@@ -45,7 +45,18 @@ walk(path.join(ROOT, 'content'));
 // and returns [], so the page fail-softs to "Nothing here yet" rather than
 // erroring. Quiet, not loud. If you need /changelog to revalidate, put this file
 // back in the bundle in the same change.
-const EXCLUDED_FROM_BUNDLE = ['RELEASES.md'];
+// ⚠ `data/season-archive/**` IS DELIBERATELY OUTSIDE `content/`, for the same
+// reason. It is 1.4 MB raw / ~116 KiB gzipped and grows by a season every year,
+// against 687 KiB of Worker headroom — moving it under `content/` would charge
+// every request for an archive almost nobody loads. It stays readable at BUILD
+// time in Node (lib/content-fs.ts falls through a bundle miss to the real fs),
+// which is all archive routes need, because a finished season never changes and
+// those routes can be `force-static`. Give an archive route a `revalidate` and
+// it will try to read the files on workerd, where unenv has no fs.
+//
+// Note this list is descriptive, not a filter: `walk()` only ever visits
+// `content/`, so RELEASES.md and data/ are excluded structurally.
+const EXCLUDED_FROM_BUNDLE = ['RELEASES.md', 'data/season-archive/** (outside content/)'];
 
 const body = JSON.stringify(map);
 const header =

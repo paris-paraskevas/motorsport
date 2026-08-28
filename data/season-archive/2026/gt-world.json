@@ -1,0 +1,7820 @@
+{
+ "season": 2026,
+ "series": "gt-world",
+ "seriesName": "GT World Challenge",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "ok"
+ },
+ "weekends": [
+  {
+   "round": 1,
+   "roundName": "6 Hours of Paul Ricard",
+   "label": null,
+   "dateRangeLabel": "10–11 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "GTWCE - Bronze Test",
+     "start": "2026-04-10T07:00:00.000Z",
+     "end": "2026-04-10T08:00:00.000Z",
+     "location": "Circuit Paul Ricard"
+    },
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-04-10T12:25:00.000Z",
+     "end": "2026-04-10T13:55:00.000Z",
+     "location": "Circuit Paul Ricard"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-04-10T17:25:00.000Z",
+     "end": "2026-04-10T18:55:00.000Z",
+     "location": "Circuit Paul Ricard"
+    },
+    {
+     "title": "GTWCE - Qualifying",
+     "start": "2026-04-11T10:05:00.000Z",
+     "end": "2026-04-11T11:15:00.000Z",
+     "location": "Circuit Paul Ricard"
+    },
+    {
+     "title": "GTWCE - 6 Hours of Paul Ricard (Race)",
+     "start": "2026-04-11T16:00:00.000Z",
+     "end": "2026-04-11T22:00:00.000Z",
+     "location": "Circuit Paul Ricard"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "roundName": "Brands Hatch Sprint",
+   "label": null,
+   "dateRangeLabel": "2–3 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-05-02T08:35:00.000Z",
+     "end": "2026-05-02T09:35:00.000Z",
+     "location": "Brands Hatch"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-05-02T11:00:00.000Z",
+     "end": "2026-05-02T12:00:00.000Z",
+     "location": "Brands Hatch"
+    },
+    {
+     "title": "GTWCE - Qualifying 1",
+     "start": "2026-05-02T15:40:00.000Z",
+     "end": "2026-05-02T15:50:00.000Z",
+     "location": "Brands Hatch"
+    },
+    {
+     "title": "GTWCE - Qualifying 2",
+     "start": "2026-05-02T16:00:00.000Z",
+     "end": "2026-05-02T16:10:00.000Z",
+     "location": "Brands Hatch"
+    },
+    {
+     "title": "GTWCE - Sprint Race 1",
+     "start": "2026-05-03T10:15:00.000Z",
+     "end": "2026-05-03T11:15:00.000Z",
+     "location": "Brands Hatch"
+    },
+    {
+     "title": "GTWCE - Sprint Race 2",
+     "start": "2026-05-03T14:45:00.000Z",
+     "end": "2026-05-03T15:45:00.000Z",
+     "location": "Brands Hatch"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "3 Hours of Monza",
+   "label": null,
+   "dateRangeLabel": "29–31 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "GTWCE - Bronze Test",
+     "start": "2026-05-29T07:00:00.000Z",
+     "end": "2026-05-29T08:00:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-05-29T12:25:00.000Z",
+     "end": "2026-05-29T13:55:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-05-29T17:25:00.000Z",
+     "end": "2026-05-29T18:55:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "GTWCE - Qualifying",
+     "start": "2026-05-30T10:05:00.000Z",
+     "end": "2026-05-30T11:15:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "GTWCE - 3 Hours of Monza (Race)",
+     "start": "2026-05-31T13:00:00.000Z",
+     "end": "2026-05-31T16:00:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "CrowdStrike 24 Hours of Spa",
+   "label": null,
+   "dateRangeLabel": "23–27 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "GTWCE - Bronze Test",
+     "start": "2026-06-23T14:55:00.000Z",
+     "end": "2026-06-23T15:55:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-06-25T08:10:00.000Z",
+     "end": "2026-06-25T09:40:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-06-25T14:10:00.000Z",
+     "end": "2026-06-25T15:10:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Qualifying 1",
+     "start": "2026-06-25T17:45:00.000Z",
+     "end": "2026-06-25T18:05:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Qualifying 2",
+     "start": "2026-06-25T18:10:00.000Z",
+     "end": "2026-06-25T18:40:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Qualifying 3",
+     "start": "2026-06-25T18:45:00.000Z",
+     "end": "2026-06-25T19:15:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Qualifying 4",
+     "start": "2026-06-25T19:20:00.000Z",
+     "end": "2026-06-25T19:50:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Night Practice",
+     "start": "2026-06-25T20:10:00.000Z",
+     "end": "2026-06-25T21:40:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Superpole",
+     "start": "2026-06-26T13:05:00.000Z",
+     "end": "2026-06-26T13:55:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - Warm Up",
+     "start": "2026-06-26T17:20:00.000Z",
+     "end": "2026-06-26T17:50:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "GTWCE - CrowdStrike 24 Hours of Spa (Race)",
+     "start": "2026-06-27T14:30:00.000Z",
+     "end": "2026-06-28T14:30:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "Misano Sprint",
+   "label": null,
+   "dateRangeLabel": "17–19 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-07-17T12:50:00.000Z",
+     "end": "2026-07-17T14:10:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-07-17T18:10:00.000Z",
+     "end": "2026-07-17T19:30:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli"
+    },
+    {
+     "title": "GTWCE - Qualifying 1 (Group A)",
+     "start": "2026-07-18T11:05:00.000Z",
+     "end": "2026-07-18T11:15:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli"
+    },
+    {
+     "title": "GTWCE - Qualifying 1 (Group B)",
+     "start": "2026-07-18T11:20:00.000Z",
+     "end": "2026-07-18T11:30:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli"
+    },
+    {
+     "title": "GTWCE - Sprint Race 1",
+     "start": "2026-07-18T18:30:00.000Z",
+     "end": "2026-07-18T19:30:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli"
+    },
+    {
+     "title": "GTWCE - Qualifying 2 (Group A)",
+     "start": "2026-07-19T08:05:00.000Z",
+     "end": "2026-07-19T08:15:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli"
+    },
+    {
+     "title": "GTWCE - Qualifying 2 (Group B)",
+     "start": "2026-07-19T08:20:00.000Z",
+     "end": "2026-07-19T08:30:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli"
+    },
+    {
+     "title": "GTWCE - Sprint Race 2",
+     "start": "2026-07-19T12:30:00.000Z",
+     "end": "2026-07-19T13:30:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "Magny-Cours Sprint",
+   "label": null,
+   "dateRangeLabel": "1–2 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-08-01T08:35:00.000Z",
+     "end": "2026-08-01T09:35:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-08-01T11:00:00.000Z",
+     "end": "2026-08-01T12:00:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours"
+    },
+    {
+     "title": "GTWCE - Qualifying 1",
+     "start": "2026-08-01T15:40:00.000Z",
+     "end": "2026-08-01T15:50:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours"
+    },
+    {
+     "title": "GTWCE - Qualifying 2",
+     "start": "2026-08-01T16:00:00.000Z",
+     "end": "2026-08-01T16:10:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours"
+    },
+    {
+     "title": "GTWCE - Sprint Race 1",
+     "start": "2026-08-02T10:15:00.000Z",
+     "end": "2026-08-02T11:15:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours"
+    },
+    {
+     "title": "GTWCE - Sprint Race 2",
+     "start": "2026-08-02T14:45:00.000Z",
+     "end": "2026-08-02T15:45:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "3 Hours of Nürburgring",
+   "label": null,
+   "dateRangeLabel": "28–30 Aug",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "GTWCE - Bronze Test",
+     "start": "2026-08-28T07:00:00.000Z",
+     "end": "2026-08-28T08:00:00.000Z",
+     "location": "Nürburgring"
+    },
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-08-28T12:25:00.000Z",
+     "end": "2026-08-28T13:55:00.000Z",
+     "location": "Nürburgring"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-08-28T17:25:00.000Z",
+     "end": "2026-08-28T18:55:00.000Z",
+     "location": "Nürburgring"
+    },
+    {
+     "title": "GTWCE - Qualifying",
+     "start": "2026-08-29T10:05:00.000Z",
+     "end": "2026-08-29T11:15:00.000Z",
+     "location": "Nürburgring"
+    },
+    {
+     "title": "GTWCE - 3 Hours of Nürburgring (Race)",
+     "start": "2026-08-30T13:00:00.000Z",
+     "end": "2026-08-30T16:00:00.000Z",
+     "location": "Nürburgring"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "Zandvoort Sprint",
+   "label": null,
+   "dateRangeLabel": "18 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "GTWCE - Qualifying 1 (Group A)",
+     "start": "2026-09-18T07:50:00.000Z",
+     "end": "2026-09-18T08:00:00.000Z",
+     "location": "Circuit Zandvoort"
+    },
+    {
+     "title": "GTWCE - Qualifying 1 (Group B)",
+     "start": "2026-09-18T08:05:00.000Z",
+     "end": "2026-09-18T08:15:00.000Z",
+     "location": "Circuit Zandvoort"
+    },
+    {
+     "title": "GTWCE - Sprint Race 1",
+     "start": "2026-09-18T12:45:00.000Z",
+     "end": "2026-09-18T13:45:00.000Z",
+     "location": "Circuit Zandvoort"
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "roundName": "Barcelona Sprint",
+   "label": null,
+   "dateRangeLabel": "2–4 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "GTWCE - Bronze Test",
+     "start": "2026-10-02T07:00:00.000Z",
+     "end": "2026-10-02T08:00:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-10-02T12:25:00.000Z",
+     "end": "2026-10-02T13:55:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-10-02T17:25:00.000Z",
+     "end": "2026-10-02T18:55:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "GTWCE - Qualifying",
+     "start": "2026-10-03T10:05:00.000Z",
+     "end": "2026-10-03T11:15:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "GTWCE - Sprint Race",
+     "start": "2026-10-04T13:00:00.000Z",
+     "end": "2026-10-04T14:00:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "roundName": "3 Hours of Portimão",
+   "label": null,
+   "dateRangeLabel": "16–18 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "GTWCE - Bronze Test",
+     "start": "2026-10-16T08:00:00.000Z",
+     "end": "2026-10-16T09:00:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimão"
+    },
+    {
+     "title": "GTWCE - Free Practice 1",
+     "start": "2026-10-16T13:25:00.000Z",
+     "end": "2026-10-16T14:55:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimão"
+    },
+    {
+     "title": "GTWCE - Free Practice 2",
+     "start": "2026-10-16T18:25:00.000Z",
+     "end": "2026-10-16T19:55:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimão"
+    },
+    {
+     "title": "GTWCE - Qualifying",
+     "start": "2026-10-17T11:05:00.000Z",
+     "end": "2026-10-17T12:15:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimão"
+    },
+    {
+     "title": "GTWCE - 3 Hours of Portimão (Race)",
+     "start": "2026-10-18T14:00:00.000Z",
+     "end": "2026-10-18T17:00:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimão"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "raceId": 1749,
+   "raceName": "Main Race",
+   "eventName": "Circuit Paul Ricard",
+   "eventSlug": "circuit-paul-ricard",
+   "championship": "endurance",
+   "round": 1,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "7",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Mattia Drudi",
+      "Marco Sorensen",
+      "Nicki Thiim"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:54.737",
+     "laps": 176
+    },
+    {
+     "position": 2,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Luca Stolz",
+      "Maro Engel"
+     ],
+     "team": "Mercedes-AMG Team MANN-FILTER",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:55.063",
+     "laps": 176,
+     "gap": "0.806"
+    },
+    {
+     "position": 3,
+     "carNumber": "58",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Thomas Fleming",
+      "Louis Prette",
+      "Benjamin Goethe"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:54.817",
+     "laps": 176,
+     "gap": "4.447"
+    },
+    {
+     "position": 4,
+     "carNumber": "32",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Kelvin van der Linde",
+      "Jordan Pepper",
+      "Charles Weerts"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:55.324",
+     "laps": 176,
+     "gap": "10.776"
+    },
+    {
+     "position": 5,
+     "carNumber": "59",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Joseph Loake",
+      "Dean Macdonald",
+      "Marvin Kirchhöfer"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:55.059",
+     "laps": 176,
+     "gap": "25.880"
+    },
+    {
+     "position": 6,
+     "carNumber": "98",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Augusto Farfus",
+      "Jake Dennis",
+      "Raffaele Marciello"
+     ],
+     "team": "Rowe Racing",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:55.640",
+     "laps": 176,
+     "gap": "28.638"
+    },
+    {
+     "position": 7,
+     "carNumber": "17",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Maxime Martin",
+      "Maximilian Götz",
+      "Fabian Schiller"
+     ],
+     "team": "Mercedes-AMG Team GetSpeed",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:55.269",
+     "laps": 176,
+     "gap": "29.437"
+    },
+    {
+     "position": 8,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "James Kell",
+      "Arthur Rougier",
+      "Simon Gachet"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:55.542",
+     "laps": 176,
+     "gap": "31.318"
+    },
+    {
+     "position": 9,
+     "carNumber": "3",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Daniel Juncadella",
+      "Chris Lulham",
+      "Jules Gounon"
+     ],
+     "team": "Mercedes-AMG Team Verstappen Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:55.546",
+     "laps": 176,
+     "gap": "35.708"
+    },
+    {
+     "position": 10,
+     "carNumber": "998",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Ugo De Wilde",
+      "Tim Tramnitz",
+      "Jens Klingmann"
+     ],
+     "team": "Rowe Racing",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:55.424",
+     "laps": 176,
+     "gap": "38.569"
+    },
+    {
+     "position": 11,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Morris Schuring",
+      "Dorian Boccolacci",
+      "Alessio Picariello"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:55.365",
+     "laps": 176,
+     "gap": "2:15.209"
+    },
+    {
+     "position": 12,
+     "carNumber": "46",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Daniel Harper",
+      "Max Hesse",
+      "Valentino Rossi"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:55.189",
+     "laps": 175,
+     "gap": "1.427"
+    },
+    {
+     "position": 13,
+     "carNumber": "97",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Riccardo Pera",
+      "Antares Au",
+      "Loek Hartog"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:55.142",
+     "laps": 175,
+     "gap": "11.324"
+    },
+    {
+     "position": 14,
+     "carNumber": "51",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Alessio Rovera",
+      "Nicklas Nielsen",
+      "Tommaso Mosca"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:55.361",
+     "laps": 175,
+     "gap": "13.901"
+    },
+    {
+     "position": 15,
+     "carNumber": "84",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Christopher Haase",
+      "Simon Reicher",
+      "Markus Winkelhock"
+     ],
+     "team": "Eastalent Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:55.175",
+     "laps": 175,
+     "gap": "32.419"
+    },
+    {
+     "position": 16,
+     "carNumber": "71",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Frederik Schandorff",
+      "Malte Ebdrup",
+      "Simon Birch"
+     ],
+     "team": "Selected Car Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:55.798",
+     "laps": 175,
+     "gap": "32.752"
+    },
+    {
+     "position": 17,
+     "carNumber": "9",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Aleksei Nesov",
+      "Aliaksandr Malykhin",
+      "Max Hofer"
+     ],
+     "team": "Pure Rxcing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:55.684",
+     "laps": 175,
+     "gap": "33.847"
+    },
+    {
+     "position": 18,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Ignacio Montenegro",
+      "Matisse Lismont",
+      "Amaury Cordeel"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:55.845",
+     "laps": 175,
+     "gap": "34.629"
+    },
+    {
+     "position": 19,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lilou Wadoux",
+      "Arthur Leclerc",
+      "Sean Gelael"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:55.576",
+     "laps": 175,
+     "gap": "42.247"
+    },
+    {
+     "position": 20,
+     "carNumber": "21",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Oliver Söderström",
+      "Sebastien Baud",
+      "Kobe Pauwels"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:55.584",
+     "laps": 175,
+     "gap": "42.737"
+    },
+    {
+     "position": 21,
+     "carNumber": "66",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Rocco Mazzola",
+      "Sebastian Øgaard",
+      "Ariel Levi"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:56.155",
+     "laps": 175,
+     "gap": "44.612"
+    },
+    {
+     "position": 22,
+     "carNumber": "87",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Marvin Dienst",
+      "Gabriele Piana",
+      "Rinat Salikhov"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:55.564",
+     "laps": 175,
+     "gap": "50.766"
+    },
+    {
+     "position": 23,
+     "carNumber": "991",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Dries Vanthoor",
+      "James Kellett",
+      "Darren Leung"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:55.434",
+     "laps": 174,
+     "gap": "17.994"
+    },
+    {
+     "position": 24,
+     "carNumber": "992",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Christian Hahn",
+      "Ashley Sutton",
+      "Robert De Haan"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:55.787",
+     "laps": 174,
+     "gap": "18.610"
+    },
+    {
+     "position": 25,
+     "carNumber": "64",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Arjun Maini",
+      "Fabio Scherer",
+      "Thomas Drouet"
+     ],
+     "team": "HRT Ford Racing",
+     "car": "Ford Mustang GT3 EVO",
+     "time": "1:55.549",
+     "laps": 174,
+     "gap": "22.135"
+    },
+    {
+     "position": 26,
+     "carNumber": "65",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Finn Wiebelhaus",
+      "Eduardo Coseteng",
+      "Maxime Oosten"
+     ],
+     "team": "HRT Ford Racing",
+     "car": "Ford Mustang GT3 EVO",
+     "time": "1:55.991",
+     "laps": 174,
+     "gap": "24.799"
+    },
+    {
+     "position": 27,
+     "carNumber": "222",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Reece Barr",
+      "Charles Dawson",
+      "Kiern Jewiss"
+     ],
+     "team": "2 Seas Motorsport",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:56.467",
+     "laps": 174,
+     "gap": "25.257"
+    },
+    {
+     "position": 28,
+     "carNumber": "74",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Dustin Blattner",
+      "Lorenzo Patrese",
+      "Dennis Marschall"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:56.243",
+     "laps": 174,
+     "gap": "46.558"
+    },
+    {
+     "position": 29,
+     "carNumber": "42",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Ahmad Al Harthy",
+      "Javier Sagrera",
+      "Calan Williams"
+     ],
+     "team": "Oman Racing by Century Motorsport",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:56.264",
+     "laps": 174,
+     "gap": "47.888"
+    },
+    {
+     "position": 30,
+     "carNumber": "25",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Ezequiel Perez Companc",
+      "Etienne Cheli",
+      "Ivan Klymenko"
+     ],
+     "team": "Sainteloc Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:56.218",
+     "laps": 174,
+     "gap": "52.390"
+    },
+    {
+     "position": 31,
+     "carNumber": "52",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Matias Zagazeta",
+      "Jeff Machiels",
+      "Gilles Stadsbader"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:56.312",
+     "laps": 174,
+     "gap": "52.977"
+    },
+    {
+     "position": 32,
+     "carNumber": "23",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Horatio Fitz-Simon",
+      "Maxwell Lynn",
+      "Ben Dörr"
+     ],
+     "team": "Team RJN",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:55.773",
+     "laps": 174,
+     "gap": "1:08.855"
+    },
+    {
+     "position": 33,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Aurelien Panis",
+      "Anthony Bartone",
+      "Cesar Gazeau"
+     ],
+     "team": "GetSpeed Team BartoneBros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:56.037",
+     "laps": 174,
+     "gap": "1:21.875"
+    },
+    {
+     "position": 34,
+     "carNumber": "35",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Gaspard Simon",
+      "Ethan Ischer",
+      "Mateo Villagomez"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:56.737",
+     "laps": 174,
+     "gap": "1:27.490"
+    },
+    {
+     "position": 35,
+     "carNumber": "91",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Ralf Bohn",
+      "Huub van Eijndhoven",
+      "Robert Renauer"
+     ],
+     "team": "Herberth Motorsport",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:56.521",
+     "laps": 173,
+     "gap": "30.576"
+    },
+    {
+     "position": 36,
+     "carNumber": "12",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Gabriel Rindone",
+      "Tom Kalender",
+      "Mikael Grenier"
+     ],
+     "team": "GetSpeed Team Dubai",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:55.969",
+     "laps": 173,
+     "gap": "41.327"
+    },
+    {
+     "position": 37,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Tanart Sathienthirakul",
+      "Francesco Simonazzi",
+      "Angus Whiteside"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:56.869",
+     "laps": 173,
+     "gap": "53.340"
+    },
+    {
+     "position": 38,
+     "carNumber": "24",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Antoine Doquin",
+      "Lorenzo Fluxa Cross",
+      "Dennis Lind"
+     ],
+     "team": "Steller Motorsport",
+     "car": "Chevrolet Corvette Z06 GT3 R",
+     "time": "1:56.008",
+     "laps": 173,
+     "gap": "54.015"
+    },
+    {
+     "position": 39,
+     "carNumber": "63",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Franck Perera",
+      "Maximilian Paul",
+      "Mirko Bortolotti"
+     ],
+     "team": "TGI Team by GRT",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:56.267",
+     "laps": 173,
+     "gap": "1:29.300"
+    },
+    {
+     "position": 40,
+     "carNumber": "914",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Gerhard Tweraser",
+      "Dominik Olbert",
+      "Benjamin Paque"
+     ],
+     "team": "Razoon - more than racing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:55.955",
+     "laps": 173,
+     "gap": "1:46.762"
+    },
+    {
+     "position": 41,
+     "carNumber": "56",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Jonathan Adam",
+      "Tom Wood",
+      "Giacomo Petrobelli"
+     ],
+     "team": "Ecurie Ecosse Blackthorn",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:56.963",
+     "laps": 172,
+     "gap": "57.657"
+    },
+    {
+     "position": 42,
+     "carNumber": "45",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Rafael Duran",
+      "Dylan Medler",
+      "David Perel"
+     ],
+     "team": "Rinaldi Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:56.740",
+     "laps": 172,
+     "gap": "1:54.511"
+    },
+    {
+     "position": 43,
+     "carNumber": "88",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Carrie Schreiner",
+      "Daniele Di Amato",
+      "Alberto Di Folco"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:55.264",
+     "laps": 172,
+     "gap": "2:14.325"
+    },
+    {
+     "position": 44,
+     "carNumber": "11",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Marcelo Tomasoni",
+      "Aaron Muss",
+      "Kyle Marcelli"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:56.907",
+     "laps": 170,
+     "gap": "2:19.793"
+    },
+    {
+     "position": 45,
+     "carNumber": "4",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Adam Smalley",
+      "Freddie Tomlinson",
+      "Harry George"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:55.861",
+     "laps": 169,
+     "gap": "57.821"
+    },
+    {
+     "position": 46,
+     "carNumber": "67",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Scott Noble",
+      "Jason Hart",
+      "Philip Ellis"
+     ],
+     "team": "GetSpeed Team Noble Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:56.144",
+     "laps": 169,
+     "gap": "1:25.310"
+    },
+    {
+     "position": 47,
+     "carNumber": "177",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Alfredo Hernandez Ortega",
+      "Stephane Tribaudini",
+      "Colin Caresani"
+     ],
+     "team": "Grupo Prom Racing Team",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:56.230",
+     "laps": 168,
+     "gap": "1:45.122"
+    },
+    {
+     "position": 48,
+     "carNumber": "18",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Roberto Merhi",
+      "Lance Stroll",
+      "Mari Boya"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:55.213",
+     "laps": 163,
+     "gap": "-12:36.716"
+    },
+    {
+     "position": 49,
+     "carNumber": "93",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Stefano Costantini",
+      "Chris Froggatt",
+      "Eddie Cheever"
+     ],
+     "team": "Ziggo Sport Tempesta Racing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:56.396",
+     "laps": 151,
+     "gap": "-51:07.336"
+    }
+   ]
+  },
+  {
+   "raceId": 1756,
+   "raceName": "Race 2",
+   "eventName": "Brands Hatch",
+   "eventSlug": "brands-hatch",
+   "championship": "sprint",
+   "round": 2,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "80",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Ricardo Feller",
+      "Bastian Buus"
+     ],
+     "team": "Lionspeed GP",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:23.563",
+     "laps": 43
+    },
+    {
+     "position": 2,
+     "carNumber": "3",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Daniel Juncadella",
+      "Chris Lulham"
+     ],
+     "team": "Mercedes-AMG Team Verstappen Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:23.287",
+     "laps": 43,
+     "gap": "3.073"
+    },
+    {
+     "position": 3,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Maro Engel"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:23.433",
+     "laps": 43,
+     "gap": "10.286"
+    },
+    {
+     "position": 4,
+     "carNumber": "46",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Valentino Rossi",
+      "Max Hesse"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:23.499",
+     "laps": 43,
+     "gap": "13.576"
+    },
+    {
+     "position": 5,
+     "carNumber": "59",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Dean Macdonald",
+      "Marvin Kirchhöfer"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:23.899",
+     "laps": 43,
+     "gap": "17.330"
+    },
+    {
+     "position": 6,
+     "carNumber": "32",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Charles Weerts",
+      "Kelvin van der Linde"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:23.806",
+     "laps": 43,
+     "gap": "19.483"
+    },
+    {
+     "position": 7,
+     "carNumber": "31",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Amaury Cordeel",
+      "Jordan Pepper"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:24.049",
+     "laps": 43,
+     "gap": "25.640"
+    },
+    {
+     "position": 8,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Matisse Lismont",
+      "Ignacio Montenegro"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:23.661",
+     "laps": 43,
+     "gap": "26.227"
+    },
+    {
+     "position": 9,
+     "carNumber": "14",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Konsta Lappalainen",
+      "Matteo Cairoli"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:23.759",
+     "laps": 43,
+     "gap": "30.676"
+    },
+    {
+     "position": 10,
+     "carNumber": "555",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Romain Andriolo",
+      "Simon Gachet"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:24.050",
+     "laps": 43,
+     "gap": "37.011"
+    },
+    {
+     "position": 11,
+     "carNumber": "69",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Ben Green",
+      "Thierry Vermeulen"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:23.633",
+     "laps": 43,
+     "gap": "37.311"
+    },
+    {
+     "position": 12,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Morris Schuring",
+      "Dorian Boccolacci"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:23.104",
+     "laps": 43,
+     "gap": "38.103"
+    },
+    {
+     "position": 13,
+     "carNumber": "5",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Mikey Porter",
+      "Guilherme Oliveira"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:23.878",
+     "laps": 43,
+     "gap": "38.182"
+    },
+    {
+     "position": 14,
+     "carNumber": "7",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Nicki Thiim",
+      "Kobe Pauwels"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:23.940",
+     "laps": 43,
+     "gap": "38.927"
+    },
+    {
+     "position": 15,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Arthur Leclerc",
+      "Thomas Neubauer"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:23.987",
+     "laps": 43,
+     "gap": "41.023"
+    },
+    {
+     "position": 16,
+     "carNumber": "52",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Jeff Machiels",
+      "Gilles Stadsbader"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:24.114",
+     "laps": 43,
+     "gap": "43.781"
+    },
+    {
+     "position": 17,
+     "carNumber": "84",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Simon Reicher",
+      "Christopher Haase"
+     ],
+     "team": "Eastalent Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:24.541",
+     "laps": 43,
+     "gap": "59.432"
+    },
+    {
+     "position": 18,
+     "carNumber": "96",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Luca Engstler",
+      "Patric Niederhauser"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:24.545",
+     "laps": 43,
+     "gap": "59.919"
+    },
+    {
+     "position": 19,
+     "carNumber": "51",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Tommaso Mosca",
+      "Matias Zagazeta"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:24.646",
+     "laps": 43,
+     "gap": "1:00.402"
+    },
+    {
+     "position": 20,
+     "carNumber": "34",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Jamie Day",
+      "Mateo Villagomez"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:24.361",
+     "laps": 43,
+     "gap": "1:01.484"
+    },
+    {
+     "position": 21,
+     "carNumber": "9",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Aleksei Nesov",
+      "Aliaksandr Malykhin"
+     ],
+     "team": "Pure Rxcing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:23.585",
+     "laps": 43,
+     "gap": "1:02.467"
+    },
+    {
+     "position": 22,
+     "carNumber": "71",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Carl Bennett",
+      "Felix Hirsiger"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:24.653",
+     "laps": 43,
+     "gap": "1:06.524"
+    },
+    {
+     "position": 23,
+     "carNumber": "163",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Mattia Michelotto",
+      "Loris Spinelli"
+     ],
+     "team": "VSR",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:24.598",
+     "laps": 43,
+     "gap": "1:15.002"
+    },
+    {
+     "position": 24,
+     "carNumber": "77",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Jop Rappange",
+      "David Pittard"
+     ],
+     "team": "KPX Motorsport",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:24.516",
+     "laps": 43,
+     "gap": "1:23.857"
+    },
+    {
+     "position": 25,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Arthur Rougier",
+      "James Kell"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:24.079",
+     "laps": 43,
+     "gap": "1:36.996"
+    },
+    {
+     "position": 26,
+     "carNumber": "35",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Maxime Robin",
+      "Gaspard Simon"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:24.694",
+     "laps": 42,
+     "gap": "7.591"
+    },
+    {
+     "position": 27,
+     "carNumber": "21",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Oliver Söderström",
+      "Arthur Dorison"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:25.120",
+     "laps": 42,
+     "gap": "7.943"
+    },
+    {
+     "position": 28,
+     "carNumber": "914",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Simon Birch",
+      "Magnus Gustavsen"
+     ],
+     "team": "Razoon - more than racing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:24.146",
+     "laps": 42,
+     "gap": "8.308"
+    },
+    {
+     "position": 29,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Aurelien Panis",
+      "Anthony Bartone"
+     ],
+     "team": "GetSpeed Team BartoneBros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:23.859",
+     "laps": 42,
+     "gap": "15.296"
+    },
+    {
+     "position": 30,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Loris Cabirou",
+      "Tanart Sathienthirakul"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:23.984",
+     "laps": 42,
+     "gap": "19.692"
+    },
+    {
+     "position": 31,
+     "carNumber": "66",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Ariel Levi",
+      "Andrea Frassineti"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:24.149",
+     "laps": 42,
+     "gap": "21.488"
+    }
+   ]
+  },
+  {
+   "raceId": 1755,
+   "raceName": "Race 1",
+   "eventName": "Brands Hatch",
+   "eventSlug": "brands-hatch",
+   "championship": "sprint",
+   "round": 2,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Arthur Leclerc",
+      "Thomas Neubauer"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:24.132",
+     "laps": 39
+    },
+    {
+     "position": 2,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Morris Schuring",
+      "Dorian Boccolacci"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:24.020",
+     "laps": 39,
+     "gap": "0.685"
+    },
+    {
+     "position": 3,
+     "carNumber": "32",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Charles Weerts",
+      "Kelvin van der Linde"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:23.658",
+     "laps": 39,
+     "gap": "1.893"
+    },
+    {
+     "position": 4,
+     "carNumber": "31",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Amaury Cordeel",
+      "Jordan Pepper"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:23.747",
+     "laps": 39,
+     "gap": "11.953"
+    },
+    {
+     "position": 5,
+     "carNumber": "14",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Konsta Lappalainen",
+      "Matteo Cairoli"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:23.703",
+     "laps": 39,
+     "gap": "12.769"
+    },
+    {
+     "position": 6,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Maro Engel"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:23.523",
+     "laps": 39,
+     "gap": "13.181"
+    },
+    {
+     "position": 7,
+     "carNumber": "51",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Tommaso Mosca",
+      "Matias Zagazeta"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:24.402",
+     "laps": 39,
+     "gap": "26.544"
+    },
+    {
+     "position": 8,
+     "carNumber": "58",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Thomas Fleming",
+      "Louis Prette"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:24.358",
+     "laps": 39,
+     "gap": "27.005"
+    },
+    {
+     "position": 9,
+     "carNumber": "7",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Nicki Thiim",
+      "Kobe Pauwels"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:24.346",
+     "laps": 39,
+     "gap": "27.593"
+    },
+    {
+     "position": 10,
+     "carNumber": "69",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Ben Green",
+      "Thierry Vermeulen"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:24.503",
+     "laps": 39,
+     "gap": "28.028"
+    },
+    {
+     "position": 11,
+     "carNumber": "59",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Dean Macdonald",
+      "Marvin Kirchhöfer"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:24.072",
+     "laps": 39,
+     "gap": "28.535"
+    },
+    {
+     "position": 12,
+     "carNumber": "3",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Daniel Juncadella",
+      "Chris Lulham"
+     ],
+     "team": "Mercedes-AMG Team Verstappen Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:23.607",
+     "laps": 39,
+     "gap": "28.736"
+    },
+    {
+     "position": 13,
+     "carNumber": "5",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Mikey Porter",
+      "Guilherme Oliveira"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:24.422",
+     "laps": 39,
+     "gap": "31.530"
+    },
+    {
+     "position": 14,
+     "carNumber": "46",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Valentino Rossi",
+      "Max Hesse"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:23.539",
+     "laps": 39,
+     "gap": "34.644"
+    },
+    {
+     "position": 15,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Matisse Lismont",
+      "Ignacio Montenegro"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:23.932",
+     "laps": 39,
+     "gap": "36.024"
+    },
+    {
+     "position": 16,
+     "carNumber": "34",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Jamie Day",
+      "Mateo Villagomez"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:24.609",
+     "laps": 39,
+     "gap": "43.749"
+    },
+    {
+     "position": 17,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Aurelien Panis",
+      "Anthony Bartone"
+     ],
+     "team": "GetSpeed Team BartoneBros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:24.551",
+     "laps": 39,
+     "gap": "52.583"
+    },
+    {
+     "position": 18,
+     "carNumber": "35",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Maxime Robin",
+      "Gaspard Simon"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:24.395",
+     "laps": 39,
+     "gap": "53.849"
+    },
+    {
+     "position": 19,
+     "carNumber": "9",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Aleksei Nesov",
+      "Aliaksandr Malykhin"
+     ],
+     "team": "Pure Rxcing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:24.080",
+     "laps": 39,
+     "gap": "55.841"
+    },
+    {
+     "position": 20,
+     "carNumber": "96",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Luca Engstler",
+      "Patric Niederhauser"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:24.722",
+     "laps": 39,
+     "gap": "57.881"
+    },
+    {
+     "position": 21,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Arthur Rougier",
+      "James Kell"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:24.216",
+     "laps": 39,
+     "gap": "59.301"
+    },
+    {
+     "position": 22,
+     "carNumber": "66",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Ariel Levi",
+      "Andrea Frassineti"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:24.124",
+     "laps": 39,
+     "gap": "1:04.845"
+    },
+    {
+     "position": 23,
+     "carNumber": "84",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Simon Reicher",
+      "Christopher Haase"
+     ],
+     "team": "Eastalent Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:24.040",
+     "laps": 39,
+     "gap": "1:14.528"
+    },
+    {
+     "position": 24,
+     "carNumber": "21",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Oliver Söderström",
+      "Arthur Dorison"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:24.880",
+     "laps": 39,
+     "gap": "1:19.283"
+    },
+    {
+     "position": 25,
+     "carNumber": "52",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Jeff Machiels",
+      "Gilles Stadsbader"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:24.880",
+     "laps": 39,
+     "gap": "1:22.267"
+    },
+    {
+     "position": 26,
+     "carNumber": "71",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Carl Bennett",
+      "Felix Hirsiger"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:24.657",
+     "laps": 39,
+     "gap": "1:22.630"
+    },
+    {
+     "position": 27,
+     "carNumber": "555",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Romain Andriolo",
+      "Simon Gachet"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:24.656",
+     "laps": 39,
+     "gap": "1:23.195"
+    },
+    {
+     "position": 28,
+     "carNumber": "163",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Mattia Michelotto",
+      "Loris Spinelli"
+     ],
+     "team": "VSR",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:24.728",
+     "laps": 39,
+     "gap": "1:23.485"
+    },
+    {
+     "position": 29,
+     "carNumber": "77",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Jop Rappange",
+      "David Pittard"
+     ],
+     "team": "KPX Motorsport",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:24.032",
+     "laps": 38,
+     "gap": "2.761"
+    },
+    {
+     "position": 30,
+     "carNumber": "914",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Simon Birch",
+      "Magnus Gustavsen"
+     ],
+     "team": "Razoon - more than racing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:23.876",
+     "laps": 38,
+     "gap": "12.129"
+    },
+    {
+     "position": 31,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Loris Cabirou",
+      "Tanart Sathienthirakul"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:25.210",
+     "laps": 38,
+     "gap": "34.869"
+    }
+   ]
+  },
+  {
+   "raceId": 1762,
+   "raceName": "Main Race",
+   "eventName": "Monza",
+   "eventSlug": "monza",
+   "championship": "endurance",
+   "round": 3,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "66",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Rocco Mazzola",
+      "Sebastian Øgaard",
+      "Ariel Levi"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:47.306",
+     "laps": 79
+    },
+    {
+     "position": 2,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Luca Stolz",
+      "Maro Engel"
+     ],
+     "team": "Mercedes-AMG Team MANN-FILTER",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:46.445",
+     "laps": 79,
+     "gap": "0.783"
+    },
+    {
+     "position": 3,
+     "carNumber": "555",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Baptiste Moulin",
+      "Romain Andriolo",
+      "Lorens Lecertua"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:47.419",
+     "laps": 79,
+     "gap": "2.425"
+    },
+    {
+     "position": 4,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Morris Schuring",
+      "Dorian Boccolacci",
+      "Alessio Picariello"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:46.788",
+     "laps": 79,
+     "gap": "2.785"
+    },
+    {
+     "position": 5,
+     "carNumber": "98",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Augusto Farfus",
+      "Jake Dennis",
+      "Raffaele Marciello"
+     ],
+     "team": "Rowe Racing",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:47.410",
+     "laps": 79,
+     "gap": "3.558"
+    },
+    {
+     "position": 6,
+     "carNumber": "23",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Horatio Fitz-Simon",
+      "Maxwell Lynn",
+      "Ben Dörr"
+     ],
+     "team": "Team RJN",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:46.659",
+     "laps": 79,
+     "gap": "4.570"
+    },
+    {
+     "position": 7,
+     "carNumber": "96",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Luca Engstler",
+      "Marco Mapelli",
+      "Patric Niederhauser"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:47.197",
+     "laps": 79,
+     "gap": "6.125"
+    },
+    {
+     "position": 8,
+     "carNumber": "74",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Dustin Blattner",
+      "Lorenzo Patrese",
+      "Dennis Marschall"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:46.396",
+     "laps": 79,
+     "gap": "6.830"
+    },
+    {
+     "position": 9,
+     "carNumber": "56",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Giacomo Petrobelli",
+      "Lorcan Hanafin",
+      "Jonathan Adam"
+     ],
+     "team": "Ecurie Ecosse Blackthorn",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:47.060",
+     "laps": 79,
+     "gap": "8.511"
+    },
+    {
+     "position": 10,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Francesco Simonazzi",
+      "Angus Whiteside",
+      "Tanart Sathienthirakul"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:47.361",
+     "laps": 79,
+     "gap": "9.308"
+    },
+    {
+     "position": 11,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lilou Wadoux",
+      "Arthur Leclerc",
+      "Sean Gelael"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:46.942",
+     "laps": 79,
+     "gap": "9.983"
+    },
+    {
+     "position": 12,
+     "carNumber": "42",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Ahmad Al Harthy",
+      "Javier Sagrera",
+      "Calan Williams"
+     ],
+     "team": "Oman Racing by Century Motorsport",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:47.475",
+     "laps": 79,
+     "gap": "10.579"
+    },
+    {
+     "position": 13,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Anthony Bartone",
+      "Cesar Gazeau",
+      "Aurelien Panis"
+     ],
+     "team": "GetSpeed Team Bartone Bros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:47.226",
+     "laps": 79,
+     "gap": "11.468"
+    },
+    {
+     "position": 14,
+     "carNumber": "71",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Frederik Schandorff",
+      "Malte Ebdrup",
+      "Simon Birch"
+     ],
+     "team": "Selected Car Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:47.422",
+     "laps": 79,
+     "gap": "12.705"
+    },
+    {
+     "position": 15,
+     "carNumber": "93",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Jonathan Hui",
+      "Chris Froggatt",
+      "Eddie Cheever"
+     ],
+     "team": "Ziggo Sport Tempesta Racing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:47.542",
+     "laps": 79,
+     "gap": "13.785"
+    },
+    {
+     "position": 16,
+     "carNumber": "991",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Robert De Haan",
+      "Darren Leung",
+      "James Kellett"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:47.213",
+     "laps": 79,
+     "gap": "14.093"
+    },
+    {
+     "position": 17,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Ignacio Montenegro",
+      "Matisse Lismont",
+      "Amaury Cordeel"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:47.536",
+     "laps": 79,
+     "gap": "16.190"
+    },
+    {
+     "position": 18,
+     "carNumber": "58",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Thomas Fleming",
+      "Louis Prette",
+      "Benjamin Goethe"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:47.296",
+     "laps": 79,
+     "gap": "18.750"
+    },
+    {
+     "position": 19,
+     "carNumber": "45",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Rafael Duran",
+      "Dylan Medler",
+      "David Perel"
+     ],
+     "team": "Rinaldi Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:46.606",
+     "laps": 79,
+     "gap": "19.034"
+    },
+    {
+     "position": 20,
+     "carNumber": "84",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Christopher Haase",
+      "Simon Reicher",
+      "Markus Winkelhock"
+     ],
+     "team": "Eastalent Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:47.189",
+     "laps": 79,
+     "gap": "20.057"
+    },
+    {
+     "position": 21,
+     "carNumber": "89",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Patrick Kolb",
+      "Bashar Mardini",
+      "Alex Fontana"
+     ],
+     "team": "Lionspeed GP",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:47.336",
+     "laps": 79,
+     "gap": "20.500"
+    },
+    {
+     "position": 22,
+     "carNumber": "60",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Thomas Kiefer",
+      "Rolf Ineichen",
+      "Tim Heinemann"
+     ],
+     "team": "JMW Motorsport",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:47.528",
+     "laps": 79,
+     "gap": "26.269"
+    },
+    {
+     "position": 23,
+     "carNumber": "998",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Ugo De Wilde",
+      "Tim Tramnitz",
+      "Jens Klingmann"
+     ],
+     "team": "Rowe Racing",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:47.394",
+     "laps": 79,
+     "gap": "27.330"
+    },
+    {
+     "position": 24,
+     "carNumber": "35",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Gaspard Simon",
+      "Ethan Ischer",
+      "Mateo Villagomez"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:47.666",
+     "laps": 79,
+     "gap": "31.900"
+    },
+    {
+     "position": 25,
+     "carNumber": "91",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Ralf Bohn",
+      "Huub van Eijndhoven",
+      "Robert Renauer"
+     ],
+     "team": "Herberth Motorsport",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:47.405",
+     "laps": 79,
+     "gap": "32.790"
+    },
+    {
+     "position": 26,
+     "carNumber": "24",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Mikkel Mac",
+      "Antoine Doquin",
+      "Dennis Lind"
+     ],
+     "team": "Steller Motorsport",
+     "car": "Chevrolet Corvette Z06 GT3 R",
+     "time": "1:47.079",
+     "laps": 79,
+     "gap": "33.024"
+    },
+    {
+     "position": 27,
+     "carNumber": "21",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Kobe Pauwels",
+      "Oliver Söderström",
+      "Sebastien Baud"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:47.350",
+     "laps": 79,
+     "gap": "46.365"
+    },
+    {
+     "position": 28,
+     "carNumber": "34",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Jamie Day",
+      "Christian Krognes",
+      "Henrique Chaves"
+     ],
+     "team": "natural elements by Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:47.426",
+     "laps": 79,
+     "gap": "47.150"
+    },
+    {
+     "position": 29,
+     "carNumber": "88",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Carrie Schreiner",
+      "Daniele Di Amato",
+      "Gerhard Tweraser"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:47.481",
+     "laps": 79,
+     "gap": "58.006"
+    },
+    {
+     "position": 30,
+     "carNumber": "32",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Kelvin van der Linde",
+      "Jordan Pepper",
+      "Charles Weerts"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:46.938",
+     "laps": 79,
+     "gap": "2:05.213"
+    },
+    {
+     "position": 31,
+     "carNumber": "12",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Gabriel Rindone",
+      "Tom Kalender",
+      "Mikael Grenier"
+     ],
+     "team": "GetSpeed Team Dubai",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:47.531",
+     "laps": 78,
+     "gap": "6.841"
+    },
+    {
+     "position": 32,
+     "carNumber": "177",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Alfredo Hernandez Ortega",
+      "Stephane Tribaudini",
+      "Colin Caresani"
+     ],
+     "team": "Grupo Prom Racing Team",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:47.711",
+     "laps": 78,
+     "gap": "30.282"
+    },
+    {
+     "position": 33,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Arthur Rougier",
+      "Simon Gachet",
+      "James Kell"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:47.298",
+     "laps": 78,
+     "gap": "39.787"
+    },
+    {
+     "position": 34,
+     "carNumber": "992",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Christian Hahn",
+      "Bobby Thompson",
+      "Josh Rowledge"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:47.629",
+     "laps": 78,
+     "gap": "1:07.147"
+    },
+    {
+     "position": 35,
+     "carNumber": "87",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Marvin Dienst",
+      "Gabriele Piana",
+      "Rinat Salikhov"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:47.115",
+     "laps": 77,
+     "gap": "-6:08.431"
+    },
+    {
+     "position": 36,
+     "carNumber": "25",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Ezequiel Perez Companc",
+      "Etienne Cheli",
+      "Ivan Klymenko"
+     ],
+     "team": "Sainteloc Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:47.198",
+     "laps": 77,
+     "gap": "-6:07.196"
+    },
+    {
+     "position": 37,
+     "carNumber": "9",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Aleksei Nesov",
+      "Max Hofer",
+      "Aliaksandr Malykhin"
+     ],
+     "team": "Pure Rxcing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:47.141",
+     "laps": 77,
+     "gap": "-5:36.033"
+    },
+    {
+     "position": 38,
+     "carNumber": "97",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Riccardo Pera",
+      "Antares Au",
+      "Sven Müller"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:47.221",
+     "laps": 76,
+     "gap": "-6:07.325"
+    },
+    {
+     "position": 39,
+     "carNumber": "11",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Aaron Muss",
+      "Marcelo Tomasoni",
+      "Kyle Marcelli"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:48.127",
+     "laps": 76,
+     "gap": "33.799"
+    },
+    {
+     "position": 40,
+     "carNumber": "914",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Georgios Kolovos",
+      "Lenny Ried",
+      "Stylianos Kolovos"
+     ],
+     "team": "Razoon - more than racing",
+     "car": "Porsche 911 GT3 R EVO",
+     "time": "1:48.369",
+     "laps": 72,
+     "gap": "15.108"
+    },
+    {
+     "position": 41,
+     "carNumber": "222",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Reece Barr",
+      "Charles Dawson",
+      "Kiern Jewiss"
+     ],
+     "team": "2 Seas Motorsport",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:47.528",
+     "laps": 71,
+     "gap": "-23:12.316"
+    },
+    {
+     "position": 42,
+     "carNumber": "44",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Joshua Rattican",
+      "Tomas Pintos",
+      "Jayden Kelly"
+     ],
+     "team": "Greystone GT",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:47.471",
+     "laps": 71,
+     "gap": "-20:09.057"
+    }
+   ]
+  },
+  {
+   "raceId": 1777,
+   "raceName": "Main Race",
+   "eventName": "CrowdStrike 24 Hours of Spa",
+   "eventSlug": "crowdstrike-24-hours-of-spa",
+   "championship": "endurance",
+   "round": 4,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "80",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Ricardo Feller",
+      "Thomas Preining",
+      "Bastian Buus"
+     ],
+     "team": "Lionspeed GP",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:17.484",
+     "laps": 541
+    },
+    {
+     "position": 2,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Luca Stolz",
+      "Maro Engel"
+     ],
+     "team": "Mercedes-AMG Team MANN-FILTER",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "2:17.855",
+     "laps": 541,
+     "gap": "12.288"
+    },
+    {
+     "position": 3,
+     "carNumber": "51",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Alessio Rovera",
+      "Tommaso Mosca",
+      "Nicklas Nielsen"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "2:17.340",
+     "laps": 541,
+     "gap": "12.938"
+    },
+    {
+     "position": 4,
+     "carNumber": "22",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Ayhancan Güven",
+      "Matt Campbell",
+      "Frederic Makowiecki"
+     ],
+     "team": "Schumacher CLRT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:18.105",
+     "laps": 541,
+     "gap": "13.721"
+    },
+    {
+     "position": 5,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lilou Wadoux",
+      "Arthur Leclerc",
+      "Sean Gelael"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "2:18.095",
+     "laps": 541,
+     "gap": "31.899"
+    },
+    {
+     "position": 6,
+     "carNumber": "46",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Valentino Rossi",
+      "Daniel Harper",
+      "Max Hesse"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "2:18.076",
+     "laps": 541,
+     "gap": "1:17.484"
+    },
+    {
+     "position": 7,
+     "carNumber": "34",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Jamie Day",
+      "Christian Krognes",
+      "Henrique Chaves"
+     ],
+     "team": "natural elements by Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "2:18.444",
+     "laps": 541,
+     "gap": "1:29.169"
+    },
+    {
+     "position": 8,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Morris Schuring",
+      "Dorian Boccolacci",
+      "Alessio Picariello"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:18.218",
+     "laps": 541,
+     "gap": "2:01.813"
+    },
+    {
+     "position": 9,
+     "carNumber": "98",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Augusto Farfus",
+      "Jake Dennis",
+      "Raffaele Marciello"
+     ],
+     "team": "Rowe Racing",
+     "car": "BMW M4 GT3 EVO",
+     "time": "2:18.321",
+     "laps": 540,
+     "gap": "1:33.917"
+    },
+    {
+     "position": 10,
+     "carNumber": "74",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Dustin Blattner",
+      "Ben Tuck",
+      "Mathys Jaubert",
+      "Dennis Marschall"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "2:18.743",
+     "laps": 540,
+     "gap": "1:59.354"
+    },
+    {
+     "position": 11,
+     "carNumber": "998",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Ugo De Wilde",
+      "Tim Tramnitz",
+      "Jens Klingmann"
+     ],
+     "team": "Rowe Racing",
+     "car": "BMW M4 GT3 EVO",
+     "time": "2:18.550",
+     "laps": 540,
+     "gap": "2:04.198"
+    },
+    {
+     "position": 12,
+     "carNumber": "32",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Kelvin van der Linde",
+      "Jordan Pepper",
+      "Charles Weerts"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "2:18.009",
+     "laps": 539,
+     "gap": "-3:04.847"
+    },
+    {
+     "position": 13,
+     "carNumber": "991",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Leyton Fourie",
+      "Darren Leung",
+      "David Pittard",
+      "James Kellett"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "2:18.727",
+     "laps": 539,
+     "gap": "1:00.981"
+    },
+    {
+     "position": 14,
+     "carNumber": "45",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Rafael Duran",
+      "Dylan Medler",
+      "Alessandro Balzan",
+      "David Perel"
+     ],
+     "team": "Rinaldi Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "2:19.131",
+     "laps": 539,
+     "gap": "2:02.688"
+    },
+    {
+     "position": 15,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Ignacio Montenegro",
+      "Amaury Cordeel",
+      "Mathieu Detry",
+      "Matisse Lismont"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "2:19.321",
+     "laps": 539,
+     "gap": "2:14.221"
+    },
+    {
+     "position": 16,
+     "carNumber": "52",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Francesco Braschi",
+      "Jeff Machiels",
+      "Matias Zagazeta",
+      "Gilles Stadsbader"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "2:19.043",
+     "laps": 538,
+     "gap": "0.866"
+    },
+    {
+     "position": 17,
+     "carNumber": "5",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Salman Owega",
+      "Dante Rappange",
+      "Guilherme Oliveira",
+      "Mikey Porter"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "2:18.468",
+     "laps": 538,
+     "gap": "17.452"
+    },
+    {
+     "position": 18,
+     "carNumber": "65",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Finn Wiebelhaus",
+      "Max Reis",
+      "Maxime Oosten",
+      "Eduardo Coseteng"
+     ],
+     "team": "HRT Ford Racing",
+     "car": "Ford Mustang GT3 EVO",
+     "time": "2:18.275",
+     "laps": 537,
+     "gap": "22.971"
+    },
+    {
+     "position": 19,
+     "carNumber": "96",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Luca Engstler",
+      "Marco Mapelli",
+      "Patric Niederhauser"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Lamborghini Temerario GT3",
+     "time": "2:19.777",
+     "laps": 537,
+     "gap": "48.756"
+    },
+    {
+     "position": 20,
+     "carNumber": "89",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Alex Fontana",
+      "Bashar Mardini",
+      "Axcil Jefferies",
+      "Patrick Kolb"
+     ],
+     "team": "Lionspeed GP",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:18.451",
+     "laps": 537,
+     "gap": "2:00.610"
+    },
+    {
+     "position": 21,
+     "carNumber": "87",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Marvin Dienst",
+      "Gabriele Piana",
+      "Rinat Salikhov",
+      "Daan Arrow"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "2:19.016",
+     "laps": 536,
+     "gap": "1.311"
+    },
+    {
+     "position": 22,
+     "carNumber": "10",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Gilles Magnus",
+      "Robin Knutsson",
+      "Alessandro Ghiretti"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:18.742",
+     "laps": 534,
+     "gap": "36.693"
+    },
+    {
+     "position": 23,
+     "carNumber": "20",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Levente Revesz",
+      "Christian Mansell",
+      "Yannick Mettler",
+      "Rui Andrade"
+     ],
+     "team": "Team Motopark",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "2:19.684",
+     "laps": 534,
+     "gap": "1:06.971"
+    },
+    {
+     "position": 24,
+     "carNumber": "4",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Adam Smalley",
+      "Freddie Tomlinson",
+      "Harry George",
+      "Ruben del Sarte"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "2:18.901",
+     "laps": 534,
+     "gap": "1:58.789"
+    },
+    {
+     "position": 25,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Loris Cabirou",
+      "Tanart Sathienthirakul",
+      "Francesco Simonazzi",
+      "Angus Whiteside"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:19.399",
+     "laps": 532,
+     "gap": "36.266"
+    },
+    {
+     "position": 26,
+     "carNumber": "71",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Conrad Laursen",
+      "Malte Ebdrup",
+      "Simon Birch",
+      "Frederik Schandorff"
+     ],
+     "team": "Selected Car Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "2:18.265",
+     "laps": 532,
+     "gap": "49.748"
+    },
+    {
+     "position": 27,
+     "carNumber": "222",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Reece Barr",
+      "Charles Dawson",
+      "Garnet Patterson",
+      "Kiern Jewiss"
+     ],
+     "team": "2 Seas Motorsport",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "2:19.956",
+     "laps": 532,
+     "gap": "1:57.854"
+    },
+    {
+     "position": 28,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Anthony Bartone",
+      "Aurelien Panis",
+      "Cesar Gazeau",
+      "Karol Basz"
+     ],
+     "team": "GetSpeed Team Bartone Bros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "2:18.693",
+     "laps": 532,
+     "gap": "2:14.910"
+    },
+    {
+     "position": 29,
+     "carNumber": "0",
+     "cup": "pro",
+     "cupLabel": "Pro-AM Cup",
+     "drivers": [
+      "H.H. Prince Jefri Ibrahim",
+      "Prince Abu Bakar Ibrahim",
+      "Jordan Love",
+      "Ben Green"
+     ],
+     "team": "Johor Motorsports Racing JMR",
+     "car": "Chevrolet Corvette Z06 GT3 R",
+     "time": "2:17.869",
+     "laps": 531,
+     "gap": "21.458"
+    },
+    {
+     "position": 30,
+     "carNumber": "25",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Ezequiel Perez Companc",
+      "Etienne Cheli",
+      "Ivan Klymenko",
+      "Lucas Legeret"
+     ],
+     "team": "Sainteloc Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "2:18.666",
+     "laps": 531,
+     "gap": "53.563"
+    },
+    {
+     "position": 31,
+     "carNumber": "56",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Jonathan Adam",
+      "Romain Leroux",
+      "Giacomo Petrobelli",
+      "Lorcan Hanafin"
+     ],
+     "team": "Ecurie Ecosse Blackthorn",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "2:19.240",
+     "laps": 529,
+     "gap": "57.264"
+    },
+    {
+     "position": 32,
+     "carNumber": "86",
+     "cup": "pro",
+     "cupLabel": "Pro-AM Cup",
+     "drivers": [
+      "Kerong Li",
+      "Anders Fjordbach",
+      "Bo Yuan",
+      "Hongli Ye"
+     ],
+     "team": "High Class Racing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:19.104",
+     "laps": 528,
+     "gap": "1:01.461"
+    },
+    {
+     "position": 33,
+     "carNumber": "999",
+     "cup": "pro",
+     "cupLabel": "Pro-AM Cup",
+     "drivers": [
+      "Patrick Charlaix",
+      "Jordan Boisson",
+      "Marvin Klein",
+      "Benjamin Paque"
+     ],
+     "team": "GetSpeed Team PCX",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "2:18.730",
+     "laps": 527,
+     "gap": "37.368"
+    },
+    {
+     "position": 34,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Jim Pla",
+      "Arthur Rougier",
+      "Simon Gachet",
+      "James Kell"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "2:18.469",
+     "laps": 519,
+     "gap": "1:50.839"
+    },
+    {
+     "position": 35,
+     "carNumber": "23",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Wyatt Brichacek",
+      "Horatio Fitz-Simon",
+      "Maxwell Lynn",
+      "Ben Dörr"
+     ],
+     "team": "Team RJN",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "2:18.274",
+     "laps": 516,
+     "gap": "55.478"
+    },
+    {
+     "position": 36,
+     "carNumber": "58",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Thomas Fleming",
+      "Louis Prette",
+      "Benjamin Goethe"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "2:17.558",
+     "laps": 513,
+     "gap": "1:54.002"
+    },
+    {
+     "position": 37,
+     "carNumber": "44",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Zac Meakin",
+      "Jayden Kelly",
+      "Tomas Pintos",
+      "Joshua Rattican"
+     ],
+     "team": "Greystone GT",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "2:19.074",
+     "laps": 508,
+     "gap": "1:03.432"
+    },
+    {
+     "position": 38,
+     "carNumber": "79",
+     "cup": "pro",
+     "cupLabel": "Pro-AM Cup",
+     "drivers": [
+      "Johannes Zelger",
+      "Fabio Babini",
+      "Hiroshi Hamaguchi",
+      "Nico Menzel"
+     ],
+     "team": "Tsunami RT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:18.890",
+     "laps": 507,
+     "gap": "1:40.463"
+    },
+    {
+     "position": 39,
+     "carNumber": "8",
+     "cup": "pro",
+     "cupLabel": "Pro-AM Cup",
+     "drivers": [
+      "Nicolò Rosi",
+      "Reinhold Krahn",
+      "Niccolò Schirò",
+      "Joel Sturm"
+     ],
+     "team": "Car Collection Motorsport",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:18.090",
+     "laps": 497,
+     "gap": "42.192"
+    },
+    {
+     "position": 40,
+     "carNumber": "555",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Baptiste Moulin",
+      "Sai Sanjay",
+      "Romain Andriolo",
+      "Lorens Lecertua"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "2:19.495",
+     "laps": 488,
+     "gap": "-1:02:16.336"
+    },
+    {
+     "position": 41,
+     "carNumber": "24",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Mikkel Pedersen",
+      "Lenny Ried",
+      "Antoine Doquin",
+      "Dennis Lind"
+     ],
+     "team": "Steller Motorsport",
+     "car": "Chevrolet Corvette Z06 GT3 R",
+     "time": "2:18.705",
+     "laps": 485,
+     "gap": "57.431"
+    },
+    {
+     "position": 42,
+     "carNumber": "914",
+     "cup": "pro",
+     "cupLabel": "Pro-AM Cup",
+     "drivers": [
+      "Edward McDermott",
+      "Kenzie Reiss Beecroft",
+      "Carl Bennett",
+      "Bryce Fullwood"
+     ],
+     "team": "Razoon - more than racing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:20.413",
+     "laps": 460,
+     "gap": "1:48.902"
+    },
+    {
+     "position": 43,
+     "carNumber": "97",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Martin Rump",
+      "Antares Au",
+      "Michelle Gatting",
+      "Sven Müller"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:18.425",
+     "laps": 457,
+     "gap": "3:22.080"
+    },
+    {
+     "position": 44,
+     "carNumber": "33",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Jason Hart",
+      "Scott Noble",
+      "Aaron Walker",
+      "Lewis Williamson"
+     ],
+     "team": "2 Seas Motorsport",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "2:18.878",
+     "laps": 453,
+     "gap": "1:48.598"
+    },
+    {
+     "position": 45,
+     "carNumber": "123",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Tobias Müller",
+      "Bayley Hall",
+      "Armand Fumal",
+      "Andres Latorre"
+     ],
+     "team": "Muehlner Motorsport",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:19.271",
+     "laps": 427,
+     "gap": "-3:55:54.946"
+    },
+    {
+     "position": 46,
+     "carNumber": "91",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Ralf Bohn",
+      "Alfred Renauer",
+      "Huub van Eijndhoven",
+      "Mathieu Jaminet"
+     ],
+     "team": "Herberth Motorsport",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "2:19.054",
+     "laps": 384,
+     "gap": "-6:17:45.549"
+    },
+    {
+     "position": 47,
+     "carNumber": "12",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Gabriel Rindone",
+      "Jarrod Waberski",
+      "Tom Kalender",
+      "Mikael Grenier"
+     ],
+     "team": "GetSpeed Team Dubai",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "2:18.940",
+     "laps": 379,
+     "gap": "-6:19:27.996"
+    }
+   ]
+  },
+  {
+   "raceId": 1839,
+   "raceName": "Race 2",
+   "eventName": "Misano",
+   "eventSlug": "misano",
+   "championship": "sprint",
+   "round": 5,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "32",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Charles Weerts",
+      "Kelvin van der Linde"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:33.580",
+     "laps": 38
+    },
+    {
+     "position": 2,
+     "carNumber": "3",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Daniel Juncadella",
+      "Jules Gounon"
+     ],
+     "team": "Mercedes-AMG Team Verstappen Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.538",
+     "laps": 38,
+     "gap": "2.977"
+    },
+    {
+     "position": 3,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Maro Engel"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.142",
+     "laps": 38,
+     "gap": "14.049"
+    },
+    {
+     "position": 4,
+     "carNumber": "46",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Valentino Rossi",
+      "Max Hesse"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:33.508",
+     "laps": 38,
+     "gap": "15.450"
+    },
+    {
+     "position": 5,
+     "carNumber": "69",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Thierry Vermeulen",
+      "Ben Green"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:33.435",
+     "laps": 38,
+     "gap": "23.206"
+    },
+    {
+     "position": 6,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Thomas Neubauer",
+      "Arthur Leclerc"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:33.783",
+     "laps": 38,
+     "gap": "27.653"
+    },
+    {
+     "position": 7,
+     "carNumber": "59",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Dean Macdonald",
+      "Marvin Kirchhöfer"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:33.364",
+     "laps": 38,
+     "gap": "29.017"
+    },
+    {
+     "position": 8,
+     "carNumber": "99",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Dylan Pereira",
+      "Alex Aka"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:33.649",
+     "laps": 38,
+     "gap": "33.976"
+    },
+    {
+     "position": 9,
+     "carNumber": "58",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Thomas Fleming",
+      "Louis Prette"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:33.631",
+     "laps": 38,
+     "gap": "35.515"
+    },
+    {
+     "position": 10,
+     "carNumber": "31",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Amaury Cordeel",
+      "Jordan Pepper"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:33.948",
+     "laps": 38,
+     "gap": "41.079"
+    },
+    {
+     "position": 11,
+     "carNumber": "555",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Simon Gachet",
+      "Romain Andriolo"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:34.200",
+     "laps": 38,
+     "gap": "43.880"
+    },
+    {
+     "position": 12,
+     "carNumber": "163",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Loris Spinelli",
+      "Mattia Michelotto"
+     ],
+     "team": "VSR",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:34.242",
+     "laps": 38,
+     "gap": "49.990"
+    },
+    {
+     "position": 13,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Anthony Bartone",
+      "Aurelien Panis"
+     ],
+     "team": "GetSpeed Team Bartone Bros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:34.075",
+     "laps": 38,
+     "gap": "50.223"
+    },
+    {
+     "position": 14,
+     "carNumber": "51",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Tommaso Mosca",
+      "Matias Zagazeta"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:33.790",
+     "laps": 38,
+     "gap": "50.354"
+    },
+    {
+     "position": 15,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "James Kell",
+      "Arthur Rougier"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:34.272",
+     "laps": 38,
+     "gap": "51.608"
+    },
+    {
+     "position": 16,
+     "carNumber": "34",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Jamie Day",
+      "Mateo Villagomez"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:34.007",
+     "laps": 38,
+     "gap": "54.813"
+    },
+    {
+     "position": 17,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Matisse Lismont",
+      "Ignacio Montenegro"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:33.812",
+     "laps": 38,
+     "gap": "57.189"
+    },
+    {
+     "position": 18,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Morris Schuring",
+      "Dorian Boccolacci"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.043",
+     "laps": 38,
+     "gap": "59.598"
+    },
+    {
+     "position": 19,
+     "carNumber": "10",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Gilles Magnus",
+      "Robin Knutsson"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.040",
+     "laps": 38,
+     "gap": "1:01.114"
+    },
+    {
+     "position": 20,
+     "carNumber": "80",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Ricardo Feller",
+      "Bastian Buus"
+     ],
+     "team": "Lionspeed GP",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:33.681",
+     "laps": 38,
+     "gap": "1:01.868"
+    },
+    {
+     "position": 21,
+     "carNumber": "52",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Jeff Machiels",
+      "Gilles Stadsbader"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.398",
+     "laps": 38,
+     "gap": "1:06.558"
+    },
+    {
+     "position": 22,
+     "carNumber": "35",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Gaspard Simon",
+      "Maxime Robin"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:34.384",
+     "laps": 38,
+     "gap": "1:06.825"
+    },
+    {
+     "position": 23,
+     "carNumber": "71",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Felix Hirsiger",
+      "Carl Bennett"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.092",
+     "laps": 38,
+     "gap": "1:11.172"
+    },
+    {
+     "position": 24,
+     "carNumber": "87",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Marvin Dienst",
+      "Rinat Salikhov"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.802",
+     "laps": 38,
+     "gap": "1:14.623"
+    },
+    {
+     "position": 25,
+     "carNumber": "77",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Jop Rappange",
+      "David Pittard"
+     ],
+     "team": "KPX Motorsport",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:34.605",
+     "laps": 38,
+     "gap": "1:18.263"
+    },
+    {
+     "position": 26,
+     "carNumber": "96",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Luca Engstler",
+      "Patric Niederhauser"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:34.121",
+     "laps": 38,
+     "gap": "1:18.570"
+    },
+    {
+     "position": 27,
+     "carNumber": "21",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Arthur Dorison",
+      "Oliver Söderström"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:33.961",
+     "laps": 38,
+     "gap": "1:19.321"
+    },
+    {
+     "position": 28,
+     "carNumber": "9",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Riccardo Pera",
+      "Aliaksandr Malykhin"
+     ],
+     "team": "Pure Rxcing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.300",
+     "laps": 38,
+     "gap": "1:19.896"
+    },
+    {
+     "position": 29,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Tanart Sathienthirakul",
+      "Mark Kastelic"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.651",
+     "laps": 38,
+     "gap": "1:25.409"
+    },
+    {
+     "position": 30,
+     "carNumber": "93",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Eddie Cheever",
+      "Peter Dempsey"
+     ],
+     "team": "Ziggo Sport Tempesta Racing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.144",
+     "laps": 38,
+     "gap": "1:25.660"
+    },
+    {
+     "position": 31,
+     "carNumber": "222",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Kiern Jewiss",
+      "Charles Dawson"
+     ],
+     "team": "2Seas Motorsport",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.808",
+     "laps": 38,
+     "gap": "1:28.955"
+    },
+    {
+     "position": 32,
+     "carNumber": "55",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Loris Cabirou",
+      "Dmitry Gvazava"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:33.853",
+     "laps": 38,
+     "gap": "1:31.256"
+    },
+    {
+     "position": 33,
+     "carNumber": "5",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Guilherme Oliveira",
+      "Mikey Porter"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:34.135",
+     "laps": 38,
+     "gap": "1:31.280"
+    },
+    {
+     "position": 34,
+     "carNumber": "74",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Dennis Marschall",
+      "Dustin Blattner"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.077",
+     "laps": 38,
+     "gap": "1:31.788"
+    },
+    {
+     "position": 35,
+     "carNumber": "84",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Christopher Haase",
+      "Simon Reicher"
+     ],
+     "team": "Eastalent Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:33.437",
+     "laps": 38,
+     "gap": "1:37.570"
+    },
+    {
+     "position": 36,
+     "carNumber": "12",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Fabian Schiller",
+      "Gabriel Rindone"
+     ],
+     "team": "GetSpeed Team Dubai",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.608",
+     "laps": 38,
+     "gap": "1:38.831"
+    },
+    {
+     "position": 37,
+     "carNumber": "88",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Sebastian Øgaard",
+      "Carrie Schreiner"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:34.189",
+     "laps": 37,
+     "gap": "6.789"
+    },
+    {
+     "position": 38,
+     "carNumber": "991",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Augusto Farfus",
+      "Darren Leung"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:33.659",
+     "laps": 37,
+     "gap": "10.609"
+    },
+    {
+     "position": 39,
+     "carNumber": "27",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "David Fumanelli",
+      "Marco Pulcini"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.140",
+     "laps": 37,
+     "gap": "56.248"
+    },
+    {
+     "position": 40,
+     "carNumber": "11",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Felice Jelmini",
+      "Marcelo Tomasoni"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:33.922",
+     "laps": 37,
+     "gap": "1:58.014"
+    }
+   ]
+  },
+  {
+   "raceId": 1783,
+   "raceName": "Race 1",
+   "eventName": "Misano",
+   "eventSlug": "misano",
+   "championship": "sprint",
+   "round": 5,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "32",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Charles Weerts",
+      "Kelvin van der Linde"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:33.413",
+     "laps": 35
+    },
+    {
+     "position": 2,
+     "carNumber": "80",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Ricardo Feller",
+      "Bastian Buus"
+     ],
+     "team": "Lionspeed GP",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:33.623",
+     "laps": 35,
+     "gap": "19.659"
+    },
+    {
+     "position": 3,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Maro Engel"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.468",
+     "laps": 35,
+     "gap": "20.148"
+    },
+    {
+     "position": 4,
+     "carNumber": "69",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Thierry Vermeulen",
+      "Ben Green"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:33.470",
+     "laps": 35,
+     "gap": "35.755"
+    },
+    {
+     "position": 5,
+     "carNumber": "99",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Dylan Pereira",
+      "Alex Aka"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:33.656",
+     "laps": 35,
+     "gap": "42.252"
+    },
+    {
+     "position": 6,
+     "carNumber": "46",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Valentino Rossi",
+      "Max Hesse"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:33.787",
+     "laps": 35,
+     "gap": "43.551"
+    },
+    {
+     "position": 7,
+     "carNumber": "31",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Amaury Cordeel",
+      "Jordan Pepper"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:33.453",
+     "laps": 35,
+     "gap": "1:02.674"
+    },
+    {
+     "position": 8,
+     "carNumber": "84",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Christopher Haase",
+      "Simon Reicher"
+     ],
+     "team": "Eastalent Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:34.265",
+     "laps": 35,
+     "gap": "1:04.997"
+    },
+    {
+     "position": 9,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Thomas Neubauer",
+      "Arthur Leclerc"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.474",
+     "laps": 35,
+     "gap": "1:08.006"
+    },
+    {
+     "position": 10,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Matisse Lismont",
+      "Ignacio Montenegro"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:34.355",
+     "laps": 35,
+     "gap": "1:10.809"
+    },
+    {
+     "position": 11,
+     "carNumber": "96",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Luca Engstler",
+      "Patric Niederhauser"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:33.935",
+     "laps": 35,
+     "gap": "1:11.321"
+    },
+    {
+     "position": 12,
+     "carNumber": "58",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Thomas Fleming",
+      "Louis Prette"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:33.976",
+     "laps": 35,
+     "gap": "1:11.591"
+    },
+    {
+     "position": 13,
+     "carNumber": "59",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Dean Macdonald",
+      "Marvin Kirchhöfer"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:34.147",
+     "laps": 35,
+     "gap": "1:11.856"
+    },
+    {
+     "position": 14,
+     "carNumber": "34",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Jamie Day",
+      "Mateo Villagomez"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:34.555",
+     "laps": 35,
+     "gap": "1:15.329"
+    },
+    {
+     "position": 15,
+     "carNumber": "51",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Tommaso Mosca",
+      "Matias Zagazeta"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.305",
+     "laps": 35,
+     "gap": "1:16.580"
+    },
+    {
+     "position": 16,
+     "carNumber": "7",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Nicki Thiim",
+      "Kobe Pauwels"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:34.028",
+     "laps": 35,
+     "gap": "1:26.926"
+    },
+    {
+     "position": 17,
+     "carNumber": "10",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Gilles Magnus",
+      "Robin Knutsson"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.285",
+     "laps": 35,
+     "gap": "1:30.035"
+    },
+    {
+     "position": 18,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "James Kell",
+      "Arthur Rougier"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:34.019",
+     "laps": 35,
+     "gap": "1:30.210"
+    },
+    {
+     "position": 19,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Anthony Bartone",
+      "Aurelien Panis"
+     ],
+     "team": "GetSpeed Team Bartone Bros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.888",
+     "laps": 35,
+     "gap": "1:47.349"
+    },
+    {
+     "position": 20,
+     "carNumber": "52",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Jeff Machiels",
+      "Gilles Stadsbader"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.383",
+     "laps": 35,
+     "gap": "2:03.328"
+    },
+    {
+     "position": 21,
+     "carNumber": "12",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Fabian Schiller",
+      "Gabriel Rindone"
+     ],
+     "team": "GetSpeed Team Dubai",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.858",
+     "laps": 35,
+     "gap": "2:05.643"
+    },
+    {
+     "position": 22,
+     "carNumber": "14",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Matteo Cairoli",
+      "Konsta Lappalainen"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.435",
+     "laps": 35,
+     "gap": "2:06.525"
+    },
+    {
+     "position": 23,
+     "carNumber": "87",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Marvin Dienst",
+      "Rinat Salikhov"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:33.796",
+     "laps": 35,
+     "gap": "2:08.045"
+    },
+    {
+     "position": 24,
+     "carNumber": "74",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Dennis Marschall",
+      "Dustin Blattner"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:34.615",
+     "laps": 35,
+     "gap": "2:08.923"
+    },
+    {
+     "position": 25,
+     "carNumber": "991",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Augusto Farfus",
+      "Darren Leung"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:34.246",
+     "laps": 35,
+     "gap": "2:09.217"
+    },
+    {
+     "position": 26,
+     "carNumber": "222",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Kiern Jewiss",
+      "Charles Dawson"
+     ],
+     "team": "2Seas Motorsport",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:34.333",
+     "laps": 35,
+     "gap": "2:09.843"
+    },
+    {
+     "position": 27,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Morris Schuring",
+      "Dorian Boccolacci"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.337",
+     "laps": 35,
+     "gap": "2:13.450"
+    },
+    {
+     "position": 28,
+     "carNumber": "21",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Arthur Dorison",
+      "Oliver Söderström"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:34.596",
+     "laps": 35,
+     "gap": "2:14.503"
+    },
+    {
+     "position": 29,
+     "carNumber": "5",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Guilherme Oliveira",
+      "Mikey Porter"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:34.572",
+     "laps": 35,
+     "gap": "2:14.870"
+    },
+    {
+     "position": 30,
+     "carNumber": "77",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Jop Rappange",
+      "David Pittard"
+     ],
+     "team": "KPX Motorsport",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:34.743",
+     "laps": 35,
+     "gap": "2:15.100"
+    },
+    {
+     "position": 31,
+     "carNumber": "35",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Gaspard Simon",
+      "Maxime Robin"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:34.779",
+     "laps": 35,
+     "gap": "2:15.777"
+    },
+    {
+     "position": 32,
+     "carNumber": "71",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Felix Hirsiger",
+      "Carl Bennett"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:35.142",
+     "laps": 35,
+     "gap": "2:24.084"
+    },
+    {
+     "position": 33,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Tanart Sathienthirakul",
+      "Mark Kastelic"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.657",
+     "laps": 35,
+     "gap": "2:32.314"
+    },
+    {
+     "position": 34,
+     "carNumber": "9",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Riccardo Pera",
+      "Aliaksandr Malykhin"
+     ],
+     "team": "Pure Rxcing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.852",
+     "laps": 35,
+     "gap": "2:45.990"
+    },
+    {
+     "position": 35,
+     "carNumber": "93",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Eddie Cheever",
+      "Peter Dempsey"
+     ],
+     "team": "Ziggo Sport Tempesta Racing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:34.782",
+     "laps": 35,
+     "gap": "2:47.247"
+    },
+    {
+     "position": 36,
+     "carNumber": "163",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Loris Spinelli",
+      "Mattia Michelotto"
+     ],
+     "team": "VSR",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:33.637",
+     "laps": 35,
+     "gap": "3:00.538"
+    },
+    {
+     "position": 37,
+     "carNumber": "27",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "David Fumanelli",
+      "Marco Pulcini"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:35.226",
+     "laps": 35,
+     "gap": "3:02.387"
+    },
+    {
+     "position": 38,
+     "carNumber": "55",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Loris Cabirou",
+      "Dmitry Gvazava"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:35.138",
+     "laps": 35,
+     "gap": "3:23.949"
+    },
+    {
+     "position": 39,
+     "carNumber": "88",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Sebastian Øgaard",
+      "Carrie Schreiner"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:35.297",
+     "laps": 34,
+     "gap": "18.918"
+    },
+    {
+     "position": 40,
+     "carNumber": "11",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Felice Jelmini",
+      "Marcelo Tomasoni"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:35.199",
+     "laps": 34,
+     "gap": "2:07.951"
+    },
+    {
+     "position": 41,
+     "carNumber": "555",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Simon Gachet",
+      "Romain Andriolo"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:34.459",
+     "laps": 31,
+     "gap": "-8:26.909"
+    }
+   ]
+  },
+  {
+   "raceId": 1795,
+   "raceName": "Race 2",
+   "eventName": "Magny-Cours",
+   "eventSlug": "magny-cours",
+   "championship": "sprint",
+   "round": 6,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "80",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Bastian Buus",
+      "Ricardo Feller"
+     ],
+     "team": "Lionspeed GP",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:37.209",
+     "laps": 34
+    },
+    {
+     "position": 2,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Matisse Lismont",
+      "Ignacio Montenegro"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:37.495",
+     "laps": 34,
+     "gap": "2.120"
+    },
+    {
+     "position": 3,
+     "carNumber": "96",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Luca Engstler",
+      "Patric Niederhauser"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:37.665",
+     "laps": 34,
+     "gap": "2.610"
+    },
+    {
+     "position": 4,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Thomas Neubauer",
+      "Arthur Leclerc"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:37.476",
+     "laps": 34,
+     "gap": "5.173"
+    },
+    {
+     "position": 5,
+     "carNumber": "84",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Simon Reicher",
+      "Christopher Haase"
+     ],
+     "team": "Eastalent Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:37.631",
+     "laps": 34,
+     "gap": "6.733"
+    },
+    {
+     "position": 6,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "James Kell",
+      "Arthur Rougier"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:37.961",
+     "laps": 34,
+     "gap": "13.741"
+    },
+    {
+     "position": 7,
+     "carNumber": "59",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Dean Macdonald",
+      "Marvin Kirchhöfer"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:37.817",
+     "laps": 34,
+     "gap": "14.301"
+    },
+    {
+     "position": 8,
+     "carNumber": "3",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Jules Gounon",
+      "Daniel Juncadella"
+     ],
+     "team": "Mercedes-AMG Team Verstappen Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:37.909",
+     "laps": 34,
+     "gap": "15.763"
+    },
+    {
+     "position": 9,
+     "carNumber": "46",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Max Hesse",
+      "Valentino Rossi"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:37.457",
+     "laps": 34,
+     "gap": "17.104"
+    },
+    {
+     "position": 10,
+     "carNumber": "51",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Tommaso Mosca",
+      "Matias Zagazeta"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:37.569",
+     "laps": 34,
+     "gap": "19.658"
+    },
+    {
+     "position": 11,
+     "carNumber": "31",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Amaury Cordeel",
+      "Jordan Pepper"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:38.171",
+     "laps": 34,
+     "gap": "20.110"
+    },
+    {
+     "position": 12,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Alessio Picariello",
+      "Dorian Boccolacci"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:37.968",
+     "laps": 34,
+     "gap": "20.251"
+    },
+    {
+     "position": 13,
+     "carNumber": "5",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Guilherme Oliveira",
+      "Mikey Porter"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:38.109",
+     "laps": 34,
+     "gap": "22.888"
+    },
+    {
+     "position": 14,
+     "carNumber": "555",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Simon Gachet",
+      "Romain Andriolo"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:38.146",
+     "laps": 34,
+     "gap": "23.191"
+    },
+    {
+     "position": 15,
+     "carNumber": "21",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Oliver Söderström",
+      "Arthur Dorison"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:38.281",
+     "laps": 34,
+     "gap": "24.487"
+    },
+    {
+     "position": 16,
+     "carNumber": "58",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Thomas Fleming",
+      "Louis Prette"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:38.192",
+     "laps": 34,
+     "gap": "24.946"
+    },
+    {
+     "position": 17,
+     "carNumber": "14",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Konsta Lappalainen",
+      "Matteo Cairoli"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:38.142",
+     "laps": 34,
+     "gap": "25.707"
+    },
+    {
+     "position": 18,
+     "carNumber": "7",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Kobe Pauwels",
+      "Nicki Thiim"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:37.582",
+     "laps": 34,
+     "gap": "26.201"
+    },
+    {
+     "position": 19,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Maro Engel"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:38.071",
+     "laps": 34,
+     "gap": "26.951"
+    },
+    {
+     "position": 20,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Anthony Bartone",
+      "Aurelien Panis"
+     ],
+     "team": "GetSpeed Team Bartone Bros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:38.481",
+     "laps": 34,
+     "gap": "30.528"
+    },
+    {
+     "position": 21,
+     "carNumber": "66",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Andrea Frassineti",
+      "Ariel Levi"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:37.669",
+     "laps": 34,
+     "gap": "30.823"
+    },
+    {
+     "position": 22,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Tanart Sathienthirakul",
+      "Mark Kastelic"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:38.047",
+     "laps": 34,
+     "gap": "34.331"
+    },
+    {
+     "position": 23,
+     "carNumber": "991",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Augusto Farfus",
+      "Darren Leung"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:37.612",
+     "laps": 34,
+     "gap": "34.892"
+    },
+    {
+     "position": 24,
+     "carNumber": "10",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Gilles Magnus",
+      "Robin Knutsson"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:37.404",
+     "laps": 34,
+     "gap": "35.935"
+    },
+    {
+     "position": 25,
+     "carNumber": "222",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Kiern Jewiss",
+      "Charles Dawson"
+     ],
+     "team": "2Seas Motorsport",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:38.150",
+     "laps": 34,
+     "gap": "37.382"
+    },
+    {
+     "position": 26,
+     "carNumber": "34",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Mateo Villagomez",
+      "Jamie Day"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:38.325",
+     "laps": 34,
+     "gap": "39.660"
+    },
+    {
+     "position": 27,
+     "carNumber": "55",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Loris Cabirou",
+      "Dmitry Gvazava"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:37.894",
+     "laps": 34,
+     "gap": "41.711"
+    },
+    {
+     "position": 28,
+     "carNumber": "93",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Eddie Cheever",
+      "Peter Dempsey"
+     ],
+     "team": "Ziggo Sport Tempesta Racing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:37.759",
+     "laps": 34,
+     "gap": "45.497"
+    },
+    {
+     "position": 29,
+     "carNumber": "35",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Gaspard Simon",
+      "Maxime Robin"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:38.313",
+     "laps": 34,
+     "gap": "47.066"
+    },
+    {
+     "position": 30,
+     "carNumber": "71",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Carl Bennett",
+      "Felix Hirsiger"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:38.387",
+     "laps": 34,
+     "gap": "49.743"
+    },
+    {
+     "position": 31,
+     "carNumber": "77",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Jop Rappange",
+      "David Pittard"
+     ],
+     "team": "KPX Motorsport",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:38.606",
+     "laps": 34,
+     "gap": "51.345"
+    },
+    {
+     "position": 32,
+     "carNumber": "12",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Fabian Schiller",
+      "Gabriel Rindone"
+     ],
+     "team": "GetSpeed Team Dubai",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:37.667",
+     "laps": 34,
+     "gap": "51.729"
+    },
+    {
+     "position": 33,
+     "carNumber": "88",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Sebastian Øgaard",
+      "Carrie Schreiner"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:38.034",
+     "laps": 34,
+     "gap": "52.206"
+    },
+    {
+     "position": 34,
+     "carNumber": "52",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Gilles Stadsbader",
+      "Jef Machiels"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:38.347",
+     "laps": 34,
+     "gap": "54.261"
+    },
+    {
+     "position": 35,
+     "carNumber": "27",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "David Fumanelli",
+      "Marco Pulcini"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:38.318",
+     "laps": 34,
+     "gap": "54.689"
+    },
+    {
+     "position": 36,
+     "carNumber": "87",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Marvin Dienst",
+      "Rinat Salikhov"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:37.604",
+     "laps": 34,
+     "gap": "1:06.055"
+    },
+    {
+     "position": 37,
+     "carNumber": "99",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Alex Aka",
+      "Dylan Pereira"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:37.230",
+     "laps": 28,
+     "gap": "-7:41.405"
+    },
+    {
+     "position": 38,
+     "carNumber": "11",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Felice Jelmini",
+      "Marcelo Tomasoni"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:38.154",
+     "laps": 25,
+     "gap": "-13:42.069"
+    }
+   ]
+  },
+  {
+   "raceId": 1792,
+   "raceName": "Race 1",
+   "eventName": "Magny-Cours",
+   "eventSlug": "magny-cours",
+   "championship": "sprint",
+   "round": 6,
+   "entries": [
+    {
+     "position": 1,
+     "carNumber": "3",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Jules Gounon",
+      "Daniel Juncadella"
+     ],
+     "team": "Mercedes-AMG Team Verstappen Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:38.426",
+     "laps": 33
+    },
+    {
+     "position": 2,
+     "carNumber": "50",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Thomas Neubauer",
+      "Arthur Leclerc"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:37.945",
+     "laps": 33,
+     "gap": "2.597"
+    },
+    {
+     "position": 3,
+     "carNumber": "7",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Kobe Pauwels",
+      "Nicki Thiim"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:37.922",
+     "laps": 33,
+     "gap": "3.395"
+    },
+    {
+     "position": 4,
+     "carNumber": "48",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Lucas Auer",
+      "Maro Engel"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:38.409",
+     "laps": 33,
+     "gap": "15.118"
+    },
+    {
+     "position": 5,
+     "carNumber": "59",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Dean Macdonald",
+      "Marvin Kirchhöfer"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:38.302",
+     "laps": 33,
+     "gap": "15.419"
+    },
+    {
+     "position": 6,
+     "carNumber": "46",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Max Hesse",
+      "Valentino Rossi"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:38.375",
+     "laps": 33,
+     "gap": "18.765"
+    },
+    {
+     "position": 7,
+     "carNumber": "32",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Charles Weerts",
+      "Kelvin van der Linde"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:38.158",
+     "laps": 33,
+     "gap": "19.513"
+    },
+    {
+     "position": 8,
+     "carNumber": "10",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Gilles Magnus",
+      "Robin Knutsson"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:38.385",
+     "laps": 33,
+     "gap": "21.052"
+    },
+    {
+     "position": 9,
+     "carNumber": "2",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Alessio Picariello",
+      "Dorian Boccolacci"
+     ],
+     "team": "Boutsen VDS",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:37.931",
+     "laps": 33,
+     "gap": "21.501"
+    },
+    {
+     "position": 10,
+     "carNumber": "51",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Tommaso Mosca",
+      "Matias Zagazeta"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:38.832",
+     "laps": 33,
+     "gap": "36.446"
+    },
+    {
+     "position": 11,
+     "carNumber": "80",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Bastian Buus",
+      "Ricardo Feller"
+     ],
+     "team": "Lionspeed GP",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:38.345",
+     "laps": 33,
+     "gap": "37.530"
+    },
+    {
+     "position": 12,
+     "carNumber": "58",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Thomas Fleming",
+      "Louis Prette"
+     ],
+     "team": "Garage 59",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:39.095",
+     "laps": 33,
+     "gap": "37.559"
+    },
+    {
+     "position": 13,
+     "carNumber": "30",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Matisse Lismont",
+      "Ignacio Montenegro"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:38.913",
+     "laps": 33,
+     "gap": "38.209"
+    },
+    {
+     "position": 14,
+     "carNumber": "99",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Alex Aka",
+      "Dylan Pereira"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:38.209",
+     "laps": 33,
+     "gap": "40.710"
+    },
+    {
+     "position": 15,
+     "carNumber": "69",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Thierry Vermeulen",
+      "Ben Green"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:38.434",
+     "laps": 33,
+     "gap": "42.805"
+    },
+    {
+     "position": 16,
+     "carNumber": "66",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Andrea Frassineti",
+      "Ariel Levi"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:38.775",
+     "laps": 33,
+     "gap": "49.081"
+    },
+    {
+     "position": 17,
+     "carNumber": "87",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Marvin Dienst",
+      "Rinat Salikhov"
+     ],
+     "team": "Winward Racing",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:38.929",
+     "laps": 33,
+     "gap": "49.152"
+    },
+    {
+     "position": 18,
+     "carNumber": "93",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Eddie Cheever",
+      "Peter Dempsey"
+     ],
+     "team": "Ziggo Sport Tempesta Racing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:38.878",
+     "laps": 33,
+     "gap": "49.435"
+    },
+    {
+     "position": 19,
+     "carNumber": "111",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "James Kell",
+      "Arthur Rougier"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:38.590",
+     "laps": 33,
+     "gap": "50.855"
+    },
+    {
+     "position": 20,
+     "carNumber": "31",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Amaury Cordeel",
+      "Jordan Pepper"
+     ],
+     "team": "Team WRT",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:38.141",
+     "laps": 33,
+     "gap": "50.995"
+    },
+    {
+     "position": 21,
+     "carNumber": "222",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Kiern Jewiss",
+      "Charles Dawson"
+     ],
+     "team": "2Seas Motorsport",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:38.693",
+     "laps": 33,
+     "gap": "54.154"
+    },
+    {
+     "position": 22,
+     "carNumber": "163",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Mattia Michelotto",
+      "Loris Spinelli"
+     ],
+     "team": "VSR",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:38.219",
+     "laps": 33,
+     "gap": "58.452"
+    },
+    {
+     "position": 23,
+     "carNumber": "74",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Dennis Marschall",
+      "Dustin Blattner"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:39.123",
+     "laps": 33,
+     "gap": "1:01.089"
+    },
+    {
+     "position": 24,
+     "carNumber": "34",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Mateo Villagomez",
+      "Jamie Day"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:39.220",
+     "laps": 33,
+     "gap": "1:02.312"
+    },
+    {
+     "position": 25,
+     "carNumber": "6",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Anthony Bartone",
+      "Aurelien Panis"
+     ],
+     "team": "GetSpeed Team Bartone Bros",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:39.356",
+     "laps": 33,
+     "gap": "1:02.937"
+    },
+    {
+     "position": 26,
+     "carNumber": "77",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Jop Rappange",
+      "David Pittard"
+     ],
+     "team": "KPX Motorsport",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:38.817",
+     "laps": 33,
+     "gap": "1:12.422"
+    },
+    {
+     "position": 27,
+     "carNumber": "21",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Oliver Söderström",
+      "Arthur Dorison"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:39.212",
+     "laps": 33,
+     "gap": "1:14.467"
+    },
+    {
+     "position": 28,
+     "carNumber": "14",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Konsta Lappalainen",
+      "Matteo Cairoli"
+     ],
+     "team": "Emil Frey Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:39.007",
+     "laps": 33,
+     "gap": "1:15.123"
+    },
+    {
+     "position": 29,
+     "carNumber": "35",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Gaspard Simon",
+      "Maxime Robin"
+     ],
+     "team": "Walkenhorst Motorsport",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:39.618",
+     "laps": 33,
+     "gap": "1:18.579"
+    },
+    {
+     "position": 30,
+     "carNumber": "555",
+     "cup": "gold",
+     "cupLabel": "Gold Cup",
+     "drivers": [
+      "Simon Gachet",
+      "Romain Andriolo"
+     ],
+     "team": "CSA Racing",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:39.748",
+     "laps": 33,
+     "gap": "1:19.838"
+    },
+    {
+     "position": 31,
+     "carNumber": "991",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Augusto Farfus",
+      "Darren Leung"
+     ],
+     "team": "Paradine Competition",
+     "car": "BMW M4 GT3 EVO",
+     "time": "1:39.516",
+     "laps": 33,
+     "gap": "1:19.874"
+    },
+    {
+     "position": 32,
+     "carNumber": "71",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Carl Bennett",
+      "Felix Hirsiger"
+     ],
+     "team": "AF Corse",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:39.662",
+     "laps": 33,
+     "gap": "1:20.054"
+    },
+    {
+     "position": 33,
+     "carNumber": "27",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "David Fumanelli",
+      "Marco Pulcini"
+     ],
+     "team": "Kessel Racing",
+     "car": "Ferrari 296 GT3 EVO",
+     "time": "1:39.357",
+     "laps": 33,
+     "gap": "1:26.468"
+    },
+    {
+     "position": 34,
+     "carNumber": "55",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Loris Cabirou",
+      "Dmitry Gvazava"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:39.311",
+     "laps": 33,
+     "gap": "1:30.615"
+    },
+    {
+     "position": 35,
+     "carNumber": "9",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Mikkel Pedersen",
+      "Aliaksandr Malykhin"
+     ],
+     "team": "Pure Rxcing",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:40.089",
+     "laps": 33,
+     "gap": "1:31.817"
+    },
+    {
+     "position": 36,
+     "carNumber": "12",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Fabian Schiller",
+      "Gabriel Rindone"
+     ],
+     "team": "GetSpeed Team Dubai",
+     "car": "Mercedes-AMG GT3 EVO",
+     "time": "1:38.738",
+     "laps": 33,
+     "gap": "1:31.857"
+    },
+    {
+     "position": 37,
+     "carNumber": "54",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Tanart Sathienthirakul",
+      "Mark Kastelic"
+     ],
+     "team": "Dinamic GT",
+     "car": "Porsche 911 GT3 R (992) EVO",
+     "time": "1:39.508",
+     "laps": 33,
+     "gap": "1:32.155"
+    },
+    {
+     "position": 38,
+     "carNumber": "26",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Jim Pla",
+      "Michael Blanchemain"
+     ],
+     "team": "Sainteloc Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:38.974",
+     "laps": 33,
+     "gap": "1:42.119"
+    },
+    {
+     "position": 39,
+     "carNumber": "88",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Sebastian Øgaard",
+      "Carrie Schreiner"
+     ],
+     "team": "Tresor Attempto Racing",
+     "car": "Audi R8 LMS GT3 EVO II",
+     "time": "1:39.731",
+     "laps": 32,
+     "gap": "16.799"
+    },
+    {
+     "position": 40,
+     "carNumber": "11",
+     "cup": "bronze",
+     "cupLabel": "Bronze Cup",
+     "drivers": [
+      "Felice Jelmini",
+      "Marcelo Tomasoni"
+     ],
+     "team": "Comtoyou Racing",
+     "car": "Aston Martin Vantage AMR GT3 EVO",
+     "time": "1:40.000",
+     "laps": 32,
+     "gap": "52.643"
+    },
+    {
+     "position": 41,
+     "carNumber": "96",
+     "cup": "pro",
+     "cupLabel": "Pro Cup",
+     "drivers": [
+      "Luca Engstler",
+      "Patric Niederhauser"
+     ],
+     "team": "Rutronik Racing",
+     "car": "Lamborghini Temerario GT3",
+     "time": "1:38.774",
+     "laps": 31,
+     "gap": "-1:48.920"
+    },
+    {
+     "position": 42,
+     "carNumber": "5",
+     "cup": "silver",
+     "cupLabel": "Silver Cup",
+     "drivers": [
+      "Guilherme Oliveira",
+      "Mikey Porter"
+     ],
+     "team": "Optimum Motorsport",
+     "car": "McLaren 720S GT3 EVO",
+     "time": "1:39.199",
+     "laps": 27,
+     "gap": "-8:45.630"
+    }
+   ]
+  }
+ ],
+ "standings": {
+  "season": 2026,
+  "overall": {
+   "championship": "overall",
+   "drivers": [
+    {
+     "position": 1,
+     "driverName": "Lucas Auer",
+     "team": "",
+     "points": 114.5
+    },
+    {
+     "position": 1,
+     "driverName": "Maro Engel",
+     "team": "",
+     "points": 114.5
+    },
+    {
+     "position": 2,
+     "driverName": "Ricardo Feller",
+     "team": "",
+     "points": 77
+    },
+    {
+     "position": 2,
+     "driverName": "Bastian Buus",
+     "team": "",
+     "points": 77
+    },
+    {
+     "position": 3,
+     "driverName": "Kelvin Van Der Linde",
+     "team": "",
+     "points": 74
+    },
+    {
+     "position": 3,
+     "driverName": "Charles Weerts",
+     "team": "",
+     "points": 74
+    },
+    {
+     "position": 4,
+     "driverName": "Luca Stolz",
+     "team": "",
+     "points": 74
+    },
+    {
+     "position": 5,
+     "driverName": "Arthur Leclerc",
+     "team": "",
+     "points": 51.5
+    },
+    {
+     "position": 6,
+     "driverName": "Daniel Juncadella",
+     "team": "",
+     "points": 50.5
+    },
+    {
+     "position": 7,
+     "driverName": "Nicki Thiim",
+     "team": "",
+     "points": 44.5
+    },
+    {
+     "position": 8,
+     "driverName": "Thomas Neubauer",
+     "team": "",
+     "points": 41.5
+    },
+    {
+     "position": 9,
+     "driverName": "Jules Gounon",
+     "team": "",
+     "points": 38.5
+    },
+    {
+     "position": 10,
+     "driverName": "Jordan Pepper",
+     "team": "",
+     "points": 38
+    },
+    {
+     "position": 11,
+     "driverName": "Max Hesse",
+     "team": "",
+     "points": 37
+    },
+    {
+     "position": 11,
+     "driverName": "Valentino Rossi",
+     "team": "",
+     "points": 37
+    },
+    {
+     "position": 12,
+     "driverName": "Thomas Fleming",
+     "team": "",
+     "points": 35
+    },
+    {
+     "position": 12,
+     "driverName": "Louis Prette",
+     "team": "",
+     "points": 35
+    },
+    {
+     "position": 13,
+     "driverName": "Marco Sorensen",
+     "team": "",
+     "points": 33
+    },
+    {
+     "position": 13,
+     "driverName": "Mattia Drudi",
+     "team": "",
+     "points": 33
+    },
+    {
+     "position": 14,
+     "driverName": "Dorian Boccolacci",
+     "team": "",
+     "points": 32
+    },
+    {
+     "position": 15,
+     "driverName": "Benjamin Goethe",
+     "team": "",
+     "points": 32
+    },
+    {
+     "position": 16,
+     "driverName": "Morris Schuring",
+     "team": "",
+     "points": 31
+    },
+    {
+     "position": 17,
+     "driverName": "Thomas Preining",
+     "team": "",
+     "points": 30
+    },
+    {
+     "position": 18,
+     "driverName": "Marvin Kirchhöfer",
+     "team": "",
+     "points": 30
+    },
+    {
+     "position": 18,
+     "driverName": "Dean Macdonald",
+     "team": "",
+     "points": 30
+    },
+    {
+     "position": 19,
+     "driverName": "Augusto  Farfus",
+     "team": "",
+     "points": 26
+    },
+    {
+     "position": 19,
+     "driverName": "Jake Dennis",
+     "team": "",
+     "points": 26
+    },
+    {
+     "position": 19,
+     "driverName": "Raffaele Marciello",
+     "team": "",
+     "points": 26
+    },
+    {
+     "position": 20,
+     "driverName": "Rocco Mazzola",
+     "team": "",
+     "points": 25
+    },
+    {
+     "position": 20,
+     "driverName": "Ariel Levi",
+     "team": "",
+     "points": 25
+    },
+    {
+     "position": 20,
+     "driverName": "Sebastian Øgaard",
+     "team": "",
+     "points": 25
+    },
+    {
+     "position": 21,
+     "driverName": "Tommaso Mosca",
+     "team": "",
+     "points": 20
+    },
+    {
+     "position": 22,
+     "driverName": "Christopher Haase",
+     "team": "",
+     "points": 20
+    },
+    {
+     "position": 22,
+     "driverName": "Simon  Reicher",
+     "team": "",
+     "points": 20
+    },
+    {
+     "position": 23,
+     "driverName": "Alessio Picariello",
+     "team": "",
+     "points": 20
+    },
+    {
+     "position": 24,
+     "driverName": "Chris Lulham",
+     "team": "",
+     "points": 18
+    },
+    {
+     "position": 25,
+     "driverName": "Dennis  Marschall",
+     "team": "",
+     "points": 17
+    },
+    {
+     "position": 25,
+     "driverName": "Dustin Blattner",
+     "team": "",
+     "points": 17
+    },
+    {
+     "position": 26,
+     "driverName": "Alessio Rovera",
+     "team": "",
+     "points": 16
+    },
+    {
+     "position": 26,
+     "driverName": "Nicklas Nielsen",
+     "team": "",
+     "points": 16
+    },
+    {
+     "position": 27,
+     "driverName": "Patric Niederhauser",
+     "team": "",
+     "points": 15.5
+    },
+    {
+     "position": 27,
+     "driverName": "Luca Engstler",
+     "team": "",
+     "points": 15.5
+    },
+    {
+     "position": 28,
+     "driverName": "Romain Andriolo",
+     "team": "",
+     "points": 15.5
+    },
+    {
+     "position": 29,
+     "driverName": "Lorens Lecertua",
+     "team": "",
+     "points": 15
+    },
+    {
+     "position": 29,
+     "driverName": "Baptiste Moulin",
+     "team": "",
+     "points": 15
+    },
+    {
+     "position": 30,
+     "driverName": "Matisse Lismont",
+     "team": "",
+     "points": 14.5
+    },
+    {
+     "position": 30,
+     "driverName": "Ignacio Montenegro",
+     "team": "",
+     "points": 14.5
+    },
+    {
+     "position": 31,
+     "driverName": "Thierry Vermeulen",
+     "team": "",
+     "points": 14
+    },
+    {
+     "position": 31,
+     "driverName": "Ben Green",
+     "team": "",
+     "points": 14
+    },
+    {
+     "position": 32,
+     "driverName": "Amaury Cordeel",
+     "team": "",
+     "points": 14
+    },
+    {
+     "position": 33,
+     "driverName": "Ben Tuck",
+     "team": "",
+     "points": 13
+    },
+    {
+     "position": 33,
+     "driverName": "Mathys Jaubert",
+     "team": "",
+     "points": 13
+    },
+    {
+     "position": 34,
+     "driverName": "Markus Winkelhock",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 35,
+     "driverName": "Matt Campbell",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 35,
+     "driverName": "Frederic Makowiecki",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 35,
+     "driverName": "Ayhancan Guven",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 36,
+     "driverName": "Joseph Loake",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 37,
+     "driverName": "Kobe Pauwels",
+     "team": "",
+     "points": 11.5
+    },
+    {
+     "position": 38,
+     "driverName": "Daniel Harper",
+     "team": "",
+     "points": 11
+    },
+    {
+     "position": 39,
+     "driverName": "Sean Gelael",
+     "team": "",
+     "points": 10
+    },
+    {
+     "position": 39,
+     "driverName": "Lilou Wadoux",
+     "team": "",
+     "points": 10
+    },
+    {
+     "position": 40,
+     "driverName": "David Pittard",
+     "team": "",
+     "points": 9
+    },
+    {
+     "position": 40,
+     "driverName": "James Kellett",
+     "team": "",
+     "points": 9
+    },
+    {
+     "position": 40,
+     "driverName": "Leyton Fourie",
+     "team": "",
+     "points": 9
+    },
+    {
+     "position": 40,
+     "driverName": "Darren Leung",
+     "team": "",
+     "points": 9
+    },
+    {
+     "position": 41,
+     "driverName": "Arthur Rougier",
+     "team": "",
+     "points": 8.5
+    },
+    {
+     "position": 41,
+     "driverName": "James Kell",
+     "team": "",
+     "points": 8.5
+    },
+    {
+     "position": 42,
+     "driverName": "Fabio Scherer",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 42,
+     "driverName": "Thomas Drouet",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 42,
+     "driverName": "Arjun  Maini",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 43,
+     "driverName": "Dylan Pereira",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 43,
+     "driverName": "Alex Aka",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 44,
+     "driverName": "Maxwell Lynn",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 44,
+     "driverName": "Ben Dörr",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 44,
+     "driverName": "Horatio Fitz-Simon",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 45,
+     "driverName": "Matteo Cairoli",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 45,
+     "driverName": "Konsta Lappalainen",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 46,
+     "driverName": "Christian Krognes",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 46,
+     "driverName": "Henrique Chaves",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 46,
+     "driverName": "Jamie Day",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 47,
+     "driverName": "Marco Mapelli",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 47,
+     "driverName": "Maxime Martin",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 47,
+     "driverName": "Fabian Schiller",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 47,
+     "driverName": "Maximilian Götz",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 48,
+     "driverName": "Simon Gachet",
+     "team": "",
+     "points": 4.5
+    },
+    {
+     "position": 49,
+     "driverName": "Matias Zagazeta",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 50,
+     "driverName": "Lorenzo  Patrese",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 51,
+     "driverName": "Tim Tramnitz",
+     "team": "",
+     "points": 3
+    },
+    {
+     "position": 51,
+     "driverName": "Jens Klingmann",
+     "team": "",
+     "points": 3
+    },
+    {
+     "position": 51,
+     "driverName": "Ugo De Wilde",
+     "team": "",
+     "points": 3
+    },
+    {
+     "position": 52,
+     "driverName": "Gilles Magnus",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 52,
+     "driverName": "Robin Knutsson",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 53,
+     "driverName": "Lorcan Hanafin",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 53,
+     "driverName": "Jonathan Adam",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 53,
+     "driverName": "Giacomo Petrobelli",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 54,
+     "driverName": "Angus Whiteside",
+     "team": "",
+     "points": 1
+    },
+    {
+     "position": 54,
+     "driverName": "Tanart Sathienthirakul",
+     "team": "",
+     "points": 1
+    },
+    {
+     "position": 54,
+     "driverName": "Francesco Simonazzi",
+     "team": "",
+     "points": 1
+    }
+   ],
+   "teams": [
+    {
+     "position": 1,
+     "name": "Winward Racing",
+     "points": 116
+    },
+    {
+     "position": 2,
+     "name": "Team WRT",
+     "points": 105.5
+    },
+    {
+     "position": 3,
+     "name": "Lionspeed GP",
+     "points": 79
+    },
+    {
+     "position": 4,
+     "name": "AF Corse",
+     "points": 61
+    },
+    {
+     "position": 5,
+     "name": "Garage 59",
+     "points": 57
+    },
+    {
+     "position": 6,
+     "name": "2Seas Motorsport",
+     "points": 56.5
+    },
+    {
+     "position": 7,
+     "name": "Comtoyou Racing",
+     "points": 48
+    },
+    {
+     "position": 8,
+     "name": "Boutsen VDS",
+     "points": 43
+    },
+    {
+     "position": 9,
+     "name": "Tresor Attempto Racing",
+     "points": 35
+    },
+    {
+     "position": 10,
+     "name": "Rowe Racing",
+     "points": 33
+    },
+    {
+     "position": 11,
+     "name": "CSA Racing",
+     "points": 30.5
+    },
+    {
+     "position": 12,
+     "name": "Emil Frey Racing",
+     "points": 27.5
+    },
+    {
+     "position": 13,
+     "name": "Eastalent Racing",
+     "points": 22.5
+    },
+    {
+     "position": 14,
+     "name": "Kessel Racing",
+     "points": 20
+    },
+    {
+     "position": 15,
+     "name": "Rutronik Racing",
+     "points": 18.5
+    },
+    {
+     "position": 16,
+     "name": "Walkenhorst Motorsport",
+     "points": 12
+    },
+    {
+     "position": 17,
+     "name": "Paradine Competition",
+     "points": 11
+    },
+    {
+     "position": 18,
+     "name": "GetSpeed",
+     "points": 9.5
+    },
+    {
+     "position": 19,
+     "name": "HRT Ford Racing",
+     "points": 8
+    },
+    {
+     "position": 20,
+     "name": "Team RJN",
+     "points": 8
+    },
+    {
+     "position": 21,
+     "name": "Optimum Motorsport",
+     "points": 2.5
+    },
+    {
+     "position": 22,
+     "name": "Ecurie Ecosse Blackthorn",
+     "points": 2
+    },
+    {
+     "position": 23,
+     "name": "VSR",
+     "points": 1
+    },
+    {
+     "position": 24,
+     "name": "Dinamic GT",
+     "points": 1
+    },
+    {
+     "position": 24,
+     "name": "Rinaldi Racing",
+     "points": 1
+    }
+   ]
+  },
+  "sprint": {
+   "championship": "sprint",
+   "drivers": [
+    {
+     "position": 1,
+     "driverName": "Kelvin Van Der Linde",
+     "team": "",
+     "points": 49.5
+    },
+    {
+     "position": 1,
+     "driverName": "Charles Weerts",
+     "team": "",
+     "points": 49.5
+    },
+    {
+     "position": 2,
+     "driverName": "Ricardo Feller",
+     "team": "",
+     "points": 47
+    },
+    {
+     "position": 2,
+     "driverName": "Bastian Buus",
+     "team": "",
+     "points": 47
+    },
+    {
+     "position": 3,
+     "driverName": "Daniel Juncadella",
+     "team": "",
+     "points": 44.5
+    },
+    {
+     "position": 4,
+     "driverName": "Arthur Leclerc",
+     "team": "",
+     "points": 41
+    },
+    {
+     "position": 4,
+     "driverName": "Thomas Neubauer",
+     "team": "",
+     "points": 41
+    },
+    {
+     "position": 5,
+     "driverName": "Maro Engel",
+     "team": "",
+     "points": 40
+    },
+    {
+     "position": 5,
+     "driverName": "Lucas Auer",
+     "team": "",
+     "points": 40
+    },
+    {
+     "position": 6,
+     "driverName": "Jules Gounon",
+     "team": "",
+     "points": 32.5
+    },
+    {
+     "position": 7,
+     "driverName": "Max Hesse",
+     "team": "",
+     "points": 25
+    },
+    {
+     "position": 7,
+     "driverName": "Valentino Rossi",
+     "team": "",
+     "points": 25
+    },
+    {
+     "position": 8,
+     "driverName": "Marvin Kirchhöfer",
+     "team": "",
+     "points": 18
+    },
+    {
+     "position": 8,
+     "driverName": "Dean Macdonald",
+     "team": "",
+     "points": 18
+    },
+    {
+     "position": 9,
+     "driverName": "Matisse Lismont",
+     "team": "",
+     "points": 14.5
+    },
+    {
+     "position": 9,
+     "driverName": "Ignacio Montenegro",
+     "team": "",
+     "points": 14.5
+    },
+    {
+     "position": 10,
+     "driverName": "Ben Green",
+     "team": "",
+     "points": 14
+    },
+    {
+     "position": 10,
+     "driverName": "Thierry Vermeulen",
+     "team": "",
+     "points": 14
+    },
+    {
+     "position": 11,
+     "driverName": "Jordan Pepper",
+     "team": "",
+     "points": 14
+    },
+    {
+     "position": 11,
+     "driverName": "Amaury Cordeel",
+     "team": "",
+     "points": 14
+    },
+    {
+     "position": 12,
+     "driverName": "Dorian Boccolacci",
+     "team": "",
+     "points": 13
+    },
+    {
+     "position": 13,
+     "driverName": "Morris Schuring",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 13,
+     "driverName": "Chris Lulham",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 14,
+     "driverName": "Kobe Pauwels",
+     "team": "",
+     "points": 11.5
+    },
+    {
+     "position": 14,
+     "driverName": "Nicki Thiim",
+     "team": "",
+     "points": 11.5
+    },
+    {
+     "position": 15,
+     "driverName": "Luca Engstler",
+     "team": "",
+     "points": 9.5
+    },
+    {
+     "position": 15,
+     "driverName": "Patric Niederhauser",
+     "team": "",
+     "points": 9.5
+    },
+    {
+     "position": 16,
+     "driverName": "Christopher Haase",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 16,
+     "driverName": "Dylan Pereira",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 16,
+     "driverName": "Simon  Reicher",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 16,
+     "driverName": "Alex Aka",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 17,
+     "driverName": "Konsta Lappalainen",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 17,
+     "driverName": "Matteo Cairoli",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 18,
+     "driverName": "Arthur Rougier",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 18,
+     "driverName": "James Kell",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 19,
+     "driverName": "Tommaso Mosca",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 19,
+     "driverName": "Matias Zagazeta",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 20,
+     "driverName": "Thomas Fleming",
+     "team": "",
+     "points": 3
+    },
+    {
+     "position": 20,
+     "driverName": "Louis Prette",
+     "team": "",
+     "points": 3
+    },
+    {
+     "position": 21,
+     "driverName": "Gilles Magnus",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 21,
+     "driverName": "Robin Knutsson",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 22,
+     "driverName": "Alessio Picariello",
+     "team": "",
+     "points": 1
+    },
+    {
+     "position": 23,
+     "driverName": "Simon Gachet",
+     "team": "",
+     "points": 0.5
+    },
+    {
+     "position": 23,
+     "driverName": "Romain Andriolo",
+     "team": "",
+     "points": 0.5
+    }
+   ],
+   "teams": [
+    {
+     "position": 1,
+     "name": "Team WRT",
+     "points": 67
+    },
+    {
+     "position": 2,
+     "name": "Lionspeed GP",
+     "points": 49
+    },
+    {
+     "position": 3,
+     "name": "2Seas Motorsport",
+     "points": 46.5
+    },
+    {
+     "position": 4,
+     "name": "AF Corse",
+     "points": 45
+    },
+    {
+     "position": 5,
+     "name": "Winward Racing",
+     "points": 42
+    },
+    {
+     "position": 6,
+     "name": "Emil Frey Racing",
+     "points": 27
+    },
+    {
+     "position": 7,
+     "name": "Garage 59",
+     "points": 24
+    },
+    {
+     "position": 8,
+     "name": "Boutsen VDS",
+     "points": 18
+    },
+    {
+     "position": 9,
+     "name": "Comtoyou Racing",
+     "points": 14
+    },
+    {
+     "position": 10,
+     "name": "Rutronik Racing",
+     "points": 11.5
+    },
+    {
+     "position": 11,
+     "name": "Eastalent Racing",
+     "points": 10
+    },
+    {
+     "position": 12,
+     "name": "Tresor Attempto Racing",
+     "points": 10
+    },
+    {
+     "position": 13,
+     "name": "CSA Racing",
+     "points": 9
+    },
+    {
+     "position": 14,
+     "name": "Optimum Motorsport",
+     "points": 2.5
+    },
+    {
+     "position": 15,
+     "name": "VSR",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "name": "Walkenhorst Motorsport",
+     "points": 1
+    },
+    {
+     "position": 17,
+     "name": "GetSpeed",
+     "points": 0.5
+    }
+   ]
+  },
+  "endurance": {
+   "championship": "endurance",
+   "drivers": [
+    {
+     "position": 1,
+     "driverName": "Lucas Auer",
+     "team": "",
+     "points": 74
+    },
+    {
+     "position": 1,
+     "driverName": "Maro Engel",
+     "team": "",
+     "points": 74
+    },
+    {
+     "position": 1,
+     "driverName": "Luca Stolz",
+     "team": "",
+     "points": 74
+    },
+    {
+     "position": 2,
+     "driverName": "Marco Sorensen",
+     "team": "",
+     "points": 33
+    },
+    {
+     "position": 2,
+     "driverName": "Nicki Thiim",
+     "team": "",
+     "points": 33
+    },
+    {
+     "position": 2,
+     "driverName": "Mattia Drudi",
+     "team": "",
+     "points": 33
+    },
+    {
+     "position": 3,
+     "driverName": "Louis Prette",
+     "team": "",
+     "points": 32
+    },
+    {
+     "position": 3,
+     "driverName": "Thomas Fleming",
+     "team": "",
+     "points": 32
+    },
+    {
+     "position": 3,
+     "driverName": "Benjamin Goethe",
+     "team": "",
+     "points": 32
+    },
+    {
+     "position": 4,
+     "driverName": "Bastian Buus",
+     "team": "",
+     "points": 30
+    },
+    {
+     "position": 4,
+     "driverName": "Ricardo Feller",
+     "team": "",
+     "points": 30
+    },
+    {
+     "position": 4,
+     "driverName": "Thomas Preining",
+     "team": "",
+     "points": 30
+    },
+    {
+     "position": 5,
+     "driverName": "Augusto  Farfus",
+     "team": "",
+     "points": 26
+    },
+    {
+     "position": 5,
+     "driverName": "Raffaele Marciello",
+     "team": "",
+     "points": 26
+    },
+    {
+     "position": 5,
+     "driverName": "Jake Dennis",
+     "team": "",
+     "points": 26
+    },
+    {
+     "position": 6,
+     "driverName": "Rocco Mazzola",
+     "team": "",
+     "points": 25
+    },
+    {
+     "position": 6,
+     "driverName": "Ariel Levi",
+     "team": "",
+     "points": 25
+    },
+    {
+     "position": 6,
+     "driverName": "Sebastian Øgaard",
+     "team": "",
+     "points": 25
+    },
+    {
+     "position": 7,
+     "driverName": "Kelvin Van Der Linde",
+     "team": "",
+     "points": 24
+    },
+    {
+     "position": 7,
+     "driverName": "Jordan Pepper",
+     "team": "",
+     "points": 24
+    },
+    {
+     "position": 7,
+     "driverName": "Charles Weerts",
+     "team": "",
+     "points": 24
+    },
+    {
+     "position": 8,
+     "driverName": "Alessio Picariello",
+     "team": "",
+     "points": 19
+    },
+    {
+     "position": 8,
+     "driverName": "Dorian Boccolacci",
+     "team": "",
+     "points": 19
+    },
+    {
+     "position": 8,
+     "driverName": "Morris Schuring",
+     "team": "",
+     "points": 19
+    },
+    {
+     "position": 9,
+     "driverName": "Dennis  Marschall",
+     "team": "",
+     "points": 17
+    },
+    {
+     "position": 9,
+     "driverName": "Dustin Blattner",
+     "team": "",
+     "points": 17
+    },
+    {
+     "position": 10,
+     "driverName": "Nicklas Nielsen",
+     "team": "",
+     "points": 16
+    },
+    {
+     "position": 10,
+     "driverName": "Tommaso Mosca",
+     "team": "",
+     "points": 16
+    },
+    {
+     "position": 10,
+     "driverName": "Alessio Rovera",
+     "team": "",
+     "points": 16
+    },
+    {
+     "position": 11,
+     "driverName": "Lorens Lecertua",
+     "team": "",
+     "points": 15
+    },
+    {
+     "position": 11,
+     "driverName": "Romain Andriolo",
+     "team": "",
+     "points": 15
+    },
+    {
+     "position": 11,
+     "driverName": "Baptiste Moulin",
+     "team": "",
+     "points": 15
+    },
+    {
+     "position": 12,
+     "driverName": "Ben Tuck",
+     "team": "",
+     "points": 13
+    },
+    {
+     "position": 12,
+     "driverName": "Mathys Jaubert",
+     "team": "",
+     "points": 13
+    },
+    {
+     "position": 13,
+     "driverName": "Markus Winkelhock",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 13,
+     "driverName": "Christopher Haase",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 13,
+     "driverName": "Simon  Reicher",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 14,
+     "driverName": "Matt Campbell",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 14,
+     "driverName": "Ayhancan Guven",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 15,
+     "driverName": "Dean Macdonald",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 15,
+     "driverName": "Marvin Kirchhöfer",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 15,
+     "driverName": "Joseph Loake",
+     "team": "",
+     "points": 12
+    },
+    {
+     "position": 16,
+     "driverName": "Daniel Harper",
+     "team": "",
+     "points": 11
+    },
+    {
+     "position": 16,
+     "driverName": "Max Hesse",
+     "team": "",
+     "points": 11
+    },
+    {
+     "position": 16,
+     "driverName": "Valentino Rossi",
+     "team": "",
+     "points": 11
+    },
+    {
+     "position": 17,
+     "driverName": "Sean Gelael",
+     "team": "",
+     "points": 10
+    },
+    {
+     "position": 17,
+     "driverName": "Lilou Wadoux",
+     "team": "",
+     "points": 10
+    },
+    {
+     "position": 17,
+     "driverName": "Arthur Leclerc",
+     "team": "",
+     "points": 10
+    },
+    {
+     "position": 18,
+     "driverName": "Darren Leung",
+     "team": "",
+     "points": 9
+    },
+    {
+     "position": 18,
+     "driverName": "Leyton Fourie",
+     "team": "",
+     "points": 9
+    },
+    {
+     "position": 18,
+     "driverName": "David Pittard",
+     "team": "",
+     "points": 9
+    },
+    {
+     "position": 18,
+     "driverName": "James Kellett",
+     "team": "",
+     "points": 9
+    },
+    {
+     "position": 19,
+     "driverName": "Fabio Scherer",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 19,
+     "driverName": "Thomas Drouet",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 19,
+     "driverName": "Arjun  Maini",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 20,
+     "driverName": "Maxwell Lynn",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 20,
+     "driverName": "Horatio Fitz-Simon",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 20,
+     "driverName": "Ben Dörr",
+     "team": "",
+     "points": 8
+    },
+    {
+     "position": 21,
+     "driverName": "Christian Krognes",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 21,
+     "driverName": "Henrique Chaves",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 21,
+     "driverName": "Jamie Day",
+     "team": "",
+     "points": 7
+    },
+    {
+     "position": 22,
+     "driverName": "Jules Gounon",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 22,
+     "driverName": "Chris Lulham",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 22,
+     "driverName": "Daniel Juncadella",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 23,
+     "driverName": "Marco Mapelli",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 23,
+     "driverName": "Maxime Martin",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 23,
+     "driverName": "Fabian Schiller",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 23,
+     "driverName": "Patric Niederhauser",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 23,
+     "driverName": "Maximilian Götz",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 23,
+     "driverName": "Luca Engstler",
+     "team": "",
+     "points": 6
+    },
+    {
+     "position": 24,
+     "driverName": "Lorenzo  Patrese",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 24,
+     "driverName": "Arthur Rougier",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 24,
+     "driverName": "Simon Gachet",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 24,
+     "driverName": "James Kell",
+     "team": "",
+     "points": 4
+    },
+    {
+     "position": 25,
+     "driverName": "Tim Tramnitz",
+     "team": "",
+     "points": 3
+    },
+    {
+     "position": 25,
+     "driverName": "Ugo De Wilde",
+     "team": "",
+     "points": 3
+    },
+    {
+     "position": 25,
+     "driverName": "Jens Klingmann",
+     "team": "",
+     "points": 3
+    },
+    {
+     "position": 26,
+     "driverName": "Lorcan Hanafin",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 26,
+     "driverName": "Jonathan Adam",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 26,
+     "driverName": "Giacomo Petrobelli",
+     "team": "",
+     "points": 2
+    },
+    {
+     "position": 27,
+     "driverName": "Tanart Sathienthirakul",
+     "team": "",
+     "points": 1
+    },
+    {
+     "position": 27,
+     "driverName": "Francesco Simonazzi",
+     "team": "",
+     "points": 1
+    },
+    {
+     "position": 27,
+     "driverName": "Angus Whiteside",
+     "team": "",
+     "points": 1
+    }
+   ],
+   "teams": [
+    {
+     "position": 1,
+     "name": "Winward Racing",
+     "points": 74
+    },
+    {
+     "position": 2,
+     "name": "Team WRT",
+     "points": 38
+    },
+    {
+     "position": 3,
+     "name": "Comtoyou Racing",
+     "points": 34
+    },
+    {
+     "position": 4,
+     "name": "Rowe Racing",
+     "points": 33
+    },
+    {
+     "position": 5,
+     "name": "Garage 59",
+     "points": 32
+    },
+    {
+     "position": 6,
+     "name": "Lionspeed GP",
+     "points": 30
+    },
+    {
+     "position": 7,
+     "name": "Tresor Attempto Racing",
+     "points": 25
+    },
+    {
+     "position": 8,
+     "name": "Boutsen VDS",
+     "points": 25
+    },
+    {
+     "position": 9,
+     "name": "CSA Racing",
+     "points": 21
+    },
+    {
+     "position": 10,
+     "name": "Kessel Racing",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "name": "AF Corse",
+     "points": 16
+    },
+    {
+     "position": 12,
+     "name": "Eastalent Racing",
+     "points": 12
+    },
+    {
+     "position": 13,
+     "name": "Paradine Competition",
+     "points": 11
+    },
+    {
+     "position": 14,
+     "name": "Walkenhorst Motorsport",
+     "points": 11
+    },
+    {
+     "position": 15,
+     "name": "2Seas Motorsport",
+     "points": 10
+    },
+    {
+     "position": 16,
+     "name": "GetSpeed",
+     "points": 9
+    },
+    {
+     "position": 17,
+     "name": "HRT Ford Racing",
+     "points": 8
+    },
+    {
+     "position": 18,
+     "name": "Team RJN",
+     "points": 8
+    },
+    {
+     "position": 19,
+     "name": "Rutronik Racing",
+     "points": 7
+    },
+    {
+     "position": 20,
+     "name": "Ecurie Ecosse Blackthorn",
+     "points": 2
+    },
+    {
+     "position": 21,
+     "name": "Dinamic GT",
+     "points": 1
+    },
+    {
+     "position": 21,
+     "name": "Rinaldi Racing",
+     "points": 1
+    }
+   ]
+  }
+ }
+}

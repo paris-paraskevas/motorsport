@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.334.88",
+  "version": "0.334.89",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,7 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "indexnow:submit": "tsx scripts/submit-sitemap-to-indexnow.ts",
+    "archive:season": "tsx scripts/archive-season.mts",
     "health:standings": "tsx scripts/health-standings.mts",
     "health:results": "tsx scripts/health-results.mts",
     "health:sessions": "tsx scripts/health-sessions.mts",

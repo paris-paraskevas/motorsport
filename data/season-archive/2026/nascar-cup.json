@@ -1,0 +1,8629 @@
+{
+ "season": 2026,
+ "series": "nascar-cup",
+ "seriesName": "NASCAR Cup",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "ok"
+ },
+ "weekends": [
+  {
+   "round": 0,
+   "roundName": null,
+   "label": null,
+   "dateRangeLabel": "2 Feb",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Cook Out Clash at Bowman Gray (exhibition)",
+     "start": "2026-02-02T01:00:00.000Z",
+     "end": "2026-02-02T03:30:00.000Z",
+     "location": "Bowman Gray Stadium, Winston-Salem, NC"
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "roundName": "68th Daytona 500",
+   "label": null,
+   "dateRangeLabel": "13–15 Feb",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Bluegreen Vacations Duel at Daytona",
+     "start": "2026-02-13T00:00:00.000Z",
+     "end": "2026-02-13T02:30:00.000Z",
+     "location": "Daytona International Speedway, Daytona Beach, FL"
+    },
+    {
+     "title": "NASCAR - 68th Daytona 500",
+     "start": "2026-02-15T19:30:00.000Z",
+     "end": "2026-02-15T23:30:00.000Z",
+     "location": "Daytona International Speedway, Daytona Beach, FL"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "roundName": "Ambetter Health 400 (Atlanta)",
+   "label": null,
+   "dateRangeLabel": "22 Feb",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Ambetter Health 400",
+     "start": "2026-02-22T20:00:00.000Z",
+     "end": "2026-02-22T23:30:00.000Z",
+     "location": "Atlanta Motor Speedway, Hampton, GA"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "EchoPark Automotive Grand Prix (COTA)",
+   "label": null,
+   "dateRangeLabel": "1 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - EchoPark Automotive Grand Prix",
+     "start": "2026-03-01T20:30:00.000Z",
+     "end": "2026-03-02T00:00:00.000Z",
+     "location": "Circuit of the Americas, Austin, TX"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "Shriners Children's 500 (Phoenix)",
+   "label": null,
+   "dateRangeLabel": "8 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Shriners Children's 500",
+     "start": "2026-03-08T19:30:00.000Z",
+     "end": "2026-03-08T22:30:00.000Z",
+     "location": "Phoenix Raceway, Avondale, AZ"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "Pennzoil 400 (Las Vegas)",
+   "label": null,
+   "dateRangeLabel": "15 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Pennzoil 400",
+     "start": "2026-03-15T20:00:00.000Z",
+     "end": "2026-03-15T23:30:00.000Z",
+     "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "Goodyear 400 (Darlington)",
+   "label": null,
+   "dateRangeLabel": "22 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Goodyear 400",
+     "start": "2026-03-22T19:00:00.000Z",
+     "end": "2026-03-22T22:30:00.000Z",
+     "location": "Darlington Raceway, Darlington, SC"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "Cook Out 400 (Martinsville)",
+   "label": null,
+   "dateRangeLabel": "29 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Cook Out 400",
+     "start": "2026-03-29T19:30:00.000Z",
+     "end": "2026-03-29T22:30:00.000Z",
+     "location": "Martinsville Speedway, Martinsville, VA"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "Food City 500 (Bristol)",
+   "label": null,
+   "dateRangeLabel": "12 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Food City 500",
+     "start": "2026-04-12T19:00:00.000Z",
+     "end": "2026-04-12T22:30:00.000Z",
+     "location": "Bristol Motor Speedway, Bristol, TN"
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "roundName": "AdventHealth 400 (Kansas)",
+   "label": null,
+   "dateRangeLabel": "19 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - AdventHealth 400",
+     "start": "2026-04-19T18:00:00.000Z",
+     "end": "2026-04-19T21:30:00.000Z",
+     "location": "Kansas Speedway, Kansas City, KS"
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "roundName": "Jack Link's 500 (Talladega)",
+   "label": null,
+   "dateRangeLabel": "26 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Jack Link's 500",
+     "start": "2026-04-26T19:00:00.000Z",
+     "end": "2026-04-26T22:30:00.000Z",
+     "location": "Talladega Superspeedway, Talladega, AL"
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "roundName": "Würth 400 (Texas)",
+   "label": null,
+   "dateRangeLabel": "3 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Wurth 400",
+     "start": "2026-05-03T19:30:00.000Z",
+     "end": "2026-05-03T22:30:00.000Z",
+     "location": "Texas Motor Speedway, Fort Worth, TX"
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "roundName": "Go Bowling at The Glen",
+   "label": null,
+   "dateRangeLabel": "10 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Go Bowling at The Glen",
+     "start": "2026-05-10T19:00:00.000Z",
+     "end": "2026-05-10T22:30:00.000Z",
+     "location": "Watkins Glen International, Watkins Glen, NY"
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "roundName": null,
+   "label": null,
+   "dateRangeLabel": "17 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - All-Star Open (exhibition)",
+     "start": "2026-05-17T18:00:00.000Z",
+     "end": "2026-05-17T19:00:00.000Z",
+     "location": "Dover Motor Speedway, Dover, DE"
+    },
+    {
+     "title": "NASCAR - All-Star Race (exhibition)",
+     "start": "2026-05-17T19:00:00.000Z",
+     "end": "2026-05-17T22:00:00.000Z",
+     "location": "Dover Motor Speedway, Dover, DE"
+    }
+   ]
+  },
+  {
+   "round": 13,
+   "roundName": "Coca-Cola 600 (Charlotte)",
+   "label": null,
+   "dateRangeLabel": "24 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Coca-Cola 600",
+     "start": "2026-05-24T22:00:00.000Z",
+     "end": "2026-05-25T03:00:00.000Z",
+     "location": "Charlotte Motor Speedway, Concord, NC"
+    }
+   ]
+  },
+  {
+   "round": 14,
+   "roundName": "Cracker Barrel 400 (Nashville)",
+   "label": null,
+   "dateRangeLabel": "31 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Cracker Barrel 400",
+     "start": "2026-05-31T23:00:00.000Z",
+     "end": "2026-06-01T02:30:00.000Z",
+     "location": "Nashville Superspeedway, Lebanon, TN"
+    }
+   ]
+  },
+  {
+   "round": 15,
+   "roundName": "FireKeepers Casino 400 (Michigan)",
+   "label": null,
+   "dateRangeLabel": "7 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - FireKeepers Casino 400",
+     "start": "2026-06-07T19:00:00.000Z",
+     "end": "2026-06-07T22:30:00.000Z",
+     "location": "Michigan International Speedway, Brooklyn, MI"
+    }
+   ]
+  },
+  {
+   "round": 16,
+   "roundName": "The Great American Getaway 400 (Pocono)",
+   "label": null,
+   "dateRangeLabel": "14 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - The Great American Getaway 400",
+     "start": "2026-06-14T19:00:00.000Z",
+     "end": "2026-06-14T22:30:00.000Z",
+     "location": "Pocono Raceway, Long Pond, PA"
+    }
+   ]
+  },
+  {
+   "round": 17,
+   "roundName": "Anduril 250 Race the Base (San Diego)",
+   "label": null,
+   "dateRangeLabel": "21 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Anduril 250 Race the Base",
+     "start": "2026-06-21T20:00:00.000Z",
+     "end": "2026-06-21T23:00:00.000Z",
+     "location": "Naval Base Coronado Street Circuit, San Diego, CA"
+    }
+   ]
+  },
+  {
+   "round": 18,
+   "roundName": "Toyota/Save Mart 350 (Sonoma)",
+   "label": null,
+   "dateRangeLabel": "28 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Toyota/Save Mart 350",
+     "start": "2026-06-28T19:30:00.000Z",
+     "end": "2026-06-28T22:30:00.000Z",
+     "location": "Sonoma Raceway, Sonoma, CA"
+    }
+   ]
+  },
+  {
+   "round": 19,
+   "roundName": "Grant Park 400 (Chicagoland)",
+   "label": null,
+   "dateRangeLabel": "5 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Grant Park 400 (Chicagoland)",
+     "start": "2026-07-05T22:00:00.000Z",
+     "end": "2026-07-06T01:30:00.000Z",
+     "location": "Chicagoland Speedway, Joliet, IL"
+    }
+   ]
+  },
+  {
+   "round": 20,
+   "roundName": "Quaker State 400 (Atlanta)",
+   "label": null,
+   "dateRangeLabel": "12 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Quaker State 400",
+     "start": "2026-07-12T23:00:00.000Z",
+     "end": "2026-07-13T02:30:00.000Z",
+     "location": "Atlanta Motor Speedway, Hampton, GA"
+    }
+   ]
+  },
+  {
+   "round": 21,
+   "roundName": "Window World 450 (North Wilkesboro)",
+   "label": null,
+   "dateRangeLabel": "19 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Window World 450 (North Wilkesboro)",
+     "start": "2026-07-19T23:00:00.000Z",
+     "end": "2026-07-20T02:30:00.000Z",
+     "location": "North Wilkesboro Speedway, North Wilkesboro, NC"
+    }
+   ]
+  },
+  {
+   "round": 22,
+   "roundName": "Brickyard 400 (Indianapolis)",
+   "label": null,
+   "dateRangeLabel": "26 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Brickyard 400",
+     "start": "2026-07-26T18:00:00.000Z",
+     "end": "2026-07-26T22:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    }
+   ]
+  },
+  {
+   "round": 23,
+   "roundName": "Iowa Corn 350",
+   "label": null,
+   "dateRangeLabel": "9 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Iowa Corn 350",
+     "start": "2026-08-09T19:30:00.000Z",
+     "end": "2026-08-09T22:30:00.000Z",
+     "location": "Iowa Speedway, Newton, IA"
+    }
+   ]
+  },
+  {
+   "round": 24,
+   "roundName": "Cook Out 400 (Richmond)",
+   "label": null,
+   "dateRangeLabel": "15 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Cook Out 400 (Richmond)",
+     "start": "2026-08-15T23:00:00.000Z",
+     "end": "2026-08-16T02:30:00.000Z",
+     "location": "Richmond Raceway, Richmond, VA"
+    }
+   ]
+  },
+  {
+   "round": 25,
+   "roundName": "Mobil 1 301 (New Hampshire)",
+   "label": null,
+   "dateRangeLabel": "23 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NASCAR - Mobil 1 301",
+     "start": "2026-08-23T19:00:00.000Z",
+     "end": "2026-08-23T22:30:00.000Z",
+     "location": "New Hampshire Motor Speedway, Loudon, NH"
+    }
+   ]
+  },
+  {
+   "round": 26,
+   "roundName": "Coke Zero Sugar 400 (Daytona — regular-season finale)",
+   "label": null,
+   "dateRangeLabel": "29 Aug",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - Coke Zero Sugar 400 (regular-season finale)",
+     "start": "2026-08-29T23:30:00.000Z",
+     "end": "2026-08-30T03:00:00.000Z",
+     "location": "Daytona International Speedway, Daytona Beach, FL"
+    }
+   ]
+  },
+  {
+   "round": 27,
+   "roundName": "Southern 500 (Darlington)",
+   "label": null,
+   "dateRangeLabel": "6 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - Southern 500",
+     "start": "2026-09-06T21:00:00.000Z",
+     "end": "2026-09-07T01:30:00.000Z",
+     "location": "Darlington Raceway, Darlington, SC"
+    }
+   ]
+  },
+  {
+   "round": 28,
+   "roundName": "Enjoy Illinois 300 (WWT Raceway)",
+   "label": null,
+   "dateRangeLabel": "13 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - Enjoy Illinois 300 (WWT Raceway)",
+     "start": "2026-09-13T19:00:00.000Z",
+     "end": "2026-09-13T22:30:00.000Z",
+     "location": "World Wide Technology Raceway, Madison, IL"
+    }
+   ]
+  },
+  {
+   "round": 29,
+   "roundName": "Bass Pro Shops Night Race (Bristol)",
+   "label": null,
+   "dateRangeLabel": "19 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - Bass Pro Shops Night Race",
+     "start": "2026-09-19T23:30:00.000Z",
+     "end": "2026-09-20T03:00:00.000Z",
+     "location": "Bristol Motor Speedway, Bristol, TN"
+    }
+   ]
+  },
+  {
+   "round": 30,
+   "roundName": "Hollywood Casino 400 (Kansas)",
+   "label": null,
+   "dateRangeLabel": "27 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - Hollywood Casino 400",
+     "start": "2026-09-27T19:00:00.000Z",
+     "end": "2026-09-27T22:30:00.000Z",
+     "location": "Kansas Speedway, Kansas City, KS"
+    }
+   ]
+  },
+  {
+   "round": 31,
+   "roundName": "South Point 400 (Las Vegas)",
+   "label": null,
+   "dateRangeLabel": "4 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - South Point 400",
+     "start": "2026-10-04T21:30:00.000Z",
+     "end": "2026-10-05T01:00:00.000Z",
+     "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+    }
+   ]
+  },
+  {
+   "round": 32,
+   "roundName": "Bank of America 400 (Charlotte oval)",
+   "label": null,
+   "dateRangeLabel": "11 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - Bank of America 400",
+     "start": "2026-10-11T19:00:00.000Z",
+     "end": "2026-10-11T22:30:00.000Z",
+     "location": "Charlotte Motor Speedway (oval), Concord, NC"
+    }
+   ]
+  },
+  {
+   "round": 33,
+   "roundName": "United Rentals 312 (Phoenix)",
+   "label": null,
+   "dateRangeLabel": "18 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - United Rentals 312",
+     "start": "2026-10-18T19:00:00.000Z",
+     "end": "2026-10-18T22:30:00.000Z",
+     "location": "Phoenix Raceway, Avondale, AZ"
+    }
+   ]
+  },
+  {
+   "round": 34,
+   "roundName": "YellaWood 500 (Talladega)",
+   "label": null,
+   "dateRangeLabel": "25 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - YellaWood 500",
+     "start": "2026-10-25T18:00:00.000Z",
+     "end": "2026-10-25T21:30:00.000Z",
+     "location": "Talladega Superspeedway, Talladega, AL"
+    }
+   ]
+  },
+  {
+   "round": 35,
+   "roundName": "Xfinity 500 (Martinsville)",
+   "label": null,
+   "dateRangeLabel": "1 Nov",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - Xfinity 500",
+     "start": "2026-11-01T19:00:00.000Z",
+     "end": "2026-11-01T22:30:00.000Z",
+     "location": "Martinsville Speedway, Martinsville, VA"
+    }
+   ]
+  },
+  {
+   "round": 36,
+   "roundName": "NASCAR Cup Series Championship (Homestead)",
+   "label": null,
+   "dateRangeLabel": "8 Nov",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NASCAR - NASCAR Cup Series Championship (Homestead)",
+     "start": "2026-11-08T20:00:00.000Z",
+     "end": "2026-11-08T23:30:00.000Z",
+     "location": "Homestead-Miami Speedway, Homestead, FL"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "round": 1,
+   "raceName": "Daytona 500",
+   "date": "2026-02-15T00:00:00.000Z",
+   "circuit": "Daytona 500",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 58
+    },
+    {
+     "position": 2,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 3,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 5,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 6,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 7,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 8,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 9,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 10,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 11,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 12,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 14,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 16,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 19,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 23,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 26,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 27,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 28,
+     "driverName": "Corey Heim (i)",
+     "driverCode": "67",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Jimmie Johnson",
+     "driverCode": "84",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 31,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 32,
+     "driverName": "Casey Mears",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 33,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 34,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 35,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 36,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 37,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "Justin Allgaier (i)",
+     "driverCode": "40",
+     "team": "JR Motorsports",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 39,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 40,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 41,
+     "driverName": "B. J. McLeod",
+     "driverCode": "78",
+     "team": "Live Fast Motorsports",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Autotrader 400",
+   "date": "2026-02-22T00:00:00.000Z",
+   "circuit": "Autotrader 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 67
+    },
+    {
+     "position": 2,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 3,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 4,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 5,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 6,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 7,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 8,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 48
+    },
+    {
+     "position": 9,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 10,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 11,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 12,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 18,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 19,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 23,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 27,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 29,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 31,
+     "driverName": "J. J. Yeley (i)",
+     "driverCode": "44",
+     "team": "NY Racing Team",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 32,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 33,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 35,
+     "driverName": "B. J. McLeod",
+     "driverCode": "78",
+     "team": "Live Fast Motorsports",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "DuraMAX Texas Grand Prix",
+   "date": "2026-03-01T00:00:00.000Z",
+   "circuit": "DuraMAX Texas Grand Prix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 61
+    },
+    {
+     "position": 2,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 45
+    },
+    {
+     "position": 3,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 4,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 48
+    },
+    {
+     "position": 5,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 6,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 7,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 8,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 9,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 10,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 11,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 12,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 14,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 22,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 25,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 26,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Jesse Love (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 30,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 32,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 36,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 37,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Straight Talk Wireless 500",
+   "date": "2026-03-08T00:00:00.000Z",
+   "circuit": "Straight Talk Wireless 500",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 65
+    },
+    {
+     "position": 2,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 54
+    },
+    {
+     "position": 3,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 5,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 47
+    },
+    {
+     "position": 6,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 7,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 8,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 9,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 10,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 12,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 13,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 15,
+     "driverName": "Brad Keselowski",
+     "driverCode": "5",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 21,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 29,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 31,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 32,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Anthony Alfredo (i)",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 34,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 35,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Pennzoil 400",
+   "date": "2026-03-15T00:00:00.000Z",
+   "circuit": "Pennzoil 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 70
+    },
+    {
+     "position": 2,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 3,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 49
+    },
+    {
+     "position": 4,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 51
+    },
+    {
+     "position": 5,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 6,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 7,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 48
+    },
+    {
+     "position": 8,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 9,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 10,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 12,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 14,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 17,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 20,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Justin Allgaier (i)",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Goodyear 400",
+   "date": "2026-03-22T00:00:00.000Z",
+   "circuit": "Goodyear 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 70
+    },
+    {
+     "position": 2,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 55
+    },
+    {
+     "position": 3,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 42
+    },
+    {
+     "position": 4,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 5,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 6,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 7,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 8,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 9,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 42
+    },
+    {
+     "position": 10,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 12,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 13,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 14,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 16,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Justin Allgaier (i)",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 33,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 35,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Timmy Hill (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "Cook Out 400 (Martinsville)",
+   "date": "2026-03-29T00:00:00.000Z",
+   "circuit": "Cook Out 400 (Martinsville)",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 55
+    },
+    {
+     "position": 2,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 56
+    },
+    {
+     "position": 3,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 46
+    },
+    {
+     "position": 4,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 49
+    },
+    {
+     "position": 5,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 47
+    },
+    {
+     "position": 6,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 7,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 8,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 9,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 10,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 11,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 12,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 13,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 16,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Justin Allgaier (i)",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 34,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "raceName": "Food City 500",
+   "date": "2026-04-12T00:00:00.000Z",
+   "circuit": "Food City 500",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 59
+    },
+    {
+     "position": 2,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 53
+    },
+    {
+     "position": 3,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 54
+    },
+    {
+     "position": 4,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 5,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 45
+    },
+    {
+     "position": 6,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 7,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 8,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 9,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 10,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 11,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 12,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 17,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 22,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 28,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 33,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Chad Finchum (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 37,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "raceName": "AdventHealth 400",
+   "date": "2026-04-19T00:00:00.000Z",
+   "circuit": "AdventHealth 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 71
+    },
+    {
+     "position": 2,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 54
+    },
+    {
+     "position": 3,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 4,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 52
+    },
+    {
+     "position": 5,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 6,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 7,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 8,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 9,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 10,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 11,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 12,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 14,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Corey Heim (i)",
+     "driverCode": "67",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 21,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "raceName": "Jack Link's 500",
+   "date": "2026-04-26T00:00:00.000Z",
+   "circuit": "Jack Link's 500",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 55
+    },
+    {
+     "position": 2,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 50
+    },
+    {
+     "position": 3,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 4,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 5,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 6,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 7,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 8,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 9,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 10,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 12,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 15,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 18,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 19,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 22,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Daniel Dye (i)",
+     "driverCode": "78",
+     "team": "Live Fast Motorsports",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Jesse Love (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Chad Finchum (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Joey Gase (i)",
+     "driverCode": "44",
+     "team": "NY Racing Team",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 31,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 32,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 34,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 38,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 39,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 40,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "raceName": "Würth 400",
+   "date": "2026-05-03T00:00:00.000Z",
+   "circuit": "Würth 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 69
+    },
+    {
+     "position": 2,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 3,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 4,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 42
+    },
+    {
+     "position": 5,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 6,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 7,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 8,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 9,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 10,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 12,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 13,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 14,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 15,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 20,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 21,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 24,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 26,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Corey Heim (i)",
+     "driverCode": "67",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 32,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsprots",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Chad Finchum (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 34,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 37,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "raceName": "Go Bowling at The Glen",
+   "date": "2026-05-10T00:00:00.000Z",
+   "circuit": "Go Bowling at The Glen",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 68
+    },
+    {
+     "position": 2,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 3,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 42
+    },
+    {
+     "position": 4,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 5,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 6,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 7,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 8,
+     "driverName": "Kyle Busch",
+     "driverCode": "8",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 9,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 10,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 11,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 12,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 13,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 21,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 22,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 27,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 28,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 30,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Josh Bilicki (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 35,
+     "driverName": "Katherine Legge",
+     "driverCode": "78",
+     "team": "Live Fast Motorsports",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 10
+    }
+   ]
+  },
+  {
+   "round": 13,
+   "raceName": "Coca-Cola 600",
+   "date": "2026-05-24T00:00:00.000Z",
+   "circuit": "Coca-Cola 600",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 55
+    },
+    {
+     "position": 2,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 50
+    },
+    {
+     "position": 3,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 60
+    },
+    {
+     "position": 4,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 53
+    },
+    {
+     "position": 5,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 54
+    },
+    {
+     "position": 6,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 53
+    },
+    {
+     "position": 7,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 8,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 9,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 10,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 12,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 13,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 14,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 16,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Corey Heim (i)",
+     "driverCode": "67",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 31,
+     "driverName": "Katherine Legge",
+     "driverCode": "78",
+     "team": "Live Fast Motorsports",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 34,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 35,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Timmy Hill (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 37,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 39,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 14,
+   "raceName": "Cracker Barrel 400",
+   "date": "2026-05-31T00:00:00.000Z",
+   "circuit": "Cracker Barrel 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 62
+    },
+    {
+     "position": 2,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 3,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 4,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 5,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 6,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 7,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 8,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 9,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 10,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 12,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 16,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 18,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 20,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 24,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Corey Heim (i)",
+     "driverCode": "67",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 27,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Chad Finchum (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 31,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 33,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 34,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 35,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 36,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 15,
+   "raceName": "FireKeepers Casino 400",
+   "date": "2026-06-07T00:00:00.000Z",
+   "circuit": "FireKeepers Casino 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 58
+    },
+    {
+     "position": 2,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 44
+    },
+    {
+     "position": 3,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 4,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 44
+    },
+    {
+     "position": 5,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 45
+    },
+    {
+     "position": 6,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 7,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 8,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 9,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 10,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 12,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 14,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 19,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "J. J. Yeley (i)",
+     "driverCode": "44",
+     "team": "NY Racing Team",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 26,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 32,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 33,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 34,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 36,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 16,
+   "raceName": "The Great American Getaway 400",
+   "date": "2026-06-14T00:00:00.000Z",
+   "circuit": "The Great American Getaway 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 67
+    },
+    {
+     "position": 2,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 3,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 4,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 5,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 6,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 7,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 8,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 9,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 10,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 12,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 13,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 14,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 16,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 20,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 21,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Daniel Dye (i)",
+     "driverCode": "78",
+     "team": "Live Fast Motorsports",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 35,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Casey Mears",
+     "driverCode": "62",
+     "team": "Beard Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 17,
+   "raceName": "Anduril 250",
+   "date": "2026-06-21T00:00:00.000Z",
+   "circuit": "Anduril 250",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Corey Heim (i)",
+     "driverCode": "67",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 2,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 3,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 42
+    },
+    {
+     "position": 4,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 5,
+     "driverName": "AJ Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 45
+    },
+    {
+     "position": 6,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 7,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 8,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 9,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 44
+    },
+    {
+     "position": 10,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Motorsports",
+     "status": "Classified",
+     "points": 45
+    },
+    {
+     "position": 12,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Daniel Suarez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 14,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 16,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 19,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 20,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 22,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Kevin Magnussen",
+     "driverCode": "91",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 28,
+     "driverName": "Jimmie Johnson",
+     "driverCode": "84",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 33,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 37,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 38,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 39,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 18,
+   "raceName": "Toyota/Save Mart 350",
+   "date": "2026-06-28T00:00:00.000Z",
+   "circuit": "Toyota/Save Mart 350",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 63
+    },
+    {
+     "position": 2,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 3,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 54
+    },
+    {
+     "position": 4,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 5,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 50
+    },
+    {
+     "position": 6,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 7,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 8,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 9,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 10,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 11,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 12,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 14,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 15,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 17,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 19,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 24,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 31,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 35,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 2
+    }
+   ]
+  },
+  {
+   "round": 19,
+   "raceName": "eero 400",
+   "date": "2026-07-05T00:00:00.000Z",
+   "circuit": "eero 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 70
+    },
+    {
+     "position": 2,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 3,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 45
+    },
+    {
+     "position": 4,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 53
+    },
+    {
+     "position": 5,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 6,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 7,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 8,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 9,
+     "driverName": "Corey Heim (i)",
+     "driverCode": "67",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 10,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 11,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 12,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 14,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 20,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 35,
+     "driverName": "J. J. Yeley (i)",
+     "driverCode": "44",
+     "team": "NY Racing Team",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 36,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 37,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 38,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 20,
+   "raceName": "Quaker State 400",
+   "date": "2026-07-12T00:00:00.000Z",
+   "circuit": "Quaker State 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 75
+    },
+    {
+     "position": 2,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 3,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 39
+    },
+    {
+     "position": 4,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 5,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 6,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 7,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 8,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 47
+    },
+    {
+     "position": 9,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 10,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 12,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 13,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 14,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 15,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 22,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 30,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 32,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 33,
+     "driverName": "Chad Finchum (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 34,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 35,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 37,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "B. J. McLeod",
+     "driverCode": "78",
+     "team": "Live Fast Motorsports",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 21,
+   "raceName": "Window World 450",
+   "date": "2026-07-19T00:00:00.000Z",
+   "circuit": "Window World 450",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 73
+    },
+    {
+     "position": 2,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 51
+    },
+    {
+     "position": 3,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 45
+    },
+    {
+     "position": 4,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 5,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 47
+    },
+    {
+     "position": 6,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 7,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 8,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 9,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 10,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 12,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 26
+    },
+    {
+     "position": 13,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 14,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 15,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 18,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 20,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 28,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 34,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Chad Finchum (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 36,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 22,
+   "raceName": "Brickyard 400",
+   "date": "2026-07-26T00:00:00.000Z",
+   "circuit": "Brickyard 400",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Corey Heim (i)",
+     "driverCode": "67",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 2,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 35
+    },
+    {
+     "position": 3,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 34
+    },
+    {
+     "position": 4,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 5,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 44
+    },
+    {
+     "position": 6,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 7,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 8,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 9,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 10,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 11,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 12,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 13,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 18,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 19,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 22,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 24,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 25,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 28,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 34,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Casey Mears",
+     "driverCode": "62",
+     "team": "Beard Motorsports",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 38,
+     "driverName": "Daniel Dye (i)",
+     "driverCode": "78",
+     "team": "Live Fast Motorsports",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 39,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 23,
+   "raceName": "Iowa Corn 350",
+   "date": "2026-08-09T00:00:00.000Z",
+   "circuit": "Iowa Corn 350",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 69
+    },
+    {
+     "position": 2,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 50
+    },
+    {
+     "position": 3,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 47
+    },
+    {
+     "position": 4,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 5,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 37
+    },
+    {
+     "position": 6,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 7,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 8,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 9,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 10,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 33
+    },
+    {
+     "position": 11,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 12,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 15,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 17,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 17
+    },
+    {
+     "position": 21,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Racing Team",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 34,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 24,
+   "raceName": "Cook Out 400 (Richmond)",
+   "date": "2026-08-15T00:00:00.000Z",
+   "circuit": "Cook Out 400 (Richmond)",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 73
+    },
+    {
+     "position": 2,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 52
+    },
+    {
+     "position": 3,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 48
+    },
+    {
+     "position": 4,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 46
+    },
+    {
+     "position": 5,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 6,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 7,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 36
+    },
+    {
+     "position": 8,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 40
+    },
+    {
+     "position": 9,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 30
+    },
+    {
+     "position": 10,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 28
+    },
+    {
+     "position": 12,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 41
+    },
+    {
+     "position": 14,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 19,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 18
+    },
+    {
+     "position": 20,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 21,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "42",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 13
+    },
+    {
+     "position": 25,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 11
+    },
+    {
+     "position": 27,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 7
+    },
+    {
+     "position": 31,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Josh Bilicki (i)",
+     "driverCode": "66",
+     "team": "Garage 66",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 36,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 1
+    },
+    {
+     "position": 37,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  },
+  {
+   "round": 25,
+   "raceName": "Dollar Tree 301",
+   "date": "2026-08-23T00:00:00.000Z",
+   "circuit": "Dollar Tree 301",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ryan Blaney",
+     "driverCode": "12",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 70
+    },
+    {
+     "position": 2,
+     "driverName": "Bubba Wallace",
+     "driverCode": "23",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 3,
+     "driverName": "Josh Berry",
+     "driverCode": "21",
+     "team": "Wood Brothers Racing",
+     "status": "Classified",
+     "points": 49
+    },
+    {
+     "position": 4,
+     "driverName": "Christopher Bell",
+     "driverCode": "20",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 43
+    },
+    {
+     "position": 5,
+     "driverName": "Kyle Larson",
+     "driverCode": "5",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 48
+    },
+    {
+     "position": 6,
+     "driverName": "Ty Gibbs",
+     "driverCode": "54",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 7,
+     "driverName": "Denny Hamlin",
+     "driverCode": "11",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 32
+    },
+    {
+     "position": 8,
+     "driverName": "Tyler Reddick",
+     "driverCode": "45",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 29
+    },
+    {
+     "position": 9,
+     "driverName": "Ryan Preece",
+     "driverCode": "60",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 38
+    },
+    {
+     "position": 10,
+     "driverName": "Noah Gragson",
+     "driverCode": "4",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 11,
+     "driverName": "Brad Keselowski",
+     "driverCode": "6",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 31
+    },
+    {
+     "position": 12,
+     "driverName": "Austin Cindric",
+     "driverCode": "2",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 25
+    },
+    {
+     "position": 13,
+     "driverName": "Zane Smith",
+     "driverCode": "38",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 24
+    },
+    {
+     "position": 14,
+     "driverName": "Joey Logano",
+     "driverCode": "22",
+     "team": "Team Penske",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 15,
+     "driverName": "Alex Bowman",
+     "driverCode": "48",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "Michael McDowell",
+     "driverCode": "71",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 21
+    },
+    {
+     "position": 17,
+     "driverName": "Daniel Suárez",
+     "driverCode": "7",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 20
+    },
+    {
+     "position": 18,
+     "driverName": "Chris Buescher",
+     "driverCode": "17",
+     "team": "RFK Racing",
+     "status": "Classified",
+     "points": 23
+    },
+    {
+     "position": 19,
+     "driverName": "Carson Hocevar",
+     "driverCode": "77",
+     "team": "Spire Motorsports",
+     "status": "Classified",
+     "points": 27
+    },
+    {
+     "position": 20,
+     "driverName": "Shane van Gisbergen",
+     "driverCode": "97",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 19
+    },
+    {
+     "position": 21,
+     "driverName": "Todd Gilliland",
+     "driverCode": "34",
+     "team": "Front Row Motorsports",
+     "status": "Classified",
+     "points": 16
+    },
+    {
+     "position": 22,
+     "driverName": "Cole Custer",
+     "driverCode": "41",
+     "team": "Haas Factory Team",
+     "status": "Classified",
+     "points": 15
+    },
+    {
+     "position": 23,
+     "driverName": "A. J. Allmendinger",
+     "driverCode": "16",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 24,
+     "driverName": "Austin Hill (i)",
+     "driverCode": "33",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Chase Elliott",
+     "driverCode": "9",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 26,
+     "driverName": "Chase Briscoe",
+     "driverCode": "19",
+     "team": "Joe Gibbs Racing",
+     "status": "Classified",
+     "points": 12
+    },
+    {
+     "position": 27,
+     "driverName": "Ty Dillon",
+     "driverCode": "10",
+     "team": "Kaulig Racing",
+     "status": "Classified",
+     "points": 10
+    },
+    {
+     "position": 28,
+     "driverName": "Ricky Stenhouse Jr.",
+     "driverCode": "47",
+     "team": "Hyak Motorsports",
+     "status": "Classified",
+     "points": 9
+    },
+    {
+     "position": 29,
+     "driverName": "Cody Ware",
+     "driverCode": "51",
+     "team": "Rick Ware Racing",
+     "status": "Classified",
+     "points": 8
+    },
+    {
+     "position": 30,
+     "driverName": "William Byron",
+     "driverCode": "24",
+     "team": "Hendrick Motorsports",
+     "status": "Classified",
+     "points": 14
+    },
+    {
+     "position": 31,
+     "driverName": "John Hunter Nemechek",
+     "driverCode": "40",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 6
+    },
+    {
+     "position": 32,
+     "driverName": "Austin Dillon",
+     "driverCode": "3",
+     "team": "Richard Childress Racing",
+     "status": "Classified",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Erik Jones",
+     "driverCode": "43",
+     "team": "Legacy Motor Club",
+     "status": "Classified",
+     "points": 4
+    },
+    {
+     "position": 34,
+     "driverName": "Riley Herbst",
+     "driverCode": "35",
+     "team": "23XI Racing",
+     "status": "Classified",
+     "points": 3
+    },
+    {
+     "position": 35,
+     "driverName": "Connor Zilisch (R)",
+     "driverCode": "88",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 2
+    },
+    {
+     "position": 36,
+     "driverName": "Ross Chastain",
+     "driverCode": "1",
+     "team": "Trackhouse Racing",
+     "status": "Classified",
+     "points": 1
+    }
+   ]
+  }
+ ],
+ "standings": {
+  "drivers": [
+   {
+    "position": 1,
+    "driverName": "Denny Hamlin",
+    "team": "Joe Gibbs Racing",
+    "points": 1001,
+    "wins": 4
+   },
+   {
+    "position": 2,
+    "driverName": "Ryan Blaney",
+    "team": "Team Penske",
+    "points": 924,
+    "wins": 3
+   },
+   {
+    "position": 3,
+    "driverName": "Ty Gibbs",
+    "team": "Joe Gibbs Racing",
+    "points": 880,
+    "wins": 2
+   },
+   {
+    "position": 4,
+    "driverName": "Tyler Reddick",
+    "team": "23XI Racing",
+    "points": 860,
+    "wins": 5
+   },
+   {
+    "position": 5,
+    "driverName": "Christopher Bell",
+    "team": "Joe Gibbs Racing",
+    "points": 738,
+    "wins": 0
+   },
+   {
+    "position": 6,
+    "driverName": "Chase Briscoe",
+    "team": "Joe Gibbs Racing",
+    "points": 727,
+    "wins": 1
+   },
+   {
+    "position": 7,
+    "driverName": "Kyle Larson",
+    "team": "Hendrick Motorsports",
+    "points": 708,
+    "wins": 0
+   },
+   {
+    "position": 8,
+    "driverName": "Chase Elliott",
+    "team": "Hendrick Motorsports",
+    "points": 707,
+    "wins": 2
+   },
+   {
+    "position": 9,
+    "driverName": "Joey Logano",
+    "team": "Team Penske",
+    "points": 682,
+    "wins": 2
+   },
+   {
+    "position": 10,
+    "driverName": "Chris Buescher",
+    "team": "RFK Racing",
+    "points": 676,
+    "wins": 0
+   },
+   {
+    "position": 11,
+    "driverName": "Carson Hocevar",
+    "team": "Spire Motorsports",
+    "points": 672,
+    "wins": 1
+   },
+   {
+    "position": 12,
+    "driverName": "William Byron",
+    "team": "Hendrick Motorsports",
+    "points": 644,
+    "wins": 0
+   },
+   {
+    "position": 13,
+    "driverName": "Daniel Suárez",
+    "team": "Spire Motorsports",
+    "points": 638,
+    "wins": 1
+   },
+   {
+    "position": 14,
+    "driverName": "Bubba Wallace",
+    "team": "23XI Racing",
+    "points": 630,
+    "wins": 0
+   },
+   {
+    "position": 15,
+    "driverName": "Austin Cindric",
+    "team": "Team Penske",
+    "points": 599,
+    "wins": 0
+   },
+   {
+    "position": 16,
+    "driverName": "Shane van Gisbergen",
+    "team": "Trackhouse Racing",
+    "points": 586,
+    "wins": 2
+   },
+   {
+    "position": 17,
+    "driverName": "Ryan Preece",
+    "team": "RFK Racing",
+    "points": 555,
+    "wins": 0
+   },
+   {
+    "position": 18,
+    "driverName": "Brad Keselowski",
+    "team": "RFK Racing",
+    "points": 520,
+    "wins": 0
+   },
+   {
+    "position": 19,
+    "driverName": "Ross Chastain",
+    "team": "Trackhouse Racing",
+    "points": 505,
+    "wins": 0
+   },
+   {
+    "position": 20,
+    "driverName": "Erik Jones",
+    "team": "Legacy Motor Club",
+    "points": 490,
+    "wins": 0
+   },
+   {
+    "position": 21,
+    "driverName": "Michael McDowell",
+    "team": "Spire Motorsports",
+    "points": 484,
+    "wins": 0
+   },
+   {
+    "position": 22,
+    "driverName": "A. J. Allmendinger",
+    "team": "Kaulig Racing",
+    "points": 456,
+    "wins": 0
+   },
+   {
+    "position": 23,
+    "driverName": "Todd Gilliland",
+    "team": "Front Row Motorsports",
+    "points": 444,
+    "wins": 0
+   },
+   {
+    "position": 24,
+    "driverName": "Zane Smith",
+    "team": "Front Row Motorsports",
+    "points": 442,
+    "wins": 0
+   },
+   {
+    "position": 25,
+    "driverName": "Austin Dillon",
+    "team": "Richard Childress Racing",
+    "points": 405,
+    "wins": 0
+   },
+   {
+    "position": 26,
+    "driverName": "Riley Herbst",
+    "team": "23XI Racing",
+    "points": 402,
+    "wins": 0
+   },
+   {
+    "position": 27,
+    "driverName": "Ricky Stenhouse Jr.",
+    "team": "Hyak Motorsports",
+    "points": 398,
+    "wins": 0
+   },
+   {
+    "position": 28,
+    "driverName": "John Hunter Nemechek",
+    "team": "Legacy Motor Club",
+    "points": 394,
+    "wins": 0
+   },
+   {
+    "position": 29,
+    "driverName": "Josh Berry",
+    "team": "Wood Brothers Racing",
+    "points": 386,
+    "wins": 0
+   },
+   {
+    "position": 30,
+    "driverName": "Alex Bowman",
+    "team": "Hendrick Motorsports",
+    "points": 362,
+    "wins": 0
+   },
+   {
+    "position": 31,
+    "driverName": "Noah Gragson",
+    "team": "Front Row Motorsports",
+    "points": 334,
+    "wins": 0
+   },
+   {
+    "position": 32,
+    "driverName": "Cole Custer",
+    "team": "Haas Factory Team",
+    "points": 302,
+    "wins": 0
+   },
+   {
+    "position": 33,
+    "driverName": "Ty Dillon",
+    "team": "Kaulig Racing",
+    "points": 294,
+    "wins": 0
+   },
+   {
+    "position": 34,
+    "driverName": "Connor Zilisch (R)",
+    "team": "Trackhouse Racing",
+    "points": 259,
+    "wins": 0
+   },
+   {
+    "position": 35,
+    "driverName": "Cody Ware",
+    "team": "Rick Ware Racing",
+    "points": 199,
+    "wins": 0
+   },
+   {
+    "position": 36,
+    "driverName": "Casey Mears",
+    "team": "Garage 66",
+    "points": 12,
+    "wins": 0
+   },
+   {
+    "position": 37,
+    "driverName": "Kevin Magnussen",
+    "team": "Trackhouse Racing",
+    "points": 11,
+    "wins": 0
+   },
+   {
+    "position": 38,
+    "driverName": "Jimmie Johnson",
+    "team": "Legacy Motor Club",
+    "points": 9,
+    "wins": 0
+   },
+   {
+    "position": 39,
+    "driverName": "Katherine Legge",
+    "team": "Live Fast Motorsports",
+    "points": 8,
+    "wins": 0
+   },
+   {
+    "position": 40,
+    "driverName": "B. J. McLeod",
+    "team": "Live Fast Motorsports",
+    "points": 4,
+    "wins": 0
+   }
+  ],
+  "constructors": [
+   {
+    "position": 1,
+    "name": "Toyota",
+    "points": 1142,
+    "wins": 14
+   },
+   {
+    "position": 2,
+    "name": "Chevrolet",
+    "points": 960,
+    "wins": 6
+   },
+   {
+    "position": 3,
+    "name": "Ford",
+    "points": 910,
+    "wins": 5
+   }
+  ]
+ }
+}

@@ -1,0 +1,5121 @@
+{
+ "season": 2026,
+ "series": "wsbk",
+ "seriesName": "WorldSBK",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "ok"
+ },
+ "weekends": [
+  {
+   "round": 1,
+   "roundName": "Phillip Island Round",
+   "label": null,
+   "dateRangeLabel": "20–22 Feb",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-02-20T00:20:00.000Z",
+     "end": "2026-02-20T01:05:00.000Z",
+     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-02-20T05:00:00.000Z",
+     "end": "2026-02-20T05:45:00.000Z",
+     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-02-20T23:00:00.000Z",
+     "end": "2026-02-20T23:30:00.000Z",
+     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-02-21T00:00:00.000Z",
+     "end": "2026-02-21T00:15:00.000Z",
+     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-02-21T05:00:00.000Z",
+     "end": "2026-02-21T05:35:00.000Z",
+     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-02-21T23:30:00.000Z",
+     "end": "2026-02-21T23:45:00.000Z",
+     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-02-22T02:00:00.000Z",
+     "end": "2026-02-22T02:20:00.000Z",
+     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-02-22T05:00:00.000Z",
+     "end": "2026-02-22T05:35:00.000Z",
+     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "roundName": "Portimão Round",
+   "label": null,
+   "dateRangeLabel": "27–29 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-03-27T10:20:00.000Z",
+     "end": "2026-03-27T11:05:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimao"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-03-27T15:00:00.000Z",
+     "end": "2026-03-27T15:45:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimao"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-03-28T09:40:00.000Z",
+     "end": "2026-03-28T10:10:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimao"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-03-28T11:15:00.000Z",
+     "end": "2026-03-28T11:30:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimao"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-03-28T15:30:00.000Z",
+     "end": "2026-03-28T16:05:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimao"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-03-29T08:00:00.000Z",
+     "end": "2026-03-29T08:15:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimao"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-03-29T10:10:00.000Z",
+     "end": "2026-03-29T10:25:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimao"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-03-29T14:30:00.000Z",
+     "end": "2026-03-29T15:05:00.000Z",
+     "location": "Autodromo Internacional do Algarve, Portimao"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "Assen Round",
+   "label": null,
+   "dateRangeLabel": "17–19 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-04-17T08:20:00.000Z",
+     "end": "2026-04-17T09:05:00.000Z",
+     "location": "TT Circuit Assen, Assen"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-04-17T13:00:00.000Z",
+     "end": "2026-04-17T13:45:00.000Z",
+     "location": "TT Circuit Assen, Assen"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-04-18T07:40:00.000Z",
+     "end": "2026-04-18T08:10:00.000Z",
+     "location": "TT Circuit Assen, Assen"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-04-18T09:00:00.000Z",
+     "end": "2026-04-18T09:15:00.000Z",
+     "location": "TT Circuit Assen, Assen"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-04-18T13:30:00.000Z",
+     "end": "2026-04-18T14:05:00.000Z",
+     "location": "TT Circuit Assen, Assen"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-04-19T07:00:00.000Z",
+     "end": "2026-04-19T07:15:00.000Z",
+     "location": "TT Circuit Assen, Assen"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-04-19T09:10:00.000Z",
+     "end": "2026-04-19T09:25:00.000Z",
+     "location": "TT Circuit Assen, Assen"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-04-19T13:30:00.000Z",
+     "end": "2026-04-19T14:05:00.000Z",
+     "location": "TT Circuit Assen, Assen"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "Balaton Park Round",
+   "label": null,
+   "dateRangeLabel": "1–3 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-05-01T08:20:00.000Z",
+     "end": "2026-05-01T09:05:00.000Z",
+     "location": "Balaton Park Circuit, Balatonfokajar"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-05-01T13:00:00.000Z",
+     "end": "2026-05-01T13:45:00.000Z",
+     "location": "Balaton Park Circuit, Balatonfokajar"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-05-02T07:40:00.000Z",
+     "end": "2026-05-02T08:10:00.000Z",
+     "location": "Balaton Park Circuit, Balatonfokajar"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-05-02T09:15:00.000Z",
+     "end": "2026-05-02T09:30:00.000Z",
+     "location": "Balaton Park Circuit, Balatonfokajar"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-05-02T13:30:00.000Z",
+     "end": "2026-05-02T14:05:00.000Z",
+     "location": "Balaton Park Circuit, Balatonfokajar"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-05-03T07:00:00.000Z",
+     "end": "2026-05-03T07:15:00.000Z",
+     "location": "Balaton Park Circuit, Balatonfokajar"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-05-03T09:10:00.000Z",
+     "end": "2026-05-03T09:25:00.000Z",
+     "location": "Balaton Park Circuit, Balatonfokajar"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-05-03T13:30:00.000Z",
+     "end": "2026-05-03T14:05:00.000Z",
+     "location": "Balaton Park Circuit, Balatonfokajar"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "Most Round",
+   "label": null,
+   "dateRangeLabel": "15–17 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-05-15T08:20:00.000Z",
+     "end": "2026-05-15T09:05:00.000Z",
+     "location": "Autodrom Most, Most"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-05-15T13:00:00.000Z",
+     "end": "2026-05-15T13:45:00.000Z",
+     "location": "Autodrom Most, Most"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-05-16T07:40:00.000Z",
+     "end": "2026-05-16T08:10:00.000Z",
+     "location": "Autodrom Most, Most"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-05-16T09:15:00.000Z",
+     "end": "2026-05-16T09:30:00.000Z",
+     "location": "Autodrom Most, Most"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-05-16T13:30:00.000Z",
+     "end": "2026-05-16T14:05:00.000Z",
+     "location": "Autodrom Most, Most"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-05-17T07:00:00.000Z",
+     "end": "2026-05-17T07:15:00.000Z",
+     "location": "Autodrom Most, Most"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-05-17T09:10:00.000Z",
+     "end": "2026-05-17T09:25:00.000Z",
+     "location": "Autodrom Most, Most"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-05-17T13:30:00.000Z",
+     "end": "2026-05-17T14:05:00.000Z",
+     "location": "Autodrom Most, Most"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "Aragón Round",
+   "label": null,
+   "dateRangeLabel": "29–31 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-05-29T08:20:00.000Z",
+     "end": "2026-05-29T09:05:00.000Z",
+     "location": "MotorLand Aragon, Alcaniz"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-05-29T13:00:00.000Z",
+     "end": "2026-05-29T13:45:00.000Z",
+     "location": "MotorLand Aragon, Alcaniz"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-05-30T07:40:00.000Z",
+     "end": "2026-05-30T08:10:00.000Z",
+     "location": "MotorLand Aragon, Alcaniz"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-05-30T09:15:00.000Z",
+     "end": "2026-05-30T09:30:00.000Z",
+     "location": "MotorLand Aragon, Alcaniz"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-05-30T13:30:00.000Z",
+     "end": "2026-05-30T14:05:00.000Z",
+     "location": "MotorLand Aragon, Alcaniz"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-05-31T07:00:00.000Z",
+     "end": "2026-05-31T07:15:00.000Z",
+     "location": "MotorLand Aragon, Alcaniz"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-05-31T09:10:00.000Z",
+     "end": "2026-05-31T09:25:00.000Z",
+     "location": "MotorLand Aragon, Alcaniz"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-05-31T13:30:00.000Z",
+     "end": "2026-05-31T14:05:00.000Z",
+     "location": "MotorLand Aragon, Alcaniz"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "Misano Round",
+   "label": null,
+   "dateRangeLabel": "12–14 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-06-12T08:20:00.000Z",
+     "end": "2026-06-12T09:05:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-06-12T13:00:00.000Z",
+     "end": "2026-06-12T13:45:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-06-13T07:40:00.000Z",
+     "end": "2026-06-13T08:10:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-06-13T09:15:00.000Z",
+     "end": "2026-06-13T09:30:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-06-13T13:30:00.000Z",
+     "end": "2026-06-13T14:05:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-06-14T07:00:00.000Z",
+     "end": "2026-06-14T07:15:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-06-14T09:10:00.000Z",
+     "end": "2026-06-14T09:25:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-06-14T13:30:00.000Z",
+     "end": "2026-06-14T14:05:00.000Z",
+     "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "Donington Park Round",
+   "label": null,
+   "dateRangeLabel": "10–12 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-07-10T09:20:00.000Z",
+     "end": "2026-07-10T10:05:00.000Z",
+     "location": "Donington Park, Castle Donington"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-07-10T14:00:00.000Z",
+     "end": "2026-07-10T14:45:00.000Z",
+     "location": "Donington Park, Castle Donington"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-07-11T08:40:00.000Z",
+     "end": "2026-07-11T09:10:00.000Z",
+     "location": "Donington Park, Castle Donington"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-07-11T10:15:00.000Z",
+     "end": "2026-07-11T10:30:00.000Z",
+     "location": "Donington Park, Castle Donington"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-07-11T14:30:00.000Z",
+     "end": "2026-07-11T15:05:00.000Z",
+     "location": "Donington Park, Castle Donington"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-07-12T08:00:00.000Z",
+     "end": "2026-07-12T08:15:00.000Z",
+     "location": "Donington Park, Castle Donington"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-07-12T10:10:00.000Z",
+     "end": "2026-07-12T10:25:00.000Z",
+     "location": "Donington Park, Castle Donington"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-07-12T14:30:00.000Z",
+     "end": "2026-07-12T15:05:00.000Z",
+     "location": "Donington Park, Castle Donington"
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "roundName": "Magny-Cours Round",
+   "label": null,
+   "dateRangeLabel": "4–6 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-09-04T08:20:00.000Z",
+     "end": "2026-09-04T09:05:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours, Magny-Cours"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-09-04T13:00:00.000Z",
+     "end": "2026-09-04T13:45:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours, Magny-Cours"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-09-05T07:40:00.000Z",
+     "end": "2026-09-05T08:10:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours, Magny-Cours"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-09-05T09:15:00.000Z",
+     "end": "2026-09-05T09:30:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours, Magny-Cours"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-09-05T13:30:00.000Z",
+     "end": "2026-09-05T14:05:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours, Magny-Cours"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-09-06T07:00:00.000Z",
+     "end": "2026-09-06T07:15:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours, Magny-Cours"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-09-06T09:10:00.000Z",
+     "end": "2026-09-06T09:25:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours, Magny-Cours"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-09-06T13:30:00.000Z",
+     "end": "2026-09-06T14:05:00.000Z",
+     "location": "Circuit de Nevers Magny-Cours, Magny-Cours"
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "roundName": "Cremona Round",
+   "label": null,
+   "dateRangeLabel": "25–27 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-09-25T08:20:00.000Z",
+     "end": "2026-09-25T09:05:00.000Z",
+     "location": "Cremona Circuit, Cremona"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-09-25T13:00:00.000Z",
+     "end": "2026-09-25T13:45:00.000Z",
+     "location": "Cremona Circuit, Cremona"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-09-26T07:40:00.000Z",
+     "end": "2026-09-26T08:10:00.000Z",
+     "location": "Cremona Circuit, Cremona"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-09-26T09:15:00.000Z",
+     "end": "2026-09-26T09:30:00.000Z",
+     "location": "Cremona Circuit, Cremona"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-09-26T13:30:00.000Z",
+     "end": "2026-09-26T14:05:00.000Z",
+     "location": "Cremona Circuit, Cremona"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-09-27T07:00:00.000Z",
+     "end": "2026-09-27T07:15:00.000Z",
+     "location": "Cremona Circuit, Cremona"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-09-27T09:10:00.000Z",
+     "end": "2026-09-27T09:25:00.000Z",
+     "location": "Cremona Circuit, Cremona"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-09-27T13:30:00.000Z",
+     "end": "2026-09-27T14:05:00.000Z",
+     "location": "Cremona Circuit, Cremona"
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "roundName": "Estoril Round",
+   "label": null,
+   "dateRangeLabel": "9–11 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-10-09T09:20:00.000Z",
+     "end": "2026-10-09T10:05:00.000Z",
+     "location": "Circuito do Estoril, Estoril"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-10-09T14:00:00.000Z",
+     "end": "2026-10-09T14:45:00.000Z",
+     "location": "Circuito do Estoril, Estoril"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-10-10T08:40:00.000Z",
+     "end": "2026-10-10T09:10:00.000Z",
+     "location": "Circuito do Estoril, Estoril"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-10-10T10:15:00.000Z",
+     "end": "2026-10-10T10:30:00.000Z",
+     "location": "Circuito do Estoril, Estoril"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-10-10T14:30:00.000Z",
+     "end": "2026-10-10T15:05:00.000Z",
+     "location": "Circuito do Estoril, Estoril"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-10-11T08:00:00.000Z",
+     "end": "2026-10-11T08:15:00.000Z",
+     "location": "Circuito do Estoril, Estoril"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-10-11T10:10:00.000Z",
+     "end": "2026-10-11T10:25:00.000Z",
+     "location": "Circuito do Estoril, Estoril"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-10-11T14:30:00.000Z",
+     "end": "2026-10-11T15:05:00.000Z",
+     "location": "Circuito do Estoril, Estoril"
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "roundName": "Jerez Round",
+   "label": null,
+   "dateRangeLabel": "16–18 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "WSBK - FP1",
+     "start": "2026-10-16T08:20:00.000Z",
+     "end": "2026-10-16T09:05:00.000Z",
+     "location": "Circuito de Jerez - Angel Nieto, Jerez"
+    },
+    {
+     "title": "WSBK - FP2",
+     "start": "2026-10-16T13:00:00.000Z",
+     "end": "2026-10-16T13:45:00.000Z",
+     "location": "Circuito de Jerez - Angel Nieto, Jerez"
+    },
+    {
+     "title": "WSBK - FP3",
+     "start": "2026-10-17T07:40:00.000Z",
+     "end": "2026-10-17T08:10:00.000Z",
+     "location": "Circuito de Jerez - Angel Nieto, Jerez"
+    },
+    {
+     "title": "WSBK - Superpole",
+     "start": "2026-10-17T09:15:00.000Z",
+     "end": "2026-10-17T09:30:00.000Z",
+     "location": "Circuito de Jerez - Angel Nieto, Jerez"
+    },
+    {
+     "title": "WSBK - Race 1",
+     "start": "2026-10-17T13:30:00.000Z",
+     "end": "2026-10-17T14:05:00.000Z",
+     "location": "Circuito de Jerez - Angel Nieto, Jerez"
+    },
+    {
+     "title": "WSBK - Warm Up",
+     "start": "2026-10-18T07:00:00.000Z",
+     "end": "2026-10-18T07:15:00.000Z",
+     "location": "Circuito de Jerez - Angel Nieto, Jerez"
+    },
+    {
+     "title": "WSBK - Superpole Race",
+     "start": "2026-10-18T09:10:00.000Z",
+     "end": "2026-10-18T09:25:00.000Z",
+     "location": "Circuito de Jerez - Angel Nieto, Jerez"
+    },
+    {
+     "title": "WSBK - Race 2",
+     "start": "2026-10-18T13:30:00.000Z",
+     "end": "2026-10-18T14:05:00.000Z",
+     "location": "Circuito de Jerez - Angel Nieto, Jerez"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "round": 8,
+   "raceName": "Prosecco DOC UK Round — Race 1",
+   "date": "2026-07-10T00:00:00.000Z",
+   "circuit": "Donington Park",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "54:18.594",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+0.165s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+46.711s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+51.668s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+54.272s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+56.830s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+57.269s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:02.662",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+1:04.127",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:06.842",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:08.689",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:10.693",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:10.866",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+1:13.631",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:16.349",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:18.226",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:20.228",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Jake Dixon",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:20.995",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:27.244",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:38.659",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "raceName": "Prosecco DOC UK Round — Superpole Race",
+   "date": "2026-07-10T00:00:00.000Z",
+   "circuit": "Donington Park",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "23:36.787",
+     "points": 12
+    },
+    {
+     "position": 2,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+1.581s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+3.346s",
+     "points": 7
+    },
+    {
+     "position": 4,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+5.614s",
+     "points": 6
+    },
+    {
+     "position": 5,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+5.836s",
+     "points": 5
+    },
+    {
+     "position": 6,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+6.664s",
+     "points": 4
+    },
+    {
+     "position": 7,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+7.830s",
+     "points": 3
+    },
+    {
+     "position": 8,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+8.147s",
+     "points": 2
+    },
+    {
+     "position": 9,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+10.886s",
+     "points": 1
+    },
+    {
+     "position": 10,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+11.894s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+12.181s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+15.346s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+16.220s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+18.004s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+18.388s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+18.530s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Jake Dixon",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+19.849s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+20.404s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+21.439s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+38.637s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "raceName": "Prosecco DOC UK Round — Race 2",
+   "date": "2026-07-10T00:00:00.000Z",
+   "circuit": "Donington Park",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "54:16.440",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+44.161s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+46.850s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+55.346s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+55.582s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+56.656s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+1:02.438",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+1:04.748",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:05.293",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+1:06.627",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:08.455",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:09.428",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:11.609",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:12.178",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:19.728",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:22.288",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Jake Dixon",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:23.820",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:30.244",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:30.646",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "Pirelli Emilia-Romagna Round — Race 1",
+   "date": "2026-06-12T00:00:00.000Z",
+   "circuit": "Misano",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "54:00.418",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+6.117s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+13.823s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+17.626s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+1:00.746",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:04.702",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:06.442",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:07.847",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+1:09.285",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:10.448",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:10.882",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:13.185",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+1:16.540",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:16.602",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:24.842",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:29.544",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:51.157",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Ryan Vickers",
+     "team": "Honda HRC",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "Pirelli Emilia-Romagna Round — Superpole Race",
+   "date": "2026-06-12T00:00:00.000Z",
+   "circuit": "Misano",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "25:27.153",
+     "points": 12
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+1.133s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+7.422s",
+     "points": 7
+    },
+    {
+     "position": 4,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+11.940s",
+     "points": 6
+    },
+    {
+     "position": 5,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+13.754s",
+     "points": 5
+    },
+    {
+     "position": 6,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+14.143s",
+     "points": 4
+    },
+    {
+     "position": 7,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+15.960s",
+     "points": 3
+    },
+    {
+     "position": 8,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+16.572s",
+     "points": 2
+    },
+    {
+     "position": 9,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+16.638s",
+     "points": 1
+    },
+    {
+     "position": 10,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+18.668s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+18.936s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+19.155s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+19.982s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+20.143s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+24.498s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+25.377s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Ryan Vickers",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+27.662s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:14.712",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "Pirelli Emilia-Romagna Round — Race 2",
+   "date": "2026-06-12T00:00:00.000Z",
+   "circuit": "Misano",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "54:09.765",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+5.101s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+54.016s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+55.959s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+58.733s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:00.258",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:02.107",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:02.886",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:07.624",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+1:07.661",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:09.545",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:09.562",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:11.979",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+1:13.114",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+1:14.074",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:31.403",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:41.535",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Ryan Vickers",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:45.902",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Aragon Round — Race 1",
+   "date": "2026-05-29T00:00:00.000Z",
+   "circuit": "Aragón",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "54:06.379",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+1.274s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+8.078s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+56.177s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+58.619s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+58.684s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+1:01.548",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+1:01.873",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:02.187",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:10.792",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:14.069",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:15.601",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:18.080",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:18.105",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:19.000",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Jake Dixon",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:20.618",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:23.702",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:39.522",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:39.693",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Hannes Soomer",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Aragon Round — Superpole Race",
+   "date": "2026-05-29T00:00:00.000Z",
+   "circuit": "Aragón",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "30:08.215",
+     "points": 12
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+0.594s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+1.240s",
+     "points": 7
+    },
+    {
+     "position": 4,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+2.640s",
+     "points": 6
+    },
+    {
+     "position": 5,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+3.219s",
+     "points": 5
+    },
+    {
+     "position": 6,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+3.747s",
+     "points": 4
+    },
+    {
+     "position": 7,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+4.219s",
+     "points": 3
+    },
+    {
+     "position": 8,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+4.621s",
+     "points": 2
+    },
+    {
+     "position": 9,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+4.895s",
+     "points": 1
+    },
+    {
+     "position": 10,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+6.009s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+6.936s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+7.371s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+11.891s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+11.977s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Hannes Soomer",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+17.296s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+20.208s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+21.691s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+22.072s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Aragon Round — Race 2",
+   "date": "2026-05-29T00:00:00.000Z",
+   "circuit": "Aragón",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "54:10.074",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+0.786s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+6.506s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+52.413s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+54.351s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+56.317s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+58.023s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+58.530s",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+58.974s",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+59.824s",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:04.639",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:05.864",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:05.919",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:07.035",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:11.608",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:23.539",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:26.789",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Hannes Soomer",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+2:41.427",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Czech Round — Race 1",
+   "date": "2026-05-15T00:00:00.000Z",
+   "circuit": "Most",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "52:35.741",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+1.330s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+51.222s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+54.094s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+54.568s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+55.168s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+1:02.584",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:03.957",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:05.637",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:07.500",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:08.349",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:08.378",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+1:08.387",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:11.510",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:11.516",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:19.309",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:27.932",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:28.660",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Yuki Kunii",
+     "team": "Honda HRC",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Czech Round — Superpole Race",
+   "date": "2026-05-15T00:00:00.000Z",
+   "circuit": "Most",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "25:07.499",
+     "points": 12
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+1.959s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+6.980s",
+     "points": 7
+    },
+    {
+     "position": 4,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+7.679s",
+     "points": 6
+    },
+    {
+     "position": 5,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+9.714s",
+     "points": 5
+    },
+    {
+     "position": 6,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+9.853s",
+     "points": 4
+    },
+    {
+     "position": 7,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+10.409s",
+     "points": 3
+    },
+    {
+     "position": 8,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+11.464s",
+     "points": 2
+    },
+    {
+     "position": 9,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+11.873s",
+     "points": 1
+    },
+    {
+     "position": 10,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+13.838s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+14.484s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+14.695s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+14.812s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+21.325s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+27.224s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Yuki Kunii",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+37.528s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+47.913s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Czech Round — Race 2",
+   "date": "2026-05-15T00:00:00.000Z",
+   "circuit": "Most",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "55:20.149",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+0.594s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+15.529s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+16.783s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+22.947s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+23.177s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+23.643s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+23.869s",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+26.991s",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+27.740s",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+29.908s",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+29.928s",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Michael van der Mark",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+32.808s",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+34.188s",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:19.887",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:23.897",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:36.551",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:37.480",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Yuki Kunii",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:49.585",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Motul Hungarian Round — Race 1",
+   "date": "2026-05-01T00:00:00.000Z",
+   "circuit": "Balaton",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "57:28.413",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+2.538s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+52.584s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+54.077s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+55.032s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+55.781s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:01.559",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:03.775",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+1:05.308",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:08.578",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:08.643",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:09.057",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:09.063",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+1:09.873",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:11.917",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:14.722",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+1:17.186",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:32.606",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:35.393",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:41.515",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Yuki Kunii",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:47.187",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Motul Hungarian Round — Superpole Race",
+   "date": "2026-05-01T00:00:00.000Z",
+   "circuit": "Balaton",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "21:50.468",
+     "points": 12
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+0.894s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+5.103s",
+     "points": 7
+    },
+    {
+     "position": 4,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+7.955s",
+     "points": 6
+    },
+    {
+     "position": 5,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+8.674s",
+     "points": 5
+    },
+    {
+     "position": 6,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+9.323s",
+     "points": 4
+    },
+    {
+     "position": 7,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+10.263s",
+     "points": 3
+    },
+    {
+     "position": 8,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+11.248s",
+     "points": 2
+    },
+    {
+     "position": 9,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+13.631s",
+     "points": 1
+    },
+    {
+     "position": 10,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+15.186s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+15.513s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+15.742s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+15.906s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+17.333s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+17.738s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+18.736s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+22.225s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+22.241s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+25.373s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+26.333s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Yuki Kunii",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+29.476s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Motul Hungarian Round — Race 2",
+   "date": "2026-05-01T00:00:00.000Z",
+   "circuit": "Balaton",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "57:19.980",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+2.557s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+11.970s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+12.478s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:04.903",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+1:06.510",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:10.043",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:12.647",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:15.768",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:15.842",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+1:18.515",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:21.864",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:32.263",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:32.506",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:33.113",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Yuki Kunii",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:43.573",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "Pirelli Dutch Round — Race 1",
+   "date": "2026-04-17T00:00:00.000Z",
+   "circuit": "TT Assen",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "55:12.444",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+1.618s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+2.923s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+6.376s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+11.775s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+17.167s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+18.163s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+18.550s",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+18.591s",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+18.779s",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+18.928s",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+19.198s",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+20.971s",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+22.646s",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+23.884s",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+25.213s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+41.459s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+44.126s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:30.165",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:30.730",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Twan Smits",
+     "team": "Team Apreco",
+     "status": "Classified",
+     "time": "+1:31.822",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:32.858",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "Pirelli Dutch Round — Superpole Race",
+   "date": "2026-04-17T00:00:00.000Z",
+   "circuit": "TT Assen",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "25:35.366",
+     "points": 12
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+1.742s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+2.632s",
+     "points": 7
+    },
+    {
+     "position": 4,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+6.219s",
+     "points": 6
+    },
+    {
+     "position": 5,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+6.373s",
+     "points": 5
+    },
+    {
+     "position": 6,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+9.318s",
+     "points": 4
+    },
+    {
+     "position": 7,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+9.432s",
+     "points": 3
+    },
+    {
+     "position": 8,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+9.433s",
+     "points": 2
+    },
+    {
+     "position": 9,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+11.347s",
+     "points": 1
+    },
+    {
+     "position": 10,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+11.590s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+12.170s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+14.379s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+15.384s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+15.429s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+16.749s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+16.856s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+18.759s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+21.090s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:05.517",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:05.532",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Twan Smits",
+     "team": "Team Apreco",
+     "status": "Classified",
+     "time": "+1:07.932",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "Pirelli Dutch Round — Race 2",
+   "date": "2026-04-17T00:00:00.000Z",
+   "circuit": "TT Assen",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "54:18.347",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+42.724s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+45.257s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+48.941s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+49.845s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+52.872s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+57.363s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+58.294s",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+59.054s",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:01.924",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+1:02.304",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:04.570",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+1:05.291",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:05.391",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:05.394",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+1:06.979",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:10.923",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:11.060",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:16.230",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:18.452",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:29.397",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Twan Smits",
+     "team": "Team Apreco",
+     "status": "Classified",
+     "time": "+1:36.266",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Pirelli Portuguese Round — Race 1",
+   "date": "2026-03-27T00:00:00.000Z",
+   "circuit": "Portimão",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "55:34.579",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+2.522s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+4.815s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+9.152s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+12.147s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+18.016s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+18.373s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+19.220s",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+19.428s",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+20.548s",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+21.126s",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+24.850s",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:05.867",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:06.006",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:11.377",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+1:14.081",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:14.982",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:15.461",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:17.111",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:32.439",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:37.238",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Pirelli Portuguese Round — Superpole Race",
+   "date": "2026-03-27T00:00:00.000Z",
+   "circuit": "Portimão",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "27:19.446",
+     "points": 12
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+1.882s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+2.401s",
+     "points": 7
+    },
+    {
+     "position": 4,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+2.781s",
+     "points": 6
+    },
+    {
+     "position": 5,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+4.706s",
+     "points": 5
+    },
+    {
+     "position": 6,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+5.596s",
+     "points": 4
+    },
+    {
+     "position": 7,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+6.457s",
+     "points": 3
+    },
+    {
+     "position": 8,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+6.896s",
+     "points": 2
+    },
+    {
+     "position": 9,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+7.704s",
+     "points": 1
+    },
+    {
+     "position": 10,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+8.016s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+10.451s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+10.523s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+10.801s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+11.427s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+13.280s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+13.619s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+16.327s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+19.553s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+1:01.769",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:01.876",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Pirelli Portuguese Round — Race 2",
+   "date": "2026-03-27T00:00:00.000Z",
+   "circuit": "Portimão",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "55:32.986",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+1.967s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+7.096s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+7.265s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+10.079s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+15.105s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+16.508s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+17.743s",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+22.139s",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+22.610s",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+26.370s",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Jonathan Rea",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:15.353",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Thomas Bridewell",
+     "team": "Superbike Advocates",
+     "status": "Classified",
+     "time": "+1:18.560",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:18.958",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Somkiat Chantra",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:19.124",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Not Classified",
+     "time": "+2:51.444",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "raceName": "Australian Round — Race 1",
+   "date": "2026-02-20T00:00:00.000Z",
+   "circuit": "Phillip Island",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "54:16.857",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+44.776s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+46.147s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+46.183s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+48.249s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+52.549s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+53.746s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:00.610",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:01.663",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:02.250",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:02.267",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+1:02.724",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+1:10.799",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Tetsuta Nagashima",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:15.308",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Ryan Vickers",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:15.311",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:39.515",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+2:34.921",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "raceName": "Australian Round — Superpole Race",
+   "date": "2026-02-20T00:00:00.000Z",
+   "circuit": "Phillip Island",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "24:16.175",
+     "points": 12
+    },
+    {
+     "position": 2,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+2.752s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+3.563s",
+     "points": 7
+    },
+    {
+     "position": 4,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+3.585s",
+     "points": 6
+    },
+    {
+     "position": 5,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Classified",
+     "time": "+43.985s",
+     "points": 5
+    },
+    {
+     "position": 6,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+44.250s",
+     "points": 4
+    },
+    {
+     "position": 7,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+45.118s",
+     "points": 3
+    },
+    {
+     "position": 8,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+48.178s",
+     "points": 2
+    },
+    {
+     "position": 9,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+49.291s",
+     "points": 1
+    },
+    {
+     "position": 10,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+49.512s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+49.893s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+51.264s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+54.366s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+54.565s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Ryan Vickers",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+54.887s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+55.151s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Tetsuta Nagashima",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+59.065s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+59.207s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:02.042",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:09.157",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "raceName": "Australian Round — Race 2",
+   "date": "2026-02-20T00:00:00.000Z",
+   "circuit": "Phillip Island",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nicolo Bulega",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "1:02:01.038",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Axel Bassani",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Classified",
+     "time": "+11.336s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Alvaro Bautista",
+     "team": "Barni Spark Racing Team",
+     "status": "Classified",
+     "time": "+17.790s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Tarran Mackenzie",
+     "team": "MGM Optical Express Racing",
+     "status": "Classified",
+     "time": "+28.356s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Andrea Locatelli",
+     "team": "Pata Maxus Yamaha",
+     "status": "Classified",
+     "time": "+30.966s",
+     "points": 11
+    },
+    {
+     "position": 6,
+     "driverName": "Danilo Petrucci",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+31.901s",
+     "points": 10
+    },
+    {
+     "position": 7,
+     "driverName": "Miguel Oliveira",
+     "team": "ROKiT BMW Motorrad WorldSBK Team",
+     "status": "Classified",
+     "time": "+32.135s",
+     "points": 9
+    },
+    {
+     "position": 8,
+     "driverName": "Iker Lecuona",
+     "team": "Aruba.it Racing - Ducati",
+     "status": "Classified",
+     "time": "+32.608s",
+     "points": 8
+    },
+    {
+     "position": 9,
+     "driverName": "Lorenzo Baldassarri",
+     "team": "Team Goeleven",
+     "status": "Classified",
+     "time": "+33.241s",
+     "points": 7
+    },
+    {
+     "position": 10,
+     "driverName": "Garrett Gerloff",
+     "team": "Kawasaki WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:28.734",
+     "points": 6
+    },
+    {
+     "position": 11,
+     "driverName": "Tetsuta Nagashima",
+     "team": "Honda HRC",
+     "status": "Classified",
+     "time": "+1:32.224",
+     "points": 5
+    },
+    {
+     "position": 12,
+     "driverName": "Alberto Surra",
+     "team": "Motocorsa Racing",
+     "status": "Classified",
+     "time": "+1:38.908",
+     "points": 4
+    },
+    {
+     "position": 13,
+     "driverName": "Remy Gardner",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+1:46.503",
+     "points": 3
+    },
+    {
+     "position": 14,
+     "driverName": "Stefano Manzi",
+     "team": "GYTR GRT Yamaha WorldSBK Team",
+     "status": "Classified",
+     "time": "+2:13.080",
+     "points": 2
+    },
+    {
+     "position": 15,
+     "driverName": "Bahattin Sofuoglu",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Classified",
+     "time": "+3:00.750",
+     "points": 1
+    },
+    {
+     "position": 16,
+     "driverName": "Alex Lowes",
+     "team": "bimota by Kawasaki Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Yari Montella",
+     "team": "Barni Spark Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Xavi Vierge",
+     "team": "Pata Maxus Yamaha",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Sam Lowes",
+     "team": "ELF Marc VDS Racing Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Ryan Vickers",
+     "team": "Honda HRC",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Mattia Rato",
+     "team": "Motoxracing WorldSBK Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  }
+ ],
+ "standings": {
+  "drivers": [
+   {
+    "position": 1,
+    "driverName": "Nicolo Bulega",
+    "team": "Aruba.it Racing - Ducati",
+    "points": 491
+   },
+   {
+    "position": 2,
+    "driverName": "Iker Lecuona",
+    "team": "Aruba.it Racing - Ducati",
+    "points": 358
+   },
+   {
+    "position": 3,
+    "driverName": "Yari Montella",
+    "team": "Barni Spark Racing Team",
+    "points": 211
+   },
+   {
+    "position": 4,
+    "driverName": "Alex Lowes",
+    "team": "bimota by Kawasaki Racing Team",
+    "points": 182
+   },
+   {
+    "position": 5,
+    "driverName": "Sam Lowes",
+    "team": "ELF Marc VDS Racing Team",
+    "points": 177
+   },
+   {
+    "position": 6,
+    "driverName": "Axel Bassani",
+    "team": "bimota by Kawasaki Racing Team",
+    "points": 153
+   },
+   {
+    "position": 7,
+    "driverName": "Lorenzo Baldassarri",
+    "team": "Team Goeleven",
+    "points": 145
+   },
+   {
+    "position": 8,
+    "driverName": "Garrett Gerloff",
+    "team": "Kawasaki WorldSBK Team",
+    "points": 110
+   },
+   {
+    "position": 9,
+    "driverName": "Alvaro Bautista",
+    "team": "Barni Spark Racing Team",
+    "points": 107
+   },
+   {
+    "position": 10,
+    "driverName": "Miguel Oliveira",
+    "team": "ROKiT BMW Motorrad WorldSBK Team",
+    "points": 106
+   },
+   {
+    "position": 11,
+    "driverName": "Andrea Locatelli",
+    "team": "Pata Maxus Yamaha",
+    "points": 99
+   },
+   {
+    "position": 12,
+    "driverName": "Alberto Surra",
+    "team": "Motocorsa Racing",
+    "points": 95
+   },
+   {
+    "position": 13,
+    "driverName": "Tarran Mackenzie",
+    "team": "MGM Optical Express Racing",
+    "points": 81
+   },
+   {
+    "position": 14,
+    "driverName": "Xavi Vierge",
+    "team": "Pata Maxus Yamaha",
+    "points": 80
+   },
+   {
+    "position": 15,
+    "driverName": "Thomas Bridewell",
+    "team": "Superbike Advocates",
+    "points": 59
+   },
+   {
+    "position": 16,
+    "driverName": "Danilo Petrucci",
+    "team": "ROKiT BMW Motorrad WorldSBK Team",
+    "points": 48
+   },
+   {
+    "position": 17,
+    "driverName": "Remy Gardner",
+    "team": "GYTR GRT Yamaha WorldSBK Team",
+    "points": 45
+   },
+   {
+    "position": 18,
+    "driverName": "Stefano Manzi",
+    "team": "GYTR GRT Yamaha WorldSBK Team",
+    "points": 34
+   },
+   {
+    "position": 19,
+    "driverName": "Michael van der Mark",
+    "team": "ROKiT BMW Motorrad WorldSBK Team",
+    "points": 23
+   },
+   {
+    "position": 20,
+    "driverName": "Somkiat Chantra",
+    "team": "Honda HRC",
+    "points": 8
+   },
+   {
+    "position": 21,
+    "driverName": "Tetsuta Nagashima",
+    "team": "Honda HRC",
+    "points": 7
+   },
+   {
+    "position": 22,
+    "driverName": "Jonathan Rea",
+    "team": "Honda HRC",
+    "points": 6
+   },
+   {
+    "position": 23,
+    "driverName": "Bahattin Sofuoglu",
+    "team": "Motoxracing WorldSBK Team",
+    "points": 4
+   },
+   {
+    "position": 24,
+    "driverName": "Mattia Rato",
+    "team": "Motoxracing WorldSBK Team",
+    "points": 2
+   },
+   {
+    "position": 25,
+    "driverName": "Ryan Vickers",
+    "team": "Honda HRC",
+    "points": 1
+   }
+  ],
+  "constructors": [
+   {
+    "position": 1,
+    "name": "Ducati",
+    "points": 496
+   },
+   {
+    "position": 2,
+    "name": "bimota",
+    "points": 220
+   },
+   {
+    "position": 3,
+    "name": "BMW",
+    "points": 136
+   },
+   {
+    "position": 4,
+    "name": "Yamaha",
+    "points": 131
+   },
+   {
+    "position": 5,
+    "name": "Kawasaki",
+    "points": 110
+   },
+   {
+    "position": 6,
+    "name": "Honda",
+    "points": 20
+   }
+  ]
+ }
+}

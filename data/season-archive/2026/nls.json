@@ -1,0 +1,355 @@
+{
+ "season": 2026,
+ "series": "nls",
+ "seriesName": "NLS Nürburgring",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "none"
+ },
+ "weekends": [
+  {
+   "round": 1,
+   "roundName": "71st ADAC Westfalenfahrt",
+   "label": null,
+   "dateRangeLabel": "14 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS1 71st ADAC Westfalenfahrt)",
+     "start": "2026-03-14T06:00:00.000Z",
+     "end": "2026-03-14T07:15:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS1 71st ADAC Westfalenfahrt)",
+     "start": "2026-03-14T07:30:00.000Z",
+     "end": "2026-03-14T09:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS1 71st ADAC Westfalenfahrt)",
+     "start": "2026-03-14T11:00:00.000Z",
+     "end": "2026-03-14T15:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "roundName": "58th ADAC Barbarossapreis",
+   "label": null,
+   "dateRangeLabel": "21 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS2 58th ADAC Barbarossapreis)",
+     "start": "2026-03-21T06:00:00.000Z",
+     "end": "2026-03-21T07:15:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS2 58th ADAC Barbarossapreis)",
+     "start": "2026-03-21T07:30:00.000Z",
+     "end": "2026-03-21T09:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS2 58th ADAC Barbarossapreis)",
+     "start": "2026-03-21T11:00:00.000Z",
+     "end": "2026-03-21T15:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "57th Adenauer ADAC Rundstrecken-Trophy",
+   "label": null,
+   "dateRangeLabel": "11 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS3 57th Adenauer ADAC Rundstrecken-Trophy)",
+     "start": "2026-04-11T05:00:00.000Z",
+     "end": "2026-04-11T06:15:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS3 57th Adenauer ADAC Rundstrecken-Trophy)",
+     "start": "2026-04-11T06:30:00.000Z",
+     "end": "2026-04-11T08:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS3 57th Adenauer ADAC Rundstrecken-Trophy)",
+     "start": "2026-04-11T10:00:00.000Z",
+     "end": "2026-04-11T14:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "ADAC 24h Qualifiers — Saturday",
+   "label": null,
+   "dateRangeLabel": "17–18 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS4 ADAC 24h Qualifiers)",
+     "start": "2026-04-17T11:00:00.000Z",
+     "end": "2026-04-17T13:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS4 ADAC 24h Qualifiers)",
+     "start": "2026-04-18T06:30:00.000Z",
+     "end": "2026-04-18T09:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS4 ADAC 24h Qualifiers — Saturday evening)",
+     "start": "2026-04-18T14:30:00.000Z",
+     "end": "2026-04-18T18:30:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "ADAC 24h Qualifiers — Sunday",
+   "label": null,
+   "dateRangeLabel": "19 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NLS - 24h Top Qualifying (NLS5 ADAC 24h Qualifiers)",
+     "start": "2026-04-19T06:00:00.000Z",
+     "end": "2026-04-19T08:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS5 ADAC 24h Qualifiers — Sunday)",
+     "start": "2026-04-19T10:00:00.000Z",
+     "end": "2026-04-19T14:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "1st ADAC Eifel Trophy",
+   "label": null,
+   "dateRangeLabel": "20 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS6 1st ADAC Eifel Trophy)",
+     "start": "2026-06-20T05:00:00.000Z",
+     "end": "2026-06-20T06:15:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS6 1st ADAC Eifel Trophy)",
+     "start": "2026-06-20T06:30:00.000Z",
+     "end": "2026-06-20T08:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS6 1st ADAC Eifel Trophy)",
+     "start": "2026-06-20T10:00:00.000Z",
+     "end": "2026-06-20T14:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "6h ADAC Ruhr-Pokal-Rennen",
+   "label": null,
+   "dateRangeLabel": "1 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS7 6h ADAC Ruhr-Pokal-Rennen)",
+     "start": "2026-08-01T05:00:00.000Z",
+     "end": "2026-08-01T06:15:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS7 6h ADAC Ruhr-Pokal-Rennen)",
+     "start": "2026-08-01T06:30:00.000Z",
+     "end": "2026-08-01T08:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 6h (NLS7 6h ADAC Ruhr-Pokal-Rennen)",
+     "start": "2026-08-01T10:00:00.000Z",
+     "end": "2026-08-01T16:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "65th ADAC Reinoldus-Langstreckenrennen",
+   "label": null,
+   "dateRangeLabel": "12 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS8 65th ADAC Reinoldus-Langstreckenrennen)",
+     "start": "2026-09-12T05:00:00.000Z",
+     "end": "2026-09-12T06:15:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS8 65th ADAC Reinoldus-Langstreckenrennen)",
+     "start": "2026-09-12T06:30:00.000Z",
+     "end": "2026-09-12T08:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS8 65th ADAC Reinoldus-Langstreckenrennen)",
+     "start": "2026-09-12T10:00:00.000Z",
+     "end": "2026-09-12T14:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "roundName": "66. ADAC ACAS Cup",
+   "label": null,
+   "dateRangeLabel": "13 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS9 66. ADAC ACAS Cup)",
+     "start": "2026-09-13T05:00:00.000Z",
+     "end": "2026-09-13T06:15:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS9 66. ADAC ACAS Cup)",
+     "start": "2026-09-13T06:30:00.000Z",
+     "end": "2026-09-13T08:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS9 66. ADAC ACAS Cup)",
+     "start": "2026-09-13T10:00:00.000Z",
+     "end": "2026-09-13T14:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "roundName": "2nd NLS Sportwarte-Trophy",
+   "label": null,
+   "dateRangeLabel": "10 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "NLS - Free Training (NLS10 2nd NLS Sportwarte-Trophy)",
+     "start": "2026-10-10T05:00:00.000Z",
+     "end": "2026-10-10T06:15:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Qualifying (NLS10 2nd NLS Sportwarte-Trophy)",
+     "start": "2026-10-10T06:30:00.000Z",
+     "end": "2026-10-10T08:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    },
+    {
+     "title": "NLS - Race 4h (NLS10 2nd NLS Sportwarte-Trophy)",
+     "start": "2026-10-10T10:00:00.000Z",
+     "end": "2026-10-10T14:00:00.000Z",
+     "location": "Nürburgring (GP-Strecke + Nordschleife), Germany"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "round": 2,
+   "raceName": "58. ADAC Barbarossapreis",
+   "date": "2026-03-21T00:00:00.000Z",
+   "circuit": "Nürburgring Nordschleife",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Dan Harper · Jordan Pepper",
+     "team": "Rowe Racing",
+     "status": "Winner",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "57. Adenauer ADAC Rundstrecken-Trophy",
+   "date": "2026-04-11T00:00:00.000Z",
+   "circuit": "Nürburgring Nordschleife",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Philipp Eng · Robin Frijns · Marco Wittmann",
+     "team": "Schubert Motorsport",
+     "status": "Winner",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "ADAC 24h Nürburgring Qualifiers Rennen 2",
+   "date": "2026-04-19T00:00:00.000Z",
+   "circuit": "Nürburgring Nordschleife",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ben Green · Christopher Haase · Alexander Sims",
+     "team": "Scherer Sport PHX",
+     "status": "Winner",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "1. ADAC Eifel Trophy",
+   "date": "2026-06-20T00:00:00.000Z",
+   "circuit": "Nürburgring Nordschleife",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nico Menzel · Sven Müller",
+     "team": "Dunlop Motorsports",
+     "status": "Winner",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "KW 6h ADAC Ruhr-Pokal-Rennen",
+   "date": "2026-08-01T00:00:00.000Z",
+   "circuit": "Nürburgring Nordschleife",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ralf Aron · Luca Stolz",
+     "team": "Mercedes-AMG Ravenol",
+     "status": "Winner",
+     "points": 0
+    }
+   ]
+  }
+ ],
+ "standings": null
+}

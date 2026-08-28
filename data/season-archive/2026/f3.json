@@ -1,0 +1,4560 @@
+{
+ "season": 2026,
+ "series": "f3",
+ "seriesName": "Formula 3",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "ok"
+ },
+ "weekends": [
+  {
+   "round": 1,
+   "roundName": "Australian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "5–7 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-03-05T21:50:00.000Z",
+     "end": "2026-03-05T22:35:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    },
+    {
+     "title": "F3 - Qualifying",
+     "start": "2026-03-06T03:00:00.000Z",
+     "end": "2026-03-06T03:30:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-03-07T00:15:00.000Z",
+     "end": "2026-03-07T01:00:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-03-07T21:50:00.000Z",
+     "end": "2026-03-07T22:40:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "roundName": null,
+   "label": null,
+   "dateRangeLabel": "10–11 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "*Cancelled* F3 | Sakhir | Race 1",
+     "start": "2026-04-10T21:00:00.000Z",
+     "end": "2026-04-11T21:00:00.000Z",
+     "location": "Bahrain International Circuit, Gate 255, Gulf of Bahrain Avenue Umm Jidar, Sakhir، 1062, Bahrain"
+    },
+    {
+     "title": "*Cancelled* F3 | Sakhir | Race 2",
+     "start": "2026-04-11T21:00:00.000Z",
+     "end": "2026-04-12T21:00:00.000Z",
+     "location": "Bahrain International Circuit, Gate 255, Gulf of Bahrain Avenue Umm Jidar, Sakhir، 1062, Bahrain"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "Monaco Grand Prix",
+   "label": null,
+   "dateRangeLabel": "4–7 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-06-04T11:25:00.000Z",
+     "end": "2026-06-04T12:10:00.000Z",
+     "location": "Circuit de Monaco"
+    },
+    {
+     "title": "F3 - Qualifying Group A",
+     "start": "2026-06-05T08:05:00.000Z",
+     "end": "2026-06-05T08:19:00.000Z",
+     "location": "Circuit de Monaco"
+    },
+    {
+     "title": "F3 - Qualifying Group B",
+     "start": "2026-06-05T09:29:00.000Z",
+     "end": "2026-06-05T09:43:00.000Z",
+     "location": "Circuit de Monaco"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-06-06T08:45:00.000Z",
+     "end": "2026-06-06T09:25:00.000Z",
+     "location": "Circuit de Monaco"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-06-07T05:55:00.000Z",
+     "end": "2026-06-07T06:40:00.000Z",
+     "location": "Circuit de Monaco"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "Barcelona-Catalunya Grand Prix",
+   "label": null,
+   "dateRangeLabel": "11–14 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-06-11T11:25:00.000Z",
+     "end": "2026-06-11T12:10:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "F3 - Qualifying Group A",
+     "start": "2026-06-12T08:00:00.000Z",
+     "end": "2026-06-12T08:14:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "F3 - Qualifying Group B",
+     "start": "2026-06-12T09:30:00.000Z",
+     "end": "2026-06-12T09:44:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-06-13T08:45:00.000Z",
+     "end": "2026-06-13T09:30:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-06-14T05:55:00.000Z",
+     "end": "2026-06-14T06:45:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "Austrian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "25–28 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-06-25T11:25:00.000Z",
+     "end": "2026-06-25T12:10:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    },
+    {
+     "title": "F3 - Qualifying Group A",
+     "start": "2026-06-26T08:00:00.000Z",
+     "end": "2026-06-26T08:14:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    },
+    {
+     "title": "F3 - Qualifying Group B",
+     "start": "2026-06-26T09:30:00.000Z",
+     "end": "2026-06-26T09:44:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-06-27T08:45:00.000Z",
+     "end": "2026-06-27T09:30:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-06-28T05:55:00.000Z",
+     "end": "2026-06-28T06:45:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "British Grand Prix",
+   "label": null,
+   "dateRangeLabel": "2–5 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-07-02T12:25:00.000Z",
+     "end": "2026-07-02T13:10:00.000Z",
+     "location": "Silverstone Circuit"
+    },
+    {
+     "title": "F3 - Qualifying Group A",
+     "start": "2026-07-03T09:00:00.000Z",
+     "end": "2026-07-03T09:14:00.000Z",
+     "location": "Silverstone Circuit"
+    },
+    {
+     "title": "F3 - Qualifying Group B",
+     "start": "2026-07-03T10:30:00.000Z",
+     "end": "2026-07-03T10:44:00.000Z",
+     "location": "Silverstone Circuit"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-07-04T09:45:00.000Z",
+     "end": "2026-07-04T10:30:00.000Z",
+     "location": "Silverstone Circuit"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-07-05T06:55:00.000Z",
+     "end": "2026-07-05T07:45:00.000Z",
+     "location": "Silverstone Circuit"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "Belgian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "16–19 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-07-16T11:25:00.000Z",
+     "end": "2026-07-16T12:10:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "F3 - Qualifying Group A",
+     "start": "2026-07-17T08:00:00.000Z",
+     "end": "2026-07-17T08:14:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "F3 - Qualifying Group B",
+     "start": "2026-07-17T09:30:00.000Z",
+     "end": "2026-07-17T09:44:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-07-18T08:45:00.000Z",
+     "end": "2026-07-18T09:30:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-07-19T05:55:00.000Z",
+     "end": "2026-07-19T06:45:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "Hungarian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "24–26 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-07-24T07:55:00.000Z",
+     "end": "2026-07-24T08:40:00.000Z",
+     "location": "Hungaroring, Budapest"
+    },
+    {
+     "title": "F3 - Qualifying",
+     "start": "2026-07-24T13:00:00.000Z",
+     "end": "2026-07-24T13:30:00.000Z",
+     "location": "Hungaroring, Budapest"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-07-25T08:05:00.000Z",
+     "end": "2026-07-25T08:50:00.000Z",
+     "location": "Hungaroring, Budapest"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-07-26T06:40:00.000Z",
+     "end": "2026-07-26T07:30:00.000Z",
+     "location": "Hungaroring, Budapest"
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "roundName": "Italian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "3–6 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-09-03T11:25:00.000Z",
+     "end": "2026-09-03T12:10:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "F3 - Qualifying Group A",
+     "start": "2026-09-04T08:00:00.000Z",
+     "end": "2026-09-04T08:14:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "F3 - Qualifying Group B",
+     "start": "2026-09-04T09:30:00.000Z",
+     "end": "2026-09-04T09:44:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-09-05T08:45:00.000Z",
+     "end": "2026-09-05T09:30:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-09-06T05:55:00.000Z",
+     "end": "2026-09-06T06:45:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "roundName": "Spanish Grand Prix (Madrid)",
+   "label": null,
+   "dateRangeLabel": "10–13 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F3 - Practice",
+     "start": "2026-09-10T11:25:00.000Z",
+     "end": "2026-09-10T12:10:00.000Z",
+     "location": "Madring, Madrid"
+    },
+    {
+     "title": "F3 - Qualifying Group A",
+     "start": "2026-09-11T08:00:00.000Z",
+     "end": "2026-09-11T08:14:00.000Z",
+     "location": "Madring, Madrid"
+    },
+    {
+     "title": "F3 - Qualifying Group B",
+     "start": "2026-09-11T09:30:00.000Z",
+     "end": "2026-09-11T09:44:00.000Z",
+     "location": "Madring, Madrid"
+    },
+    {
+     "title": "F3 - Sprint Race",
+     "start": "2026-09-12T08:45:00.000Z",
+     "end": "2026-09-12T09:30:00.000Z",
+     "location": "Madring, Madrid"
+    },
+    {
+     "title": "F3 - Feature Race",
+     "start": "2026-09-13T05:55:00.000Z",
+     "end": "2026-09-13T06:45:00.000Z",
+     "location": "Madring, Madrid"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "round": 1,
+   "raceName": "Australia Feature Race",
+   "date": "2026-03-08T00:00:00.000Z",
+   "circuit": "Albert Park Grand Prix Circuit",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "42:59.653",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+0.693s",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+2.272s",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+2.716s",
+     "points": 13
+    },
+    {
+     "position": 5,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+3.253s",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+3.576s",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Brad Benavides",
+     "driverCode": "BEN",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+4.716s",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+4.963s",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+5.346s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+5.784s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+5.983s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+6.290s",
+     "points": 2
+    },
+    {
+     "position": 13,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+6.529s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+6.802s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+7.218s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+7.778s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Patrick Heuzenroeder",
+     "driverCode": "HEU",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+8.483s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+8.836s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+9.401s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+9.977s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+10.473s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+11.182s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+11.621s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+11.871s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+19.142s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "raceName": "Australia Sprint Race",
+   "date": "2026-03-08T00:00:00.000Z",
+   "circuit": "Albert Park Grand Prix Circuit",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "11:35.440",
+     "points": 5
+    },
+    {
+     "position": 2,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+1.381s",
+     "points": 4
+    },
+    {
+     "position": 3,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+2.712s",
+     "points": 3
+    },
+    {
+     "position": 4,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+3.307s",
+     "points": 2
+    },
+    {
+     "position": 5,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+4.734s",
+     "points": 1
+    },
+    {
+     "position": 6,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+5.857s",
+     "points": 0
+    },
+    {
+     "position": 7,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+7.579s",
+     "points": 0
+    },
+    {
+     "position": 8,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+9.562s",
+     "points": 0
+    },
+    {
+     "position": 9,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+11.274s",
+     "points": 0
+    },
+    {
+     "position": 10,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+12.789s",
+     "points": 0
+    },
+    {
+     "position": 11,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+13.160s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+13.675s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+14.282s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+14.693s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+16.239s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+17.743s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Brad Benavides",
+     "driverCode": "BEN",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+18.894s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+19.404s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+20.766s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+21.740s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+22.296s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+22.620s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Patrick Heuzenroeder",
+     "driverCode": "HEU",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+23.040s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+23.413s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+23.914s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+24.652s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+25.257s",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+25.756s",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+26.105s",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+30.694s",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Monaco Feature Race",
+   "date": "2026-06-07T00:00:00.000Z",
+   "circuit": "Circuit de Monaco",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "41:14.986",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+0.527s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+17.240s",
+     "points": 16
+    },
+    {
+     "position": 4,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+17.962s",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+21.965s",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+22.880s",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+23.555s",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+26.131s",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+27.480s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+27.763s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+28.551s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+29.156s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+29.754s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+35.308s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+36.748s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+39.761s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+40.214s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+41.426s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+48.068s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+49.140s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+49.708s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+62.729s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+64.444s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+76.181s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+80.635s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+90.285s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Monaco Sprint Race",
+   "date": "2026-06-07T00:00:00.000Z",
+   "circuit": "Circuit de Monaco",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "1:1:55.381",
+     "points": 10
+    },
+    {
+     "position": 2,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+0.252s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+1.016s",
+     "points": 8
+    },
+    {
+     "position": 4,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+2.096s",
+     "points": 7
+    },
+    {
+     "position": 5,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+7.780s",
+     "points": 6
+    },
+    {
+     "position": 6,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+8.084s",
+     "points": 6
+    },
+    {
+     "position": 7,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+10.181s",
+     "points": 4
+    },
+    {
+     "position": 8,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+10.932s",
+     "points": 3
+    },
+    {
+     "position": 9,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+12.498s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+19.635s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+20.444s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+22.232s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+26.568s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+26.648s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+28.279s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+30.753s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+46.986s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+47.674s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+50.555s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+55.046s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+55.403s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+55.462s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+58.050s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+62.030s",
+     "points": 0
+    },
+    {
+     "position": 66666,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "DSQ",
+     "time": "DSQ",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Brad Benavides",
+     "driverCode": "BEN",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "Barcelona-Catalunya Feature Race",
+   "date": "2026-06-14T00:00:00.000Z",
+   "circuit": "Circuit de Barcelona-Catalunya",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "39:36.183",
+     "points": 27
+    },
+    {
+     "position": 2,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+0.740s",
+     "points": 19
+    },
+    {
+     "position": 3,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+7.110s",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+9.257s",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+10.359s",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+12.521s",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+15.461s",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+18.500s",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+23.225s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+26.487s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+26.945s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+28.497s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+29.565s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+30.054s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+30.230s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+30.340s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+30.511s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+30.829s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+31.312s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+32.655s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+34.391s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+36.855s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Ricardo Escotto",
+     "driverCode": "ESC",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+39.111s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+40.334s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+43.254s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+70.058s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+81.842s",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+85.242s",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "Barcelona-Catalunya Sprint Race",
+   "date": "2026-06-14T00:00:00.000Z",
+   "circuit": "Circuit de Barcelona-Catalunya",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "36:57.355",
+     "points": 11
+    },
+    {
+     "position": 2,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+1.044s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+1.701s",
+     "points": 8
+    },
+    {
+     "position": 4,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+2.156s",
+     "points": 7
+    },
+    {
+     "position": 5,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+3.029s",
+     "points": 6
+    },
+    {
+     "position": 6,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+3.623s",
+     "points": 5
+    },
+    {
+     "position": 7,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+4.151s",
+     "points": 4
+    },
+    {
+     "position": 8,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+5.019s",
+     "points": 3
+    },
+    {
+     "position": 9,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+5.692s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+6.665s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+7.088s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+7.316s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+9.173s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+9.563s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+10.044s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+13.788s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+14.467s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+14.985s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+15.965s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+16.692s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+17.239s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Ricardo Escotto",
+     "driverCode": "ESC",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+18.530s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+27.639s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+30.416s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+39.508s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+42.876s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Austria Feature Race",
+   "date": "2026-06-28T00:00:00.000Z",
+   "circuit": "Red Bull Ring",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "39:16.300",
+     "points": 26
+    },
+    {
+     "position": 2,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+1.373s",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+2.043s",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+3.095s",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+4.066s",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+4.349s",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+5.340s",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+5.809s",
+     "points": 6
+    },
+    {
+     "position": 9,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+6.407s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+7.675s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+8.461s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+8.944s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+9.509s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+9.879s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+10.814s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+11.386s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+12.176s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+12.582s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Salim Hanna",
+     "driverCode": "HAN",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+13.012s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+13.749s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+14.819s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+18.010s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+18.300s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+20.828s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+21.737s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+24.100s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Austria Sprint Race",
+   "date": "2026-06-28T00:00:00.000Z",
+   "circuit": "Red Bull Ring",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "31:31.362",
+     "points": 10
+    },
+    {
+     "position": 2,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+1.787s",
+     "points": 10
+    },
+    {
+     "position": 3,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+2.597s",
+     "points": 8
+    },
+    {
+     "position": 4,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+2.823s",
+     "points": 7
+    },
+    {
+     "position": 5,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+3.255s",
+     "points": 6
+    },
+    {
+     "position": 6,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+4.131s",
+     "points": 5
+    },
+    {
+     "position": 7,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+4.423s",
+     "points": 4
+    },
+    {
+     "position": 8,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+4.946s",
+     "points": 3
+    },
+    {
+     "position": 9,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+9.236s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+9.965s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+10.544s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+11.084s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+13.340s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+13.736s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+14.089s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+14.477s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+14.664s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+14.891s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+21.172s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+21.773s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+22.831s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+23.483s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+24.975s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+27.604s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+28.007s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Salim Hanna",
+     "driverCode": "HAN",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+29.440s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+35.099s",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+53.231s",
+     "points": 0
+    },
+    {
+     "position": 66666,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "DSQ",
+     "time": "DSQ",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Great Britain Feature Race",
+   "date": "2026-07-05T00:00:00.000Z",
+   "circuit": "Silverstone Circuit",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "40:51.625",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+0.908s",
+     "points": 20
+    },
+    {
+     "position": 3,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+1.160s",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+2.858s",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+3.269s",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+3.426s",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+3.995s",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+4.251s",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+4.629s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+4.871s",
+     "points": 2
+    },
+    {
+     "position": 11,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+5.442s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+5.642s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+8.723s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+9.668s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+10.395s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+10.561s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+10.759s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+11.039s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+11.214s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+11.759s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+12.096s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+18.268s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+18.655s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+25.392s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+36.358s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+44.849s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 66666,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "DSQ",
+     "time": "DSQ",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Ricardo Escotto",
+     "driverCode": "ESC",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Great Britain Sprint Race",
+   "date": "2026-07-05T00:00:00.000Z",
+   "circuit": "Silverstone Circuit",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "32:51.225",
+     "points": 11
+    },
+    {
+     "position": 2,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+17.023s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+17.620s",
+     "points": 8
+    },
+    {
+     "position": 4,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+17.750s",
+     "points": 7
+    },
+    {
+     "position": 5,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+17.957s",
+     "points": 6
+    },
+    {
+     "position": 6,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+18.155s",
+     "points": 5
+    },
+    {
+     "position": 7,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+18.360s",
+     "points": 4
+    },
+    {
+     "position": 8,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+19.002s",
+     "points": 3
+    },
+    {
+     "position": 9,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+19.479s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+20.418s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+22.464s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+22.780s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+23.254s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+23.579s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+23.967s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+24.355s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+24.534s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+24.974s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+25.435s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+25.869s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+26.470s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+29.040s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+29.596s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+30.129s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+30.565s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+34.430s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+35.959s",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Ricardo Escotto",
+     "driverCode": "ESC",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+39.335s",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+74.510s",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+76.864s",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Belgium Feature Race",
+   "date": "2026-07-19T00:00:00.000Z",
+   "circuit": "Circuit de Spa-Francorchamps",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "34:44.732",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+1.685s",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+4.453s",
+     "points": 17
+    },
+    {
+     "position": 4,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+4.927s",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+5.337s",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+7.815s",
+     "points": 9
+    },
+    {
+     "position": 7,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+9.054s",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+9.378s",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+10.652s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+12.524s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+13.427s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+14.113s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+14.645s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+16.196s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+17.529s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+19.587s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+22.105s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+22.840s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+23.183s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+24.413s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+24.958s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+25.060s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+27.770s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+29.078s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+32.522s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Ricardo Escotto",
+     "driverCode": "ESC",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+42.160s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "DNS",
+     "time": "DNS",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Belgium Sprint Race",
+   "date": "2026-07-19T00:00:00.000Z",
+   "circuit": "Circuit de Spa-Francorchamps",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "31:08.854",
+     "points": 11
+    },
+    {
+     "position": 2,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+0.978s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+1.459s",
+     "points": 8
+    },
+    {
+     "position": 4,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+3.053s",
+     "points": 7
+    },
+    {
+     "position": 5,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+3.370s",
+     "points": 6
+    },
+    {
+     "position": 6,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+3.730s",
+     "points": 5
+    },
+    {
+     "position": 7,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+3.996s",
+     "points": 4
+    },
+    {
+     "position": 8,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+4.514s",
+     "points": 3
+    },
+    {
+     "position": 9,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+4.966s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+5.657s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+6.239s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+6.840s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+7.816s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+7.856s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+8.234s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+9.957s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+10.138s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+10.282s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+11.209s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+11.442s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+12.191s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Ricardo Escotto",
+     "driverCode": "ESC",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+13.586s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+13.842s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+14.860s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+16.148s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+16.890s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+28.983s",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+32.558s",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "Hungary Feature Race",
+   "date": "2026-07-26T00:00:00.000Z",
+   "circuit": "Hungaroring",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "43:51.807",
+     "points": 26
+    },
+    {
+     "position": 2,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+1.484s",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+3.098s",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+3.380s",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+5.973s",
+     "points": 12
+    },
+    {
+     "position": 6,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+6.830s",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+9.851s",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+12.654s",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+13.192s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+13.382s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+14.011s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+14.554s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+14.902s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+15.568s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+15.821s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+16.326s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+16.924s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+19.158s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+19.748s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+20.607s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+21.261s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+21.894s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+28.042s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Salim Hanna",
+     "driverCode": "HAN",
+     "team": "AIX Racing",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "Hungary Sprint Race",
+   "date": "2026-07-26T00:00:00.000Z",
+   "circuit": "Hungaroring",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Théophile Naël",
+     "driverCode": "NAE",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "32:33.347",
+     "points": 10
+    },
+    {
+     "position": 2,
+     "driverName": "Kanato Le",
+     "driverCode": "KLE",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+2.715s",
+     "points": 9
+    },
+    {
+     "position": 3,
+     "driverName": "Ernesto Rivera",
+     "driverCode": "RIV",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+3.839s",
+     "points": 8
+    },
+    {
+     "position": 4,
+     "driverName": "Mattia Colnaghi",
+     "driverCode": "COL",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+4.126s",
+     "points": 7
+    },
+    {
+     "position": 5,
+     "driverName": "Brando Badoer",
+     "driverCode": "BAD",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+6.198s",
+     "points": 6
+    },
+    {
+     "position": 6,
+     "driverName": "Tuukka Taponen",
+     "driverCode": "TAP",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+8.030s",
+     "points": 6
+    },
+    {
+     "position": 7,
+     "driverName": "Nicola Lacorte",
+     "driverCode": "LAC",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+13.283s",
+     "points": 4
+    },
+    {
+     "position": 8,
+     "driverName": "James Wharton",
+     "driverCode": "WHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+15.298s",
+     "points": 3
+    },
+    {
+     "position": 9,
+     "driverName": "Fernando Barrichello",
+     "driverCode": "BAR",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+15.690s",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Freddie Slater",
+     "driverCode": "SLA",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+17.164s",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Yevan David",
+     "driverCode": "DAV",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+18.802s",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Louis Sharp",
+     "driverCode": "SHA",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+19.375s",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Alessandro Giusti",
+     "driverCode": "GIU",
+     "team": "MP Motorsport",
+     "status": "Finished",
+     "time": "+19.760s",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Taito Kato",
+     "driverCode": "KAI",
+     "team": "ART Grand Prix",
+     "status": "Finished",
+     "time": "+20.238s",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Jose Garfias",
+     "driverCode": "GAR",
+     "team": "PREMA Racing",
+     "status": "Finished",
+     "time": "+20.551s",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Enzo Deligny",
+     "driverCode": "DIL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+20.899s",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Ugo Ugochukwu",
+     "driverCode": "UGO",
+     "team": "Campos Racing",
+     "status": "Finished",
+     "time": "+21.385s",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Bruno Del Pino",
+     "driverCode": "DEL",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+21.572s",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Fionn Mclaughlin",
+     "driverCode": "MCL",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+22.014s",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Noah Stromsted",
+     "driverCode": "STR",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+22.277s",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Pedro Clerot",
+     "driverCode": "CLE",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+22.717s",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Christian Ho",
+     "driverCode": "CHO",
+     "team": "Rodin Motorsport",
+     "status": "Finished",
+     "time": "+23.198s",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "Woohyun Shin",
+     "driverCode": "SHI",
+     "team": "Hitech",
+     "status": "Finished",
+     "time": "+23.810s",
+     "points": 0
+    },
+    {
+     "position": 24,
+     "driverName": "Salim Hanna",
+     "driverCode": "HAN",
+     "team": "AIX Racing",
+     "status": "Finished",
+     "time": "+24.570s",
+     "points": 0
+    },
+    {
+     "position": 25,
+     "driverName": "Nandhavud Bhirombhakdi",
+     "driverCode": "BHI",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+24.870s",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "Hiyu Yamakoshi",
+     "driverCode": "YAM",
+     "team": "Van Amersfoort Racing",
+     "status": "Finished",
+     "time": "+25.430s",
+     "points": 0
+    },
+    {
+     "position": 27,
+     "driverName": "Matteo De Palo",
+     "driverCode": "DEP",
+     "team": "TRIDENT",
+     "status": "Finished",
+     "time": "+30.982s",
+     "points": 0
+    },
+    {
+     "position": 28,
+     "driverName": "Gerrard Xie",
+     "driverCode": "XIE",
+     "team": "DAMS Lucas Oil",
+     "status": "Finished",
+     "time": "+37.156s",
+     "points": 0
+    },
+    {
+     "position": 29,
+     "driverName": "Maciej Gladysz",
+     "driverCode": "GLA",
+     "team": "ART Grand Prix",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 30,
+     "driverName": "Jin Nakamura",
+     "driverCode": "NAK",
+     "team": "Hitech",
+     "status": "DNF",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  }
+ ],
+ "standings": {
+  "drivers": [
+   {
+    "position": 1,
+    "driverName": "Freddie Slater",
+    "driverCode": "SLA",
+    "team": "TRIDENT",
+    "points": 130,
+    "wins": 1
+   },
+   {
+    "position": 2,
+    "driverName": "Ugo Ugochukwu",
+    "driverCode": "UGO",
+    "team": "Campos Racing",
+    "points": 122,
+    "wins": 1
+   },
+   {
+    "position": 3,
+    "driverName": "Théophile Naël",
+    "driverCode": "NAE",
+    "team": "Campos Racing",
+    "points": 75,
+    "wins": 1
+   },
+   {
+    "position": 4,
+    "driverName": "Ernesto Rivera",
+    "driverCode": "RIV",
+    "team": "Campos Racing",
+    "points": 72,
+    "wins": 1
+   },
+   {
+    "position": 5,
+    "driverName": "Brando Badoer",
+    "driverCode": "BAD",
+    "team": "Rodin Motorsport",
+    "points": 71,
+    "wins": 1
+   },
+   {
+    "position": 6,
+    "driverName": "Noah Stromsted",
+    "driverCode": "STR",
+    "team": "TRIDENT",
+    "points": 59,
+    "wins": 1
+   },
+   {
+    "position": 7,
+    "driverName": "Hiyu Yamakoshi",
+    "driverCode": "YAM",
+    "team": "Van Amersfoort Racing",
+    "points": 55,
+    "wins": 0
+   },
+   {
+    "position": 8,
+    "driverName": "Maciej Gladysz",
+    "driverCode": "GLA",
+    "team": "ART Grand Prix",
+    "points": 54,
+    "wins": 1
+   },
+   {
+    "position": 9,
+    "driverName": "Bruno Del Pino",
+    "driverCode": "DEL",
+    "team": "Van Amersfoort Racing",
+    "points": 49,
+    "wins": 0
+   },
+   {
+    "position": 10,
+    "driverName": "Pedro Clerot",
+    "driverCode": "CLE",
+    "team": "Rodin Motorsport",
+    "points": 48,
+    "wins": 0
+   },
+   {
+    "position": 11,
+    "driverName": "Tuukka Taponen",
+    "driverCode": "TAP",
+    "team": "MP Motorsport",
+    "points": 46,
+    "wins": 0
+   },
+   {
+    "position": 12,
+    "driverName": "Taito Kato",
+    "driverCode": "KAI",
+    "team": "ART Grand Prix",
+    "points": 45,
+    "wins": 0
+   },
+   {
+    "position": 13,
+    "driverName": "Jin Nakamura",
+    "driverCode": "NAK",
+    "team": "Hitech",
+    "points": 39,
+    "wins": 0
+   },
+   {
+    "position": 14,
+    "driverName": "Mattia Colnaghi",
+    "driverCode": "COL",
+    "team": "MP Motorsport",
+    "points": 39,
+    "wins": 0
+   },
+   {
+    "position": 15,
+    "driverName": "James Wharton",
+    "driverCode": "WHA",
+    "team": "PREMA Racing",
+    "points": 28,
+    "wins": 0
+   },
+   {
+    "position": 16,
+    "driverName": "Enzo Deligny",
+    "driverCode": "DIL",
+    "team": "Van Amersfoort Racing",
+    "points": 28,
+    "wins": 0
+   },
+   {
+    "position": 17,
+    "driverName": "Louis Sharp",
+    "driverCode": "SHA",
+    "team": "PREMA Racing",
+    "points": 21,
+    "wins": 0
+   },
+   {
+    "position": 18,
+    "driverName": "Gerrard Xie",
+    "driverCode": "XIE",
+    "team": "DAMS Lucas Oil",
+    "points": 20,
+    "wins": 0
+   },
+   {
+    "position": 19,
+    "driverName": "Kanato Le",
+    "driverCode": "KLE",
+    "team": "ART Grand Prix",
+    "points": 20,
+    "wins": 0
+   },
+   {
+    "position": 20,
+    "driverName": "Alessandro Giusti",
+    "driverCode": "GIU",
+    "team": "MP Motorsport",
+    "points": 17,
+    "wins": 0
+   },
+   {
+    "position": 21,
+    "driverName": "Yevan David",
+    "driverCode": "DAV",
+    "team": "AIX Racing",
+    "points": 15,
+    "wins": 0
+   },
+   {
+    "position": 22,
+    "driverName": "Matteo De Palo",
+    "driverCode": "DEP",
+    "team": "TRIDENT",
+    "points": 7,
+    "wins": 0
+   },
+   {
+    "position": 23,
+    "driverName": "Nicola Lacorte",
+    "driverCode": "LAC",
+    "team": "DAMS Lucas Oil",
+    "points": 6,
+    "wins": 0
+   },
+   {
+    "position": 24,
+    "driverName": "Brad Benavides",
+    "driverCode": "BEN",
+    "team": "",
+    "points": 6,
+    "wins": 0
+   },
+   {
+    "position": 25,
+    "driverName": "Christian Ho",
+    "driverCode": "CHO",
+    "team": "Rodin Motorsport",
+    "points": 2,
+    "wins": 0
+   },
+   {
+    "position": 26,
+    "driverName": "Fionn Mclaughlin",
+    "driverCode": "MCL",
+    "team": "Hitech",
+    "points": 2,
+    "wins": 0
+   },
+   {
+    "position": 27,
+    "driverName": "Fernando Barrichello",
+    "driverCode": "BAR",
+    "team": "AIX Racing",
+    "points": 2,
+    "wins": 0
+   },
+   {
+    "position": 28,
+    "driverName": "Jose Garfias",
+    "driverCode": "GAR",
+    "team": "PREMA Racing",
+    "points": 1,
+    "wins": 0
+   },
+   {
+    "position": 29,
+    "driverName": "Nandhavud Bhirombhakdi",
+    "driverCode": "BHI",
+    "team": "DAMS Lucas Oil",
+    "points": 0,
+    "wins": 0
+   },
+   {
+    "position": 30,
+    "driverName": "Patrick Heuzenroeder",
+    "driverCode": "HEU",
+    "team": "",
+    "points": 0,
+    "wins": 0
+   },
+   {
+    "position": 31,
+    "driverName": "Woohyun Shin",
+    "driverCode": "SHI",
+    "team": "Hitech",
+    "points": 0,
+    "wins": 0
+   },
+   {
+    "position": 32,
+    "driverName": "Salim Hanna",
+    "driverCode": "HAN",
+    "team": "AIX Racing",
+    "points": 0,
+    "wins": 0
+   },
+   {
+    "position": 33,
+    "driverName": "Ricardo Escotto",
+    "driverCode": "ESC",
+    "team": "",
+    "points": 0,
+    "wins": 0
+   }
+  ],
+  "constructors": [
+   {
+    "position": 1,
+    "name": "Campos Racing",
+    "points": 269
+   },
+   {
+    "position": 2,
+    "name": "TRIDENT",
+    "points": 196
+   },
+   {
+    "position": 3,
+    "name": "Van Amersfoort Racing",
+    "points": 132
+   },
+   {
+    "position": 4,
+    "name": "Rodin Motorsport",
+    "points": 121
+   },
+   {
+    "position": 5,
+    "name": "ART Grand Prix",
+    "points": 119
+   },
+   {
+    "position": 6,
+    "name": "MP Motorsport",
+    "points": 102
+   },
+   {
+    "position": 7,
+    "name": "PREMA Racing",
+    "points": 50
+   },
+   {
+    "position": 8,
+    "name": "Hitech",
+    "points": 41
+   },
+   {
+    "position": 9,
+    "name": "DAMS Lucas Oil",
+    "points": 26
+   },
+   {
+    "position": 10,
+    "name": "AIX Racing",
+    "points": 23
+   }
+  ]
+ }
+}

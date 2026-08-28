@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.89 — 2026-08-28
+
+### Added — the 2026 season archived before its sources roll over
+`scripts/archive-season.mts` (`npm run archive:season`) captures a season's weekends, sessions, results and standings to `data/season-archive/<season>/<slug>.json`. Run for 2026: **15 series, 221 weekends, 1041 sessions.**
+
+**Why now, and why it is time-sensitive.** `/series/<slug>/weekend/<round>` carries no season — `weekendFor` resolves the round against `series.sessions`, which `loadSeriesFromDir` windows to `meta.season`. When the 2027 calendar lands, `/series/f1/weekend/15` silently becomes 2027's round 15 and the 2026 page is unreachable. Nothing 404s; it just shows a different race. Adding a season to the URL alone would serve empty pages, because the data does not survive either — measured 2026-08-28:
+- `rounds.json` and `sessions.json` are single-season files (`"season": 2026`).
+- Sessions come from a **live ICS feed**. **The F1 feed carries 2026 only** — 60 entries, no history. MotoGP (2010–), WSBK (2011–) and NASCAR (2010–) do carry years back, but at roughly **one entry per round**, so the practice / qualifying / race breakdown is not in them either.
+- `fallback.ics` is an **80-byte stub** — there is no snapshot to fall back on.
+
+So the schedule is the irreplaceable half and it has a deadline. Results and standings are lower-risk (Wikipedia keeps per-season pages; several fetchers already take a season argument) but are captured too, per the operator's call: archive schedule + results + standings.
+
+**Coverage** — 15/15 weekends+sessions, **14/15 results**, **13/15 standings**. The two gaps are genuine absences rather than capture failures: no ADAC results/standings fetcher and no NLS standings fetcher exist in the codebase at all, because both are curated families whose champions live permanently in `champions.json`. Every file records a per-part `captured` status (`ok` / `empty` / `failed` / `none`) so a reader can tell a season with no results from a capture that could not reach the source.
+
+**Where it lives, and why not `content/`.** `scripts/bundle-content.mts` walks `content/**` and inlines every text file into the Worker script. The archive is 1.4 MB raw / **~116 KiB gzipped** — 17% of the remaining 687 KiB of headroom, charged to every request, for data almost nobody loads. `data/` is outside that walk, so the Worker bundle is **unchanged at 9552.56 KiB** and the content bundle unchanged at 315 files. It stays readable at BUILD time in Node, which is all archive routes need: a finished season never changes, so those routes can be `force-static` — the same contract that lets `/changelog` read `RELEASES.md`. The note in `bundle-content.mts` records the constraint.
+
+Fetchers are imported from the same modules `lib/results-health.ts` and `scripts/warm-live-data.mts` use, with DTM and NASCAR taking the curated round list and IndyCar the curated drivers, so the archive matches what the Results tab renders rather than re-deriving the dispatch.
+
+### Not in this change
+Season-aware routes. This is the snapshot half only (operator sequencing, 2026-08-28) — the data loss was the one irreversible part, and it is now closed. `/series/<slug>/<season>/weekend/<round>` plus a 301 from the bare shape, and the weekend-note enrichment that depends on it, come next.
+
 ## 0.334.88 — 2026-08-28
 
 ### Fixed — 13 indexed pages that advertise content they have not got
