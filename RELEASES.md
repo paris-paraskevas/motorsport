@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.106 — 2026-08-28
+
+**Contact us and Buy Me a Coffee are now on the header on phones.** Both buttons had only ever appeared on desktop, so on a phone there was no way to reach them from the top of the page. The search box beside them now says simply "Search" to make room.
+
 ## 0.334.105 — 2026-08-28
 
 **Three race weekends were under-reporting the parts teams brought.** Austria was missing two of Cadillac's ten new parts entirely, Barcelona had four of Ferrari's eight rolled into one line, and Monaco's technical file carried the wrong date. All three now match what the teams actually declared to the FIA.
