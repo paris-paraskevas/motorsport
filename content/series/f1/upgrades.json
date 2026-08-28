@@ -1,5 +1,5 @@
 {
-  "_comment": "Per-weekend F1 car upgrades, curated from the official FIA 'Car Presentation Submissions' documents (one per GP; the doc teams legally submit declaring new parts). Keyed by round → { gp, date, doc, teams:[{team, items:[{component, reason, detail}]}] }. Only teams that submitted updates are listed; the renderer derives the 'no updates' teams from the F1 roster. `detail` is a short factual summary of the geometric change (not F1.com's editorial prose). Source: fia.com/system/files/decision-document/2026_<gp>_-_car_presentation_submissions.pdf. Curation-first (see docs/research/2026-07-06-f1-upgrades-data-source.md). R1-R11 curated (R1 = launch-spec cars under the new 2026 regs).",
+  "_comment": "Per-weekend F1 car upgrades, curated from the official FIA 'Car Presentation Submissions' documents (one per GP; the doc teams legally submit declaring new parts). Keyed by round → { gp, date, doc, teams:[{team, items:[{component, reason, detail}]}] }. Only teams that submitted updates are listed; the renderer derives the 'no updates' teams from the F1 roster. `detail` is a short factual summary of the geometric change (not F1.com's editorial prose). Source: fia.com/system/files/decision-document/2026_<gp>_-_car_presentation_submissions.pdf. Curation-first (see docs/research/2026-07-06-f1-upgrades-data-source.md). R1-R12 curated (R1 = launch-spec cars under the new 2026 regs). Draft a new round with `npm run upgrades:draft`, then check every reason and detail against the PDF before committing: the parser cannot see the FIA vertically-merged cells, which is how four Ferrari rows and one Mercedes row came out as run-on text for R12.",
   "1": {
     "gp": "Australian Grand Prix",
     "date": "2026-03-06",
@@ -572,6 +572,48 @@
       ] },
       { "team": "Cadillac", "items": [
         { "component": "Front Corner", "reason": "Performance — Brake Cooling", "detail": "Updated brake-duct inlet scoop and exit apertures for more cooling." }
+      ] }
+    ]
+  },
+  "12": {
+    "gp": "Dutch Grand Prix",
+    "date": "2026-08-21",
+    "doc": 10,
+    "teams": [
+      { "team": "McLaren", "items": [
+        { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "New rear-wing assembly for more aerodynamic load in all conditions." },
+        { "component": "Coke / Engine Cover", "reason": "Performance — Local Load", "detail": "Revised bodywork around the coke and tailpipe, working with the new rear wing." },
+        { "component": "Rear Corner", "reason": "Performance — Flow Conditioning", "detail": "Rear brake duct revised inside and out for cleaner flow and better brake cooling." }
+      ] },
+      { "team": "Mercedes", "items": [
+        { "component": "Front Corner", "reason": "Performance — Flow Conditioning", "detail": "Drum front lip detached from the duct inlet, with camber adjusted." }
+      ] },
+      { "team": "Red Bull", "items": [
+        { "component": "Front Corner", "reason": "Reliability", "detail": "Lower wishbone rearward leg chord shortened to reduce strain on the gaitor at high steering angles." }
+      ] },
+      { "team": "Ferrari", "items": [
+        { "component": "Floor Body", "reason": "Performance — Local Load", "detail": "Revised front floor and vane arrangement." },
+        { "component": "Floor Board", "reason": "Performance — Local Load", "detail": "Updated board brace layout and pick-ups, with revised board foot geometry." },
+        { "component": "Floor Edge", "reason": "Performance — Local Load", "detail": "Reshaped floor edge curl." },
+        { "component": "Diffuser", "reason": "Performance — Local Load", "detail": "Alternative diffuser stay layout, revised expansion profile and fence loading." },
+        { "component": "Beam Wing", "reason": "Performance — Local Load", "detail": "Revised lower beam-wing spanwise twist." }
+      ] },
+      { "team": "Aston Martin", "items": [
+        { "component": "Front Wing", "reason": "Performance — Local Load", "detail": "Reduced chord on the final element outboard." },
+        { "component": "Front Wing Endplate", "reason": "Performance — Local Load", "detail": "Modification to the inboard foot." },
+        { "component": "Front Wing", "reason": "Performance — Local Load", "detail": "Optional new front-wing flap, widening the setup balance range." },
+        { "component": "Floor Fences", "reason": "Performance — Local Load", "detail": "New floor fence in the diffuser." },
+        { "component": "Diffuser", "reason": "Performance — Local Load", "detail": "Modification to the lower edge of the diffuser winglet." }
+      ] },
+      { "team": "Alpine", "items": [
+        { "component": "Floor Body", "reason": "Performance — Local Load", "detail": "New floor design for better surface flow and more local load." },
+        { "component": "Floor Board", "reason": "Performance — Flow Conditioning", "detail": "Reprofiled board for cleaner flow to the rear of the car." },
+        { "component": "Floor Edge", "reason": "Performance — Local Load", "detail": "Redesigned floor edges and profiles for more local load." },
+        { "component": "Diffuser", "reason": "Performance — Local Load", "detail": "Reprofiled diffuser for more local load across the operating range." },
+        { "component": "Sidepod / Coke", "reason": "Performance — Flow Conditioning", "detail": "New bodywork to suit the new floor while keeping cooling capacity." },
+        { "component": "Rear Corner", "reason": "Performance — Local Load", "detail": "Reprofiled elements on the rear drum face for better interaction with the floor." },
+        { "component": "Rear Impact Structure", "reason": "Performance — Local Load", "detail": "Updated geometry for more local aerodynamic load." },
+        { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "Redesigned flap profile for more rear load with a stable flowfield." }
       ] }
     ]
   }
