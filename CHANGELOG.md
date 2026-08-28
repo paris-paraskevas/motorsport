@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.101 — 2026-08-28
+
+### Added — the only data writer now says when it dies
+
+`warm-live-data` is the site's ONLY writer of race data, and it has died silently twice: **28 hours** unnoticed in session 30, then **five days** from 23 Aug 2026 (82 of 120 runs). Both were found by someone running `gh run list` for an unrelated reason. A red run in the Actions tab is not a notification, so the workflow now opens a GitHub issue instead.
+
+**One issue per outage, not one per failed run.** The schedule fires several times a day, so commenting on every failure would produce an unreadable stream and train everyone to ignore it. An open issue *is* the alert: the failure step creates one if none exists and otherwise does nothing at all. The success step then **closes it on the next green run** with a recovery comment, so a stale open issue can never become the new silent failure.
+
+Three details that are load-bearing:
+
+- **`gh issue list`, not `gh search`.** The search index lags by minutes, which would open duplicate issues across consecutive failures. Listing hits the API directly.
+- **`permissions:` must spell out `contents: read`.** Naming a permissions block drops every default, so omitting it would have broken `actions/checkout`.
+- **The issue body carries the two causes that have actually done this**, both of which fail silently: a missing `package-lock.json` entry (npm 11 tolerates it, the runner's npm 10 refuses — reproduce with `npm run lockfile:check`), and Node 20, on which every snapshot write failed while the job still reported success.
+
+**Verified by running the extracted step bodies against a stubbed `gh`**: success with no open issue does nothing; success with one closes it; failure with one open declines to duplicate. The fourth branch — failure with no open issue — was proven against the live API by accident, when a `PATH`-based stub silently failed under Git Bash on Windows (a `C:/…` entry makes the drive letter read as a `PATH` separator) and the script reached the real CLI. It created issue **#867**, which rendered correctly and was closed immediately with an explanation. Recorded because the lesson generalises: on Windows, assert `command -v` resolves to the stub before running anything that can mutate.
+
 ## 0.334.100 — 2026-08-28
 
 ### Internal — the sign-out finding, written down where 0.334.99 promised it was
