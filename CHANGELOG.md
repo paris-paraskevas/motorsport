@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.108 — 2026-08-28
+
+### Audited — the other eight upgrade rounds, and a parser artifact named
+
+0.334.105 fixed three curated rounds that under-reported parts, so the remaining eight were checked the same way: fetch each FIA document, extract, parse, and compare item counts per team against `upgrades.json`.
+
+**The curation is correct on all eight.** R1 39 parts, R2 7, R5 39, R9 9, R10 21, R11 37 — exact matches. R3 and R4 appeared to differ (Williams: ours 1 against 3, and 7 against 9) and **both are parser artifacts, not data errors**. The FIA's per-page footer is the entrant's full name plus a copyright line, and `pdftotext -layout` places it where a row number belongs, so Williams gains two phantom parts called "Atlassian Williams F1 Team". Checked in the raw text before believing either number.
+
+**The script now names that artifact** rather than mislabelling it. Its shape checks already caught the phantom rows, but reported them as "detail is EMPTY", which tells a curator the wrong thing about why. A component containing its own team's name, or any copyright wording, is now flagged as *"page furniture, not a part … DELETE the row"*. Proven against the two rounds that carry it — it fires exactly twice, on exactly the right rows, and does not fire on R11.
+
+### Verified, not changed — two items closed by checking
+
+- **`metadataBase` is not a defect.** It is set in both route groups, and the build warning concerns build-time resolution rather than output. Ten route types on prod — `/`, `/calendar`, `/blog`, `/information`, `/archive`, a series page, a weekend page, `/tracks`, `/changelog`, `/about` — **all emit absolute `https://` og:image URLs**. Nothing to fix.
+- **`/api/push/history` is already gone.** No route, no `lib/push-history.ts`, and zero references anywhere. An earlier session removed it; the queue entry was stale.
+
+### Not done, and why — the jump bar on preview weekends
+
+0.334.107 added "On this page" to the report branch only. The preview branch measures **4.4 screens on a phone** (not the 2.3 a desktop viewport suggested — the columns stack), with four real destinations, so it wants one.
+
+It is not built because the preview branch **cannot honour the design's invariant**. Weather and news both stream behind `Suspense` and may render nothing, so a server-derived button could point at a section that never arrives — precisely the dead-button failure the derived list exists to prevent. Doing it properly means building the list client-side from the DOM after hydration, which is a different mechanism and deserves its own decision rather than being smuggled in here.
+
 ## 0.334.107 — 2026-08-28
 
 ### Added — "On this page" on the weekend report
