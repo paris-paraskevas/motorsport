@@ -6,7 +6,86 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-27 (LATEST, session 39 FINAL — the record cohort, and four false claims it surfaced) — `main` = **0.334.86**, prod verified, zero open PRs, suite **1451**
+## ⚡ Next session pickup — 2026-08-28 (LATEST, session 40 FINAL — shareability, the season archive, and the outage nobody was told about) — `main` = **0.334.94**, prod verified, zero open PRs, suite **1462**
+
+**Read `docs/next-session.md` next.** It is the ordered queue and it opens with the one red item.
+
+### 🔴 READ THIS FIRST — `warm-live-data` was dead for five days and the fix is UNCONFIRMED
+
+`CLAUDE.md` calls it **"THE ONLY WRITER of the site's data"**: the Worker runs `DATA_SOURCE=db` and cannot fetch standings or results itself, because the upstreams block Cloudflare's shared egress.
+
+- **82 of the last 120 runs failed. Last success 2026-08-23T14:12Z.** Cause: `Missing: @swc/helpers@0.5.23 from lock file` — the **#687/#688 disease, third occurrence**. npm 11 locally tolerates a nested-entry hole; the runner's npm 10 refuses; the only writer dies silently.
+- **Fixed in 0.334.94** by regenerating the lockfile under npm 10 (one nested entry: `@serwist/turbopack/node_modules/@swc/helpers`). The lockfile's own `version` was also stale at **0.334.26**, 67 patches behind, because hand-editing `package.json` never touches it. Verified under **both** npm generations — that is the step missed last time.
+- **`npm run lockfile:check`** now exists (`npx npm@10 ci --dry-run`). Run it after anything touching dependencies; local npm cannot catch this class.
+- ⚠️ **No warm run has fired since the merge, so the fix is unproven.** The last run is still 07:43Z. Confirm before trusting any data page, and **do not flip 1.0 until it has run green twice.**
+- **A second finding, independent of the outage: the schedule is throttled.** The workflow declares `*/20 * * * *` (72 runs/day); the real cadence is **~5 runs/day with 3–11 hour gaps**. Even healthy, results land hours late, not within 20 minutes. The comment in the file is wrong about its own contract.
+- **The real problem is still open: nothing alerts on this workflow.** 28 hours last time, five days this time, found only because `gh run list` was run while ticking off §A3. Needs a channel — that is an operator decision.
+
+### ✅ Shipped — 8 merges, 0.334.87 → 0.334.94, every one prod-verified
+
+| Version | What |
+|---|---|
+| **0.334.87** | **Per-page social cards** for series, tabs, drivers and Learn — 869 pages had shared one image |
+| **0.334.88** | **13 indexed empty-state pages noindexed**, and the two competing 1.0 modals merged into one |
+| **0.334.89** | **The 2026 season archived** — 15 series, 221 weekends, 1041 sessions, before the feeds roll over |
+| **0.334.90** | Archive routes — **this build FAILED and never deployed** |
+| **0.334.91** | The build fix (memoised archive reads) |
+| **0.334.92** | **F1 weekend notes** — all 12 completed rounds |
+| **0.334.93** | Play-money framing on the two league surfaces (launch gate A6) |
+| **0.334.94** | The `warm-live-data` lockfile fix above |
+
+Suite 1451 → **1462**. Worker bundle **unchanged all day at 9552.56 KiB** (687 KiB headroom).
+
+### 🔴 The findings that change what the next session can do
+
+1. **Weekend URLs carry no season.** `/series/f1/weekend/15` resolves the round against `meta.season`, so when the 2027 calendar lands it silently becomes 2027's round 15 and the 2026 page is unreachable. Nothing 404s. **This is why weekend notes are keyed `"<season>-<round>"`** — a round-only key reattaches to a different race every January, the 0.334.54 staleness class.
+2. **The F1 ICS feed carries 2026 ONLY** — 60 entries, zero history. MotoGP/WSBK/NASCAR go back to 2010-11 but at ~one entry per *round*, so no session breakdown, and `fallback.ics` is an 80-byte stub. **Whatever is not captured before a feed rolls over is gone**, which is why the archive was urgent. Re-run `npm run archive:season` before each rollover.
+3. **`opengraph-image.tsx` is NOT inherited by a nested dynamic segment.** Marking `seriesTabMetadata` `ownCard` stripped the card from all 73 tab pages and the parent's did not fall through — they had *no* og:image, the exact 0.334.37 defect. Tabs need their own route file.
+4. **A metadata route cannot be a re-export.** `export { default, runtime, … } from '../opengraph-image'` makes Next refuse to parse `runtime` and the route 500s. Share the renderer (`lib/og-cards.tsx`), not the module.
+5. **The Cloudflare builder runs 3 workers; this machine runs 21.** A build that is green locally can die there on the 60-second per-page export budget. 0.334.90 failed exactly that way on `/` after the page count went 961 → 1188.
+6. **`.next/dev` staleness bit TWICE today** (landmine 9) and both times looked like a real bug — once 500ing pages after a failed compile, once 404ing every archive weekend route. **Clear it before believing a dev-only failure.**
+7. **Caching a `null` is a permanent outage.** `loadSeasonArchive` memoised failures, so one transient read would 404 a page for the life of the process. Only cache successes.
+
+### 🟡 Content position, measured on prod (this is the answer to "is the content good enough")
+
+| Family | Pages | Words | Sibling overlap |
+|---|---:|---:|---:|
+| Blog posts | 24 | 1,289 | 8% |
+| Learn hub/topics | 12 | 1,050 | 4% |
+| Driver profiles | 126 | 422 | 15% |
+| Track profiles | 139 | 307 | 14% |
+| `most-` records | 23 | 273 | 12% |
+| Editorial answers | 119 | 258 | 6% |
+| Who-won answers | 489 | 208 | 15% |
+
+The pages that drew the AdSense verdict were **67–101 words at 54–66% overlap**. **Content is no longer the weak link.**
+
+**Correction to the record:** session 39's close called the 212 weekend pages "the largest remaining scaled-content surface". Measured properly their sibling overlap is **15%** — short but genuinely distinct, and an upcoming-race schedule page answers a real query. The missing archive was the actual problem, not thinness.
+
+### 🟢 1.0 is unblocked on everything except the warmer
+
+§A9 was recorded as "five boxes, nothing built". **That was stale** — it predated the 0.334.41 modal rebuild. What existed was *two* competing 1.0 modals, both `id: 'v1.0'`, both dark, both mounted, with racing "is a dialog open" guards. Operator kept `WhatsNewModal` (real page screenshots), the roadmap was grafted on and **signed off, all three items**, and `LaunchBanner` + `LAUNCH_ANNOUNCEMENT` were deleted.
+
+**Operator decisions taken 2026-08-28:** no separate "what 1.0 is" page (the modal covers it, §A9 complete) · **A8 accepted** — launch with server-side errors visible only in Cloudflare logs, watch them for 48h.
+
+§A verified on prod this session: A1 home populates signed-out · A3 bundle, Clerk `pk_live_`, Supabase prod live · A4 sitemap/robots/llms 200, OG cards, empty-tab metadata · **A5 exactly one console error and it is the deliberate Funding Choices CSP block** · A6 assistant off · A7 all security headers.
+
+### 🩹 Owed (operator)
+
+- **Confirm the warmer is green** — and name a `workflow_dispatch` if you want it now rather than waiting hours. Ad-hoc data refreshes need you to say so.
+- **Alerting on `warm-live-data`.** The single most valuable thing left. Email, Slack webhook, or warm-run age on the admin health board.
+- **Credential-gated §A gates**: crons green (`CRON_SECRET` — the endpoint correctly 401s, so fail-closed is proven), KV reachable, a real contact-form send, PSI re-measure, secret rotation, GSC coverage.
+- **Eyeball one trend chart against its standings table.** A2 reconciles in the data (standings 242/183/183/159/155 match, and the gap to summed race points is exactly sprint points) but the rendered chart total could not be read programmatically.
+- **F1 upgrades are stale**: latest curated round is **11**, the season has run **12**.
+- Long-carried: the image session.
+
+### ⚠️ Shared checkout
+
+A second session worked here throughout. At close it had uncommitted edits to `IDEAS.md`, `SCHEDULE.md`, `content/assistant/site-help.md`, `lib/information/generated.ts` and `lib/whats-new.ts`, plus untracked `docs/marketing/` (13 screenshots) and `docs/research/2026-08-28-social-presence.md` — a social-presence push already in flight. **None of it was touched.** `git add -A` swept two of those files into a commit once and had to be backed out; **stage explicit paths in this repo, never `-A`.**
+
+---
+
+## ⚡ Session 39 — 2026-08-27 (the record cohort, and four false claims it surfaced) — `main` = **0.334.86**, prod verified, zero open PRs, suite **1451**
 
 **Read `docs/next-session.md` next.** TIER 1 item 1 is struck; its correction and the recommendation on item 2 are written in.
 
