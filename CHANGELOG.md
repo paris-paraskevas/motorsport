@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.106 — 2026-08-28
+
+### Fixed — contact and Buy Me a Coffee were desktop-only
+
+Operator: *"mobile needs to show contact bubble and coffee bubble on header."* Both carried `hidden … lg:inline-flex` in `components/AppShell.tsx`, so a phone visitor had no way to reach either from the header — and the contact button *is* the site's front-door feedback route, which makes hiding it from the majority-mobile audience the wrong way round.
+
+Both now render at every width. **Held at 44×44 rather than shrunk** for the narrow header: that is the minimum comfortable touch target, and shrinking a control to fit is how a tap becomes a miss. The account button stays `lg`-only on purpose — the mobile bottom bar already carries Account.
+
+**One knock-on, fixed with it.** The two buttons take about 112px, which cut the phone search placeholder off mid-word ("Browse or sear"). It is now **"Search"** on phones; the `aria-label` still carries the full "Browse the site, or search it" at every width, so a screen reader loses nothing.
+
+Measured at 360px, the narrowest realistic Android: both buttons a true 44×44, `document.body.scrollWidth` 350 against a 360 viewport, so **no horizontal overflow**. Desktop verified unchanged — full wordmark, all three buttons 44×44, full placeholder, 58px header. The contact button was clicked on a phone viewport and its modal opened, so this is reachability rather than just a visible circle.
+
+Also adds `docs/marketing/f1-technical-file-1440.png`, the prod capture of the technical file restored in 0.334.104.
+
 ## 0.334.105 — 2026-08-28
 
 ### Fixed — three technical files that under-reported what teams brought

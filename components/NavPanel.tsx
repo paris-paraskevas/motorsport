@@ -78,9 +78,10 @@ export function NavPanel({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [docs, setDocs] = useState<SearchDoc[] | null>(INDEX_CACHE);
-  // Placeholder text is viewport-dependent (spec: "Browse the site, or search
-  // it" on desktop, "Browse or search" on phones) — CSS can't swap placeholder
-  // strings, so one matchMedia listener does.
+  // Placeholder text is viewport-dependent ("Browse the site, or search it" on
+  // desktop, "Search" on phones) — CSS can't swap placeholder strings, so one
+  // matchMedia listener does. `aria-label` carries the full phrasing at every
+  // width, so shortening the visible hint costs a screen reader nothing.
   const [wide, setWide] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -411,7 +412,10 @@ export function NavPanel({
             if (!open) setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={wide ? 'Browse the site, or search it' : 'Browse or search'}
+          // "Search" on phones, not "Browse or search": the contact and coffee
+          // buttons joined the header on 2026-08-28 and took ~112px, which cut
+          // the longer string off mid-word. The field is still the same control.
+          placeholder={wide ? 'Browse the site, or search it' : 'Search'}
           aria-label="Browse the site, or search it"
           role="combobox"
           aria-expanded={open}

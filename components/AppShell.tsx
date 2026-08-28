@@ -253,7 +253,10 @@ function HeaderAccount() {
         aria-label="Contact us"
         title="Contact us"
         data-heatmap-id="nav:contact"
-        className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full bg-text text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted lg:inline-flex"
+        // Visible on phones too (operator, 2026-08-28). Held at h-11/w-11 rather
+        // than shrunk for the narrow header: 44px is the minimum comfortable
+        // touch target, and the search field beside it flexes instead.
+        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-text text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
       >
         <Mail aria-hidden="true" className="h-[18px] w-[18px]" />
       </button>
@@ -266,7 +269,8 @@ function HeaderAccount() {
         aria-label="Support us on Buy Me a Coffee"
         title="Support us"
         data-heatmap-id="nav:support"
-        className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border-strong bg-surface text-text transition-colors duration-(--duration-fast) hover:border-text lg:inline-flex"
+        // Visible on phones too, alongside contact (operator, 2026-08-28).
+        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border-strong bg-surface text-text transition-colors duration-(--duration-fast) hover:border-text"
       >
         <Coffee aria-hidden="true" className="h-[18px] w-[18px]" />
       </a>
