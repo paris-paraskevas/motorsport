@@ -97,7 +97,7 @@ export async function loadSeasonArchive(
 ): Promise<SeasonArchive | null> {
   const key = `${season}/${slug}`;
   const hit = cache.get(key);
-  if (hit !== undefined) return hit;
+  if (hit) return hit;
   let value: SeasonArchive | null = null;
   try {
     const raw = await readFile(path.join(ROOT, String(season), `${slug}.json`), 'utf-8');
@@ -106,7 +106,12 @@ export async function loadSeasonArchive(
   } catch {
     value = null;
   }
-  cache.set(key, value);
+  // ONLY successes are cached. Memoising a null poisons the key for the life of
+  // the process, so one transient read failure would 404 that page forever —
+  // which is exactly what happened in `next dev`, where each route runs in its
+  // own worker: the season page rendered while every archive weekend page 404'd.
+  // A miss is cheap to retry; a cached miss is a permanent, silent outage.
+  if (value) cache.set(key, value);
   return value;
 }
 

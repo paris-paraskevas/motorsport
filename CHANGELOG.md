@@ -4,6 +4,28 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.92 — 2026-08-28
+
+### Added — race weekend pages get an authored account, and Formula 1's twelve completed rounds are done
+Measured on prod 2026-08-28, a weekend page carried **no original prose at all** — section headings, a standings table and syndicated news headlines. The classification says who won; nothing said how, or what it changed. `content/series/<slug>/weekend-notes.json` fills that, rendered by `components/weekend/WeekendNote.tsx` as "How it was won" between the classification and the session list, on **both** the live weekend page and its `/archive` copy.
+
+**The key is `"<season>-<round>"`, and that is the whole design.** The live URL `/series/<slug>/weekend/<round>` carries no season, so a note keyed by round alone would silently reattach to a different race every January — the staleness class that put a false claim on twelve Formula E pages in 0.334.54. Keyed by season it is permanent, and one note serves the live page now and the archive forever. The hyphen matters too: a bare `"2026"` key is integer-like, and V8 orders integer-like keys ascending regardless of insertion order, which is what mangled `champion-notes.json` in session 38.
+
+**Twelve F1 notes, every one cross-checked against our own archived results before it was written.** All twelve margins in the sources matched `data/season-archive/2026/f1.json` exactly — Austria is the neat one, where the report's "0.375s adrift" plus Verstappen's +1.611 reproduces Antonelli's +1.986 to the thousandth. 120 rendered words per note on a page that had none.
+
+`lib/weekend-notes-integrity.test.ts` gates them: every key is `<season>-<round>`; every note maps to a round that exists in that season's archive; **every note names that round's actual winner**, resolved from the archived results, which is the transposition guard; two sources on distinct hosts; no stub. Suite 1456 → **1462**. All 24 source URLs were checked to resolve before shipping.
+
+### Omitted deliberately
+**The Monaco note does not state who finished third.** Our results have Gasly (+20.369); a contemporary report has Hadjar promoted after two five-second penalties for Gasly — and then notes those penalties were *rescinded*. Our Jolpica data reflects the post-rescission classification and is very likely right, but two sources disagree in the same breath, so the note says neither and describes the race instead.
+
+### Fixed — a latent defect in the archive cache, found while chasing a red herring
+`loadSeasonArchive` memoised `null`. One transient read failure would have poisoned that key for the life of the process and 404'd the page permanently — a silent outage with no way back but a restart. Only successful reads are cached now.
+
+**Honest note on how it was found:** every `/archive/.../weekend/<round>` was 404ing in `next dev`, and this looked like the cause. It was not. The 404s were **stale `.next/dev`** (landmine 9, for the second time today); clearing it fixed them, and the archive route had never been broken. The cache fix is kept because it is a genuine defect, not because it fixed this.
+
+### Not enriched
+The other fourteen series, and F1's eleven rounds still to run. The mechanism is fail-soft, so those pages render exactly as they do today and a wave needs no code.
+
 ## 0.334.91 — 2026-08-28
 
 ### Fixed — the 0.334.90 build failed on Cloudflare and never deployed

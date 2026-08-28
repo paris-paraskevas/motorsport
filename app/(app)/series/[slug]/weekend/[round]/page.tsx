@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
+import { loadWeekendNotes, weekendNoteKey } from '@/lib/series-content';
+import { WeekendNote } from '@/components/weekend/WeekendNote';
 import { sessionSlug, weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { groupByDay, groupByWeekend } from '@/lib/group';
 import { LocalTime } from '@/components/LocalTime';
@@ -271,6 +273,12 @@ async function ReportBody({
   raceHighlight: string | undefined;
   upgrades: Awaited<ReturnType<typeof loadF1Upgrades>>;
 }) {
+  // The authored account of the weekend, keyed by SEASON and round — see
+  // loadWeekendNotes. An absent key renders nothing, so a series is enriched a
+  // wave at a time and a round that has not run yet simply has no note.
+  const weekendNote = (await loadWeekendNotes(slug))?.[
+    weekendNoteKey(series.meta.season, round)
+  ];
   const watch = series.meta.watch;
 
   let raceEntries: RaceResult['results'] = [];
@@ -406,6 +414,8 @@ async function ReportBody({
         )}
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div>
+          {weekendNote ? <WeekendNote note={weekendNote} /> : null}
           {/* How the weekend went — the sessions as the story's spine. */}
           <section aria-label="How the weekend went">
             <div className="mb-1 flex items-baseline justify-between border-b border-text pb-1">
@@ -460,6 +470,7 @@ async function ReportBody({
               </div>
             ))}
           </section>
+          </div>
 
           {/* The venue rail. */}
           <aside>

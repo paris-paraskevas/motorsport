@@ -120,6 +120,46 @@ export interface RecordNotesFile {
   teams?: RecordNote;
 }
 
+/** Authored per-weekend enrichment (content/series/<slug>/weekend-notes.json).
+ *
+ *  Why the key is `"<season>-<round>"` and not a round number: the live weekend
+ *  URL `/series/<slug>/weekend/<round>` carries NO season, and `weekendFor`
+ *  resolves the round against whatever season `meta.season` currently is. A note
+ *  keyed by round alone would silently reattach to a different race every
+ *  January — the staleness class that put a false claim on twelve Formula E
+ *  pages in 0.334.54. Keyed by season it is permanent, and the same note serves
+ *  the live page now and `/archive/<season>/<slug>/weekend/<round>` forever.
+ *
+ *  The hyphen also matters: a bare `"2026"` key is integer-like, and V8 orders
+ *  integer-like keys ascending regardless of insertion order, which is what
+ *  mangled champion-notes.json in session 38. `"2026-15"` is a plain string key,
+ *  so ordinary JSON.stringify is safe here.
+ *
+ *  Same fail-soft gate as every other sidecar: absent file or absent key and the
+ *  page renders exactly as it does today. */
+export function loadWeekendNotes(slug: string): Promise<WeekendNotesFile | null> {
+  return readJsonIfExists<WeekendNotesFile>(
+    path.join(SERIES_ROOT, slug, 'weekend-notes.json'),
+  );
+}
+
+/** One race weekend's authored note. `lead` renders as "The race: …"; `note` is
+ *  what the classification cannot say — how it was won and what it changed. */
+export interface WeekendNote {
+  lead: string;
+  note: string;
+  sources?: string[];
+}
+
+/** Sidecar shape: "<season>-<round>" → note. */
+export type WeekendNotesFile = Record<string, WeekendNote>;
+
+/** The key for a weekend note. One definition, because a mismatch between the
+ *  writer and the reader fails silently — the page just renders unenriched. */
+export function weekendNoteKey(season: number, round: number): string {
+  return `${season}-${round}`;
+}
+
 /** Curated WRC per-stage classifications (content/series/wrc/stage-results.json).
  *  The rally results feed is winners-only, so the full per-stage field lives
  *  here as curated content (RULE #1: eWRC + wrc.com). Null when the file is
