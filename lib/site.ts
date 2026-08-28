@@ -36,6 +36,21 @@ export const INDEXNOW_KEY_LOCATION = `${SITE_URL}/${INDEXNOW_KEY}.txt`;
 export const PAGE_WIDE = 'w-full p-4 md:p-6 lg:p-8 pb-16';
 export const PAGE_READ = 'w-full max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16';
 
+/** The play-money disclaimer, on every betting surface.
+ *
+ *  A launch gate, not decoration: `docs/launch-checklist.md` §A6 requires
+ *  no-cashout framing on `/social` **and every betting surface**, because
+ *  marketing must not imply real gambling. Audited on prod 2026-08-28 and
+ *  `/social/leagues` carried **none** — nor did the league detail page — while
+ *  `/social` had four mentions.
+ *
+ *  One constant rather than the same sentence typed into each page, because two
+ *  copies of a compliance line are two copies to forget to update. Wording
+ *  follows the voice already on `/social` ("No cash, no catch") and
+ *  `WeekendBetting` ("free Paddock credits, no cashout"). */
+export const PLAY_MONEY_NOTE =
+  'Played with free Paddock credits. No cash in, no cash out — just bragging rights.';
+
 // The v1.0 announcement used to live here as LAUNCH_ANNOUNCEMENT, rendered by
 // components/LaunchBanner. Both were retired in 0.334.88: the What's-New modal
 // (lib/whats-new.ts + components/whats-new/) had grown into a better version of

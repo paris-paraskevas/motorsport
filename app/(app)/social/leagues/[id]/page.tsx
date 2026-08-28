@@ -8,13 +8,23 @@ import { ensureBettingUser } from '@/lib/betting/credits';
 import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { getLeagueDetail } from '@/lib/betting/leagues';
 import { LeagueDetailView } from '@/components/betting/LeagueDetailView';
-import { PAGE_READ } from '@/lib/site';
+import { PAGE_READ, PLAY_MONEY_NOTE } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'League', robots: { index: false, follow: false } };
 
 function frame(children: ReactNode) {
-  return <div className={PAGE_READ}>{children}</div>;
+  return (
+    <div className={PAGE_READ}>
+      {children}
+      {/* Launch gate A6: no-cashout framing on every betting surface. A league
+          leaderboard is one. Rendered from the shared constant so it cannot
+          drift from the wording on /social/leagues. */}
+      <p className="mt-8 border-t border-border pt-4 font-mono text-[11px] leading-relaxed text-text-muted">
+        {PLAY_MONEY_NOTE}
+      </p>
+    </div>
+  );
 }
 
 export default async function LeaguePage({ params }: { params: Promise<{ id: string }> }) {
