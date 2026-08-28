@@ -1,0 +1,3597 @@
+{
+ "season": 2026,
+ "series": "indycar",
+ "seriesName": "IndyCar",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "ok"
+ },
+ "weekends": [
+  {
+   "round": 1,
+   "roundName": "Firestone Grand Prix of St. Petersburg",
+   "label": null,
+   "dateRangeLabel": "27–1 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-02-27T18:30:00.000Z",
+     "end": "2026-02-27T20:00:00.000Z",
+     "location": "Streets of St. Petersburg, St. Petersburg, FL"
+    },
+    {
+     "title": "IndyCar - Practice 2",
+     "start": "2026-02-28T14:30:00.000Z",
+     "end": "2026-02-28T16:00:00.000Z",
+     "location": "Streets of St. Petersburg, St. Petersburg, FL"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-02-28T21:30:00.000Z",
+     "end": "2026-02-28T23:00:00.000Z",
+     "location": "Streets of St. Petersburg, St. Petersburg, FL"
+    },
+    {
+     "title": "IndyCar - Warm-up",
+     "start": "2026-03-01T14:00:00.000Z",
+     "end": "2026-03-01T14:30:00.000Z",
+     "location": "Streets of St. Petersburg, St. Petersburg, FL"
+    },
+    {
+     "title": "IndyCar - Firestone Grand Prix of St. Petersburg",
+     "start": "2026-03-01T17:00:00.000Z",
+     "end": "2026-03-01T19:30:00.000Z",
+     "location": "Streets of St. Petersburg, St. Petersburg, FL"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "roundName": "Good Ranchers 250 (Phoenix Raceway)",
+   "label": null,
+   "dateRangeLabel": "6–7 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-03-06T17:00:00.000Z",
+     "end": "2026-03-06T18:30:00.000Z",
+     "location": "Phoenix Raceway, Avondale, AZ"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-03-06T21:00:00.000Z",
+     "end": "2026-03-06T22:00:00.000Z",
+     "location": "Phoenix Raceway, Avondale, AZ"
+    },
+    {
+     "title": "IndyCar - High-line / Final Practice",
+     "start": "2026-03-06T23:30:00.000Z",
+     "end": "2026-03-07T00:30:00.000Z",
+     "location": "Phoenix Raceway, Avondale, AZ"
+    },
+    {
+     "title": "IndyCar - Good Ranchers 250",
+     "start": "2026-03-07T20:20:00.000Z",
+     "end": "2026-03-07T23:00:00.000Z",
+     "location": "Phoenix Raceway, Avondale, AZ"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "Java House Grand Prix of Arlington",
+   "label": null,
+   "dateRangeLabel": "13–15 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-03-13T20:00:00.000Z",
+     "end": "2026-03-13T21:20:00.000Z",
+     "location": "Streets of Arlington, Arlington, TX"
+    },
+    {
+     "title": "IndyCar - Practice 2",
+     "start": "2026-03-14T13:30:00.000Z",
+     "end": "2026-03-14T14:55:00.000Z",
+     "location": "Streets of Arlington, Arlington, TX"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-03-14T18:30:00.000Z",
+     "end": "2026-03-14T20:15:00.000Z",
+     "location": "Streets of Arlington, Arlington, TX"
+    },
+    {
+     "title": "IndyCar - Warm-up",
+     "start": "2026-03-15T13:30:00.000Z",
+     "end": "2026-03-15T13:50:00.000Z",
+     "location": "Streets of Arlington, Arlington, TX"
+    },
+    {
+     "title": "IndyCar - Java House Grand Prix of Arlington",
+     "start": "2026-03-15T15:30:00.000Z",
+     "end": "2026-03-15T17:30:00.000Z",
+     "location": "Streets of Arlington, Arlington, TX"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "Children's of Alabama Indy Grand Prix",
+   "label": null,
+   "dateRangeLabel": "27–29 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-03-27T19:30:00.000Z",
+     "end": "2026-03-27T21:00:00.000Z",
+     "location": "Barber Motorsports Park, Birmingham, AL"
+    },
+    {
+     "title": "IndyCar - Practice 2",
+     "start": "2026-03-28T15:00:00.000Z",
+     "end": "2026-03-28T16:30:00.000Z",
+     "location": "Barber Motorsports Park, Birmingham, AL"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-03-28T18:30:00.000Z",
+     "end": "2026-03-28T20:00:00.000Z",
+     "location": "Barber Motorsports Park, Birmingham, AL"
+    },
+    {
+     "title": "IndyCar - Warm-up",
+     "start": "2026-03-29T14:00:00.000Z",
+     "end": "2026-03-29T14:30:00.000Z",
+     "location": "Barber Motorsports Park, Birmingham, AL"
+    },
+    {
+     "title": "IndyCar - Children's of Alabama Indy Grand Prix",
+     "start": "2026-03-29T17:00:00.000Z",
+     "end": "2026-03-29T19:30:00.000Z",
+     "location": "Barber Motorsports Park, Birmingham, AL"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "Acura Grand Prix of Long Beach",
+   "label": null,
+   "dateRangeLabel": "17–19 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-04-17T22:00:00.000Z",
+     "end": "2026-04-17T23:30:00.000Z",
+     "location": "Streets of Long Beach, Long Beach, CA"
+    },
+    {
+     "title": "IndyCar - Practice 2",
+     "start": "2026-04-18T17:30:00.000Z",
+     "end": "2026-04-18T19:00:00.000Z",
+     "location": "Streets of Long Beach, Long Beach, CA"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-04-18T22:30:00.000Z",
+     "end": "2026-04-19T00:00:00.000Z",
+     "location": "Streets of Long Beach, Long Beach, CA"
+    },
+    {
+     "title": "IndyCar - Warm-up",
+     "start": "2026-04-19T17:00:00.000Z",
+     "end": "2026-04-19T17:30:00.000Z",
+     "location": "Streets of Long Beach, Long Beach, CA"
+    },
+    {
+     "title": "IndyCar - Acura Grand Prix of Long Beach",
+     "start": "2026-04-19T21:30:00.000Z",
+     "end": "2026-04-20T00:00:00.000Z",
+     "location": "Streets of Long Beach, Long Beach, CA"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "Sonsio Grand Prix at the Brickyard",
+   "label": null,
+   "dateRangeLabel": "8–17 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-05-08T13:05:00.000Z",
+     "end": "2026-05-08T14:25:00.000Z",
+     "location": "Indianapolis Motor Speedway Road Course, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Practice 2",
+     "start": "2026-05-08T17:05:00.000Z",
+     "end": "2026-05-08T18:25:00.000Z",
+     "location": "Indianapolis Motor Speedway Road Course, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-05-09T14:45:00.000Z",
+     "end": "2026-05-09T16:30:00.000Z",
+     "location": "Indianapolis Motor Speedway Road Course, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Sonsio Grand Prix",
+     "start": "2026-05-09T20:30:00.000Z",
+     "end": "2026-05-09T22:30:00.000Z",
+     "location": "Indianapolis Motor Speedway Road Course, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Indianapolis 500 Practice 1",
+     "start": "2026-05-12T16:00:00.000Z",
+     "end": "2026-05-12T22:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Indianapolis 500 Practice 2",
+     "start": "2026-05-13T16:00:00.000Z",
+     "end": "2026-05-13T22:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Indianapolis 500 Practice 3",
+     "start": "2026-05-14T16:00:00.000Z",
+     "end": "2026-05-14T22:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Indianapolis 500 Fast Friday Practice",
+     "start": "2026-05-15T16:00:00.000Z",
+     "end": "2026-05-15T22:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Indianapolis 500 Qualifying Day 1",
+     "start": "2026-05-16T15:00:00.000Z",
+     "end": "2026-05-16T22:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Indianapolis 500 Top 12 Qualifying",
+     "start": "2026-05-17T20:05:00.000Z",
+     "end": "2026-05-17T21:05:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Indianapolis 500 Last Chance Qualifying",
+     "start": "2026-05-17T21:15:00.000Z",
+     "end": "2026-05-17T22:15:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Indianapolis 500 Firestone Fast Six",
+     "start": "2026-05-17T22:25:00.000Z",
+     "end": "2026-05-17T22:55:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "110th Indianapolis 500",
+   "label": null,
+   "dateRangeLabel": "22–24 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Indianapolis 500 Carb Day Practice",
+     "start": "2026-05-22T15:00:00.000Z",
+     "end": "2026-05-22T17:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - Oscar Mayer Indy 500 Pit Stop Challenge",
+     "start": "2026-05-22T18:30:00.000Z",
+     "end": "2026-05-22T20:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    },
+    {
+     "title": "IndyCar - 110th Indianapolis 500",
+     "start": "2026-05-24T16:30:00.000Z",
+     "end": "2026-05-24T20:00:00.000Z",
+     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "Chevrolet Detroit Grand Prix",
+   "label": null,
+   "dateRangeLabel": "29–31 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-05-29T19:00:00.000Z",
+     "end": "2026-05-29T20:25:00.000Z",
+     "location": "Streets of Detroit, Detroit, MI"
+    },
+    {
+     "title": "IndyCar - Practice 2",
+     "start": "2026-05-30T13:00:00.000Z",
+     "end": "2026-05-30T14:25:00.000Z",
+     "location": "Streets of Detroit, Detroit, MI"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-05-30T17:00:00.000Z",
+     "end": "2026-05-30T18:30:00.000Z",
+     "location": "Streets of Detroit, Detroit, MI"
+    },
+    {
+     "title": "IndyCar - Warm-up",
+     "start": "2026-05-31T13:30:00.000Z",
+     "end": "2026-05-31T14:00:00.000Z",
+     "location": "Streets of Detroit, Detroit, MI"
+    },
+    {
+     "title": "IndyCar - Chevrolet Detroit Grand Prix",
+     "start": "2026-05-31T16:30:00.000Z",
+     "end": "2026-05-31T19:00:00.000Z",
+     "location": "Streets of Detroit, Detroit, MI"
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "roundName": "Bommarito Automotive Group 500 (Gateway)",
+   "label": null,
+   "dateRangeLabel": "6–8 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-06-06T16:30:00.000Z",
+     "end": "2026-06-06T17:30:00.000Z",
+     "location": "World Wide Technology Raceway, Madison, IL"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-06-06T20:30:00.000Z",
+     "end": "2026-06-06T21:30:00.000Z",
+     "location": "World Wide Technology Raceway, Madison, IL"
+    },
+    {
+     "title": "IndyCar - Final Practice",
+     "start": "2026-06-07T01:00:00.000Z",
+     "end": "2026-06-07T02:00:00.000Z",
+     "location": "World Wide Technology Raceway, Madison, IL"
+    },
+    {
+     "title": "IndyCar - Bommarito Automotive Group 500",
+     "start": "2026-06-08T01:00:00.000Z",
+     "end": "2026-06-08T04:00:00.000Z",
+     "location": "World Wide Technology Raceway, Madison, IL"
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "roundName": "XPEL Grand Prix at Road America",
+   "label": null,
+   "dateRangeLabel": "19–21 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-06-19T20:00:00.000Z",
+     "end": "2026-06-19T21:20:00.000Z",
+     "location": "Road America, Elkhart Lake, WI"
+    },
+    {
+     "title": "IndyCar - Practice 2",
+     "start": "2026-06-20T15:00:00.000Z",
+     "end": "2026-06-20T16:20:00.000Z",
+     "location": "Road America, Elkhart Lake, WI"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-06-20T18:00:00.000Z",
+     "end": "2026-06-20T19:15:00.000Z",
+     "location": "Road America, Elkhart Lake, WI"
+    },
+    {
+     "title": "IndyCar - Warm-up",
+     "start": "2026-06-21T15:00:00.000Z",
+     "end": "2026-06-21T15:30:00.000Z",
+     "location": "Road America, Elkhart Lake, WI"
+    },
+    {
+     "title": "IndyCar - XPEL Grand Prix at Road America",
+     "start": "2026-06-21T18:00:00.000Z",
+     "end": "2026-06-21T19:55:00.000Z",
+     "location": "Road America, Elkhart Lake, WI"
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "roundName": null,
+   "label": null,
+   "dateRangeLabel": "4 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar | Honda Indy 200 at Mid-Ohio",
+     "start": "2026-07-04T21:00:00.000Z",
+     "end": "2026-07-05T21:00:00.000Z",
+     "location": "Mid-Ohio Sports Car Course, 7721 Steam Corners Rd, Lexington, OH 44904, USA"
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "roundName": "Borchetta Bourbon Music City Grand Prix (Nashville Superspeedway)",
+   "label": null,
+   "dateRangeLabel": "18–20 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar - Practice 1",
+     "start": "2026-07-18T14:00:00.000Z",
+     "end": "2026-07-18T15:15:00.000Z",
+     "location": "Nashville Superspeedway, Lebanon, TN"
+    },
+    {
+     "title": "IndyCar - Qualifying",
+     "start": "2026-07-18T19:00:00.000Z",
+     "end": "2026-07-18T20:00:00.000Z",
+     "location": "Nashville Superspeedway, Lebanon, TN"
+    },
+    {
+     "title": "IndyCar - Final Practice",
+     "start": "2026-07-18T22:00:00.000Z",
+     "end": "2026-07-18T23:00:00.000Z",
+     "location": "Nashville Superspeedway, Lebanon, TN"
+    },
+    {
+     "title": "IndyCar - Borchetta Bourbon Music City Grand Prix",
+     "start": "2026-07-20T19:00:00.000Z",
+     "end": "2026-07-20T21:15:00.000Z",
+     "location": "Nashville Superspeedway, Lebanon, TN"
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "roundName": "OnlyBulls Grand Prix of Portland",
+   "label": null,
+   "dateRangeLabel": "8 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar | bitnile.com Grand Prix of Portland",
+     "start": "2026-08-08T21:00:00.000Z",
+     "end": "2026-08-09T21:00:00.000Z",
+     "location": "Portland International Raceway, 1940 N Victory Blvd, Portland, OR 97217, USA"
+    }
+   ]
+  },
+  {
+   "round": 13,
+   "roundName": "Ontario Honda Dealers Indy at Markham",
+   "label": null,
+   "dateRangeLabel": "15 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar | Ontario Honda Dealers Indy at Markham",
+     "start": "2026-08-15T21:00:00.000Z",
+     "end": "2026-08-16T21:00:00.000Z",
+     "location": "Honda Indy Markham, Unionville, ON L3R 2E3, Canada"
+    }
+   ]
+  },
+  {
+   "round": 14,
+   "roundName": "Freedom 250 Grand Prix of Washington, D.C.",
+   "label": null,
+   "dateRangeLabel": "22 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "IndyCar | Grand Prix of Washington",
+     "start": "2026-08-22T21:00:00.000Z",
+     "end": "2026-08-23T21:00:00.000Z",
+     "location": "Washington, DC, USA"
+    }
+   ]
+  },
+  {
+   "round": 15,
+   "roundName": "Snap-on Makers and Fixers 250 (Milwaukee Mile Race 1)",
+   "label": null,
+   "dateRangeLabel": "29 Aug",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "IndyCar - Hy-Vee Milwaukee Mile Race 1",
+     "start": "2026-08-29T18:30:00.000Z",
+     "end": "2026-08-29T21:00:00.000Z",
+     "location": "Milwaukee Mile, West Allis, WI"
+    }
+   ]
+  },
+  {
+   "round": 16,
+   "roundName": "Snap-on Milwaukee Mile 250 (Race 2)",
+   "label": null,
+   "dateRangeLabel": "30 Aug",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "IndyCar - Hy-Vee Milwaukee Mile Race 2",
+     "start": "2026-08-30T17:00:00.000Z",
+     "end": "2026-08-30T19:30:00.000Z",
+     "location": "Milwaukee Mile, West Allis, WI"
+    }
+   ]
+  },
+  {
+   "round": 17,
+   "roundName": "WeatherTech Raceway Laguna Seca (Season Finale)",
+   "label": null,
+   "dateRangeLabel": "5 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "IndyCar | Laguna Seca",
+     "start": "2026-09-05T21:00:00.000Z",
+     "end": "2026-09-06T21:00:00.000Z",
+     "location": "WeatherTech Raceway Laguna Seca, 1021 Monterey Salinas Hwy, Salinas, CA 93908, USA"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "round": 1,
+   "raceName": "Firestone Grand Prix of St. Petersburg",
+   "date": "2026-03-01T00:00:00.000Z",
+   "circuit": "Firestone Grand Prix of St. Petersburg",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 42
+    },
+    {
+     "position": 3,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 29
+    },
+    {
+     "position": 7,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 27
+    },
+    {
+     "position": 8,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 15,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 24,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Good Ranchers 250 (Phoenix Raceway)",
+   "date": "2026-03-07T00:00:00.000Z",
+   "circuit": "Good Ranchers 250 (Phoenix Raceway)",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 41
+    },
+    {
+     "position": 3,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 37
+    },
+    {
+     "position": 4,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 33
+    },
+    {
+     "position": 5,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 31
+    },
+    {
+     "position": 6,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 27
+    },
+    {
+     "position": 8,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 14,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 15,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 16,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 17,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 18,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "Java House Grand Prix of Arlington",
+   "date": "2026-03-15T00:00:00.000Z",
+   "circuit": "Java House Grand Prix of Arlington",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 41
+    },
+    {
+     "position": 3,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 34
+    },
+    {
+     "position": 5,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 20,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Children's of Alabama Indy Grand Prix",
+   "date": "2026-03-29T00:00:00.000Z",
+   "circuit": "Children's of Alabama Indy Grand Prix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 52
+    },
+    {
+     "position": 2,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 41
+    },
+    {
+     "position": 3,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Acura Grand Prix of Long Beach",
+   "date": "2026-04-19T00:00:00.000Z",
+   "circuit": "Acura Grand Prix of Long Beach",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 42
+    },
+    {
+     "position": 3,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 35
+    },
+    {
+     "position": 4,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 15,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 20,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Sonsio Grand Prix at the Brickyard",
+   "date": "2026-05-09T00:00:00.000Z",
+   "circuit": "Sonsio Grand Prix at the Brickyard",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 41
+    },
+    {
+     "position": 3,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 35
+    },
+    {
+     "position": 4,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 6,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 14,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "110th Indianapolis 500",
+   "date": "2026-05-24T00:00:00.000Z",
+   "circuit": "110th Indianapolis 500",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 50
+    },
+    {
+     "position": 2,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 40
+    },
+    {
+     "position": 3,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 35
+    },
+    {
+     "position": 4,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 31
+    },
+    {
+     "position": 6,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 23
+    },
+    {
+     "position": 10,
+     "driverName": "Takuma Sato",
+     "team": "",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Conor Daly",
+     "team": "",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Jack Harvey",
+     "team": "",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Jacob Abel",
+     "team": "",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Hélio Castroneves",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    },
+    {
+     "position": 26,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 27,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 28,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 5
+    },
+    {
+     "position": 29,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 5
+    },
+    {
+     "position": 30,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 5
+    },
+    {
+     "position": 31,
+     "driverName": "Ed Carpenter",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    },
+    {
+     "position": 32,
+     "driverName": "Ryan Hunter-Reay",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    },
+    {
+     "position": 33,
+     "driverName": "Katherine Legge",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "raceName": "Chevrolet Detroit Grand Prix",
+   "date": "2026-05-31T00:00:00.000Z",
+   "circuit": "Chevrolet Detroit Grand Prix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 52
+    },
+    {
+     "position": 2,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 41
+    },
+    {
+     "position": 3,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 35
+    },
+    {
+     "position": 4,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 31
+    },
+    {
+     "position": 6,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 29
+    },
+    {
+     "position": 7,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 12,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 23,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "raceName": "Bommarito Automotive Group 500 (Gateway)",
+   "date": "2026-06-07T00:00:00.000Z",
+   "circuit": "Bommarito Automotive Group 500 (Gateway)",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 41
+    },
+    {
+     "position": 3,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 13,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 18,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 23,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "raceName": "XPEL Grand Prix at Road America",
+   "date": "2026-06-21T00:00:00.000Z",
+   "circuit": "XPEL Grand Prix at Road America",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 40
+    },
+    {
+     "position": 3,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 35
+    },
+    {
+     "position": 4,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 6,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 25
+    },
+    {
+     "position": 9,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 23,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 25,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "raceName": "Honda Indy 200 at Mid-Ohio",
+   "date": "2026-07-05T00:00:00.000Z",
+   "circuit": "Honda Indy 200 at Mid-Ohio",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 42
+    },
+    {
+     "position": 3,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 35
+    },
+    {
+     "position": 4,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 29
+    },
+    {
+     "position": 7,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 23
+    },
+    {
+     "position": 10,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "raceName": "Music City Grand Prix (Nashville Superspeedway)",
+   "date": "2026-07-19T00:00:00.000Z",
+   "circuit": "Music City Grand Prix (Nashville Superspeedway)",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 40
+    },
+    {
+     "position": 3,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 33
+    },
+    {
+     "position": 5,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 31
+    },
+    {
+     "position": 6,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 11,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 18,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 21,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 13,
+   "raceName": "OnlyBulls Grand Prix of Portland",
+   "date": "2026-08-09T00:00:00.000Z",
+   "circuit": "OnlyBulls Grand Prix of Portland",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 42
+    },
+    {
+     "position": 3,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 25
+    },
+    {
+     "position": 9,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 23,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 14,
+   "raceName": "Ontario Honda Dealers Indy at Markham",
+   "date": "2026-08-16T00:00:00.000Z",
+   "circuit": "Ontario Honda Dealers Indy at Markham",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 41
+    },
+    {
+     "position": 3,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 13,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 17
+    },
+    {
+     "position": 14,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 21,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 23,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  },
+  {
+   "round": 15,
+   "raceName": "Freedom 250 Grand Prix of Washington, D.C.",
+   "date": "2026-08-23T00:00:00.000Z",
+   "circuit": "Freedom 250 Grand Prix of Washington, D.C.",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Kyle Kirkwood",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 51
+    },
+    {
+     "position": 2,
+     "driverName": "Christian Lundgaard",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 40
+    },
+    {
+     "position": 3,
+     "driverName": "Will Power",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 36
+    },
+    {
+     "position": 4,
+     "driverName": "Marcus Ericsson",
+     "team": "Andretti Global",
+     "status": "Finished",
+     "points": 32
+    },
+    {
+     "position": 5,
+     "driverName": "Kyffin Simpson",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 30
+    },
+    {
+     "position": 6,
+     "driverName": "Nolan Siegel",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 28
+    },
+    {
+     "position": 7,
+     "driverName": "Scott Dixon",
+     "team": "Chip Ganassi Racing",
+     "status": "Finished",
+     "points": 26
+    },
+    {
+     "position": 8,
+     "driverName": "Josef Newgarden",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 24
+    },
+    {
+     "position": 9,
+     "driverName": "Caio Collet R",
+     "team": "",
+     "status": "Finished",
+     "points": 22
+    },
+    {
+     "position": 10,
+     "driverName": "Romain Grosjean",
+     "team": "Dale Coyne Racing",
+     "status": "Finished",
+     "points": 20
+    },
+    {
+     "position": 11,
+     "driverName": "Mick Schumacher R",
+     "team": "",
+     "status": "Finished",
+     "points": 19
+    },
+    {
+     "position": 12,
+     "driverName": "Alexander Rossi",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 13,
+     "driverName": "Graham Rahal",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 14,
+     "driverName": "Christian Rasmussen",
+     "team": "Ed Carpenter Racing",
+     "status": "Finished",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "Dennis Hauger R",
+     "team": "",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 16,
+     "driverName": "Pato O'Ward",
+     "team": "Arrow McLaren",
+     "status": "Finished",
+     "points": 14
+    },
+    {
+     "position": 17,
+     "driverName": "Marcus Armstrong",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 13
+    },
+    {
+     "position": 18,
+     "driverName": "Louis Foster",
+     "team": "Rahal Letterman Lanigan Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 19,
+     "driverName": "Felix Rosenqvist",
+     "team": "Meyer Shank Racing",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 20,
+     "driverName": "Álex Palou",
+     "team": "",
+     "status": "Finished",
+     "points": 11
+    },
+    {
+     "position": 21,
+     "driverName": "Santino Ferrucci",
+     "team": "A.J. Foyt Racing",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 22,
+     "driverName": "Scott McLaughlin",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 9
+    },
+    {
+     "position": 23,
+     "driverName": "Rinus VeeKay",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 7
+    },
+    {
+     "position": 24,
+     "driverName": "David Malukas",
+     "team": "Team Penske",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 25,
+     "driverName": "Sting Ray Robb",
+     "team": "Juncos Hollinger Racing",
+     "status": "Finished",
+     "points": 5
+    }
+   ]
+  }
+ ],
+ "standings": {
+  "drivers": [
+   {
+    "position": 1,
+    "driverName": "Alex Palou",
+    "team": "Chip Ganassi Racing",
+    "points": 553,
+    "wins": 6
+   },
+   {
+    "position": 2,
+    "driverName": "Kyle Kirkwood",
+    "team": "Andretti Global",
+    "points": 462,
+    "wins": 2
+   },
+   {
+    "position": 3,
+    "driverName": "Christian Lundgaard",
+    "team": "Arrow McLaren",
+    "points": 443,
+    "wins": 2
+   },
+   {
+    "position": 4,
+    "driverName": "David Malukas",
+    "team": "Team Penske",
+    "points": 411,
+    "wins": 0
+   },
+   {
+    "position": 5,
+    "driverName": "Pato O&apos;Ward",
+    "team": "Arrow McLaren",
+    "points": 399,
+    "wins": 1
+   },
+   {
+    "position": 6,
+    "driverName": "Josef Newgarden",
+    "team": "Team Penske",
+    "points": 376,
+    "wins": 2
+   },
+   {
+    "position": 7,
+    "driverName": "Marcus Ericsson",
+    "team": "Andretti Global",
+    "points": 361,
+    "wins": 1
+   },
+   {
+    "position": 8,
+    "driverName": "Felix Rosenqvist",
+    "team": "Meyer Shank Racing",
+    "points": 355,
+    "wins": 1
+   },
+   {
+    "position": 9,
+    "driverName": "Scott McLaughlin",
+    "team": "Team Penske",
+    "points": 354,
+    "wins": 0
+   },
+   {
+    "position": 10,
+    "driverName": "Will Power",
+    "team": "Andretti Global",
+    "points": 328,
+    "wins": 0
+   },
+   {
+    "position": 11,
+    "driverName": "Rinus VeeKay",
+    "team": "Juncos Hollinger Racing",
+    "points": 302,
+    "wins": 0
+   },
+   {
+    "position": 12,
+    "driverName": "Scott Dixon",
+    "team": "Chip Ganassi Racing",
+    "points": 290,
+    "wins": 0
+   },
+   {
+    "position": 13,
+    "driverName": "Kyffin Simpson",
+    "team": "Chip Ganassi Racing",
+    "points": 282,
+    "wins": 0
+   },
+   {
+    "position": 14,
+    "driverName": "Graham Rahal",
+    "team": "Rahal Letterman Lanigan Racing",
+    "points": 276,
+    "wins": 0
+   },
+   {
+    "position": 15,
+    "driverName": "Marcus Armstrong",
+    "team": "Meyer Shank Racing",
+    "points": 257,
+    "wins": 0
+   },
+   {
+    "position": 16,
+    "driverName": "Alexander Rossi",
+    "team": "ECR",
+    "points": 236,
+    "wins": 0
+   },
+   {
+    "position": 17,
+    "driverName": "Santino Ferrucci",
+    "team": "A.J. Foyt Enterprises",
+    "points": 234,
+    "wins": 0
+   },
+   {
+    "position": 18,
+    "driverName": "Romain Grosjean",
+    "team": "Dale Coyne Racing",
+    "points": 229,
+    "wins": 0
+   },
+   {
+    "position": 19,
+    "driverName": "Nolan Siegel",
+    "team": "Arrow McLaren",
+    "points": 223,
+    "wins": 0
+   },
+   {
+    "position": 20,
+    "driverName": "Louis Foster",
+    "team": "Rahal Letterman Lanigan Racing",
+    "points": 212,
+    "wins": 0
+   },
+   {
+    "position": 21,
+    "driverName": "Dennis Hauger",
+    "team": "Dale Coyne Racing",
+    "points": 204,
+    "wins": 0
+   },
+   {
+    "position": 22,
+    "driverName": "Christian Rasmussen",
+    "team": "ECR",
+    "points": 180,
+    "wins": 0
+   },
+   {
+    "position": 23,
+    "driverName": "Caio Collet",
+    "team": "A.J. Foyt Enterprises",
+    "points": 180,
+    "wins": 0
+   },
+   {
+    "position": 24,
+    "driverName": "Mick Schumacher",
+    "team": "Rahal Letterman Lanigan Racing",
+    "points": 170,
+    "wins": 0
+   },
+   {
+    "position": 25,
+    "driverName": "Sting Ray Robb",
+    "team": "Juncos Hollinger Racing",
+    "points": 155,
+    "wins": 0
+   },
+   {
+    "position": 26,
+    "driverName": "Conor Daly",
+    "team": "Dreyer & Reinbold Racing",
+    "points": 24,
+    "wins": 0
+   },
+   {
+    "position": 27,
+    "driverName": "Takuma Sato",
+    "team": "Rahal Letterman Lanigan Racing",
+    "points": 20,
+    "wins": 0
+   },
+   {
+    "position": 28,
+    "driverName": "Jack Harvey",
+    "team": "Dreyer & Reinbold Racing",
+    "points": 8,
+    "wins": 0
+   },
+   {
+    "position": 29,
+    "driverName": "Jacob Abel",
+    "team": "Abel Motorsports",
+    "points": 6,
+    "wins": 0
+   },
+   {
+    "position": 30,
+    "driverName": "Helio Castroneves",
+    "team": "Meyer Shank Racing",
+    "points": 5,
+    "wins": 0
+   },
+   {
+    "position": 31,
+    "driverName": "Ed Carpenter",
+    "team": "ECR",
+    "points": 5,
+    "wins": 0
+   },
+   {
+    "position": 32,
+    "driverName": "Ryan Hunter-Reay",
+    "team": "Arrow McLaren",
+    "points": 5,
+    "wins": 0
+   },
+   {
+    "position": 33,
+    "driverName": "Katherine Legge",
+    "team": "HMD Motorsports w/ AJ Foyt Racing",
+    "points": 5,
+    "wins": 0
+   }
+  ]
+ }
+}

@@ -1,0 +1,2911 @@
+{
+ "season": 2026,
+ "series": "wec",
+ "seriesName": "FIA WEC",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "ok"
+ },
+ "weekends": [
+  {
+   "round": 1,
+   "roundName": "6 Hours of Imola",
+   "label": null,
+   "dateRangeLabel": "13–19 Apr",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FIA WEC | [TEST] Prologue",
+     "start": "2026-04-13T21:00:00.000Z",
+     "end": "2026-04-14T21:00:00.000Z",
+     "location": "Autodromo Enzo e Dino Ferrari, Piazza Ayrton Senna da Silva, 1, 40026 Imola BO, Italy"
+    },
+    {
+     "title": "WEC - Free Practice 1",
+     "start": "2026-04-17T08:15:00.000Z",
+     "end": "2026-04-17T09:45:00.000Z",
+     "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+    },
+    {
+     "title": "WEC - Free Practice 2",
+     "start": "2026-04-17T13:15:00.000Z",
+     "end": "2026-04-17T14:45:00.000Z",
+     "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+    },
+    {
+     "title": "WEC - Free Practice 3",
+     "start": "2026-04-18T08:30:00.000Z",
+     "end": "2026-04-18T09:30:00.000Z",
+     "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+    },
+    {
+     "title": "WEC - LMGT3 Qualifying",
+     "start": "2026-04-18T12:30:00.000Z",
+     "end": "2026-04-18T12:42:00.000Z",
+     "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+    },
+    {
+     "title": "WEC - LMGT3 Hyperpole",
+     "start": "2026-04-18T12:50:00.000Z",
+     "end": "2026-04-18T13:00:00.000Z",
+     "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+    },
+    {
+     "title": "WEC - Hypercar Qualifying",
+     "start": "2026-04-18T13:10:00.000Z",
+     "end": "2026-04-18T13:22:00.000Z",
+     "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+    },
+    {
+     "title": "WEC - Hypercar Hyperpole",
+     "start": "2026-04-18T13:30:00.000Z",
+     "end": "2026-04-18T13:40:00.000Z",
+     "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+    },
+    {
+     "title": "WEC - 6 Hours of Imola (Race)",
+     "start": "2026-04-19T11:00:00.000Z",
+     "end": "2026-04-19T17:00:00.000Z",
+     "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "roundName": "TotalEnergies 6 Hours of Spa-Francorchamps",
+   "label": null,
+   "dateRangeLabel": "7–9 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WEC - Free Practice 1",
+     "start": "2026-05-07T09:00:00.000Z",
+     "end": "2026-05-07T10:30:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "WEC - Free Practice 2",
+     "start": "2026-05-07T13:40:00.000Z",
+     "end": "2026-05-07T15:10:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "WEC - Free Practice 3",
+     "start": "2026-05-08T08:10:00.000Z",
+     "end": "2026-05-08T09:10:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "WEC - LMGT3 Qualifying",
+     "start": "2026-05-08T12:30:00.000Z",
+     "end": "2026-05-08T12:42:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "WEC - LMGT3 Hyperpole",
+     "start": "2026-05-08T12:55:00.000Z",
+     "end": "2026-05-08T13:05:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "WEC - Hypercar Qualifying",
+     "start": "2026-05-08T13:20:00.000Z",
+     "end": "2026-05-08T13:32:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "WEC - Hypercar Hyperpole",
+     "start": "2026-05-08T13:45:00.000Z",
+     "end": "2026-05-08T13:55:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "WEC - 6 Hours of Spa-Francorchamps (Race)",
+     "start": "2026-05-09T12:00:00.000Z",
+     "end": "2026-05-09T18:00:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "24 Hours of Le Mans",
+   "label": null,
+   "dateRangeLabel": "10–13 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WEC - Le Mans Free Practice 1",
+     "start": "2026-06-10T12:00:00.000Z",
+     "end": "2026-06-10T15:00:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Qualifying (LMP2 & LMGT3)",
+     "start": "2026-06-10T16:45:00.000Z",
+     "end": "2026-06-10T17:15:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Qualifying (Hypercar)",
+     "start": "2026-06-10T17:30:00.000Z",
+     "end": "2026-06-10T18:00:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Free Practice 2",
+     "start": "2026-06-10T20:00:00.000Z",
+     "end": "2026-06-10T22:00:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Free Practice 3",
+     "start": "2026-06-11T12:45:00.000Z",
+     "end": "2026-06-11T14:45:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Hyperpole 1 (LMP2 & LMGT3)",
+     "start": "2026-06-11T18:00:00.000Z",
+     "end": "2026-06-11T18:30:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Hyperpole 2 (LMP2 & LMGT3)",
+     "start": "2026-06-11T18:35:00.000Z",
+     "end": "2026-06-11T19:05:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Hyperpole 1 (Hypercar)",
+     "start": "2026-06-11T19:05:00.000Z",
+     "end": "2026-06-11T19:35:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Hyperpole 2 (Hypercar)",
+     "start": "2026-06-11T19:40:00.000Z",
+     "end": "2026-06-11T20:10:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Free Practice 4",
+     "start": "2026-06-11T21:00:00.000Z",
+     "end": "2026-06-11T22:00:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - Le Mans Warm-up",
+     "start": "2026-06-13T10:00:00.000Z",
+     "end": "2026-06-13T10:15:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    },
+    {
+     "title": "WEC - 24 Hours of Le Mans (Race Start)",
+     "start": "2026-06-13T14:00:00.000Z",
+     "end": "2026-06-14T14:00:00.000Z",
+     "location": "Circuit de la Sarthe, Le Mans"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "Rolex 6 Hours of São Paulo",
+   "label": null,
+   "dateRangeLabel": "10–12 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "WEC - Free Practice 1",
+     "start": "2026-07-10T13:00:00.000Z",
+     "end": "2026-07-10T14:30:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+    },
+    {
+     "title": "WEC - Free Practice 2",
+     "start": "2026-07-10T17:00:00.000Z",
+     "end": "2026-07-10T18:30:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+    },
+    {
+     "title": "WEC - Free Practice 3",
+     "start": "2026-07-11T12:00:00.000Z",
+     "end": "2026-07-11T13:00:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+    },
+    {
+     "title": "WEC - LMGT3 Qualifying",
+     "start": "2026-07-11T17:00:00.000Z",
+     "end": "2026-07-11T17:12:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+    },
+    {
+     "title": "WEC - LMGT3 Hyperpole",
+     "start": "2026-07-11T17:20:00.000Z",
+     "end": "2026-07-11T17:30:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+    },
+    {
+     "title": "WEC - Hypercar Qualifying",
+     "start": "2026-07-11T17:40:00.000Z",
+     "end": "2026-07-11T17:52:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+    },
+    {
+     "title": "WEC - Hypercar Hyperpole",
+     "start": "2026-07-11T18:00:00.000Z",
+     "end": "2026-07-11T18:10:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+    },
+    {
+     "title": "WEC - 6 Hours of São Paulo (Race)",
+     "start": "2026-07-12T14:00:00.000Z",
+     "end": "2026-07-12T20:00:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "Lone Star Le Mans",
+   "label": null,
+   "dateRangeLabel": "4–5 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "WEC - Free Practice 1",
+     "start": "2026-09-04T15:00:00.000Z",
+     "end": "2026-09-04T16:30:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "WEC - Free Practice 2",
+     "start": "2026-09-04T19:00:00.000Z",
+     "end": "2026-09-04T20:30:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "WEC - Free Practice 3",
+     "start": "2026-09-05T14:00:00.000Z",
+     "end": "2026-09-05T15:00:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "WEC - LMGT3 Qualifying",
+     "start": "2026-09-05T17:00:00.000Z",
+     "end": "2026-09-05T17:12:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "WEC - LMGT3 Hyperpole",
+     "start": "2026-09-05T17:20:00.000Z",
+     "end": "2026-09-05T17:30:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "WEC - Hypercar Qualifying",
+     "start": "2026-09-05T17:40:00.000Z",
+     "end": "2026-09-05T17:52:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "WEC - Hypercar Hyperpole",
+     "start": "2026-09-05T18:00:00.000Z",
+     "end": "2026-09-05T18:10:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "WEC - Lone Star Le Mans 6 Hours (Race)",
+     "start": "2026-09-05T19:00:00.000Z",
+     "end": "2026-09-06T01:00:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "6 Hours of Fuji",
+   "label": null,
+   "dateRangeLabel": "25–27 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "WEC - Free Practice 1",
+     "start": "2026-09-25T01:00:00.000Z",
+     "end": "2026-09-25T02:30:00.000Z",
+     "location": "Fuji International Speedway, Oyama"
+    },
+    {
+     "title": "WEC - Free Practice 2",
+     "start": "2026-09-25T05:00:00.000Z",
+     "end": "2026-09-25T06:30:00.000Z",
+     "location": "Fuji International Speedway, Oyama"
+    },
+    {
+     "title": "WEC - Free Practice 3",
+     "start": "2026-09-26T00:00:00.000Z",
+     "end": "2026-09-26T01:00:00.000Z",
+     "location": "Fuji International Speedway, Oyama"
+    },
+    {
+     "title": "WEC - LMGT3 Qualifying",
+     "start": "2026-09-26T05:00:00.000Z",
+     "end": "2026-09-26T05:12:00.000Z",
+     "location": "Fuji International Speedway, Oyama"
+    },
+    {
+     "title": "WEC - LMGT3 Hyperpole",
+     "start": "2026-09-26T05:20:00.000Z",
+     "end": "2026-09-26T05:30:00.000Z",
+     "location": "Fuji International Speedway, Oyama"
+    },
+    {
+     "title": "WEC - Hypercar Qualifying",
+     "start": "2026-09-26T05:40:00.000Z",
+     "end": "2026-09-26T05:52:00.000Z",
+     "location": "Fuji International Speedway, Oyama"
+    },
+    {
+     "title": "WEC - Hypercar Hyperpole",
+     "start": "2026-09-26T06:00:00.000Z",
+     "end": "2026-09-26T06:10:00.000Z",
+     "location": "Fuji International Speedway, Oyama"
+    },
+    {
+     "title": "WEC - 6 Hours of Fuji (Race)",
+     "start": "2026-09-27T02:00:00.000Z",
+     "end": "2026-09-27T08:00:00.000Z",
+     "location": "Fuji International Speedway, Oyama"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "6 Hours of Barcelona",
+   "label": null,
+   "dateRangeLabel": "17 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "FIA WEC | 6 Hours of Barcelona",
+     "start": "2026-10-17T21:00:00.000Z",
+     "end": "2026-10-18T21:00:00.000Z",
+     "location": "Circuit de Barcelona, Mas La Moreneta s/n, 08160 Montmeló, Barcelona, Spain"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "6 Hours of Monza",
+   "label": null,
+   "dateRangeLabel": "7 Nov",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "FIA WEC | 6 Hours of Monza",
+     "start": "2026-11-07T22:00:00.000Z",
+     "end": "2026-11-08T22:00:00.000Z",
+     "location": "Autodromo Nazionale Monza, Viale di Vedano, 5, 20900 Monza MB, Italy"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "round": 1,
+   "eventName": "6 Hours of Imola",
+   "dateStart": "2026-04-17T00:00:00.000Z",
+   "dateEnd": "2026-04-19T00:00:00.000Z",
+   "perClass": {
+    "Hypercar": [
+     {
+      "position": 1,
+      "carNumber": "8",
+      "team": "TOYOTA RACING",
+      "drivers": "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+      "vehicle": "",
+      "manufacturer": "TOYOTA",
+      "laps": 213,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "6:00:10.939"
+     },
+     {
+      "position": 2,
+      "carNumber": "51",
+      "team": "FERRARI AF CORSE",
+      "drivers": "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 213,
+      "status": "",
+      "gap": "13.352",
+      "elapsedTime": "6:00:24.291"
+     },
+     {
+      "position": 3,
+      "carNumber": "7",
+      "team": "TOYOTA RACING",
+      "drivers": "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+      "vehicle": "",
+      "manufacturer": "TOYOTA",
+      "laps": 213,
+      "status": "",
+      "gap": "41.187",
+      "elapsedTime": "6:00:52.126"
+     },
+     {
+      "position": 4,
+      "carNumber": "35",
+      "team": "ALPINE ENDURANCE TEAM",
+      "drivers": "ANTÓNIO FÉLIX DA COSTA, CHARLES MILESI, FERDINAND HABSBURG",
+      "vehicle": "",
+      "manufacturer": "ALPINE",
+      "laps": 213,
+      "status": "",
+      "gap": "59.385",
+      "elapsedTime": "6:01:10.324"
+     },
+     {
+      "position": 5,
+      "carNumber": "20",
+      "team": "BMW M TEAM WRT",
+      "drivers": "RENÉ RAST, ROBIN FRIJNS",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 213,
+      "status": "",
+      "gap": "1:00.543",
+      "elapsedTime": "6:01:11.482"
+     },
+     {
+      "position": 6,
+      "carNumber": "50",
+      "team": "FERRARI AF CORSE",
+      "drivers": "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 213,
+      "status": "",
+      "gap": "1:00.901",
+      "elapsedTime": "6:01:11.840"
+     },
+     {
+      "position": 7,
+      "carNumber": "15",
+      "team": "BMW M TEAM WRT",
+      "drivers": "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 213,
+      "status": "",
+      "gap": "1:01.506",
+      "elapsedTime": "6:01:12.445"
+     },
+     {
+      "position": 8,
+      "carNumber": "38",
+      "team": "CADILLAC HERTZ TEAM JOTA",
+      "drivers": "EARL BAMBER, SÉBASTIEN BOURDAIS",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 213,
+      "status": "",
+      "gap": "1:01.995",
+      "elapsedTime": "6:01:12.934"
+     },
+     {
+      "position": 9,
+      "carNumber": "007",
+      "team": "ASTON MARTIN THOR TEAM",
+      "drivers": "HARRY TINCKNELL, TOM GAMBLE",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 212,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:16.386"
+     },
+     {
+      "position": 10,
+      "carNumber": "83",
+      "team": "AF CORSE",
+      "drivers": "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 212,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:16.824"
+     },
+     {
+      "position": 11,
+      "carNumber": "36",
+      "team": "ALPINE ENDURANCE TEAM",
+      "drivers": "FRÉDÉRIC MAKOWIECKI, JULES GOUNON, VICTOR MARTINS",
+      "vehicle": "",
+      "manufacturer": "ALPINE",
+      "laps": 212,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:43.534"
+     },
+     {
+      "position": 12,
+      "carNumber": "94",
+      "team": "PEUGEOT TOTALENERGIES",
+      "drivers": "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
+      "vehicle": "",
+      "manufacturer": "PEUGEOT",
+      "laps": 212,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:26.368"
+     },
+     {
+      "position": 13,
+      "carNumber": "12",
+      "team": "CADILLAC HERTZ TEAM JOTA",
+      "drivers": "NORMAN NATO, WILL STEVENS",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 212,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:26.646"
+     },
+     {
+      "position": 14,
+      "carNumber": "009",
+      "team": "ASTON MARTIN THOR TEAM",
+      "drivers": "ALEX RIBERAS, MARCO SØRENSEN",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 212,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:27.637"
+     },
+     {
+      "position": 15,
+      "carNumber": "17",
+      "team": "GENESIS MAGMA RACING",
+      "drivers": "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
+      "vehicle": "",
+      "manufacturer": "GENESIS",
+      "laps": 211,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:00:15.868"
+     },
+     {
+      "position": 16,
+      "carNumber": "93",
+      "team": "PEUGEOT TOTALENERGIES",
+      "drivers": "NICK CASSIDY, PAUL DI RESTA, STOFFEL VANDOORNE",
+      "vehicle": "",
+      "manufacturer": "PEUGEOT",
+      "laps": 210,
+      "status": "",
+      "gap": "3 Laps",
+      "elapsedTime": "6:01:31.971"
+     },
+     {
+      "position": 17,
+      "carNumber": "19",
+      "team": "GENESIS MAGMA RACING",
+      "drivers": "DANIEL JUNCADELLA, MATHIEU JAMINET, PAUL-LOUP CHATIN",
+      "vehicle": "",
+      "manufacturer": "GENESIS",
+      "laps": 189,
+      "status": "",
+      "gap": "24 Laps",
+      "elapsedTime": "6:00:19.620"
+     }
+    ],
+    "LMGT3": [
+     {
+      "position": 1,
+      "carNumber": "69",
+      "team": "TEAM WRT",
+      "drivers": "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 194,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "6:01:51.257"
+     },
+     {
+      "position": 2,
+      "carNumber": "33",
+      "team": "TF SPORT",
+      "drivers": "JONNY EDGAR",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 194,
+      "status": "",
+      "gap": "0.265",
+      "elapsedTime": "6:01:51.522"
+     },
+     {
+      "position": 3,
+      "carNumber": "92",
+      "team": "THE BEND MANTHEY",
+      "drivers": "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+      "vehicle": "",
+      "manufacturer": "PORSCHE",
+      "laps": 193,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:52.984"
+     },
+     {
+      "position": 4,
+      "carNumber": "91",
+      "team": "MANTHEY DK ENGINEERING",
+      "drivers": "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+      "vehicle": "",
+      "manufacturer": "PORSCHE",
+      "laps": 193,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:06.346"
+     },
+     {
+      "position": 5,
+      "carNumber": "32",
+      "team": "TEAM WRT",
+      "drivers": "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 193,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:19.385"
+     },
+     {
+      "position": 6,
+      "carNumber": "21",
+      "team": "VISTA AF CORSE",
+      "drivers": "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 193,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:36.465"
+     },
+     {
+      "position": 7,
+      "carNumber": "58",
+      "team": "GARAGE 59",
+      "drivers": "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+      "vehicle": "",
+      "manufacturer": "McLAREN",
+      "laps": 193,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:37.721"
+     },
+     {
+      "position": 8,
+      "carNumber": "88",
+      "team": "PROTON COMPETITION",
+      "drivers": "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+      "vehicle": "",
+      "manufacturer": "FORD",
+      "laps": 193,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:42.354"
+     },
+     {
+      "position": 9,
+      "carNumber": "23",
+      "team": "HEART OF RACING TEAM",
+      "drivers": "GRAY NEWELL, JONNY ADAM",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 193,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:43.631"
+     },
+     {
+      "position": 10,
+      "carNumber": "77",
+      "team": "PROTON COMPETITION",
+      "drivers": "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+      "vehicle": "",
+      "manufacturer": "FORD",
+      "laps": 193,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:43.681"
+     },
+     {
+      "position": 11,
+      "carNumber": "54",
+      "team": "VISTA AF CORSE",
+      "drivers": "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 192,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:00:46.013"
+     },
+     {
+      "position": 12,
+      "carNumber": "79",
+      "team": "IRON LYNX",
+      "drivers": "JOHANNES ZELGER, LIN HODENIUS, MATTEO CRESSONI",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 192,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:00:53.970"
+     },
+     {
+      "position": 13,
+      "carNumber": "10",
+      "team": "GARAGE 59",
+      "drivers": "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
+      "vehicle": "",
+      "manufacturer": "McLAREN",
+      "laps": 179,
+      "status": "",
+      "gap": "15 Laps",
+      "elapsedTime": "6:01:44.550"
+     },
+     {
+      "position": 14,
+      "carNumber": "78",
+      "team": "AKKODIS ASP TEAM",
+      "drivers": "HADRIEN DAVID, TOM VAN ROMPUY",
+      "vehicle": "",
+      "manufacturer": "LEXUS",
+      "laps": 171,
+      "status": "",
+      "gap": "23 Laps",
+      "elapsedTime": "6:01:43.915"
+     },
+     {
+      "position": 15,
+      "carNumber": "61",
+      "team": "IRON LYNX",
+      "drivers": "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 166,
+      "status": "",
+      "gap": "28 Laps",
+      "elapsedTime": "5:15:45.759"
+     },
+     {
+      "position": 16,
+      "carNumber": "34",
+      "team": "RACING TEAM TURKEY BY TF",
+      "drivers": "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 162,
+      "status": "",
+      "gap": "32 Laps",
+      "elapsedTime": "5:40:12.764"
+     },
+     {
+      "position": 17,
+      "carNumber": "27",
+      "team": "HEART OF RACING TEAM",
+      "drivers": "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 146,
+      "status": "",
+      "gap": "48 Laps",
+      "elapsedTime": "4:37:53.204"
+     },
+     {
+      "position": 18,
+      "carNumber": "87",
+      "team": "AKKODIS ASP TEAM",
+      "drivers": "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+      "vehicle": "",
+      "manufacturer": "LEXUS",
+      "laps": 32,
+      "status": "",
+      "gap": "162 Laps",
+      "elapsedTime": "57:58.247"
+     }
+    ]
+   }
+  },
+  {
+   "round": 2,
+   "eventName": "TotalEnergies 6 Hours of Spa-Francorchamps",
+   "dateStart": "2026-05-07T00:00:00.000Z",
+   "dateEnd": "2026-05-09T00:00:00.000Z",
+   "perClass": {
+    "Hypercar": [
+     {
+      "position": 1,
+      "carNumber": "20",
+      "team": "BMW M TEAM WRT",
+      "drivers": "RENÉ RAST, ROBIN FRIJNS",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 151,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "6:01:17.036"
+     },
+     {
+      "position": 2,
+      "carNumber": "15",
+      "team": "BMW M TEAM WRT",
+      "drivers": "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 151,
+      "status": "",
+      "gap": "1.969",
+      "elapsedTime": "6:01:19.005"
+     },
+     {
+      "position": 3,
+      "carNumber": "50",
+      "team": "FERRARI AF CORSE",
+      "drivers": "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 151,
+      "status": "",
+      "gap": "2.622",
+      "elapsedTime": "6:01:19.658"
+     },
+     {
+      "position": 4,
+      "carNumber": "007",
+      "team": "ASTON MARTIN THOR TEAM",
+      "drivers": "HARRY TINCKNELL, TOM GAMBLE",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 151,
+      "status": "",
+      "gap": "5.004",
+      "elapsedTime": "6:01:22.040"
+     },
+     {
+      "position": 5,
+      "carNumber": "7",
+      "team": "TOYOTA RACING",
+      "drivers": "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+      "vehicle": "",
+      "manufacturer": "TOYOTA",
+      "laps": 151,
+      "status": "",
+      "gap": "6.015",
+      "elapsedTime": "6:01:23.051"
+     },
+     {
+      "position": 6,
+      "carNumber": "83",
+      "team": "AF CORSE",
+      "drivers": "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 151,
+      "status": "",
+      "gap": "11.552",
+      "elapsedTime": "6:01:28.588"
+     },
+     {
+      "position": 7,
+      "carNumber": "93",
+      "team": "PEUGEOT TOTALENERGIES",
+      "drivers": "NICK CASSIDY, PAUL DI RESTA, STOFFEL VANDOORNE",
+      "vehicle": "",
+      "manufacturer": "PEUGEOT",
+      "laps": 151,
+      "status": "",
+      "gap": "12.861",
+      "elapsedTime": "6:01:29.897"
+     },
+     {
+      "position": 8,
+      "carNumber": "17",
+      "team": "GENESIS MAGMA RACING",
+      "drivers": "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
+      "vehicle": "",
+      "manufacturer": "GENESIS",
+      "laps": 151,
+      "status": "",
+      "gap": "29.882",
+      "elapsedTime": "6:01:46.918"
+     },
+     {
+      "position": 9,
+      "carNumber": "12",
+      "team": "CADILLAC HERTZ TEAM JOTA",
+      "drivers": "NORMAN NATO, WILL STEVENS",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 151,
+      "status": "",
+      "gap": "31.837",
+      "elapsedTime": "6:01:48.873"
+     },
+     {
+      "position": 10,
+      "carNumber": "8",
+      "team": "TOYOTA RACING",
+      "drivers": "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+      "vehicle": "",
+      "manufacturer": "TOYOTA",
+      "laps": 151,
+      "status": "",
+      "gap": "32.165",
+      "elapsedTime": "6:01:49.201"
+     },
+     {
+      "position": 11,
+      "carNumber": "36",
+      "team": "ALPINE ENDURANCE TEAM",
+      "drivers": "FRÉDÉRIC MAKOWIECKI, JULES GOUNON, VICTOR MARTINS",
+      "vehicle": "",
+      "manufacturer": "ALPINE",
+      "laps": 151,
+      "status": "",
+      "gap": "32.376",
+      "elapsedTime": "6:01:49.412"
+     },
+     {
+      "position": 12,
+      "carNumber": "35",
+      "team": "ALPINE ENDURANCE TEAM",
+      "drivers": "ANTÓNIO FÉLIX DA COSTA, CHARLES MILESI, FERDINAND HABSBURG",
+      "vehicle": "",
+      "manufacturer": "ALPINE",
+      "laps": 149,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:02:46.639"
+     },
+     {
+      "position": 13,
+      "carNumber": "19",
+      "team": "GENESIS MAGMA RACING",
+      "drivers": "DANIEL JUNCADELLA, MATHIEU JAMINET, PAUL-LOUP CHATIN",
+      "vehicle": "",
+      "manufacturer": "GENESIS",
+      "laps": 143,
+      "status": "",
+      "gap": "8 Laps",
+      "elapsedTime": "6:01:51.636"
+     },
+     {
+      "position": 14,
+      "carNumber": "009",
+      "team": "ASTON MARTIN THOR TEAM",
+      "drivers": "ALEX RIBERAS, MARCO SØRENSEN",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 136,
+      "status": "",
+      "gap": "15 Laps",
+      "elapsedTime": "5:25:30.293"
+     },
+     {
+      "position": 15,
+      "carNumber": "51",
+      "team": "FERRARI AF CORSE",
+      "drivers": "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 129,
+      "status": "",
+      "gap": "22 Laps",
+      "elapsedTime": "4:57:41.017"
+     },
+     {
+      "position": 16,
+      "carNumber": "94",
+      "team": "PEUGEOT TOTALENERGIES",
+      "drivers": "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
+      "vehicle": "",
+      "manufacturer": "PEUGEOT",
+      "laps": 103,
+      "status": "",
+      "gap": "48 Laps",
+      "elapsedTime": "3:51:31.520"
+     },
+     {
+      "position": 17,
+      "carNumber": "38",
+      "team": "CADILLAC HERTZ TEAM JOTA",
+      "drivers": "EARL BAMBER, SÉBASTIEN BOURDAIS",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 85,
+      "status": "",
+      "gap": "66 Laps",
+      "elapsedTime": "3:40:57.271"
+     }
+    ],
+    "LMGT3": [
+     {
+      "position": 1,
+      "carNumber": "10",
+      "team": "GARAGE 59",
+      "drivers": "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
+      "vehicle": "",
+      "manufacturer": "McLAREN",
+      "laps": 139,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "6:01:45.434"
+     },
+     {
+      "position": 2,
+      "carNumber": "27",
+      "team": "HEART OF RACING TEAM",
+      "drivers": "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 139,
+      "status": "",
+      "gap": "2.148",
+      "elapsedTime": "6:01:47.582"
+     },
+     {
+      "position": 3,
+      "carNumber": "92",
+      "team": "THE BEND MANTHEY",
+      "drivers": "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+      "vehicle": "",
+      "manufacturer": "PORSCHE",
+      "laps": 139,
+      "status": "",
+      "gap": "3.422",
+      "elapsedTime": "6:01:48.856"
+     },
+     {
+      "position": 4,
+      "carNumber": "21",
+      "team": "VISTA AF CORSE",
+      "drivers": "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 139,
+      "status": "",
+      "gap": "4.063",
+      "elapsedTime": "6:01:49.497"
+     },
+     {
+      "position": 5,
+      "carNumber": "58",
+      "team": "GARAGE 59",
+      "drivers": "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+      "vehicle": "",
+      "manufacturer": "McLAREN",
+      "laps": 139,
+      "status": "",
+      "gap": "10.401",
+      "elapsedTime": "6:01:55.835"
+     },
+     {
+      "position": 6,
+      "carNumber": "87",
+      "team": "AKKODIS ASP TEAM",
+      "drivers": "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+      "vehicle": "",
+      "manufacturer": "LEXUS",
+      "laps": 139,
+      "status": "",
+      "gap": "12.259",
+      "elapsedTime": "6:01:57.693"
+     },
+     {
+      "position": 7,
+      "carNumber": "91",
+      "team": "MANTHEY DK ENGINEERING",
+      "drivers": "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+      "vehicle": "",
+      "manufacturer": "PORSCHE",
+      "laps": 139,
+      "status": "",
+      "gap": "13.968",
+      "elapsedTime": "6:01:59.402"
+     },
+     {
+      "position": 8,
+      "carNumber": "33",
+      "team": "TF SPORT",
+      "drivers": "JONNY EDGAR",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 139,
+      "status": "",
+      "gap": "15.002",
+      "elapsedTime": "6:02:00.436"
+     },
+     {
+      "position": 9,
+      "carNumber": "34",
+      "team": "RACING TEAM TURKEY BY TF",
+      "drivers": "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 139,
+      "status": "",
+      "gap": "16.140",
+      "elapsedTime": "6:02:01.574"
+     },
+     {
+      "position": 10,
+      "carNumber": "61",
+      "team": "IRON LYNX",
+      "drivers": "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 139,
+      "status": "",
+      "gap": "16.335",
+      "elapsedTime": "6:02:01.769"
+     },
+     {
+      "position": 11,
+      "carNumber": "69",
+      "team": "TEAM WRT",
+      "drivers": "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 139,
+      "status": "",
+      "gap": "27.168",
+      "elapsedTime": "6:02:12.602"
+     },
+     {
+      "position": 12,
+      "carNumber": "88",
+      "team": "PROTON COMPETITION",
+      "drivers": "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+      "vehicle": "",
+      "manufacturer": "FORD",
+      "laps": 139,
+      "status": "",
+      "gap": "27.344",
+      "elapsedTime": "6:02:12.778"
+     },
+     {
+      "position": 13,
+      "carNumber": "23",
+      "team": "HEART OF RACING TEAM",
+      "drivers": "GRAY NEWELL, JONNY ADAM",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 139,
+      "status": "",
+      "gap": "28.508",
+      "elapsedTime": "6:02:13.942"
+     },
+     {
+      "position": 14,
+      "carNumber": "32",
+      "team": "TEAM WRT",
+      "drivers": "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 139,
+      "status": "",
+      "gap": "1:05.946",
+      "elapsedTime": "6:02:51.380"
+     },
+     {
+      "position": 15,
+      "carNumber": "54",
+      "team": "VISTA AF CORSE",
+      "drivers": "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 138,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:02:01.065"
+     },
+     {
+      "position": 16,
+      "carNumber": "77",
+      "team": "PROTON COMPETITION",
+      "drivers": "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+      "vehicle": "",
+      "manufacturer": "FORD",
+      "laps": 127,
+      "status": "",
+      "gap": "12 Laps",
+      "elapsedTime": "6:03:17.553"
+     },
+     {
+      "position": 17,
+      "carNumber": "79",
+      "team": "IRON LYNX",
+      "drivers": "JOHANNES ZELGER, LIN HODENIUS, MATTEO CRESSONI",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 95,
+      "status": "",
+      "gap": "44 Laps",
+      "elapsedTime": "5:58:28.622"
+     },
+     {
+      "position": 18,
+      "carNumber": "78",
+      "team": "AKKODIS ASP TEAM",
+      "drivers": "HADRIEN DAVID, TOM VAN ROMPUY",
+      "vehicle": "",
+      "manufacturer": "LEXUS",
+      "laps": 118,
+      "status": "",
+      "gap": "21 Laps",
+      "elapsedTime": "4:57:31.016"
+     }
+    ]
+   }
+  },
+  {
+   "round": 3,
+   "eventName": "24 Hours of Le Mans",
+   "dateStart": "2026-06-10T00:00:00.000Z",
+   "dateEnd": "2026-06-14T00:00:00.000Z",
+   "perClass": {
+    "Hypercar": [
+     {
+      "position": 1,
+      "carNumber": "7",
+      "team": "TOYOTA RACING",
+      "drivers": "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+      "vehicle": "",
+      "manufacturer": "TOYOTA",
+      "laps": 381,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "24:03:01.030"
+     },
+     {
+      "position": 2,
+      "carNumber": "20",
+      "team": "BMW M TEAM WRT",
+      "drivers": "RENÉ RAST, ROBIN FRIJNS",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 381,
+      "status": "",
+      "gap": "10.913",
+      "elapsedTime": "24:03:11.943"
+     },
+     {
+      "position": 3,
+      "carNumber": "8",
+      "team": "TOYOTA RACING",
+      "drivers": "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+      "vehicle": "",
+      "manufacturer": "TOYOTA",
+      "laps": 381,
+      "status": "",
+      "gap": "20.417",
+      "elapsedTime": "24:03:21.447"
+     },
+     {
+      "position": 4,
+      "carNumber": "12",
+      "team": "CADILLAC HERTZ TEAM JOTA",
+      "drivers": "NORMAN NATO, WILL STEVENS",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 381,
+      "status": "",
+      "gap": "32.381",
+      "elapsedTime": "24:03:33.411"
+     },
+     {
+      "position": 5,
+      "carNumber": "51",
+      "team": "FERRARI AF CORSE",
+      "drivers": "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 381,
+      "status": "",
+      "gap": "2:22.423",
+      "elapsedTime": "24:05:23.453"
+     },
+     {
+      "position": 6,
+      "carNumber": "35",
+      "team": "ALPINE ENDURANCE TEAM",
+      "drivers": "ANTÓNIO FÉLIX DA COSTA, CHARLES MILESI, FERDINAND HABSBURG",
+      "vehicle": "",
+      "manufacturer": "ALPINE",
+      "laps": 381,
+      "status": "",
+      "gap": "2:30.205",
+      "elapsedTime": "24:05:31.235"
+     },
+     {
+      "position": 7,
+      "carNumber": "83",
+      "team": "AF CORSE",
+      "drivers": "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 381,
+      "status": "",
+      "gap": "2:35.573",
+      "elapsedTime": "24:05:36.603"
+     },
+     {
+      "position": 8,
+      "carNumber": "007",
+      "team": "ASTON MARTIN THOR TEAM",
+      "drivers": "HARRY TINCKNELL, TOM GAMBLE",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 379,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "24:03:30.890"
+     },
+     {
+      "position": 9,
+      "carNumber": "101",
+      "team": "CADILLAC WTR",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 379,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "24:03:59.236"
+     },
+     {
+      "position": 10,
+      "carNumber": "36",
+      "team": "ALPINE ENDURANCE TEAM",
+      "drivers": "FRÉDÉRIC MAKOWIECKI, JULES GOUNON, VICTOR MARTINS",
+      "vehicle": "",
+      "manufacturer": "ALPINE",
+      "laps": 379,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "24:05:06.622"
+     },
+     {
+      "position": 11,
+      "carNumber": "94",
+      "team": "PEUGEOT TOTALENERGIES",
+      "drivers": "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
+      "vehicle": "",
+      "manufacturer": "PEUGEOT",
+      "laps": 377,
+      "status": "",
+      "gap": "4 Laps",
+      "elapsedTime": "24:04:18.448"
+     },
+     {
+      "position": 12,
+      "carNumber": "93",
+      "team": "PEUGEOT TOTALENERGIES",
+      "drivers": "NICK CASSIDY, PAUL DI RESTA, STOFFEL VANDOORNE",
+      "vehicle": "",
+      "manufacturer": "PEUGEOT",
+      "laps": 376,
+      "status": "",
+      "gap": "5 Laps",
+      "elapsedTime": "24:05:21.204"
+     },
+     {
+      "position": 13,
+      "carNumber": "19",
+      "team": "GENESIS MAGMA RACING",
+      "drivers": "DANIEL JUNCADELLA, MATHIEU JAMINET, PAUL-LOUP CHATIN",
+      "vehicle": "",
+      "manufacturer": "GENESIS",
+      "laps": 372,
+      "status": "",
+      "gap": "9 Laps",
+      "elapsedTime": "24:04:04.363"
+     },
+     {
+      "position": 14,
+      "carNumber": "009",
+      "team": "ASTON MARTIN THOR TEAM",
+      "drivers": "ALEX RIBERAS, MARCO SØRENSEN",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 372,
+      "status": "",
+      "gap": "9 Laps",
+      "elapsedTime": "24:04:28.357"
+     },
+     {
+      "position": 15,
+      "carNumber": "50",
+      "team": "FERRARI AF CORSE",
+      "drivers": "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 284,
+      "status": "",
+      "gap": "97 Laps",
+      "elapsedTime": "18:19:55.370"
+     },
+     {
+      "position": 16,
+      "carNumber": "15",
+      "team": "BMW M TEAM WRT",
+      "drivers": "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 272,
+      "status": "",
+      "gap": "109 Laps",
+      "elapsedTime": "17:20:34.543"
+     },
+     {
+      "position": 17,
+      "carNumber": "17",
+      "team": "GENESIS MAGMA RACING",
+      "drivers": "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
+      "vehicle": "",
+      "manufacturer": "GENESIS",
+      "laps": 263,
+      "status": "",
+      "gap": "118 Laps",
+      "elapsedTime": "16:26:58.396"
+     },
+     {
+      "position": 18,
+      "carNumber": "38",
+      "team": "CADILLAC HERTZ TEAM JOTA",
+      "drivers": "EARL BAMBER, SÉBASTIEN BOURDAIS",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 218,
+      "status": "",
+      "gap": "163 Laps",
+      "elapsedTime": "15:57:19.921"
+     }
+    ],
+    "LMP2": [
+     {
+      "position": 1,
+      "carNumber": "43",
+      "team": "INTER EUROPOL COMPETITION",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 361,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "24:06:33.808"
+     },
+     {
+      "position": 2,
+      "carNumber": "343",
+      "team": "INTER EUROPOL COMPETITION",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 360,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:03:07.994"
+     },
+     {
+      "position": 3,
+      "carNumber": "29",
+      "team": "FORESTIER RACING BY PANIS",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 360,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:03:20.959"
+     },
+     {
+      "position": 4,
+      "carNumber": "26",
+      "team": "VECTOR SPORT",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 360,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:03:34.356"
+     },
+     {
+      "position": 5,
+      "carNumber": "37",
+      "team": "CLX MOTORSPORT",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 360,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:04:52.522"
+     },
+     {
+      "position": 6,
+      "carNumber": "28",
+      "team": "IDEC SPORT",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 359,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "24:05:11.370"
+     },
+     {
+      "position": 7,
+      "carNumber": "4",
+      "team": "CROWDSTRIKE RACING BY APR",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 358,
+      "status": "",
+      "gap": "3 Laps",
+      "elapsedTime": "24:03:26.294"
+     },
+     {
+      "position": 8,
+      "carNumber": "22",
+      "team": "UNITED AUTOSPORTS",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 358,
+      "status": "",
+      "gap": "3 Laps",
+      "elapsedTime": "24:03:37.658"
+     },
+     {
+      "position": 9,
+      "carNumber": "183",
+      "team": "AF CORSE",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 357,
+      "status": "",
+      "gap": "4 Laps",
+      "elapsedTime": "24:04:34.947"
+     },
+     {
+      "position": 10,
+      "carNumber": "99",
+      "team": "AO BY TF",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 356,
+      "status": "",
+      "gap": "5 Laps",
+      "elapsedTime": "24:05:02.178"
+     },
+     {
+      "position": 11,
+      "carNumber": "9",
+      "team": "PROTON COMPETITION",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 356,
+      "status": "",
+      "gap": "5 Laps",
+      "elapsedTime": "24:05:32.283"
+     },
+     {
+      "position": 12,
+      "carNumber": "25",
+      "team": "ALGARVE PRO RACING",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 356,
+      "status": "",
+      "gap": "5 Laps",
+      "elapsedTime": "24:05:50.357"
+     },
+     {
+      "position": 13,
+      "carNumber": "14",
+      "team": "TDS RACING",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 355,
+      "status": "",
+      "gap": "6 Laps",
+      "elapsedTime": "24:06:08.936"
+     },
+     {
+      "position": 14,
+      "carNumber": "44",
+      "team": "PROTON COMPETITION",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 354,
+      "status": "",
+      "gap": "7 Laps",
+      "elapsedTime": "24:04:54.501"
+     },
+     {
+      "position": 15,
+      "carNumber": "222",
+      "team": "UNITED AUTOSPORTS",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 354,
+      "status": "",
+      "gap": "7 Laps",
+      "elapsedTime": "24:05:24.274"
+     },
+     {
+      "position": 16,
+      "carNumber": "48",
+      "team": "RD LIMITED",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 353,
+      "status": "",
+      "gap": "8 Laps",
+      "elapsedTime": "24:05:07.555"
+     },
+     {
+      "position": 17,
+      "carNumber": "3",
+      "team": "DKR ENGINEERING",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 344,
+      "status": "",
+      "gap": "17 Laps",
+      "elapsedTime": "24:06:21.773"
+     },
+     {
+      "position": 18,
+      "carNumber": "24",
+      "team": "NIELSEN RACING",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 341,
+      "status": "",
+      "gap": "20 Laps",
+      "elapsedTime": "24:03:49.886"
+     },
+     {
+      "position": 19,
+      "carNumber": "30",
+      "team": "DUQUEINE TEAM",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ORECA",
+      "laps": 307,
+      "status": "",
+      "gap": "54 Laps",
+      "elapsedTime": "20:36:43.524"
+     }
+    ],
+    "LMGT3": [
+     {
+      "position": 1,
+      "carNumber": "33",
+      "team": "TF SPORT",
+      "drivers": "JONNY EDGAR",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 336,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "24:06:52.461"
+     },
+     {
+      "position": 2,
+      "carNumber": "78",
+      "team": "AKKODIS ASP TEAM",
+      "drivers": "HADRIEN DAVID, TOM VAN ROMPUY",
+      "vehicle": "",
+      "manufacturer": "LEXUS",
+      "laps": 335,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:03:08.533"
+     },
+     {
+      "position": 3,
+      "carNumber": "23",
+      "team": "HEART OF RACING TEAM",
+      "drivers": "GRAY NEWELL, JONNY ADAM",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 335,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:04:13.931"
+     },
+     {
+      "position": 4,
+      "carNumber": "87",
+      "team": "AKKODIS ASP TEAM",
+      "drivers": "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+      "vehicle": "",
+      "manufacturer": "LEXUS",
+      "laps": 335,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:04:15.666"
+     },
+     {
+      "position": 5,
+      "carNumber": "21",
+      "team": "VISTA AF CORSE",
+      "drivers": "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 335,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:04:34.041"
+     },
+     {
+      "position": 6,
+      "carNumber": "34",
+      "team": "RACING TEAM TURKEY BY TF",
+      "drivers": "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 335,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "24:05:08.218"
+     },
+     {
+      "position": 7,
+      "carNumber": "32",
+      "team": "TEAM WRT",
+      "drivers": "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 334,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "24:03:32.171"
+     },
+     {
+      "position": 8,
+      "carNumber": "150",
+      "team": "RICHARD MILLE AF CORSE",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 334,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "24:04:30.987"
+     },
+     {
+      "position": 9,
+      "carNumber": "74",
+      "team": "KESSEL RACING",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 334,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "24:04:44.899"
+     },
+     {
+      "position": 10,
+      "carNumber": "57",
+      "team": "KESSEL RACING",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 334,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "24:05:15.370"
+     },
+     {
+      "position": 11,
+      "carNumber": "59",
+      "team": "RACING SPIRIT OF LEMAN",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 332,
+      "status": "",
+      "gap": "4 Laps",
+      "elapsedTime": "24:03:47.474"
+     },
+     {
+      "position": 12,
+      "carNumber": "10",
+      "team": "GARAGE 59",
+      "drivers": "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
+      "vehicle": "",
+      "manufacturer": "McLAREN",
+      "laps": 332,
+      "status": "",
+      "gap": "4 Laps",
+      "elapsedTime": "24:06:28.306"
+     },
+     {
+      "position": 13,
+      "carNumber": "92",
+      "team": "THE BEND MANTHEY",
+      "drivers": "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+      "vehicle": "",
+      "manufacturer": "PORSCHE",
+      "laps": 330,
+      "status": "",
+      "gap": "6 Laps",
+      "elapsedTime": "24:05:31.149"
+     },
+     {
+      "position": 14,
+      "carNumber": "2",
+      "team": "TF SPORT",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 330,
+      "status": "",
+      "gap": "6 Laps",
+      "elapsedTime": "24:06:15.609"
+     },
+     {
+      "position": 15,
+      "carNumber": "58",
+      "team": "GARAGE 59",
+      "drivers": "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+      "vehicle": "",
+      "manufacturer": "McLAREN",
+      "laps": 329,
+      "status": "",
+      "gap": "7 Laps",
+      "elapsedTime": "24:03:07.290"
+     },
+     {
+      "position": 16,
+      "carNumber": "62",
+      "team": "TEAM QATAR BY IRON LYNX",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 324,
+      "status": "",
+      "gap": "12 Laps",
+      "elapsedTime": "24:03:54.380"
+     },
+     {
+      "position": 17,
+      "carNumber": "88",
+      "team": "PROTON COMPETITION",
+      "drivers": "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+      "vehicle": "",
+      "manufacturer": "FORD",
+      "laps": 323,
+      "status": "",
+      "gap": "13 Laps",
+      "elapsedTime": "24:06:25.942"
+     },
+     {
+      "position": 18,
+      "carNumber": "27",
+      "team": "HEART OF RACING TEAM",
+      "drivers": "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 291,
+      "status": "",
+      "gap": "45 Laps",
+      "elapsedTime": "21:03:27.097"
+     },
+     {
+      "position": 19,
+      "carNumber": "69",
+      "team": "TEAM WRT",
+      "drivers": "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 291,
+      "status": "",
+      "gap": "45 Laps",
+      "elapsedTime": "21:08:08.763"
+     },
+     {
+      "position": 20,
+      "carNumber": "91",
+      "team": "MANTHEY DK ENGINEERING",
+      "drivers": "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+      "vehicle": "",
+      "manufacturer": "PORSCHE",
+      "laps": 254,
+      "status": "",
+      "gap": "82 Laps",
+      "elapsedTime": "18:02:21.172"
+     },
+     {
+      "position": 21,
+      "carNumber": "77",
+      "team": "PROTON COMPETITION",
+      "drivers": "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+      "vehicle": "",
+      "manufacturer": "FORD",
+      "laps": 244,
+      "status": "",
+      "gap": "92 Laps",
+      "elapsedTime": "17:33:09.298"
+     },
+     {
+      "position": 22,
+      "carNumber": "79",
+      "team": "IRON LYNX",
+      "drivers": "JOHANNES ZELGER, LIN HODENIUS, MATTEO CRESSONI",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 153,
+      "status": "",
+      "gap": "183 Laps",
+      "elapsedTime": "11:03:22.599"
+     },
+     {
+      "position": 23,
+      "carNumber": "54",
+      "team": "VISTA AF CORSE",
+      "drivers": "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 110,
+      "status": "",
+      "gap": "226 Laps",
+      "elapsedTime": "7:36:48.500"
+     },
+     {
+      "position": 24,
+      "carNumber": "61",
+      "team": "IRON LYNX",
+      "drivers": "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 65,
+      "status": "",
+      "gap": "271 Laps",
+      "elapsedTime": "5:03:16.609"
+     },
+     {
+      "position": 25,
+      "carNumber": "13",
+      "team": "13 AUTOSPORT",
+      "drivers": "",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 61,
+      "status": "",
+      "gap": "275 Laps",
+      "elapsedTime": "4:55:34.441"
+     }
+    ]
+   }
+  },
+  {
+   "round": 4,
+   "eventName": "Rolex 6 Hours of São Paulo",
+   "dateStart": "2026-07-10T00:00:00.000Z",
+   "dateEnd": "2026-07-12T00:00:00.000Z",
+   "perClass": {
+    "Hypercar": [
+     {
+      "position": 1,
+      "carNumber": "15",
+      "team": "BMW M TEAM WRT",
+      "drivers": "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 242,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "6:00:26.462"
+     },
+     {
+      "position": 2,
+      "carNumber": "51",
+      "team": "FERRARI AF CORSE",
+      "drivers": "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 242,
+      "status": "",
+      "gap": "2.254",
+      "elapsedTime": "6:00:28.716"
+     },
+     {
+      "position": 3,
+      "carNumber": "12",
+      "team": "CADILLAC HERTZ TEAM JOTA",
+      "drivers": "NORMAN NATO, WILL STEVENS",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 242,
+      "status": "",
+      "gap": "6.687",
+      "elapsedTime": "6:00:33.149"
+     },
+     {
+      "position": 4,
+      "carNumber": "38",
+      "team": "CADILLAC HERTZ TEAM JOTA",
+      "drivers": "EARL BAMBER, SÉBASTIEN BOURDAIS",
+      "vehicle": "",
+      "manufacturer": "CADILLAC",
+      "laps": 242,
+      "status": "",
+      "gap": "12.666",
+      "elapsedTime": "6:00:39.128"
+     },
+     {
+      "position": 5,
+      "carNumber": "83",
+      "team": "AF CORSE",
+      "drivers": "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 242,
+      "status": "",
+      "gap": "32.351",
+      "elapsedTime": "6:00:58.813"
+     },
+     {
+      "position": 6,
+      "carNumber": "007",
+      "team": "ASTON MARTIN THOR TEAM",
+      "drivers": "HARRY TINCKNELL, TOM GAMBLE",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 242,
+      "status": "",
+      "gap": "35.566",
+      "elapsedTime": "6:01:02.028"
+     },
+     {
+      "position": 7,
+      "carNumber": "50",
+      "team": "FERRARI AF CORSE",
+      "drivers": "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 242,
+      "status": "",
+      "gap": "39.952",
+      "elapsedTime": "6:01:06.414"
+     },
+     {
+      "position": 8,
+      "carNumber": "20",
+      "team": "BMW M TEAM WRT",
+      "drivers": "RENÉ RAST, ROBIN FRIJNS",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 242,
+      "status": "",
+      "gap": "40.047",
+      "elapsedTime": "6:01:06.509"
+     },
+     {
+      "position": 9,
+      "carNumber": "009",
+      "team": "ASTON MARTIN THOR TEAM",
+      "drivers": "ALEX RIBERAS, MARCO SØRENSEN",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 242,
+      "status": "",
+      "gap": "45.523",
+      "elapsedTime": "6:01:11.985"
+     },
+     {
+      "position": 10,
+      "carNumber": "35",
+      "team": "ALPINE ENDURANCE TEAM",
+      "drivers": "ANTÓNIO FÉLIX DA COSTA, CHARLES MILESI, FERDINAND HABSBURG",
+      "vehicle": "",
+      "manufacturer": "ALPINE",
+      "laps": 242,
+      "status": "",
+      "gap": "56.996",
+      "elapsedTime": "6:01:23.458"
+     },
+     {
+      "position": 11,
+      "carNumber": "36",
+      "team": "ALPINE ENDURANCE TEAM",
+      "drivers": "FRÉDÉRIC MAKOWIECKI, JULES GOUNON, VICTOR MARTINS",
+      "vehicle": "",
+      "manufacturer": "ALPINE",
+      "laps": 242,
+      "status": "",
+      "gap": "1:17.818",
+      "elapsedTime": "6:01:44.280"
+     },
+     {
+      "position": 12,
+      "carNumber": "7",
+      "team": "TOYOTA RACING",
+      "drivers": "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+      "vehicle": "",
+      "manufacturer": "TOYOTA",
+      "laps": 241,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:36.757"
+     },
+     {
+      "position": 13,
+      "carNumber": "19",
+      "team": "GENESIS MAGMA RACING",
+      "drivers": "DANIEL JUNCADELLA, MATHIEU JAMINET, PAUL-LOUP CHATIN",
+      "vehicle": "",
+      "manufacturer": "GENESIS",
+      "laps": 241,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:39.724"
+     },
+     {
+      "position": 14,
+      "carNumber": "94",
+      "team": "PEUGEOT TOTALENERGIES",
+      "drivers": "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
+      "vehicle": "",
+      "manufacturer": "PEUGEOT",
+      "laps": 241,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:03.749"
+     },
+     {
+      "position": 15,
+      "carNumber": "17",
+      "team": "GENESIS MAGMA RACING",
+      "drivers": "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
+      "vehicle": "",
+      "manufacturer": "GENESIS",
+      "laps": 241,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:38.280"
+     },
+     {
+      "position": 16,
+      "carNumber": "93",
+      "team": "PEUGEOT TOTALENERGIES",
+      "drivers": "NICK CASSIDY, PAUL DI RESTA, STOFFEL VANDOORNE",
+      "vehicle": "",
+      "manufacturer": "PEUGEOT",
+      "laps": 240,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:00:44.796"
+     },
+     {
+      "position": 17,
+      "carNumber": "8",
+      "team": "TOYOTA RACING",
+      "drivers": "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+      "vehicle": "",
+      "manufacturer": "TOYOTA",
+      "laps": 230,
+      "status": "",
+      "gap": "12 Laps",
+      "elapsedTime": "6:01:41.706"
+     }
+    ],
+    "LMGT3": [
+     {
+      "position": 1,
+      "carNumber": "34",
+      "team": "RACING TEAM TURKEY BY TF",
+      "drivers": "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 219,
+      "status": "",
+      "gap": "",
+      "elapsedTime": "6:01:46.144"
+     },
+     {
+      "position": 2,
+      "carNumber": "69",
+      "team": "TEAM WRT",
+      "drivers": "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 219,
+      "status": "",
+      "gap": "8.108",
+      "elapsedTime": "6:01:54.252"
+     },
+     {
+      "position": 3,
+      "carNumber": "92",
+      "team": "THE BEND MANTHEY",
+      "drivers": "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+      "vehicle": "",
+      "manufacturer": "PORSCHE",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:27.894"
+     },
+     {
+      "position": 4,
+      "carNumber": "91",
+      "team": "MANTHEY DK ENGINEERING",
+      "drivers": "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+      "vehicle": "",
+      "manufacturer": "PORSCHE",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:28.323"
+     },
+     {
+      "position": 5,
+      "carNumber": "88",
+      "team": "PROTON COMPETITION",
+      "drivers": "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+      "vehicle": "",
+      "manufacturer": "FORD",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:30.079"
+     },
+     {
+      "position": 6,
+      "carNumber": "61",
+      "team": "IRON LYNX",
+      "drivers": "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:54.253"
+     },
+     {
+      "position": 7,
+      "carNumber": "87",
+      "team": "AKKODIS ASP TEAM",
+      "drivers": "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+      "vehicle": "",
+      "manufacturer": "LEXUS",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:00:55.914"
+     },
+     {
+      "position": 8,
+      "carNumber": "33",
+      "team": "TF SPORT",
+      "drivers": "JONNY EDGAR",
+      "vehicle": "",
+      "manufacturer": "CORVETTE",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:02.770"
+     },
+     {
+      "position": 9,
+      "carNumber": "21",
+      "team": "VISTA AF CORSE",
+      "drivers": "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:03.472"
+     },
+     {
+      "position": 10,
+      "carNumber": "77",
+      "team": "PROTON COMPETITION",
+      "drivers": "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+      "vehicle": "",
+      "manufacturer": "FORD",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:07.093"
+     },
+     {
+      "position": 11,
+      "carNumber": "58",
+      "team": "GARAGE 59",
+      "drivers": "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+      "vehicle": "",
+      "manufacturer": "McLAREN",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:36.890"
+     },
+     {
+      "position": 12,
+      "carNumber": "32",
+      "team": "TEAM WRT",
+      "drivers": "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+      "vehicle": "",
+      "manufacturer": "BMW",
+      "laps": 218,
+      "status": "",
+      "gap": "1 Lap",
+      "elapsedTime": "6:01:37.628"
+     },
+     {
+      "position": 13,
+      "carNumber": "27",
+      "team": "HEART OF RACING TEAM",
+      "drivers": "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 217,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:00:36.160"
+     },
+     {
+      "position": 14,
+      "carNumber": "78",
+      "team": "AKKODIS ASP TEAM",
+      "drivers": "HADRIEN DAVID, TOM VAN ROMPUY",
+      "vehicle": "",
+      "manufacturer": "LEXUS",
+      "laps": 217,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:00:38.772"
+     },
+     {
+      "position": 15,
+      "carNumber": "79",
+      "team": "IRON LYNX",
+      "drivers": "JOHANNES ZELGER, LIN HODENIUS, MATTEO CRESSONI",
+      "vehicle": "",
+      "manufacturer": "MERCEDES",
+      "laps": 217,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:00:39.360"
+     },
+     {
+      "position": 16,
+      "carNumber": "10",
+      "team": "GARAGE 59",
+      "drivers": "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
+      "vehicle": "",
+      "manufacturer": "McLAREN",
+      "laps": 217,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:01:38.242"
+     },
+     {
+      "position": 17,
+      "carNumber": "54",
+      "team": "VISTA AF CORSE",
+      "drivers": "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
+      "vehicle": "",
+      "manufacturer": "FERRARI",
+      "laps": 217,
+      "status": "",
+      "gap": "2 Laps",
+      "elapsedTime": "6:03:00.805"
+     },
+     {
+      "position": 18,
+      "carNumber": "23",
+      "team": "HEART OF RACING TEAM",
+      "drivers": "GRAY NEWELL, JONNY ADAM",
+      "vehicle": "",
+      "manufacturer": "ASTON MARTIN",
+      "laps": 216,
+      "status": "",
+      "gap": "3 Laps",
+      "elapsedTime": "6:00:59.724"
+     }
+    ]
+   }
+  }
+ ],
+ "standings": {
+  "drivers": {
+   "Hypercar": [
+    {
+     "position": 1,
+     "driverName": "RENÉ RAST, ROBIN FRIJNS",
+     "team": "BMW #20",
+     "points": 75
+    },
+    {
+     "position": 2,
+     "driverName": "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+     "team": "TOYOTA #7",
+     "points": 75
+    },
+    {
+     "position": 3,
+     "driverName": "SHELDON VAN DER LINDE",
+     "team": "BMW #20",
+     "points": 65
+    },
+    {
+     "position": 4,
+     "driverName": "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+     "team": "FERRARI #51",
+     "points": 57
+    },
+    {
+     "position": 5,
+     "driverName": "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+     "team": "TOYOTA #8",
+     "points": 56
+    },
+    {
+     "position": 6,
+     "driverName": "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+     "team": "BMW #15",
+     "points": 50
+    },
+    {
+     "position": 7,
+     "driverName": "DRIES VANTHOOR",
+     "team": "BMW #15",
+     "points": 44
+    },
+    {
+     "position": 8,
+     "driverName": "NORMAN NATO, WILL STEVENS",
+     "team": "CADILLAC #12",
+     "points": 42
+    },
+    {
+     "position": 9,
+     "driverName": "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+     "team": "FERRARI #83",
+     "points": 31
+    },
+    {
+     "position": 10,
+     "driverName": "HARRY TINCKNELL, TOM GAMBLE",
+     "team": "ASTON MARTIN #007",
+     "points": 30
+    },
+    {
+     "position": 11,
+     "driverName": "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+     "team": "FERRARI #50",
+     "points": 29
+    },
+    {
+     "position": 12,
+     "driverName": "ANTÓNIO FÉLIX DA COSTA, CHARLES MILESI, FERDINAND HABSBURG",
+     "team": "ALPINE #35",
+     "points": 29
+    },
+    {
+     "position": 13,
+     "driverName": "LOUIS DELÉTRAZ",
+     "team": "CADILLAC #12",
+     "points": 26
+    },
+    {
+     "position": 14,
+     "driverName": "EARL BAMBER, SÉBASTIEN BOURDAIS",
+     "team": "CADILLAC #38",
+     "points": 16
+    },
+    {
+     "position": 15,
+     "driverName": "JACK AITKEN",
+     "team": "CADILLAC #38",
+     "points": 12
+    },
+    {
+     "position": 16,
+     "driverName": "ROSS GUNN",
+     "team": "ASTON MARTIN #007",
+     "points": 8
+    },
+    {
+     "position": 17,
+     "driverName": "NICK CASSIDY, PAUL DI RESTA, STOFFEL VANDOORNE",
+     "team": "PEUGEOT #93",
+     "points": 6
+    },
+    {
+     "position": 18,
+     "driverName": "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
+     "team": "GENESIS #17",
+     "points": 4
+    },
+    {
+     "position": 19,
+     "driverName": "FRÉDÉRIC MAKOWIECKI, JULES GOUNON, VICTOR MARTINS",
+     "team": "ALPINE #36",
+     "points": 4
+    },
+    {
+     "position": 20,
+     "driverName": "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
+     "team": "PEUGEOT #94",
+     "points": 3
+    },
+    {
+     "position": 21,
+     "driverName": "ALEX RIBERAS, MARCO SØRENSEN",
+     "team": "ASTON MARTIN #009",
+     "points": 2
+    },
+    {
+     "position": 22,
+     "driverName": "DANIEL JUNCADELLA, MATHIEU JAMINET, PAUL-LOUP CHATIN",
+     "team": "GENESIS #19",
+     "points": 0
+    },
+    {
+     "position": 23,
+     "driverName": "ROMAN DE ANGELIS",
+     "team": "ASTON MARTIN #009",
+     "points": 0
+    }
+   ],
+   "LMGT3": [
+    {
+     "position": 1,
+     "driverName": "JONNY EDGAR",
+     "team": "CORVETTE #33",
+     "points": 76
+    },
+    {
+     "position": 2,
+     "driverName": "NICKY CATSBURG",
+     "team": "CORVETTE #33",
+     "points": 72
+    },
+    {
+     "position": 3,
+     "driverName": "BEN KEATING",
+     "team": "CORVETTE #33",
+     "points": 54
+    },
+    {
+     "position": 4,
+     "driverName": "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+     "team": "PORSCHE #92",
+     "points": 49
+    },
+    {
+     "position": 5,
+     "driverName": "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+     "team": "BMW #69",
+     "points": 43
+    },
+    {
+     "position": 6,
+     "driverName": "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+     "team": "CORVETTE #34",
+     "points": 43
+    },
+    {
+     "position": 7,
+     "driverName": "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+     "team": "FERRARI #21",
+     "points": 42
+    },
+    {
+     "position": 8,
+     "driverName": "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+     "team": "LEXUS #87",
+     "points": 38
+    },
+    {
+     "position": 9,
+     "driverName": "HADRIEN DAVID, TOM VAN ROMPUY",
+     "team": "LEXUS #78",
+     "points": 37
+    },
+    {
+     "position": 10,
+     "driverName": "JACK HAWKSWORTH",
+     "team": "LEXUS #78",
+     "points": 36
+    },
+    {
+     "position": 11,
+     "driverName": "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
+     "team": "McLAREN #10",
+     "points": 34
+    },
+    {
+     "position": 12,
+     "driverName": "GRAY NEWELL, JONNY ADAM",
+     "team": "ASTON MARTIN #23",
+     "points": 33
+    },
+    {
+     "position": 13,
+     "driverName": "EDUARDO BARRICHELLO",
+     "team": "ASTON MARTIN #23",
+     "points": 30
+    },
+    {
+     "position": 14,
+     "driverName": "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+     "team": "PORSCHE #91",
+     "points": 30
+    },
+    {
+     "position": 15,
+     "driverName": "BLAKE MCDONALD",
+     "team": "CORVETTE #33",
+     "points": 22
+    },
+    {
+     "position": 16,
+     "driverName": "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+     "team": "BMW #32",
+     "points": 22
+    },
+    {
+     "position": 17,
+     "driverName": "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+     "team": "ASTON MARTIN #27",
+     "points": 19
+    },
+    {
+     "position": 18,
+     "driverName": "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+     "team": "McLAREN #58",
+     "points": 18
+    },
+    {
+     "position": 19,
+     "driverName": "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+     "team": "FORD #88",
+     "points": 14
+    },
+    {
+     "position": 20,
+     "driverName": "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+     "team": "MERCEDES #61",
+     "points": 9
+    },
+    {
+     "position": 21,
+     "driverName": "NICOLÁS VARRONE",
+     "team": "CORVETTE #33",
+     "points": 4
+    },
+    {
+     "position": 22,
+     "driverName": "KOBE PAUWELS",
+     "team": "ASTON MARTIN #23",
+     "points": 3
+    },
+    {
+     "position": 23,
+     "driverName": "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+     "team": "FORD #77",
+     "points": 2
+    },
+    {
+     "position": 24,
+     "driverName": "ESTEBAN MASSON",
+     "team": "LEXUS #78",
+     "points": 1
+    },
+    {
+     "position": 25,
+     "driverName": "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
+     "team": "FERRARI #54",
+     "points": 0
+    },
+    {
+     "position": 26,
+     "driverName": "JOHANNES ZELGER, LIN HODENIUS, MATTEO CRESSONI",
+     "team": "MERCEDES #79",
+     "points": 0
+    }
+   ]
+  },
+  "teams": {
+   "LMGT3": [
+    {
+     "position": 1,
+     "team": "CORVETTE #33 TF SPORT",
+     "points": 76
+    },
+    {
+     "position": 2,
+     "team": "PORSCHE #92 THE BEND MANTHEY",
+     "points": 49
+    },
+    {
+     "position": 3,
+     "team": "BMW #69 TEAM WRT",
+     "points": 43
+    },
+    {
+     "position": 4,
+     "team": "CORVETTE #34 RACING TEAM TURKEY BY TF",
+     "points": 43
+    },
+    {
+     "position": 5,
+     "team": "FERRARI #21 VISTA AF CORSE",
+     "points": 42
+    },
+    {
+     "position": 6,
+     "team": "LEXUS #87 AKKODIS ASP TEAM",
+     "points": 38
+    },
+    {
+     "position": 7,
+     "team": "LEXUS #78 AKKODIS ASP TEAM",
+     "points": 37
+    },
+    {
+     "position": 8,
+     "team": "McLAREN #10 GARAGE 59",
+     "points": 34
+    },
+    {
+     "position": 9,
+     "team": "ASTON MARTIN #23 HEART OF RACING TEAM",
+     "points": 33
+    },
+    {
+     "position": 10,
+     "team": "PORSCHE #91 MANTHEY DK ENGINEERING",
+     "points": 30
+    },
+    {
+     "position": 11,
+     "team": "BMW #32 TEAM WRT",
+     "points": 22
+    },
+    {
+     "position": 12,
+     "team": "ASTON MARTIN #27 HEART OF RACING TEAM",
+     "points": 19
+    },
+    {
+     "position": 13,
+     "team": "McLAREN #58 GARAGE 59",
+     "points": 18
+    },
+    {
+     "position": 14,
+     "team": "FORD #88 PROTON COMPETITION",
+     "points": 14
+    },
+    {
+     "position": 15,
+     "team": "MERCEDES #61 IRON LYNX",
+     "points": 9
+    },
+    {
+     "position": 16,
+     "team": "FORD #77 PROTON COMPETITION",
+     "points": 2
+    },
+    {
+     "position": 17,
+     "team": "FERRARI #54 VISTA AF CORSE",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "team": "MERCEDES #79 IRON LYNX",
+     "points": 0
+    }
+   ]
+  },
+  "manufacturers": {
+   "Hypercar": [
+    {
+     "position": 1,
+     "manufacturer": "TOYOTA",
+     "points": 132
+    },
+    {
+     "position": 2,
+     "manufacturer": "BMW",
+     "points": 127
+    },
+    {
+     "position": 3,
+     "manufacturer": "FERRARI",
+     "points": 88
+    },
+    {
+     "position": 4,
+     "manufacturer": "CADILLAC",
+     "points": 60
+    },
+    {
+     "position": 5,
+     "manufacturer": "ALPINE",
+     "points": 41
+    },
+    {
+     "position": 6,
+     "manufacturer": "ASTON MARTIN",
+     "points": 40
+    },
+    {
+     "position": 7,
+     "manufacturer": "PEUGEOT",
+     "points": 15
+    },
+    {
+     "position": 8,
+     "manufacturer": "GENESIS",
+     "points": 6
+    }
+   ]
+  }
+ }
+}

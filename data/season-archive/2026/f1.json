@@ -1,0 +1,3587 @@
+{
+ "season": 2026,
+ "series": "f1",
+ "seriesName": "Formula 1",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "ok"
+ },
+ "weekends": [
+  {
+   "round": 1,
+   "roundName": "Australian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "6–8 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-03-06T01:30:00.000Z",
+     "end": "2026-03-06T02:30:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-03-06T05:00:00.000Z",
+     "end": "2026-03-06T06:00:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-03-07T01:30:00.000Z",
+     "end": "2026-03-07T02:30:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-03-07T05:00:00.000Z",
+     "end": "2026-03-07T06:00:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-03-08T04:00:00.000Z",
+     "end": "2026-03-08T06:00:00.000Z",
+     "location": "Albert Park Circuit, Melbourne"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "roundName": "Chinese Grand Prix",
+   "label": null,
+   "dateRangeLabel": "13–15 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-03-13T03:30:00.000Z",
+     "end": "2026-03-13T04:30:00.000Z",
+     "location": "Shanghai International Circuit"
+    },
+    {
+     "title": "F1 - Sprint Qualifying",
+     "start": "2026-03-13T07:30:00.000Z",
+     "end": "2026-03-13T08:14:00.000Z",
+     "location": "Shanghai International Circuit"
+    },
+    {
+     "title": "F1 - Sprint",
+     "start": "2026-03-14T03:00:00.000Z",
+     "end": "2026-03-14T04:00:00.000Z",
+     "location": "Shanghai International Circuit"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-03-14T07:00:00.000Z",
+     "end": "2026-03-14T08:00:00.000Z",
+     "location": "Shanghai International Circuit"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-03-15T07:00:00.000Z",
+     "end": "2026-03-15T09:00:00.000Z",
+     "location": "Shanghai International Circuit"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "Japanese Grand Prix",
+   "label": null,
+   "dateRangeLabel": "27–29 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-03-27T02:30:00.000Z",
+     "end": "2026-03-27T03:30:00.000Z",
+     "location": "Suzuka International Racing Course"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-03-27T06:00:00.000Z",
+     "end": "2026-03-27T07:00:00.000Z",
+     "location": "Suzuka International Racing Course"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-03-28T02:30:00.000Z",
+     "end": "2026-03-28T03:30:00.000Z",
+     "location": "Suzuka International Racing Course"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-03-28T06:00:00.000Z",
+     "end": "2026-03-28T07:00:00.000Z",
+     "location": "Suzuka International Racing Course"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-03-29T05:00:00.000Z",
+     "end": "2026-03-29T07:00:00.000Z",
+     "location": "Suzuka International Racing Course"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "Miami Grand Prix",
+   "label": null,
+   "dateRangeLabel": "1–3 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-05-01T16:00:00.000Z",
+     "end": "2026-05-01T17:30:00.000Z",
+     "location": "Miami International Autodrome"
+    },
+    {
+     "title": "F1 - Sprint Qualifying",
+     "start": "2026-05-01T20:30:00.000Z",
+     "end": "2026-05-01T21:14:00.000Z",
+     "location": "Miami International Autodrome"
+    },
+    {
+     "title": "F1 - Sprint",
+     "start": "2026-05-02T16:00:00.000Z",
+     "end": "2026-05-02T17:00:00.000Z",
+     "location": "Miami International Autodrome"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-05-02T20:00:00.000Z",
+     "end": "2026-05-02T21:00:00.000Z",
+     "location": "Miami International Autodrome"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-05-03T17:00:00.000Z",
+     "end": "2026-05-03T19:00:00.000Z",
+     "location": "Miami International Autodrome"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "Canadian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "22–24 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-05-22T16:30:00.000Z",
+     "end": "2026-05-22T17:30:00.000Z",
+     "location": "Circuit Gilles Villeneuve, Montreal"
+    },
+    {
+     "title": "F1 - Sprint Qualifying",
+     "start": "2026-05-22T20:30:00.000Z",
+     "end": "2026-05-22T21:15:00.000Z",
+     "location": "Circuit Gilles Villeneuve, Montreal"
+    },
+    {
+     "title": "F1 - Sprint",
+     "start": "2026-05-23T16:00:00.000Z",
+     "end": "2026-05-23T17:00:00.000Z",
+     "location": "Circuit Gilles Villeneuve, Montreal"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-05-23T20:00:00.000Z",
+     "end": "2026-05-23T21:00:00.000Z",
+     "location": "Circuit Gilles Villeneuve, Montreal"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-05-24T20:00:00.000Z",
+     "end": "2026-05-24T22:00:00.000Z",
+     "location": "Circuit Gilles Villeneuve, Montreal"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "Monaco Grand Prix",
+   "label": null,
+   "dateRangeLabel": "5–7 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-06-05T11:30:00.000Z",
+     "end": "2026-06-05T12:30:00.000Z",
+     "location": "Circuit de Monaco"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-06-05T15:00:00.000Z",
+     "end": "2026-06-05T16:00:00.000Z",
+     "location": "Circuit de Monaco"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-06-06T10:30:00.000Z",
+     "end": "2026-06-06T11:30:00.000Z",
+     "location": "Circuit de Monaco"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-06-06T14:00:00.000Z",
+     "end": "2026-06-06T15:00:00.000Z",
+     "location": "Circuit de Monaco"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-06-07T13:00:00.000Z",
+     "end": "2026-06-07T15:00:00.000Z",
+     "location": "Circuit de Monaco"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "Barcelona-Catalunya Grand Prix",
+   "label": null,
+   "dateRangeLabel": "12–14 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-06-12T11:30:00.000Z",
+     "end": "2026-06-12T12:30:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-06-12T15:00:00.000Z",
+     "end": "2026-06-12T16:00:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-06-13T10:30:00.000Z",
+     "end": "2026-06-13T11:30:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-06-13T14:00:00.000Z",
+     "end": "2026-06-13T15:00:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-06-14T13:00:00.000Z",
+     "end": "2026-06-14T15:00:00.000Z",
+     "location": "Circuit de Barcelona-Catalunya"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "Austrian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "26–28 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-06-26T11:30:00.000Z",
+     "end": "2026-06-26T12:30:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-06-26T15:00:00.000Z",
+     "end": "2026-06-26T16:00:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-06-27T10:30:00.000Z",
+     "end": "2026-06-27T11:30:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-06-27T14:00:00.000Z",
+     "end": "2026-06-27T15:00:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-06-28T13:00:00.000Z",
+     "end": "2026-06-28T15:00:00.000Z",
+     "location": "Red Bull Ring, Spielberg"
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "roundName": "British Grand Prix",
+   "label": null,
+   "dateRangeLabel": "3–5 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-07-03T11:30:00.000Z",
+     "end": "2026-07-03T12:30:00.000Z",
+     "location": "Silverstone Circuit"
+    },
+    {
+     "title": "F1 - Sprint Qualifying",
+     "start": "2026-07-03T15:30:00.000Z",
+     "end": "2026-07-03T16:14:00.000Z",
+     "location": "Silverstone Circuit"
+    },
+    {
+     "title": "F1 - Sprint",
+     "start": "2026-07-04T11:00:00.000Z",
+     "end": "2026-07-04T12:00:00.000Z",
+     "location": "Silverstone Circuit"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-07-04T15:00:00.000Z",
+     "end": "2026-07-04T16:00:00.000Z",
+     "location": "Silverstone Circuit"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-07-05T14:00:00.000Z",
+     "end": "2026-07-05T16:00:00.000Z",
+     "location": "Silverstone Circuit"
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "roundName": "Belgian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "17–19 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-07-17T11:30:00.000Z",
+     "end": "2026-07-17T12:30:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-07-17T15:00:00.000Z",
+     "end": "2026-07-17T16:00:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-07-18T10:30:00.000Z",
+     "end": "2026-07-18T11:30:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-07-18T14:00:00.000Z",
+     "end": "2026-07-18T15:00:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-07-19T13:00:00.000Z",
+     "end": "2026-07-19T15:00:00.000Z",
+     "location": "Circuit de Spa-Francorchamps"
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "roundName": "Hungarian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "24–26 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-07-24T11:30:00.000Z",
+     "end": "2026-07-24T12:30:00.000Z",
+     "location": "Hungaroring, Budapest"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-07-24T15:00:00.000Z",
+     "end": "2026-07-24T16:00:00.000Z",
+     "location": "Hungaroring, Budapest"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-07-25T10:30:00.000Z",
+     "end": "2026-07-25T11:30:00.000Z",
+     "location": "Hungaroring, Budapest"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-07-25T14:00:00.000Z",
+     "end": "2026-07-25T15:00:00.000Z",
+     "location": "Hungaroring, Budapest"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-07-26T13:00:00.000Z",
+     "end": "2026-07-26T15:00:00.000Z",
+     "location": "Hungaroring, Budapest"
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "roundName": "Dutch Grand Prix",
+   "label": null,
+   "dateRangeLabel": "21–23 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-08-21T10:30:00.000Z",
+     "end": "2026-08-21T11:30:00.000Z",
+     "location": "Circuit Zandvoort"
+    },
+    {
+     "title": "F1 - Sprint Qualifying",
+     "start": "2026-08-21T14:30:00.000Z",
+     "end": "2026-08-21T15:14:00.000Z",
+     "location": "Circuit Zandvoort"
+    },
+    {
+     "title": "F1 - Sprint",
+     "start": "2026-08-22T10:00:00.000Z",
+     "end": "2026-08-22T11:00:00.000Z",
+     "location": "Circuit Zandvoort"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-08-22T14:00:00.000Z",
+     "end": "2026-08-22T15:00:00.000Z",
+     "location": "Circuit Zandvoort"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-08-23T13:00:00.000Z",
+     "end": "2026-08-23T15:00:00.000Z",
+     "location": "Circuit Zandvoort"
+    }
+   ]
+  },
+  {
+   "round": 13,
+   "roundName": "Italian Grand Prix",
+   "label": null,
+   "dateRangeLabel": "4–6 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-09-04T11:30:00.000Z",
+     "end": "2026-09-04T12:30:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-09-04T15:00:00.000Z",
+     "end": "2026-09-04T16:00:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-09-05T10:30:00.000Z",
+     "end": "2026-09-05T11:30:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-09-05T14:00:00.000Z",
+     "end": "2026-09-05T15:00:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-09-06T13:00:00.000Z",
+     "end": "2026-09-06T15:00:00.000Z",
+     "location": "Autodromo Nazionale Monza"
+    }
+   ]
+  },
+  {
+   "round": 14,
+   "roundName": "Spanish Grand Prix (Madrid)",
+   "label": null,
+   "dateRangeLabel": "11–13 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-09-11T11:30:00.000Z",
+     "end": "2026-09-11T12:30:00.000Z",
+     "location": "Madring, Madrid"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-09-11T15:00:00.000Z",
+     "end": "2026-09-11T16:00:00.000Z",
+     "location": "Madring, Madrid"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-09-12T10:30:00.000Z",
+     "end": "2026-09-12T11:30:00.000Z",
+     "location": "Madring, Madrid"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-09-12T14:00:00.000Z",
+     "end": "2026-09-12T15:00:00.000Z",
+     "location": "Madring, Madrid"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-09-13T13:00:00.000Z",
+     "end": "2026-09-13T15:00:00.000Z",
+     "location": "Madring, Madrid"
+    }
+   ]
+  },
+  {
+   "round": 15,
+   "roundName": "Azerbaijan Grand Prix",
+   "label": null,
+   "dateRangeLabel": "24–26 Sept",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-09-24T09:30:00.000Z",
+     "end": "2026-09-24T10:30:00.000Z",
+     "location": "Baku City Circuit"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-09-24T13:00:00.000Z",
+     "end": "2026-09-24T14:00:00.000Z",
+     "location": "Baku City Circuit"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-09-25T08:30:00.000Z",
+     "end": "2026-09-25T09:30:00.000Z",
+     "location": "Baku City Circuit"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-09-25T12:00:00.000Z",
+     "end": "2026-09-25T13:00:00.000Z",
+     "location": "Baku City Circuit"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-09-26T11:00:00.000Z",
+     "end": "2026-09-26T13:00:00.000Z",
+     "location": "Baku City Circuit"
+    }
+   ]
+  },
+  {
+   "round": 16,
+   "roundName": "Bahrain Grand Prix",
+   "label": null,
+   "dateRangeLabel": "2–4 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 Bahrain GP - Practice 1",
+     "start": "2026-10-02T04:30:00.000Z",
+     "end": "2026-10-02T05:30:00.000Z",
+     "location": null
+    },
+    {
+     "title": "F1 Bahrain GP - Practice 2",
+     "start": "2026-10-02T08:00:00.000Z",
+     "end": "2026-10-02T09:00:00.000Z",
+     "location": null
+    },
+    {
+     "title": "F1 Bahrain GP - Practice 3",
+     "start": "2026-10-03T04:30:00.000Z",
+     "end": "2026-10-03T05:30:00.000Z",
+     "location": null
+    },
+    {
+     "title": "F1 Bahrain GP - Qualifying",
+     "start": "2026-10-03T08:00:00.000Z",
+     "end": "2026-10-03T09:00:00.000Z",
+     "location": null
+    },
+    {
+     "title": "F1 Bahrain GP - Race",
+     "start": "2026-10-04T07:00:00.000Z",
+     "end": "2026-10-04T09:00:00.000Z",
+     "location": null
+    }
+   ]
+  },
+  {
+   "round": 17,
+   "roundName": "Singapore Grand Prix",
+   "label": null,
+   "dateRangeLabel": "9–11 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-10-09T09:30:00.000Z",
+     "end": "2026-10-09T10:30:00.000Z",
+     "location": "Marina Bay Street Circuit, Singapore"
+    },
+    {
+     "title": "F1 - Sprint Qualifying",
+     "start": "2026-10-09T12:30:00.000Z",
+     "end": "2026-10-09T13:14:00.000Z",
+     "location": "Marina Bay Street Circuit, Singapore"
+    },
+    {
+     "title": "F1 - Sprint",
+     "start": "2026-10-10T09:00:00.000Z",
+     "end": "2026-10-10T10:00:00.000Z",
+     "location": "Marina Bay Street Circuit, Singapore"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-10-10T12:00:00.000Z",
+     "end": "2026-10-10T13:00:00.000Z",
+     "location": "Marina Bay Street Circuit, Singapore"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-10-11T12:00:00.000Z",
+     "end": "2026-10-11T14:00:00.000Z",
+     "location": "Marina Bay Street Circuit, Singapore"
+    }
+   ]
+  },
+  {
+   "round": 18,
+   "roundName": "United States Grand Prix",
+   "label": null,
+   "dateRangeLabel": "23–25 Oct",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-10-23T18:30:00.000Z",
+     "end": "2026-10-23T19:30:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-10-23T22:00:00.000Z",
+     "end": "2026-10-23T23:00:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-10-24T17:30:00.000Z",
+     "end": "2026-10-24T18:30:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-10-24T21:00:00.000Z",
+     "end": "2026-10-24T22:00:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-10-25T20:00:00.000Z",
+     "end": "2026-10-25T22:00:00.000Z",
+     "location": "Circuit of The Americas, Austin"
+    }
+   ]
+  },
+  {
+   "round": 19,
+   "roundName": "Mexico City Grand Prix",
+   "label": null,
+   "dateRangeLabel": "30–1 Nov",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-10-30T18:30:00.000Z",
+     "end": "2026-10-30T19:30:00.000Z",
+     "location": "Autodromo Hermanos Rodriguez, Mexico City"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-10-30T22:00:00.000Z",
+     "end": "2026-10-30T23:00:00.000Z",
+     "location": "Autodromo Hermanos Rodriguez, Mexico City"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-10-31T17:30:00.000Z",
+     "end": "2026-10-31T18:30:00.000Z",
+     "location": "Autodromo Hermanos Rodriguez, Mexico City"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-10-31T21:00:00.000Z",
+     "end": "2026-10-31T22:00:00.000Z",
+     "location": "Autodromo Hermanos Rodriguez, Mexico City"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-11-01T20:00:00.000Z",
+     "end": "2026-11-01T22:00:00.000Z",
+     "location": "Autodromo Hermanos Rodriguez, Mexico City"
+    }
+   ]
+  },
+  {
+   "round": 20,
+   "roundName": "São Paulo Grand Prix",
+   "label": null,
+   "dateRangeLabel": "6–8 Nov",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-11-06T16:30:00.000Z",
+     "end": "2026-11-06T17:30:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, São Paulo"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-11-06T20:00:00.000Z",
+     "end": "2026-11-06T21:00:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, São Paulo"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-11-07T15:30:00.000Z",
+     "end": "2026-11-07T16:30:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, São Paulo"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-11-07T19:00:00.000Z",
+     "end": "2026-11-07T20:00:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, São Paulo"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-11-08T18:00:00.000Z",
+     "end": "2026-11-08T20:00:00.000Z",
+     "location": "Autodromo Jose Carlos Pace, São Paulo"
+    }
+   ]
+  },
+  {
+   "round": 21,
+   "roundName": "Las Vegas Grand Prix",
+   "label": null,
+   "dateRangeLabel": "20–22 Nov",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-11-20T02:30:00.000Z",
+     "end": "2026-11-20T03:30:00.000Z",
+     "location": "Las Vegas Strip Circuit"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-11-20T06:00:00.000Z",
+     "end": "2026-11-20T07:00:00.000Z",
+     "location": "Las Vegas Strip Circuit"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-11-21T02:30:00.000Z",
+     "end": "2026-11-21T03:30:00.000Z",
+     "location": "Las Vegas Strip Circuit"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-11-21T04:00:00.000Z",
+     "end": "2026-11-21T05:00:00.000Z",
+     "location": "Las Vegas Strip Circuit"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-11-22T04:00:00.000Z",
+     "end": "2026-11-22T06:00:00.000Z",
+     "location": "Las Vegas Strip Circuit"
+    }
+   ]
+  },
+  {
+   "round": 22,
+   "roundName": "Qatar Grand Prix",
+   "label": null,
+   "dateRangeLabel": "27–29 Nov",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-11-27T13:30:00.000Z",
+     "end": "2026-11-27T14:30:00.000Z",
+     "location": "Lusail International Circuit"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-11-27T17:00:00.000Z",
+     "end": "2026-11-27T18:00:00.000Z",
+     "location": "Lusail International Circuit"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-11-28T12:30:00.000Z",
+     "end": "2026-11-28T13:30:00.000Z",
+     "location": "Lusail International Circuit"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-11-28T16:00:00.000Z",
+     "end": "2026-11-28T17:00:00.000Z",
+     "location": "Lusail International Circuit"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-11-29T16:00:00.000Z",
+     "end": "2026-11-29T18:00:00.000Z",
+     "location": "Lusail International Circuit"
+    }
+   ]
+  },
+  {
+   "round": 23,
+   "roundName": "Abu Dhabi Grand Prix",
+   "label": null,
+   "dateRangeLabel": "4–6 Dec",
+   "isPast": false,
+   "sessions": [
+    {
+     "title": "F1 - Practice 1",
+     "start": "2026-12-04T09:30:00.000Z",
+     "end": "2026-12-04T10:30:00.000Z",
+     "location": "Yas Marina Circuit"
+    },
+    {
+     "title": "F1 - Practice 2",
+     "start": "2026-12-04T13:00:00.000Z",
+     "end": "2026-12-04T14:00:00.000Z",
+     "location": "Yas Marina Circuit"
+    },
+    {
+     "title": "F1 - Practice 3",
+     "start": "2026-12-05T10:30:00.000Z",
+     "end": "2026-12-05T11:30:00.000Z",
+     "location": "Yas Marina Circuit"
+    },
+    {
+     "title": "F1 - Qualifying",
+     "start": "2026-12-05T14:00:00.000Z",
+     "end": "2026-12-05T15:00:00.000Z",
+     "location": "Yas Marina Circuit"
+    },
+    {
+     "title": "F1 - Race",
+     "start": "2026-12-06T13:00:00.000Z",
+     "end": "2026-12-06T15:00:00.000Z",
+     "location": "Yas Marina Circuit"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "round": 1,
+   "raceName": "Australian Grand Prix",
+   "date": "2026-03-08T00:00:00.000Z",
+   "circuit": "Albert Park Grand Prix Circuit",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "1:23:06.801",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+2.974",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+15.519",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+16.144",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+51.741",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+54.617",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+4.593",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+11.816",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+12.775",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+29.027",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+29.850",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+56.075",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+57.173",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+8.487",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+36.886",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+7.850",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Did not start",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Did not start",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Chinese Grand Prix",
+   "date": "2026-03-15T00:00:00.000Z",
+   "circuit": "Shanghai International Circuit",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "1:33:15.607",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+5.515",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+25.267",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+28.894",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Finished",
+     "time": "+57.268",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+59.647",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+1:20.588",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+1:27.247",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+11.673",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+12.403",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+21.109",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+22.828",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+56.158",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+1:06.256",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+1:14.641",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Did not start",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Did not start",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Did not start",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Did not start",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "Japanese Grand Prix",
+   "date": "2026-03-29T00:00:00.000Z",
+   "circuit": "Suzuka Circuit",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "1:28:03.403",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+13.722",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+15.270",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+15.754",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+23.479",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+25.037",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+32.340",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+32.677",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+50.180",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Finished",
+     "time": "+51.216",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Finished",
+     "time": "+52.280",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+56.154",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Finished",
+     "time": "+59.078",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+59.848",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Finished",
+     "time": "+1:05.008",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+1:05.773",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Finished",
+     "time": "+1:32.453",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+26.548",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+42.621",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+5.067",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Miami Grand Prix",
+   "date": "2026-05-03T00:00:00.000Z",
+   "circuit": "Miami International Autodrome",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "1:33:19.273",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+3.264",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+27.092",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+43.051",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+48.949",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+53.753",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+1:01.871",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+1:04.245",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Finished",
+     "time": "+1:22.072",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Finished",
+     "time": "+1:30.972",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+6.400",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+9.353",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+13.873",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+44.781",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+1:14.964",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+1:17.513",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+1:22.631",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+1:08.255",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Canadian Grand Prix",
+   "date": "2026-05-24T00:00:00.000Z",
+   "circuit": "Circuit Gilles Villeneuve",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "1:28:15.758",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+10.768",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+11.276",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+44.151",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Lapped",
+     "time": "+5.033",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+19.510",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+34.235",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+34.572",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+58.014",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+59.049",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Lapped",
+     "time": "+12.699",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+14.182",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+21.156",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+1:08.635",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+18.397",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+53.390",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Did not start",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Monaco Grand Prix",
+   "date": "2026-06-07T00:00:00.000Z",
+   "circuit": "Circuit de Monaco",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "2:23:31.243",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+6.271",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+20.369",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+23.394",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+24.261",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+26.553",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+29.010",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Finished",
+     "time": "+33.413",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Finished",
+     "time": "+37.140",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Finished",
+     "time": "+41.899",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Finished",
+     "time": "+42.748",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+43.353",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Finished",
+     "time": "+44.102",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+48.964",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Finished",
+     "time": "+49.153",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Retired",
+     "time": "",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "Barcelona Grand Prix",
+   "date": "2026-06-14T00:00:00.000Z",
+   "circuit": "Circuit de Barcelona-Catalunya",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "1:32:28.105",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+19.561",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+23.719",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+40.497",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+58.661",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Lapped",
+     "time": "+24.627",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+55.789",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+1:12.224",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+1:18.074",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+1:19.867",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+26.687",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+27.866",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+59.149",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+7.769",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Retired",
+     "time": "",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Retired",
+     "time": "",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Retired",
+     "time": "",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Lapped",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "raceName": "Austrian Grand Prix",
+   "date": "2026-06-28T00:00:00.000Z",
+   "circuit": "Red Bull Ring",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "1:26:37.979",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+1.611",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+1.986",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+21.809",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+26.393",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+29.399",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+31.505",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+45.659",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+15.334",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+19.030",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+30.315",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+38.484",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+39.251",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+1:02.677",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+1:05.647",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+25.932",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+28.082",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+4.833",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "raceName": "British Grand Prix",
+   "date": "2026-07-05T00:00:00.000Z",
+   "circuit": "Silverstone Circuit",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "1:27:11.335",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+0.427",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+0.772",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+1.149",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+1.598",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+2.023",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+2.214",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Finished",
+     "time": "+2.413",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+3.229",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+3.445",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+4.014",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Finished",
+     "time": "+5.245",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Finished",
+     "time": "+5.512",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Finished",
+     "time": "+7.403",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+8.005",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Finished",
+     "time": "+8.162",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+4.391",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+4.980",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+6.750",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Retired",
+     "time": "",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "raceName": "Belgian Grand Prix",
+   "date": "2026-07-19T00:00:00.000Z",
+   "circuit": "Circuit de Spa-Francorchamps",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "1:24:42.479",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+1.952",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+11.586",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+17.245",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+18.988",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+23.307",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+24.014",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Finished",
+     "time": "+49.140",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+50.406",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+1:16.037",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Finished",
+     "time": "+1:16.991",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Finished",
+     "time": "+1:17.523",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Finished",
+     "time": "+1:18.348",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Finished",
+     "time": "+1:34.465",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Finished",
+     "time": "+1:44.684",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Finished",
+     "time": "+1:45.856",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Finished",
+     "time": "+1:50.925",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+1:00.979",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+20.848",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "raceName": "Hungarian Grand Prix",
+   "date": "2026-07-26T00:00:00.000Z",
+   "circuit": "Hungaroring",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "1:39:56.180",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+15.080",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+18.728",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+23.840",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+24.540",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Isack Hadjar",
+     "driverCode": "HAD",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+55.488",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+57.503",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+28.033",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+30.382",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+51.050",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+52.028",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+53.429",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+1:03.828",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+1:06.052",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+3.876",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+12.859",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+52.729",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+52.973",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Lapped",
+     "time": "+57.198",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "raceName": "Dutch Grand Prix",
+   "date": "2026-08-23T00:00:00.000Z",
+   "circuit": "Circuit Park Zandvoort",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Lando Norris",
+     "driverCode": "NOR",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "2:04:44.859",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Andrea Kimi Antonelli",
+     "driverCode": "ANT",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+11.536",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "George Russell",
+     "driverCode": "RUS",
+     "team": "Mercedes",
+     "status": "Finished",
+     "time": "+15.906",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Lewis Hamilton",
+     "driverCode": "HAM",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+16.755",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Charles Leclerc",
+     "driverCode": "LEC",
+     "team": "Ferrari",
+     "status": "Finished",
+     "time": "+17.258",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Oscar Piastri",
+     "driverCode": "PIA",
+     "team": "McLaren",
+     "status": "Finished",
+     "time": "+32.332",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Liam Lawson",
+     "driverCode": "LAW",
+     "team": "Red Bull",
+     "status": "Finished",
+     "time": "+1:19.915",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Nico Hülkenberg",
+     "driverCode": "HUL",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+36.049",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Fernando Alonso",
+     "driverCode": "ALO",
+     "team": "Aston Martin",
+     "status": "Lapped",
+     "time": "+48.393",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Pierre Gasly",
+     "driverCode": "GAS",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+49.640",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Yuki Tsunoda",
+     "driverCode": "TSU",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+54.322",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Arvid Lindblad",
+     "driverCode": "LIN",
+     "team": "RB F1 Team",
+     "status": "Lapped",
+     "time": "+1:05.680",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Gabriel Bortoleto",
+     "driverCode": "BOR",
+     "team": "Audi",
+     "status": "Lapped",
+     "time": "+1:06.235",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Franco Colapinto",
+     "driverCode": "COL",
+     "team": "Alpine F1 Team",
+     "status": "Lapped",
+     "time": "+20.534",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Sergio Pérez",
+     "driverCode": "PER",
+     "team": "Cadillac F1 Team",
+     "status": "Lapped",
+     "time": "+58.582",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Carlos Sainz",
+     "driverCode": "SAI",
+     "team": "Williams",
+     "status": "Lapped",
+     "time": "+1:10.271",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Alexander Albon",
+     "driverCode": "ALB",
+     "team": "Williams",
+     "status": "Retired",
+     "time": "",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Valtteri Bottas",
+     "driverCode": "BOT",
+     "team": "Cadillac F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Esteban Ocon",
+     "driverCode": "OCO",
+     "team": "Haas F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Lance Stroll",
+     "driverCode": "STR",
+     "team": "Aston Martin",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 21,
+     "driverName": "Oliver Bearman",
+     "driverCode": "BEA",
+     "team": "Haas F1 Team",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 22,
+     "driverName": "Max Verstappen",
+     "driverCode": "VER",
+     "team": "Red Bull",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  }
+ ],
+ "standings": {
+  "drivers": [
+   {
+    "position": 1,
+    "driverName": "Andrea Kimi Antonelli",
+    "driverCode": "ANT",
+    "team": "Mercedes",
+    "points": 242,
+    "wins": 6
+   },
+   {
+    "position": 2,
+    "driverName": "George Russell",
+    "driverCode": "RUS",
+    "team": "Mercedes",
+    "points": 183,
+    "wins": 2
+   },
+   {
+    "position": 3,
+    "driverName": "Lewis Hamilton",
+    "driverCode": "HAM",
+    "team": "Ferrari",
+    "points": 183,
+    "wins": 1
+   },
+   {
+    "position": 4,
+    "driverName": "Lando Norris",
+    "driverCode": "NOR",
+    "team": "McLaren",
+    "points": 159,
+    "wins": 2
+   },
+   {
+    "position": 5,
+    "driverName": "Charles Leclerc",
+    "driverCode": "LEC",
+    "team": "Ferrari",
+    "points": 155,
+    "wins": 1
+   },
+   {
+    "position": 6,
+    "driverName": "Max Verstappen",
+    "driverCode": "VER",
+    "team": "Red Bull",
+    "points": 112,
+    "wins": 0
+   },
+   {
+    "position": 7,
+    "driverName": "Oscar Piastri",
+    "driverCode": "PIA",
+    "team": "McLaren",
+    "points": 104,
+    "wins": 0
+   },
+   {
+    "position": 8,
+    "driverName": "Isack Hadjar",
+    "driverCode": "HAD",
+    "team": "Red Bull",
+    "points": 68,
+    "wins": 0
+   },
+   {
+    "position": 9,
+    "driverName": "Liam Lawson",
+    "driverCode": "LAW",
+    "team": "RB F1 Team",
+    "points": 49,
+    "wins": 0
+   },
+   {
+    "position": 10,
+    "driverName": "Pierre Gasly",
+    "driverCode": "GAS",
+    "team": "Alpine F1 Team",
+    "points": 44,
+    "wins": 0
+   },
+   {
+    "position": 11,
+    "driverName": "Arvid Lindblad",
+    "driverCode": "LIN",
+    "team": "RB F1 Team",
+    "points": 23,
+    "wins": 0
+   },
+   {
+    "position": 12,
+    "driverName": "Franco Colapinto",
+    "driverCode": "COL",
+    "team": "Alpine F1 Team",
+    "points": 19,
+    "wins": 0
+   },
+   {
+    "position": 13,
+    "driverName": "Oliver Bearman",
+    "driverCode": "BEA",
+    "team": "Haas F1 Team",
+    "points": 18,
+    "wins": 0
+   },
+   {
+    "position": 14,
+    "driverName": "Gabriel Bortoleto",
+    "driverCode": "BOR",
+    "team": "Audi",
+    "points": 10,
+    "wins": 0
+   },
+   {
+    "position": 15,
+    "driverName": "Nico Hülkenberg",
+    "driverCode": "HUL",
+    "team": "Audi",
+    "points": 6,
+    "wins": 0
+   },
+   {
+    "position": 16,
+    "driverName": "Carlos Sainz",
+    "driverCode": "SAI",
+    "team": "Williams",
+    "points": 6,
+    "wins": 0
+   },
+   {
+    "position": 17,
+    "driverName": "Alexander Albon",
+    "driverCode": "ALB",
+    "team": "Williams",
+    "points": 5,
+    "wins": 0
+   },
+   {
+    "position": 18,
+    "driverName": "Esteban Ocon",
+    "driverCode": "OCO",
+    "team": "Haas F1 Team",
+    "points": 3,
+    "wins": 0
+   },
+   {
+    "position": 19,
+    "driverName": "Fernando Alonso",
+    "driverCode": "ALO",
+    "team": "Aston Martin",
+    "points": 3,
+    "wins": 0
+   },
+   {
+    "position": 20,
+    "driverName": "Yuki Tsunoda",
+    "driverCode": "TSU",
+    "team": "RB F1 Team",
+    "points": 0,
+    "wins": 0
+   },
+   {
+    "position": 21,
+    "driverName": "Lance Stroll",
+    "driverCode": "STR",
+    "team": "Aston Martin",
+    "points": 0,
+    "wins": 0
+   },
+   {
+    "position": 22,
+    "driverName": "Valtteri Bottas",
+    "driverCode": "BOT",
+    "team": "Cadillac F1 Team",
+    "points": 0,
+    "wins": 0
+   },
+   {
+    "position": 23,
+    "driverName": "Sergio Pérez",
+    "driverCode": "PER",
+    "team": "Cadillac F1 Team",
+    "points": 0,
+    "wins": 0
+   }
+  ],
+  "constructors": [
+   {
+    "position": 1,
+    "name": "Mercedes",
+    "points": 425,
+    "wins": 8
+   },
+   {
+    "position": 2,
+    "name": "Ferrari",
+    "points": 338,
+    "wins": 2
+   },
+   {
+    "position": 3,
+    "name": "McLaren",
+    "points": 263,
+    "wins": 2
+   },
+   {
+    "position": 4,
+    "name": "Red Bull",
+    "points": 186,
+    "wins": 0
+   },
+   {
+    "position": 5,
+    "name": "RB F1 Team",
+    "points": 66,
+    "wins": 0
+   },
+   {
+    "position": 6,
+    "name": "Alpine F1 Team",
+    "points": 63,
+    "wins": 0
+   },
+   {
+    "position": 7,
+    "name": "Haas F1 Team",
+    "points": 21,
+    "wins": 0
+   },
+   {
+    "position": 8,
+    "name": "Audi",
+    "points": 16,
+    "wins": 0
+   },
+   {
+    "position": 9,
+    "name": "Williams",
+    "points": 11,
+    "wins": 0
+   },
+   {
+    "position": 10,
+    "name": "Aston Martin",
+    "points": 3,
+    "wins": 0
+   },
+   {
+    "position": 11,
+    "name": "Cadillac F1 Team",
+    "points": 0,
+    "wins": 0
+   }
+  ]
+ }
+}

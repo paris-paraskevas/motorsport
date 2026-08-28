@@ -1,0 +1,3227 @@
+{
+ "season": 2026,
+ "series": "formula-e",
+ "seriesName": "Formula E",
+ "capturedAt": "2026-08-28T07:25:21.505Z",
+ "captured": {
+  "weekends": "ok",
+  "results": "ok",
+  "standings": "ok"
+ },
+ "weekends": [
+  {
+   "round": 1,
+   "roundName": "São Paulo E-Prix",
+   "label": null,
+   "dateRangeLabel": "5–6 Dec",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (São Paulo R1)",
+     "start": "2025-12-05T19:30:00.000Z",
+     "end": "2025-12-05T20:10:00.000Z",
+     "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil"
+    },
+    {
+     "title": "FE - FP2 (São Paulo R1)",
+     "start": "2025-12-06T10:30:00.000Z",
+     "end": "2025-12-06T11:10:00.000Z",
+     "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil"
+    },
+    {
+     "title": "FE - Qualifying (São Paulo R1)",
+     "start": "2025-12-06T12:40:00.000Z",
+     "end": "2025-12-06T13:48:00.000Z",
+     "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil"
+    },
+    {
+     "title": "FE - Race (São Paulo R1)",
+     "start": "2025-12-06T17:05:00.000Z",
+     "end": "2025-12-06T18:00:00.000Z",
+     "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "roundName": "Mexico City E-Prix",
+   "label": null,
+   "dateRangeLabel": "9–10 Jan",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (Mexico City R2)",
+     "start": "2026-01-09T22:30:00.000Z",
+     "end": "2026-01-09T23:10:00.000Z",
+     "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico"
+    },
+    {
+     "title": "FE - FP2 (Mexico City R2)",
+     "start": "2026-01-10T13:30:00.000Z",
+     "end": "2026-01-10T14:10:00.000Z",
+     "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico"
+    },
+    {
+     "title": "FE - Qualifying (Mexico City R2)",
+     "start": "2026-01-10T15:40:00.000Z",
+     "end": "2026-01-10T16:48:00.000Z",
+     "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico"
+    },
+    {
+     "title": "FE - Race (Mexico City R2)",
+     "start": "2026-01-10T20:05:00.000Z",
+     "end": "2026-01-10T21:00:00.000Z",
+     "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "roundName": "Miami E-Prix",
+   "label": null,
+   "dateRangeLabel": "30–31 Jan",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (Miami R3)",
+     "start": "2026-01-30T22:00:00.000Z",
+     "end": "2026-01-30T22:40:00.000Z",
+     "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA"
+    },
+    {
+     "title": "FE - FP2 (Miami R3)",
+     "start": "2026-01-31T12:30:00.000Z",
+     "end": "2026-01-31T13:10:00.000Z",
+     "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA"
+    },
+    {
+     "title": "FE - Qualifying (Miami R3)",
+     "start": "2026-01-31T14:40:00.000Z",
+     "end": "2026-01-31T15:48:00.000Z",
+     "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA"
+    },
+    {
+     "title": "FE - Race (Miami R3)",
+     "start": "2026-01-31T19:05:00.000Z",
+     "end": "2026-01-31T20:00:00.000Z",
+     "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "roundName": "Jeddah E-Prix — Race 1",
+   "label": null,
+   "dateRangeLabel": "12–13 Feb",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (Jeddah R4)",
+     "start": "2026-02-12T17:00:00.000Z",
+     "end": "2026-02-12T17:40:00.000Z",
+     "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+    },
+    {
+     "title": "FE - FP2 (Jeddah R4)",
+     "start": "2026-02-13T10:30:00.000Z",
+     "end": "2026-02-13T11:10:00.000Z",
+     "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+    },
+    {
+     "title": "FE - Qualifying (Jeddah R4)",
+     "start": "2026-02-13T12:40:00.000Z",
+     "end": "2026-02-13T13:48:00.000Z",
+     "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+    },
+    {
+     "title": "FE - Race (Jeddah R4)",
+     "start": "2026-02-13T17:05:00.000Z",
+     "end": "2026-02-13T18:00:00.000Z",
+     "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "roundName": "Jeddah E-Prix — Race 2",
+   "label": null,
+   "dateRangeLabel": "14 Feb",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP3 (Jeddah R5)",
+     "start": "2026-02-14T10:30:00.000Z",
+     "end": "2026-02-14T11:10:00.000Z",
+     "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+    },
+    {
+     "title": "FE - Qualifying (Jeddah R5)",
+     "start": "2026-02-14T12:40:00.000Z",
+     "end": "2026-02-14T13:48:00.000Z",
+     "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+    },
+    {
+     "title": "FE - Race (Jeddah R5)",
+     "start": "2026-02-14T17:05:00.000Z",
+     "end": "2026-02-14T18:00:00.000Z",
+     "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "roundName": "Madrid E-Prix",
+   "label": null,
+   "dateRangeLabel": "20–21 Mar",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - Shakedown (Madrid R6)",
+     "start": "2026-03-20T13:30:00.000Z",
+     "end": "2026-03-20T13:45:00.000Z",
+     "location": "Circuito del Jarama, Madrid, Spain"
+    },
+    {
+     "title": "FE - FP1 (Madrid R6)",
+     "start": "2026-03-20T15:30:00.000Z",
+     "end": "2026-03-20T16:10:00.000Z",
+     "location": "Circuito del Jarama, Madrid, Spain"
+    },
+    {
+     "title": "FE - FP2 (Madrid R6)",
+     "start": "2026-03-21T07:30:00.000Z",
+     "end": "2026-03-21T08:10:00.000Z",
+     "location": "Circuito del Jarama, Madrid, Spain"
+    },
+    {
+     "title": "FE - Qualifying (Madrid R6)",
+     "start": "2026-03-21T09:40:00.000Z",
+     "end": "2026-03-21T10:48:00.000Z",
+     "location": "Circuito del Jarama, Madrid, Spain"
+    },
+    {
+     "title": "FE - Race (Madrid R6)",
+     "start": "2026-03-21T14:05:00.000Z",
+     "end": "2026-03-21T15:00:00.000Z",
+     "location": "Circuito del Jarama, Madrid, Spain"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "roundName": "Berlin E-Prix — Race 1",
+   "label": null,
+   "dateRangeLabel": "1–2 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (Berlin R7)",
+     "start": "2026-05-01T14:00:00.000Z",
+     "end": "2026-05-01T14:40:00.000Z",
+     "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+    },
+    {
+     "title": "FE - FP2 (Berlin R7)",
+     "start": "2026-05-02T07:30:00.000Z",
+     "end": "2026-05-02T08:10:00.000Z",
+     "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+    },
+    {
+     "title": "FE - Qualifying (Berlin R7)",
+     "start": "2026-05-02T09:40:00.000Z",
+     "end": "2026-05-02T10:48:00.000Z",
+     "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+    },
+    {
+     "title": "FE - Race (Berlin R7)",
+     "start": "2026-05-02T14:05:00.000Z",
+     "end": "2026-05-02T15:00:00.000Z",
+     "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "roundName": "Berlin E-Prix — Race 2",
+   "label": null,
+   "dateRangeLabel": "3 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP3 (Berlin R8)",
+     "start": "2026-05-03T07:30:00.000Z",
+     "end": "2026-05-03T08:10:00.000Z",
+     "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+    },
+    {
+     "title": "FE - Qualifying (Berlin R8)",
+     "start": "2026-05-03T09:40:00.000Z",
+     "end": "2026-05-03T10:48:00.000Z",
+     "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+    },
+    {
+     "title": "FE - Race (Berlin R8)",
+     "start": "2026-05-03T14:05:00.000Z",
+     "end": "2026-05-03T15:00:00.000Z",
+     "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "roundName": "Monaco E-Prix — Race 1",
+   "label": null,
+   "dateRangeLabel": "16 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE Monaco E-Prix R9 - FP1",
+     "start": "2026-05-16T05:30:00.000Z",
+     "end": "2026-05-16T06:15:00.000Z",
+     "location": "Circuit de Monaco, Monte Carlo, Monaco"
+    },
+    {
+     "title": "FE Monaco E-Prix R9 - FP2",
+     "start": "2026-05-16T07:10:00.000Z",
+     "end": "2026-05-16T07:45:00.000Z",
+     "location": "Circuit de Monaco, Monte Carlo, Monaco"
+    },
+    {
+     "title": "FE Monaco E-Prix R9 - Qualifying",
+     "start": "2026-05-16T08:40:00.000Z",
+     "end": "2026-05-16T09:48:00.000Z",
+     "location": "Circuit de Monaco, Monte Carlo, Monaco"
+    },
+    {
+     "title": "FE Monaco E-Prix R9 - Race",
+     "start": "2026-05-16T13:05:00.000Z",
+     "end": "2026-05-16T14:00:00.000Z",
+     "location": "Circuit de Monaco, Monte Carlo, Monaco"
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "roundName": "Monaco E-Prix — Race 2",
+   "label": null,
+   "dateRangeLabel": "17 May",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE Monaco E-Prix R10 - FP3",
+     "start": "2026-05-17T06:30:00.000Z",
+     "end": "2026-05-17T07:15:00.000Z",
+     "location": "Circuit de Monaco, Monte Carlo, Monaco"
+    },
+    {
+     "title": "FE Monaco E-Prix R10 - Qualifying",
+     "start": "2026-05-17T08:40:00.000Z",
+     "end": "2026-05-17T09:48:00.000Z",
+     "location": "Circuit de Monaco, Monte Carlo, Monaco"
+    },
+    {
+     "title": "FE Monaco E-Prix R10 - Race",
+     "start": "2026-05-17T13:05:00.000Z",
+     "end": "2026-05-17T14:00:00.000Z",
+     "location": "Circuit de Monaco, Monte Carlo, Monaco"
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "roundName": "Sanya E-Prix",
+   "label": null,
+   "dateRangeLabel": "19–20 Jun",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (Sanya R11)",
+     "start": "2026-06-19T08:30:00.000Z",
+     "end": "2026-06-19T09:10:00.000Z",
+     "location": "Sanya Street Circuit, Sanya, China"
+    },
+    {
+     "title": "FE - FP2 (Sanya R11)",
+     "start": "2026-06-20T00:30:00.000Z",
+     "end": "2026-06-20T01:10:00.000Z",
+     "location": "Sanya Street Circuit, Sanya, China"
+    },
+    {
+     "title": "FE - Qualifying (Sanya R11)",
+     "start": "2026-06-20T02:40:00.000Z",
+     "end": "2026-06-20T03:48:00.000Z",
+     "location": "Sanya Street Circuit, Sanya, China"
+    },
+    {
+     "title": "FE - Race (Sanya R11)",
+     "start": "2026-06-20T07:05:00.000Z",
+     "end": "2026-06-20T08:00:00.000Z",
+     "location": "Sanya Street Circuit, Sanya, China"
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "roundName": "Shanghai E-Prix — Race 1",
+   "label": null,
+   "dateRangeLabel": "3–4 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (Shanghai R12)",
+     "start": "2026-07-03T08:00:00.000Z",
+     "end": "2026-07-03T08:55:00.000Z",
+     "location": "Shanghai International Circuit (short layout), Shanghai, China"
+    },
+    {
+     "title": "FE - FP2 (Shanghai R12)",
+     "start": "2026-07-04T00:30:00.000Z",
+     "end": "2026-07-04T01:25:00.000Z",
+     "location": "Shanghai International Circuit (short layout), Shanghai, China"
+    },
+    {
+     "title": "FE - Qualifying (Shanghai R12)",
+     "start": "2026-07-04T02:40:00.000Z",
+     "end": "2026-07-04T03:48:00.000Z",
+     "location": "Shanghai International Circuit (short layout), Shanghai, China"
+    },
+    {
+     "title": "FE - Race (Shanghai R12)",
+     "start": "2026-07-04T07:05:00.000Z",
+     "end": "2026-07-04T08:00:00.000Z",
+     "location": "Shanghai International Circuit (short layout), Shanghai, China"
+    }
+   ]
+  },
+  {
+   "round": 13,
+   "roundName": "Shanghai E-Prix — Race 2",
+   "label": null,
+   "dateRangeLabel": "5 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP3 (Shanghai R13)",
+     "start": "2026-07-05T00:30:00.000Z",
+     "end": "2026-07-05T01:25:00.000Z",
+     "location": "Shanghai International Circuit (short layout), Shanghai, China"
+    },
+    {
+     "title": "FE - Qualifying (Shanghai R13)",
+     "start": "2026-07-05T02:40:00.000Z",
+     "end": "2026-07-05T03:48:00.000Z",
+     "location": "Shanghai International Circuit (short layout), Shanghai, China"
+    },
+    {
+     "title": "FE - Race (Shanghai R13)",
+     "start": "2026-07-05T07:05:00.000Z",
+     "end": "2026-07-05T08:00:00.000Z",
+     "location": "Shanghai International Circuit (short layout), Shanghai, China"
+    }
+   ]
+  },
+  {
+   "round": 14,
+   "roundName": "Tokyo E-Prix — Race 1",
+   "label": null,
+   "dateRangeLabel": "24–25 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (Tokyo R14)",
+     "start": "2026-07-24T10:00:00.000Z",
+     "end": "2026-07-24T10:55:00.000Z",
+     "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+    },
+    {
+     "title": "FE - FP2 (Tokyo R14)",
+     "start": "2026-07-25T04:30:00.000Z",
+     "end": "2026-07-25T05:25:00.000Z",
+     "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+    },
+    {
+     "title": "FE - Qualifying (Tokyo R14)",
+     "start": "2026-07-25T06:40:00.000Z",
+     "end": "2026-07-25T07:48:00.000Z",
+     "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+    },
+    {
+     "title": "FE - Race (Tokyo R14)",
+     "start": "2026-07-25T11:05:00.000Z",
+     "end": "2026-07-25T12:00:00.000Z",
+     "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+    }
+   ]
+  },
+  {
+   "round": 15,
+   "roundName": "Tokyo E-Prix — Race 2",
+   "label": null,
+   "dateRangeLabel": "26 Jul",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP3 (Tokyo R15)",
+     "start": "2026-07-26T04:30:00.000Z",
+     "end": "2026-07-26T05:25:00.000Z",
+     "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+    },
+    {
+     "title": "FE - Qualifying (Tokyo R15)",
+     "start": "2026-07-26T06:40:00.000Z",
+     "end": "2026-07-26T07:48:00.000Z",
+     "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+    },
+    {
+     "title": "FE - Race (Tokyo R15)",
+     "start": "2026-07-26T11:05:00.000Z",
+     "end": "2026-07-26T12:00:00.000Z",
+     "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+    }
+   ]
+  },
+  {
+   "round": 16,
+   "roundName": "London E-Prix — Race 1",
+   "label": null,
+   "dateRangeLabel": "14–15 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP1 (London R16)",
+     "start": "2026-08-14T14:00:00.000Z",
+     "end": "2026-08-14T14:40:00.000Z",
+     "location": "ExCeL London, Royal Victoria Dock, London, UK"
+    },
+    {
+     "title": "FE - FP2 (London R16)",
+     "start": "2026-08-15T09:30:00.000Z",
+     "end": "2026-08-15T10:10:00.000Z",
+     "location": "ExCeL London, Royal Victoria Dock, London, UK"
+    },
+    {
+     "title": "FE - Qualifying (London R16)",
+     "start": "2026-08-15T11:40:00.000Z",
+     "end": "2026-08-15T12:48:00.000Z",
+     "location": "ExCeL London, Royal Victoria Dock, London, UK"
+    },
+    {
+     "title": "FE - Race (London R16)",
+     "start": "2026-08-15T16:00:00.000Z",
+     "end": "2026-08-15T17:00:00.000Z",
+     "location": "ExCeL London, Royal Victoria Dock, London, UK"
+    }
+   ]
+  },
+  {
+   "round": 17,
+   "roundName": "London E-Prix — Race 2 (Season Finale)",
+   "label": null,
+   "dateRangeLabel": "16 Aug",
+   "isPast": true,
+   "sessions": [
+    {
+     "title": "FE - FP3 (London R17)",
+     "start": "2026-08-16T09:30:00.000Z",
+     "end": "2026-08-16T10:10:00.000Z",
+     "location": "ExCeL London, Royal Victoria Dock, London, UK"
+    },
+    {
+     "title": "FE - Qualifying (London R17)",
+     "start": "2026-08-16T11:40:00.000Z",
+     "end": "2026-08-16T12:48:00.000Z",
+     "location": "ExCeL London, Royal Victoria Dock, London, UK"
+    },
+    {
+     "title": "FE - Race (London R17) — Season Finale",
+     "start": "2026-08-16T16:00:00.000Z",
+     "end": "2026-08-16T17:00:00.000Z",
+     "location": "ExCeL London, Royal Victoria Dock, London, UK"
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "round": 1,
+   "raceName": "São Paulo ePrix",
+   "date": "2025-12-06T00:00:00.000Z",
+   "circuit": "São Paulo ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "59:23.013",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+1:349",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+1.876",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+2.449",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+3.775",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+4.436",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+4.832",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+5.289",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+5.370",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+6.095",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+6.581",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+8.187",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Collision",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Collision damage",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Spun out",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Collision damage",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Collision",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Collision damage",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Collision damage",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "raceName": "Mexico City ePrix",
+   "date": "2026-01-10T00:00:00.000Z",
+   "circuit": "Mexico City ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "49:25:393",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+0.651",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+0.945",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+1.436",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+1.647",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+1.936",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+3.894",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+4.943",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+5.143",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+5.843",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+6.168",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+9.113",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+10.370",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+10.614",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+13.200",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+27.458",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+1:00.202",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Retired",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Retired",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "raceName": "Miami ePrix",
+   "date": "2026-01-31T00:00:00.000Z",
+   "circuit": "Miami ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "48:43.266",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+3.151",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+8.827",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+12.394",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+16.561",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+17.525",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+17.718",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+18.903",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+20.576",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+21.102",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+21.817",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+31.075",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+33.315",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+36.131",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+47.066",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+ 2 laps",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "raceName": "Jeddah ePrix",
+   "date": "2026-02-13T00:00:00.000Z",
+   "circuit": "Jeddah ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "47:18.506",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+2.677",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+7.097",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+8.735",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+9.153",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+11.381",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+11.386",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+12.305",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+12.726",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+13.125",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+16.048",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+16.283",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+16.718",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+17.048",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+19.871",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+20.280",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+22.257",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+43.191",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "DNS",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "raceName": "Jeddah ePrix",
+   "date": "2026-02-14T00:00:00.000Z",
+   "circuit": "Jeddah ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "41:21.590",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+2.574",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+3.508",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+3.924",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+4.521",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+5.461",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+5.926",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+6.348",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+6.887",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+9.170",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+9.476",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+14.206",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+14.714",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+14.769",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+14.787",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+15.979",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+17.951",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+23.342",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+1:08.185",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+1:09.107",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "raceName": "Madrid ePrix",
+   "date": "2026-03-21T00:00:00.000Z",
+   "circuit": "Madrid ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "38:26.706",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+0.386",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+0.799",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+0.985",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+1.570",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+3.760",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+3.822",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+3.884",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+4.117",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+6.576",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+7.182",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+10.216",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+15.686",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+16.345",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+26.016",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+26.917",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+29.372",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+53.664",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+55.751",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+55.889",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "raceName": "Berlin ePrix",
+   "date": "2026-05-02T00:00:00.000Z",
+   "circuit": "Berlin ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "41:37.851",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+4.798",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+5.252",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+5.898",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+8.117",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+8.917",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+10.142",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+10.529",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+11.141",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+13.051",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+13.836",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+14.336",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+14.596",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+14.889",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+15.178",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+16.046",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+17.195",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+18.138",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+49.648",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "RET",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "raceName": "Berlin ePrix",
+   "date": "2026-05-03T00:00:00.000Z",
+   "circuit": "Berlin ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "39:50.663",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+0.822",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+1.111",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+1.639",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+4.424",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+5.940",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+6.325",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+7.604",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+8.491",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+8.965",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+10.216",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+11.712",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+12.747",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+13.212",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+14.774",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+14.873",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+15.372",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+36.559",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "RET",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "RET",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "raceName": "Monaco ePrix",
+   "date": "2026-05-16T00:00:00.000Z",
+   "circuit": "Monaco ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "51:26.313",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+2.677",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+21.115",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+21.320",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+21.839",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+23.990",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+24.322",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+27.019",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+29.004",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+29.817",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+35.817",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+45.641",
+     "points": 3
+    },
+    {
+     "position": 13,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+52.893",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+1:02.680",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "+1:22.065",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+1 lap",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "RET",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "RET",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "raceName": "Monaco ePrix",
+   "date": "2026-05-17T00:00:00.000Z",
+   "circuit": "Monaco ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "Finished",
+     "time": "45:43.102",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+1.165",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+3.448",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+10.442",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+10.891",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+18.073",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+18.380",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+18.950",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+19.622",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+19.895",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+21.119",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+22.854",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+24.160",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+41.244",
+     "points": 3
+    },
+    {
+     "position": 15,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+45.359",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+54.175",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+1:06.715",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+1:08.041",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "RET",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "RET",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "raceName": "Sanya ePrix",
+   "date": "2026-06-20T00:00:00.000Z",
+   "circuit": "Sanya ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Jake Dennis",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "01:09:08.646",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Pepe Martí",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+2.104",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra",
+     "status": "Finished",
+     "time": "+2.855",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "António Félix da Costa",
+     "team": "Jaguar",
+     "status": "Finished",
+     "time": "+5.702",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti-Porsche",
+     "status": "Finished",
+     "time": "+6.112",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Maximilian Günther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+7.116",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Nico Müller",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+8.780",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Jean-Éric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+9.036",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+9.373",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+9.881",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "+10.471",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Joel Eriksson",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+11.264",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Sébastien Buemi",
+     "team": "Envision-Jaguar",
+     "status": "Finished",
+     "time": "+12.491",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche",
+     "status": "Finished",
+     "time": "+12.742",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro-Porsche",
+     "status": "Finished",
+     "time": "+1:10.696",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar",
+     "status": "RET",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan",
+     "status": "RET",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "NC",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Norman Nato",
+     "team": "Nissan",
+     "status": "RET",
+     "points": 0
+    },
+    {
+     "position": 100,
+     "driverName": "Edoardo Mortara",
+     "team": "Mahindra",
+     "status": "RET",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "raceName": "Shanghai ePrix",
+   "date": "2026-07-04T00:00:00.000Z",
+   "circuit": "Shanghai ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche Formula E Team",
+     "status": "Race winner",
+     "points": 25
+    }
+   ]
+  },
+  {
+   "round": 13,
+   "raceName": "Shanghai ePrix",
+   "date": "2026-07-05T00:00:00.000Z",
+   "circuit": "Shanghai ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Lucas di Grassi",
+     "team": "Lola Yamaha ABT Formula E Team",
+     "status": "Race winner",
+     "points": 25
+    }
+   ]
+  },
+  {
+   "round": 14,
+   "raceName": "Tokyo ePrix",
+   "date": "2026-07-25T00:00:00.000Z",
+   "circuit": "Tokyo ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro",
+     "status": "Finished",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Jake Dennis",
+     "team": "Andretti Formula E",
+     "status": "Finished",
+     "time": "0.380",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "0.617",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar Racing",
+     "status": "Finished",
+     "time": "4.763",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Edo Mortara",
+     "team": "Mahindra Racing",
+     "status": "Finished",
+     "time": "6.223",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Jean-Eric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "6.619",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan e.Dams",
+     "status": "Finished",
+     "time": "7.159",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Pepe Marti",
+     "team": "Cupra Kiro",
+     "status": "Finished",
+     "time": "7.516",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Antonio Felix da Costa",
+     "team": "Jaguar Racing",
+     "status": "Finished",
+     "time": "7.765",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "10.456",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Lucas di Grassi",
+     "team": "LOLA YAMAHA ABT",
+     "status": "Finished",
+     "time": "11.411",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Joel Eriksson",
+     "team": "Envision Racing",
+     "status": "Finished",
+     "time": "14.380",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti Formula E",
+     "status": "Finished",
+     "time": "15.391",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Sebastien Buemi",
+     "team": "Envision Racing",
+     "status": "Finished",
+     "time": "15.808",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Max Guenther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "19.028",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Norman Nato",
+     "team": "Nissan e.Dams",
+     "status": "Finished",
+     "time": "36.804",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra Racing",
+     "status": "Finished",
+     "time": "46.973",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Nico Mueller",
+     "team": "Porsche Team",
+     "status": "Finished",
+     "time": "1:04.205",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Zane Maloney",
+     "team": "LOLA YAMAHA ABT",
+     "status": "Finished",
+     "time": "1:11.524",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche Team",
+     "status": "Finished",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 15,
+   "raceName": "Tokyo ePrix",
+   "date": "2026-07-26T00:00:00.000Z",
+   "circuit": "Tokyo ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Nyck de Vries",
+     "team": "Mahindra Racing",
+     "status": "Finished",
+     "time": "01:01:13:217",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+ 0:00:683",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Jake Dennis",
+     "team": "Andretti Formula E",
+     "status": "Finished",
+     "time": "+ 0:00:958",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan e.Dams",
+     "status": "Finished",
+     "time": "+ 0:02:662",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Jean-Eric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+ 0:02:960",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Norman Nato",
+     "team": "Nissan e.Dams",
+     "status": "Finished",
+     "time": "+ 0:03:430",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Sebastien Buemi",
+     "team": "Envision Racing",
+     "status": "Finished",
+     "time": "+ 0:03:799",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Nico Mueller",
+     "team": "Porsche Team",
+     "status": "Finished",
+     "time": "+ 0:04:194",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Taylro Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+ 0:04:702",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Maximilian Guenther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "+ 0:05:140",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti Formula E",
+     "status": "Finished",
+     "time": "+ 0:05:604",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Zane Maloney",
+     "team": "LOLA YAMAHA ABT",
+     "status": "Finished",
+     "time": "+ 0:06:049",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Lucas di Grassi",
+     "team": "LOLA YAMAHA ABT",
+     "status": "Finished",
+     "time": "+ 0:06:349",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro",
+     "status": "Finished",
+     "time": "+ 0:06:826",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche Team",
+     "status": "Finished",
+     "time": "+ 0:08:375",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Antonio Felix da Costa",
+     "team": "Jaguar Racing",
+     "status": "Finished",
+     "time": "+ 0:08:535",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar Racing",
+     "status": "Finished",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Edo Mortara",
+     "team": "Mahindra Racing",
+     "status": "Finished",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Joel Eriksson",
+     "team": "Envision Racing",
+     "status": "Finished",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Pepe Marti",
+     "team": "Cupra Kiro",
+     "status": "Finished",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 16,
+   "raceName": "London ePrix",
+   "date": "2026-08-15T00:00:00.000Z",
+   "circuit": "London ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche Team",
+     "status": "Finished",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Jake Dennis",
+     "team": "Andretti Formula E",
+     "status": "Finished",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Antonio Felix Da Costa",
+     "team": "Jaguar TCS Racing",
+     "status": "Finished",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Sebastien Buemi",
+     "team": "Envision Racing",
+     "status": "Finished",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Edo Mortara",
+     "team": "Mahindra Racing",
+     "status": "Finished",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro",
+     "status": "Finished",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar TCS Racing",
+     "status": "Finished",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Ollie Rowland",
+     "team": "Nissan e.Dams",
+     "status": "Finished",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Nico Mueller",
+     "team": "Porsche Team",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Maximilian Gunther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Nyck De Vries",
+     "team": "Mahindra Racing",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Joel Eriksson",
+     "team": "Envision Racing",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Norman Nato",
+     "team": "Nissan e.Dams",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti Formula E",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Pepe Marti",
+     "team": "Cupra Kiro",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Jean-Eric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Lucas Di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  },
+  {
+   "round": 17,
+   "raceName": "London ePrix",
+   "date": "2026-08-16T00:00:00.000Z",
+   "circuit": "London ePrix",
+   "results": [
+    {
+     "position": 1,
+     "driverName": "Taylor Barnard",
+     "team": "DS Penske",
+     "status": "Finished",
+     "points": 25
+    },
+    {
+     "position": 2,
+     "driverName": "Nyck De Vries",
+     "team": "Mahindra Racing",
+     "status": "Finished",
+     "time": "0.614",
+     "points": 18
+    },
+    {
+     "position": 3,
+     "driverName": "Edo Mortara",
+     "team": "Mahindra Racing",
+     "status": "Finished",
+     "time": "6.087",
+     "points": 15
+    },
+    {
+     "position": 4,
+     "driverName": "Mitch Evans",
+     "team": "Jaguar TCS Racing",
+     "status": "Finished",
+     "time": "7.722",
+     "points": 12
+    },
+    {
+     "position": 5,
+     "driverName": "Sebastien Buemi",
+     "team": "Envision Racing",
+     "status": "Finished",
+     "time": "16.754",
+     "points": 10
+    },
+    {
+     "position": 6,
+     "driverName": "Nick Cassidy",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "17.205",
+     "points": 8
+    },
+    {
+     "position": 7,
+     "driverName": "Jean-Eric Vergne",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "17.864",
+     "points": 6
+    },
+    {
+     "position": 8,
+     "driverName": "Pepe Marti",
+     "team": "Cupra Kiro",
+     "status": "Finished",
+     "time": "18.312",
+     "points": 4
+    },
+    {
+     "position": 9,
+     "driverName": "Oliver Rowland",
+     "team": "Nissan e.Dams",
+     "status": "Finished",
+     "time": "19.363",
+     "points": 2
+    },
+    {
+     "position": 10,
+     "driverName": "Norman Nato",
+     "team": "Nissan e.Dams",
+     "status": "Finished",
+     "time": "24.990",
+     "points": 1
+    },
+    {
+     "position": 11,
+     "driverName": "Maximilian Gunther",
+     "team": "DS Penske",
+     "status": "Finished",
+     "time": "31.219",
+     "points": 0
+    },
+    {
+     "position": 12,
+     "driverName": "Felipe Drugovich",
+     "team": "Andretti Formula E",
+     "status": "Finished",
+     "time": "35.367",
+     "points": 0
+    },
+    {
+     "position": 13,
+     "driverName": "Nico Muller",
+     "team": "Porsche Team",
+     "status": "Finished",
+     "time": "38.658",
+     "points": 0
+    },
+    {
+     "position": 14,
+     "driverName": "Antonio Felix Da Costa",
+     "team": "Jaguar TCS Racing",
+     "status": "Finished",
+     "time": "48.737",
+     "points": 0
+    },
+    {
+     "position": 15,
+     "driverName": "Pascal Wehrlein",
+     "team": "Porsche Team",
+     "status": "Finished",
+     "time": "49.110",
+     "points": 0
+    },
+    {
+     "position": 16,
+     "driverName": "Zane Maloney",
+     "team": "Lola Yamamaha ABT",
+     "status": "Finished",
+     "time": "59.710",
+     "points": 0
+    },
+    {
+     "position": 17,
+     "driverName": "Dan Ticktum",
+     "team": "Cupra Kiro",
+     "status": "Finished",
+     "time": "1:03.794",
+     "points": 0
+    },
+    {
+     "position": 18,
+     "driverName": "Jake Dennis",
+     "team": "Andretti Formula E",
+     "status": "Finished",
+     "time": "+1 Lap",
+     "points": 0
+    },
+    {
+     "position": 19,
+     "driverName": "Joel Eriksson",
+     "team": "Envision Racing",
+     "status": "Finished",
+     "time": "DNF",
+     "points": 0
+    },
+    {
+     "position": 20,
+     "driverName": "Lucas Di Grassi",
+     "team": "Lola Yamaha ABT",
+     "status": "Finished",
+     "time": "DNF",
+     "points": 0
+    }
+   ]
+  }
+ ],
+ "standings": {
+  "drivers": [
+   {
+    "position": 1,
+    "driverName": "Pascal Wehrlein",
+    "team": "",
+    "points": 169
+   },
+   {
+    "position": 2,
+    "driverName": "Jake Dennis",
+    "team": "",
+    "points": 164
+   },
+   {
+    "position": 3,
+    "driverName": "Mitch Evans",
+    "team": "",
+    "points": 160
+   },
+   {
+    "position": 4,
+    "driverName": "Oliver Rowland",
+    "team": "",
+    "points": 137
+   },
+   {
+    "position": 5,
+    "driverName": "Edoardo Mortara",
+    "team": "",
+    "points": 137
+   },
+   {
+    "position": 6,
+    "driverName": "António Félix da Costa",
+    "team": "",
+    "points": 128
+   },
+   {
+    "position": 7,
+    "driverName": "Nyck de Vries",
+    "team": "",
+    "points": 115
+   },
+   {
+    "position": 8,
+    "driverName": "Nick Cassidy",
+    "team": "",
+    "points": 114
+   },
+   {
+    "position": 9,
+    "driverName": "Nico Müller",
+    "team": "",
+    "points": 102
+   },
+   {
+    "position": 10,
+    "driverName": "Sébastien Buemi",
+    "team": "",
+    "points": 97
+   },
+   {
+    "position": 11,
+    "driverName": "Taylor Barnard",
+    "team": "",
+    "points": 68
+   },
+   {
+    "position": 12,
+    "driverName": "Jean-Éric Vergne",
+    "team": "",
+    "points": 68
+   },
+   {
+    "position": 13,
+    "driverName": "Pepe Martí",
+    "team": "",
+    "points": 66
+   },
+   {
+    "position": 14,
+    "driverName": "Felipe Drugovich",
+    "team": "",
+    "points": 65
+   },
+   {
+    "position": 15,
+    "driverName": "Dan Ticktum",
+    "team": "",
+    "points": 62
+   },
+   {
+    "position": 16,
+    "driverName": "Joel Eriksson",
+    "team": "",
+    "points": 55
+   },
+   {
+    "position": 17,
+    "driverName": "Lucas di Grassi",
+    "team": "",
+    "points": 32
+   },
+   {
+    "position": 18,
+    "driverName": "Maximilian Günther",
+    "team": "",
+    "points": 23
+   },
+   {
+    "position": 19,
+    "driverName": "Norman Nato",
+    "team": "",
+    "points": 20
+   },
+   {
+    "position": 20,
+    "driverName": "Zane Maloney",
+    "team": "",
+    "points": 3
+   }
+  ],
+  "constructors": [
+   {
+    "position": 1,
+    "name": "Jaguar TCS Racing",
+    "points": 288
+   },
+   {
+    "position": 2,
+    "name": "Porsche Formula E Team",
+    "points": 271
+   },
+   {
+    "position": 3,
+    "name": "Mahindra Racing",
+    "points": 252
+   },
+   {
+    "position": 4,
+    "name": "Andretti Formula E",
+    "points": 229
+   },
+   {
+    "position": 5,
+    "name": "Citroën Racing",
+    "points": 182
+   },
+   {
+    "position": 6,
+    "name": "Nissan Formula E Team",
+    "points": 157
+   },
+   {
+    "position": 7,
+    "name": "Envision Racing",
+    "points": 152
+   },
+   {
+    "position": 8,
+    "name": "Cupra Kiro",
+    "points": 128
+   },
+   {
+    "position": 9,
+    "name": "DS Penske",
+    "points": 91
+   },
+   {
+    "position": 10,
+    "name": "Lola Yamaha ABT Formula E Team",
+    "points": 35
+   }
+  ]
+ }
+}
