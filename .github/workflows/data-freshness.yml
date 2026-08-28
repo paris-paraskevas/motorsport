@@ -1,0 +1,109 @@
+name: Is the site's data still arriving?
+
+# Watches the DATA, not the workflow that writes it.
+#
+# The alerting added in 0.334.101 opens an issue when a warm-live-data run
+# FAILS. It cannot see the failure that actually cost five days: a job that
+# stops being scheduled, or one nobody looks at. A run that never happens
+# raises nothing.
+#
+# So this asks the only question a reader cares about — is what the site is
+# serving still fresh? — from its own schedule, and catches every version of
+# "the writer stopped", including the ones the workflow-level alert is blind to.
+#
+# Two independent schedules both dying silently is a far smaller risk than one.
+# That residual is accepted; the alternative is an external monitor, which means
+# a service, an account and a bill.
+
+on:
+  schedule:
+    - cron: '17 */6 * * *' # four times a day, against a 12-hour threshold
+  workflow_dispatch: {}
+
+concurrency:
+  group: data-freshness
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Least privilege, and `contents: read` must be spelled out: naming a
+    # permissions block drops every default, so omitting it breaks checkout.
+    permissions:
+      contents: read
+      issues: write
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # 22+, matching warm-live-data: on Node 20 every Supabase call fails
+          # with "detected without native WebSocket support".
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # lib/ imports the generated content bundle, which is gitignored.
+      - name: Generate the content bundle
+        run: npx tsx scripts/bundle-content.mts
+      - name: Check how old the newest snapshot is
+        run: npx tsx scripts/check-data-freshness.mts
+
+      # ONE issue per outage, not one per check. Four checks a day against a
+      # stale database would otherwise produce four identical comments a day and
+      # train everyone to ignore the label. The open issue IS the alert.
+      - name: Open an issue when the data has gone stale
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: The site's data has gone stale
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing is already open; not commenting."
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body "$(cat <<EOF
+          The newest row in \`source_snapshot\` is older than the threshold, which
+          means **the site is serving data it collected some time ago and is not
+          getting anything new**. Nothing on the site is wrong; nothing is arriving.
+
+          \`warm-live-data\` is the only writer, so it has either stopped running or
+          stopped succeeding:
+
+          \`\`\`
+          gh run list --workflow warm-live-data.yml --limit 5
+          \`\`\`
+
+          **Check failed:** $RUN_URL
+
+          This issue was opened automatically and **closes itself** once data is
+          arriving again. Leave it open while it is red — nothing reopens it.
+
+          Note the two alerts are deliberately different. A \`warm-live-data is
+          failing\` issue means a run happened and failed. THIS one means the data
+          is old however that came about, including a job that stopped being
+          scheduled at all — the failure that went unnoticed for five days in
+          August 2026 and for 28 hours before that.
+          EOF
+          )"
+
+      - name: Close the stale-data issue once data is arriving again
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: The site's data has gone stale
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -z "$existing" ]; then
+            exit 0
+          fi
+          gh issue close "$existing" --comment "Recovered: $RUN_URL found the data fresh again."

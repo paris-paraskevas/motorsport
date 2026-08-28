@@ -858,11 +858,43 @@ export default async function WeekendPage({
               <WeekendTabs
                 scheduleSlot={
                   <>
+                    {/* "On this page" for the PREVIEW, sitting inside the
+                        schedule slot rather than above the tabs — it indexes
+                        this tab's content, and above the tab row it would claim
+                        to index the Bets tab too.
+                        Measured on a phone, where the two columns stack: the
+                        preview runs 4.4 screens with the wire 1,508px down and
+                        the venue 2,371px down, so the far blocks are exactly
+                        the ones worth jumping to. (A desktop viewport reads 2.3
+                        screens and made this look unnecessary — it is not.)
+                        Every target's wrapper renders unconditionally, so the
+                        anchor cannot go missing while its contents stream in;
+                        the wire is gated on NEWS_SLUG_MAP, which the SERVER
+                        knows, so no button is offered for a series that has no
+                        wire at all. */}
+                    {(NEWS_SLUG_MAP[slug] != null ? 3 : 2) >= 3 && (
+                      <nav aria-label="On this page" className="mb-6 flex flex-wrap gap-1.5">
+                        {[
+                          { id: 'schedule', label: 'Schedule' },
+                          { id: 'weather', label: 'Weather' },
+                          ...(NEWS_SLUG_MAP[slug] != null ? [{ id: 'the-wire', label: 'The wire' }] : []),
+                        ].map(t => (
+                          <a
+                            key={t.id}
+                            href={`#${t.id}`}
+                            data-heatmap-id={`weekend:jump:${t.id}`}
+                            className="inline-flex min-h-10 flex-1 basis-[9rem] items-center justify-center border border-border px-2 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
+                          >
+                            {t.label}
+                          </a>
+                        ))}
+                      </nav>
+                    )}
                     {/* Round-2 ⑦: the schedule and a LARGE circuit map share
                         the main width on big screens (the rail's 240px map
                         "seems really small" — operator). Below xl the map
                         stays in the rail. */}
-                    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(300px,400px)]">
+                    <div id="schedule" className={`grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(300px,400px)] ${ANCHOR_OFFSET}`}>
                       <div className="min-w-0">
                         <WeekendSchedule weekend={weekend} color={color} sessionLinkBase={sessionLinkBase} />
                       </div>
@@ -892,13 +924,20 @@ export default async function WeekendPage({
                         </figure>
                       )}
                     </div>
-                    <Suspense fallback={<div className="h-10 animate-pulse bg-surface/40" />}>
-                      <WeekendWeatherStrip weekend={weekend} />
-                    </Suspense>
-                    {NEWS_SLUG_MAP[slug] != null && (
-                      <Suspense fallback={null}>
-                        <PreviewNews slug={slug} />
+                    {/* The wrappers carry the anchors, NOT the streamed children:
+                        a Suspense child that resolves to null would take its id
+                        with it and leave the jump button pointing at nothing. */}
+                    <div id="weather" className={ANCHOR_OFFSET}>
+                      <Suspense fallback={<div className="h-10 animate-pulse bg-surface/40" />}>
+                        <WeekendWeatherStrip weekend={weekend} />
                       </Suspense>
+                    </div>
+                    {NEWS_SLUG_MAP[slug] != null && (
+                      <div id="the-wire" className={ANCHOR_OFFSET}>
+                        <Suspense fallback={null}>
+                          <PreviewNews slug={slug} />
+                        </Suspense>
+                      </div>
                     )}
                   </>
                 }

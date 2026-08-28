@@ -12,7 +12,13 @@ name: Warm live-data cache (Cloudflare)
 
 on:
   schedule:
-    - cron: '*/20 * * * *' # every 20 min; dial down if Actions minutes are tight
+    # DECLARED every 20 minutes; GitHub does NOT honour that. Measured cadence
+    # is ~5 runs a day with gaps of 3 to 11 hours, because cron on shared
+    # runners is throttled and best-effort. Left as-is because a longer interval
+    # would not run any more reliably — but do not read this line as a promise:
+    # anything depending on freshness must tolerate a half-day gap, which is why
+    # data-freshness.yml uses a 12-hour threshold rather than a tight one.
+    - cron: '*/20 * * * *'
   workflow_dispatch: {}
 
 concurrency:
