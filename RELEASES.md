@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.110 — 2026-08-28
+
+**Internal housekeeping.** A clear-out of our own to-do list; nothing on the site changed.
+
 ## 0.334.109 — 2026-08-28
 
 **Upcoming race weekend pages get the same "on this page" strip**, so you can jump straight to the weather or the news instead of scrolling for it. Behind the scenes we also added a check that tells us if the site ever stops receiving fresh results, however that happens.
