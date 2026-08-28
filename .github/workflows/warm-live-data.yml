@@ -23,6 +23,11 @@ jobs:
   warm:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Least privilege, and `contents: read` must be spelled out: naming a
+    # permissions block drops every default, so omitting it would break checkout.
+    permissions:
+      contents: read
+      issues: write
     env:
       KV_REST_API_URL: ${{ secrets.KV_REST_API_URL }}
       KV_REST_API_TOKEN: ${{ secrets.KV_REST_API_TOKEN }}
@@ -48,3 +53,69 @@ jobs:
         run: npx tsx scripts/bundle-content.mts
       - name: Warm all series' standings + results caches
         run: npx tsx scripts/warm-live-data.mts
+
+      # ── Alerting ──────────────────────────────────────────────────────────
+      # This job is the site's ONLY data writer and it has died silently twice:
+      # 28 hours unnoticed in session 30, then 5 days from 23 Aug 2026. Both were
+      # found by someone running `gh run list` for an unrelated reason. A red run
+      # in the Actions tab is not a notification, so it opens an issue instead.
+      #
+      # ONE issue per outage, not one per failed run. The schedule fires several
+      # times a day, so commenting on every failure would produce an unreadable
+      # stream and train everyone to ignore it — an open issue IS the alert, and
+      # it stays open until a run goes green.
+      #
+      # `gh issue list` rather than `gh search`: the search index lags by up to a
+      # few minutes, which would open duplicate issues on consecutive failures.
+      - name: Open an issue when the only data writer fails
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: warm-live-data is failing
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing is already open for this outage; not commenting."
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body "$(cat <<EOF
+          \`warm-live-data\` is the only thing that writes race data into the site.
+          The Worker runs \`DATA_SOURCE=db\` and cannot fetch standings or results
+          itself, so while this job is failing Paddock keeps serving the last data
+          it collected and silently stops learning anything new.
+
+          **Failing run:** $RUN_URL
+
+          This issue was opened automatically and **closes itself on the next
+          successful run**. Leave it open while the job is red — nothing reopens it.
+
+          Two causes have done this before, both silently:
+
+          - **A missing \`package-lock.json\` entry.** npm 11 locally tolerates a
+            nested-entry hole; the runner's npm 10 refuses and the job dies on
+            \`npm ci\`. Reproduce it locally with \`npm run lockfile:check\`, which
+            runs the install under npm 10 — your own npm will not catch this class.
+          - **The Node version.** The job pins 22+ deliberately: on Node 20 every
+            snapshot write failed while the job still reported success, because
+            \`writeSnapshot\` is fail-soft.
+          EOF
+          )"
+
+      # Self-clearing, so a stale open issue never becomes the new silent failure.
+      - name: Close the outage issue once a run succeeds
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: warm-live-data is failing
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -z "$existing" ]; then
+            exit 0
+          fi
+          gh issue close "$existing" --comment "Recovered: $RUN_URL succeeded, and the site's data is being written again."
