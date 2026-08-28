@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.105 — 2026-08-28
+
+**Three race weekends were under-reporting the parts teams brought.** Austria was missing two of Cadillac's ten new parts entirely, Barcelona had four of Ferrari's eight rolled into one line, and Monaco's technical file carried the wrong date. All three now match what the teams actually declared to the FIA.
+
 ## 0.334.104 — 2026-08-28
 
 **The Dutch Grand Prix page now shows what each team brought to the race.** Every weekend teams have to declare their new parts to the FIA, and we turn that into a technical file on the race weekend page. Zandvoort had been missing it since the race. It is there now: six teams, twenty-three new parts, with what each one changes and why.
