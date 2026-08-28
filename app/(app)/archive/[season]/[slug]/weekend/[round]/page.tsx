@@ -7,6 +7,8 @@ import {
   isArchiveLiveSeason,
   type ArchivedWeekend,
 } from '@/lib/season-archive';
+import { loadWeekendNotes, weekendNoteKey } from '@/lib/series-content';
+import { WeekendNote } from '@/components/weekend/WeekendNote';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_READ } from '@/lib/site';
 
@@ -86,6 +88,10 @@ export default async function ArchiveWeekendPage({
   if (!found) notFound();
   const { archive, weekend } = found;
   const live = await isArchiveLiveSeason(slug, Number(season));
+  // The SAME note the live weekend page renders — keyed by season and round, so
+  // it stays attached to this race once the season rolls over and the live URL
+  // has moved on to a different one.
+  const note = (await loadWeekendNotes(slug))?.[weekendNoteKey(Number(season), weekend.round)];
 
   return (
     <div className={PAGE_READ}>
@@ -111,6 +117,12 @@ export default async function ArchiveWeekendPage({
           </Link>{' '}
           has results, standings and times in your own zone.
         </p>
+      ) : null}
+
+      {note ? (
+        <div className="mt-8">
+          <WeekendNote note={note} />
+        </div>
       ) : null}
 
       <section aria-label="Sessions" className="mt-8">

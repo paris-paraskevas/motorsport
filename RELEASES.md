@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.92 — 2026-08-28
+
+**Race weekend pages now tell you how the race was won.** Until today they listed the sessions and the finishing order and left it there — you could see that Russell won in Melbourne, but not that he lost the lead on lap one, got it back when a virtual safety car split the strategies, and that Piastri never made the grid at his home race. All twelve Formula 1 rounds run so far have a written account, each checked against two independent reports. The rest of the championships follow.
+
 ## 0.334.91 — 2026-08-28
 
 **Internal.** The previous update failed to build and never reached the site; this fixes the cause and nothing else changes.
