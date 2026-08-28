@@ -4,6 +4,30 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.110 — 2026-08-28
+
+### Internal — `IDEAS.md` re-triaged against reality, 240 lines → 186
+
+The file's own rule is *"delete an item when it ships — history is the record"*, and it had stopped obeying it: three stacked session-close blocks, two lists explicitly labelled "CLEARED" and "kept for the record", and **three overlapping Inboxes** carrying the same items in three different states.
+
+**Everything deleted was verified closed first, against prod or the repo, not assumed.** That mattered — several entries were wrong in *both* directions:
+
+- `/social/leagues` play-money framing — prod now renders "No cash". Shipped 0.334.93. Deleted.
+- The site-wide og:image fault — ten route types checked, **all emit absolute `https://` URLs**. Deleted.
+- The "Vercel KV" comment sweep — **zero occurrences remain**. Deleted.
+- CSP promotion to enforcing — prod sends **no** `Report-Only` header. Deleted from three separate places.
+- `/api/push/history` — no route, no lib, zero references. Deleted.
+- **Champions depth ×11** — **489 notes across all 15 families**. The same line also claimed "ADAC 24h + NLS never", which 0.334.81 disproved by writing all 70. Deleted.
+
+**Two figures were corrected in the opposite direction from the one they were recorded in**, which is the more useful half of this pass:
+
+- The Worker bundle was recorded at **19.35 KiB of headroom** and reads as a crisis. Re-measured: **9686.48 KiB against 10240, so 553.5 KiB free.** The OG-card runtime is still the biggest single lever but it is no longer urgent.
+- `.supabase-pat` was recorded as **"NOT dead", corrected on 2026-08-21**. It returns **401 on `GET /v1/projects`**, the simplest endpoint there is. It blocks any future Management-API migration.
+
+**Items confirmed still open rather than quietly dropped**: the "how an F1 race weekend works" answer is **still a 404**; `/blog` renders **5 covers**, so 19 posts still have none; **none** of NASCAR, DTM, WRC, F2 or F3 has a `bios.json` at all; Turnstile is not built.
+
+**And one parked item whose premise had evaporated.** "Bahrain GP 2026 — NOT confirmed, parked until F1/FIA confirm" is curated as round 16, **live on prod**, carrying `venue: Sepang International Circuit`, `countryCode: MY` and a `rescheduleNote` — and the page shows the relocation to a reader. It is neither unconfirmed nor hidden, so what remains is a question rather than a task: whether a *Bahrain* Grand Prix at Sepang is the right name to publish.
+
 ## 0.334.109 — 2026-08-28
 
 ### Added — an alert that watches the DATA, not the job
