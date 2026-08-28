@@ -4,6 +4,34 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.107 — 2026-08-28
+
+### Added — "On this page" on the weekend report
+
+Operator asked for the series page's button band on the weekend page, "boasting all sections". Scrutinised first, because the two pages are not the same shape: the series band is **thirteen links to thirteen routes**, while the weekend page's sections are blocks on **one** page. So this is a jump bar, not a tab set, and it earns its place by page length rather than by feature count.
+
+**Measured on prod before building**, which is what set the design:
+
+| Page | Scroll | Sections |
+|---|---|---|
+| F1 Zandvoort, completed | **5.2 screens** | 5 |
+| MotoGP, completed | — | 3 |
+| NASCAR / WEC, completed | — | 2 |
+| NLS round 7, completed | **1.4 screens** | **1** |
+| F1 Monza, upcoming | 2.3 screens | 3 (none of them `<section>`) |
+
+**The list is derived from the sections that actually rendered**, not from a constant. That is the whole design: almost every block is conditional — the technical file is F1-only and only for curated rounds, the race story is F1-only, highlights need a curated video, "what it changed" needs a standings brief. A fixed thirteen-button set copied across would be mostly dead buttons on most of ~250 weekend pages. A button can only exist here if its section did.
+
+**It hides below three sections.** At one or two the page is short enough to scroll and a bar is chrome standing in front of the content it indexes. Verified: present on F1 (5 buttons) and MotoGP (3), **absent on NLS and on every preview**.
+
+**Static, not sticky** — an operator-delegated call. The site already fixes a header and, on phones, a bottom bar; a third fixed strip would take reading space on every page to help on a few. Easily made sticky later if it wants to be.
+
+Every target gained an `id` and a `scroll-mt` clearing the fixed header — without it a jump lands with its own heading hidden, which reads as the link having missed. `ANCHOR_OFFSET` is module-scoped because the technical file renders in **both** the report and preview branches, which are separate components; a component-scoped constant compiled but failed `tsc` at the second render site.
+
+Deliberately excluded: **the venue**, which lives in the rail as a link OUT to `/tracks/<slug>` — one button that leaves the page while the rest scroll it would be a different promise.
+
+Verified on a dev render: clicking "Upgrades" lands the technical file **15px below** the 59px header, not underneath it; the bar reads Classification · How it was won · The weekend · What it changed · Upgrades, and wraps to three rows at 390px.
+
 ## 0.334.106 — 2026-08-28
 
 ### Fixed — contact and Buy Me a Coffee were desktop-only
