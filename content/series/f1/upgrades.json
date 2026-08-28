@@ -279,7 +279,7 @@
   },
   "6": {
     "gp": "Monaco Grand Prix",
-    "date": "2026-06-07",
+    "date": "2026-06-05",
     "doc": 15,
     "teams": [
       { "team": "McLaren", "items": [
@@ -353,10 +353,14 @@
         { "component": "Front Wing (flaps)", "reason": "Balance Range", "detail": "More-cambered flap assembly available for extra local load." }
       ] },
       { "team": "Ferrari", "items": [
-        { "component": "Front Wing", "reason": "Performance — Local Load", "detail": "Revised footplate/vanes and endplate diveplane addition." },
-        { "component": "Nose", "reason": "Performance — Local Load", "detail": "New SM mechanism links, revised nose with raised lower surface." },
-        { "component": "Floor (board, edge, body, diffuser)", "reason": "Performance — Local Load", "detail": "Reduced keel volume; redesigned floor leading edge; diffuser reprofiling." },
-        { "component": "Sidepod / Coke", "reason": "Performance — Flow Conditioning", "detail": "Inflated sidepod shoulder and adapted cokeline." }
+        { "component": "Front Wing", "reason": "Performance — Local Load", "detail": "Revised front-wing footplate with a new vane arrangement and optimised spanwise loading." },
+        { "component": "Front Wing Endplate", "reason": "Performance — Local Load", "detail": "Endplate diveplane added." },
+        { "component": "Nose", "reason": "Performance — Local Load", "detail": "New SM mechanism links integrated into the nose, with a revised shape and raised lower surface." },
+        { "component": "Floor Body", "reason": "Performance — Local Load", "detail": "Reduced keel volume." },
+        { "component": "Floor Board", "reason": "Performance — Local Load", "detail": "Front floor board elements optimised, both horizontal and vertical." },
+        { "component": "Floor Edge", "reason": "Performance — Local Load", "detail": "Redesigned front floor leading-edge profiles and claws, with optimised rearward corner winglets." },
+        { "component": "Diffuser", "reason": "Performance — Local Load", "detail": "Reprofiled diffuser sidewall cutout, updated winglet angle of attack and expansion profile." },
+        { "component": "Sidepod / Coke", "reason": "Performance — Flow Conditioning", "detail": "Inflated sidepod shoulder with an adapted cokeline." }
       ] },
       { "team": "Williams", "items": [
         { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "SM-fairing winglets and third-element trailing-edge extensions." }
@@ -433,7 +437,10 @@
         { "component": "Cooling Louvres", "reason": "Performance — Cooling Range", "detail": "Updated sidepod top-deck and engine-cover louvres." },
         { "component": "Mirror Stay", "reason": "Performance — Flow Conditioning", "detail": "Changed incidence and updated stay profiles." },
         { "component": "Roll Hoop Leg Fairings", "reason": "Performance — Flow Conditioning", "detail": "Reprofiled for stability across yaw angles." },
-        { "component": "Floor Bib / Leading Edge", "reason": "Performance — Local Load", "detail": "Updated bib/keel and reprofiled floor leading-edge devices." }
+        { "component": "Floor Bib", "reason": "Performance — Local Load", "detail": "Updated bib and keel geometry." },
+        { "component": "Floor Leading Edge", "reason": "Performance — Local Load", "detail": "Reprofiled floor surfaces with updated leading-edge devices." },
+        { "component": "Diffuser", "reason": "Performance — Local Load", "detail": "Updated diffuser surface geometry." },
+        { "component": "Beam Wing", "reason": "Performance — Local Load", "detail": "Reprofiled beam-wing surfaces." }
       ] }
     ]
   },

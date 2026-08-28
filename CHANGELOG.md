@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.105 — 2026-08-28
+
+### Fixed — three technical files that under-reported what teams brought
+
+Found by an audit of `upgrades.json` against the FIA's own documents, and every one verified from the source PDF rather than taken on report:
+
+- **Round 8, Cadillac: 7 parts curated where the FIA numbered 10.** Floor Bib and Floor Leading Edge had been merged into one row, and **Diffuser and Beam Wing were missing outright**. The Austrian GP page now reads 41 parts across 9 teams instead of 38.
+- **Round 7, Ferrari: 4 parts curated where the FIA numbered 8.** Front Wing Endplate had been dropped, and rows 4-7 were collapsed into a single `"Floor (board, edge, body, diffuser)"`. Ferrari filed one geometric cell across rows 1-3 and another across 4-7, which is what invites the collapse — the phrases are now mapped to components **by name**, as R12 was, because the phrase order does not follow the row order.
+- **Round 6's date was the race Sunday.** `2026-06-07` against a document whose own header reads **05 June 2026**. Every other round in the file uses the Friday, which is when the FIA publishes.
+
+The pattern is one thing: **where the FIA merges cells vertically, curation merged the rows too, and parts vanished.** That is the same fault the new `upgrades:draft` tooling surfaces as run-on text rather than hiding, which is how it was found at all. Total parts across R1-R12 now **339**.
+
+Verified on a dev render: Cadillac's block on `/series/f1/weekend/8` reports "10 PARTS" and the page header "9 teams · 41 new parts declared"; `Front Wing Endplate` renders on round 7 and `Floor Leading Edge` and `Beam Wing` on round 8, none of which appeared before.
+
 ## 0.334.104 — 2026-08-28
 
 ### Content — the Dutch GP technical file, five weeks late
