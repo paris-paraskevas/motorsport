@@ -72,6 +72,34 @@ function deviceLabel(): string {
   return os ? `${browser} on ${os}` : browser;
 }
 
+// Whether THIS device asked for notifications. Device-local because the intent
+// cannot be recovered from anywhere else once a subscription lapses: a push
+// subscription belongs to the SERVICE WORKER, not to the account, and every
+// deploy replaces the worker wholesale (all ~218 precache entries change), so
+// the browser drops it. The server record is no help either — the sender evicts
+// a dead endpoint on 404/410 (lib/push.ts:71), so after the first failed send
+// both sides agree the device is unsubscribed and nothing remembers that it was
+// ever wanted. This flag is that memory, and restorePushSubscription acts on it.
+const OPT_IN_KEY = 'paddock:push-opted-in';
+
+function setOptedIn(on: boolean): void {
+  try {
+    if (on) localStorage.setItem(OPT_IN_KEY, '1');
+    else localStorage.removeItem(OPT_IN_KEY);
+  } catch {
+    /* storage blocked (private mode, embedded webview): restore never fires,
+       which is the pre-existing behaviour rather than a regression. */
+  }
+}
+
+function hasOptedIn(): boolean {
+  try {
+    return localStorage.getItem(OPT_IN_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 export async function subscribeToPush(): Promise<void> {
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') {
@@ -93,9 +121,15 @@ export async function subscribeToPush(): Promise<void> {
     const data = await res.json().catch(() => null);
     throw new Error(data?.error || `server error (${res.status})`);
   }
+  setOptedIn(true);
 }
 
 export async function unsubscribeFromPush(): Promise<void> {
+  // Cleared FIRST, and unconditionally: turning notifications off is an explicit
+  // choice, so it must stick even if the steps below fail. Clearing it last
+  // would let a thrown unsubscribe leave the flag set, and the next page load
+  // would silently turn notifications back on.
+  setOptedIn(false);
   const reg = await navigator.serviceWorker.ready;
   const sub = await reg.pushManager.getSubscription();
   if (!sub) return;
@@ -105,6 +139,57 @@ export async function unsubscribeFromPush(): Promise<void> {
     body: JSON.stringify({ endpoint: sub.endpoint }),
   });
   await sub.unsubscribe();
+}
+
+export type PushRestoreResult = 'restored' | 'not-needed' | 'failed';
+
+/** Put back a subscription this device asked for and the browser has since
+ *  dropped. Runs on mount from components/SerwistRegister.
+ *
+ *  SILENT BY CONSTRUCTION: it never calls Notification.requestPermission, so it
+ *  can only act where permission is ALREADY granted and no dialog can appear on
+ *  load. A device that never opted in, or whose permission has been revoked,
+ *  is left alone. */
+export async function restorePushSubscription(): Promise<PushRestoreResult> {
+  if (getPushAvailability() !== 'available') return 'not-needed';
+  if (!hasOptedIn()) return 'not-needed';
+  // Permission revoked or reset since opting in. A silent re-subscribe is
+  // impossible without a prompt, and prompting on load is exactly the pattern
+  // browsers punish, so drop the stale intent instead of retrying every load.
+  if (Notification.permission !== 'granted') {
+    setOptedIn(false);
+    return 'not-needed';
+  }
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if (await reg.pushManager.getSubscription()) return 'not-needed';
+    const vapidKey = await getVapidKey();
+    if (!vapidKey) return 'failed';
+    const subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
+    });
+    const res = await fetch('/api/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription, label: deviceLabel() }),
+    });
+    if (!res.ok) {
+      // Roll the browser back so the two sides cannot disagree. /api/push/
+      // subscribe is auth-protected (middleware.ts), so a signed-out visitor
+      // gets 401 here. Keeping the browser subscription in that case would be
+      // the worst outcome: getSubscription() would report 'subscribed', every
+      // later restore would decide there was nothing to do, and the device
+      // would never receive another notification while looking enabled.
+      await subscription.unsubscribe().catch(() => {});
+      return 'failed';
+    }
+    return 'restored';
+  } catch {
+    // Deliberately keeps the opt-in flag: a transient failure (offline, a 500)
+    // should retry on the next load rather than silently give up.
+    return 'failed';
+  }
 }
 
 export async function getPushSubscriptionState(): Promise<'subscribed' | 'idle' | 'denied'> {
