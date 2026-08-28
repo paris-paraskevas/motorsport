@@ -4,6 +4,46 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.98 — 2026-08-28
+
+### Fixed — the IndyCar champion's name carries its accent
+
+`content/series/indycar/champions.json` spelled the four-time champion **Alex Palou** across all four title rows, and `drivers.json` did the same on the grid. He is **Álex Palou**. The repo was already inconsistent with itself: `bios.json:56` and every source link in `champion-notes.json` (`%C3%81lex_Palou`) carried the accent, and `champions.json` itself already holds Hélio Castroneves and Kenny Bräck, so the accent is that file's own convention.
+
+Deferred since session 39 because renaming a driver touches the `driversOf` matching behind per-person title counts. Checked rather than assumed, and neither concern survives:
+
+- **`driversOf`** (`lib/information/generated.ts:65`) splits on commas and slashes and trims. There is no fuzzy matching, so four consistently-renamed rows still group as one person.
+- **`slugify`** (`lib/slug.ts:5`) normalises NFD and strips combining diacritics — the file documents the Hülkenberg case — so `Álex Palou` slugs to `alex-palou`, byte-identical to before. **No URL changed and there is nothing to redirect.**
+- **`lib/champion-notes-integrity.test.ts:88`** guards on the surname alone (`.split(/\s+/).slice(-1)[0]`), so an accent on the forename cannot reach it.
+
+**Three references stay unaccented on purpose, because each quotes upstream rather than us**: the footnote in `history.md` citing IndyCar's own article title "Alex Palou: 2025 NTT INDYCAR SERIES Champion"; the assertions in `lib/standings/indycar.test.ts`, which assert what the feed actually returns; and the Wikipedia HTML fixture in `lib/wikipedia-season.test.ts`. The comment at `components/tabs/ChampionsTab.tsx:215` illustrating Wikipedia's `"Alex Palou (1)"` annotation format stays for the same reason.
+
+Verified on a dev render: `/drivers/alex-palou` still returns 200, and `/series/indycar/champions` serves 16 occurrences of `Álex Palou` as real UTF-8 (`c3 81`) with none unaccented.
+
+## 0.334.97 — 2026-08-28
+
+### Internal — the pre-launch social presence kit
+
+`docs/research/2026-08-28-social-presence.md` covers the eight weeks *before* the launch-day plan in `docs/research/2026-07-06-launch-marketing.md`, which stays as the day-0 runbook. Handles and bios written to each platform's real character limit (counted, not estimated), an avatar and banner spec against `public/icons/icon-512.png`, a four-week content calendar pegged to the real fixture list, eight paste-ready posts, a UTM scheme and per-channel rules of engagement.
+
+**Its most useful section is §2, the claim inventory** — what may be said about the product, verified against prod, and what may not. That audit is what produced 0.334.96: three published claims the product could not support. It also records the reasoning behind one recommendation worth keeping: a brand account on Instagram, X, YouTube and Facebook, but a **person's** account on Reddit, because a brand-named account posting about that brand is an advert by definition and that is precisely what the sub rules and spam filters target.
+
+Three of the 2026-07-06 plan's claims are corrected there: "works offline" (false), the F1-upgrades wedge (the feature renders but `content/series/f1/upgrades.json` stops at round 11, so rounds 12 and 13 show nothing), and the dark-theme asset spec (the site is the light paper theme, and its editorial look is a differentiator rather than something to hide).
+
+**`docs/marketing/` — 15 screenshots** captured from prod signed out, phone 390 and desktop 1440. Deliberately under `docs/` rather than `public/`: they are working files to upload elsewhere, not site content, and `public/` is served and crawlable.
+
+## 0.334.96 — 2026-08-28
+
+### Fixed — three published claims the product could not support
+
+Found while fact-checking marketing copy against prod, which is the exercise that surfaces claims nobody re-reads once they have shipped.
+
+**"Works offline" was false in two places.** Offline was removed deliberately in 0.268.0 — `app/sw.ts:14` says so in terms ("No offline fallback, deliberately"), and `components/SerwistRegister.tsx:30` records the same, which is why `cacheOnNavigation` is off. Yet `lib/whats-new.ts` shipped the capability chip **"Installs as an app, works offline"** inside the modal whose copy was signed off the same day, and `content/assistant/site-help.md` told readers "the schedule for the coming days is cached so it still works with no signal". Both surfaces were dark at the time — the modal gated on `active: false`, the assistant on `NEXT_PUBLIC_ASSISTANT_ENABLED` — so this was false-when-enabled rather than false-now, and **the chip would have gone live the moment 1.0 flipped**. The chip is now "Installs as an app"; the help section is retitled "Account and install" and states plainly that Paddock needs a connection.
+
+**The record pages' summary made an all-time claim over a bounded file.** `mostDriverTitlesEntry` and `mostConstructorTitlesEntry` in `lib/information/generated.ts` emit a `summary` that serves as both the meta description and the `/information` hub teaser, and it stated the record flat: "Philipp Leisen holds the record with 4 NLS Nürburgring titles." The body already carried the scope ("Based on our curated …, 2010–2025"); the summary did not. Four files start long after their championship did — NASCAR 2000, WRC 1979, IndyCar 1996, NLS 2010 — so on those four the summary read as an all-time record the data cannot support. Both now append `across ${span(champs)}`, the same span the provenance line uses, so the SERP entry and the hub card cannot outrun the file. 0.334.83–85 put that qualification in the note body; this closes the half a reader meets first.
+
+Verified on a dev render of the changed generator: `/information/endurance/most-nls-nurburgring-championships` emits `<meta name="description" content="Philipp Leisen holds the record with 4 NLS Nürburgring titles across 2010–2025. …">`, and the same sentence appears as that page's teaser on `/information/endurance`.
+
 ## 0.334.95 — 2026-08-28
 
 ### Internal

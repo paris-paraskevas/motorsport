@@ -349,10 +349,15 @@ function mostDriverTitlesEntry(
     topic,
     slug: slugify(`most-${meta.name}-championships`),
     question: `Who has won the most ${meta.name} championships?`,
+    // Scoped to the curated span, as the body's provenance line already is. Four
+    // files start long after their championship did (NASCAR 2000, WRC 1979,
+    // IndyCar 1996, NLS 2010), so an unqualified summary is an all-time claim the
+    // data cannot support — and the summary is the meta description and the hub
+    // teaser, which is where a reader meets the claim first.
     summary:
       rec.names.length > 1
-        ? `${joinNames(rec.names)} share the record with ${topN} ${meta.name} titles each.`
-        : `${topName} holds the record with ${topN} ${meta.name} titles.`,
+        ? `${joinNames(rec.names)} share the record with ${topN} ${meta.name} titles each across ${span(champs)}.`
+        : `${topName} holds the record with ${topN} ${meta.name} titles across ${span(champs)}.`,
     keywords: [
       `most ${meta.name} titles`,
       `most ${meta.name} championships`,
@@ -409,10 +414,11 @@ function mostConstructorTitlesEntry(
     topic,
     slug: slugify(`most-successful-${meta.name}-team`),
     question: `Which team has won the most ${meta.name} titles?`,
+    // Same scoping as the drivers' record above, for the same reason.
     summary:
       rec.names.length > 1
-        ? `${joinNames(rec.names)} share the record with ${topN} ${meta.name} ${label} titles each.`
-        : `${topName} leads with ${topN} ${meta.name} ${label} titles.`,
+        ? `${joinNames(rec.names)} share the record with ${topN} ${meta.name} ${label} titles each across ${span(champs)}.`
+        : `${topName} leads with ${topN} ${meta.name} ${label} titles across ${span(champs)}.`,
     keywords: [
       `most successful ${meta.name} team`,
       `${meta.name} constructors record`,

@@ -1677,6 +1677,21 @@ Plan at start: none written — the session began as a UI task (the What's-New m
 
 Active: (no [+Nm] prefixes given this session)
 
+### Fri 2026-08-28 — session 41 (the social media job)
+
+Ran in the same checkout as session 40 and concurrently with it, which is why this entry is numbered 41 despite the same date. Plan at start: execute the pre-launch presence half of the W8 launch program. Scope locked by `AskUserQuestion`: presence kit now, all five channels, nothing posted by Claude.
+
+- → done: **the presence kit** (`docs/research/2026-08-28-social-presence.md`, 430 lines) — handle and identity kit with bios written to each platform's real limit and the counts verified rather than estimated, a brand-vs-builder recommendation, a four-week calendar pegged to the real fixture list, eight paste-ready posts, UTM scheme, rules of engagement.
+- → done: **15 assets** captured from prod signed out into `docs/marketing/`, including the September calendar with all fifteen filters lit, which is the one image that argues the whole product.
+- → done, and the reason the fact-check earned its keep: **three published claims the product could not support**, shipped as 0.334.96. "Works offline" in two places (`lib/whats-new.ts` chip, `content/assistant/site-help.md`) — false since 0.268.0 and about to go live with the 1.0 flip. And the record pages' `summary`, which stated an all-time record over four bounded files.
+- → done, unplanned: **root-caused the 0.334.90 Cloudflare build failure** to `/` prerendering against live upstreams, because `DATA_SOURCE` is defined only in `wrangler.jsonc` as a Worker runtime var and is therefore unset during every build. Measured: 10 upstream fetches without the flag, 0 with it. Session 40 fixed the immediate failure differently (memoising the archive reads, 0.334.91); this remains a real correctness issue, deliberately NOT applied — see below.
+- → **found and deliberately not acted on**: setting `DATA_SOURCE=db` on the build would remove a writer. `withSourceSnapshot` writes whenever the flag is unset, so every Cloudflare build has been writing prod snapshots. With `warm-live-data` dead since 23 Aug that is currently the only writer running. **Sequence it after warm goes green, not before.**
+- → done: `npm run lockfile:check` → exit 0 under npm@10, so the 0.334.94 fix holds. TIER 0 is unproven only because no run has fired since the 09:48Z merge.
+- → corrected in flight: I reported "no fetcher, no parser, no cron" for F1 upgrades. `lib/upgrades/f1-parse.ts` is a complete parser with 13 passing tests, shipped 2026-07-24 and orphaned — zero importers outside its own test.
+- Won't-touch honoured: no post published, no account created, no prod Supabase or infra write, the 1.0 flip untouched.
+
+Active: (no [+Nm] prefixes given this session)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
