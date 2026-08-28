@@ -4,6 +4,32 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.109 — 2026-08-28
+
+### Added — an alert that watches the DATA, not the job
+
+The failure alerting in 0.334.101 opens an issue when a `warm-live-data` run fails. It cannot see the failure that actually cost five days: **a workflow that stops being scheduled, or one nobody looks at**. A run that never happens raises nothing.
+
+`scripts/check-data-freshness.mts` plus `.github/workflows/data-freshness.yml` ask the only question a reader cares about — is what the site is serving still fresh? — from their own schedule, four times a day. That catches every version of "the writer stopped", including the ones the job-level alert is blind to. Two independent schedules both dying silently is a far smaller risk than one; that residual is accepted rather than chased, because the alternative is an external monitor, which means a service, an account and a bill.
+
+**The threshold is 12 hours, deliberately generous.** The workflow declares `*/20` but GitHub throttles cron on shared runners, and the real cadence is ~5 runs a day with observed gaps of 3 to 11 hours. A tighter threshold would fire on a healthy-but-throttled day, and an alert that cries wolf is one people learn to ignore — the exact failure this work exists to prevent. The five-day outage would have been caught inside its first day.
+
+Proven against prod read-only, both ways: healthy prints `newest snapshot: results:wec — 4.9 h old (threshold 12 h)` then `OK: data is arriving` and exits 0; `MAX_SNAPSHOT_AGE_HOURS=1` prints the failure with its diagnosis and exits **1**. The threshold is env-overridable precisely so the alarm can be exercised — a threshold nobody has seen fire is one nobody should trust.
+
+**Two bugs caught while building it**, both worth recording. Setting `process.exitCode` inline without restructuring let an empty table print its error and then "OK: data is arriving" directly underneath it, so the checks are now early returns from one function. And `process.exit()` mid-flight trips a libuv assertion on Windows and reports 127 rather than 1, because the Supabase client holds a handle open.
+
+### Changed — the `*/20` comment was a promise the platform does not keep
+
+`warm-live-data.yml` said "every 20 min". It is not: measured cadence is ~5 runs a day with 3-to-11-hour gaps. The cron itself is unchanged, because a longer interval would not run any more reliably — but the comment now says so, since anything depending on freshness must tolerate a half-day gap.
+
+### Added — "On this page" on preview weekends too
+
+0.334.107 shipped this for completed rounds only, on a reading a desktop viewport made look right and which was wrong: **a preview measures 4.4 screens on a phone**, not 2.3, because the two columns stack. The wire sits 1,508px down and the venue 2,371px down, so the far blocks are exactly the ones worth jumping to.
+
+It was held back because weather and news stream behind `Suspense` and may resolve to nothing. The way through is that **the wrappers carry the anchors, not the streamed children** — a child that resolves to null would take its id with it and leave a button pointing nowhere. The wire is additionally gated on `NEWS_SLUG_MAP`, which the **server** knows, so no button is offered for a series that has no wire at all.
+
+Verified: three buttons on an F1 preview, **none on an NLS preview**, which is that gate doing its job.
+
 ## 0.334.108 — 2026-08-28
 
 ### Audited — the other eight upgrade rounds, and a parser artifact named
