@@ -119,6 +119,13 @@ function pointsPositions(slug: string): number {
 
 const RETIRED_RE = /\b(dnf|dns|dsq|dq|ret|retired|withdrew|wd|accident|not classified|nc)\b/i;
 
+// Clears the FIXED header (50px on phones, 58px on lg) so a section jumped to
+// from the "On this page" bar does not arrive under it. Without this every
+// anchor lands with its own title hidden, which reads as the link having missed.
+// Module scope because the technical file renders in BOTH the report and the
+// preview branch, and those are separate components.
+const ANCHOR_OFFSET = 'scroll-mt-[62px] lg:scroll-mt-[74px]';
+
 // Panel 3b: the preview rail's "Going in" factbox — the championship's top
 // three as the weekend starts. Network fetch, so it streams behind Suspense.
 async function GoingIn({ slug, season }: { slug: string; season: number }) {
@@ -348,6 +355,24 @@ async function ReportBody({
     </li>
   );
 
+  // "On this page", built from the sections that ACTUALLY rendered rather than
+  // from a fixed list (operator asked for the series page's button band here).
+  // Deriving it is the whole point: almost every block below is conditional —
+  // the technical file is F1-only and only for curated rounds, the race story is
+  // F1-only, highlights need a curated video, "what it changed" needs a
+  // standings brief — so a fixed set would be mostly dead buttons. A button can
+  // only exist here if its section did.
+  //
+  // Order matches reading order, so the bar doubles as a summary of the page.
+  const jumpTargets = [
+    (raceEntries.length > 0 || classBlocks.length > 0) && { id: 'classification', label: 'Classification' },
+    weekendNote && { id: 'how-it-was-won', label: 'How it was won' },
+    { id: 'how-the-weekend-went', label: 'The weekend' },
+    brief && brief.top.length > 0 && { id: 'what-it-changed', label: 'What it changed' },
+    raceHighlight && { id: 'highlights', label: 'Highlights' },
+    upgrades && { id: 'technical-file', label: 'Upgrades' },
+  ].filter(Boolean) as { id: string; label: string }[];
+
   return (
     <>
       {winner && (
@@ -357,10 +382,32 @@ async function ReportBody({
         </p>
       )}
 
+      {/* Below three sections the page is short enough to scroll (measured on
+          prod: NLS rounds carry ONE section over 1.4 screens, WEC and NASCAR
+          two), and a jump bar there is chrome standing in front of the content
+          it indexes. A completed F1 round carries five over 5.2 screens, which
+          is where it earns its place. Static, not sticky: the site already fixes
+          a header and, on phones, a bottom bar — a third fixed strip would take
+          reading space on every page to help on a few. */}
+      {jumpTargets.length >= 3 && (
+        <nav aria-label="On this page" className="mb-7 flex flex-wrap gap-1.5">
+          {jumpTargets.map(t => (
+            <a
+              key={t.id}
+              href={`#${t.id}`}
+              data-heatmap-id={`weekend:jump:${t.id}`}
+              className="inline-flex min-h-10 flex-1 basis-[9rem] items-center justify-center border border-border px-2 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
+            >
+              {t.label}
+            </a>
+          ))}
+        </nav>
+      )}
+
       <div>
         {/* The result that leads. */}
         {(raceEntries.length > 0 || classBlocks.length > 0) && (
-          <section aria-label="Classification" className="border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5">
+          <section id="classification" aria-label="Classification" className={`border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5 ${ANCHOR_OFFSET}`}>
             <div className="flex items-baseline justify-between border-b border-text pb-1">
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
                 Classification{primaryClass ? ` · ${primaryClass.cls}` : ''}
@@ -417,7 +464,7 @@ async function ReportBody({
           <div>
           {weekendNote ? <WeekendNote note={weekendNote} /> : null}
           {/* How the weekend went — the sessions as the story's spine. */}
-          <section aria-label="How the weekend went">
+          <section id="how-the-weekend-went" aria-label="How the weekend went" className={ANCHOR_OFFSET}>
             <div className="mb-1 flex items-baseline justify-between border-b border-text pb-1">
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
                 How the weekend went
@@ -539,7 +586,7 @@ async function ReportBody({
 
         {/* What it changed. */}
         {brief && brief.top.length > 0 && (
-          <section aria-label="What it changed" className="mt-9">
+          <section id="what-it-changed" aria-label="What it changed" className={`mt-9 ${ANCHOR_OFFSET}`}>
             <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">What it changed</span>
               <Link href={`/series/${slug}/standings`} className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline">
@@ -567,7 +614,7 @@ async function ReportBody({
 
         {/* Highlights, where curated. */}
         {raceHighlight && (
-          <section className="mt-9">
+          <section id="highlights" aria-label="Highlights" className={`mt-9 ${ANCHOR_OFFSET}`}>
             <div className="mb-3 border-b border-text pb-1">
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">Highlights</span>
             </div>
@@ -577,7 +624,7 @@ async function ReportBody({
 
         {/* The technical file — an appendix, not a headline (§4.7). */}
         {upgrades && (
-          <section id="technical-file" className="mt-9">
+          <section id="technical-file" aria-label="Technical file" className={`mt-9 ${ANCHOR_OFFSET}`}>
             <WeekendUpgrades data={upgrades} />
           </section>
         )}
@@ -990,7 +1037,7 @@ export default async function WeekendPage({
 
           {/* The technical file, when teams have already filed for this round. */}
           {upgrades && (
-            <section id="technical-file" className="mt-9">
+            <section id="technical-file" aria-label="Technical file" className={`mt-9 ${ANCHOR_OFFSET}`}>
               <WeekendUpgrades data={upgrades} />
             </section>
           )}

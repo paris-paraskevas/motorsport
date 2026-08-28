@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.107 — 2026-08-28
+
+**Race weekend pages now have an "on this page" strip.** On a finished race weekend there is a lot to scroll through, so the top of the page now lists what is on it: the classification, how it was won, the weekend itself, what it changed in the championship, and the technical file. Tap one to jump straight there. It only appears where the page is long enough to need it.
+
 ## 0.334.106 — 2026-08-28
 
 **Contact us and Buy Me a Coffee are now on the header on phones.** Both buttons had only ever appeared on desktop, so on a phone there was no way to reach them from the top of the page. The search box beside them now says simply "Search" to make room.
