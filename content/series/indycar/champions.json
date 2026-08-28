@@ -1,9 +1,9 @@
 [
-  { "year": 2025, "driver": "Alex Palou", "constructor": "Chip Ganassi Racing", "wins": 8 },
-  { "year": 2024, "driver": "Alex Palou", "constructor": "Chip Ganassi Racing", "wins": 2 },
-  { "year": 2023, "driver": "Alex Palou", "constructor": "Chip Ganassi Racing", "wins": 5 },
+  { "year": 2025, "driver": "Álex Palou", "constructor": "Chip Ganassi Racing", "wins": 8 },
+  { "year": 2024, "driver": "Álex Palou", "constructor": "Chip Ganassi Racing", "wins": 2 },
+  { "year": 2023, "driver": "Álex Palou", "constructor": "Chip Ganassi Racing", "wins": 5 },
   { "year": 2022, "driver": "Will Power", "constructor": "Team Penske", "wins": 1 },
-  { "year": 2021, "driver": "Alex Palou", "constructor": "Chip Ganassi Racing", "wins": 3, "runnerUp": "Pato O’Ward" },
+  { "year": 2021, "driver": "Álex Palou", "constructor": "Chip Ganassi Racing", "wins": 3, "runnerUp": "Pato O’Ward" },
   { "year": 2020, "driver": "Scott Dixon", "constructor": "Chip Ganassi Racing", "wins": 4, "runnerUp": "Josef Newgarden" },
   { "year": 2019, "driver": "Josef Newgarden", "constructor": "Team Penske", "wins": 4 },
   { "year": 2018, "driver": "Scott Dixon", "constructor": "Chip Ganassi Racing", "points": 678, "wins": 3 },

@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.98 — 2026-08-28
+
+### Fixed — the IndyCar champion's name carries its accent
+
+`content/series/indycar/champions.json` spelled the four-time champion **Alex Palou** across all four title rows, and `drivers.json` did the same on the grid. He is **Álex Palou**. The repo was already inconsistent with itself: `bios.json:56` and every source link in `champion-notes.json` (`%C3%81lex_Palou`) carried the accent, and `champions.json` itself already holds Hélio Castroneves and Kenny Bräck, so the accent is that file's own convention.
+
+Deferred since session 39 because renaming a driver touches the `driversOf` matching behind per-person title counts. Checked rather than assumed, and neither concern survives:
+
+- **`driversOf`** (`lib/information/generated.ts:65`) splits on commas and slashes and trims. There is no fuzzy matching, so four consistently-renamed rows still group as one person.
+- **`slugify`** (`lib/slug.ts:5`) normalises NFD and strips combining diacritics — the file documents the Hülkenberg case — so `Álex Palou` slugs to `alex-palou`, byte-identical to before. **No URL changed and there is nothing to redirect.**
+- **`lib/champion-notes-integrity.test.ts:88`** guards on the surname alone (`.split(/\s+/).slice(-1)[0]`), so an accent on the forename cannot reach it.
+
+**Three references stay unaccented on purpose, because each quotes upstream rather than us**: the footnote in `history.md` citing IndyCar's own article title "Alex Palou: 2025 NTT INDYCAR SERIES Champion"; the assertions in `lib/standings/indycar.test.ts`, which assert what the feed actually returns; and the Wikipedia HTML fixture in `lib/wikipedia-season.test.ts`. The comment at `components/tabs/ChampionsTab.tsx:215` illustrating Wikipedia's `"Alex Palou (1)"` annotation format stays for the same reason.
+
+Verified on a dev render: `/drivers/alex-palou` still returns 200, and `/series/indycar/champions` serves 16 occurrences of `Álex Palou` as real UTF-8 (`c3 81`) with none unaccented.
+
 ## 0.334.97 — 2026-08-28
 
 ### Internal — the pre-launch social presence kit

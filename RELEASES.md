@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.98 — 2026-08-28
+
+**Álex Palou's name is spelled properly now.** The four-time IndyCar champion's first name carries an accent and our championship records were missing it. Links and page addresses are unchanged.
+
 ## 0.334.97 — 2026-08-28
 
 **Internal groundwork.** Planning and reference material for Paddock's social channels; nothing on the site changed.
