@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.95 — 2026-08-28
+
+**Internal housekeeping.** Session records and the plan for the next one; nothing user-facing changed.
+
 ## 0.334.94 — 2026-08-28
 
 **The job that keeps results and standings up to date had stopped running, and is fixed.** It had been failing since 23 August on a dependency-file mismatch, which meant the site was serving the last data it managed to collect rather than fresh data. Nothing on the site was wrong, but nothing new was arriving either. It resumes automatically.

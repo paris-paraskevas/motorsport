@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.95 — 2026-08-28
+
+### Internal
+- **Session-40 handoff.** `docs/HANDOFF.md` gains the session block; `docs/next-session.md` is re-ordered **by risk rather than by thinness**, because content is no longer the weak link — every large family now measures 200–1,300 rendered words at 4–15% sibling overlap against the 67–101 words / 54–66% overlap that drew the AdSense verdict.
+- **A new TIER 0 opens the queue**, and it is the `warm-live-data` outage: the site's only data writer failed 82 of its last 120 runs, the 0.334.94 fix is unproven until a run goes green, and nothing alerts on it. Plus the separate finding that the workflow's declared `*/20 * * * *` schedule really runs ~5 times a day with 3–11 hour gaps.
+- **Six new landmines recorded**: `.next/dev` staleness (twice in one session, both times masquerading as real bugs) · the Cloudflare builder's 3 workers against this machine's 21 · `opengraph-image.tsx` is not inherited by a nested dynamic segment and a metadata route cannot be a re-export · never cache a `null` · weekend URLs carry no season · `git add -A` is unsafe in a shared checkout.
+- **TIER 1 gains the weekend-notes programme** (one series of fifteen done, method recorded) and the standing instruction to re-run `npm run archive:season` before any calendar rollover, because the F1 ICS carries only the current year.
+- **TIER 2 item 2 struck**: the 1.0 copy is signed off, §A9 is complete, and the item is corrected — it had not known that two competing 1.0 modals existed.
+- Nothing user-facing changed in this push.
+
 ## 0.334.94 — 2026-08-28
 
 ### Fixed — the site's ONLY data writer had been dead for days and nothing said so
