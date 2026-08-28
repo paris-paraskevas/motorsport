@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.104 — 2026-08-28
+
+**The Dutch Grand Prix page now shows what each team brought to the race.** Every weekend teams have to declare their new parts to the FIA, and we turn that into a technical file on the race weekend page. Zandvoort had been missing it since the race. It is there now: six teams, twenty-three new parts, with what each one changes and why.
+
 ## 0.334.103 — 2026-08-28
 
 **Groundwork for bringing the F1 technical files back up to date.** Each Grand Prix weekend the FIA publishes what new parts every team has brought, and we turn that into the technical file on our race weekend pages. Collecting it was entirely manual and had fallen behind since late July. There is now a tool that does the mechanical part and leaves a human to check it, so those pages can catch up. Nothing on the site has changed yet.

@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.104 — 2026-08-28
+
+### Content — the Dutch GP technical file, five weeks late
+
+`/series/f1/weekend/12` has shown no technical file since the race ran on 23 August, because curation stopped after round 11 on 24 July. Round 12 is now curated: **6 teams, 23 parts**, matching the FIA's own numbering in Document 10 of the 2026 Dutch Grand Prix.
+
+Drafted with the `npm run upgrades:draft` tooling from 0.334.103 and then **checked column by column against the PDF**, which is the half that is not automatable. The draft supplied the team set, the item counts and seventeen clean rows. Six needed rewriting from the source:
+
+- **Mercedes' Front Corner** came out with the reason `"Front Corner Conditioning Camber Adjusted."` and the detail `"camber adjusted."` The reason cell wraps across two lines with the component name between them, so flat text interleaves it. Actually *Performance — Flow Conditioning*, *"Drum front lip detached from the duct inlet, with camber adjusted."*
+- **Ferrari filed ONE geometric cell spanning rows 1-3 and one reason cell spanning all five**, which is why four of its rows became run-on text — one reason field reached 244 characters. The shared cell names three changes *by component*, so they are mapped by name and not by position: the phrase order does not follow the row order, and a positional split would have attributed all three wrongly.
+- **Alpine's Sidepod / Coke had an empty `detail`** and the parser did not flag it. Now *"New bodywork to suit the new floor while keeping cooling capacity."*
+
+Two things kept from the source rather than normalised away: **Red Bull's reason is `Reliability`**, not a Performance class — it is a wishbone chord shortened to reduce strain on the gaitor, and filing it as performance would misstate what the team declared. And **Aston Martin filed "Front Wing" twice**, as rows 1 and 3, which is preserved rather than merged.
+
+The file's `_comment` now says R1-R12 and carries the working instruction: draft, then check every reason and detail against the PDF, because the parser cannot see the FIA's vertically-merged cells.
+
+Verified on a dev render of `/series/f1/weekend/12`: the Technical file section reports "6 teams · 23 new parts declared" and every row carries a reason chip and a non-empty detail.
+
 ## 0.334.103 — 2026-08-28
 
 ### Added — `npm run upgrades:draft`, the F1 upgrades ingest that was missing its middle
