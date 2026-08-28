@@ -4,6 +4,29 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.94 — 2026-08-28
+
+### Fixed — the site's ONLY data writer had been dead for days and nothing said so
+`warm-live-data` is described in `CLAUDE.md` as "THE ONLY WRITER of the site's data": the Worker runs `DATA_SOURCE=db` and cannot fetch standings or results itself, because the upstreams rate-limit Cloudflare's shared egress. Found during the §A verification pass:
+
+```
+82 of the last 120 runs FAILED. Last success 2026-08-23T14:12Z.
+npm error `npm ci` can only install packages when your package.json and
+npm error package-lock.json are in sync.
+npm error Missing: @swc/helpers@0.5.23 from lock file
+```
+
+**This is the #687/#688 disease, third occurrence.** Session 30 lost 28 hours to it and recorded the mechanism exactly: npm 11 locally tolerates a nested-entry hole in the lockfile, the runner's npm 10 refuses, and the only writer dies silently. Reproduced here before fixing — local npm is **11.9.0**, and `npx npm@10 ci --dry-run` failed identically.
+
+- **The fix is one nested entry**, regenerated with npm 10: `node_modules/@serwist/turbopack/node_modules/@swc/helpers@0.5.23`. The lockfile's own `version` field was also stale at **0.334.26**, 67 patches behind, because hand-editing `package.json` never touches it.
+- **Verified under BOTH npm generations**, which is the part that was missed last time: `npx npm@10 ci --dry-run` → `added 217 packages`, exit 0; `npm ci --dry-run` on npm 11 → exit 0.
+- **`npm run lockfile:check`** added — `npx npm@10 ci --dry-run`, the guard session 30 recommended and nobody wired up. Run it after anything that touches dependencies; local npm will not catch this class on its own.
+
+No manual dispatch: the schedule runs every 20 minutes and will pick the fix up on merge. Ad-hoc warm runs against prod need the operator to name the action.
+
+### Still owed, and it is the real problem
+**Nothing alerts on this workflow failing.** Session 30 identified the detection gap after 28 hours; this time it ran to 82 failures. The fix is a notification channel, which is an operator decision — a failing scheduled job that only shows up when somebody happens to run `gh run list` is not monitoring.
+
 ## 0.334.93 — 2026-08-28
 
 ### Fixed — launch gate A6: two betting surfaces carried no play-money framing

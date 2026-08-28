@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.334.93",
+  "version": "0.334.94",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "lockfile:check": "npx --yes npm@10 ci --dry-run",
     "pretest": "tsx scripts/bundle-content.mts",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
