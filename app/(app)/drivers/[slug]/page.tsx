@@ -42,7 +42,9 @@ export async function generateMetadata({
   return {
     title: driver.name,
     description,
-    ...withSocialMeta({ title: driver.name, description, path: `/drivers/${slug}` }),
+    // ownCard: the sibling opengraph-image.tsx generates a driver card tinted
+    // by their team colour.
+    ...withSocialMeta({ title: driver.name, description, path: `/drivers/${slug}`, ownCard: true }),
   };
 }
 

@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.87 — 2026-08-28
+
+### Added
+- **Per-page social cards for the three biggest shareable families.** Measured on prod 2026-08-28: `/`, every series page, all 126 driver profiles and all 654 Learn answers pointed at the same `https://paddock-tracker.com/opengraph-image` — one identical 51 KB picture behind 869 URLs. Only blog posts and weekend pages had cards of their own. Now:
+  - `app/(app)/series/[slug]/opengraph-image.tsx` + `app/(app)/series/[slug]/[tab]/opengraph-image.tsx` — series name, season badge, tinted by `meta.color`.
+  - `app/(app)/drivers/[slug]/opengraph-image.tsx` — name, series, team, race number, tinted by `teamColor` with `seriesColor` as fallback.
+  - `app/(app)/information/[topic]/[slug]/opengraph-image.tsx` — leads with the question itself, with `headlineSize()` stepping 84→46 px so "Who won the 2020 Formula 1 championship?" and "Who has won the most ADAC Ravenol 24h Nürburgring championships?" both fit.
+  - Wired with `ownCard: true` in `seriesTabMetadata`, the driver page and the Learn entry page. That flag is load-bearing: an explicit `images` beats the file convention (measured 0.334.37), so without it the colocated file never wins.
+- **Worker bundle unchanged at 9552.56 KiB gzipped** (687.44 KiB headroom) — the Satori/`ImageResponse` runtime was already resident for the blog and weekend cards, so these routes add handlers and nothing else.
+
+### Two findings from checking each route type after the change rather than trusting the docs
+- **`opengraph-image.tsx` is NOT inherited by a nested dynamic segment.** Marking `seriesTabMetadata` `ownCard` stripped `SOCIAL_CARD` from all 73 tab pages and the parent's card did not fall through — they shipped with **no og:image at all**, which is the exact 0.334.37 defect. Caught in `next dev` before it left the branch. The tabs need their own route file.
+- **A metadata route cannot be a re-export.** `export { default, runtime, … } from '../opengraph-image'` was the obvious way to avoid duplicating the card, and Next rejects it outright: *"can't recognize the exported `runtime` field… it may be re-exported from another file"*, and the route 500s. So the renderer moved to `lib/og-cards.tsx` (`seriesCard(slug)`) with two thin route files calling it — one definition, so the tab card cannot drift from the series card.
+- Clearing `.next/dev` was needed after the failed re-export; the dev server kept serving the broken compile and 500ed the pages themselves, not just the image route (landmine 9).
+
 ## 0.334.86 — 2026-08-27
 
 ### Internal

@@ -58,7 +58,11 @@ export async function seriesTabMetadata(slug: string, rawTab: string | undefined
       // on so the outbound links still carry, and the tab remains fully usable
       // for readers — this removes it from the index, not from the site.
       ...(tab === 'news' ? { robots: { index: false, follow: true } } : {}),
-      ...withSocialMeta({ title, description, path: canonical }),
+      // ownCard: `app/(app)/series/[slug]/opengraph-image.tsx` generates a
+      // series-tinted card, inherited by every tab beneath it. An explicit
+      // `images` here would beat the file convention (measured 2026-08-25), so
+      // this flag is load-bearing, not decoration.
+      ...withSocialMeta({ title, description, path: canonical, ownCard: true }),
     };
   } catch {
     return { title: 'Series not found' };

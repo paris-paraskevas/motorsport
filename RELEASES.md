@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.87 — 2026-08-28
+
+**Share a page and you now get a picture of that page, not the same one every time.** Until today a link to Formula 1, a link to a driver profile and a link to a Learn answer all previewed with one identical site card — 869 pages behind a single image. Series pages now share with their own name, season and colour, driver pages with the driver's name, team and number in the team's colour, and every Learn answer leads with the question you asked. Blog posts and race weekends already had their own and keep them.
+
 ## 0.334.86 — 2026-08-27
 
 **Internal housekeeping.** Session records and the plan for the next one; nothing user-facing changed.

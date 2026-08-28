@@ -47,6 +47,8 @@ export async function generateMetadata({
       title: entry.question,
       description,
       path: `/information/${topic}/${slug}`,
+      // The colocated opengraph-image.tsx leads with the question itself.
+      ownCard: true,
     }),
   };
 }
