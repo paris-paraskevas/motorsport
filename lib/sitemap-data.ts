@@ -3,6 +3,7 @@ import { loadAllSeriesMeta, loadSeries } from './series';
 import { groupByWeekend } from './group';
 import { tabsFor } from './tabs';
 import { tabIsEmpty } from '@/components/SeriesPageView';
+import { listArchivePairs, loadSeasonArchive, isArchiveLiveSeason } from './season-archive';
 import { SITE_URL } from './site';
 import { INFO_TOPICS, aboutGuideForSeries } from './information/topics';
 import { getIndexedInfoEntries, isTopicIndexable } from './information/registry';
@@ -61,6 +62,7 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/write-for-us` },
     { url: `${SITE_URL}/about` },
     { url: `${SITE_URL}/changelog` },
+    { url: `${SITE_URL}/archive` },
     { url: `${SITE_URL}/privacy` },
     { url: `${SITE_URL}/terms` },
     { url: `${SITE_URL}/cookies` },
@@ -221,10 +223,36 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     .sort()
     .map((slug) => ({ url: `${SITE_URL}/drivers/${slug}` }));
 
+  // Season archive (/archive/<season>/<slug>/…). Only seasons that are NO LONGER
+  // the live one: while a season is current, the archive renders the same
+  // weekend as /series/<slug>/weekend/<round>, so it ships noindex + canonical
+  // to the live URL, and submitting it here would earn "Submitted URL marked
+  // noindex". `isArchiveLiveSeason` is the same predicate the pages use, so the
+  // robots tag and the sitemap cannot disagree.
+  //
+  // Today this contributes ZERO URLs — 2026 is current for all fifteen series.
+  // It fills in by itself at the rollover, with no code change.
+  const archivePairs = await listArchivePairs();
+  const archiveChunks = await Promise.all(
+    archivePairs.map(async ({ season, slug }) => {
+      if (await isArchiveLiveSeason(slug, season)) return [] as MetadataRoute.Sitemap;
+      const archive = await loadSeasonArchive(season, slug);
+      if (!archive) return [] as MetadataRoute.Sitemap;
+      return [
+        { url: `${SITE_URL}/archive/${season}/${slug}` },
+        ...archive.weekends.map((w) => ({
+          url: `${SITE_URL}/archive/${season}/${slug}/weekend/${w.round}`,
+        })),
+      ];
+    }),
+  );
+  const archiveUrls = archiveChunks.flat();
+
   return [
     ...staticUrls,
     ...seriesUrls,
     ...weekendChunks.flat(),
+    ...archiveUrls,
     ...infoUrls,
     ...authorUrls,
     ...driverUrls,

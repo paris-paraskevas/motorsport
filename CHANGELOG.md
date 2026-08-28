@@ -4,6 +4,29 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.90 — 2026-08-28
+
+### Added — the season archive is now browsable
+Three routes over the snapshot taken in 0.334.89, all `force-static` because `data/` is unreadable on workerd by design:
+- `/archive` — seasons, each listing its championships.
+- `/archive/<season>/<slug>` — the season: every round, plus the final classifications.
+- `/archive/<season>/<slug>/weekend/<round>` — the weekend: every session, times labelled UTC.
+
+**The 212 existing weekend URLs are untouched, and that is the design.** `/series/f1/weekend/15` keeps meaning "the current season", which is what is indexed and what people link to. No route was restructured and no 301 was added — the risk of moving 212 indexed URLs bought nothing, because the thing that was missing was an archive, not a different URL shape.
+
+**How the duplicate is avoided.** While a season is still the live one, `/archive/2026/f1/weekend/15` renders the same weekend as `/series/f1/weekend/15`. So `isArchiveLiveSeason(slug, season)` — one predicate, exported from `lib/season-archive.ts` and used by both pages **and** `lib/sitemap-data.ts`, so robots and sitemap cannot disagree — makes the archive defer while that holds: `noindex, follow`, canonical pointed at the live URL, and excluded from the sitemap. It becomes the canonical copy on its own the moment `meta.season` rolls forward. No code change, no backfill, nothing to remember.
+
+Measured in `next dev`: `/archive` `index, follow` self-canonical; `/archive/2026/f1` and `/archive/2026/f1/weekend/15` `noindex, follow` canonical to `/series/f1` and `/series/f1/weekend/15`. **The past-season branch was verified too** — a throwaway `data/season-archive/2025/f1.json` rendered `index, follow`, self-canonical, and appeared in the sitemap while zero `archive/2026` URLs did; the fixture was then deleted. That branch is otherwise entirely unexercised until the rollover, which is exactly why it was worth faking a season to test.
+
+`components/ArchiveStandings.tsx` renders the classification tables from an ALLOW-LIST of keys (`drivers`, `coDrivers`, `teams`, `constructors`, `manufacturers`) rather than sniffing every array in the payload — DTM's standings also carry `driverRoundBreakdown`, which is not a classification. Row shapes converge on `{position, points}` plus one of `driverName` / `coDriverName` / `name`.
+
+**Cost: none at runtime.** 236 pages prerendered (`○ /archive`, `● ` for both dynamic routes); Worker bundle **unchanged at 9552.56 KiB gzipped**, content bundle unchanged at 315 files. The archive is static HTML, not Worker payload.
+
+Reachable from the footer ("Season archive") and in the sitemap.
+
+### Known limitation, stated on the page
+Standings were captured **as at the snapshot**, not as at each round, so a past-season weekend page shows the final classification rather than the table at that point in the season. Reconstructing per-round standings is a much larger job; the season page says "standings as at capture" rather than implying otherwise.
+
 ## 0.334.89 — 2026-08-28
 
 ### Added — the 2026 season archived before its sources roll over

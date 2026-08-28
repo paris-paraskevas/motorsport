@@ -52,6 +52,7 @@ export function Footer() {
             <FooterLink href="/write-for-us" dataHeatmapId="footer:write-for-us">Write for Paddock</FooterLink>
             <FooterLink href="/social/threads" dataHeatmapId="footer:threads">Threads</FooterLink>
             <FooterLink href="/changelog" dataHeatmapId="footer:changelog">Release notes</FooterLink>
+            <FooterLink href="/archive" dataHeatmapId="footer:archive">Season archive</FooterLink>
             <FooterLink href="/settings" dataHeatmapId="footer:account">Account</FooterLink>
             {/* Contact + coffee moved here from the header pills (four-door shell). */}
             <ContactFooterButton />
