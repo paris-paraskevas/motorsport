@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.97 — 2026-08-28
+
+### Internal — the pre-launch social presence kit
+
+`docs/research/2026-08-28-social-presence.md` covers the eight weeks *before* the launch-day plan in `docs/research/2026-07-06-launch-marketing.md`, which stays as the day-0 runbook. Handles and bios written to each platform's real character limit (counted, not estimated), an avatar and banner spec against `public/icons/icon-512.png`, a four-week content calendar pegged to the real fixture list, eight paste-ready posts, a UTM scheme and per-channel rules of engagement.
+
+**Its most useful section is §2, the claim inventory** — what may be said about the product, verified against prod, and what may not. That audit is what produced 0.334.96: three published claims the product could not support. It also records the reasoning behind one recommendation worth keeping: a brand account on Instagram, X, YouTube and Facebook, but a **person's** account on Reddit, because a brand-named account posting about that brand is an advert by definition and that is precisely what the sub rules and spam filters target.
+
+Three of the 2026-07-06 plan's claims are corrected there: "works offline" (false), the F1-upgrades wedge (the feature renders but `content/series/f1/upgrades.json` stops at round 11, so rounds 12 and 13 show nothing), and the dark-theme asset spec (the site is the light paper theme, and its editorial look is a differentiator rather than something to hide).
+
+**`docs/marketing/` — 15 screenshots** captured from prod signed out, phone 390 and desktop 1440. Deliberately under `docs/` rather than `public/`: they are working files to upload elsewhere, not site content, and `public/` is served and crawlable.
+
 ## 0.334.96 — 2026-08-28
 
 ### Fixed — three published claims the product could not support

@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.97 — 2026-08-28
+
+**Internal groundwork.** Planning and reference material for Paddock's social channels; nothing on the site changed.
+
 ## 0.334.96 — 2026-08-28
 
 **Two things the site said about itself were not true, and are now corrected.** Paddock does not work offline, and has not for some time, but two places still promised it would. And the "most titles" pages now name the years they cover in their summary line, not only in the detail underneath, because for a few championships our records begin later than the championship itself did.

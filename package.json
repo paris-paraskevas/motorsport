@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.334.96",
+  "version": "0.334.97",
   "private": true,
   "scripts": {
     "dev": "next dev",
