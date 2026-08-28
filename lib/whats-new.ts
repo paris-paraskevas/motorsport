@@ -12,9 +12,19 @@
  *  reports the running version, and announcing 1.0 while running 0.334.x lies.
  *
  *  ⚠ COPY NEEDS THE OPERATOR'S SIGN-OFF BEFORE `active` GOES TRUE. `chips` and
- *  card bodies describe what EXISTS; nothing here is a roadmap, deliberately —
- *  the previous draft's "what comes next" list made three public promises and
- *  the operator's own kill list had already ruled out one of them. */
+ *  card bodies describe what EXISTS.
+ *
+ *  `next` IS a roadmap, and that reverses what this comment said until 0.334.88.
+ *  It used to read "nothing here is a roadmap, deliberately — the previous
+ *  draft's 'what comes next' list made three public promises and the operator's
+ *  own kill list had already ruled out one of them." **Checked against IDEAS.md
+ *  on 2026-08-28: none of the three is killed.** All are live parked plans —
+ *  the image session (NOW §4), the day page and the Street View corner tours
+ *  (both operator-raised 2026-08-22). What the kill list actually contains
+ *  nearby is that *portraits ×14 and team logos* died on LICENSING, which is a
+ *  constraint on how the image session sources pictures, not a kill of it.
+ *  launch-checklist §A9 requires a "what to expect later" section, so the
+ *  section is back, operator-signed per item on 2026-08-28. */
 
 /** Keys into the screenshot registry (`components/whats-new/CardShot.tsx`).
  *  Each names one real surface of the site, captured light and dark. Adding a
@@ -47,6 +57,11 @@ export interface WhatsNewEntry {
   cards: WhatsNewCard[];
   /** One-liners for things that need saying but not a card. */
   chips: string[];
+  /** "What to expect later" — required by launch-checklist §A9. EVERY LINE IS A
+   *  PUBLIC PROMISE the moment the entry goes active, so each one needs the
+   *  operator's sign-off individually; better three that ship than ten that rot.
+   *  Empty array renders nothing. */
+  next: string[];
   ctaLabel: string;
   ctaHref: string;
 }
@@ -102,6 +117,13 @@ export const WHATS_NEW: WhatsNewEntry[] = [
       'Predictions and friend leagues, play money only',
       'Installs as an app, works offline',
       'No account needed to browse',
+    ],
+    // Operator-signed 2026-08-28, all three as drafted. Each is a live plan in
+    // IDEAS.md — the image session, the day page, the Street View corner tours.
+    next: [
+      'Photography across the site, so every page has something to look at',
+      'A page for each day of a race weekend, with that day’s forecast, news and sessions',
+      'Circuit maps, and a corner-by-corner tour of the ones worth walking',
     ],
     ctaLabel: 'See the full changelog',
     ctaHref: '/changelog',

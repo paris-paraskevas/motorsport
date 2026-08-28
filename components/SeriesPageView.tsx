@@ -8,6 +8,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
+import { seriesPublishedPostCount } from '@/lib/blog';
 import { Series } from '@/lib/types';
 import { StaleBanner } from '@/components/StaleBanner';
 import { AboutTab } from '@/components/tabs/AboutTab';
@@ -36,6 +37,32 @@ export function seriesTabCanonical(slug: string, tab: TabKey): string {
   return tab === 'calendar' ? `/series/${slug}` : `/series/${slug}/${tab}`;
 }
 
+/** Whether a tab renders an empty state — a page that advertises content it has
+ *  not got. Measured on prod 2026-08-28: **13 such pages were `index, follow`** —
+ *  twelve series blog tabs reading "No DTM pieces published yet" and
+ *  `/series/nls/standings` reading "Nothing here yet for this series." Thin,
+ *  near-identical to each other, and promising data in the SERP snippet that the
+ *  page does not deliver. Launch-checklist A4 asks for exactly this call, and
+ *  0.334.8 already made it for the news tabs.
+ *
+ *  These are the only two empty states in the tab set, and each is detected at
+ *  its own source rather than by sniffing rendered output:
+ *   - `standings` — `StandingsTab` falls through to `PlaceholderTab` when the
+ *     series has no `officialStandingsUrl`, which is a content-file fact.
+ *   - `blog` — zero published posts, and ONLY when the database actually
+ *     answered. See `seriesPublishedPostCount`: an unreachable Supabase must not
+ *     read as "empty", or every blog tab noindexes itself on a build that could
+ *     not see the data.
+ *
+ *  Fail-open by construction: anything unknown returns false and stays indexed.
+ *  A tab flips back to indexable the moment it has content, on the next
+ *  revalidation — nothing needs to be un-done by hand. */
+export async function tabIsEmpty(slug: string, tab: TabKey, meta: { officialStandingsUrl?: string }): Promise<boolean> {
+  if (tab === 'standings') return !meta.officialStandingsUrl;
+  if (tab === 'blog') return (await seriesPublishedPostCount(slug)) === 0;
+  return false;
+}
+
 /** Shared `generateMetadata` body for both route entries. `rawTab` is the path
  *  segment (or undefined for the bare calendar route); it's resolved + the
  *  per-tab title/description/canonical are produced from it. */
@@ -57,7 +84,12 @@ export async function seriesTabMetadata(slug: string, rawTab: string | undefined
       // cannot fix by writing more (the audit's own conclusion). `follow` stays
       // on so the outbound links still carry, and the tab remains fully usable
       // for readers — this removes it from the index, not from the site.
-      ...(tab === 'news' ? { robots: { index: false, follow: true } } : {}),
+      // `follow` stays on in both cases: the page remains fully usable and its
+      // outbound links still carry. This removes them from the index, not from
+      // the site — the same call 0.334.8 made for the news tabs.
+      ...(tab === 'news' || (await tabIsEmpty(slug, tab, meta))
+        ? { robots: { index: false, follow: true } }
+        : {}),
       // ownCard: `app/(app)/series/[slug]/opengraph-image.tsx` generates a
       // series-tinted card, inherited by every tab beneath it. An explicit
       // `images` here would beat the file convention (measured 2026-08-25), so

@@ -43,8 +43,12 @@ let listResult: { data: Record<string, unknown>[] | null; error: { message: stri
   error: null,
 };
 
+// Mutable so the seriesPublishedPostCount cases can exercise the unconfigured
+// path, which is the whole point of that helper returning null rather than 0.
+let configured = true;
+
 vi.mock('./betting/client', () => ({
-  isBettingConfigured: () => true,
+  isBettingConfigured: () => configured,
   betDb: () => ({
     from: () => ({
       update: (...args: unknown[]) => {
@@ -61,7 +65,9 @@ vi.mock('./betting/client', () => ({
         const chain: Record<string, (...a: unknown[]) => unknown> = {
           eq: (...a: unknown[]) => {
             readChain.eq.push(a);
-            return chain;
+            // Awaitable AND chainable, same as `limit` below: seriesPublishedPostCount
+            // awaits straight off `.eq('status','published')` with no terminator.
+            return Object.assign(Promise.resolve(listResult), chain);
           },
           not: (...a: unknown[]) => {
             readChain.not.push(a);
@@ -86,6 +92,7 @@ vi.mock('./betting/client', () => ({
 vi.mock('./betting/friends', () => ({ displayNames: vi.fn(async () => new Map()) }));
 
 import {
+  seriesPublishedPostCount,
   updatePostContent,
   normalizeOriginalUrl,
   fetchHomeBlogLead,
@@ -109,6 +116,7 @@ beforeEach(() => {
   readChain.limit = [];
   readResult = { data: null, error: null };
   listResult = { data: [], error: null };
+  configured = true;
 });
 
 describe('updatePostContent', () => {
@@ -411,5 +419,50 @@ describe('setLearnTopic', () => {
   it('throws when no published row matched', async () => {
     eq2Mock.mockResolvedValue({ error: null, count: 0 });
     await expect(setLearnTopic('p1', 'motogp')).rejects.toThrow(/only a published post/i);
+  });
+});
+
+// The load-bearing distinction for the series-blog noindex gate (0.334.88):
+// "no posts" and "could not read" must not look the same. `publishedPosts()`
+// collapses both into [], which is right for a page that should still render
+// and wrong for a caller deciding whether to noindex — reading an unreachable
+// database as "empty" would deindex all fourteen series blog tabs, including
+// the ones with posts.
+describe('seriesPublishedPostCount', () => {
+  it('counts posts by series_slug and by tag', async () => {
+    listResult = {
+      data: [
+        { series_slug: 'f1', tags: [] },
+        { series_slug: 'motogp', tags: ['f1'] },
+        { series_slug: 'wec', tags: ['imsa'] },
+      ],
+      error: null,
+    };
+    expect(await seriesPublishedPostCount('f1')).toBe(2);
+    expect(await seriesPublishedPostCount('wec')).toBe(1);
+  });
+
+  it('returns 0 — not null — when the database answers and nothing matches', async () => {
+    listResult = { data: [{ series_slug: 'f1', tags: [] }], error: null };
+    expect(await seriesPublishedPostCount('dtm')).toBe(0);
+  });
+
+  it('returns null when Supabase is not configured, so the caller stays indexed', async () => {
+    configured = false;
+    listResult = { data: [], error: null };
+    expect(await seriesPublishedPostCount('dtm')).toBeNull();
+  });
+
+  it('returns null on a query error rather than reporting an empty series', async () => {
+    listResult = { data: null, error: { message: 'boom' } };
+    expect(await seriesPublishedPostCount('dtm')).toBeNull();
+  });
+
+  it('tolerates a null tags column', async () => {
+    listResult = {
+      data: [{ series_slug: 'dtm', tags: null }],
+      error: null,
+    } as unknown as typeof listResult;
+    expect(await seriesPublishedPostCount('dtm')).toBe(1);
   });
 });

@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.88 — 2026-08-28
+
+### Fixed — 13 indexed pages that advertise content they have not got
+Measured on prod 2026-08-28: twelve `series/*/blog` tabs rendering *"No DTM pieces published yet"* and `/series/nls/standings` rendering *"Nothing here yet for this series."*, **all thirteen `index, follow`** and all in the sitemap. Thin, near-identical to one another, and promising data in the SERP snippet the page does not deliver — launch-checklist §A4 asks for exactly this call and 0.334.8 already made it for the news tabs.
+- `tabIsEmpty()` in `components/SeriesPageView.tsx` detects each at its source rather than by sniffing rendered output: `standings` is empty when the series has no `officialStandingsUrl` (a content-file fact — only `nls` and `adac-ravenol-24h` qualify, and adac's tab set excludes standings); `blog` is empty on zero published posts.
+- **`seriesPublishedPostCount()` in `lib/blog.ts` returns `number | null`, and the null matters.** `publishedPosts()` collapses an unconfigured or unreachable Supabase into `[]`, which is correct for a page that should still render and catastrophic for a caller deciding whether to noindex — reading "empty" off a build that could not see the database would deindex all fourteen blog tabs including Formula 1's, which has posts. `.env.local` points at a local Supabase that is usually down, so that is the *normal* local case. Only a successful read returns a number; anything else returns null and the page stays indexed.
+- The sitemap **imports `tabIsEmpty`** rather than reimplementing it, so the robots tag and the sitemap cannot disagree. (The news exclusion beside it is duplicated in both files with a comment saying so; this one deliberately is not.)
+- Five cases added to `lib/blog.test.ts` pinning the contract, because the fail-soft makes the obvious test vacuous: counted by `series_slug` **and** by tag, 0 when the DB answers and nothing matches, null when unconfigured, null on a query error, and a null `tags` column tolerated. Suite 1451 → **1456**.
+- Fail-open by construction, and self-healing: a tab flips back to indexable the moment it has content, on the next revalidation. Nothing needs undoing by hand.
+
+### Changed — the two competing 1.0 announcement modals become one
+`LaunchBanner` (0.334.41) and `WhatsNewModal` (0.334.66) were **both mounted in `app/(app)/layout.tsx`, both keyed `id: 'v1.0'`, both shipping dark** — two implementations of the same announcement. Each guards on `document.querySelector('[role="dialog"]')`, but that guard **races**: both effects run before either dialog is in the DOM, so flipping both live could stack two modals over the page.
+- **Kept `WhatsNewModal`** (operator decision, 2026-08-28, taken with both rendered): six cards carrying real 848×260 screenshots of our own pages — which is what the operator asked for when the first version drew abstract panels — plus five capability chips.
+- **Grafted on the one thing it lacked**: the "What comes next" section, required by launch-checklist §A9. New `WhatsNewEntry.next: string[]`; empty array renders nothing.
+- **Deleted `components/LaunchBanner.tsx` (215 lines) and `LAUNCH_ANNOUNCEMENT` in `lib/site.ts`** — the constant's only consumer was that component. Both in git history; the roadmap copy moved across verbatim.
+- Verified in a browser with `active` flipped on temporarily: **exactly one dialog**, the roadmap renders, then flipped back. The entry still ships dark.
+
+### Corrected — a stale comment that had reversed a decision on false grounds
+`lib/whats-new.ts`'s header read *"nothing here is a roadmap, deliberately — the previous draft's 'what comes next' list made three public promises and the operator's own kill list had already ruled out one of them."* **Checked against `IDEAS.md`: none of the three is killed.** All are live parked plans — the image session (NOW §4, the operator's own "biggest job we have ever done"), the day page and the Street View corner tours (both operator-raised 2026-08-22). What the kill list actually holds nearby is that *portraits ×14 and team logos* died on **licensing**, which constrains how the image session sources pictures rather than killing it. The comment now records the reversal and its evidence.
+
 ## 0.334.87 — 2026-08-28
 
 ### Added

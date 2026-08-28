@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { loadAllSeriesMeta, loadSeries } from './series';
 import { groupByWeekend } from './group';
 import { tabsFor } from './tabs';
+import { tabIsEmpty } from '@/components/SeriesPageView';
 import { SITE_URL } from './site';
 import { INFO_TOPICS, aboutGuideForSeries } from './information/topics';
 import { getIndexedInfoEntries, isTopicIndexable } from './information/registry';
@@ -77,9 +78,22 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   // Single-event series carry a reduced tab set, and the coverage-gated
   // Tracks tab only exists for TRACKS_TAB_SLUGS series — so respect tabsFor
   // (slug-aware since the Tracks tab landed).
-  const seriesUrls: MetadataRoute.Sitemap = sortedMeta.flatMap((m) => [
+  //
+  // An EMPTY tab is excluded for the same reason (0.334.88): twelve series blog
+  // tabs and /series/nls/standings render an empty state and were submitted as
+  // indexable. `tabIsEmpty` is imported rather than reimplemented so the robots
+  // tag and the sitemap cannot disagree — the news exclusion below is duplicated
+  // and this one deliberately is not.
+  const seriesTabLists = await Promise.all(
+    sortedMeta.map(async (m) => {
+      const keys = tabsFor(m.singleEvent, m.slug);
+      const empty = await Promise.all(keys.map((t) => tabIsEmpty(m.slug, t.key, m)));
+      return keys.filter((_, i) => !empty[i]);
+    }),
+  );
+  const seriesUrls: MetadataRoute.Sitemap = sortedMeta.flatMap((m, mi) => [
     { url: `${SITE_URL}/series/${m.slug}` },
-    ...tabsFor(m.singleEvent, m.slug)
+    ...seriesTabLists[mi]
       // history + about moved to /information guides (redirected in middleware) —
       // keep the redirecting URLs out of the sitemap. About only redirects where
       // a guide exists, so gate it on aboutGuideForSeries.
