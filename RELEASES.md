@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.103 — 2026-08-28
+
+**Groundwork for bringing the F1 technical files back up to date.** Each Grand Prix weekend the FIA publishes what new parts every team has brought, and we turn that into the technical file on our race weekend pages. Collecting it was entirely manual and had fallen behind since late July. There is now a tool that does the mechanical part and leaves a human to check it, so those pages can catch up. Nothing on the site has changed yet.
+
 ## 0.334.102 — 2026-08-28
 
 **More of our championship write-ups are now checked against the data automatically.** Each one states the champion's points and the runner-up's, and an automated check confirms those match our records. It used to only manage that for some of them; it now covers considerably more. One 1993 Formula 1 sentence was reworded so it reads champion-first, which is how the rest are written.
