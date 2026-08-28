@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.102 — 2026-08-28
+
+**More of our championship write-ups are now checked against the data automatically.** Each one states the champion's points and the runner-up's, and an automated check confirms those match our records. It used to only manage that for some of them; it now covers considerably more. One 1993 Formula 1 sentence was reworded so it reads champion-first, which is how the rest are written.
+
 ## 0.334.101 — 2026-08-28
 
 **Internal reliability.** The job that keeps results and standings up to date now raises an alert if it ever stops, instead of failing quietly. It had done that twice before without anyone noticing. Nothing on the site changed.

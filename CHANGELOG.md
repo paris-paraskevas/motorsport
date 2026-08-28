@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.102 — 2026-08-28
+
+### Changed — the points check now reads the sentences people actually write
+
+`POINTS_PAIR` in `lib/champion-notes-integrity.test.ts` compares the two totals a champion note states against `champions.json`. It only matched when those totals were adjacent — `489 points to 361` — so the moment a note named the rival, which good prose does, the check silently skipped it. **69 of the 193 eligible notes were checked. Now 109 are.** Operator decision, taken 2026-08-28.
+
+**The queue's figures for this were wrong** and are corrected here: it recorded 75 checked and 47 available. Measured against the real files, it was 69 and 40.
+
+**Order is kept, and that is the whole point of the option chosen.** The alternative on the table was comparing the pair order-insensitively, which would have passed everything immediately — and thrown away the transposition guard, which is most of what this check is for. So the pattern still requires the champion's total first, and that is now a house rule for these notes, written into the test's own comment. The one note that stated them the other way round was **accurate prose** and was reworded rather than exempted: f1 1993's *"Ayrton Senna finished runner-up on 73 points to Prost's 99"* is now *"Prost finished on 99 points to Ayrton Senna's 73."*
+
+Three details in the pattern are load-bearing:
+
+- The gap between the totals is **non-capturing and `\D`-only**, so it can never step over a number and pair the wrong two. Bounded at 24 characters — a name and a possessive fit, the next clause does not.
+- **Years are excluded** (`(?!19\d\d|20\d\d)`). Without it, *"the first since 1973 to hold titles in the 125 and 250 classes"* reads as a points pair. Safe because the largest figure anywhere in `champions.json` is **678** (IndyCar 2018) — measured across every file, not assumed.
+- The 1993 note was edited as **text, not parsed and re-serialised**: `champion-notes.json` is keyed by year, those keys are integer-like, and `JSON.stringify` reorders them. Verified after the edit that the key order was byte-identical.
+
+**`POINTS_PAIR` now has its own tests** — four shapes it must read, two year-traps it must reject. Without them the corpus assertion could only fail louder when the pattern broke, never when it quietly stopped matching, and a check that silently matches nothing looks exactly like a passing one.
+
+The 40 newly covered notes are DTM 5, F1 6, MotoGP 21, WRC 4, WSBK 4, and all 40 already agreed with the data. Coverage proven by mutation rather than asserted: corrupting `dtm 1991` from 174 to 175 fails the suite with *"1991: prose says 174/166: expected [174, 166] to deeply equal [175, 166]"*, and the file was restored byte-identical.
+
 ## 0.334.101 — 2026-08-28
 
 ### Added — the only data writer now says when it dies
