@@ -115,7 +115,7 @@ export const WHATS_NEW: WhatsNewEntry[] = [
       'Weather by the hour',
       'Alerts before a session starts',
       'Predictions and friend leagues, play money only',
-      'Installs as an app, works offline',
+      'Installs as an app',
       'No account needed to browse',
     ],
     // Operator-signed 2026-08-28, all three as drafted. Each is a live plan in

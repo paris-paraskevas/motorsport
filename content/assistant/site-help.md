@@ -13,7 +13,7 @@ Paddock Tracker (paddock-tracker.com) is a free motorsport companion that tracks
 IndyCar, NASCAR Cup, Formula E, WEC, IMSA, GT World Challenge, DTM, WRC, NLS, and
 the ADAC Ravenol 24h. It shows schedules in your local time, standings, results,
 champions, and news — plus a free play-money prediction game. It installs as an
-app on your phone (a PWA) and works offline for the schedule. You can browse most
+app on your phone (a PWA). You can browse most
 of it without an account; some features (personalisation, predictions, following)
 need a free account.
 
@@ -87,12 +87,13 @@ F1 has an analysis hub (`/f1/analysis`) with qualifying analysis, lap replays, a
 telemetry-based leaderboards (speed traps, pit stops, overtakes). Some analysis
 features require a free account.
 
-## Account, install, offline
+## Account and install
 
 - Create a free account to follow series, personalise the home page, get
   notifications, and play the prediction game. Account settings live at `/settings`.
 - Install Paddock as an app: use your browser's "Add to Home Screen" / "Install".
-- Offline: the schedule for the coming days is cached so it still works with no signal.
+- Paddock needs a connection: there is no offline mode, so pages will not load
+  without a signal.
 
 ## Help and contact
 
