@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.100 — 2026-08-28
+
+### Internal — the sign-out finding, written down where 0.334.99 promised it was
+
+0.334.99 said the sign-out half of the operator's report "is recorded in `IDEAS.md`". It was not, so this makes that true rather than leaving a published changelog asserting something false — the same defect class 0.334.96 existed to fix.
+
+The finding: **every session ends after 7 days regardless of activity**, and it is Clerk's setting rather than our code. Nothing in `middleware.ts` or either `ClerkProvider` configures session lifetime. The dashboard shows **Maximum lifetime ON at its 7-day default and Inactivity timeout OFF**, so this is not an away-for-a-few-days timeout, it is a weekly ceiling for every signed-in user. Clerk's own panel additionally warns that browser storage limits can end a session earlier than the configured maximum, which is why the installed Android app feels worse than desktop. The field is **Pro-gated**, so raising it is a cost decision and therefore the operator's.
+
 ## 0.334.99 — 2026-08-28
 
 ### Fixed — notifications no longer switch themselves off
