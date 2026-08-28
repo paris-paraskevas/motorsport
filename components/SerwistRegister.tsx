@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import { SerwistProvider } from '@serwist/turbopack/react';
+import { restorePushSubscription } from '@/lib/pushClient';
 
 // Registers the service worker served by app/serwist/[path]/route.ts — the
 // explicit half of the @serwist/turbopack architecture that replaced
@@ -9,6 +11,17 @@ import { SerwistProvider } from '@serwist/turbopack/react';
 // config exactly. Dev stays disabled: that was the old behavior, and a
 // localhost SW serves months-stale chunks (session-26 landmine 0).
 export function SerwistRegister() {
+  // Notifications used to switch themselves off on their own. A push
+  // subscription belongs to the service worker rather than to the account, and
+  // every deploy replaces the worker, so the browser drops the subscription and
+  // the site then honestly reports notifications as off — nothing put them back.
+  // This lives here because this component already owns the worker's lifecycle,
+  // which is the thing that breaks them. Silent: restorePushSubscription never
+  // prompts, so no permission dialog can appear on load.
+  useEffect(() => {
+    void restorePushSubscription();
+  }, []);
+
   return (
     <SerwistProvider
       swUrl="/serwist/sw.js"

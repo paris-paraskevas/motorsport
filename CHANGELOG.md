@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.99 — 2026-08-28
+
+### Fixed — notifications no longer switch themselves off
+
+Operator report: *"i get signed out from paddock at random times, and also notifications get unenabled."* Two unrelated causes. This is the notifications half; the sign-outs are Clerk's **Maximum lifetime** sitting at its 7-day default (Inactivity timeout is off, confirmed in the dashboard), which is a plan decision rather than a code one and is recorded in `IDEAS.md`.
+
+**Why they turned themselves off.** A push subscription belongs to the **service worker**, not to the account. Every deploy replaces that worker wholesale — all ~218 precache entries change identity — and Android Chrome evicts subscriptions on its own besides, so the browser genuinely loses it. From then on `getPushSubscriptionState` answers "not subscribed" perfectly honestly and the toggle reads off. The system then tidies itself into *agreement* rather than into repair: the next send fails, `lib/push.ts:71` sees 404/410 and evicts the row, and both sides now agree the device is unsubscribed. **Nothing anywhere remembered it had ever been wanted.**
+
+**The fix** stores that intent where it survives both events: a device-local `paddock:push-opted-in` flag, written on a successful subscribe and cleared on unsubscribe. `restorePushSubscription()` acts on it from a `useEffect` in `components/SerwistRegister` — which already owns the worker's lifecycle, so no new file and no new mount point. It is **silent by construction**: it never calls `Notification.requestPermission`, so it can only act where permission is already granted and no dialog can appear on load.
+
+Three decisions worth keeping:
+
+- **Roll the browser back when the server refuses.** `/api/push/subscribe` is auth-protected (`middleware.ts`), so a signed-out visitor gets 401. Keeping the browser subscription then would be the worst available outcome — `getSubscription()` would report `subscribed` forever after, every later restore would decide there was nothing to do, and the device would look enabled while receiving nothing.
+- **A revoked permission clears the flag; a transient failure keeps it.** One should stop retrying on every page load, the other should retry on the next one.
+- **`unsubscribeFromPush` clears the flag FIRST and unconditionally.** Turning notifications off is an explicit choice and has to stick; clearing it last would let a thrown unsubscribe leave the flag set, and the next load would silently switch them back on.
+
+`lib/pushClient.test.ts` is new and covers ten cases. The rollback case was mutation-checked rather than assumed: deleting `subscription.unsubscribe()` makes it fail with *"expected vi.fn() to be called once, but got 0 times"*.
+
+**Deliberately not verifiable in dev**: `SerwistRegister` disables the worker when `NODE_ENV === 'development'`, so the restore path cannot execute locally by design. It is unit-tested end to end; the real confirmation is the symptom not recurring across the next few deploys.
+
 ## 0.334.98 — 2026-08-28
 
 ### Fixed — the IndyCar champion's name carries its accent
