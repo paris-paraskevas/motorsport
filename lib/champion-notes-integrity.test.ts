@@ -60,9 +60,61 @@ const sets = readdirSync(ROOT)
 
 const cases = sets.map((s) => [s.slug, s.notes, s.champions] as const);
 
-/** "395.5 points to 387.5" or plain "123 to 65" — the champion/runner-up pair as
- *  the prose states it. Two shapes because both are used across the notes. */
-const POINTS_PAIR = /(\d{2,4}(?:\.\d)?)\s+points\s+to\s+(\d{2,4}(?:\.\d)?)|(\d{2,4}(?:\.\d)?)\s+to\s+(\d{2,4}(?:\.\d)?)/;
+/** "395.5 points to 387.5", plain "123 to 65", and — since 0.334.102 — the shape
+ *  good prose actually uses, "498 points to Sykes's 447". The narrow form matched
+ *  only when the two totals were adjacent, so naming the rival made the check
+ *  silently skip the note: it went from checking 69 of the 193 notes that have
+ *  both totals in champions.json to checking 109.
+ *
+ *  Three things here are load-bearing:
+ *
+ *  - The gap is NON-capturing and `\D`-only, so it can never step over a number
+ *    and pair the wrong two. Bounded at 24 characters: long enough for a name
+ *    and a possessive, short enough that it cannot reach into the next clause.
+ *  - Years are excluded. Without `(?!19\d\d|20\d\d)`, "the first since 1973 to
+ *    hold titles in the 125 and 250 classes" reads as a points pair. No real
+ *    total lands in that band — the largest figure anywhere in champions.json is
+ *    678 (IndyCar 2018), measured, not assumed.
+ *  - ORDER IS THE POINT. The champion's total is stated first, and comparing the
+ *    pair in order is what catches a transposed note. That makes it a house rule
+ *    for these notes: when a note gives both totals, name the champion's first.
+ *    The f1 1993 note was accurate but stated the runner-up first ("Ayrton Senna
+ *    finished runner-up on 73 points to Prost's 99"), so it was reworded rather
+ *    than exempted.
+ *
+ *  If this ever fails, the fix is the prose or the data — NOT making the
+ *  comparison order-insensitive. That would trade away the transposition guard,
+ *  which is most of what this check is for. */
+const POINTS_PAIR =
+  /\b(?!19\d\d|20\d\d)(\d{2,4}(?:\.\d)?)\s+points\s+to\s+(?:\D{0,24}?)\b(?!19\d\d|20\d\d)(\d{2,4}(?:\.\d)?)\b|\b(?!19\d\d|20\d\d)(\d{2,4}(?:\.\d)?)\s+to\s+\b(?!19\d\d|20\d\d)(\d{2,4}(?:\.\d)?)\b/;
+
+// The pattern's own tests. Without these the corpus assertion below can only
+// fail LOUDER when the regex breaks, never when it quietly stops matching — and
+// a check that silently matches nothing is indistinguishable from a passing one.
+describe('POINTS_PAIR', () => {
+  const pair = (s: string) => {
+    const m = POINTS_PAIR.exec(s);
+    return m ? m.slice(1).filter((g) => g !== undefined).map(Number) : null;
+  };
+
+  it.each([
+    ['489 points to 361', [489, 361]],
+    ["498 points to Sykes's 447", [498, 447]],
+    ['395.5 points to 387.5', [395.5, 387.5]],
+    ["99 points to Ayrton Senna's 73", [99, 73]],
+  ])('reads %s', (prose, expected) => {
+    expect(pair(prose as string)).toEqual(expected);
+  });
+
+  // Both of these are real sentences from the corpus shape. A four-digit year
+  // beside "to" is the one false positive broadening the pattern could create.
+  it.each([
+    'the first since 1973 to hold titles in the 125 and 250 classes',
+    'won the title in 2001 with a race to spare',
+  ])('does not read a year as a points pair: %s', (prose) => {
+    expect(pair(prose)).toBeNull();
+  });
+});
 
 describe('champion-notes.json integrity', () => {
   it('finds note files to check', () => {
