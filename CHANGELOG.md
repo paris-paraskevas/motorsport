@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.91 — 2026-08-28
+
+### Fixed — the 0.334.90 build failed on Cloudflare and never deployed
+`main` was un-deployable: prod stayed on 0.334.89 and `/archive` 404'd. **It was not the Worker size limit** — the build died inside `next build` during static export, minutes before wrangler or any size check runs, and the last measured bundle was 9552.56 KiB with 687 KiB of headroom.
+
+The actual failure: `/` exceeded the 60-second per-page export budget three times and aborted the build, along with both `/authors/<slug>` pages.
+
+```
+Failed to build /(app)/page: / (attempt 1 of 3) because it took more than 60 seconds.
+Failed to build /(app)/authors/[slug]/page: /authors/paris-paraskevas (attempt 1 of 3)
+Failed to build /(app)/page: / after 3 attempts.
+Export encountered an error on /(app)/page: /, exiting the build.
+```
+
+**What this change fixes.** `loadSeasonArchive` re-read and re-JSON-parsed the whole season file on every call — once per `generateStaticParams` entry, once per `generateMetadata`, once per page render, and once more per sitemap entry. Roughly **900 full parses** of files up to a few hundred KB where 15 would do, and `isArchiveLiveSeason` did the same with `loadSeriesMeta` about 470 times. Both are now memoised per process, which is sound because the archive is immutable for the life of a build. That is a real defect independent of the build failure.
+
+**Why it plausibly caused it.** Page count went 961 → 1188 with 0.334.90, on a Cloudflare builder running **3 workers** where this machine runs **21**. Next renders pages concurrently inside each worker, so ~900 redundant parses stretch the wall-clock of whatever else that worker is rendering — and `/` was already the slowest page on the site.
+
+**Stated honestly: this is not proven.** A competing explanation fits the evidence at least as well — the only three pages that failed are the only three backed by Supabase (`/` renders the blog lead, the author pages list published posts), and `publishedPosts()` has no timeout, so a slow database hangs rather than fails. Locally the build is green either way (104s, zero timeouts) and CI cannot be reproduced here, so the next build is the test. If it fails again the routes get reverted and the Supabase-timeout theory gets the next look.
+
 ## 0.334.90 — 2026-08-28
 
 ### Added — the season archive is now browsable

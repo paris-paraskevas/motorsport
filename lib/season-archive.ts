@@ -75,20 +75,44 @@ export async function listArchivedSeries(season: number): Promise<string[]> {
   }
 }
 
+/** Per-process cache. These files are immutable for the life of a build — that
+ *  is the whole premise of the archive — and without this the same season file
+ *  is read and JSON-parsed once per `generateStaticParams` entry, once per
+ *  `generateMetadata`, once per page render and once more for the sitemap:
+ *  roughly 900 full parses of files up to a few hundred KB, where 15 would do.
+ *
+ *  That mattered. The 0.334.90 build FAILED on Cloudflare — `/` exceeded the
+ *  60-second per-page export budget three times — after the page count went
+ *  961 → 1188 on a builder with **3 workers** where this machine has 21. The
+ *  wasted parsing was starving the network-bound pages. Caching is not a
+ *  micro-optimisation here, it is the difference between a green build and a
+ *  red one. */
+const cache = new Map<string, SeasonArchive | null>();
+
 /** One archived season for one series. Null when absent or unreadable — which
  *  on workerd is ALWAYS, by design. Callers are static routes. */
 export async function loadSeasonArchive(
   season: number,
   slug: string,
 ): Promise<SeasonArchive | null> {
+  const key = `${season}/${slug}`;
+  const hit = cache.get(key);
+  if (hit !== undefined) return hit;
+  let value: SeasonArchive | null = null;
   try {
     const raw = await readFile(path.join(ROOT, String(season), `${slug}.json`), 'utf-8');
     const parsed = JSON.parse(raw) as SeasonArchive;
-    return parsed && Array.isArray(parsed.weekends) ? parsed : null;
+    value = parsed && Array.isArray(parsed.weekends) ? parsed : null;
   } catch {
-    return null;
+    value = null;
   }
+  cache.set(key, value);
+  return value;
 }
+
+/** Same reasoning as the archive cache above — this is called once per archive
+ *  page for metadata, once more for the render, and again per sitemap entry. */
+const liveCache = new Map<string, boolean>();
 
 /** True while `season` is still the season the LIVE series pages serve.
  *
@@ -102,11 +126,16 @@ export async function loadSeasonArchive(
  *  Exported so the pages and `lib/sitemap-data.ts` share one definition; a
  *  sitemap that submits a noindex URL earns "Submitted URL marked noindex". */
 export async function isArchiveLiveSeason(slug: string, season: number): Promise<boolean> {
+  const key = `${slug}@${season}`;
+  const hit = liveCache.get(key);
+  if (hit !== undefined) return hit;
   // Imported lazily: lib/series pulls the content bundle, and the archive
   // loader is also used by scripts that have no need for it.
   const { loadSeriesMeta } = await import('./series');
   const meta = await loadSeriesMeta(slug).catch(() => null);
-  return meta?.season === season;
+  const value = meta?.season === season;
+  liveCache.set(key, value);
+  return value;
 }
 
 /** Every (season, slug) pair on disk — for generateStaticParams. */
