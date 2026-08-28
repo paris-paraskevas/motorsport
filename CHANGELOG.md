@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.93 — 2026-08-28
+
+### Fixed — launch gate A6: two betting surfaces carried no play-money framing
+Audited on prod during the §A verification pass. `docs/launch-checklist.md` §A6 requires no-cashout framing on `/social` **and every betting surface**, because marketing must not imply real gambling. `/social` had four mentions. **`/social/leagues` had none, and neither did the league detail page `/social/leagues/[id]`** — a leaderboard built from predictions, with nothing on it saying the credits are not money.
+
+- `PLAY_MONEY_NOTE` in `lib/site.ts`: *"Played with free Paddock credits. No cash in, no cash out — just bragging rights."* One constant, because two copies of a compliance line are two copies to forget. The wording follows the voice already on `/social` ("No cash, no catch") and in `WeekendBetting` ("free Paddock credits, no cashout").
+- Rendered **inside each page's `frame()`**, not in a single branch — so the not-configured, signed-out and signed-in states all carry it, and a state added later cannot quietly lose it. That placement is the point: the signed-out league page was one of the three states that had nothing.
+- `/social/friends` and `/social/threads` were checked and deliberately left alone: a friends list and a discussion board are not betting surfaces.
+
+This was the only red in the §A pass that is code rather than credentials or a judgement call.
+
+### Also verified on prod in the same pass, unchanged by this commit
+Home populates signed-out with no placeholders (A1) · Worker bundle 9552.56 / 10240 KiB (A3) · Clerk `pk_live_` (A3) · Supabase prod live, proven by the 0.334.88 empty-tab noindex firing (A3) · sitemap, robots and llms.txt all 200 (A4) · **exactly one console error and it is the deliberate Funding Choices CSP block** (A5) · assistant off with no launcher, so the privacy policy stays true (A6) · HSTS preload, Permissions-Policy, Referrer-Policy, nosniff, SAMEORIGIN (A7).
+
+`/api/cron/health` returns 401 without a bearer token, which proves `lib/cron-auth.ts` still fails closed — but reading the last-run timestamps needs `CRON_SECRET`, so "crons green" stays owed. The chart-vs-standings invariant (A2) reconciles in the data — standings 242/183/183/159/155 match our sources and the gap to summed race points is exactly sprint points — but the rendered chart total could not be read programmatically, so the visual half is unproven.
+
 ## 0.334.92 — 2026-08-28
 
 ### Added — race weekend pages get an authored account, and Formula 1's twelve completed rounds are done

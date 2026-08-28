@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.93 — 2026-08-28
+
+**The leagues pages now say out loud that the credits are not money.** Predictions on Paddock have always been play money with no cash in and no cash out, and the main Social page said so — but the leagues list and individual league leaderboards did not. They do now, on every version of those pages.
+
 ## 0.334.92 — 2026-08-28
 
 **Race weekend pages now tell you how the race was won.** Until today they listed the sessions and the finishing order and left it there — you could see that Russell won in Melbourne, but not that he lost the lead on lap one, got it back when a virtual safety car split the strategies, and that Piastri never made the grid at his home race. All twelve Formula 1 rounds run so far have a written account, each checked against two independent reports. The rest of the championships follow.

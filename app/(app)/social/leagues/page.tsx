@@ -7,7 +7,7 @@ import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
 import { getUserLeagues, getLeaderboardsForLeagues } from '@/lib/betting/leagues';
 import { LeaguesPanel } from '@/components/betting/LeaguesPanel';
-import { PAGE_WIDE } from '@/lib/site';
+import { PAGE_WIDE, PLAY_MONEY_NOTE } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Leagues', robots: { index: false, follow: false } };
@@ -31,6 +31,12 @@ function frame(children: ReactNode) {
           Leagues<span className="text-brand">.</span>
         </h1>
       </header>
+      {/* Launch gate A6: no-cashout framing on every betting surface. Inside
+          frame() on purpose, so the signed-out, not-configured and signed-in
+          states all carry it and a future state cannot quietly lose it. */}
+      <p className="mb-5 max-w-xl font-mono text-[11px] leading-relaxed text-text-muted">
+        {PLAY_MONEY_NOTE}
+      </p>
       {children}
     </div>
   );
