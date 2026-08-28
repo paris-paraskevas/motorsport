@@ -163,6 +163,19 @@ function report(parsed: ParsedUpgrades, round: number | null): void {
   const extra: string[] = [];
   for (const t of parsed.teams) {
     for (const i of t.items) {
+      // Page furniture read as a numbered row. The FIA's per-page footer is the
+      // entrant's full name plus a copyright line, and `pdftotext -layout` puts
+      // it where a row number would be — so Williams gains two phantom parts
+      // ("Atlassian Williams F1 Team") on rounds 3 and 4, measured. Named
+      // explicitly because the generic empty-detail warning below catches these
+      // too, but tells the curator the wrong thing about why.
+      const furniture =
+        i.component.toLowerCase().includes(t.team.toLowerCase()) ||
+        /rights reserved|confidential|©/i.test(`${i.component} ${i.reason}`);
+      if (furniture) {
+        extra.push(`${t.team}: "${i.component}" — page furniture, not a part (the entrant name / copyright footer). DELETE the row.`);
+        continue;
+      }
       if (!i.detail?.trim()) extra.push(`${t.team}: "${i.component}" — detail is EMPTY`);
       else if (i.detail.length > 160) extra.push(`${t.team}: "${i.component}" — detail ran on (${i.detail.length} chars), probably swallowed the next row`);
       if (i.reason.length > 60) extra.push(`${t.team}: "${i.component}" — reason ran on (${i.reason.length} chars), probably a merged cell`);
