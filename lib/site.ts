@@ -36,47 +36,15 @@ export const INDEXNOW_KEY_LOCATION = `${SITE_URL}/${INDEXNOW_KEY}.txt`;
 export const PAGE_WIDE = 'w-full p-4 md:p-6 lg:p-8 pb-16';
 export const PAGE_READ = 'w-full max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16';
 
-// v1.0 launch announcement — a MODAL over any page on arrival, not a bar.
-// Rendered by components/LaunchBanner.
+// The v1.0 announcement used to live here as LAUNCH_ANNOUNCEMENT, rendered by
+// components/LaunchBanner. Both were retired in 0.334.88: the What's-New modal
+// (lib/whats-new.ts + components/whats-new/) had grown into a better version of
+// the same thing — six cards carrying real screenshots of our own pages rather
+// than a text list — and the two were mounted side by side under the SAME
+// 'v1.0' dismissal id, with racing "is a dialog already open" guards.
 //
-// Operator, 2026-08-25: "1.0 needs to be a pop up banner that covers any page
-// upon a users visit, it can be shown to everyone, same dont show again logic as
-// support prompt." So: everyone, once, dismissal persisted in localStorage keyed
-// by `id` (and to the account when signed in, like SupportPrompt).
-//
-// Ships DARK: `active: false` renders nothing, so merging this is a no-op for
-// readers. On launch day flip `active` in the SAME commit that bumps
-// package.json to 1.0.0 (docs/launch-checklist.md §B). Bump `id` for any future
-// announcement so people who dismissed this one still see the next.
-//
-// ⚠ THE COPY BELOW IS DRAFT AND NEEDS THE OPERATOR'S SIGN-OFF BEFORE `active`
-// GOES TRUE. `next` in particular: anything named there is a public promise, and
-// three things that ship beat ten that rot.
-export const LAUNCH_ANNOUNCEMENT = {
-  active: false,
-  id: 'v1.0',
-  kicker: 'Version 1.0',
-  title: 'Paddock is out of early access',
-  intro:
-    'Fifteen championships in one place, every session in your own time zone. Built in the open over a hundred days, and free, with no account needed to use most of it.',
-  /** What the site does, by capability rather than by release. */
-  does: [
-    ['The calendar', 'Every session of fifteen series, grouped by race weekend, in your time'],
-    ['Results and standings', 'Full classifications, live championship tables and season charts'],
-    ['The record', 'Champions back to 1950, a page for every driver, every circuit in depth'],
-    ['F1 analysis', 'Qualifying decoded lap by lap, and the onboard rebuilt from real GPS'],
-    ['Writing', 'Previews, race reports and analysis, written and fact-checked in house'],
-    ['Predictions', 'A play-money game with friend leagues. No cash in, no cash out'],
-  ],
-  /** DRAFT. Needs sign-off — see the warning above. */
-  next: [
-    'Photography across the site, so every page has something to look at',
-    'A page for each day of a race weekend, with that day’s forecast, news and sessions',
-    'Circuit maps, and a corner-by-corner tour of the ones worth walking',
-  ],
-  ctaLabel: 'See everything that changed',
-  ctaHref: '/changelog',
-} as const;
+// The roadmap copy moved across verbatim as WhatsNewEntry.next. Both files are
+// in git history if the old shape is ever wanted back.
 
 // Series/team colours used AS TEXT (labels, headings, deltas). Vibrant hexes
 // wash out on the light themes, so the colour mixes toward black by the

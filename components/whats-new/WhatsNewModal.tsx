@@ -237,6 +237,34 @@ function Panel({
               </ul>
             </>
           )}
+
+          {/* "What to expect later" — required by launch-checklist §A9, and the
+              one thing the retired LaunchBanner had that this modal did not.
+              Grafted here rather than kept in a second modal (0.334.88): both
+              were keyed 'v1.0', both mounted, and their "is another dialog
+              open" guards RACE — each effect runs before the other's dialog is
+              in the DOM, so flipping both live could stack two modals.
+
+              Anything listed becomes a public promise, so the copy is
+              operator-signed per item. */}
+          {entry.next.length > 0 && (
+            <>
+              <p className="mt-6 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+                What comes next
+              </p>
+              <ul className="mt-1.5">
+                {entry.next.map(item => (
+                  <li
+                    key={item}
+                    className="flex gap-2 py-1 text-[13px] leading-snug text-text-muted"
+                  >
+                    <span aria-hidden className="mt-[7px] h-[3px] w-2.5 shrink-0 bg-border-strong" />
+                    <span className="min-w-0 flex-1">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-border px-5 py-3.5 md:px-7">

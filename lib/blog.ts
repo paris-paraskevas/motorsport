@@ -270,6 +270,37 @@ export async function publishedPosts(): Promise<BlogPost[]> {
   }
 }
 
+/** How many published posts a series has — or **null when we cannot tell**,
+ *  which is emphatically not the same as zero.
+ *
+ *  `publishedPosts()` above swallows an unconfigured or unreachable Supabase
+ *  into an empty list, which is right for a page that should still render. It
+ *  is wrong for the caller this exists for: `seriesTabMetadata` noindexes a
+ *  series blog tab that has nothing on it, and reading "empty" off a build that
+ *  simply could not see the database would noindex all fourteen — including
+ *  Formula 1's, which has posts. `.env.local` points at a local Supabase that
+ *  is usually down, so that is the normal case locally, not an edge case.
+ *
+ *  Only a successful read returns a number. Anything else returns null and the
+ *  caller leaves the page indexed. */
+export async function seriesPublishedPostCount(slug: string): Promise<number | null> {
+  if (!isBettingConfigured()) return null;
+  try {
+    const { data, error } = await betDb()
+      .from('post')
+      .select('series_slug, tags')
+      .eq('status', 'published');
+    if (error || !data) return null;
+    // Same membership test the tab itself uses: the post's own series, or the
+    // slug appearing as a tag on a cross-series piece.
+    return data.filter(
+      (r) => r.series_slug === slug || (Array.isArray(r.tags) ? r.tags.includes(slug) : false),
+    ).length;
+  } catch {
+    return null;
+  }
+}
+
 export type HomeBlogLead = {
   slug: string;
   title: string;

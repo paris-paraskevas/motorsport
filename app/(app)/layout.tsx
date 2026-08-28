@@ -5,7 +5,6 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { FONT_CLASSES } from '@/lib/fonts';
 import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
-import { LaunchBanner } from '@/components/LaunchBanner';
 import { WhatsNewModal } from '@/components/whats-new/WhatsNewModal';
 import { SupportPrompt } from '@/components/SupportPrompt';
 
@@ -133,11 +132,12 @@ export default async function RootLayout({
           <AppShell seriesList={seriesList} bettingEnabled={isBettingConfigured()}>
             {children}
           </AppShell>
-          {/* The 1.0 announcement, a modal over whatever page the reader landed
-              on (operator, 2026-08-25). Layout level beside the other dialogs
-              rather than inside AppShell, because it is fixed-position and no
-              longer an inline bar. Ships dark until LAUNCH_ANNOUNCEMENT.active. */}
-          <LaunchBanner />
+          {/* The release announcement, a modal over whatever page the reader
+              landed on (operator, 2026-08-25). Layout level beside the other
+              dialogs rather than inside AppShell, because it is fixed-position
+              and not an inline bar. Ships dark until an entry is `active`.
+              `LaunchBanner` used to sit beside this one carrying the same
+              'v1.0' id — retired in 0.334.88, see WhatsNewModal's roadmap note. */}
           <WhatsNewModal />
           {/* Custom consent UI replacing Google Funding Choices (0.12.6). FC
               was dropped because adsbygoogle.js never summons a banner until
