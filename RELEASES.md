@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.90 — 2026-08-28
+
+**There's a season archive now, linked from the footer.** Every round of every championship we track, with the sessions as they were scheduled and the final standings. While a season is still running the live pages remain the ones to use — the archive quietly defers to them — but once 2026 is over, this is where it stays, and the same will happen for every season after it. Nothing about the pages you already use has changed.
+
 ## 0.334.89 — 2026-08-28
 
 **Internal, but it matters for later: this season is now saved.** Race weekend pages are built from a live calendar feed, and Formula 1's carries only the current year — so when the 2027 calendar arrives, 2026's schedules would have disappeared from every source we have. All fifteen championships are now archived: 221 race weekends and 1041 sessions, with results and standings. Nothing changes on the site today; this is what will let you look back at the 2026 season next year.
