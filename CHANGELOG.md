@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.103 — 2026-08-28
+
+### Added — `npm run upgrades:draft`, the F1 upgrades ingest that was missing its middle
+
+The FIA publishes a "Car Presentation Submissions" PDF per Grand Prix, and `content/series/f1/upgrades.json` is curated from it by hand. **The parser for that PDF has existed since 2026-07-24** — `lib/upgrades/f1-parse.ts`, shipped as "Phase A" with 13 passing tests and then orphaned: nothing imported it outside its own test, and the playbook its header cites (`docs/content-authoring/f1-upgrades-playbook.md`) was never written. Meanwhile curation stopped after round 11 on 24 July, so rounds 12 and 13 render nothing.
+
+`scripts/fetch-f1-upgrades.mts` is the missing middle: discovery, fetch, extraction, emission. It reads the season document list, finds the Car Presentation doc, downloads it, runs `pdftotext -layout`, feeds `parseCarPresentation`, and writes the round into `upgrades.json`. **The review is the git diff**, and that is not a convenience — it is the control that keeps a machine parse out of published content.
+
+**Deliberately NOT a GitHub Action**, and the header says why at length. Two things are unsettled, either of which would make a cron emit silent garbage: the parser is welded to **Xpdf 4.00's** `pdftotext`, and a runner's `poppler-utils` is a different fork that was measured causing a *total* parse failure rather than a degraded one; and fia.com's response to Actions egress is unverified, which this repo has been burned by before (0.12.12). The script therefore **refuses to run unless `pdftotext -v` reports Xpdf 4.00** — a wrong extractor produces plausible-looking rubbish, which is worse than an error.
+
+Guards that came from the research rather than from imagination: zero documents on the season page is treated as a **transient fault, never as "not published yet"** (the listing returned an empty 200 twice in 25 probes); a Drupal `_0` re-upload suffix in the filename is surfaced, because the original URL keeps serving the superseded file; and three fetch attempts with backoff, because fia.com served a 504 maintenance page mid-probe.
+
+**`lib/upgrades/upgrades-file.ts` exists because the first version destroyed its own review.** `JSON.stringify(obj, null, 2)` turned the 70-line file into 255, moved `_comment` to the bottom (V8 orders integer-like keys first) and showed every existing round as changed. `serialise()` reproduces the house style — one line per item, one block per team — so a new round adds only its own lines: **42 insertions, nothing else touched.** It is guarded at the call site (serialising the current file must reproduce it, or the script writes nothing) and by `upgrades-file.test.ts`. Line endings are normalised on both sides and restored on write, because git's autocrlf leaves CRLF in the working tree while `serialise` emits LF — without that the guard refuses to run on Windows.
+
+**What the first real run measured, on the Dutch GP.** 6 teams, 23 parts, 5 filing nothing, mapped to round 12 automatically. Of the 23 rows, **17 are clean, 5 carry run-on reasons from vertically-merged table cells (all 5 flagged by the parser), and one — Alpine's Sidepod/Coke — had an EMPTY `detail` that the parser did not flag at all.** The script now adds its own shape checks for exactly that: empty detail, over-long detail, over-long reason. An empty field looks authored once committed, which makes it worse than a loud one.
+
+**Round 12's data is NOT in this push.** The draft needs a curation pass against the PDF before it becomes published content — six rows need hands, and RULE #1 does not bend for a tool being new.
+
 ## 0.334.102 — 2026-08-28
 
 ### Changed — the points check now reads the sentences people actually write
