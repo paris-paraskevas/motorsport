@@ -133,19 +133,19 @@
       "matchDate": "2026-09-25",
       "round": 6,
       "sessions": [
-        { "title": "WEC - Free Practice 1", "start": "2026-09-25T01:00:00Z", "end": "2026-09-25T02:30:00Z", "location": "Fuji International Speedway, Oyama" },
-        { "title": "WEC - Free Practice 2", "start": "2026-09-25T05:00:00Z", "end": "2026-09-25T06:30:00Z", "location": "Fuji International Speedway, Oyama" }
+        { "title": "WEC - Free Practice 1", "start": "2026-09-25T01:15:00Z", "end": "2026-09-25T02:45:00Z", "location": "Fuji International Speedway, Oyama" },
+        { "title": "WEC - Free Practice 2", "start": "2026-09-25T05:30:00Z", "end": "2026-09-25T07:00:00Z", "location": "Fuji International Speedway, Oyama" }
       ]
     },
     {
       "matchDate": "2026-09-26",
       "round": 6,
       "sessions": [
-        { "title": "WEC - Free Practice 3", "start": "2026-09-26T00:00:00Z", "end": "2026-09-26T01:00:00Z", "location": "Fuji International Speedway, Oyama" },
-        { "title": "WEC - LMGT3 Qualifying", "start": "2026-09-26T05:00:00Z", "end": "2026-09-26T05:12:00Z", "location": "Fuji International Speedway, Oyama" },
-        { "title": "WEC - LMGT3 Hyperpole", "start": "2026-09-26T05:20:00Z", "end": "2026-09-26T05:30:00Z", "location": "Fuji International Speedway, Oyama" },
-        { "title": "WEC - Hypercar Qualifying", "start": "2026-09-26T05:40:00Z", "end": "2026-09-26T05:52:00Z", "location": "Fuji International Speedway, Oyama" },
-        { "title": "WEC - Hypercar Hyperpole", "start": "2026-09-26T06:00:00Z", "end": "2026-09-26T06:10:00Z", "location": "Fuji International Speedway, Oyama" }
+        { "title": "WEC - Free Practice 3", "start": "2026-09-26T00:50:00Z", "end": "2026-09-26T01:50:00Z", "location": "Fuji International Speedway, Oyama" },
+        { "title": "WEC - LMGT3 Qualifying", "start": "2026-09-26T05:20:00Z", "end": "2026-09-26T05:32:00Z", "location": "Fuji International Speedway, Oyama" },
+        { "title": "WEC - LMGT3 Hyperpole", "start": "2026-09-26T05:40:00Z", "end": "2026-09-26T05:50:00Z", "location": "Fuji International Speedway, Oyama" },
+        { "title": "WEC - Hypercar Qualifying", "start": "2026-09-26T06:00:00Z", "end": "2026-09-26T06:12:00Z", "location": "Fuji International Speedway, Oyama" },
+        { "title": "WEC - Hypercar Hyperpole", "start": "2026-09-26T06:20:00Z", "end": "2026-09-26T06:30:00Z", "location": "Fuji International Speedway, Oyama" }
       ]
     },
     {

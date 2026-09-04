@@ -4,6 +4,44 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.21 — 2026-09-04
+
+### Fixed — WEC at Fuji and IMSA at Indianapolis, closing the feedless sweep
+
+**WEC, 6 Hours of Fuji (25-27 September).** The race itself was right at 11:00 local, which is why nothing looked wrong. **All seven other sessions were 15 to 50 minutes early**, checked against fiawec.com's own race page:
+
+| session | was (JST) | now |
+|---|---|---|
+| Free Practice 1 | 10:00 | **10:15** |
+| Free Practice 2 | 14:00 | **14:30** |
+| Free Practice 3 | 09:00 | **09:50** |
+| LMGT3 Qualifying | 14:00 | **14:20** |
+| LMGT3 Hyperpole | 14:20 | **14:40** |
+| Hypercar Qualifying | 14:40 | **15:00** |
+| Hypercar Hyperpole | 15:00 | **15:20** |
+
+Applied in reverse order, because each old value collided with the next session's new one — a forward pass would have silently overwritten the wrong rows.
+
+**IMSA, TireRack.com Battle on the Bricks (Indianapolis).** Qualifying 17:00 to **17:05**; the race 15:00 to **15:10**, and its duration corrected from three hours to the actual **two hours forty**. Small numbers, but the finish time was twenty minutes out.
+
+### The sweep, and where it stops
+
+Ten series, 51 future rounds. **Every future round that has a published 2026 timetable has now been checked against it**, and what that turned up across 1.0.19 to 1.0.21:
+
+- a **six-hour race on the wrong day** (WEC at COTA)
+- a **whole championship's races 35 minutes early** (DTM, all 16)
+- a **season-wide Sunday change never applied** (WorldSBK Race 2, nine rounds)
+- a **round missing five sessions and filed a day early** (GT World at Zandvoort)
+- seven sessions quietly early at Fuji, two at Indianapolis
+
+**Verified correct and deliberately untouched:** NASCAR's ten remaining rounds including the daylight-saving boundary, MotoGP's template validated against Aragon's published times, WorldSBK's Friday and Saturday, NLS's names, dates and format, and GT World's Portimão finale.
+
+**What remains unverifiable, stated plainly.** Several series have not published their 2026 per-round timetables, so there is nothing to check against and nothing was invented: MotoGP's nine future rounds, DTM's practice and qualifying, NLS's session times, IMSA's practices and its Petit Le Mans round, and GT World round 9. Two are **known-suspect rather than unknown**: DTM's qualifying disagreed with the Nürburgring's published times, and GT World round 9 is labelled a Sprint round while carrying an endurance shape.
+
+The 704 sessions already in the past were not swept. They are archive accuracy with no reader consequence, and the effort belongs on rounds that have not happened.
+
+Verified: `tsc` 0, `lint` 0, 1529 tests, build exit 0 at 1189/1189, `sessions:audit` clean, overlap guard green.
+
 ## 1.0.20 — 2026-09-04
 
 ### Fixed — WorldSBK's whole 2026 Sunday, and a GT World round missing five sessions

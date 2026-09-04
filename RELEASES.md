@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.21 — 2026-09-04
+
+**The last of the schedule sweep.** Practice and qualifying for the Fuji six-hour race were up to fifty minutes early, and IMSA's Indianapolis race was starting ten minutes early and finishing twenty minutes late. Every upcoming race weekend on the site has now been checked against the championship's own published timetable, wherever one exists.
+
 ## 1.0.20 — 2026-09-04
 
 **WorldSBK's second race now shows the right time all season, and a GT World weekend has its missing races back.** WorldSBK moved Race 2 to an earlier slot for 2026 and our schedule still had the old one at nine rounds. Separately, the GT World round at Zandvoort was listed entirely on the Friday, with both Sunday sessions and the second race missing; the full weekend is now there.
