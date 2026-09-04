@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.0 — 2026-09-04
+
+### Paddock is out of early access
+
+`lib/whats-new.ts` `active: false` → `true` **in the same commit as the `package.json` bump**, per `docs/launch-checklist.md` §B. Those two must move together: `/changelog` reports the running version, so announcing 1.0 while serving 0.334.x would lie to every reader who checked.
+
+**No code behaviour changes today.** The modal, its six capability cards and its three-item roadmap have been merged and dark since 0.334.66, deliberately, so that the launch is one small commit rather than a launch and a build at once. `RELEASES.md` opens `# 1.0 · Lights out`; the version span and date range are **not** authored into the prose, because `deriveSpan` computes both from the entries beneath and a hand-written header would drift from its own contents.
+
+**The gate that held this back is met.** `warm-live-data` — the site's only data writer — had failed 82 of 120 runs and was fixed in 0.334.94, but the operator's TIER 0 rule was that 1.0 waits for a **scheduled** run to go green, not a manual one. It now has **five consecutive scheduled successes** (2026-09-03T17:09Z through 2026-09-04T01:50Z), the independent data-freshness monitor added in 0.334.109 is running on schedule and passing, and no alert issue is open.
+
+**Accepted knowingly, and recorded so nobody rediscovers them as surprises:**
+- **Server-side errors surface only in Cloudflare's logs** (§A8). `app/error.tsx` reports nowhere else. Watch the logs for 48 hours; giving it a sink is queued.
+- **Every session ends after 7 days** regardless of activity — Clerk's Maximum lifetime at its default, Inactivity timeout off. Raising it is Pro-gated and the operator has declined the cost, so this is a known property of the product rather than a defect.
+- **One console error per ad-bearing page is expected**: the CSP deliberately blocks `fundingchoicesmessages.google.com`, because our own modal has owned consent since 0.12.6.
+
+Next: `npm run indexnow:submit` so the new state is re-crawled.
+
 ## 0.334.110 — 2026-08-28
 
 ### Internal — `IDEAS.md` re-triaged against reality, 240 lines → 186
