@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.10 — 2026-09-04
+
+### Content — curated bios for the whole WRC Rally1 works line-up
+
+Nine of the fifteen series had a `bios.json`; WRC did not, so every WRC driver page fell back to the Wikipedia intro. That fallback works (`app/(app)/drivers/[slug]/page.tsx` prefers curated and degrades quietly), but it reads like Wikipedia: *"Elfyn Rhys Evans (born 28 December 1988) is a Welsh professional rally driver."*
+
+**All nine** now have an authored two-paragraph bio: Ogier, Evans, Katsuta, Solberg and Pajari at Toyota, Neuville and Fourmaux at Hyundai, McErlean and Armstrong at M-Sport. Two primary sources each, from wrc.com, fia.com and m-sport.co.uk.
+
+**Two current-season facts that would have been wrong from memory:**
+
+- **Ogier is a NINE-time champion**, not eight. He drew level with Loeb's all-time record in 2025, and it was a first title for co-driver Vincent Landais.
+- **Katsuta has won a rally.** His maiden victory came at Safari Rally Kenya on his 94th start, making him the first Japanese winner of a WRC round since Kenjiro Shinozuka took the Ivory Coast Rally in 1992.
+
+Written to the file's own rules: evergreen career and identity only, because the driver page renders live form separately and a volatile figure would go stale on an ISR page. So maiden wins and titles are in; championship positions and running win tallies are not. British English, no em dashes, no AI-tell phrases.
+
+**Every slug was confirmed to resolve on prod before the file was written.** A mistyped key does not error — `loadDriverBios` returns a map and a miss falls straight back to Wikipedia, so a typo would have looked exactly like success. A validation pass also checks both directions: no bio key that is absent from `drivers.json`, and no driver on the entry list left without a bio.
+
+The entry list itself was re-verified against wrc.com while researching, and it is current: Toyota's five cars, Hyundai's two full-timers, M-Sport's two.
+
+Verified: `tsc` 0, `lint` 0, 1499 tests, build exit 0 at 1189/1189, and browser-checked — the About section on `/drivers/oliver-solberg` now renders the curated prose instead of the Wikipedia intro, with three more spot-checked on a dev render.
+
 ## 1.0.9 — 2026-09-04
 
 ### Test — the draft-backup hook gets tests, and this repo can now test React at all
