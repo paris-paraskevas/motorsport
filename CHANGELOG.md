@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.4 — 2026-09-04
+
+### Internal — three queued decisions settled, and one of them was already built
+
+**Blog editor autosave was NOT open work. It has existed since 2026-08-24.** `components/studio/useDraftBackup.ts` is wired into both writing surfaces — the composer and the editor — with an "Unsaved draft found / Restore it / Discard" banner, a 1-second debounced snapshot and a `beforeunload` guard. Its own header comment names the day the operator lost a post as the reason it exists.
+
+**Claude asserted twice that it did not exist**, once contradicting the operator directly, and put it in a plan as work. The searches covered `components/blog/` and `app/(app)/studio/` and never looked in `components/studio/`, which is where the studio's own components live. The operator was right both times. Recorded here because the failure was not the missing grep — it was treating a negative search result over a guessed-at directory as proof of absence.
+
+The implementation had also already reached the same conclusion the decision reached, with a better reason: **localStorage only, no server writes, because a debounced PATCH would keep rewriting a row that may be sitting in the review queue** — so a post could change under the person reviewing it.
+
+**One real gap it leaves**, now queued: `useDraftBackup` has no test, and it carries two invariants a refactor would break silently — the frozen `useSyncExternalStore` read (so the banner does not reappear while the author types) and the `if (!recovered) dropSnapshot(key)` guard (so the hook does not delete the very snapshot it just offered). Testing it needs Testing Library, which is its own parked decision.
+
+**Server-side error reporting: declined, recorded as accepted.** Weighed Sentry (affordable again — 553.5 KiB of headroom, free tier at 5k errors/month) against a self-hosted sink, and chose neither. `app/error.tsx` continues to report only to Cloudflare's logs. That is §A8, already shipped in 1.0 as a knowing risk, and it degrades the moment traffic is not low — a route-level error is invisible unless someone opens the dashboard.
+
+**Turnstile: declined.** There is no spam problem, and the ask behind it was "show that we are legit", not "stop bots". A captcha with nothing to stop is friction on the two highest-intent forms on the site. The honest line on `/about` about hosting and security does the same job for nothing, and stays queued.
+
 ## 1.0.3 — 2026-09-04
 
 ### Content — MotoGP 2009 gets its win count, and the last gap in the family closes

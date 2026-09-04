@@ -17,6 +17,8 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 5. **Social presence is live and needs feeding.** Accounts created on all five with a first post each. The four-week calendar, per-post copy and asset pack are in `docs/research/2026-08-28-social-presence.md`; the launch-day sequence stays in `docs/research/2026-07-06-launch-marketing.md`. Operator chose the BRAND account on Reddit against the recommendation — worth watching for how the subs react.
 6. **Information hubs are the last pre-Paper surface.** Queue the restyle with the image session.
 
+**Accepted rather than fixed — server errors surface ONLY in Cloudflare's logs (operator, 2026-09-04).** `app/error.tsx` reports nowhere else. Weighed against Sentry (affordable again, 553.5 KiB of headroom) and a self-hosted sink, and both declined. This is §A8 of the launch checklist, shipped in 1.0 as a knowing risk. It gets worse the moment traffic is not low, because a route-level error is invisible unless someone opens the Cloudflare dashboard.
+
 **Accepted rather than fixed (operator, 2026-08-28):** everyone is signed out every **7 days** — Clerk's Maximum lifetime at its default, Inactivity timeout off. Raising it is Pro-gated and the operator will not pay, so this is now a known property of the product, not a bug. Browser storage limits can end a session earlier still, which is why the installed Android app feels worse.
 
 ## Blog contract (REVISED mid-session, operator 2026-08-20 evening)
@@ -37,8 +39,8 @@ Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items v
 
 **Bugs and defects**
 
-- **The blog editor loses work — it needs autosave.** Reported as real data loss ("i lost progress"). `components/blog/MarkdownEditor.tsx` / `DraftPreview.tsx` keep the body in component state with no periodic persistence, so a navigation, a crash or a closed tab discards everything since the last manual save. Wants a debounced local draft, a visible "saved / saving" state, and a decision on whether it writes to the DB row or only to local storage. **Losing written work is the worst class of bug in an authoring tool.**
-- **`error.tsx` reports to nothing.** `@vercel/*` went with the Cloudflare migration and server Sentry went in 0.288.0, so a route-level error surfaces in the browser console and Cloudflare's logs and nowhere else. Whether to reintroduce reporting, and with whose DSN, is open.
+_(Removed 2026-09-04: blog editor autosave. **Already built** — `components/studio/useDraftBackup.ts`, wired into BOTH writing surfaces with a "Unsaved draft found / Restore it / Discard" banner. localStorage only, deliberately: a debounced PATCH would keep rewriting a row that may be sitting in the review queue. Claude asserted twice that this did not exist, having searched `components/blog/` and `app/(app)/studio/` but not `components/studio/`; the operator was right both times.)_
+- **`useDraftBackup` has no test**, and it carries subtle invariants: the frozen `useSyncExternalStore` read (so the banner does not reappear while typing), and the `if (!recovered) dropSnapshot(key)` guard that stops the hook deleting the very snapshot it just offered. Both are exactly what a refactor breaks silently. Testing it properly needs Testing Library, which is itself a parked decision.
 _(Removed 2026-08-28, operator-confirmed: "the home page shows one post on mobile" is not a defect. `HomeLead.tsx:287` is `hidden … xl:block` DELIBERATELY, and the comment records the reasoning from 2026-08-21 — below xl the column is already full and the band would grow taller than its own picture.)_
 _(Removed 2026-09-04: the empty-tab metadata item. **Already fixed in 0.334.88** — `tabIsEmpty()` in `components/SeriesPageView.tsx:60` covers both empty states, and prod confirms it: `/series/nls/standings` serves `noindex, follow` and is out of the sitemap, while `/series/f1/standings` serves `index, follow`.)_
 - **`gt-world` has no era-name handling.** `seriesNameForYear` special-cases F2 and F3 so their pre-rebrand seasons read "GP2 Series" / "GP3 Series", but 2014-2019 GT World pages say "GT World Challenge" when the series was the **Blancpain GT Series** — a name `constructor` already carries for exactly those rows. One `if` in the shape of the existing two.
@@ -94,7 +96,7 @@ The ingest exists as of 0.334.103: `npm run upgrades:draft` does discovery, fetc
 
 **Sharper versions of the same goal, if the operator still wants the signal:**
 1. ~~**Move the CSP from `report-only` to enforcing.**~~ **DONE 0.334.17.** The stale `va.vercel-scripts.com` entry went in 0.334.2, `static.cloudflareinsights.com` was added in 0.334.6, and the operator took the baked-in decision on 2026-08-24: `fundingchoicesmessages.google.com` stays **off** the allow-list, so Google's Funding Choices consent UI is now genuinely blocked. Our own modal has owned consent since 0.12.6.
-2. **Turnstile on the contact and write-for-us forms** — a visible Cloudflare widget exactly where a visitor expects a check, costing nothing on page load. There is a `turnstile-spin` skill in the toolchain for it.
+2. ~~**Turnstile on the contact and write-for-us forms**~~ — **DECLINED 2026-09-04.** There is no spam problem, and the ask behind this was "show that we are legit", not "stop bots". A captcha with nothing to stop is pure friction on the two highest-intent forms on the site. Option 3 below does the same job for nothing. Revisit only if spam actually arrives.
 3. **Say it in words on `/about`**: one honest line about how the site is hosted and secured, which is what a visitor deciding whether to trust it actually reads.
 
 ## AdSense-readiness content (live again — the rejection makes it current)
