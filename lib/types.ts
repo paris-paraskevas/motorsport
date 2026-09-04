@@ -211,6 +211,14 @@ export interface SessionOverrideEntry {
   end: string;
   location?: string;
   significance?: SignificanceFlag;
+  // Set when the DAY is known and the governing body has not published the
+  // hour yet — F2's Baku and Yas Marina rounds are literally "TBC" on
+  // fiaformula2.com. `start` still has to be a real instant because the whole
+  // pipeline sorts and groups on it, so it carries the day at a plausible
+  // hour; this flag is what stops that hour being shown as if it were a fact.
+  // Renders as TBC, no notification, never counted as live: the same contract
+  // `Session.dateOnly` already has for a date-only ICS entry.
+  dateOnly?: boolean;
 }
 
 export interface SessionOverrideBlock {

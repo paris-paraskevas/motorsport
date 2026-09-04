@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.14 — 2026-09-04
+
+**Where a series has not published its session times yet, we now say so instead of guessing.** Three Formula 2 rounds later this season are still marked "to be confirmed" by the governing body, and the site had been showing exact times for them anyway. Those now show the day with the time as TBC, and they will get real times as soon as the official schedule is out.
+
 ## 1.0.13 — 2026-09-04
 
 **Every session time on the site has been checked against the official timetables.** After the Monza and Madrid corrections we went looking for the rest, and found more: sixteen Formula 1 sessions across six upcoming races, and most of the Formula 2 and Formula 3 European rounds. All of them now match the published schedules, and there is a new internal check that compares our times against the official feed so this cannot drift quietly again.

@@ -49,6 +49,9 @@ function expandBlock(seriesSlug: string, block: SessionOverrideBlock): Session[]
       end,
       location: s.location,
       significance: s.significance,
+      // Only set the flag when true, so an ordinary curated session stays
+      // byte-identical to what it produced before this existed.
+      ...(s.dateOnly ? { dateOnly: true as const } : {}),
     };
   });
 }
