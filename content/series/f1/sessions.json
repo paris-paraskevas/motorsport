@@ -115,8 +115,8 @@
       "matchDate": "2026-09-06",
       "round": 13,
       "sessions": [
-        { "title": "F1 - Practice 1", "start": "2026-09-04T11:30:00Z", "end": "2026-09-04T12:30:00Z", "location": "Autodromo Nazionale Monza" },
-        { "title": "F1 - Practice 2", "start": "2026-09-04T15:00:00Z", "end": "2026-09-04T16:00:00Z", "location": "Autodromo Nazionale Monza" },
+        { "title": "F1 - Practice 1", "start": "2026-09-04T10:30:00Z", "end": "2026-09-04T11:30:00Z", "location": "Autodromo Nazionale Monza" },
+        { "title": "F1 - Practice 2", "start": "2026-09-04T14:00:00Z", "end": "2026-09-04T15:00:00Z", "location": "Autodromo Nazionale Monza" },
         { "title": "F1 - Practice 3", "start": "2026-09-05T10:30:00Z", "end": "2026-09-05T11:30:00Z", "location": "Autodromo Nazionale Monza" },
         { "title": "F1 - Qualifying", "start": "2026-09-05T14:00:00Z", "end": "2026-09-05T15:00:00Z", "location": "Autodromo Nazionale Monza" },
         { "title": "F1 - Race", "start": "2026-09-06T13:00:00Z", "end": "2026-09-06T15:00:00Z", "location": "Autodromo Nazionale Monza" }
