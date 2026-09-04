@@ -101,9 +101,14 @@
       "matchDate": "2026-09-18",
       "round": 8,
       "sessions": [
-        { "title": "GTWCE - Qualifying 1 (Group A)", "start": "2026-09-18T07:50:00Z", "end": "2026-09-18T08:00:00Z", "location": "Circuit Zandvoort" },
-        { "title": "GTWCE - Qualifying 1 (Group B)", "start": "2026-09-18T08:05:00Z", "end": "2026-09-18T08:15:00Z", "location": "Circuit Zandvoort" },
-        { "title": "GTWCE - Sprint Race 1", "start": "2026-09-18T12:45:00Z", "end": "2026-09-18T13:45:00Z", "location": "Circuit Zandvoort" }
+        { "title": "GTWCE - Free Practice 1", "start": "2026-09-18T07:00:00Z", "end": "2026-09-18T08:20:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Free Practice 2", "start": "2026-09-18T11:50:00Z", "end": "2026-09-18T13:10:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Qualifying 1 (Group A)", "start": "2026-09-19T07:50:00Z", "end": "2026-09-19T08:00:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Qualifying 1 (Group B)", "start": "2026-09-19T08:05:00Z", "end": "2026-09-19T08:15:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Sprint Race 1", "start": "2026-09-19T12:45:00Z", "end": "2026-09-19T13:45:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Qualifying 2 (Group A)", "start": "2026-09-20T08:35:00Z", "end": "2026-09-20T08:45:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Qualifying 2 (Group B)", "start": "2026-09-20T08:50:00Z", "end": "2026-09-20T09:00:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Sprint Race 2", "start": "2026-09-20T12:15:00Z", "end": "2026-09-20T13:15:00Z", "location": "Circuit Zandvoort" }
       ]
     },
     {

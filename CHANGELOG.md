@@ -4,6 +4,40 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.20 — 2026-09-04
+
+### Fixed — WorldSBK's whole 2026 Sunday, and a GT World round missing five sessions
+
+#### WorldSBK moved Race 2 for 2026, and our data never followed
+
+1.0.19 corrected Magny-Cours on the strength of an article headlined *"a new Sunday timetable"*. That framing was too narrow: **the change is season-wide.** worldsbk.com's own Misano schedule says the round runs "a new Sunday schedule to close out the weekend", and gives Warm Up **09:15**, Superpole Race **11:00**, Race 2 **14:00**.
+
+Our Misano round said 09:00 / 11:10 / **15:30**. Friday and Saturday matched perfectly, which is exactly why it survived: FP1 10:20, FP2 15:00, FP3 09:40, Superpole 11:15 and Race 1 15:30 are all correct.
+
+Rounds **3 to 8 and 10 to 12 all carried the identical old stamp** `09:00 / 11:10 / 15:30`. **Race 2 is corrected to 14:00 local at all nine**, including the three still to come (Cremona, Estoril, Jerez). Misano is additionally corrected in full, since its official times are published.
+
+Warm Up and Superpole Race are **deliberately left alone** everywhere else: the two rounds with published 2026 times disagree with each other (Misano 09:15/11:00, Magny-Cours 09:20/11:10), so there is no single correct value to apply and guessing would just be a new stamp. Rounds 1 and 2 are flyaways with their own times and are untouched.
+
+Each round's UTC instant is **searched, not computed** — the script asks the runtime which instant renders as 14:00 in that venue's zone, so Donington and Estoril correctly land on 13:00Z while the CEST rounds land on 12:00Z, without anyone reasoning about DST.
+
+#### GT World at Zandvoort — a day early, and five sessions missing
+
+Round 8 held **three** sessions, all on Friday 18 September. SRO's own timetable for the round puts the racing on **Saturday and Sunday**; Friday is practice.
+
+The times of day were right and the day was wrong, which is a telling shape: qualifying at 09:50/10:05 and the race at 14:45 are exactly Saturday's published slots, filed a day early. And a Sprint Cup round has **two** qualifying sessions and **two** races, so Free Practice 1, Free Practice 2, Qualifying 2 (both groups) and Sprint Race 2 did not exist on the site at all.
+
+Rebuilt from the official timetable: 3 sessions become **8**.
+
+The source is SRO's provisional timetable dated 23 February, which is the best available and is certainly right about the days — the event page independently states racing on 19/20 September. Worth re-checking nearer the weekend, when the final version reaches the noticeboard.
+
+#### Flagged, not fixed
+
+**GT World round 9 (Barcelona) is labelled a Sprint round but has an endurance shape** — a Bronze Test, two practices, one qualifying and a single race. A Sprint round needs two qualifying sessions and two races, exactly the gap just closed at Zandvoort. Its timetable is not published yet, so it is recorded rather than guessed at.
+
+Still not reached: IMSA rounds 10-11 and WEC rounds 6-8.
+
+Verified: `tsc` 0, `lint` 0, 1529 tests, build exit 0 at 1189/1189, and the cross-venue overlap guard still green with 8 sessions where there were 3.
+
 ## 1.0.19 — 2026-09-04
 
 ### Fixed — the sweep reaches the twelve series with no feed to check them against
