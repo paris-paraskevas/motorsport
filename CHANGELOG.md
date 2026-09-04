@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.7 — 2026-09-04
+
+### Added — the Formula 1 race-weekend guide, the last obvious gap in the series set
+
+Thirteen of the fifteen series had a "how a race weekend works" page. **Formula 1 did not** — `/information/formula-1/how-a-formula-1-race-weekend-works` returned 404, and nothing in the repo linked to it, so this was an absence rather than a broken link. It is the most-searched question about the most-searched series on the site.
+
+`content/information/answers/how-a-formula-1-race-weekend-works.md`, `review: verified` + `featured: true`, so it indexes (the cap is 900 and sits near 783). Covers the standard weekend, qualifying, race distance, Sprint weekends, parc ferme and the rookie-FP1 rule, and links out to the points page and the 2026-regulations page rather than restating either.
+
+**Every load-bearing number was checked against two independent primary sources** (RULE #1), and two of them are current-season specifics that would have been wrong from memory:
+
+- **Q3 is 13 minutes, not 12.** Confirmed by both formula1.com's weekend guide and the FIA 2026 Sporting Regulations Section B.
+- **Six drivers are eliminated in each of Q1 and Q2, not five.** The regulations scale eliminations with the entry list, and Cadillac's arrival took the field to 22 cars.
+- Sprint Qualifying at 12/10/8 minutes, the 100 km Sprint, points 8-1 to the top eight, and the six 2026 Sprint venues (China, Miami, Canada, Great Britain, the Netherlands, Singapore) each confirmed twice.
+
+**One claim was rejected during checking.** A search summary asserted that the Bahrain and Saudi Arabian Grands Prix had been cancelled from the 2026 calendar; the official calendar shows both ran, on 10-12 and 17-19 April. A second summary pointed at an Azerbaijan Sprint format change, which turned out to be a 2023 story about a season when Baku did host a Sprint. Neither reached the page.
+
+Browser-verified on a dev render, including a **control**: the untouched MotoGP weekend page logs the same single hydration warning, so that warning is pre-existing site chrome and not something this page introduced.
+
+Verified: `tsc` 0, `lint` 0, 1481 tests, build exit 0 at **1189/1189** — exactly one more prerendered page than 1.0.6.
+
 ## 1.0.6 — 2026-09-04
 
 ### Fixed — `indexnow:submit` has been dead since the `server-only` imports landed, and now runs
