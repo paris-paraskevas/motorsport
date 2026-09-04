@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.8 — 2026-09-04
+
+**Monza's upgrade list is up.** Ten teams declared 26 new parts for the Italian Grand Prix, and every one is on the weekend page with what changed and why. Audi brought nothing new.
+
 ## 1.0.7 — 2026-09-04
 
 **There is now a guide to how a Formula 1 weekend actually works.** Every other championship on the site had one; the biggest series did not. It covers practice, all three parts of qualifying, how race distance is decided, what changes on a Sprint weekend, and why the car cannot be touched after qualifying.
