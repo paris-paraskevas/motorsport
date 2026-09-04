@@ -4,6 +4,55 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.19 — 2026-09-04
+
+### Fixed — the sweep reaches the twelve series with no feed to check them against
+
+`npm run sessions:audit` can only compare a series that publishes timed ICS events, which is F1 and nothing else. The other twelve had **937 override sessions with nothing to validate them**. This is that gap, worked by hand against each series' own governing body.
+
+**Scoped honestly first.** Of those 937, only **195 are still in the future**, across 51 rounds in ten series — Formula E, IndyCar, WRC and the ADAC 24h have no future sessions at all. Past sessions are archive accuracy; future ones are what a reader sets an alarm by, so those were done first.
+
+#### WEC at COTA — every session wrong, and the race on the wrong DAY
+
+The worst of it, and it is **this weekend**. Checked against fiawec.com's own race page:
+
+| session | was (local CDT) | now |
+|---|---|---|
+| Free Practice 1 | Fri 10:00 | **Fri 11:30** |
+| Free Practice 2 | Fri 14:00 | **Fri 16:00** |
+| Free Practice 3 | Sat 09:00 | **Sat 11:00** |
+| LMGT3 Qualifying / Hyperpole | Sat 12:00 / 12:20 | **Sat 15:00 / 15:20** |
+| Hypercar Qualifying / Hyperpole | Sat 12:40 / 13:00 | **Sat 15:40 / 16:00** |
+| **Lone Star Le Mans 6 Hours** | **Sat 14:00** | **Sun 13:00** |
+
+The six-hour race was listed on **Saturday**. fiawec.com states it "takes place on September 6th" at 13:00 local.
+
+#### WorldSBK at Magny-Cours — Race 2 was 90 minutes late
+
+WorldSBK moved Sunday's timetable this year to fit around Formula 1, and the official article is headlined *"featuring a new Sunday timetable"*. **Race 2 runs at 14:00, "earlier than usual"**; ours had the old 15:30. Warm Up moves 09:00 to **09:20**. Friday and Saturday were already correct.
+
+The timezone needed care: worldsbk.com annotates its own times "(UTC +1)", which is wrong — France is CEST in September. Settled by probe rather than by reading, and cross-checked against Crash.net's UK listing of 13:00, exactly one hour behind French time, which only works if local is UTC+2.
+
+#### DTM — every race in the season started 35 minutes early
+
+**All 16 races** carried a 12:55 local start. The actual start is **13:30**, both days, all season: *"Startzeit ist am Samstag sowie am Sonntag jeweils zur gewohnten Zeit um 13:30 Uhr"*, confirmed individually at the Lausitzring, the Norisring, the Nürburgring and the Sachsenring. 12:55 is the pre-race presentation window, and 13:00 is when the broadcast starts — neither is the race.
+
+Round 4 was different again at 11:30 and is corrected to the same 13:30. Every round falls inside CEST, probe-confirmed, so all sixteen are 11:30Z.
+
+#### Verified correct, and left alone
+
+- **NASCAR, all ten remaining rounds.** Including the **1 November Martinsville race**, which lands on the day US daylight saving ends and was already right. Gateway's start needed its own source (the official schedule omits it): 3 p.m. ET, which is what we had.
+- **MotoGP.** Its 2026 per-round timetables are not published yet, so the future rounds cannot be checked directly. Instead the template was validated against **Aragon**, which has already run and therefore does have a published timetable: FP2 10:10, Qualifying 10:50, Sprint 15:00, Warm Up 09:40, Race 14:00 — every one matching ours exactly. The flyaway rounds vary from the European pattern in our data, which is a sign of real per-round curation rather than a stamp.
+- **WorldSBK Friday and Saturday**, and **NLS rounds 8 and 9**, whose names, dates and four-hour format all check out.
+
+#### Still unverified, stated plainly
+
+Several series have simply **not published their 2026 per-round timetables yet**, so there is nothing to check against and nothing was changed on a guess: MotoGP's nine future rounds, DTM's practice and qualifying, and NLS's session times. **DTM's qualifying is known to be suspect** — ours had the Nürburgring at 09:40 where the official timetable said 09:55 — but those times vary per round and future ones are unpublished, so they are flagged rather than guessed at.
+
+Not yet reached: GT World rounds 8-9, IMSA rounds 10-11, WorldSBK rounds 10-12 and WEC rounds 6-8.
+
+Verified: `tsc` 0, `lint` 0, 1529 tests, build exit 0 at 1189/1189, `sessions:audit` clean at 55/0, and the cross-venue overlap guard still green with the corrected data.
+
 ## 1.0.18 — 2026-09-04
 
 ### Fixed — Monaco's podium, three months late, after the Court of Appeal reinstated Gasly's penalties

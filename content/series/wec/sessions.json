@@ -113,20 +113,20 @@
       "matchDate": "2026-09-04",
       "round": 5,
       "sessions": [
-        { "title": "WEC - Free Practice 1", "start": "2026-09-04T15:00:00Z", "end": "2026-09-04T16:30:00Z", "location": "Circuit of The Americas, Austin" },
-        { "title": "WEC - Free Practice 2", "start": "2026-09-04T19:00:00Z", "end": "2026-09-04T20:30:00Z", "location": "Circuit of The Americas, Austin" }
+        { "title": "WEC - Free Practice 1", "start": "2026-09-04T16:30:00Z", "end": "2026-09-04T18:00:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "WEC - Free Practice 2", "start": "2026-09-04T21:00:00Z", "end": "2026-09-04T22:30:00Z", "location": "Circuit of The Americas, Austin" }
       ]
     },
     {
       "matchDate": "2026-09-05",
       "round": 5,
       "sessions": [
-        { "title": "WEC - Free Practice 3", "start": "2026-09-05T14:00:00Z", "end": "2026-09-05T15:00:00Z", "location": "Circuit of The Americas, Austin" },
-        { "title": "WEC - LMGT3 Qualifying", "start": "2026-09-05T17:00:00Z", "end": "2026-09-05T17:12:00Z", "location": "Circuit of The Americas, Austin" },
-        { "title": "WEC - LMGT3 Hyperpole", "start": "2026-09-05T17:20:00Z", "end": "2026-09-05T17:30:00Z", "location": "Circuit of The Americas, Austin" },
-        { "title": "WEC - Hypercar Qualifying", "start": "2026-09-05T17:40:00Z", "end": "2026-09-05T17:52:00Z", "location": "Circuit of The Americas, Austin" },
-        { "title": "WEC - Hypercar Hyperpole", "start": "2026-09-05T18:00:00Z", "end": "2026-09-05T18:10:00Z", "location": "Circuit of The Americas, Austin" },
-        { "title": "WEC - Lone Star Le Mans 6 Hours (Race)", "start": "2026-09-05T19:00:00Z", "end": "2026-09-06T01:00:00Z", "location": "Circuit of The Americas, Austin" }
+        { "title": "WEC - Free Practice 3", "start": "2026-09-05T16:00:00Z", "end": "2026-09-05T17:00:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "WEC - LMGT3 Qualifying", "start": "2026-09-05T20:00:00Z", "end": "2026-09-05T20:12:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "WEC - LMGT3 Hyperpole", "start": "2026-09-05T20:20:00Z", "end": "2026-09-05T20:30:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "WEC - Hypercar Qualifying", "start": "2026-09-05T20:40:00Z", "end": "2026-09-05T20:52:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "WEC - Hypercar Hyperpole", "start": "2026-09-05T21:00:00Z", "end": "2026-09-05T21:10:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "WEC - Lone Star Le Mans 6 Hours (Race)", "start": "2026-09-06T18:00:00Z", "end": "2026-09-07T00:00:00Z", "location": "Circuit of The Americas, Austin" }
       ]
     },
     {
