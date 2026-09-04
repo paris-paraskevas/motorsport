@@ -1,0 +1,13 @@
+{
+  "_comment": "Curated corrections to the per-race classification, keyed by round, applied by lib/results/overrides.ts to the Results tab, the season-trend chart and the home podium loader alike. Use this ONLY where the upstream feed (api.jolpi.ca) is demonstrably behind the governing body, and record the decision that justifies it. Entries are matched on driverName exactly as lib/results/f1.ts builds it: `${givenName} ${familyName}`. DELETE a round's block once upstream has caught up, so this file never silently outlives the correction it exists for.",
+  "_6": "2026 Monaco Grand Prix. Gasly finished 3rd on track on 7 June, was demoted to 7th by two 5-second pit-lane speeding penalties, and Hadjar was promoted to 3rd. Alpine won a Right of Review on 12 June and the penalties were rescinded, restoring Gasly's podium (Stewards Documents 99, 100, 101). McLaren and Red Bull appealed. On 2026-09-04 the FIA International Court of Appeal (decision 2026-06-07-08-09, heard 25 August in Paris) REINSTATED both penalties, reasoning that rescinding them would judge Gasly differently from drivers who had already served the same penalty in-race. Hadjar is 3rd again; Piastri, Lawson and Lindblad each move up one; Gasly is 7th. Verified against fia.com's ICA judgements index plus the classification reported consistently by multiple outlets. As of writing, api.jolpi.ca still serves the pre-appeal order (Gasly 3rd, Hadjar 4th), which is the whole reason this block exists.",
+  "_6_source": "https://www.fia.com/judgements-ica",
+  "_6_gasly_time": "Gasly's TIME is corrected as well as his position, because a position alone left him listed 7th on +20.369, ahead of the 3rd-placed car on +23.394, which reads as a bug. The two penalties are 5 seconds each, so his classified time is his on-track +20.369 plus 10.000 = +30.369. That is applying the penalty, not inventing a figure, and it lands exactly between Lindblad (+29.010, 6th) and Albon (+33.413, 8th) -- independent corroboration that 7th is the right slot.",
+  "6": [
+    { "driverName": "Isack Hadjar", "position": 3, "points": 15 },
+    { "driverName": "Oscar Piastri", "position": 4, "points": 12 },
+    { "driverName": "Liam Lawson", "position": 5, "points": 10 },
+    { "driverName": "Arvid Lindblad", "position": 6, "points": 8 },
+    { "driverName": "Pierre Gasly", "position": 7, "points": 6, "time": "+30.369" }
+  ]
+}
