@@ -1,0 +1,95 @@
+{
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. Evergreen career + identity ONLY — no live-season stats (the page renders live 'Season so far' separately, and volatile figures would go stale on the ISR page). Preferred over the Wikipedia-intro fallback; drivers without an entry keep the Wikipedia bio. key = slugify(driver name). WRC Rally1 works line-up complete (9 drivers) as of 2026-09-04, authored solo two-source-per-driver against wrc.com / fia.com / m-sport.co.uk; every slug was confirmed to resolve on prod BEFORE writing, because a mistyped key fails silently by falling back to Wikipedia. British English, no em dashes, no AI-tell phrases (house style). sources[] = the primary references checked against; not rendered.",
+  "drivers": {
+    "sebastien-ogier": {
+      "paragraphs": [
+        "Sébastien Ogier joined Volkswagen for 2013 and won four consecutive world titles, then took two more with M-Sport Ford in 2017 and 2018. After a season back at Citroën he moved to Toyota in 2020, winning again that year and in 2021, and has since built his programmes around a selection of rounds rather than a full campaign.",
+        "His ninth world title, in 2025, drew him level with fellow Frenchman Sébastien Loeb on the all-time record, and it delivered a first championship for co-driver Vincent Landais, who had joined him in late 2022. He carries the number 1 at Toyota Gazoo Racing."
+      ],
+      "sources": [
+        "https://www.wrc.com/en/news/ogier-crowned-nine-time-wrc-champion-as-neuville-wins-saudi-arabia-finale",
+        "https://www.wrc.com/en/drivers/sebastien-ogier"
+      ]
+    },
+    "elfyn-evans": {
+      "paragraphs": [
+        "Elfyn Evans learned the craft in the Welsh forests and returned to the top tier with M-Sport in 2017, where victory on Wales Rally GB made him the first Welsh driver to win his home round of the championship. He moved to Toyota in 2020, with Scott Martin alongside him ever since.",
+        "Evans has finished runner-up in the world championship four times, in 2020, 2021, 2023 and 2024, the last of those sealed by inheriting the Rally Japan win from a rival who crashed out of the lead. He carries the number 33."
+      ],
+      "sources": [
+        "https://www.fia.com/news/wrc-i-was-determined-nobody-was-going-get-way-time-elfyn-evans",
+        "https://www.wrc.com/en/misc/wrc-season-archive/wrc-season-2024"
+      ]
+    },
+    "takamoto-katsuta": {
+      "paragraphs": [
+        "Takamoto Katsuta took a surprise WRC2 victory on Rally Sweden in 2018 and was promoted to the top class with Toyota in 2020. His first podium came on Safari Rally Kenya in 2021, an event whose length and heat have shaped his reputation as a finisher.",
+        "He went back to that same Kenyan event for his maiden WRC win, in 2026 and on his 94th start, becoming the first Japanese driver to win a round of the championship since Kenjiro Shinozuka took the Ivory Coast Rally in 1992. A second victory followed in Croatia. He is co-driven by Aaron Johnston and carries the number 18."
+      ],
+      "sources": [
+        "https://www.wrc.com/en/news/katsuta-and-johnston-claim-breakthrough-safari-rally-kenya-victory",
+        "https://www.wrc.com/en/drivers/takamoto-katsuta"
+      ]
+    },
+    "oliver-solberg": {
+      "paragraphs": [
+        "Oliver Solberg is the son of Petter Solberg, who in 2003 became the first Norwegian to win the World Rally Championship. He made his own way up through the support categories and took the WRC2 title in 2025.",
+        "His maiden WRC victory came at Rally Estonia that same year, on his debut in a Toyota GR Yaris Rally1 and after only two days of testing. It was Toyota's hundredth win in the championship, and it came almost twenty years after his father's last. He stepped up to a full Rally1 season for 2026 with co-driver Elliott Edmondson and carries the number 99."
+      ],
+      "sources": [
+        "https://www.wrc.com/en/news/solberg-stuns-with-first-wrc-triumph-in-estonia",
+        "https://www.wrc.com/en/news/solberg-steps-up-as-toyota-confirms-five-car-2026-line-up"
+      ]
+    },
+    "sami-pajari": {
+      "paragraphs": [
+        "Sami Pajari became the first Finn to win the Junior WRC title in 2021, then dominated WRC2 in 2024 with four victories to take the championship alongside co-driver Enni Mälkönen. Toyota moved him into a full Rally1 seat for 2025.",
+        "His maiden WRC win came at Rally Estonia in 2026, led from start to finish, and made him the eighty-third different winner in the championship's history. A home victory at Rally Finland followed a fortnight later. He carries the number 5."
+      ],
+      "sources": [
+        "https://www.wrc.com/en/news/pajari-wins-delfi-rally-estonia",
+        "https://www.fia.com/news/wrc-pajari-and-malkonen-crowned-2024-wrc2-champions"
+      ]
+    },
+    "thierry-neuville": {
+      "paragraphs": [
+        "Thierry Neuville spent a decade as the World Rally Championship's most familiar nearly man, finishing runner-up five times before taking the title at last in 2024. Almost all of that career has been spent with Hyundai.",
+        "The 2024 championship was settled at Rally Japan, where the only driver still able to catch him crashed out of the rally lead with four stages to run. Neuville had led the standings since winning the opening round at Monte-Carlo. He is co-driven by Martijn Wydaeghe and carries the number 11."
+      ],
+      "sources": [
+        "https://www.wrc.com/en/misc/wrc-season-archive/wrc-season-2024",
+        "https://www.wrc.com/en/drivers/thierry-neuville"
+      ]
+    },
+    "adrien-fourmaux": {
+      "paragraphs": [
+        "Adrien Fourmaux gave up studying medicine for rallying and won the French Junior title in 2018 with barely a year of experience behind him, which earned a place at M-Sport. He made his top-flight debut on Croatia Rally in 2021 and finished fifth.",
+        "After a season back in Rally2, where he won the British Rally Championship with five victories, he returned to the top class and scored five podiums in 2024, the first of them in Sweden. That season took him to Hyundai for 2025. He is co-driven by Alexandre Coria and carries the number 16."
+      ],
+      "sources": [
+        "https://www.wrc.com/en/drivers/adrien-fourmaux",
+        "https://www.m-sport.co.uk/single-post/adrien-fourmaux-departs-m-sport-for-new-chapter-in-2025"
+      ]
+    },
+    "josh-mcerlean": {
+      "paragraphs": [
+        "Josh McErlean came up through WRC2 with backing from the Motorsport Ireland Rally Academy, his best result there a runner-up finish on Rally de Portugal in 2024. M-Sport gave him a full Ford Puma Rally1 campaign for 2025.",
+        "He made his top-level debut at Rallye Monte-Carlo and finished seventh, a result he matched at Rally Finland and again at the Central European Rally, ending his rookie season eleventh in the championship. He was retained for 2026 with co-driver Eoin Treacy and carries the number 55."
+      ],
+      "sources": [
+        "https://www.wrc.com/en/drivers/josh-mcerlean",
+        "https://www.m-sport.co.uk/single-post/josh-mcerlean-returns-to-m-sport-ford-for-full-2026-world-rally-championship-alongside-new-rally1-re"
+      ]
+    },
+    "jon-armstrong": {
+      "paragraphs": [
+        "Jon Armstrong reached Rally1 by an unusual route. A lack of funding pushed him towards sim racing, where he won the WRC Esports world title in 2018, and that success revived his career on real stages.",
+        "He was Junior WRC runner-up in 2021 and 2022, took the ERC3 title in 2023, and finished runner-up in the European Rally Championship in 2025 with wins at Rali Ceredigion and the Croatian finale. M-Sport promoted him to a full Rally1 seat for 2026 alongside co-driver Shane Byrne. He carries the number 95."
+      ],
+      "sources": [
+        "https://www.wrc.com/en/news/armstrong-s-unique-path-to-wrc-rally1-dream",
+        "https://www.wrc.com/en/news/armstrong-steps-up-to-rally1-as-m-sport-confirms-2026-line-up"
+      ]
+    }
+  }
+}

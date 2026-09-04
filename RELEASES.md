@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.10 — 2026-09-04
+
+**Every World Rally Championship driver now has a proper biography.** All nine Rally1 drivers had been showing a Wikipedia extract; each one now has a short, fact-checked account of how they got here and what they have won, written for this site.
+
 ## 1.0.9 — 2026-09-04
 
 **Internal work on the writing tools.** The editor's crash protection, which keeps a copy of what you are typing in case the tab closes, is now covered by automated tests. Nothing on the site changed.
