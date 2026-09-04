@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.15 — 2026-09-04
+
+### Content — the Monza preview, drafted for the review queue
+
+`drafts/f1-italian-grand-prix-2026-preview.md`, per the Blog SOP: a file, **not** a DB write and **not** public MDX. The operator holds the prod service-role key and runs the insert, then approves and schedules in `/blog`. No `publishAt` key, which is what yields the null the SOP requires.
+
+The angle is ours and comes from our own data: **ten teams declared 26 new parts for this weekend and eleven of them, from six teams, are filed under drag range or drag reduction.** Mercedes removed winglet devices from the rear wing, Ferrari's entire submission is four circuit-specific parts including deleting a rear brake duct winglet cascade, Alpine took a fairing off the rear wing. Nobody is bolting anything on at Monza, they are deleting surfaces. Red Bull and Haas are the two exceptions and that is interesting on its own.
+
+Hard numbers taken **verbatim** from `scripts/weekend-post-context.mts` so the post matches the site: Antonelli 242, Russell 183, Hamilton 183, Norris 159, Leclerc 155. Constructors read off `/series/f1/standings` and self-checked against the driver totals, which is why **no Red Bull points figure appears in the post** — their row did not self-check on the scrape, so it was left out rather than guessed.
+
+Narrative cross-checked twice against formula1.com: the Wolff and Antonelli quotes on taking a full power unit at his home race, Ferrari's in-season engine step, the Schumacher anniversaries, and Norris holding the Monza lap record. Weather from Open-Meteo by **venue-local** date.
+
+**Every internal link was curl-checked against prod before writing**, and two would have been dead: `/drivers/andrea-kimi-antonelli` is a 404 against the live `/drivers/kimi-antonelli` (the standings call him Andrea Kimi, so the obvious slug is wrong), and `/teams/red-bull` is a 404 against `/teams/red-bull-racing`. All 17 links in the final draft return 200.
+
+Parse verified with `--dry`: title 82/140, summary 292/300, body 6918/50000, `publishAt` null. No cover image is set; a licence-verified one is found at review or the post ships without.
+
 ## 1.0.14 — 2026-09-04
 
 ### Fixed — the site stated session times the FIA has not published, and now says TBC
