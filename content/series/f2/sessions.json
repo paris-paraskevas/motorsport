@@ -44,20 +44,20 @@
       "matchDate": "2026-06-14",
       "round": 5,
       "sessions": [
-        { "title": "F2 - Practice", "start": "2026-06-12T08:00:00Z", "end": "2026-06-12T08:45:00Z", "location": "Circuit de Barcelona-Catalunya" },
-        { "title": "F2 - Qualifying", "start": "2026-06-12T12:55:00Z", "end": "2026-06-12T13:25:00Z", "location": "Circuit de Barcelona-Catalunya" },
-        { "title": "F2 - Sprint Race", "start": "2026-06-13T12:10:00Z", "end": "2026-06-13T13:00:00Z", "location": "Circuit de Barcelona-Catalunya" },
-        { "title": "F2 - Feature Race", "start": "2026-06-14T09:25:00Z", "end": "2026-06-14T10:35:00Z", "location": "Circuit de Barcelona-Catalunya" }
+        { "title": "F2 - Practice", "start": "2026-06-12T09:05:00Z", "end": "2026-06-12T09:50:00Z", "location": "Circuit de Barcelona-Catalunya" },
+        { "title": "F2 - Qualifying", "start": "2026-06-12T13:55:00Z", "end": "2026-06-12T14:25:00Z", "location": "Circuit de Barcelona-Catalunya" },
+        { "title": "F2 - Sprint Race", "start": "2026-06-13T12:15:00Z", "end": "2026-06-13T13:05:00Z", "location": "Circuit de Barcelona-Catalunya" },
+        { "title": "F2 - Feature Race", "start": "2026-06-14T09:25:00Z", "end": "2026-06-14T10:30:00Z", "location": "Circuit de Barcelona-Catalunya" }
       ]
     },
     {
       "matchDate": "2026-06-28",
       "round": 6,
       "sessions": [
-        { "title": "F2 - Practice", "start": "2026-06-26T08:00:00Z", "end": "2026-06-26T08:45:00Z", "location": "Red Bull Ring, Spielberg" },
-        { "title": "F2 - Qualifying", "start": "2026-06-26T12:55:00Z", "end": "2026-06-26T13:25:00Z", "location": "Red Bull Ring, Spielberg" },
-        { "title": "F2 - Sprint Race", "start": "2026-06-27T12:10:00Z", "end": "2026-06-27T13:00:00Z", "location": "Red Bull Ring, Spielberg" },
-        { "title": "F2 - Feature Race", "start": "2026-06-28T09:25:00Z", "end": "2026-06-28T10:35:00Z", "location": "Red Bull Ring, Spielberg" }
+        { "title": "F2 - Practice", "start": "2026-06-26T09:05:00Z", "end": "2026-06-26T09:50:00Z", "location": "Red Bull Ring, Spielberg" },
+        { "title": "F2 - Qualifying", "start": "2026-06-26T13:55:00Z", "end": "2026-06-26T14:25:00Z", "location": "Red Bull Ring, Spielberg" },
+        { "title": "F2 - Sprint Race", "start": "2026-06-27T12:15:00Z", "end": "2026-06-27T13:05:00Z", "location": "Red Bull Ring, Spielberg" },
+        { "title": "F2 - Feature Race", "start": "2026-06-28T08:10:00Z", "end": "2026-06-28T09:15:00Z", "location": "Red Bull Ring, Spielberg" }
       ]
     },
     {
@@ -66,18 +66,18 @@
       "sessions": [
         { "title": "F2 - Practice", "start": "2026-07-03T09:00:00Z", "end": "2026-07-03T09:45:00Z", "location": "Silverstone Circuit" },
         { "title": "F2 - Qualifying", "start": "2026-07-03T13:55:00Z", "end": "2026-07-03T14:25:00Z", "location": "Silverstone Circuit" },
-        { "title": "F2 - Sprint Race", "start": "2026-07-04T13:10:00Z", "end": "2026-07-04T14:00:00Z", "location": "Silverstone Circuit" },
-        { "title": "F2 - Feature Race", "start": "2026-07-05T10:25:00Z", "end": "2026-07-05T11:35:00Z", "location": "Silverstone Circuit" }
+        { "title": "F2 - Sprint Race", "start": "2026-07-04T12:45:00Z", "end": "2026-07-04T13:35:00Z", "location": "Silverstone Circuit" },
+        { "title": "F2 - Feature Race", "start": "2026-07-05T10:15:00Z", "end": "2026-07-05T11:20:00Z", "location": "Silverstone Circuit" }
       ]
     },
     {
       "matchDate": "2026-07-19",
       "round": 8,
       "sessions": [
-        { "title": "F2 - Practice", "start": "2026-07-17T08:00:00Z", "end": "2026-07-17T08:45:00Z", "location": "Circuit de Spa-Francorchamps" },
-        { "title": "F2 - Qualifying", "start": "2026-07-17T12:55:00Z", "end": "2026-07-17T13:25:00Z", "location": "Circuit de Spa-Francorchamps" },
-        { "title": "F2 - Sprint Race", "start": "2026-07-18T12:10:00Z", "end": "2026-07-18T13:00:00Z", "location": "Circuit de Spa-Francorchamps" },
-        { "title": "F2 - Feature Race", "start": "2026-07-19T09:25:00Z", "end": "2026-07-19T10:35:00Z", "location": "Circuit de Spa-Francorchamps" }
+        { "title": "F2 - Practice", "start": "2026-07-17T09:05:00Z", "end": "2026-07-17T09:50:00Z", "location": "Circuit de Spa-Francorchamps" },
+        { "title": "F2 - Qualifying", "start": "2026-07-17T13:55:00Z", "end": "2026-07-17T14:25:00Z", "location": "Circuit de Spa-Francorchamps" },
+        { "title": "F2 - Sprint Race", "start": "2026-07-18T12:15:00Z", "end": "2026-07-18T13:05:00Z", "location": "Circuit de Spa-Francorchamps" },
+        { "title": "F2 - Feature Race", "start": "2026-07-19T08:00:00Z", "end": "2026-07-19T09:05:00Z", "location": "Circuit de Spa-Francorchamps" }
       ]
     },
     {
