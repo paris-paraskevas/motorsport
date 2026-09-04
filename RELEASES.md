@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.11 — 2026-09-04
+
+**The Monza timetable was wrong and is now right.** Friday's two Formula 1 practice sessions were showing an hour later than they actually run, and several Formula 2 and Formula 3 sessions were wrong by anything from five minutes to a full day. Every session of the weekend has been rechecked against the official timetables. Apologies to anyone who set an alarm by us.
+
 ## 1.0.10 — 2026-09-04
 
 **Every World Rally Championship driver now has a proper biography.** All nine Rally1 drivers had been showing a Wikipedia extract; each one now has a short, fact-checked account of how they got here and what they have won, written for this site.

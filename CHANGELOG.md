@@ -4,6 +4,40 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.11 — 2026-09-04
+
+### Fixed — the entire Monza session timetable was wrong, reported by the operator mid-weekend
+
+**Caught by a reader, not by us.** F1 Practice 1 rendered as 14:30 in Athens when the session runs at 13:30.
+
+Every session of the 2026 Italian Grand Prix weekend, in `content/series/{f1,f2,f3}/sessions.json`, checked against **two independent official sources** (the formula1.com weekend timetable and each series' own race page, which publish in track time and UTC respectively and agree exactly):
+
+| session | was (Monza) | now (Monza) | error |
+|---|---|---|---|
+| F1 Practice 1 | 13:30 | **12:30** | 1h late |
+| F1 Practice 2 | 17:00 | **16:00** | 1h late |
+| F1 Practice 3 / Qualifying / Race | — | — | already correct |
+| F2 Sprint Race | 14:10 | **14:15** | 5 min early |
+| F2 Feature Race | 11:25 | **09:45** | 1h40 late |
+| F2 Practice / Qualifying | — | — | already correct |
+| F3 Practice | **Thu** 13:25 | **Fri 08:35** | wrong DAY |
+| F3 Qualifying Group A | 10:00 | **14:00** | 4h early |
+| F3 Qualifying Group B | 11:30 | **14:20** | 2h50 early |
+| F3 Sprint Race | 10:45 | **09:30** | 1h15 late |
+| F3 Feature Race | 07:55 | **08:15** | 20 min early |
+
+**Root cause of the F1 error:** Monza runs Friday practice at 12:30 and 16:00, an hour earlier than the standard European pattern of 13:30 and 17:00. The default pattern was used. Saturday and Sunday, which do follow the standard pattern here, were entered correctly, which is exactly why it survived a read-through.
+
+The F2 and F3 errors were worse than wrong, they were **impossible**: the old data had F2 Practice and F3 Qualifying Group A on track at the same instant. The corrected timetable is a clean non-overlapping sequence across all three series, Friday to Sunday.
+
+This also explains the home page reading `THIS WEEKEND · FORMULA 3 · F3 Sprint Race`: the band picks whichever session is next, and F3's sprint was sitting at the wrong time.
+
+**A guard is coming separately, not in this commit.** Two invariants were written (no two on-track sessions sharing a venue and an instant; every session inside its own round's date window) and they immediately failed on **pre-existing** problems well beyond Monza, including F1 `sessions.json` round numbers drifting from `rounds.json` from round 16 onward. That is a real audit and it must not hold up a fix that is wrong on the live site during the session it describes. The invariants are written and parked; they ship once their findings are dispositioned.
+
+Stated plainly so a green suite is never misread: those invariants would have caught the F3 wrong-day and the F2/F3 collision on the commit that introduced them. **They would NOT have caught the F1 hour shift**, which collides with nothing and is only detectable against the official timetable. That stays a human step.
+
+Verified: `tsc` 0, 1499 tests, and the corrected weekend printed in Monza local time matches the official timetable session for session.
+
 ## 1.0.10 — 2026-09-04
 
 ### Content — curated bios for the whole WRC Rally1 works line-up
