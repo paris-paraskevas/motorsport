@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.3 — 2026-09-04
+
+### Content — MotoGP 2009 gets its win count, and the last gap in the family closes
+
+`content/series/motogp/champions.json` carried 2009 without a `wins` value — the only row of 77 missing one, found while sweeping the family after the 1987 fix and **deliberately left blank rather than guessed at**. Its champions-tab row read "306 pts · beat Jorge Lorenzo by 45" where every neighbour reads "… · 9 wins · …".
+
+**Valentino Rossi won six races in 2009.** Corroborated two ways before writing, per RULE #1: Wikipedia's 2009 season race table counted round by round — **Spain, Catalonia, Netherlands, Germany, Czech Republic, San Marino** — and the season summary independently. Our own champion note agrees on everything around it (306 points to Lorenzo's 261, clinched at Sepang with a round to spare), which is a third internal check.
+
+Worth recording because it nearly went wrong: one aggregator source states "306 points from nine victories" in one paragraph and six in another. **Nine is the number Rossi scored in 2003, 2004 and 2008**, so a single-source read would have produced a plausible, wrong figure that matched three other seasons. Counting the race table is what settles it.
+
+All 77 MotoGP rows now carry a `wins` value. Verified on a dev render: the 2009 row reads **"306 pts · 6 wins · beat Jorge Lorenzo by 45"**.
+
+### Also — one queue item that was already fixed
+
+`/series/nls/standings` "advertises rich data it has not got" was **closed in 0.334.88** and the entry was stale. `tabIsEmpty()` (`components/SeriesPageView.tsx:60`) covers both empty states, and prod confirms it: that page serves `noindex, follow` and is absent from the sitemap, while `/series/f1/standings` serves `index, follow`. Removed from `IDEAS.md` rather than re-fixed.
+
 ## 1.0.2 — 2026-09-04
 
 ### Fixed — the test suite was flaky under a dev server, and slower for it
