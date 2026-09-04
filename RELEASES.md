@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.3 — 2026-09-04
+
+**The 2009 MotoGP champion's win count was missing, and is now there.** Valentino Rossi won six races that year. It was the only season of the 77 in our MotoGP records without a figure, and it had been left blank rather than guessed at.
+
 ## 1.0.2 — 2026-09-04
 
 **Internal reliability.** Our automated test run was occasionally flaky and is now both stable and faster; nothing on the site changed.

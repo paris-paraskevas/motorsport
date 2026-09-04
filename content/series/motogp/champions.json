@@ -15,7 +15,7 @@
   { "year": 2012, "driver": "Jorge Lorenzo", "constructor": "Yamaha", "constructorChampion": "Honda", "points": 350, "wins": 6, "runnerUp": "Dani Pedrosa", "runnerUpTeam": "Honda", "runnerUpPoints": 332 },
   { "year": 2011, "driver": "Casey Stoner", "constructor": "Honda", "constructorChampion": "Honda", "points": 350, "wins": 10, "runnerUp": "Jorge Lorenzo", "runnerUpTeam": "Yamaha", "runnerUpPoints": 260 },
   { "year": 2010, "driver": "Jorge Lorenzo", "constructor": "Yamaha", "constructorChampion": "Yamaha", "points": 383, "wins": 9, "runnerUp": "Dani Pedrosa", "runnerUpTeam": "Honda", "runnerUpPoints": 245 },
-  { "year": 2009, "driver": "Valentino Rossi", "constructor": "Yamaha", "constructorChampion": "Yamaha", "points": 306, "runnerUp": "Jorge Lorenzo", "runnerUpTeam": "Yamaha", "runnerUpPoints": 261 },
+  { "year": 2009, "driver": "Valentino Rossi", "constructor": "Yamaha", "constructorChampion": "Yamaha", "points": 306, "wins": 6, "runnerUp": "Jorge Lorenzo", "runnerUpTeam": "Yamaha", "runnerUpPoints": 261 },
   { "year": 2008, "driver": "Valentino Rossi", "constructor": "Yamaha", "constructorChampion": "Yamaha", "points": 373, "wins": 9, "runnerUp": "Casey Stoner", "runnerUpTeam": "Ducati", "runnerUpPoints": 280 },
   { "year": 2007, "driver": "Casey Stoner", "constructor": "Ducati", "constructorChampion": "Ducati", "points": 367, "wins": 10, "runnerUp": "Dani Pedrosa", "runnerUpTeam": "Honda", "runnerUpPoints": 242 },
   { "year": 2006, "driver": "Nicky Hayden", "constructor": "Honda", "constructorChampion": "Honda", "points": 252, "wins": 2, "runnerUp": "Valentino Rossi", "runnerUpTeam": "Yamaha", "runnerUpPoints": 247 },
