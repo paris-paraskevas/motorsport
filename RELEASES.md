@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.18 — 2026-09-04
+
+**The Monaco Grand Prix result has changed, three months after the race.** The FIA's Court of Appeal reinstated Pierre Gasly's two pit-lane penalties today, which gives Isack Hadjar third place back and moves Oscar Piastri, Liam Lawson and Arvid Lindblad each up one. The race page, the championship tables and the season chart all reflect the corrected result.
+
 ## 1.0.17 — 2026-09-04
 
 **Pato O'Ward's name is spelled properly again.** The IndyCar standings were showing a stray piece of markup in place of his apostrophe, on the standings page and the home page.

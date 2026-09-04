@@ -4,6 +4,44 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.18 — 2026-09-04
+
+### Fixed — Monaco's podium, three months late, after the Court of Appeal reinstated Gasly's penalties
+
+On **2026-09-04** the FIA International Court of Appeal (decision `2026-06-07-08-09`, heard 25 August in Paris) reinstated the two 5-second pit-lane speeding penalties on Pierre Gasly from the **2026 Monaco Grand Prix**, overturning the Right of Review that had rescinded them on 12 June. **Isack Hadjar reclaims third**; Piastri, Lawson and Lindblad each move up one; Gasly falls to seventh.
+
+**`api.jolpi.ca` still serves the pre-appeal order**, so the site would have kept showing Gasly on the podium indefinitely.
+
+**Both override mechanisms this needed already existed** and are wired everywhere that matters: `results-overrides.json` through `lib/results/overrides.ts` (Results tab, season-trend chart, home podium loader) and `standings-overrides.json` through `lib/standings/overrides.ts` (Standings tab, home championship widgets). This is content plus one gap closed, not a new subsystem.
+
+#### The gap: standings accumulate, so an absolute total is a trap
+
+The standings override only supported absolute points. Writing "Hadjar 71" would have **frozen five drivers at their 4 September totals for every remaining round of the season**. An appeal produces an *adjustment*, so `pointsDelta` was added to `DriverStandingOverride` and `ConstructorStandingOverride`; it stays correct as the season continues and needs no editing after each race. Any delta **re-ranks** the table, because a curated `position` cannot be trusted once the points beneath it have moved. Absolute overrides behave exactly as before.
+
+#### The error this nearly shipped with
+
+The first draft of the deltas was **wrong**, and it was wrong because it copied the press. Several summaries reported *"four drivers +3"*. F1 scores 25-18-15-12-10-8-6-4-2-1, so moving up one place is worth a different amount depending on where you start:
+
+| driver | round 6 before | after | delta |
+|---|---|---|---|
+| Hadjar | 12 (P4) | 15 (P3) | **+3** |
+| Piastri | 10 (P5) | 12 (P4) | **+2** |
+| Lawson | 8 (P6) | 10 (P5) | **+2** |
+| Lindblad | 6 (P7) | 8 (P6) | **+2** |
+| Gasly | 15 (P3) | 6 (P7) | **−9** |
+
+**Championship points are conserved by a reclassification**: `+3+2+2+2−9 = 0`. The press version summed to `+3`, inventing three points out of nothing. That conservation check is now a permanent test (`tests/f1-overrides-integrity.test.ts`), along with a check that each constructor's delta equals the sum of its own drivers' deltas — both could be zero while the points were attributed to the wrong teams — and that every corrected result awards exactly the championship points for the position it claims.
+
+#### Gasly's time, not just his position
+
+Correcting the position alone left him listed **7th on +20.369, ahead of the 3rd-placed car on +23.394**, which reads as a bug. The penalties are 5 seconds each, so his classified time is `+20.369 + 10.000 = +30.369`. That is applying the penalty, not inventing a figure, and it lands exactly between Lindblad (+29.010, 6th) and Albon (+33.413, 8th) — independent corroboration that seventh is the right slot.
+
+Browser-verified on a dev render. The classification now reads 1 Antonelli, 2 Hamilton, **3 Hadjar**, 4 Piastri, 5 Lawson, 6 Lindblad, **7 Gasly**, 8 Albon, with times increasing monotonically down the order; the standings tab reads Piastri 106, Hadjar 71, Lawson 51, Gasly 35.
+
+Both files carry the decision reference, the derivation, and an instruction to **delete them once upstream catches up**, so they cannot silently outlive the correction.
+
+Verified: `tsc` 0, `lint` 0, **1529** tests across 119 files (was 1513 across 118), build exit 0 at 1189/1189. Mutation-checked twice: ignoring `pointsDelta` fails three of the unit tests, and restoring the press-summary `+3` fails the conservation guard with `expected 1 to be +0`.
+
 ## 1.0.17 — 2026-09-04
 
 ### Fixed — "Pato O&apos;Ward" on the home page and the IndyCar standings

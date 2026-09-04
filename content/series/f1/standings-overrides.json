@@ -1,0 +1,20 @@
+{
+  "_comment": "Curated corrections to the championship tables, applied by lib/standings/overrides.ts to the Standings tab and the home championship widgets alike. Deltas, NOT absolute totals: a standings table accumulates, so a hard number would freeze these drivers at their 2026-09-04 values for every remaining round of the season. Any delta re-ranks the table, because a curated position cannot be trusted once the points underneath it have moved. DELETE this file once upstream has caught up.",
+  "_why": "FIA International Court of Appeal decision 2026-06-07-08-09, published 2026-09-04, heard 25 August in Paris. The two 5-second pit-lane speeding penalties on Pierre Gasly at the 2026 Monaco Grand Prix (round 6) were REINSTATED after McLaren and Red Bull appealed the Right of Review that had rescinded them on 12 June. Hadjar reclaims 3rd; Piastri, Lawson and Lindblad each move up one place; Gasly falls to 7th. Kept in step with content/series/f1/results-overrides.json round 6 -- the two MUST move together, because the repo's locked-in invariant is that the season-trend chart total for every driver matches the standings tab total for that driver.",
+  "_deltas_derivation": "Derived from the round-6 points swing, NOT copied from press summaries -- several of those reported 'four drivers +3', which does not survive checking. F1 scores 25-18-15-12-10-8-6-4-2-1, so moving up one place is worth a DIFFERENT amount depending on where you are: Hadjar 4th->3rd is 12->15 (+3), but Piastri 5th->4th is 10->12 (+2), Lawson 6th->5th is 8->10 (+2) and Lindblad 7th->6th is 6->8 (+2). Gasly 3rd->7th is 15->6 (-9). The check that settles it: championship points are CONSERVED, and +3+2+2+2-9 = 0. The press version summed to +3, which would have invented three points out of nothing.",
+  "_source": "https://www.fia.com/judgements-ica",
+  "_no_position_changes": "Checked against the upstream table after round 12: every affected driver and constructor keeps its place, only the totals move. Gasly at 35 still sits above Lindblad at 25, and RB at 70 still sits above Alpine at 54. The re-rank runs anyway rather than relying on that holding after the next race.",
+  "drivers": [
+    { "driverName": "Isack Hadjar", "pointsDelta": 3 },
+    { "driverName": "Oscar Piastri", "pointsDelta": 2 },
+    { "driverName": "Liam Lawson", "pointsDelta": 2 },
+    { "driverName": "Arvid Lindblad", "pointsDelta": 2 },
+    { "driverName": "Pierre Gasly", "pointsDelta": -9 }
+  ],
+  "constructors": [
+    { "name": "Red Bull", "pointsDelta": 3 },
+    { "name": "McLaren", "pointsDelta": 2 },
+    { "name": "RB F1 Team", "pointsDelta": 4 },
+    { "name": "Alpine F1 Team", "pointsDelta": -9 }
+  ]
+}

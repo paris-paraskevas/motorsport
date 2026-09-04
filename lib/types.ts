@@ -291,14 +291,24 @@ export interface WrcStageResultsFile {
 export interface DriverStandingOverride {
   driverName: string;
   position?: number;
+  /** ABSOLUTE total. Only safe once a season is over — a standings table
+   *  accumulates, so a hard number freezes this driver there for every
+   *  remaining round. Mid-season, use `pointsDelta`. */
   points?: number;
+  /** Adjustment applied to whatever upstream reports, which is what an appeal
+   *  actually produces. Stays correct as the season continues, and needs no
+   *  editing after each race. Positions are recomputed when any delta lands. */
+  pointsDelta?: number;
   wins?: number;
 }
 
 export interface ConstructorStandingOverride {
   name: string;
   position?: number;
+  /** ABSOLUTE total — see the warning on DriverStandingOverride.points. */
   points?: number;
+  /** Adjustment applied to whatever upstream reports. See DriverStandingOverride. */
+  pointsDelta?: number;
   wins?: number;
 }
 
