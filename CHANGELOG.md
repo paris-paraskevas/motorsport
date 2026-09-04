@@ -4,6 +4,39 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.14 — 2026-09-04
+
+### Fixed — the site stated session times the FIA has not published, and now says TBC
+
+Operator decision, taken after the sweep: **when a series has not published its session times, show the day and no clock.**
+
+Three Formula 2 rounds are published as **"TBC"** on fiaformula2.com right now: **Baku (24-26 September), Lusail (27-29 November) and Yas Marina (4-6 December)**. Our `sessions.json` carried precise hours for all twelve of those sessions, rendered with exactly the same confidence as a time checked against an official timetable. They were invented. The days were right; the clocks were not.
+
+**The mechanism already existed and only the schema was missing.** `Session.dateOnly` has been in `lib/types.ts` for a long time, documented as "no real hour is known: UI must not display a clock time, notifications must not fire, and live-now must not consider it active", and it is honoured in `MonthView`, `SessionPill`, `SessionCard` (including live detection), `WeekendSchedule`, `SessionForecast` and `WeekendWeatherStrip`. What was missing is that a **curated** session had no way to say it. `SessionOverrideEntry` gains `dateOnly?: boolean` and `expandBlock` threads it through. Twelve sessions flagged, no renderer changed.
+
+`start` still carries a real instant, because the whole pipeline sorts and groups weekends on it. The flag is what stops that instant being presented as a fact.
+
+The flag is set **only when true**, never written as `false`, so every existing curated session expands byte-identically to what it did before.
+
+Browser-verified: all four F2 Baku sessions render **TBC**, and the control in the same pass, F2 at Monza, still shows real times with zero TBC on the page.
+
+Three tests cover the passthrough, and it is **mutation-checked**: deleting the one line in `expandBlock` fails with `expected undefined to be true`. One of the three asserts the flag is absent rather than `false` on an ordinary session, because that distinction is the compatibility guarantee.
+
+### The overlap guard ships, green
+
+`tests/session-times-integrity.test.ts`: **no two on-track sessions may share a venue and an instant.** One circuit has one track. It pools every series rather than checking each alone, because the Monza collision was *between* two series and a per-series check cannot see it.
+
+It went from many failures to none across 1.0.11 to 1.0.14 as the real data was fixed, and the last two hits were resolved honestly rather than by tuning the test:
+
+- **ADAC "Grid Formation" and "Open Grid"** were a false positive. Paddock and ceremonial activity is not exclusive use of the track and much of it deliberately runs concurrently, so scrutineering, pit walks, grid formation, parades and press conferences are excluded by name.
+- **F2 at Yas Marina overlapping F1 practice** was caused by one of the fabricated times above. It is gone because the session no longer claims an hour, not because a different number was invented to dodge a red test.
+
+**Mutation-checked**: reintroducing the exact collision that shipped (F2 Practice on top of F1 Practice 1 at Monza) fails the suite, naming the venue and both sessions. A second test asserts the pool is non-empty (500+ sessions, 50+ venues), because a filter bug that excluded everything would make the first test pass vacuously, which is the failure mode this whole file exists to prevent.
+
+Its limits are written into the file: it does **not** catch an hour-shifted session that collides with nothing, which was the original Monza F1 bug. `npm run sessions:audit` covers that against the feed; the human check against the official timetable remains.
+
+Verified: `tsc` 0, `lint` 0, **1505** tests across 116 files (was 1499 across 115), build exit 0 at 1189/1189, `sessions:audit` clean at 55/0.
+
 ## 1.0.13 — 2026-09-04
 
 ### Fixed — the season-wide session-time sweep, and the tool that found it
