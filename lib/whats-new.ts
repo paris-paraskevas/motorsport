@@ -70,7 +70,10 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   {
     id: 'v1.0',
     version: '1.0',
-    active: false,
+    // LIVE as of 1.0.0, 2026-09-04. Flipped in the same commit as the
+    // package.json bump, per launch-checklist §B: /changelog reports the running
+    // version, so announcing 1.0 while running 0.334.x would lie to readers.
+    active: true,
     title: 'Paddock is out of early access',
     intro:
       'Fifteen championships in one place, every session in your own time zone. Built in the open over a hundred days, and free, with no account needed to use most of it.',
