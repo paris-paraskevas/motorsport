@@ -11,6 +11,7 @@ import { pinnedLeadSlug, visibleBlocks, type HomeLayout } from '@/lib/home-layou
 import type {
   HomeLeadBlog,
   HomeLeadChanged,
+  HomeLeadAlsoRacing,
   HomeLeadLiveWeekend,
   HomeLeadNextItem,
   HomeLeadResult,
@@ -29,13 +30,58 @@ import type { HomeBlockId } from '@/lib/home-layout';
 
 export interface HomeModel {
   blog: HomeLeadBlog | null;
-  liveWeekend: HomeLeadLiveWeekend | null;
+  /** Every live weekend that earns its own box: F1 first, then the named
+   *  majors by soonest next session. See the selection block for the why. */
+  liveWeekends: HomeLeadLiveWeekend[];
+  /** Live weekends that do not get a box, as one compact row. */
+  alsoRacing: HomeLeadAlsoRacing[];
   result: HomeLeadResult | null;
   changed: HomeLeadChanged | null;
   next: HomeLeadNextItem[];
   wire: HomeLeadWireItem[];
   /** Block ids to render, in the operator's order, hidden ones already removed. */
   order: HomeBlockId[];
+}
+
+// OPERATOR DECISION, 2026-09-04. Home-page precedence used to be purely
+// temporal, with no series ever preferred by name. On Italian Grand Prix Friday
+// that put FORMULA 3 in the hero band, because F3's qualifying happened to come
+// before F1's second practice, and the Grand Prix appeared nowhere on the page.
+const LEAD_SLUG = 'f1';
+const MAJOR_SLUGS = ['motogp', 'wec', 'indycar', 'nascar-cup'];
+
+/**
+ * Decide which live weekends get their own box and in what order.
+ *
+ * Formula 1 always leads when it is running. Each of the four other
+ * championships the operator named gets its own box, ordered by whichever has
+ * the next session SOONEST — the reader's question is "what is about to
+ * happen", so a series with nothing left to run sinks rather than jumping the
+ * queue. Everything else goes to `also`, which the page renders as one compact
+ * row so a busy Saturday cannot bury the lead story behind seven boxes.
+ *
+ * `candidates` must already be sorted by weekend start, which is what the
+ * fallback relies on.
+ *
+ * Pure and exported so the ranking can be tested without loading every series.
+ */
+export function rankLiveWeekends<T extends { slug: string; nextStartMs: number }>(
+  candidates: readonly T[],
+): { featured: T[]; also: T[] } {
+  const lead = candidates.filter(c => c.slug === LEAD_SLUG);
+  const majors = candidates
+    .filter(c => MAJOR_SLUGS.includes(c.slug))
+    .sort((a, b) => a.nextStartMs - b.nextStartMs);
+
+  let featured = [...lead, ...majors];
+  // Nothing named is running, so the band would be empty on a weekend that is
+  // demonstrably busy. Fall back to the old behaviour: feature the weekend that
+  // started soonest, whatever series it belongs to.
+  if (featured.length === 0 && candidates.length > 0) featured = [candidates[0]];
+
+  const chosen = new Set<T>(featured);
+  const also = candidates.filter(c => !chosen.has(c)).sort((a, b) => a.nextStartMs - b.nextStartMs);
+  return { featured, also };
 }
 
 function ageLabel(pubDate: Date, now: Date): string {
@@ -55,9 +101,9 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
   // with a Formula E finale that ended five days earlier, because "newest race
   // with a podium" has no concept of a weekend being underway. Live = not past,
   // AND first session already started or starting inside 24h, AND the last
-  // session not yet over. Precedence is temporal, never editorial: candidates
-  // sort by first start, so a weekend already running beats one about to start,
-  // and no series is ever preferred or suppressed by name.
+  // session not yet over. This step is purely temporal and finds EVERY live
+  // weekend; which of them earn a box, and in what order, is decided in 0a
+  // below and is now editorial (it was not before 2026-09-04 — see there).
   // NOT lib/weekend.ts weekendIsLive(): that is `start <= now <= end` on a
   // single session, i.e. "a session is running this second". This band must also
   // catch the Friday morning before FP1 has turned a wheel, hence the DAY_MS
@@ -78,20 +124,34 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
     })
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  let liveWeekend: HomeLeadLiveWeekend | null = null;
-  const live = liveCandidates[0];
-  if (live) {
-    // A dateOnly session has no real hour (lib/types.ts, Session.dateOnly), so
-    // it can never be a timed "next up" or an "also today" row — both carry a
-    // clock time to the client.
+  // ── 0a. Which live weekends get a box, and in what order. The ranking itself
+  // lives in `rankLiveWeekends` above, pure and tested; this only feeds it.
+  //
+  // A dateOnly session has no real hour (lib/types.ts, Session.dateOnly), so it
+  // can never be a timed "next up" or an "also today" row — both carry a clock
+  // time to the client.
+  //
+  // Earliest session that has NOT finished — `end > now`, not `start > now`. A
+  // running session must stay selected, otherwise the band skips straight past
+  // it to the following one and the LIVE pill can never fire while a session is
+  // actually on track.
+  const nextTimed = (cand: (typeof liveCandidates)[number]) =>
+    cand.w.sessions
+      .filter(x => !x.dateOnly && x.end > now)
+      .sort((a, b) => a.start.getTime() - b.start.getTime())[0] ?? null;
+
+  const ranked = rankLiveWeekends(
+    liveCandidates.map(c => ({
+      cand: c,
+      slug: c.s.meta.slug,
+      nextStartMs: nextTimed(c)?.start.getTime() ?? Number.POSITIVE_INFINITY,
+    })),
+  );
+
+  const liveWeekends: HomeLeadLiveWeekend[] = ranked.featured.map(({ cand: live }) => {
     const timed = live.w.sessions.filter(x => !x.dateOnly);
-    // Earliest session that has NOT finished — `end > now`, not `start > now`.
-    // A running session must stay selected, otherwise the band skips straight
-    // past it to the following one and the LIVE pill can never fire while a
-    // session is actually on track.
-    const nextUp =
-      timed.filter(x => x.end > now).sort((a, b) => a.start.getTime() - b.start.getTime())[0] ?? null;
-    liveWeekend = {
+    const nextUp = nextTimed(live);
+    return {
       seriesSlug: live.s.meta.slug,
       seriesName: live.s.meta.name,
       color: live.s.meta.color,
@@ -128,7 +188,28 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
         : [],
       alsoDayIso: nextUp ? nextUp.start.toISOString().slice(0, 10) : null,
     };
-  }
+  });
+
+  // Everything else that is racing, already ordered by soonest session. A
+  // weekend with no timed session left to run is dropped rather than listed
+  // with no time beside it.
+  const alsoRacing: HomeLeadAlsoRacing[] = ranked.also
+    .map(({ cand: c }) => ({ c, up: nextTimed(c) }))
+    .flatMap(({ c, up }) =>
+      up
+        ? [
+            {
+              seriesSlug: c.s.meta.slug,
+              seriesName: c.s.meta.name,
+              color: c.s.meta.color,
+              eventName: weekendLabel(c.w, c.w.round).title,
+              href: `/series/${c.s.meta.slug}/weekend/${c.w.round}`,
+              sessionName: up.title,
+              startIso: up.start.toISOString(),
+            },
+          ]
+        : [],
+    );
 
   // ── 1. The result that just happened: newest finished race across every
   // covered series (KV-warmed feeds; fail-soft nulls just drop the band). ──
@@ -279,5 +360,5 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
     /* no blog lead this revalidation */
   }
 
-  return { blog, liveWeekend, result, changed, next, wire, order: visibleBlocks(layout) };
+  return { blog, liveWeekends, alsoRacing, result, changed, next, wire, order: visibleBlocks(layout) };
 }

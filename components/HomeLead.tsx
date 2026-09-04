@@ -98,6 +98,19 @@ export interface HomeLeadLiveWeekend {
   alsoDayIso: string | null;
 }
 
+/** A weekend that is running but does not earn its own box: everything outside
+ *  F1 and the four named majors. One line each, in a single row, so a busy
+ *  Saturday cannot push the lead story off the screen behind seven boxes. */
+export interface HomeLeadAlsoRacing {
+  seriesSlug: string;
+  seriesName: string;
+  color: string;
+  eventName: string;
+  href: string;
+  sessionName: string;
+  startIso: string;
+}
+
 function timeLabel(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
@@ -127,7 +140,8 @@ export type HomeLeadBandId = (typeof DEFAULT_ORDER)[number];
 
 export function HomeLead({
   blog,
-  liveWeekend,
+  liveWeekends,
+  alsoRacing,
   result,
   changed,
   next,
@@ -135,7 +149,12 @@ export function HomeLead({
   order,
 }: {
   blog?: HomeLeadBlog | null;
-  liveWeekend?: HomeLeadLiveWeekend | null;
+  /** F1 first when it is running, then the named majors by soonest next
+   *  session. Composed in lib/home-model.ts; this component renders the order
+   *  it is given and decides nothing about precedence itself. */
+  liveWeekends?: HomeLeadLiveWeekend[];
+  /** Everything else racing, as one compact row beneath the boxes. */
+  alsoRacing?: HomeLeadAlsoRacing[];
   result: HomeLeadResult | null;
   changed: HomeLeadChanged | null;
   next: HomeLeadNextItem[];
@@ -160,7 +179,7 @@ export function HomeLead({
   // section, so "first" below means first VISIBLE band, not first configured.
   const hasContent: Record<HomeLeadBandId, boolean> = {
     blog: Boolean(blog),
-    live: Boolean(liveWeekend),
+    live: (liveWeekends?.length ?? 0) > 0 || (alsoRacing?.length ?? 0) > 0,
     // The result BAND is the race section plus the championship/next-up pair
     // below it, so it counts as present if either half has anything.
     result: Boolean(
@@ -324,13 +343,29 @@ export function HomeLead({
         </section>
   );
 
-  /* ── 0b. The weekend in progress. By default it sits above the finished-race
-     band so a completed season elsewhere cannot outrank a race running today;
-     the operator can override that ordering. ── */
-  const liveBand = liveWeekend && (
+  /* ── 0b. The weekends in progress. By default this sits above the
+     finished-race band so a completed season elsewhere cannot outrank a race
+     running today; the operator can override that ordering.
+
+     ONE BOX PER FEATURED SERIES since 2026-09-04, where it used to be a single
+     band for whichever weekend happened to start first. That rule put FORMULA 3
+     at the top of the page on Italian Grand Prix Friday. `liveWeekends` arrives
+     already ordered by lib/home-model.ts — F1 first, then the named majors by
+     soonest session — and this component does not re-sort or re-rank it.
+
+     Only the FIRST box carries its day's remaining session list. Four full
+     lists would run to most of a screen, and the lead is the one that earns the
+     depth; the others answer "what and when", which is the whole job of a
+     secondary box. ── */
+  const liveList = liveWeekends ?? [];
+  const alsoList = alsoRacing ?? [];
+  const liveBand = (liveList.length > 0 || alsoList.length > 0) && (
+    <div className={topGap('live')}>
+      {liveList.map((liveWeekend, liveIndex) => (
         <section
-          aria-label="This weekend"
-          className={`${topGap('live')}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
+          key={`${liveWeekend.seriesSlug}-${liveWeekend.href}`}
+          aria-label={liveIndex === 0 ? 'This weekend' : `Also this weekend: ${liveWeekend.seriesName}`}
+          className={`${liveIndex === 0 ? '' : 'mt-3 '}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
         >
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             {/* Deliberately NOT "On now": the band also catches a weekend
@@ -383,7 +418,7 @@ export function HomeLead({
             </div>
           )}
 
-          {liveWeekend.alsoSameDay.length > 0 && liveWeekend.alsoDayIso && (
+          {liveIndex === 0 && liveWeekend.alsoSameDay.length > 0 && liveWeekend.alsoDayIso && (
             <>
               <span className="mt-4 block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
                 <SessionDayNote dayIso={liveWeekend.alsoDayIso} />
@@ -409,6 +444,42 @@ export function HomeLead({
             </>
           )}
         </section>
+      ))}
+
+      {/* Everything else on track this weekend. One row, not one box each: on a
+          busy Saturday the boxed treatment would push the lead story off the
+          screen entirely. Each entry still links straight to its weekend. */}
+      {alsoList.length > 0 && (
+        <section
+          aria-label="Also racing this weekend"
+          className={`${liveList.length > 0 ? 'mt-3 ' : ''}border-[1.5px] border-border bg-surface-elevated px-[18px] py-3 lg:px-5`}
+        >
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted">
+            Also racing
+          </span>
+          <ul className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            {alsoList.map(item => (
+              <li key={`${item.seriesSlug}-${item.href}`} className="flex items-baseline gap-2">
+                <span
+                  aria-hidden="true"
+                  className="h-3 w-[3px] shrink-0 self-center"
+                  style={{ backgroundColor: item.color }}
+                />
+                <Link
+                  href={item.href}
+                  className="font-serif text-[15px] text-text-muted hover:text-text hover:underline"
+                >
+                  {item.seriesName}
+                </Link>
+                <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                  {timeLabel(item.startIso)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
   );
 
   /* ── 1 + 2×3. The result that just happened, and the championship/next-up
