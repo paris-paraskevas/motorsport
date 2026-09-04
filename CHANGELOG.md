@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.2 — 2026-09-04
+
+### Fixed — the test suite was flaky under a dev server, and slower for it
+
+Fork-worker start timeouts reproduced whenever `npm test` ran alongside `next dev` — carried in `IDEAS.md` since session 29 with the suggested fix "pin `maxWorkers`, or document *no suite under dev*".
+
+`vitest.config.ts` set `globals`, `environment` and `include` and **nothing else**, so worker count was unbounded. On a 22-core machine that over-subscribes badly, and measuring made the choice obvious rather than a guess:
+
+```
+unpinned         8.57s   (import 48.48s of contended work)
+maxWorkers 4     9.25s
+maxWorkers 50%   6.91s   (import 24.01s)
+```
+
+**Half the cores is faster than all of them**, so this is not a trade of speed for stability — it is both. A **percentage** rather than a number so it adapts: a 2-core CI runner gets 1 worker instead of an over-subscribed 4. Nothing is skipped; all 1481 tests still run.
+
+Verified against the actual reproduction, not just the config: with `next dev` running alongside, the full suite passes — **114 files, 1481 tests, 6.74s**. That is the case that used to fail.
+
+**Not done here, and left in the queue:** the related "a deterministic loader called once per test is pure cost" sweep. The import figures above suggest real headroom there, but finding those call sites is its own piece of work and folding it in would have hidden it inside a config change.
+
 ## 1.0.1 — 2026-09-04
 
 ### Removed — the last of the landing page, ten months after it went
