@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.17 — 2026-09-04
+
+**Pato O'Ward's name is spelled properly again.** The IndyCar standings were showing a stray piece of markup in place of his apostrophe, on the standings page and the home page.
+
 ## 1.0.16 — 2026-09-04
 
 **Formula 1 now leads the home page whenever it is racing.** The page used to show whichever series had the next session, which meant that on Italian Grand Prix Friday it led with Formula 3 and the Grand Prix itself was nowhere to be seen. MotoGP, WEC, IndyCar and NASCAR now each get their own panel when they are running, soonest session first, and anything else racing that weekend appears in a single line underneath.

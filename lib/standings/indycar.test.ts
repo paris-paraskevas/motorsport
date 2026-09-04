@@ -170,6 +170,46 @@ describe('fetchIndyCarStandings', () => {
     globalThis.fetch = originalFetch;
   });
 
+  // indycar.com serves the apostrophe DOUBLE-encoded inside data-driver-data:
+  // the live page literally contains `O&amp;apos;Ward`. Cheerio decodes one
+  // level when it reads the attribute, leaving the string `O&apos;Ward`, and
+  // React escapes that ampersand on render — so the standings table and the
+  // home page both showed readers `Pato O&apos;Ward`.
+  //
+  // The fixture below reproduces that exactly: `row()` JSON-encodes the name and
+  // then escapes `'`, so passing an already-escaped `&amp;apos;` through it
+  // produces the same double-encoded attribute the real site serves.
+  it("decodes indycar.com's double-encoded apostrophe, and leaves ordinary names alone", async () => {
+    // MIN_DRIVERS is 10, so the table has to be a plausible size or the parser
+    // rejects it wholesale. Pato is seeded at rank 4, where he actually sits.
+    const rows = Array.from({ length: 12 }, (_, i) =>
+      i === 3
+        ? row({
+            rank: 4,
+            firstName: 'Pato',
+            lastName: 'O&amp;apos;Ward',
+            team: 'Arrow McLaren',
+            points: 503,
+            wins: 1,
+          })
+        : row({
+            rank: i + 1,
+            firstName: 'Driver',
+            lastName: `Number${i + 1}`,
+            team: 'Some Team',
+            points: 600 - i * 10,
+            wins: 0,
+          }),
+    ).join('');
+
+    mockFetchOnceOk(`<table>${rows}</table>`);
+    const result = await fetchIndyCarStandings();
+    expect(result).not.toBeNull();
+    expect(result!.drivers[3].driverName).toBe("Pato O'Ward");
+    // The decode must not touch a name that never needed it.
+    expect(result!.drivers[0].driverName).toBe('Driver Number1');
+  });
+
   it('parses a 12-driver standings table with rank / name / team / points / wins', async () => {
     mockFetchOnceOk(FULL_GRID_HTML);
     const result = await fetchIndyCarStandings();

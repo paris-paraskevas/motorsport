@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.17 — 2026-09-04
+
+### Fixed — "Pato O&apos;Ward" on the home page and the IndyCar standings
+
+Noted during the 1.0.16 browser check and fixed here rather than left as a curiosity.
+
+`CAUSE: indycar.com serves the apostrophe DOUBLE-encoded inside data-driver-data (the live page literally contains O&amp;apos;Ward) -> cheerio decodes one level when it reads the attribute, leaving the literal string O&apos;Ward -> React escapes that ampersand on render -> SYMPTOM: readers saw "Pato O&apos;Ward" in the standings table and on the home page.`
+
+Settled by probing rather than reasoning: running the real parser against the live page prints `parsed lastName: "O&apos;Ward"`, which pins the decode level exactly.
+
+`decodeResidualEntities` undoes **one** residual level on the extracted name. Deliberately narrow: the apostrophe and quote forms a person's name can contain, plus a trailing `&amp;` pass. It is **not** a general repeated decode, because repeatedly decoding would corrupt a name that legitimately contained the text "&amp;".
+
+The existing fixture builder single-encodes, so it could never have caught this; the new test passes an already-escaped `&amp;apos;` through it, which reproduces the real site's double-encoded attribute byte for byte. It also asserts an ordinary name is untouched, and seeds a full 12-row table because `MIN_DRIVERS` is 10 and the parser rejects a short one outright.
+
+**Mutation-checked**: removing the decode fails with `expected 'Pato O&apos;Ward' to be 'Pato O'Ward'`.
+
+Verified: `tsc` 0, `lint` 0, 1513 tests, build exit 0 at 1189/1189.
+
 ## 1.0.16 — 2026-09-04
 
 ### Changed — Formula 1 leads the home page, and every major running gets its own box

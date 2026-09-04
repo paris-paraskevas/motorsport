@@ -33,6 +33,27 @@ function teamFromAlt(alt: string | undefined): string {
   return alt.replace(/\s+Logo\s*$/i, '').trim();
 }
 
+/**
+ * Undo ONE residual level of HTML encoding in a driver name.
+ *
+ * indycar.com double-encodes the apostrophe inside the `data-driver-data`
+ * attribute: the page literally serves `O&amp;apos;Ward`. Cheerio decodes one
+ * level when it reads the attribute, which leaves the string `O&apos;Ward`, and
+ * React then escapes that ampersand on render, so the standings table and the
+ * home page both showed `Pato O&apos;Ward` to readers.
+ *
+ * Deliberately narrow: the apostrophe and quote forms a person's name can
+ * actually contain, plus a trailing `&amp;` pass so a double-encoded ampersand
+ * resolves too. It is NOT a general repeated decode, because repeatedly
+ * decoding would corrupt a name that legitimately contained the text "&amp;".
+ */
+export function decodeResidualEntities(value: string): string {
+  return value
+    .replace(/&apos;|&#0*39;|&#x0*27;/gi, "'")
+    .replace(/&quot;|&#0*34;|&#x0*22;/gi, '"')
+    .replace(/&amp;/gi, '&');
+}
+
 async function fetchIndyCarStandingsLive(): Promise<{
   drivers: DriverStanding[];
 } | null> {
@@ -95,7 +116,7 @@ async function fetchIndyCarStandingsLive(): Promise<{
       const wins = Number(data.wins);
       drivers.push({
         position,
-        driverName: `${data.firstName} ${data.lastName}`,
+        driverName: `${decodeResidualEntities(data.firstName)} ${decodeResidualEntities(data.lastName)}`,
         team,
         points,
         wins: Number.isFinite(wins) ? wins : undefined,
