@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.9 — 2026-09-04
+
+### Test — the draft-backup hook gets tests, and this repo can now test React at all
+
+`components/studio/useDraftBackup.ts` is the crash protection the studio grew after a post was lost on 2026-08-24. It had **no tests**, and it turned out nothing in this repo did: `vitest.config.ts` globbed only `lib/`, `tests/` and `app/`, there was no jsdom or happy-dom installed, no `@testing-library`, and not one `.test.tsx` file existed despite the glob allowing them. "Add a test for this hook" was really "decide whether this repo tests React" — an operator call, and it was made.
+
+Added as devDependencies (**zero Worker bundle cost — devDeps never ship**): `@testing-library/react@16.3.3`, `@testing-library/dom@10`, `jsdom@29.1.1`. `components/**/*.test.{ts,tsx}` joins the include list; `node` stays the default environment and a test opts into a DOM with a `// @vitest-environment jsdom` docblock, because a DOM per file is not free and almost everything here is pure logic.
+
+**jsdom is pinned to 29 on purpose.** 30.0.1 declares `node: ^24.15.0` and this machine runs 24.14.0, so it installs with an `EBADENGINE` warning every time. 29.1.1 declares `>=24.0.0` and is otherwise the same library.
+
+**18 tests**, covering recovery, the frozen read, the debounce, the storage guards and the navigate-away prompt. Two findings worth keeping:
+
+- **A spy on `window.localStorage` silently never fires.** jsdom's Storage is a proxy that turns an instance property assignment into a stored *key*, so `vi.spyOn(window.localStorage, 'setItem')` does nothing. The write test failed outright — and the read test **passed for the wrong reason**, because "no recovery offered" is also what an empty store looks like. Both now spy on `Storage.prototype` and seed a snapshot first, so a spy that fails to land fails the test.
+- **`fmtRecoveredAt` is asserted as a relationship, not a literal.** This machine resolves to `el-GR` and renders `02:02 μ.μ.` where a CI runner on `en-US` renders `02:02 PM`. What the function actually decides is which branch to take, so the test checks that the older timestamp ends with the same-day rendering and is longer — true in any locale.
+
+`vi.spyOn(window, 'addEventListener')` resolves to the `DedicatedWorkerGlobalScope` overload here (the service-worker lib is in the ambient types), so tsc rejects comparing its event map against `'beforeunload'`. Comparing `String(call[0])` instead — an honest runtime conversion, not a type escape hatch, and no `as any`.
+
+**Mutation-checked.** Deleting the `if (!recovered)` guard at `useDraftBackup.ts:132` — the one stopping the hook from deleting the snapshot it has just offered — fails with `AssertionError: expected null not to be null`. The file was restored and the diff confirmed empty.
+
+Verified: `tsc` 0, `lint` 0, **1499** tests across 115 files (was 1481 across 114), build exit 0 at 1189/1189.
+
 ## 1.0.8 — 2026-09-04
 
 ### Content — round 13 (Monza) upgrades, 10 teams and 26 parts
