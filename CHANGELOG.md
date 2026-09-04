@@ -4,6 +4,35 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.16 — 2026-09-04
+
+### Changed — Formula 1 leads the home page, and every major running gets its own box
+
+**Operator decision.** The home page picked one live weekend and it picked the wrong one. Precedence was purely temporal, and `lib/home-model.ts` said so out loud: *"no series is ever preferred or suppressed by name"*. On Italian Grand Prix Friday that put **FORMULA 3** in the hero band, because F3's qualifying at 12:00 fell before F1's second practice at 14:00. The Grand Prix appeared **nowhere on the page**.
+
+The new rule:
+
+1. **Formula 1 always leads** when it is running.
+2. **MotoGP, WEC, IndyCar and NASCAR Cup each get their own box**, ordered by whichever has the next session **soonest**. The reader's question is "what is about to happen", so a series with nothing left to run sinks rather than jumping the queue.
+3. **Everything else collapses into one compact "Also racing" row.** Nothing disappears, and a busy Saturday cannot bury the lead story behind seven boxes.
+
+Today, with five series live, that renders as: Formula 1 at Monza, then FIA WEC at Circuit of the Americas, then one row reading *Formula 3 15:00 · Formula 2 15:55 · WorldSBK 16:00*. Browser-verified against exactly that.
+
+**The ranking is a pure function**, `rankLiveWeekends`, sitting beside the model rather than buried in a 250-line assembly, because this is editorial policy and it will be revisited. Seven tests pin it, including the literal Monza Friday shape. **Mutation-checked**: deleting the F1 clause fails two of them.
+
+Behaviour deliberately preserved at the edges:
+
+- **A weekend with none of the five named series still gets a band.** It falls back to featuring the soonest-starting weekend, which is exactly what shipped before, so a DTM-and-WorldSBK Saturday does not render an empty section.
+- **Only the first box carries its day's remaining session list.** Four full lists would run to most of a screen; the lead earns the depth, the others answer "what and when".
+- A `dateOnly` session still never becomes a countdown or an "also racing" time, so the TBC rounds from 1.0.14 stay silent rather than appearing with an invented hour.
+- The `live` block id is unchanged, so the operator's existing layout composer still orders and hides the whole band as before.
+
+The stale comment claiming precedence is never editorial is **corrected rather than left to mislead** — that exact class of lying comment is what produced the other bugs fixed today.
+
+Verified: `tsc` 0, `lint` 0, **1512** tests across 117 files (was 1505 across 116), build exit 0 at 1189/1189.
+
+**NOTED (not done):** the IndyCar standings table on the home page renders `Pato O&apos;Ward` — an HTML entity escaped twice. Real, visible, and out of scope for this change.
+
 ## 1.0.15 — 2026-09-04
 
 ### Content — the Monza preview, drafted for the review queue
