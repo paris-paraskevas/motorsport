@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.1 — 2026-09-04
+
+### Removed — the last of the landing page, ten months after it went
+
+Three things left behind by the 0.334.42 landing retirement, all the same root cause: text and code that stopped being true when that page went away.
+
+**Deleted** `components/landing/LandingNav.tsx`, `LandingFooter.tsx` and `LandingAuth.tsx` — 7,640 bytes with no importer outside their own directory (they only referenced each other). Checked immediately before deleting rather than trusted from the note in `IDEAS.md`, which mattered: **`components/landing/InstallApp.tsx` is in the same directory and is live** — `components/Footer.tsx:6` imports it, and it renders the "Install as an app" button. Deleting the directory wholesale, which the note's phrasing invited, would have torn that button out of the footer.
+
+**The footer's first link said "Landing"** and pointed at `/`, which *has been* the home page since 0.334.42. It now says "Home". The `data-heatmap-id` deliberately keeps its old `footer:landing` value so the recorded interaction history stays comparable across the rename.
+
+**Two comments cited the deleted components as examples** and would have pointed at nothing: the wordmark note in `components/AppShell.tsx` and the `useSyncExternalStore` idiom note in `components/f1/GhostLap3D.tsx`. Both now name what actually exists.
+
+Verified on a dev render: the footer's first link reads **Home**, no link reads "Landing", and the Install button is still there — which is the check that proves the deletion stopped where it should have.
+
 ## 1.0.0 — 2026-09-04
 
 ### Paddock is out of early access

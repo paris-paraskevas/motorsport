@@ -296,7 +296,8 @@ function inputState(throttle: number, brake: number): InputState {
 }
 const STATE_LABEL: Record<InputState, string> = { flat: 'flat out', lifting: 'lifting', braking: 'braking' };
 
-// useSyncExternalStore over the media query (repo idiom — see LandingAuth/LocalTime)
+// useSyncExternalStore over the media query (repo idiom — see LocalTime; the
+// other example, LandingAuth, was deleted with the landing page)
 // rather than setState-in-effect: hydration-safe (server snapshot = no reduction)
 // and no cascading-render lint error.
 function usePrefersReducedMotion(): boolean {

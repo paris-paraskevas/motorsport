@@ -44,7 +44,10 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-6 text-xs sm:gap-8">
           <div>
             <ColumnHeading>Site</ColumnHeading>
-            <FooterLink href="/" dataHeatmapId="footer:landing">Landing</FooterLink>
+            {/* "Home", not "Landing": the marketing landing page was retired in
+                0.334.42 and `/` IS the home page now. The heatmap id keeps its
+                old value on purpose so the recorded history stays comparable. */}
+            <FooterLink href="/" dataHeatmapId="footer:landing">Home</FooterLink>
             <FooterLink href="/about" dataHeatmapId="footer:about">About</FooterLink>
             <FooterLink href="/information" dataHeatmapId="footer:learn">Learn</FooterLink>
             <FooterLink href="/news" dataHeatmapId="footer:news">News</FooterLink>

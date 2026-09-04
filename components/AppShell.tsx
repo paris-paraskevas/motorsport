@@ -92,8 +92,10 @@ export function AppShell({
       <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated border-b border-text pt-[env(safe-area-inset-top)]">
         <div className="flex h-[50px] w-full items-center gap-3 px-[14px] lg:h-[58px] lg:gap-[22px] lg:px-10">
           {/* The PADDOCK•TRACKER wordmark (operator, 2026-08-20: "get back our
-              logo") — condensed caps + the brand dot, one treatment shared with
-              LandingNav and LandingFooter. Mobile drops to PADDOCK for width. */}
+              logo") — condensed caps + the brand dot. It used to be one
+              treatment shared with LandingNav and LandingFooter; those were
+              deleted as orphans once the landing page was retired, so this is
+              the only place it lives now. Mobile drops to PADDOCK for width. */}
           <Link
             href="/"
             data-heatmap-id="nav:wordmark"
