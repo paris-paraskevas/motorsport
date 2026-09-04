@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.7 — 2026-09-04
+
+**There is now a guide to how a Formula 1 weekend actually works.** Every other championship on the site had one; the biggest series did not. It covers practice, all three parts of qualifying, how race distance is decided, what changes on a Sprint weekend, and why the car cannot be touched after qualifying.
+
 ## 1.0.6 — 2026-09-04
 
 **Search engines are being told about the site again.** The tool that pings Bing and Yandex when pages change had been broken for some time, so recent changes were waiting on a crawler to wander past. It works now, and every page on the site has been submitted.
