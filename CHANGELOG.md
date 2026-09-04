@@ -4,6 +4,34 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.6 — 2026-09-04
+
+### Fixed — `indexnow:submit` has been dead since the `server-only` imports landed, and now runs
+
+`npm run indexnow:submit` is how Bing and Yandex are told which pages changed. It threw on import, every time:
+
+```
+Error: This module cannot be imported from a Client Component module.
+  at lib/information/registry.ts:1
+```
+
+**Cause:** `scripts/submit-sitemap-to-indexnow.ts` called `buildSitemapEntries()`, which reaches `lib/information/registry.ts`, which imports `server-only` — a package whose entire job is to throw outside a Server Component. It resolves to an empty file only under the `react-server` export condition, which Next's bundler sets and plain Node (so `tsx`) does not. Seven modules under `lib/` import it.
+
+Passing `--conditions=react-server` to `tsx` fixes that import and immediately breaks the next one: React then resolves to its react-server build, which has no `createContext`, and `next/link` is in the chain —
+
+```
+TypeError: _react.default.createContext is not a function
+  at next/dist/shared/lib/router-context.shared-runtime
+```
+
+So the script now **reads the deployed sitemap** (`https://paddock-tracker.com/sitemap.xml`) instead of rebuilding it in-process. That removes the entire `server-only`/React import chain, and it is the more correct source anyway: IndexNow is a claim about what a crawler will find, and only the deployed sitemap can honestly make it. A locally rebuilt list can contain a URL that has not shipped, which sends a crawler to a 404 — the opposite of the favour being asked.
+
+Also: an unparseable or empty sitemap now **fails** (exit 1) rather than logging a warning and reporting success, matching `check-data-freshness.mts`; and an optional substring argument submits a subset (`npm run indexnow:submit -- information/`), which is what IndexNow actually wants after a targeted change. The usage comment carries the Git Bash trap — a leading-slash argument is rewritten to `C:/Program Files/Git/…` by MSYS and matches nothing.
+
+**First successful submission the script has ever made:** 1254 URLs in two batches, both `HTTP 200`. That covers the 55 ADAC pages whose titles changed in 1.0.5, and completes the `indexnow:submit` step the 1.0 launch checklist asks for.
+
+Verified: `tsc` 0, `lint` 0, 1481 tests, and the live run above. The no-match path was exercised first (exit 1, nothing submitted) to prove fetch and parse before anything went out.
+
 ## 1.0.5 — 2026-09-04
 
 ### Fixed — a 24-hour race is not a championship, on 55 indexed pages

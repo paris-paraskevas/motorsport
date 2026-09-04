@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.6 — 2026-09-04
+
+**Search engines are being told about the site again.** The tool that pings Bing and Yandex when pages change had been broken for some time, so recent changes were waiting on a crawler to wander past. It works now, and every page on the site has been submitted.
+
 ## 1.0.5 — 2026-09-04
 
 **The Nürburgring 24 Hours is a race, and our pages now say so.** Fifty-odd pages about it called its winners champions and their wins titles, as though it were a season-long championship. It is one race a year. Every page about it now reads correctly, and the other fourteen championships are untouched.
