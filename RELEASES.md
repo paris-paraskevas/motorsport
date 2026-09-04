@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.1 — 2026-09-04
+
+**The first link in the footer now says "Home" rather than "Landing".** It always went to the home page; the label was left over from a page we retired a while ago. Some unused code went with it.
+
 ## 1.0.0 — 2026-09-04
 
 **Paddock Tracker is 1.0.** Nothing about the site changes today; what changes is that we are calling it finished enough to say so out loud. Fifteen championships share one calendar in your own time zone, with standings and results that reconcile to the official tables, weather by the hour for every session, written accounts of how each race was won, guides to 138 circuits, and 619 sourced answers to the questions people actually ask about motorsport. There is a prediction game with virtual credits, and there is no account needed to read any of it. A short note about what arrived and what comes next appears the first time you visit.
