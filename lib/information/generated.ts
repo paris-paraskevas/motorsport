@@ -50,6 +50,29 @@ function secondTitleLabel(meta: SeriesMeta): string {
 const driversTitleWord = (meta: SeriesMeta) =>
   meta.category === 'motorcycle' ? 'riders’' : 'drivers’';
 
+/** A single race is not a championship, and its winner did not take a "drivers’
+ *  title". The ADAC Ravenol 24h is one 24-hour race per year, so 54 who-won
+ *  pages plus its two record pages were calling a race win a championship — a
+ *  correctness problem, not a wording preference.
+ *
+ *  `meta.singleEvent` is not a new flag invented for this: `tabsFor` already
+ *  trims the tab set with it, and `SeriesTabs` already relabels Champions as
+ *  "Past Winners" for exactly these series. This reads the same fact.
+ *
+ *  Today that is the ADAC 24h alone. **NLS is NOT one** despite also running at
+ *  the Nürburgring and being filed under endurance — it is a season championship
+ *  scored on group positions, which is why its meta has no `singleEvent`. An
+ *  earlier note claimed NLS needed the race treatment and was corrected; the
+ *  flag, not the venue or the category, is what decides. */
+const isSingleRace = (meta: SeriesMeta) => meta.singleEvent === true;
+
+/** The trailing noun in "the 2000 <series> championship" — nothing for a race,
+ *  because "the 2000 ADAC Ravenol 24h Nürburgring" is already the event's name. */
+const seasonNoun = (meta: SeriesMeta) => (isSingleRace(meta) ? '' : ' championship');
+
+/** What a tally of these counts: a race is won, a championship is titled. */
+const tallyWord = (meta: SeriesMeta) => (isSingleRace(meta) ? 'wins' : 'titles');
+
 /** The endurance families put a whole crew in one `driver` string — "James
  *  Calado, Antonio Giovinazzi, Alessandro Pier Guidi" — and NLS and the shared
  *  1996 IndyCar title use slashes. Counting titles by that whole string treats a
@@ -163,17 +186,30 @@ function whoWonEntry(
   note?: ChampionNote,
 ): InfoEntry {
   const name = seriesNameForYear(meta, champ.year);
-  const question = `Who won the ${champ.year} ${name} championship?`;
+  const question = `Who won the ${champ.year} ${name}${seasonNoun(meta)}?`;
+  // The SLUG deliberately keeps "championship" even where the question no longer
+  // says it. These 55 URLs are indexed and were only just earned back into the
+  // index by the enrichment programme; renaming them means 55 redirects and real
+  // risk, to fix the least-read part of the string. A slug is an identifier, and
+  // identifiers are allowed to lag their titles.
   const slug = slugify(`who-won-the-${champ.year}-${name}-championship`);
   const teamWith = champ.constructor ? ` with ${champ.constructor}` : '';
-  const summary = `${champ.driver} won the ${champ.year} ${name} championship${teamWith}.`;
+  const summary = `${champ.driver} won the ${champ.year} ${name}${seasonNoun(meta)}${teamWith}.`;
 
   const lines: string[] = [];
   const teamRacing = champ.constructor ? `, racing for **${champ.constructor}**` : '';
+  // "clinching the title" is a season's language; a 24-hour race has no title to
+  // clinch, and in practice these rows carry no points anyway.
   const pointsClause =
-    typeof champ.points === 'number' ? `, clinching the title on **${champ.points}** points` : '';
+    typeof champ.points === 'number'
+      ? isSingleRace(meta)
+        ? `, on **${champ.points}** points`
+        : `, clinching the title on **${champ.points}** points`
+      : '';
   lines.push(
-    `**${champ.driver}** won the ${champ.year} ${name} ${driversTitleWord(meta)} championship${teamRacing}${pointsClause}.`,
+    isSingleRace(meta)
+      ? `**${champ.driver}** won the ${champ.year} ${name}${teamRacing}${pointsClause}.`
+      : `**${champ.driver}** won the ${champ.year} ${name} ${driversTitleWord(meta)} championship${teamRacing}${pointsClause}.`,
   );
   if (champ.constructorChampion) {
     const label = secondTitleLabel(meta);
@@ -205,8 +241,8 @@ function whoWonEntry(
     const nth = driverYears.indexOf(champ.year) + 1;
     lines.push(
       driverYears.length > 1
-        ? `It was **${champ.driver}**’s ${ordinal(nth)} of ${driverYears.length} ${name} titles (${driverYears.join(', ')}).`
-        : `It was **${champ.driver}**’s first ${name} title.`,
+        ? `It was **${champ.driver}**’s ${ordinal(nth)} of ${driverYears.length} ${name} ${tallyWord(meta)} (${driverYears.join(', ')}).`
+        : `It was **${champ.driver}**’s first ${name} ${isSingleRace(meta) ? "win" : "title"}.`,
     );
   } else {
     const firsts: string[] = [];
@@ -224,7 +260,7 @@ function whoWonEntry(
     // Joined by hand rather than through joinNames: the firsts clause already
     // ends in "and X", so gluing the two with another "and" reads as a stutter
     // ("…for Alonso and Nakajima and Buemi's 2nd of 4").
-    const firstsClause = firsts.length ? `a first ${name} title for ${joinNames(firsts)}` : '';
+    const firstsClause = firsts.length ? `a first ${name} ${isSingleRace(meta) ? "win" : "title"} for ${joinNames(firsts)}` : '';
     const repeatsClause = repeats.length ? joinNames(repeats) : '';
     const body =
       firstsClause && repeatsClause
@@ -235,7 +271,7 @@ function whoWonEntry(
   const driverRecord = topHolders(rankTitles(all, (c) => driversOf(c.driver)));
   if (driverRecord.count >= 2) {
     lines.push(
-      `The all-time ${name} ${driversTitleWord(meta)} record is **${driverRecord.count}** titles, ${driverRecord.names.length > 1 ? 'shared by' : 'held by'} **${joinNames(driverRecord.names)}**.`,
+      `The all-time ${name} ${isSingleRace(meta) ? '' : `${driversTitleWord(meta)} `}record is **${driverRecord.count}** ${tallyWord(meta)}, ${driverRecord.names.length > 1 ? 'shared by' : 'held by'} **${joinNames(driverRecord.names)}**.`,
     );
   }
   // The authored enrichment, when this season has one: where and when the title
@@ -257,7 +293,7 @@ function whoWonEntry(
     question,
     summary,
     keywords: [
-      `${champ.year} ${name} champion`,
+      `${champ.year} ${name} ${isSingleRace(meta) ? "winner" : "champion"}`,
       `who won ${champ.year} ${name}`,
       `${name} ${champ.year}`,
       champ.driver,
@@ -272,7 +308,7 @@ function whoWonEntry(
       ...(note?.sources ?? []).map((url) => ({ label: sourceLabel(url), url })),
     ],
     related: [
-      { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
+      { label: `${meta.name} — ${isSingleRace(meta) ? "past winners" : "all champions"}`, href: `/series/${meta.slug}/champions` },
       { label: `${meta.name} history`, href: `/information/${topic}/the-history-of-${meta.slug}` },
       { label: `${meta.name} home`, href: `/series/${meta.slug}` },
     ],
@@ -333,12 +369,14 @@ function mostDriverTitlesEntry(
   const rec = topHolders(ranked);
   const lines = [
     rec.names.length > 1
-      ? `**${joinNames(rec.names)}** share the record for the most ${meta.name} ${driversTitleWord(meta)} titles, with **${topN}** each${predecessorNote}.`
-      : `**${topName}** has won the most ${meta.name} ${driversTitleWord(meta)} titles, with **${topN}**${predecessorNote}.`,
-    `Across ${span(champs)}, ${distinct} different ${who} have been crowned ${meta.name} champion.`,
+      ? `**${joinNames(rec.names)}** share the record for the most ${meta.name} ${isSingleRace(meta) ? "" : `${driversTitleWord(meta)} `}${tallyWord(meta)}, with **${topN}** each${predecessorNote}.`
+      : `**${topName}** has won the most ${meta.name} ${isSingleRace(meta) ? "" : `${driversTitleWord(meta)} `}${tallyWord(meta)}, with **${topN}**${predecessorNote}.`,
+    isSingleRace(meta)
+      ? `Across ${span(champs)}, ${distinct} different ${who} have won the ${meta.name}.`
+      : `Across ${span(champs)}, ${distinct} different ${who} have been crowned ${meta.name} champion.`,
   ];
   if (multi.length > 1) {
-    lines.push('Drivers with multiple titles:');
+    lines.push(isSingleRace(meta) ? 'Multiple winners:' : 'Drivers with multiple titles:');
     lines.push(multi.map(([n, c]) => `- **${n}** — ${c}`).join('\n'));
   }
   lines.push(...recordNoteLines(note));
@@ -348,7 +386,9 @@ function mostDriverTitlesEntry(
     kind: 'qa',
     topic,
     slug: slugify(`most-${meta.name}-championships`),
-    question: `Who has won the most ${meta.name} championships?`,
+    question: isSingleRace(meta)
+      ? `Who has won the most ${meta.name} races?`
+      : `Who has won the most ${meta.name} championships?`,
     // Scoped to the curated span, as the body's provenance line already is. Four
     // files start long after their championship did (NASCAR 2000, WRC 1979,
     // IndyCar 1996, NLS 2010), so an unqualified summary is an all-time claim the
@@ -356,8 +396,8 @@ function mostDriverTitlesEntry(
     // teaser, which is where a reader meets the claim first.
     summary:
       rec.names.length > 1
-        ? `${joinNames(rec.names)} share the record with ${topN} ${meta.name} titles each across ${span(champs)}.`
-        : `${topName} holds the record with ${topN} ${meta.name} titles across ${span(champs)}.`,
+        ? `${joinNames(rec.names)} share the record with ${topN} ${meta.name} ${tallyWord(meta)} each across ${span(champs)}.`
+        : `${topName} holds the record with ${topN} ${meta.name} ${tallyWord(meta)} across ${span(champs)}.`,
     keywords: [
       `most ${meta.name} titles`,
       `most ${meta.name} championships`,
@@ -372,7 +412,7 @@ function mostDriverTitlesEntry(
       ...(note?.sources ?? []).map((url) => ({ label: sourceLabel(url), url })),
     ],
     related: [
-      { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
+      { label: `${meta.name} — ${isSingleRace(meta) ? "past winners" : "all champions"}`, href: `/series/${meta.slug}/champions` },
       { label: `${meta.name} history`, href: `/information/${topic}/the-history-of-${meta.slug}` },
       { label: `${meta.name} home`, href: `/series/${meta.slug}` },
     ],
@@ -431,7 +471,7 @@ function mostConstructorTitlesEntry(
       ...(note?.sources ?? []).map((url) => ({ label: sourceLabel(url), url })),
     ],
     related: [
-      { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
+      { label: `${meta.name} — ${isSingleRace(meta) ? "past winners" : "all champions"}`, href: `/series/${meta.slug}/champions` },
       { label: `${meta.name} history`, href: `/information/${topic}/the-history-of-${meta.slug}` },
       { label: `${meta.name} home`, href: `/series/${meta.slug}` },
     ],
