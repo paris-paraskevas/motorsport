@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.20 — 2026-09-04
+
+**WorldSBK's second race now shows the right time all season, and a GT World weekend has its missing races back.** WorldSBK moved Race 2 to an earlier slot for 2026 and our schedule still had the old one at nine rounds. Separately, the GT World round at Zandvoort was listed entirely on the Friday, with both Sunday sessions and the second race missing; the full weekend is now there.
+
 ## 1.0.19 — 2026-09-04
 
 **More schedule corrections, including a race listed on the wrong day.** The World Endurance Championship's six-hour race at the Circuit of the Americas was showing on Saturday; it runs on Sunday. WorldSBK's second race at Magny-Cours moved 90 minutes earlier this year and we had the old time. And every DTM race of the season was listed 35 minutes early, at the start of the pre-race build-up rather than the race itself. All checked against each championship's own published timetable.
