@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.5 — 2026-09-04
+
+### Fixed — a 24-hour race is not a championship, on 55 indexed pages
+
+The ADAC Ravenol 24h Nürburgring is **one race a year**. Every generated page about it called its winner a champion: `Who won the 2000 ADAC Ravenol 24h Nürburgring championship?` in the title, the `<h1>` and the breadcrumb structured data, and in the body `won the 2000 … drivers' championship`, `121 different drivers have been crowned … champion`, `the all-time … record is 5 titles`. **55 URLs, all `index, follow`.**
+
+This is the session-39 recommendation taken: those pages were flagged as "thin" at under 130 words, and the advice was to **fix the noun rather than pad them**, because the problem was never length.
+
+**`meta.singleEvent` already existed and already meant this.** `tabsFor` trims the tab set with it and `SeriesTabs` already relabels Champions as "Past Winners" for exactly these series, so this reads an established fact rather than inventing a flag. Three small helpers — `isSingleRace`, `seasonNoun`, `tallyWord` — then thread it through **nine** call sites: the question, the summary, the body lead, the points clause ("clinching the title" is a season's language), the first-win and nth-win lines, the all-time record line, the "crowned champion" line, the record page's own question, and a keyword.
+
+**NLS is deliberately NOT affected**, despite also running at the Nürburgring and being filed under endurance. It is a season championship scored on group positions, its meta carries no `singleEvent`, and an earlier note claiming otherwise was already corrected. The flag decides this, not the venue or the category — and that is written into the code comment so the next person does not re-derive it wrongly.
+
+**The slugs deliberately keep "championship".** Those 55 URLs are indexed and were only just earned back into the index by the enrichment programme; renaming them means 55 redirects and real risk, to fix the least-read part of the string. A slug is an identifier and identifiers may lag their titles. **Recorded as a known residual, not as done.**
+
+Verified on a dev render, and the browser found one the greps missed — the "crowned champion" sentence was only visible in rendered text. The 2000 page now reads *"It was a first ADAC Ravenol 24h Nürburgring **win** for Bernd Mayländer"* and *"the all-time record is 5 **wins**"*, with **zero** occurrences of championship/title/crowned language left on the page. Control checked in the same pass: `/information/formula-1/who-won-the-2020-formula-1-championship` is byte-for-byte unchanged and still says "championship" and "titles".
+
 ## 1.0.4 — 2026-09-04
 
 ### Internal — three queued decisions settled, and one of them was already built
