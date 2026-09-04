@@ -4,6 +4,29 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.8 — 2026-09-04
+
+### Content — round 13 (Monza) upgrades, 10 teams and 26 parts
+
+The FIA published `Car Presentation Submissions` as **Document 10 at 09:54 local**, earlier than the 12:30 the retry was scheduled for. `npm run upgrades:draft` picked it up on the first attempt — the second real use of the ingest, and the first where discovery, fetch, extraction and emission all ran unattended.
+
+**The script's own warnings were right, and incomplete.** It flagged 2 parser warnings and 7 shape problems; curating against the PDF found a ninth class it could not see. For McLaren, Williams, Mercedes and Ferrari the parser had put text from the FIA's **"Brief description"** column into `detail`, where the schema wants the short **"Geometric differences"** phrase (`lib/upgrades/f1-parse.ts:20`). Those entries looked plausible — full sentences, right subject matter — which is exactly why the human diff review is not optional.
+
+Notable corrections against the document:
+
+- **Cadillac's first component is `Forward Floor Board Stay`**, not `Forward Floor`; its reason is `Performance — Flow Conditioning`, not the `Structural Improvement — Flow Conditioning` the parser emitted. That reason string does not appear anywhere in the PDF.
+- **Cadillac's second reason** was a bare `Performance`; the document says `Performance — Local Load`.
+- **All four Ferrari rows share one vertically-merged reason cell** (`Circuit specific — Drag Range`) and one shared brief description, which is why the parser resolved only two of them. The four geometric phrases map to the four components unambiguously on subject matter: mirror stay to Mirror Stay, brake duct cascade to Rear Corner.
+- **Red Bull's fourth row reason is recorded as printed: `Flow Conditioning`, with no `Performance —` prefix.** Every other Flow Conditioning row in this document carries that prefix, so the temptation is to add it. Checked against the layout instead: the cell sits on one line at a shifted column origin, and a two-token reason wraps to two lines everywhere else in the same table. It is not a wrap, so it is not inferred.
+- **`SM` is expanded to "straight-mode"**, which the document itself defines — McLaren writes "straight line mode" and Alpine writes "The SM pod" about the same mechanism.
+- **Alpine's `Rear wing` is normalised to `Rear Wing`** to match every other component name in the file.
+
+Audi submitted no updates and is omitted, per the existing convention.
+
+The diff is a **pure 53-line append** with nothing above round 13 touched — the round-trip guard in `lib/upgrades/upgrades-file.ts` doing the job it was written for after the first draft reformatted all 255 lines.
+
+Verified: `tsc` 0, `lint` 0, 1481 tests, build exit 0 at 1189/1189, and browser-checked on the weekend page — the Upgrades section reads **"10 TEAMS · 26 NEW PARTS DECLARED"** with every reason chip rendering.
+
 ## 1.0.7 — 2026-09-04
 
 ### Added — the Formula 1 race-weekend guide, the last obvious gap in the series set

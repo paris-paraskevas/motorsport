@@ -623,5 +623,58 @@
         { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "Redesigned flap profile for more rear load with a stable flowfield." }
       ] }
     ]
+  },
+  "13": {
+    "gp": "Italian Grand Prix",
+    "date": "2026-09-04",
+    "doc": 10,
+    "teams": [
+      { "team": "McLaren", "items": [
+        { "component": "Rear Wing", "reason": "Performance — Drag Reduction", "detail": "Alternative straight-mode flap position, paired with a less loaded beam wing." },
+        { "component": "Floor Furniture", "reason": "Performance — Flow Conditioning", "detail": "Updated floor furniture." }
+      ] },
+      { "team": "Mercedes", "items": [
+        { "component": "Rear Wing", "reason": "Circuit specific — Drag Range", "detail": "Various winglet devices removed from the rear wing." },
+        { "component": "Front Bodywork", "reason": "Circuit specific — Drag Range", "detail": "Trimmed mirror rear stays." }
+      ] },
+      { "team": "Red Bull", "items": [
+        { "component": "Rear Corner", "reason": "Reliability", "detail": "Revised rear-suspension-to-wheel-bodywork gaitor." },
+        { "component": "Floor Body", "reason": "Performance — Local Load", "detail": "Revised bib edge profile." },
+        { "component": "Exhaust Tailpipe", "reason": "Reliability", "detail": "Revised tailpipe bracket." },
+        { "component": "Front Wing", "reason": "Flow Conditioning", "detail": "Revised endplate vane." }
+      ] },
+      { "team": "Ferrari", "items": [
+        { "component": "Floor Board", "reason": "Circuit specific — Drag Range", "detail": "Front floor board elements optimised, with a single vertical element." },
+        { "component": "Mirror Stay", "reason": "Circuit specific — Drag Range", "detail": "Shorter mirror vertical stay and connection to the sidepod." },
+        { "component": "Rear Corner", "reason": "Circuit specific — Drag Range", "detail": "Rear brake duct winglet cascade removed." },
+        { "component": "RV Tail", "reason": "Circuit specific — Drag Range", "detail": "Slotted central winglet element with trimmed side winglets." }
+      ] },
+      { "team": "Williams", "items": [
+        { "component": "Halo", "reason": "Circuit specific — Drag Range", "detail": "A vertical fence introduced around the halo geometry." },
+        { "component": "Front Wing", "reason": "Circuit specific — Balance Range", "detail": "Reduced chord on the front-wing flap elements." },
+        { "component": "Floor Body", "reason": "Circuit specific — Drag Range", "detail": "A local trim applied to the floor board geometry." }
+      ] },
+      { "team": "Racing Bulls", "items": [
+        { "component": "Rear Wing", "reason": "Circuit specific — Drag Range", "detail": "New assembly with an updated straight-mode mechanism." },
+        { "component": "Exhaust Tailpipe", "reason": "Performance — Flow Conditioning", "detail": "Repositioned tailpipe with a reprofiled bracket." }
+      ] },
+      { "team": "Aston Martin", "items": [
+        { "component": "Front Suspension", "reason": "Performance — Local Load", "detail": "Revised fairings for one of the front suspension members." },
+        { "component": "Floor Edge", "reason": "Performance — Local Load", "detail": "Updated floor area in front of the rear tyre." }
+      ] },
+      { "team": "Haas", "items": [
+        { "component": "Floor", "reason": "Performance — Local Load", "detail": "New front floor with new side geometry and a diffuser update." },
+        { "component": "Bodywork", "reason": "Performance — Local Load", "detail": "New sidepod and coke-line, a narrower roll hoop and an updated engine cover." },
+        { "component": "Rear Corner", "reason": "Performance — Local Load", "detail": "Realigned rear suspension fairings and drum deflectors." }
+      ] },
+      { "team": "Alpine", "items": [
+        { "component": "Front Wing Endplate", "reason": "Performance — Local Load", "detail": "Revised footplate vane." },
+        { "component": "Rear Wing", "reason": "Performance — Drag Reduction", "detail": "Straight-mode pod fairing removed." }
+      ] },
+      { "team": "Cadillac", "items": [
+        { "component": "Forward Floor Board Stay", "reason": "Performance — Flow Conditioning", "detail": "Updated stay position with a higher outboard attachment point." },
+        { "component": "Diffuser Vane", "reason": "Performance — Local Load", "detail": "Vane added to the inner trailing edge of the outboard diffuser sidewall." }
+      ] }
+    ]
   }
 }
