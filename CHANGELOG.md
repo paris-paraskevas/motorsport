@@ -4,6 +4,66 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.13 — 2026-09-04
+
+### Fixed — the season-wide session-time sweep, and the tool that found it
+
+Monza and Madrid were not two mistakes, they were two instances of one. This is the sweep, and it is the operator's call taken in full: verify every round against official sources rather than only the ones somebody happened to notice.
+
+**The key discovery is that the upstream feed was never the problem.** `content/series/f1/meta.json` points at an ICS feed which carried the correct Monza instants all along, annotated with the track time:
+
+```
+DTSTART:20260904T103000Z
+SUMMARY:F1 Premio Italia GP - Practice 1
+DESCRIPTION:Track time: Fri 04 Sept 12:30-13:30 (Europe/Rome)
+```
+
+A hand-entered `sessions.json` override had **replaced good data with bad**. So the question worth asking of every override in the repo was not "is this plausible" but "does the feed disagree".
+
+#### F1: 16 wrong sessions across six future rounds
+
+Every one flagged by the feed and then **confirmed individually against that round's formula1.com race page** before being touched:
+
+| round | wrong | error |
+|---|---|---|
+| R15 Baku | FP1, FP2 | 1h late |
+| R17 Singapore | FP1, Qualifying | 1h late / 1h early |
+| R18 Austin | FP1, FP2 | 1h late |
+| R20 São Paulo | **all five sessions** | 1h late |
+| R21 Las Vegas | FP1, FP2, FP3 | 2h late |
+| R22 Qatar | FP3, Qualifying | 2h early |
+
+Same root cause as Monza every time: the standard European "FP1 at 13:30 local, FP2 at 17:00" pattern applied to rounds that do not follow it.
+
+#### F1 round numbers were one behind `rounds.json` from Singapore on
+
+`rounds.json` carries round 16, the **Bahrain Grand Prix relocated to Sepang, Malaysia** (2-4 October, `rescheduleNote` and `previousStartDate` already curated correctly, and its session times come from the feed and match the official page exactly). `sessions.json` had no block for it and so numbered everything after it one too low. Nothing reads `block.round` (override matching is by `matchDate`), so this was a misleading label rather than a broken page, but a misleading label is a future trap. Rounds 16 to 22 are renumbered 17 to 23 and every block now lands inside its own round's window.
+
+#### F3 rounds 3 to 7, and F2 rounds 5 to 8
+
+These carried an identical stamp across rounds, which is what gave the game away: `08:00 / 09:30 / 08:45 / 05:55` for F3 and `08:00 / 12:55 / 12:10 / 09:25` for F2, with Silverstone the same plus an hour for BST. Not timetables, a template.
+
+Replaced with the times published on **fiaformula3.com and fiaformula2.com's own round pages**. Two structural corrections fell out of it:
+
+- **Barcelona, Spielberg, Silverstone and Spa have ONE F3 qualifying session, not two groups.** Our data invented the group split. Monaco genuinely has two, and keeps them.
+- **F3 practice was on the wrong day at four rounds**, filed the day before qualifying where the official schedule runs them together.
+
+#### The tool: `npm run sessions:audit`
+
+`scripts/audit-sessions.mts` diffs every override against its series' ICS feed and reports disagreements. `--strict` exits 1, `--series f1` narrows it. It currently reports **agree 55 · disagree 0**.
+
+It is documented with what it *cannot* do, because that matters more than what it can: outside F1 the feeds are date-only, so 941 override sessions have nothing to diff against and this is not a proof they are right. And the feed is a third party, so where it and the official timetable disagree, **the official timetable wins and the override stays** — a disagreement means "go and check", never "apply the feed".
+
+Two false alarms it used to raise are fixed rather than tolerated: the feed says "Sprint Qualification" and "Sprint Race" where we say "Sprint Qualifying" and "Sprint", so naive substring matching paired our Sprint with the feed's Sprint QUALIFICATION and reported every sprint weekend as 20 hours wrong. Session types are now canonicalised across both vocabularies.
+
+#### Still open, deliberately
+
+The cross-venue overlap invariant is written and still parked, now down to **two** hits from many. One is a false positive the invariant must learn (ADAC "Grid Formation" and "Open Grid" are procedural windows, not exclusive track sessions). The other is F2 at Yas Marina overlapping F1 practice, and that one is **caused by a fabricated time**: F2's official Yas Marina and Baku times are published as "TBC". The honest fix is the operator's approved "date only, no time" change, not inventing a different number to dodge a test.
+
+The round-window invariant is **abandoned**, not parked. It failed on Le Mans, the Indy 500 and the Spa 24 Hours, all correctly: `rounds.json` describes race days and those events legitimately run a week of practice and qualifying beforehand. No slack setting both admits Le Mans and catches a session filed one day early, so it punished correct data without catching the bug it was written for.
+
+Verified: `tsc` 0, `lint` 0, 1499 tests, build exit 0 at 1189/1189, `npm run sessions:audit` clean at 55/0.
+
 ## 1.0.12 — 2026-09-04
 
 ### Fixed — Madrid, next weekend, had the same broken timetable as Monza plus two missing races
