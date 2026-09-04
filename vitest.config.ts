@@ -5,7 +5,19 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['lib/**/*.test.ts', 'tests/**/*.test.ts', 'app/**/*.test.{ts,tsx}'],
+    include: [
+      'lib/**/*.test.ts',
+      'tests/**/*.test.ts',
+      'app/**/*.test.{ts,tsx}',
+      'components/**/*.test.{ts,tsx}',
+    ],
+    // `node` stays the default because almost everything here is pure logic and
+    // a DOM per file is not free. A component or hook test opts in per file with
+    // a `// @vitest-environment jsdom` docblock on line 1.
+    //
+    // jsdom is pinned to 29 deliberately: 30 declares `node: ^24.15.0` and this
+    // machine runs 24.14.0, so it installs with an EBADENGINE warning on every
+    // npm i. 29.1.1 declares `>=24.0.0` and is otherwise the same.
     // Capped because unbounded was BOTH flaky and slower. Fork-worker start
     // timeouts reproduce whenever a dev server runs alongside the suite, and on
     // this 22-core machine the uncapped default over-subscribes badly:
