@@ -4,6 +4,45 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.12 — 2026-09-04
+
+### Fixed — Madrid, next weekend, had the same broken timetable as Monza plus two missing races
+
+The Monza fix in 1.0.11 exposed a template. Madrid's F2 and F3 data was **the same wrong stamp**, and it is next weekend.
+
+**F1 at Madrid was already correct** and is untouched. Madrid runs the standard European pattern (13:30, 17:00, 12:30, 16:00, 15:00), which is precisely why Monza was the exception that slipped through.
+
+F3's Madrid round is the **2026 season finale and uses an expanded format**: an extra qualifying session and a **second Feature Race** instead of the usual single one. Our data had a standard Sprint/Feature pair, so two sessions did not exist at all and the two qualifying sessions were named and timed as if they were the usual groups:
+
+| F3 session | was | now (Madrid local) |
+|---|---|---|
+| Practice | Thu 13:25 | **Fri 09:55** |
+| Qualifying Group A | Fri 10:00 | **Qualifying 1, Fri 18:25** |
+| Qualifying Group B | Fri 11:30 | **Qualifying 2, Fri 18:55** |
+| Sprint Race | Sat 10:45 | **Sat 11:05** |
+| Feature Race 1 | *missing* | **Sat 18:00** |
+| Feature Race 2 | Sun 07:55 (as "Feature Race") | **Sun 09:45** |
+
+F2 at Madrid: Practice 10:00 to **11:05**, Qualifying 14:55 to **15:00**, Sprint 14:10 to **14:15**, Feature Race end 12:35 to **12:30**.
+
+Every one checked against **two independent official sources** (the formula1.com weekend timetable in track time, and each series' own round page in UTC). They agree exactly. The corrected weekend is a clean non-overlapping sequence of fifteen sessions.
+
+### The finding underneath, which is bigger than either weekend
+
+Surveying every F2 and F3 round makes the shape obvious. **F3 rounds 3 to 7 all carry the identical stamp** `08:00 / 09:30 / 08:45 / 05:55`, with Silverstone the same plus an hour for BST. **F2 rounds 5 to 8 do the same.** These are not per-round timetables, they are a template applied across the season.
+
+And checking the remaining future rounds against the governing body produced the part that matters most:
+
+> **F2's official session times for Baku (24-26 September) and Yas Marina (4-6 December) are published as "TBC".** They do not exist yet. Our site shows precise times for both anyway.
+
+So for those rounds there is nothing to correct the data *to*. The times are invented, the dates are right, and the site presents the invention with the same confidence as a verified time. That is a product decision rather than a bug fix, and it is going to the operator rather than being quietly patched: either show a date without a time until the timetable is published, or mark it provisional.
+
+The two invariants written in 1.0.11 remain parked for the same reason as before. They still fail on the pre-existing F3 rounds 3 to 7 and F2 rounds 5 to 8 collisions (all in the past), on F1 `sessions.json` round numbers drifting from `rounds.json` from round 16 onward, and on round-window failures in gt-world, indycar and wec. One of the ADAC hits is a false positive the invariant needs to learn: "Grid Formation" and "Open Grid" are procedural windows, not exclusive track sessions.
+
+**No future session outside those TBC rounds is now known to be wrong.**
+
+Verified: `tsc` 0, 1499 tests, and the corrected Madrid weekend printed in local time matches the official timetable session for session.
+
 ## 1.0.11 — 2026-09-04
 
 ### Fixed — the entire Monza session timetable was wrong, reported by the operator mid-weekend

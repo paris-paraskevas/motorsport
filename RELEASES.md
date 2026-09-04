@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.12 — 2026-09-04
+
+**Next weekend's Madrid timetable was wrong too, and two Formula 3 races were missing from it entirely.** Madrid closes the Formula 3 season with an expanded format, two qualifying sessions and two Feature Races, and our schedule had the usual pair. Every session of the weekend now matches the official timetable. Formula 1's Madrid times were already correct.
+
 ## 1.0.11 — 2026-09-04
 
 **The Monza timetable was wrong and is now right.** Friday's two Formula 1 practice sessions were showing an hour later than they actually run, and several Formula 2 and Formula 3 sessions were wrong by anything from five minutes to a full day. Every session of the weekend has been rechecked against the official timetables. Apologies to anyone who set an alarm by us.
