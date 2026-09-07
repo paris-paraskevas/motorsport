@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { requireAdmin } from '@/lib/admin-guard';
 import { publishedPosts } from '@/lib/blog';
 import {
-  loadLiveHomeLayout,
+  DEFAULT_HOME_LAYOUT,
+  loadHomeLayoutState,
   layoutFromParams,
   pinnedLeadSlug,
   visibleBlocks,
@@ -20,12 +21,14 @@ export const metadata: Metadata = { title: 'Site · Admin' };
 // live. The first tool in the console that CHANGES the site rather than
 // reporting on it.
 //
-// The DRAFT lives in the URL (?order=&hidden=&lead=), and the preview is a real
-// server render of the real components from lib/home-model.ts — the same
-// function /app itself uses, so the preview cannot drift from the page. That is
-// also why the draft is a query parameter rather than client state: this route
-// is already force-dynamic, so reading searchParams costs nothing here, whereas
-// on /app it would opt the route out of ISR for everyone.
+// The in-progress draft lives in the URL (?order=&hidden=&lead=), and the
+// preview is a real server render of the real components from lib/home-model.ts
+// — the same function /app itself uses, so the preview cannot drift from the
+// page. That is also why the draft is a query parameter rather than client
+// state: this route is already force-dynamic, so reading searchParams costs
+// nothing here, whereas on /app it would opt the route out of ISR for everyone.
+// A SAVED draft is an unpublished page_layout row (Save draft in the composer);
+// the page opens it when the URL carries no edits.
 export default async function AdminHomePage({
   searchParams,
 }: {
@@ -33,14 +36,15 @@ export default async function AdminHomePage({
 }) {
   await requireAdmin();
   const params = await searchParams;
-  const live = await loadLiveHomeLayout();
+  const { live, draft: savedDraft } = await loadHomeLayoutState();
+  const liveLayout = live?.layout ?? DEFAULT_HOME_LAYOUT;
 
-  // No parameters yet → the draft starts as whatever is currently live, so the
-  // composer opens showing the real home page rather than a default.
+  // No parameters yet → the composer opens on the saved draft if one is newer
+  // than the live layout, else on whatever is live: real state, never a default.
   const touched = Boolean(params.order || params.hidden || params.lead);
   const draft = touched
     ? layoutFromParams(params)
-    : live;
+    : (savedDraft?.layout ?? liveLayout);
 
   const [model, posts] = await Promise.all([buildHomeModel(draft), publishedPosts()]);
 
@@ -53,7 +57,11 @@ export default async function AdminHomePage({
       <div className="grid gap-8 xl:grid-cols-[22rem_minmax(0,1fr)] xl:items-start">
         <HomeComposer
           blocks={draft.blocks}
-          liveBlocks={live.blocks}
+          liveBlocks={liveLayout.blocks}
+          liveId={live?.id ?? null}
+          savedDraft={
+            savedDraft ? { id: savedDraft.id, at: savedDraft.at, blocks: savedDraft.layout.blocks } : null
+          }
           order={visibleBlocks(draft)}
           pinnedSlug={pinnedLeadSlug(draft)}
           // Decided on the server: PADDOCK_ENV is not a NEXT_PUBLIC_ variable, so
