@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.23 — 2026-09-07
+
+### Fix — `warm-live-data` had not run since 4 Sept 11:51Z; the lockfile was missing one nested entry
+
+`.github/workflows/warm-live-data.yml` failed at `npm ci` on every scheduled run from 2026-09-04 11:51Z (last success 06:41Z that morning) through today (latest: run 34108117084 at 09:48Z) with
+
+```
+npm error Missing: @swc/helpers@0.5.23 from lock file
+```
+
+**Cause.** 3b4f45b (1.0.9) regenerated `package-lock.json` with npm 11, which omits the nested `node_modules/@serwist/turbopack/node_modules/@swc/helpers` (0.5.23) entry that npm 10 in CI requires. npm 11 tolerates the gap, so nothing failed on a laptop. The lock's root `version` had also been left at 1.0.8 while `package.json` moved on.
+
+**Effect.** The warmer is the only writer of the site's data (`scripts/warm-live-data.mts`; the Worker runs `DATA_SOURCE=db`), so prod served snapshots frozen at 4 Sept 06:41Z through the whole Italian Grand Prix weekend: the F1 standings still showed post-Zandvoort totals a day after Monza and the Monza result was absent from the results tabs. The calendar was unaffected (curated sidecars, audited separately).
+
+**Fix.** Regenerated with `npx npm@10 install --package-lock-only`. The diff is that single nested entry plus the lock's root version catching up to `package.json`.
+
+**Verification.** `npx npm@10 ci --dry-run --ignore-scripts` (what `npm run lockfile:check` runs, minus the husky prepare hook that a bare worktree lacks) exits 0 on this branch; on `main` it exits 1 with the Missing line. The real proof is the first scheduled run after merge writing fresh snapshots: watch the Actions run and the standings' written-at timestamp.
+
+**Follow-up (not done here).** `npm run lockfile:check` already exists; it is not run anywhere in CI. A pull-request step running it would have caught this on 1.0.9's PR. The outage only surfaced because the designer prototype's Data view listed snapshot ages.
+
 ## 1.0.22 — 2026-09-07
 
 ### Content — the full Monza set, five drafts, fact-checked against the FIA's own documents
