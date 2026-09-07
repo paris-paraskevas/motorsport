@@ -89,23 +89,34 @@ export function HomeComposer({
   order,
   pinnedSlug,
   posts,
+  liveId,
+  savedDraft,
   readOnly = false,
 }: {
   blocks: HomeBlock[];
   /** What is currently published, so the composer can say whether the draft differs. */
   liveBlocks: HomeBlock[];
+  /** The live revision's id, or null when nothing is published. Sent back with a
+   *  publish as `base`, so the API can refuse one whose base is no longer live. */
+  liveId: string | null;
+  /** The saved draft this page opened, if one is newer than the live layout. */
+  savedDraft: { id: string; at: string; blocks: HomeBlock[] } | null;
   order: HomeBlockId[];
   pinnedSlug: string | null;
   posts: { slug: string; title: string; publishedAt: string | null; seriesSlug: string | null }[];
   /** True on the preview Workers (testing., paris.): drafting and the live preview
-   *  still work, Publish is disabled and a banner says where edits are made.
-   *  The API refuses a publish from a preview regardless; this is the honest UI. */
+   *  still work, Save draft and Publish are disabled and a banner says where edits
+   *  are made. The API refuses a write from a preview regardless; this is the
+   *  honest UI. */
   readOnly?: boolean;
 }) {
   const router = useRouter();
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<'draft' | 'publish' | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState<'draft' | 'publish' | null>(null);
+  // A publish refused with 409 because the live revision moved: when it moved,
+  // and the id to resend with if the operator chooses Publish anyway.
+  const [conflict, setConflict] = useState<{ id: string | null; at: string | null } | null>(null);
   const [query, setQuery] = useState('');
 
   // Title OR series, so "f1" narrows to a championship and "zandvoort" to a
@@ -132,6 +143,21 @@ export function HomeComposer({
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return '';
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  }
+
+  /** "2026-09-07T21:15:30Z" → "7 Sept, 21:15 UTC". UTC on the server and in the
+   *  browser alike, so the hydrated text matches what the server rendered. */
+  function shortDateTime(iso: string): string {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    const text = d.toLocaleString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'UTC',
+    });
+    return `${text} UTC`;
   }
 
   // Serialising the draft into the URL is what triggers the server preview.
@@ -161,39 +187,63 @@ export function HomeComposer({
     push(blocks.map(b => (b.id === 'blog' ? { ...b, pinnedSlug: slug ?? undefined } : b)));
 
   // Compare against what is actually published, not against the last render, so
-  // the button is honest after a reload.
+  // the button is honest after a reload. Save draft compares against the saved
+  // draft instead, or against the live layout when there is none.
   const dirty = useMemo(
     () => JSON.stringify(blocks) !== JSON.stringify(liveBlocks),
     [blocks, liveBlocks],
   );
+  const draftDirty = useMemo(
+    () => JSON.stringify(blocks) !== JSON.stringify(savedDraft?.blocks ?? liveBlocks),
+    [blocks, savedDraft, liveBlocks],
+  );
 
-  async function publish() {
+  // One request shape for both buttons. `base` is the live revision this page
+  // was loaded against; the API refuses a publish when it has moved (409), and
+  // Publish anyway resends with the id the refusal named. A draft carries no base.
+  async function send(action: 'draft' | 'publish', base: string | null) {
     if (busy) return;
-    setBusy(true);
+    setBusy(action);
     setError(null);
-    setSaved(false);
+    setSaved(null);
+    setConflict(null);
     try {
       const res = await fetch('/api/admin/page-layout', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ blocks }),
+        body: JSON.stringify({ blocks, action, base }),
       });
+      if (res.status === 409) {
+        const d = (await res.json().catch(() => ({}))) as {
+          live?: { id?: string; publishedAt?: string } | null;
+        };
+        setConflict({ id: d.live?.id ?? null, at: d.live?.publishedAt ?? null });
+        return;
+      }
       if (!res.ok) {
         const d = (await res.json().catch(() => ({}))) as { error?: string };
         setError(d.error ?? `Failed (${res.status}).`);
         return;
       }
-      setSaved(true);
+      setSaved(action);
+      // Drop the URL draft: the page reopens from the row just written.
+      router.replace('/admin/site', { scroll: false });
       router.refresh();
     } catch {
       setError('Network error. Try again.');
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   }
 
   const rowBtn =
     'flex w-full items-center gap-2 border-b border-border px-2 py-2 text-left text-sm transition-colors duration-(--duration-fast) hover:bg-surface';
+  const primaryBtn =
+    'inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-text disabled:opacity-50';
+  const secondaryBtn =
+    'inline-flex items-center gap-2 border border-border bg-transparent px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text disabled:opacity-50';
+  const quietBtn =
+    'inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text disabled:opacity-50';
 
   return (
     <div className="min-w-0">
@@ -279,27 +329,71 @@ export function HomeComposer({
         )}
       </div>
 
+      {savedDraft && !saved && (
+        <p className="mt-5 text-xs text-text-muted">
+          Editing the draft saved {shortDateTime(savedDraft.at)}. Nothing changes for visitors
+          until you publish.
+        </p>
+      )}
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={publish}
-          disabled={busy || !dirty || readOnly}
-          className="inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-text disabled:opacity-50"
+          onClick={() => send('draft', null)}
+          disabled={busy !== null || !draftDirty || readOnly}
+          className={secondaryBtn}
         >
-          {busy && <Loader2 size={13} className="animate-spin" />}
-          {busy ? 'Publishing…' : dirty ? 'Publish to everyone' : 'Published'}
+          {busy === 'draft' && <Loader2 size={13} className="animate-spin" />}
+          {busy === 'draft' ? 'Saving…' : 'Save draft'}
+        </button>
+        <button
+          type="button"
+          onClick={() => send('publish', liveId)}
+          disabled={busy !== null || !dirty || readOnly}
+          className={primaryBtn}
+        >
+          {busy === 'publish' && <Loader2 size={13} className="animate-spin" />}
+          {busy === 'publish' ? 'Publishing…' : dirty ? 'Publish to everyone' : 'Published'}
         </button>
         {dirty && (
           <button
             type="button"
             onClick={() => router.replace('/admin/site', { scroll: false })}
-            className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text"
+            className={quietBtn}
           >
             <RotateCcw size={13} /> Discard
           </button>
         )}
       </div>
-      {saved && !dirty && (
+      {conflict && (
+        <div className="mt-3 border border-border-strong bg-surface px-3 py-2 text-xs text-text">
+          <p>
+            The home page was published again
+            {conflict.at ? ` at ${shortDateTime(conflict.at)}` : ''}, after you loaded this page.
+            Reload to see it, or publish yours over it.
+          </p>
+          <div className="mt-2 flex gap-4">
+            <button
+              type="button"
+              onClick={() => {
+                router.replace('/admin/site', { scroll: false });
+                router.refresh();
+              }}
+              className={quietBtn}
+            >
+              Reload
+            </button>
+            <button type="button" onClick={() => send('publish', conflict.id)} className={quietBtn}>
+              Publish anyway
+            </button>
+          </div>
+        </div>
+      )}
+      {saved === 'draft' && (
+        <p className="mt-2 text-xs text-text-muted">
+          Draft saved. Nothing changes for visitors until you publish.
+        </p>
+      )}
+      {saved === 'publish' && !dirty && (
         <p className="mt-2 text-xs text-text-muted">
           Live. The home page picks it up within a few minutes.
         </p>

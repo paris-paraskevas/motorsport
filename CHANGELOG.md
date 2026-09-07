@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.32 — 2026-09-08
+
+### Feature — Phase 1 of the designer plan, step 3: drafts, and a publish that checks its base
+
+The home composer could only publish, and a publish overwrote whatever had been published since the page was opened. Field guide §03, rule two (revisions, not overwrites) and the 1.0.25 studio pattern, applied to the first design surface.
+
+- **`POST /api/admin/page-layout`** takes `{ blocks, action: 'draft' | 'publish', base }`. `draft` inserts an unpublished `page_layout` row and does not revalidate. `publish` reads the live revision's id first; if it differs from `base` (the id the composer loaded, or null when nothing was live) the route answers 409 with the live id and writes nothing. That read is deliberately not fail-soft: a version check that cannot read the version refuses. A body without `action` is 400, so the old client shape cannot publish by accident. The insert now returns the new row's id. `page_layout` has no `updated_at`; the live row's id is the version.
+- **`lib/home-layout.ts`**: `loadLiveHomeRevision()` (id, published_at, parsed layout), `loadHomeDraftRevision(live)` (the newest unpublished row saved AFTER the live one; an older draft is history, because publishing inserts and never touches the draft row), `loadHomeLayoutState()`; `loadLiveHomeLayout()` now delegates and keeps its fail-soft default.
+- **`app/(admin)/admin/site/page.tsx`** opens the saved draft when the URL carries no edits, else the live layout; passes `liveId` and `savedDraft` down.
+- **`components/admin/HomeComposer.tsx`**: Save draft (secondary) beside Publish (primary); "Editing the draft saved 7 Sept, 21:15 UTC" when opened on a saved draft; a conflict box on 409 with Reload and Publish anyway (which resends with the live id the refusal named); both buttons disabled when read-only. Times render in UTC on server and client alike so hydration cannot disagree.
+
+**Tests.** `app/api/admin/page-layout/route.test.ts` rewritten around a fake table (8 cases: 404 non-admin, 403 off production, 400 without action, draft inserts unpublished and does not revalidate, publish with a live base inserts and revalidates, stale base → 409 with the live id and no insert, null base honoured both ways, unreadable version → 500 and no insert). `lib/home-layout.test.ts` gains 3 fail-soft read cases behind a mocked client. `npx vitest run` → 123 files, **1562 passed** (from 1554). `tsc` clean; `eslint` 0 errors. A temporary render probe (not committed) confirmed: read-only shows the banner with Save draft and Publish as the two disabled controls; a dirty draft on production has both enabled; opened on a saved draft equal to the edits, Save draft is disabled, Publish enabled and the notice shows; nothing live and no edits reads "Published", disabled.
+
+**Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.31) `Total Upload 41794.24 KiB / gzip 9705.22 KiB`; after `Total Upload 41801.13 KiB / gzip 9707.99 KiB`.
+
+**Not browser-verified**: the composer sits behind the admin session. Morning check on prod: open `/admin/site`, change a band, Save draft, reload (the draft reopens), Publish.
+
 ## 1.0.31 — 2026-09-08
 
 ### Feature — Phase 1 of the designer plan, step 2: the design tables, and the weekly export

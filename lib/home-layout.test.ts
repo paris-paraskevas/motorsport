@@ -1,9 +1,39 @@
-import { describe, it, expect } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
+
+// A fake page_layout table for the read helpers. The two reads are told apart
+// by what they select: the live read asks for published_at, the draft read for
+// created_at. Everything above the reads is pure and never touches this.
+let configured = true;
+let liveResult: { data: unknown; error: { message: string } | null } = { data: null, error: null };
+let draftResult: { data: unknown; error: { message: string } | null } = { data: null, error: null };
+vi.mock('./betting/client', () => ({
+  isBettingConfigured: () => configured,
+  betDb: () => ({
+    from: () => ({
+      select: (columns: string) => {
+        const result = columns.includes('published_at') ? liveResult : draftResult;
+        const q = {
+          eq: () => q,
+          not: () => q,
+          is: () => q,
+          gt: () => q,
+          order: () => q,
+          limit: () => q,
+          maybeSingle: async () => result,
+        };
+        return q;
+      },
+    }),
+  }),
+}));
+
 import {
   parseHomeLayout,
   pinnedLeadSlug,
   visibleBlocks,
   layoutFromParams,
+  loadHomeLayoutState,
+  loadLiveHomeLayout,
   DEFAULT_HOME_LAYOUT,
   HOME_BLOCK_IDS,
   type HomeLayout,
@@ -135,5 +165,43 @@ describe('layoutFromParams', () => {
   it('ignores a hidden id that is not a real block', () => {
     const l = layoutFromParams({ order: 'blog,wire', hidden: 'nonsense' });
     expect(visibleBlocks(l)).toEqual(['blog', 'wire', 'live', 'result']);
+  });
+});
+
+describe('loadHomeLayoutState — fail-soft reads', () => {
+  beforeEach(() => {
+    configured = true;
+    liveResult = { data: null, error: null };
+    draftResult = { data: null, error: null };
+  });
+
+  it('is empty when the database is not configured', async () => {
+    configured = false;
+    expect(await loadHomeLayoutState()).toEqual({ live: null, draft: null });
+    expect(await loadLiveHomeLayout()).toEqual(DEFAULT_HOME_LAYOUT);
+  });
+
+  it('is empty on a query error, and the live layout falls back to the default', async () => {
+    liveResult = { data: null, error: { message: 'boom' } };
+    draftResult = { data: null, error: { message: 'boom' } };
+    expect(await loadHomeLayoutState()).toEqual({ live: null, draft: null });
+    expect(await loadLiveHomeLayout()).toEqual(DEFAULT_HOME_LAYOUT);
+  });
+
+  it('maps the live and draft rows, parsing their blocks defensively', async () => {
+    liveResult = {
+      data: { id: 'a', blocks: [{ id: 'wire' }, { id: 'nope' }], published_at: '2026-09-07T20:00:00Z' },
+      error: null,
+    };
+    draftResult = {
+      data: { id: 'b', blocks: [{ id: 'blog', hidden: true }], created_at: '2026-09-07T21:00:00Z' },
+      error: null,
+    };
+    const state = await loadHomeLayoutState();
+    expect(state.live).toMatchObject({ id: 'a', at: '2026-09-07T20:00:00Z' });
+    expect(state.live?.layout.blocks.map(b => b.id)).toEqual(['wire', 'blog', 'live', 'result']);
+    expect(state.draft).toMatchObject({ id: 'b', at: '2026-09-07T21:00:00Z' });
+    expect(state.draft?.layout.blocks[0]).toMatchObject({ id: 'blog', hidden: true });
+    expect(await loadLiveHomeLayout()).toEqual(state.live?.layout);
   });
 });

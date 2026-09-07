@@ -120,25 +120,78 @@ export function layoutFromParams(params: {
   );
 }
 
+/** One stored revision of the home layout, as the composer and the API see it.
+ *  `at` is `published_at` for the live revision and `created_at` for a draft. */
+export interface HomeRevision {
+  id: string;
+  at: string;
+  layout: HomeLayout;
+}
+
+type RevisionRow = { id: string; blocks: unknown; published_at?: string | null; created_at?: string | null };
+
 /**
- * The live layout for the home page. Returns the default on ANY failure —
- * Supabase unconfigured, table missing (it is created by a migration that ships
- * separately from this code), query error, or a malformed column.
+ * The newest published revision, or null on ANY failure — Supabase unconfigured,
+ * table missing (it is created by a migration that ships separately from this
+ * code), query error, or a malformed column. Its `id` is the version the composer
+ * hands back on publish: the API refuses a publish whose base is no longer the
+ * live revision (Phase 1 of the designer plan, the 1.0.25 studio pattern).
  */
-export async function loadLiveHomeLayout(): Promise<HomeLayout> {
-  if (!isBettingConfigured()) return DEFAULT_HOME_LAYOUT;
+export async function loadLiveHomeRevision(): Promise<HomeRevision | null> {
+  if (!isBettingConfigured()) return null;
   try {
     const { data, error } = await betDb()
       .from('page_layout')
-      .select('blocks')
+      .select('id, blocks, published_at')
       .eq('page_key', HOME_PAGE_KEY)
       .not('published_at', 'is', null)
       .order('published_at', { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (error || !data) return DEFAULT_HOME_LAYOUT;
-    return parseHomeLayout(data.blocks);
+    if (error || !data) return null;
+    const row = data as RevisionRow;
+    return { id: String(row.id), at: String(row.published_at), layout: parseHomeLayout(row.blocks) };
   } catch {
-    return DEFAULT_HOME_LAYOUT;
+    return null;
   }
+}
+
+/**
+ * The draft the composer should open: the newest UNPUBLISHED revision saved after
+ * the live one. A draft older than the live revision is history, not a draft —
+ * publishing inserts a new row and never touches the draft row, so without this
+ * cut-off every publish would resurrect whatever draft preceded it. Null when
+ * there is none, or on any failure.
+ */
+export async function loadHomeDraftRevision(live: HomeRevision | null): Promise<HomeRevision | null> {
+  if (!isBettingConfigured()) return null;
+  try {
+    let query = betDb()
+      .from('page_layout')
+      .select('id, blocks, created_at')
+      .eq('page_key', HOME_PAGE_KEY)
+      .is('published_at', null);
+    if (live) query = query.gt('created_at', live.at);
+    const { data, error } = await query.order('created_at', { ascending: false }).limit(1).maybeSingle();
+    if (error || !data) return null;
+    const row = data as RevisionRow;
+    return { id: String(row.id), at: String(row.created_at), layout: parseHomeLayout(row.blocks) };
+  } catch {
+    return null;
+  }
+}
+
+/** Live and draft together, for the composer page. Fail-soft like its parts. */
+export async function loadHomeLayoutState(): Promise<{ live: HomeRevision | null; draft: HomeRevision | null }> {
+  const live = await loadLiveHomeRevision();
+  const draft = await loadHomeDraftRevision(live);
+  return { live, draft };
+}
+
+/**
+ * The live layout for the home page. Returns the default on ANY failure —
+ * Supabase unconfigured, table missing, query error, or a malformed column.
+ */
+export async function loadLiveHomeLayout(): Promise<HomeLayout> {
+  return (await loadLiveHomeRevision())?.layout ?? DEFAULT_HOME_LAYOUT;
 }
