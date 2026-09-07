@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.24 — 2026-09-07
+
+### Fix — the What's-New banners are re-captured at 2× and served by pixel density
+
+The six `public/whats-new/*-{light,dark}.webp` banners were 848×260 captures encoded at quality 82, 8–13 KB each, displayed at 848 CSS px: on every retina phone and laptop the browser upscaled them 2× and they read as smears (operator, 2026-09-07: "shit quality, ours need to be high definition").
+
+- Re-captured all six surfaces from PROD at deviceScaleFactor 2 (1696×520) with the recipe in `components/whats-new/CardShot.tsx`: Playwright, viewport 848×260, CDP `Emulation.setDeviceMetricsOverride`, `screenshot({ scale: 'device' })`, theme through `localStorage['paddock:theme']`, chrome stripped. Offsets recorded in `SHOTS[].at`; the calendar crop moved to the Italian GP week with today outlined under it (y=505; the old y=876 landed on empty cells above the Azerbaijan band).
+- Encoded with sharp at quality 90: `*@2x.webp` (1696×520, twelve NEW files) and the 1× `*.webp` downscaled from the same capture (twelve, replaced). 779 KB across the 24 files; only the first card's pair loads eagerly.
+- `CardShot.tsx`: a plain `<img>` with `srcSet="… 1x, …@2x 2x"` replaces `next/image unoptimized`, which emits no srcset. The `2x` descriptor is also what keeps `object-none` honest on phones: without it the browser would treat the 1696px file as 1696 CSS px and the phone crop would show a quarter of the image at double size. `loading="eager"` + `fetchPriority="high"` on the first card, lazy on the rest (what `priority`/`loading` did before).
+- The writing card's alt text now describes the lead post as it is (the Monza analysis with a Mercedes photo, not a Zandvoort report).
+
+**Caveat.** The standings crop shows the post-Zandvoort totals (242 · 183 · 183) because `warm-live-data` has not run since 4 Sept (#902). Re-shoot `standings-{light,dark}` once the warmer has written fresh snapshots; the recipe makes that a two-minute job.
+
 ## 1.0.22 — 2026-09-07
 
 ### Content — the full Monza set, five drafts, fact-checked against the FIA's own documents
