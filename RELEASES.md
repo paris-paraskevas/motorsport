@@ -4,6 +4,9 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.25 — 2026-09-07
+
+**The writing desk no longer loses work quietly.** If a post changed on the server after you opened it, saving now stops and says so, with the choice to reload the newer copy or to overwrite it on purpose. The same check warns when a recovered draft is older than what has been saved since.
 ## 1.0.24 — 2026-09-07
 
 **Sharper pictures in the 1.0 announcement.** The six screenshots in the What's New dialog were captured at half the resolution a modern phone or laptop shows, so they looked soft. They are re-taken at full resolution, and each screen now gets the copy that suits it.

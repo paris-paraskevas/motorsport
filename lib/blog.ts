@@ -559,16 +559,30 @@ export interface PostContentPatch {
   heroImage?: string | null;
 }
 
-/** Edit a post's text + cover in place (the /blog/[slug] admin-preview pencil —
- *  spec docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md; hero image
+/** Edit a post's text + cover in place (the /studio/[id] editor — spec
+ *  docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md; hero image
  *  made editable 0.230.0 for social share cards). Slug, series and publish time
  *  stay immutable in this surface. Trims every provided field and enforces the
- *  same limits as createDraft. The UPDATE is status-guarded to 'draft' | 'approved'
- *  with an exact count, so a published or rejected post can never be silently
- *  rewritten — including the race where the publish cron takes an approved post
- *  live mid-edit (the caller maps that domain error to a 422). Returns the
- *  updated post id. */
-export async function updatePostContent(id: string, patch: PostContentPatch): Promise<string> {
+ *  same limits as createDraft. The UPDATE is status-guarded to
+ *  'draft' | 'in_review' | 'approved' with an exact count, so a published or
+ *  rejected post can never be silently rewritten — including the race where the
+ *  publish cron takes an approved post live mid-edit (the caller maps that
+ *  domain error to a 422).
+ *
+ *  `expectedUpdatedAt` is the row's `updated_at` as the editor loaded it. When
+ *  given, the UPDATE is filtered on it too, so a save from an editor that opened
+ *  the post BEFORE someone else (or a script) saved it fails with a "changed
+ *  since" error instead of silently reverting their work — which is what
+ *  happened to the Monza FP3 draft on 2026-09-07 at 07:48:53Z. Omit it to
+ *  overwrite deliberately (the editor's "Save anyway").
+ *
+ *  Returns the id and the new `updated_at`, which the editor sends back on its
+ *  next save. */
+export async function updatePostContent(
+  id: string,
+  patch: PostContentPatch,
+  expectedUpdatedAt?: string | null,
+): Promise<{ id: string; updatedAt: string }> {
   const fields: Record<string, string | null> = {};
   if (patch.title !== undefined) {
     const title = patch.title.trim();
@@ -592,16 +606,25 @@ export async function updatePostContent(id: string, patch: PostContentPatch): Pr
     throw new Error('at least one of title, summary, body, heroImage is required');
   }
 
-  const { error, count } = await betDb()
+  const updatedAt = new Date().toISOString();
+  let q = betDb()
     .from('post')
-    .update({ ...fields, updated_at: new Date().toISOString() }, { count: 'exact' })
-    .eq('id', id)
+    .update({ ...fields, updated_at: updatedAt }, { count: 'exact' })
+    .eq('id', id);
+  if (expectedUpdatedAt) q = q.eq('updated_at', expectedUpdatedAt);
+  const { error, count } = await q
     // in_review included: a submitted piece stays editable while it waits for a
     // decision, which is the whole point of submitting rather than publishing.
     .in('status', ['draft', 'in_review', 'approved']);
   if (error) throw new Error(`updatePostContent failed: ${error.message}`);
-  if (!count) throw new Error('post is not editable (only drafts, submissions and scheduled posts can be edited)');
-  return id;
+  if (!count) {
+    // Zero rows matched. With the version filter on, a newer save is the likely
+    // cause rather than a locked status; the caller tells the two apart with a
+    // read and answers 409 or 422 accordingly.
+    if (expectedUpdatedAt) throw new Error('post changed since it was opened; reload to see the newer copy');
+    throw new Error('post is not editable (only drafts, submissions and scheduled posts can be edited)');
+  }
+  return { id, updatedAt };
 }
 
 /** Submit a draft for review: 'draft' → 'in_review' (the owning writer, or an

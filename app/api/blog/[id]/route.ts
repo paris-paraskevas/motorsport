@@ -152,6 +152,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 // (spec docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md; hero made
 // editable 0.230.0). Validation / status domain errors map to 422, mirroring the
 // handler above.
+//
+// Optimistic concurrency (2026-09-07, after the Monza FP3 draft lost five minutes
+// of out-of-band edits to a stale editor save): the editor may send
+// `expectedUpdatedAt`, the row's updated_at as it loaded it. The UPDATE is then
+// filtered on it; a miss answers 409 with the row's CURRENT updated_at so the
+// editor can say the copy changed and offer a reload or an explicit overwrite
+// (resend without the field). Omitting it keeps the old last-writer-wins.
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
   const { userId } = await auth();
@@ -160,7 +167,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const { id } = await params;
   const gate = await authorizePostActor(id, userId);
   if (gate instanceof NextResponse) return gate;
-  let body: { title?: unknown; summary?: unknown; body?: unknown; heroImage?: unknown };
+  let body: { title?: unknown; summary?: unknown; body?: unknown; heroImage?: unknown; expectedUpdatedAt?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -189,11 +196,27 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return NextResponse.json({ error: `${key} must not be empty` }, { status: 400 });
     }
   }
+  const expectedUpdatedAt =
+    typeof body.expectedUpdatedAt === 'string' && body.expectedUpdatedAt ? body.expectedUpdatedAt : undefined;
   try {
-    await updatePostContent(id, patch);
-    return NextResponse.json({ ok: true });
+    const { updatedAt } = await updatePostContent(id, patch, expectedUpdatedAt);
+    return NextResponse.json({ ok: true, updatedAt });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown';
+    if (/changed since/i.test(message)) {
+      // The version filter also masks a status lock; one read tells them apart.
+      const current = await getPostById(id);
+      if (current && (current.status === 'draft' || current.status === 'in_review' || current.status === 'approved')) {
+        return NextResponse.json(
+          { error: 'This post changed since you opened it.', updatedAt: current.updatedAt },
+          { status: 409 },
+        );
+      }
+      return NextResponse.json(
+        { error: 'post is not editable (only drafts, submissions and scheduled posts can be edited)' },
+        { status: 422 },
+      );
+    }
     const domain = /must be|required|not editable/i.test(message);
     return NextResponse.json({ error: message }, { status: domain ? 422 : 500 });
   }
