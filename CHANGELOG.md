@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.27 — 2026-09-07
+
+### Chore — the data workflows move to the Node 24 majors of their two actions
+
+`actions/checkout@v4` → `@v7` and `actions/setup-node@v4` → `@v7` in `.github/workflows/warm-live-data.yml` and `data-freshness.yml`. Run 34135679278 annotated both v4 actions as targeting the deprecated Node 20 runtime and being forced onto Node 24; both v7 majors declare `runs.using: node24` in their `action.yml`. No behaviour change for these workflows: checkout v7's defaults (shallow clone, no tags) match how they already used it, and the pinned `node-version: 22` for our own script is untouched.
+
+Also: `CLAUDE.md` no longer claims the Supabase PAT is live. It returned 401 on 2026-09-07, as `docs/handoff-archive.md:360` recorded weeks earlier; the note now says to regenerate it or apply migrations through Studio.
+
 ## 1.0.26 — 2026-09-07
 
 ### Fix — the What's-New standings banner shows the post-Monza table
