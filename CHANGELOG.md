@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.25 — 2026-09-07
+
+### Fix — the studio editor can no longer overwrite a newer copy of a post without saying so
+
+**What happened.** On 2026-09-07 the Monza FP3 draft was updated out-of-band at 07:43Z (22-row table, cover, in-article photo, verified in the row); at 07:48:53Z its body reverted to the pre-update text and had to be re-applied. An editor session that had loaded the post before 07:43 saved after it, and `PATCH /api/blog/[id]` was last-writer-wins: `updatePostContent` filtered on `id` and status only, so the stale save went through silently (IDEAS.md, "A save from the draft editor silently overwrote newer server content").
+
+**Fix — optimistic concurrency on the row's `updated_at`.**
+
+- `lib/blog.ts` `updatePostContent(id, patch, expectedUpdatedAt?)`: when the editor sends the `updated_at` it loaded, the UPDATE is filtered on it too (`.eq('updated_at', …)` before the status `.in`). Zero rows with the filter on throws `post changed since it was opened`. Returns `{ id, updatedAt }` so the client carries the new stamp.
+- `app/api/blog/[id]/route.ts` PATCH: accepts `expectedUpdatedAt`; a conflict answers **409** with the row's current `updated_at` (one `getPostById` read tells a real conflict from a status lock, which stays 422); success returns `{ ok, updatedAt }`. Omitting the field keeps the old behaviour, which is what "Save anyway" uses.
+- `components/studio/StudioEditor.tsx`: sends the baseline (the loaded `updatedAt`, or the newer stamp the last save returned, because `router.refresh()` can lag a quick second save); on 409 shows a red banner naming the time the server copy changed, with **Reload the newer copy** (the localStorage backup keeps the unsaved edits and offers them back) and **Save anyway, overwriting it**. The "Unsaved draft found" banner now also says when the recovery snapshot is OLDER than the server's copy and demotes Restore to "Restore them anyway" — the second mechanism the IDEAS entry suspected, guarded in the same change.
+- `app/(app)/studio/[id]/page.tsx` passes `updatedAt` into the editor.
+
+**Tests.** `lib/blog.test.ts`: the mock's inner `eq` is now awaitable AND chainable, so the three-link chain `eq(id) → eq(updated_at) → in(status)` is assertable; three new cases (filter added and stamp returned; no filter when none is sent; zero count with the filter → changed-since). `npx vitest run lib/blog.test.ts` → 42 passed.
+
+**Not done.** Working out which of the two mechanisms bit on the 7th. Both are guarded now, so the distinction stopped mattering.
+
 ## 1.0.22 — 2026-09-07
 
 ### Content — the full Monza set, five drafts, fact-checked against the FIA's own documents

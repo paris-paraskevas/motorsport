@@ -36,6 +36,9 @@ export interface StudioEditorPost {
   originalUrl: string | null;
   status: 'draft' | 'in_review' | 'approved';
   publishAt: string | null;
+  /** The row's `updated_at` as loaded. Sent back on Save so an editor that opened
+   *  the post before a newer save cannot silently overwrite it. */
+  updatedAt: string | null;
 }
 
 const FIELD =
@@ -91,6 +94,12 @@ export function StudioEditor({
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Lost-update guard. `savedAt` is what the last Save returned; the baseline
+  // sent with the next Save is the newer of that and the loaded row (ISO strings
+  // order lexically), because router.refresh() can lag a quick second save.
+  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [conflict, setConflict] = useState<{ updatedAt: string | null } | null>(null);
+  const baseline = savedAt && (!post.updatedAt || savedAt > post.updatedAt) ? savedAt : post.updatedAt;
   const [linkNote, setLinkNote] = useState<string | null>(null);
   // AI heading proposal under review. `from` pins the body it was computed
   // against, so Apply can refuse if the draft changed underneath it.
@@ -128,6 +137,11 @@ export function StudioEditor({
     dirty,
   );
 
+  // A recovery snapshot older than the server's copy means somebody saved after
+  // these edits were typed; restoring would replace that newer text.
+  const snapshotStale =
+    recovered !== null && post.updatedAt !== null && Date.parse(post.updatedAt) > recovered.ts;
+
   function restoreDraft() {
     if (!recovered) return;
     setTitle(recovered.values.title);
@@ -137,7 +151,10 @@ export function StudioEditor({
     discard();
   }
 
-  async function save(e?: FormEvent) {
+  // `force` drops the version check: the author has read the conflict banner and
+  // chosen to overwrite. Every other Save sends `baseline`, and a 409 means the
+  // server's copy moved on after this page loaded.
+  async function save(e?: FormEvent, force = false) {
     e?.preventDefault();
     setBusy(true);
     setError(null);
@@ -145,13 +162,25 @@ export function StudioEditor({
       const res = await fetch(`/api/blog/${post.id}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ title, summary, body, heroImage: hero.trim() || null }),
+        body: JSON.stringify({
+          title,
+          summary,
+          body,
+          heroImage: hero.trim() || null,
+          expectedUpdatedAt: force ? undefined : baseline,
+        }),
       });
-      const d = (await res.json().catch(() => ({}))) as { error?: string };
+      const d = (await res.json().catch(() => ({}))) as { error?: string; updatedAt?: string | null };
+      if (res.status === 409) {
+        setConflict({ updatedAt: d.updatedAt ?? null });
+        return;
+      }
       if (!res.ok) {
         setError(d.error ?? `Failed (${res.status}).`);
         return;
       }
+      setConflict(null);
+      if (d.updatedAt) setSavedAt(d.updatedAt);
       clear(); // the server now holds this; drop the local recovery copy
       router.refresh(); // fresh post props arrive; `dirty` settles false
     } catch {
@@ -260,6 +289,26 @@ export function StudioEditor({
   return (
     <form onSubmit={save} className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-10 lg:items-start">
       <div className="min-w-0 space-y-4">
+        {conflict && (
+          <div className="border border-red-600/60 bg-red-50/60 px-4 py-3 dark:bg-red-950/20">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-red-700 dark:text-red-300">
+              Not saved: this post changed since you opened it
+            </p>
+            <p className="mt-1 text-sm text-text-muted">
+              The server&apos;s copy was saved
+              {conflict.updatedAt ? ` at ${fmtRecoveredAt(Date.parse(conflict.updatedAt))}` : ' after this page loaded'}
+              {' '}by another editor session or a script. Your edits are still here, and backed up in this browser.
+            </p>
+            <div className="mt-3 flex gap-2">
+              <button type="button" onClick={() => window.location.reload()} className={BTN_PRIMARY}>
+                Reload the newer copy
+              </button>
+              <button type="button" onClick={() => save(undefined, true)} disabled={busy} className={BTN_QUIET}>
+                Save anyway, overwriting it
+              </button>
+            </div>
+          </div>
+        )}
         {recovered && (
           <div className="border border-amber-600/60 bg-amber-50/60 px-4 py-3 dark:bg-amber-950/20">
             <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
@@ -267,10 +316,16 @@ export function StudioEditor({
             </p>
             <p className="mt-1 text-sm text-text-muted">
               This browser has changes from {fmtRecoveredAt(recovered.ts)} that were never saved.
+              {snapshotStale && post.updatedAt && (
+                <>
+                  {' '}The saved copy changed at {fmtRecoveredAt(Date.parse(post.updatedAt))}, after these edits
+                  were typed; restoring them replaces that newer text.
+                </>
+              )}
             </p>
             <div className="mt-3 flex gap-2">
-              <button type="button" onClick={restoreDraft} className={BTN_PRIMARY}>
-                Restore them
+              <button type="button" onClick={restoreDraft} className={snapshotStale ? BTN_QUIET : BTN_PRIMARY}>
+                {snapshotStale ? 'Restore them anyway' : 'Restore them'}
               </button>
               <button type="button" onClick={discard} className={BTN_QUIET}>
                 Discard

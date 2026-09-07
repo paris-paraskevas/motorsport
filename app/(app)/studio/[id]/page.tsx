@@ -82,6 +82,7 @@ export default async function StudioPostPage({ params }: { params: Promise<{ id:
           originalUrl: post.originalUrl,
           status: post.status,
           publishAt: post.publishAt,
+          updatedAt: post.updatedAt,
         }}
         admin={admin}
         aiTools={admin || hasDonated(user)}

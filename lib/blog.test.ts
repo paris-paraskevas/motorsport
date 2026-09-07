@@ -56,7 +56,12 @@ vi.mock('./betting/client', () => ({
         return {
           eq: (...eqArgs: unknown[]) => {
             eqMock(...eqArgs);
-            return { in: inMock, eq: eq2Mock };
+            return {
+              in: inMock,
+              // Awaitable (setLearnTopic ends on eq(status)) AND chainable
+              // (updatePostContent's version filter continues to in(status)).
+              eq: (...a: unknown[]) => Object.assign(eq2Mock(...a) as Promise<unknown>, { in: inMock }),
+            };
           },
         };
       },
@@ -163,6 +168,30 @@ describe('updatePostContent', () => {
   it('surfaces DB errors', async () => {
     inMock.mockResolvedValue({ error: { message: 'boom' }, count: null });
     await expect(updatePostContent('id-1', { title: 'T' })).rejects.toThrow(/boom/);
+  });
+
+  // Lost-update guard (2026-09-07): the editor sends the updated_at it loaded and
+  // the UPDATE is filtered on it, so a stale editor cannot silently revert a
+  // newer save — the Monza FP3 draft lost its out-of-band edits that way.
+  it('filters on the loaded updated_at when the caller sends one, and returns the new stamp', async () => {
+    const res = await updatePostContent('id-1', { title: 'T' }, '2026-09-07T07:43:12.000Z');
+    expect(eqMock).toHaveBeenCalledWith('id', 'id-1');
+    expect(eq2Mock).toHaveBeenCalledWith('updated_at', '2026-09-07T07:43:12.000Z');
+    expect(inMock).toHaveBeenCalledWith('status', ['draft', 'in_review', 'approved']);
+    expect(res.id).toBe('id-1');
+    expect(res.updatedAt).toBeTruthy();
+  });
+
+  it('adds no version filter when none is sent', async () => {
+    await updatePostContent('id-1', { title: 'T' });
+    expect(eq2Mock).not.toHaveBeenCalled();
+  });
+
+  it('maps a zero-count update WITH a version filter to a changed-since error', async () => {
+    inMock.mockResolvedValue({ error: null, count: 0 });
+    await expect(
+      updatePostContent('id-1', { title: 'T' }, '2026-09-07T07:43:12.000Z'),
+    ).rejects.toThrow(/changed since/);
   });
 
   // Hero image (0.230.0): editable cover for social share cards. https:// or
