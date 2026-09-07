@@ -6,6 +6,7 @@ import type {
   RaceResult,
 } from '@/lib/types';
 import { fetchF1Standings } from '@/lib/standings/f1';
+import { readCurrentStandings } from '@/lib/standing-rows';
 import { fetchF2Standings } from '@/lib/standings/f2';
 import { fetchF3Standings } from '@/lib/standings/f3';
 import { fetchIndyCarStandings } from '@/lib/standings/indycar';
@@ -342,10 +343,22 @@ function TrendSkeleton() {
   );
 }
 
+// Phase 0 of the designer plan: with DATA_TABLES=on the F1 table comes from the
+// standing_current view (rows the loader wrote under a run id) and falls back to
+// the payload path when no rows exist yet. Off, or unset, is exactly today's
+// path. The flag is an environment variable until Application Settings exist.
+async function loadF1Standings(season: number) {
+  if (process.env.DATA_TABLES === 'on') {
+    const rows = await readCurrentStandings('f1', season);
+    if (rows) return rows;
+  }
+  return fetchF1Standings();
+}
+
 export async function StandingsTab({ series }: { series: Series }) {
   if (series.meta.slug === 'f1') {
     const [data, overrides, races, sprints, resultsOverrides] = await Promise.all([
-      fetchF1Standings(),
+      loadF1Standings(series.meta.season),
       loadStandingsOverrides(series.meta.slug),
       fetchF1SeasonResults(),
       fetchF1SeasonSprints(),

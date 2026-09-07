@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.28 — 2026-09-07
+
+### Feature — Phase 0 of the designer plan: standings as rows with provenance, beside the payloads
+
+The first step of moving the site from one JSON payload per source to structured rows (Paddock Designer Field Guide, sections 03–04). Everything ships fail-soft: until the migration is applied the loader logs a `SKIP` per series and every reader falls back to today's payload path.
+
+- **Migration `supabase/migrations/20260907190000_source_run_and_standing.sql`** (NEW): `source` (self-registered by the loader), `source_run` (started/finished, status running|ok|failed, rows_written, error, runner), `standing` (series, season, kind driver|constructor, class_name, position, name as the feed gives it, code, team, points, wins, `source_run_id` with cascade) and the view `standing_current` = the rows of the newest ok run per source. RLS on, no policies, service role only, like every other table. The run id is the transaction: PostgREST has no multi-request transaction, so a load inserts under a fresh run and marks it ok LAST; readers never see a half-written load and a bad load is rolled back by marking its run failed. Upsert-in-place was rejected (it cannot remove a driver who dropped out).
+- **`lib/standing-rows.ts`** (NEW): `standingRowsFromPayload` (maps `{ drivers, constructors }` and bare `DriverStanding[]`; unknown shapes return null so the caller logs instead of guessing), `writeStandingRun` (loader only), `readCurrentStandings` (the tab shape from the view; `numeric` arrives as a string and is coerced), `latestRuns` (newest run per source, for the console), `pruneStandingRuns` (runs older than 30 days, never the newest ok run of a source). `lib/health-core.ts` now keeps the fetched `value` on OK/LOW results so the loader persists what it already fetched instead of fetching twice.
+- **`scripts/warm-live-data.mts`**: a "standings rows" section after the standings health loop, one run per series under `standings:<slug>`, `runner` = the GitHub run id; prune after a successful write. At the end, if `CRON_SECRET` is in the runner env, it POSTs the refreshed paths to the new **`/api/cron/revalidate`** (cron-auth'd, fail-closed, root-relative paths only, at most 50) so the Worker drops the ISR entries; without the secret it logs `revalidate: skipped` and the pages refresh on their own window. `.github/workflows/warm-live-data.yml` passes `CRON_SECRET` through when the repo secret exists.
+- **`scripts/check-data-freshness.mts`**: after the snapshot check, the row tier: the oldest "newest ok load" across sources fails the check past the same 12-hour threshold; a missing table or no runs yet is reported, not failed.
+- **`components/tabs/StandingsTab.tsx`**: with `DATA_TABLES=on` the F1 table reads `standing_current` and falls back to the payload when no rows exist; unset is exactly today's path. The flag is an environment variable until Application Settings exist (Phase 1).
+- **`/admin/system`**: a "Loads — rows with provenance" panel (newest run per source, rows written, age, failed runs in red) between Freshness and the flags.
+
+**Tests.** `lib/standing-rows.test.ts` (NEW, 10 cases: mapper shapes and dropped rows; run opened, rows inserted, run marked ok last; insert failure marks the run failed; unmapped and unconfigured paths touch nothing; reader grouping and coercion; latest-runs ordering; prune keeps the newest ok run) and `app/api/cron/revalidate/route.test.ts` (NEW, 6 cases: path picking and cap, 503 without a secret, 401 wrong secret, 400 no usable path, one revalidation per valid path). `npx vitest run` on the four touched suites → 52 passed; `tsc` and `eslint` clean.
+
+**Not in this PR.** Applying the migration to prod (operator-named, through the Management API now that the PAT is regenerated), the `CRON_SECRET` repo secret, and switching `DATA_TABLES=on` on the Worker: three operator actions, in that order, each reversible.
+
 ## 1.0.27 — 2026-09-07
 
 ### Chore — the data workflows move to the Node 24 majors of their two actions

@@ -79,6 +79,43 @@ async function check(): Promise<number> {
     return 1;
   }
 
+  // The row tier (Phase 0: source_run + standing). The question is the same
+  // per source: when did its newest OK load finish? The oldest of those answers
+  // for the whole tier. A missing table (migration not applied yet) or no runs
+  // at all is reported, not failed — the snapshot check above already passed.
+  const runs = await betDb()
+    .from('source_run')
+    .select('source_key, finished_at')
+    .eq('status', 'ok')
+    .order('finished_at', { ascending: false })
+    .limit(300);
+  if (runs.error) {
+    console.log(`row tier: not readable (${runs.error.message}); skipping.`);
+  } else {
+    const newest = new Map<string, number>();
+    for (const r of (runs.data ?? []) as { source_key: string; finished_at: string | null }[]) {
+      if (!r.finished_at || newest.has(r.source_key)) continue;
+      newest.set(r.source_key, Date.parse(r.finished_at));
+    }
+    if (newest.size === 0) {
+      console.log('row tier: no loads recorded yet.');
+    } else {
+      let oldestKey = '';
+      let oldestAt = Infinity;
+      for (const [key, at] of newest) if (at < oldestAt) { oldestAt = at; oldestKey = key; }
+      const rowAgeHours = (Date.now() - oldestAt) / 3_600_000;
+      const rowPretty = rowAgeHours < 1 ? `${Math.round(rowAgeHours * 60)} min` : `${rowAgeHours.toFixed(1)} h`;
+      console.log(`row tier: ${newest.size} sources; oldest OK load ${oldestKey} — ${rowPretty} old`);
+      if (rowAgeHours > MAX_AGE_HOURS) {
+        console.error(
+          `FAILED: the row tier for ${oldestKey} is ${rowPretty} old while snapshots are fresh — the loader` +
+            ` is running but its row writes are failing. Check the "standings rows" section of the latest run.`,
+        );
+        return 1;
+      }
+    }
+  }
+
   console.log('OK: data is arriving.');
   return 0;
 }

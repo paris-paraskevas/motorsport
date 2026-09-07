@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { requireAdmin } from '@/lib/admin-guard';
 import { readHealthReport, type HealthReport } from '@/lib/health-store';
 import { getSourceHealth, type SourceHealth } from '@/lib/source-snapshot';
+import { latestRuns, type SourceRunSummary } from '@/lib/standing-rows';
 import { getOpenMarkets, type OpenMarket } from '@/lib/betting/markets';
 import {
   fetchBillableUsage,
@@ -218,9 +219,10 @@ function flagRows() {
 export default async function AdminSystemPage() {
   await requireAdmin();
 
-  const [report, sources, markets, usage, billing] = await Promise.all([
+  const [report, sources, runs, markets, usage, billing] = await Promise.all([
     safe(() => readHealthReport(), null as HealthReport | null),
     safe(() => getSourceHealth(), [] as SourceHealth[]),
+    safe(() => latestRuns(), [] as SourceRunSummary[]),
     safe(() => getOpenMarkets(), [] as OpenMarket[]),
     safe(() => fetchWorkerUsage(30), null as WorkerUsage | null),
     safe(() => fetchBillableUsage(30), null as BillableUsage | null),
@@ -288,6 +290,48 @@ export default async function AdminSystemPage() {
         ) : (
           <FreshnessPanel sources={sources} />
         )}
+      </TelemetryPanel>
+
+      <TelemetryPanel
+        title="Loads — rows with provenance"
+        meta={runs.length ? `${runs.filter(r => r.status !== 'ok').length} failed of ${runs.length}` : undefined}
+        flush
+      >
+        {runs.length === 0 ? (
+          <div className="p-4">
+            <Unavailable note="No loads recorded yet. Rows arrive with the Phase 0 migration (source, source_run, standing); until it is applied the loader writes payloads only." />
+          </div>
+        ) : (
+          <ul className="divide-y divide-border">
+            {runs.slice(0, 16).map(r => (
+              <li key={r.sourceKey} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
+                <span className="min-w-0 truncate font-mono text-xs text-text">{r.sourceKey}</span>
+                <span className="flex shrink-0 items-baseline gap-3">
+                  {r.status !== 'ok' ? (
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-negative">{r.status}</span>
+                  ) : (
+                    <span className="font-mono text-[11px] tabular-nums text-text-faint">{r.rowsWritten} rows</span>
+                  )}
+                  <span
+                    className={`font-mono text-[11px] tabular-nums ${
+                      r.ageMinutes != null && r.ageMinutes > 12 * 60 ? 'text-negative' : 'text-text-faint'
+                    }`}
+                  >
+                    {r.ageMinutes == null
+                      ? 'running'
+                      : r.ageMinutes < 60
+                        ? `${r.ageMinutes}m`
+                        : `${Math.round(r.ageMinutes / 60)}h`}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="border-t border-border px-4 py-2.5 text-xs leading-relaxed text-text-faint">
+          Each row is the newest run per source. A load is visible to readers only once its run is marked ok, so a
+          failed run here means readers still see the previous good load, not a half-written one.
+        </p>
       </TelemetryPanel>
 
       <div className="grid gap-6 lg:grid-cols-2">
