@@ -89,6 +89,7 @@ export function HomeComposer({
   order,
   pinnedSlug,
   posts,
+  readOnly = false,
 }: {
   blocks: HomeBlock[];
   /** What is currently published, so the composer can say whether the draft differs. */
@@ -96,6 +97,10 @@ export function HomeComposer({
   order: HomeBlockId[];
   pinnedSlug: string | null;
   posts: { slug: string; title: string; publishedAt: string | null; seriesSlug: string | null }[];
+  /** True on the preview Workers (testing., paris.): drafting and the live preview
+   *  still work, Publish is disabled and a banner says where edits are made.
+   *  The API refuses a publish from a preview regardless; this is the honest UI. */
+  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -192,6 +197,12 @@ export function HomeComposer({
 
   return (
     <div className="min-w-0">
+      {readOnly && (
+        <p className="mb-4 border border-border-strong bg-surface px-3 py-2 text-xs text-text-muted">
+          Design edits are made on production. This copy of the site is read-only: arrange and
+          preview here, publish on paddock-tracker.com.
+        </p>
+      )}
       <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
         Bands · drag to reorder
       </p>
@@ -272,7 +283,7 @@ export function HomeComposer({
         <button
           type="button"
           onClick={publish}
-          disabled={busy || !dirty}
+          disabled={busy || !dirty || readOnly}
           className="inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-text disabled:opacity-50"
         >
           {busy && <Loader2 size={13} className="animate-spin" />}

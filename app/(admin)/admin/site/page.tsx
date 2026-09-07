@@ -8,6 +8,7 @@ import {
   visibleBlocks,
 } from '@/lib/home-layout';
 import { buildHomeModel } from '@/lib/home-model';
+import { isProductionWorker } from '@/lib/env';
 import { HomeLead } from '@/components/HomeLead';
 import { AdminPageHeader } from '@/components/admin/AdminUI';
 import { HomeComposer } from '@/components/admin/HomeComposer';
@@ -55,6 +56,9 @@ export default async function AdminHomePage({
           liveBlocks={live.blocks}
           order={visibleBlocks(draft)}
           pinnedSlug={pinnedLeadSlug(draft)}
+          // Decided on the server: PADDOCK_ENV is not a NEXT_PUBLIC_ variable, so
+          // the client cannot read it, and the API refuses the publish anyway.
+          readOnly={!isProductionWorker()}
           posts={posts.slice(0, 30).map(p => ({
             slug: p.slug,
             title: p.title,

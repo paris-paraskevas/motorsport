@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
+import { isProductionWorker } from '@/lib/env';
 import { HOME_PAGE_KEY, parseHomeLayout } from '@/lib/home-layout';
 
 export const runtime = 'nodejs';
@@ -10,7 +11,9 @@ export const dynamic = 'force-dynamic';
 
 // POST = publish a new home-page layout revision: { blocks: HomeBlock[] }.
 // Admin-only; 404 for everyone else (the no-existence-oracle shape the other
-// admin routes use — app/api/admin/users/[id]/route.ts:15).
+// admin routes use — app/api/admin/users/[id]/route.ts:15). Production-only;
+// 403 on a preview Worker (lib/env.ts): the three Workers share one database,
+// so a publish from testing. or paris. would change the live home page.
 //
 // The table is APPEND-ONLY (supabase/migrations/20260824120000_page_layout.sql):
 // publishing inserts a new row rather than updating one, so every version the
@@ -23,6 +26,12 @@ export const dynamic = 'force-dynamic';
 // rows can also be written by hand in SQL.
 export async function POST(req: Request) {
   if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isProductionWorker()) {
+    return NextResponse.json(
+      { error: 'Design edits are made on production; this copy of the site is read-only.' },
+      { status: 403 },
+    );
+  }
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
   }
