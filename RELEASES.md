@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.22 — 2026-09-07
+
+**Internal drafting.** The full set of Monza write-ups, one for each practice session plus qualifying and the race report, is written and waiting in the review queue. Nothing is published until it is approved.
+
 ## 1.0.21 — 2026-09-04
 
 **The last of the schedule sweep.** Practice and qualifying for the Fuji six-hour race were up to fifty minutes early, and IMSA's Indianapolis race was starting ten minutes early and finishing twenty minutes late. Every upcoming race weekend on the site has now been checked against the championship's own published timetable, wherever one exists.
