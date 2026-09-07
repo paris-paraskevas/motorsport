@@ -1706,6 +1706,16 @@ Active: (no [+Nm] prefixes given this session)
 
 Active: (no [+Nm] prefixes given this session)
 
+### Tue 2026-09-08 — Phase 0 switched on in prod, Phase 1 begins (session 43, opened late Mon evening)
+
+- Intent 1: the three operator-gated actions. Migration `20260907190000` applied to prod on the operator's word (Management API, information_schema proof pasted); `warm-live-data` dispatched (run 34160583323, ten series `OK n rows`, three multi-class SKIPs as designed); `DATA_TABLES=on` deployed as Worker version 9bf36e7f; browser check of `/series/f1/standings` and a Supabase request-log proof that the rows path is read.
+- Intent 2: the two design questions, one at a time (prod-only designer writes; the database as the audit trail), and the `CRON_SECRET` mismatch (the loader's revalidate nudge gets 401).
+- Intent 3: Phase 1 as PR-sized steps, each with the release trio and `wrangler deploy --dry-run` before and after: (a) `PADDOCK_ENV` + `isProductionWorker()`, `DATA_TABLES` moved into `wrangler.jsonc`, the Worker-size law in CLAUDE.md corrected to the 64 MiB uncompressed limit; (b) the design-tables migration as one idempotent file, applied by the operator before merge, proof in the PR; (c) the layout API grows a draft save and a publish step with the `updated_at` version check.
+- Housekeeping done at open: nav-composer code parked as a local commit on `feat/nav-composer` (operator: keep); the six Monza drafts committed on `content/monza-drafts-final`; this branch `feat/designer-phase-1` off `main` 1.0.29.
+- Won't touch this session: no `git push` unless asked (PR branches when asked are fine); no prod Supabase write beyond the ones the operator names; no post published; no branch deleted without confirmation; the designer UI itself (Phase 2); the multi-class standings mapping (GT World, IMSA, WEC).
+
+Active: (no [+Nm] prefixes given this session)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

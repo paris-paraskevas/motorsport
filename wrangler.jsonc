@@ -46,7 +46,16 @@
   // Action. Unset this and prod data goes non-deterministic again (a colo that
   // isn't blocked returns partial data and overwrites the good cache).
   "vars": {
-    "DATA_SOURCE": "db"
+    "DATA_SOURCE": "db",
+    // Phase 0 of the designer plan: the F1 standings tab reads the `standing_current`
+    // rows and falls back to the payload when they are empty. In this file rather
+    // than the dashboard because `wrangler deploy` (every merge) replaces dashboard
+    // vars: the value the operator set by hand on 2026-09-07 would vanish otherwise.
+    "DATA_TABLES": "on",
+    // Phase 1: the ONLY config that says "production". `isProductionWorker()` in
+    // lib/env.ts gates every design write; the preview configs must never carry it
+    // (they share this database, so a design write from a preview edits the live site).
+    "PADDOCK_ENV": "production"
   },
   // ISR page cache (see open-next.config.ts). Without these the adapter falls
   // back to its "dummy" cache and every request re-renders.

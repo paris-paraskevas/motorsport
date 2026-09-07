@@ -45,6 +45,7 @@ _(Removed 2026-08-28, operator-confirmed: "the home page shows one post on mobil
 _(Removed 2026-09-04: the empty-tab metadata item. **Already fixed in 0.334.88** — `tabIsEmpty()` in `components/SeriesPageView.tsx:60` covers both empty states, and prod confirms it: `/series/nls/standings` serves `noindex, follow` and is out of the sitemap, while `/series/f1/standings` serves `index, follow`.)_
 - **`gt-world` has no era-name handling.** `seriesNameForYear` special-cases F2 and F3 so their pre-rebrand seasons read "GP2 Series" / "GP3 Series", but 2014-2019 GT World pages say "GT World Challenge" when the series was the **Blancpain GT Series** — a name `constructor` already carries for exactly those rows. One `if` in the shape of the existing two.
 - **The footer's first link is labelled "Landing"** and points at `/`, which since 0.334.42 *is* the home page. One word, but a copy call.
+- **`/series/f1/standings` ships a stylesheet link that answers as HTML** (prod, observed 2026-09-07 and reproduced 2026-09-08 00:56 local at 1.0.29): `Refused to apply style from 'https://paddock-tracker.com/_next/static/chunks/0ej-ohiw8omjz.css' because its MIME type ('text/html') is not a supported stylesheet MIME type`. A chunk reference the build no longer serves (the assets directory answers with the 404 page), so a CSS file is missing on that route. Find what emits the link; check whether other routes carry it.
 
 **Content gaps**
 
@@ -56,8 +57,8 @@ _(Removed 2026-09-04: MotoGP 2009 `wins`. Filled with **6** — corroborated by 
 
 **Debt and housekeeping**
 
-- **The Worker bundle has room again — the old figure was alarming and is now wrong.** Re-measured 2026-08-28: **9686.48 KiB gzipped against the 10240 KiB ceiling, 553.5 KiB of headroom**, not the 19.35 KiB this file recorded on 2026-08-24. The OG-card runtime is still ~618 KiB of that (Satori / `resvg.wasm` / embedded Geist), so pre-generating cards at build time remains the biggest single lever — but it is no longer urgent.
-- **`.supabase-pat` is DEAD.** Returns **401 on `GET /v1/projects`**, the simplest endpoint there is, tested 2026-08-28. This file previously recorded the opposite ("NOT dead", corrected 2026-08-21) and that note is now stale in the other direction. It blocks any future Management-API migration. Operator said to leave it; recorded so it is not rediscovered as a mystery.
+_(Superseded 2026-09-08: the Worker-size item. **Cloudflare removed the compressed limit on 2026-09-04**; only uncompressed size counts now, 64 MiB on every plan. Our dry-run reads Total Upload **41704 KiB** against **65536 KiB**, so the bundle has about a third of the ceiling free and the OG-card runtime is no longer a lever worth a session. CLAUDE.md's "at the ceiling" law is corrected in the first Phase 1 PR.)_
+_(Removed 2026-09-08: "`.supabase-pat` is DEAD". The operator regenerated it on 2026-09-07 ("paddock-september", expires 2027-08-31); it applied migration 20260907190000 to prod the same evening. Live.)_
 - **Orphan sweep**: `LandingNav`, `LandingFooter`, `LandingAuth` have zero importers since the landing retirement. Nothing imports them so they cost nothing at runtime.
 - **`content/information/tracks.json` (87.45 KiB gzipped) stays in the Worker** — the RELEASES.md trick does not transfer, because `/information` revalidates hourly and so re-renders where there is no filesystem.
 - **`/series/f1/champions` preloads four Wikimedia portraits it never paints.** Warnings only, but four ~500 KB images fetched for nothing. For the image session.

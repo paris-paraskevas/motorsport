@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.30 — 2026-09-08
+
+### Feature — Phase 1 of the designer plan, step 1: production knows it is production
+
+The three Workers (production, `testing.`, `paris.`) share one Supabase database and nothing in the code could tell them apart, so the home composer's Publish worked from a preview and wrote the live layout. Field guide §03, rule five; the operator confirmed prod-only designer writes on 2026-09-08.
+
+- **`wrangler.jsonc`**: `vars` gains `PADDOCK_ENV: "production"` and `DATA_TABLES: "on"`. The preview configs are untouched, so they stay non-production. `DATA_TABLES` moves here from the dashboard because `wrangler deploy` on every merge replaces dashboard vars (the config has no `keep_vars`); the value the operator set by hand on 2026-09-07 (Worker version 9bf36e7f) would otherwise vanish on this merge.
+- **`lib/env.ts`** (NEW): `isProductionWorker()` is `process.env.PADDOCK_ENV === 'production'`, exact match, so a near-miss cannot unlock writes.
+- **`app/api/admin/page-layout/route.ts`**: after the admin check and before any read or write, a non-production Worker gets 403 with `Design edits are made on production; this copy of the site is read-only.`
+- **`app/(admin)/admin/site/page.tsx`** decides `readOnly={!isProductionWorker()}` on the server (the variable is not `NEXT_PUBLIC_`); **`components/admin/HomeComposer.tsx`** takes the prop, shows the banner and disables Publish. Drafting in the URL and the live preview keep working on a preview Worker.
+- **`CLAUDE.md`**: the Worker-size law rewritten (Cloudflare removed the compressed limits on 2026-09-04; 64 MiB uncompressed on every plan; measured below), the PAT sentence corrected (regenerated 2026-09-07, expires 2027-08-31; the Supabase organisation is on the Free plan with no backups), landmine 10 for `PADDOCK_ENV`.
+- **Records**: `SCHEDULE.md` gains the Tue 2026-09-08 plan; `IDEAS.md` gains the `/series/f1/standings` stylesheet-served-as-HTML finding and retires two stale items (the Worker-headroom figure, the dead PAT).
+
+**Tests.** `lib/env.test.ts` (NEW, 3 cases: exact value, unset, six near-misses) and `app/api/admin/page-layout/route.test.ts` (NEW, 3 cases: 404 for a non-admin whatever the environment; 403 off production with nothing inserted and no revalidation; a published revision with `created_by`, `published_at` and `revalidatePath('/')` on production). `npx vitest run` → 123 files, **1554 passed** (from 1548). `tsc --noEmit` clean; `eslint` 0 errors (the two known `_encoding` warnings); `npm run lockfile:check` clean after `npm version` touched both lockfile version fields. A temporary render probe (not committed) confirmed the read-only composer shows the banner with Publish as its only disabled control, and the production composer shows neither.
+
+**Size.** `wrangler deploy --dry-run` on a fresh `cf:build` each time: before (1.0.29) `Total Upload 41793.71 KiB / gzip 9705.11 KiB`; after `Total Upload 41794.24 KiB / gzip 9705.22 KiB`. The after listing shows `env.DATA_TABLES ("on")` and `env.PADDOCK_ENV ("production")`.
+
+**Prod state changed this session by the operator, recorded here because it is not code.** Migration `20260907190000` applied 2026-09-07 ~20:30Z through the Management API (`source`, `source_run`, `standing`, view `standing_current`); `warm-live-data` run 34160583323 wrote rows for ten series (GT World, IMSA and WEC log `SKIP payload shape not mapped yet`); `DATA_TABLES=on` deployed as version 9bf36e7f at 21:01Z; Supabase's request log shows the first `standing_current` read at 21:15:30Z. Still open: the GitHub `CRON_SECRET` does not match the Worker's, so the loader's revalidate nudge gets 401; the operator is rotating both.
+
 ## 1.0.29 — 2026-09-07
 
 ### Docs — session handoff for 2026-09-07
