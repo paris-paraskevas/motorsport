@@ -23,9 +23,10 @@
 //      live example).
 //
 //   npx tsx --env-file=.env.production.local scripts/warm-live-data.mts
-import { runStandingsHealth } from '../lib/standings-health';
+import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
 import { readSnapshot } from '../lib/source-snapshot';
+import { writeStandingRun, pruneStandingRuns } from '../lib/standing-rows';
 import { betDb } from '../lib/betting/client';
 import { loadSeries } from '../lib/series';
 import { loadCuratedDrivers } from '../lib/series-content';
@@ -72,6 +73,40 @@ function rowsOf(v: unknown): number {
 console.error('=== standings (all series) ===');
 const standings = await runStandingsHealth();
 for (const r of standings) console.error(`  ${r.label.padEnd(14)} ${r.status.padEnd(8)} ${r.rows} rows`);
+
+// Phase 0 of the designer plan: the same payloads as ROWS with provenance
+// (source, source_run, standing — migration 20260907190000). Each series is
+// written under its own run id and the run is marked ok last, so readers of the
+// standing_current view never see a half-written load. Fail-soft per series:
+// an unmapped payload shape or a missing table is a SKIP line, never a failed
+// run — the snapshot proof below stays the gate for this job.
+console.error('=== standings rows (source_run + standing) ===');
+const runner = process.env.GITHUB_RUN_ID ? `warm-live-data#${process.env.GITHUB_RUN_ID}` : 'local';
+let rowsOk = 0;
+const rowsSlugs: string[] = [];
+for (const r of standings) {
+  if (r.status !== 'OK' && r.status !== 'LOW') {
+    console.error(`  ${r.label.padEnd(14)} ${'SKIP'.padEnd(8)} ${r.status.toLowerCase()} upstream`);
+    continue;
+  }
+  const out = await writeStandingRun({
+    sourceKey: `standings:${r.slug}`,
+    label: r.label,
+    series: r.slug,
+    season: HEALTH_SEASON,
+    payload: r.value,
+    runner,
+  });
+  if (out.ok) {
+    rowsOk++;
+    rowsSlugs.push(r.slug);
+  }
+  console.error(`  ${r.label.padEnd(14)} ${(out.ok ? 'OK' : 'SKIP').padEnd(8)} ${out.ok ? `${out.rows} rows` : out.note}`);
+}
+if (rowsOk > 0) {
+  const pruned = await pruneStandingRuns();
+  if (pruned > 0) console.error(`  pruned ${pruned} run${pruned === 1 ? '' : 's'} older than 30 days`);
+}
 
 console.error('=== results (health registry) ===');
 const results = await runResultsHealth();
@@ -201,4 +236,27 @@ if (durable == null || ageMin > 10) {
   process.exit(1);
 }
 console.error(`seeded OK: the DB the site reads was updated by this run.`);
+
+// Nudge the ISR cache for the pages whose data just changed. The Worker's
+// revalidatePath only runs inside the Worker, so this asks /api/cron/revalidate
+// to do it, with the same secret the other cron routes use. Optional: without
+// CRON_SECRET in the runner's env the pages still refresh on their own window
+// (series tabs 1200 s); this only shortens the wait after new data lands.
+if (process.env.CRON_SECRET) {
+  const base = process.env.SITE_URL || 'https://paddock-tracker.com';
+  const okSlugs = standings.filter(s => s.status === 'OK' || s.status === 'LOW').map(s => s.slug);
+  const paths = ['/', ...okSlugs.flatMap(slug => [`/series/${slug}`, `/series/${slug}/standings`])];
+  try {
+    const res = await fetch(`${base}/api/cron/revalidate`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.CRON_SECRET}` },
+      body: JSON.stringify({ paths }),
+    });
+    console.error(`revalidate: HTTP ${res.status} for ${paths.length} paths${rowsSlugs.length ? ` (rows written for ${rowsSlugs.join(', ')})` : ''}`);
+  } catch (err) {
+    console.error(`revalidate: failed — ${err instanceof Error ? err.message : String(err)}`);
+  }
+} else {
+  console.error('revalidate: skipped (CRON_SECRET not in the runner env); pages refresh on their own window.');
+}
 process.exit(sOk + rOk + extraOk > 0 ? 0 : 1);

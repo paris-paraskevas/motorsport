@@ -20,6 +20,9 @@ export interface HealthResult {
   min: number;
   ms: number;
   error?: string;
+  /** The fetched payload itself, so a caller that already paid for the fetch
+   *  (the loader) can persist it as rows without a second, impolite request. */
+  value?: unknown;
 }
 
 export interface Check {
@@ -62,8 +65,8 @@ async function runCheck(c: Check): Promise<HealthResult> {
     const ms = Date.now() - t0;
     const rows = countRows(value);
     if (value == null || rows === 0) return { ...base, status: 'EMPTY', rows, ms };
-    if (rows < c.min) return { ...base, status: 'LOW', rows, ms };
-    return { ...base, status: 'OK', rows, ms };
+    if (rows < c.min) return { ...base, status: 'LOW', rows, ms, value };
+    return { ...base, status: 'OK', rows, ms, value };
   } catch (e) {
     return { ...base, status: 'ERROR', rows: 0, ms: Date.now() - t0, error: e instanceof Error ? e.message : String(e) };
   }
