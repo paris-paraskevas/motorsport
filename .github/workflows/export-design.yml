@@ -1,0 +1,72 @@
+name: Export the design and editorial tables to git
+
+# The database is the source of truth and the audit trail (revisions, never
+# overwrites), but the Supabase organisation is on the Free plan: no backups and
+# no point-in-time recovery (checked 2026-09-07). This job is the off-platform
+# copy: every design and editorial table as JSON, on its own branch.
+#
+# Never main: a bot push there is an unreviewed deploy. Never under content/:
+# that folder ships inside the Worker. The branch `export/design` is written by
+# this job alone and is not meant to be merged; restore = re-insert the JSON,
+# review = git diff on the branch. Operator decision 2026-09-08.
+#
+# The export is deterministic (stable row order, a manifest of counts with no
+# timestamp), so a week with no edits produces no commit.
+
+on:
+  schedule:
+    - cron: '0 4 * * 0' # Sundays 04:00Z
+  workflow_dispatch: {}
+
+concurrency:
+  group: export-design
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # `contents: write` is what pushing the export branch needs. The token cannot
+    # open pull requests, touch settings or reach any other repository.
+    permissions:
+      contents: write
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          # 22+, matching the data workflows: on Node 20 every Supabase call fails
+          # with "detected without native WebSocket support".
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # The export branch lives in a second working tree beside the code, so the
+      # script (from main) writes into the branch's tree. The first run creates
+      # the branch as an orphan: it shares no history with main.
+      - name: Check out the export branch into export-branch/
+        run: |
+          if git fetch --depth=1 origin export/design 2>/dev/null; then
+            git worktree add export-branch FETCH_HEAD
+            git -C export-branch checkout -q -B export/design FETCH_HEAD
+          else
+            git worktree add --orphan -b export/design export-branch
+          fi
+
+      - name: Export every table
+        run: npx tsx scripts/export-design.mts --out export-branch/export
+
+      - name: Commit and push only when something changed
+        working-directory: export-branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add export
+          if git diff --cached --quiet; then
+            echo "No change since the last export."
+            exit 0
+          fi
+          git commit -q -m "export: design and editorial tables, $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push origin HEAD:export/design
