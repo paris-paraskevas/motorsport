@@ -22,6 +22,16 @@ const REST = 'https://api.cloudflare.com/client/v4';
  */
 export const WORKERS_INCLUDED_REQUESTS = 10_000_000;
 
+/**
+ * The production Worker's script name (`name` in wrangler.jsonc). The account
+ * also runs `motorsport-testing` and `motorsport-paris`, so an unfiltered query
+ * sums every Worker on the account and the console's "requests" figure is the
+ * three previews' traffic added to prod's (found by the 2026-09-07 data-API
+ * inventory). Hard-coded rather than read from the environment: the panel is
+ * about production whichever Worker renders it.
+ */
+export const PRODUCTION_SCRIPT_NAME = 'motorsport';
+
 export interface WorkerUsage {
   requests: number;
   errors: number;
@@ -71,9 +81,11 @@ export async function fetchWorkerUsage(days = 30): Promise<WorkerUsage | null> {
 
   const end = new Date();
   const start = new Date(end.getTime() - days * 86_400_000);
-  const query = `query($tag:string!,$start:string!,$end:string!){
+  // `scriptName` restricts the dataset to one Worker; the filter field is the one
+  // Cloudflare's own "Querying Workers Metrics with GraphQL" tutorial uses.
+  const query = `query($tag:string!,$script:string!,$start:string!,$end:string!){
     viewer { accounts(filter:{accountTag:$tag}) {
-      workersInvocationsAdaptive(limit:100, filter:{datetime_geq:$start, datetime_leq:$end}) {
+      workersInvocationsAdaptive(limit:100, filter:{scriptName:$script, datetime_geq:$start, datetime_leq:$end}) {
         sum { requests errors subrequests }
       }
     }}
@@ -85,7 +97,12 @@ export async function fetchWorkerUsage(days = 30): Promise<WorkerUsage | null> {
       headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
       body: JSON.stringify({
         query,
-        variables: { tag: account, start: start.toISOString(), end: end.toISOString() },
+        variables: {
+          tag: account,
+          script: PRODUCTION_SCRIPT_NAME,
+          start: start.toISOString(),
+          end: end.toISOString(),
+        },
       }),
     });
     if (!res.ok) return null;

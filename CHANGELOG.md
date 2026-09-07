@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.33 — 2026-09-08
+
+### Fix — the console's Worker usage counted every Worker on the account
+
+`lib/analytics/cloudflare.ts` queried `workersInvocationsAdaptive` with a date filter only, so the System tab's requests, errors and subrequests were prod plus `motorsport-testing` plus `motorsport-paris`, summed. Found by the 2026-09-07 data-API inventory. The filter now names the script (`scriptName: $script`, the field Cloudflare's own "Querying Workers Metrics with GraphQL" tutorial uses) with `PRODUCTION_SCRIPT_NAME = 'motorsport'`, hard-coded because the panel is about production whichever Worker renders it. **Tests.** `lib/analytics/cloudflare.test.ts` (NEW, 3 cases: the filter and variable carry the script name and the sum is right; multiple rows are summed; null on GraphQL errors, on a non-2xx and when unconfigured without a fetch). Suite 1562 → **1565**. `tsc` and `eslint` clean. `wrangler deploy --dry-run`: `Total Upload 41801.18 KiB / gzip 9708.04 KiB` (from 41801.13 / 9707.99). Not browser-verified: the panel sits behind the admin session; the figure should drop by the previews' share.
+
+Also tonight, prod state changed by this session under the operator's delegation: **`CRON_SECRET` rotated** on the Worker and in GitHub with one generated value, never displayed; the dispatched loader run 34171116946 logged `revalidate: HTTP 200 for 27 paths`, where every earlier run since #907 had logged 401, so the pages now refresh within seconds of a load.
+
 ## 1.0.32 — 2026-09-08
 
 ### Feature — Phase 1 of the designer plan, step 3: drafts, and a publish that checks its base
