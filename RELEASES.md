@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.23 — 2026-09-07
+
+**The automatic data refresh is repaired.** Since Thursday morning the job that keeps standings and results current had been failing to start, so the Formula 1 tables were three days old through the Italian Grand Prix weekend and Monza's result was missing. The cause was a bookkeeping mismatch in how the job installs its tools; it is fixed, and the tables catch up on the first refresh after this release.
+
 ## 1.0.22 — 2026-09-07
 
 **Internal drafting.** The full set of Monza write-ups, one for each practice session plus qualifying and the race report, is written and waiting in the review queue. Nothing is published until it is approved.
