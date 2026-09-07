@@ -6,7 +6,54 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-28 (LATEST, session 40 FINAL — shareability, the season archive, and the outage nobody was told about) — `main` = **0.334.94**, prod verified, zero open PRs, suite **1462**
+## ⚡ Next session pickup — 2026-09-07 (LATEST, session 42 — the designer programme, Phase 0 shipped, the loader outage fixed) — `main` = **1.0.29**, prod verified at 1.0.25+, zero open PRs, suite **1548**
+
+### 🔴 Read first — three operator actions gate the next step, in this order
+
+1. **Apply migration `supabase/migrations/20260907190000_source_run_and_standing.sql` to prod** (`source`, `source_run`, `standing`, view `standing_current`). Merged in #907 (1.0.28) but **NOT applied**: the law says the operator names it. `.supabase-pat` now holds the regenerated token "paddock-september" (verified HTTP 200 on 2026-09-07, expires 2027-08-31); apply through `POST https://api.supabase.com/v1/projects/dzelqrtajnauunzmxfic/database/query` with a browser User-Agent, or Studio. Until then the loader logs `SKIP … relation does not exist` per series and every reader falls back to the payload path.
+2. **Dispatch `warm-live-data`** and confirm the new "standings rows" section logs `OK n rows` per series; `/admin/system` → "Loads — rows with provenance" fills. Optional: add repo secret `CRON_SECRET` (the Worker's value) so the run can call `/api/cron/revalidate`.
+3. **Set `DATA_TABLES=on` on the production Worker** (wrangler var). The F1 standings tab then reads `standing_current` and falls back to the payload when empty. Revert by unsetting.
+
+### The loader outage is over (and this time it is proven)
+`warm-live-data` failed every run from 2026-09-04 11:51Z at `npm ci` (`Missing: @swc/helpers@0.5.23`, the #687/#688 disease again, from 3b4f45b/1.0.9). #902 (1.0.23) regenerated the nested entry under npm 10. Green runs: 34135679278 (14:58Z, F1 standings 34 rows, results 299 rows, every series OK) and 34137280990 (15:14Z, first run on `actions/checkout@v7` + `setup-node@v7`, #906). Prod shows the post-Monza totals (Antonelli 267). Two things the green run still logs, both handled: `www.wrc.com` answers 403 to the runner (fallback used), `motorsportweek.com` 404 twice.
+
+### The plan of record
+- **Field guide** (artifact `6fb2f726-1b9d-4226-bfc4-5cb594b6b124`): every APEX Page Designer and Shared Component with Oracle's definition, Paddock's version, Adopt/Adapt/Skip, the table it needs; §03 database design **after an adversarial review** (one enforced write path per table, run-id swap instead of transactions, ISR plus a revalidate nudge instead of a version-keyed cache, `PADDOCK_ENV` gate for prod-only designer writes, the database as the audit trail with no nightly export to `main`); §04 phases 0–7 with a verification column; §06 the flat list; §07 the Data workspace service by service (verified against vendor docs).
+- **Designer prototype** (artifact `cf8ff9e2-bc1c-4dcc-8239-2e6d3f8da713`, v2.4): APEX Layout schematic, 45-entry shared-components catalogue, declarative dynamic actions that execute in Save and Run, Chrome-DevTools device toolbar, runtime developer toolbar with Quick Edit and Theme Roller, Data workspace with 14 services (tiers: readable now · needs a credential · our own tables; tabs Overview · Breakdowns · Health · Connection). Earlier artifacts were deleted between publishes; quote the current URL.
+- **Open questions for the operator** (answer before Phase 1): prod-only designer writes acceptable? The database as the audit trail, or a weekly export branch? And verify Cloudflare's limits page, which now states a 64 MiB uncompressed Worker size with no compressed limit, against the 10 MiB gzipped ceiling this repo treats as law.
+
+### ✅ Shipped — 8 merges, 1.0.22 → 1.0.29
+
+| Version | PR | What |
+|---|---|---|
+| **1.0.23** | #902 | Lockfile: nested `@swc/helpers@0.5.23` back; `warm-live-data` green again |
+| **1.0.24** | #904 | What's-New banners re-captured at 2× from prod, served by `srcSet`; calendar crop on the Italian GP week |
+| **1.0.25** | #903 | Studio lost-update guard: `updated_at` version check, 409 on a stale save, conflict banner (Reload / Save anyway), stale recovery snapshot flagged |
+| **1.0.26** | #905 | Standings banner re-shot with the post-Monza table |
+| **1.0.27** | #906 | `actions/checkout@v7` + `setup-node@v7`; CLAUDE.md no longer claims the PAT is live |
+| **1.0.28** | #907 | **Phase 0**: `source` · `source_run` · `standing` · `standing_current`; loader writes one run per series (ok marked last); `/api/cron/revalidate`; freshness row-tier check; `DATA_TABLES` flag on the F1 tab; Loads panel. 16 new tests |
+| **1.0.29** | this | Handoff, schedule and ideas ledger |
+
+Also today, before the designer work: the six Monza posts (FP1, FP2, FP3, qualifying, race, long runs) written in the operator's voice with full 22-row linked tables and 2026 Commons covers; five published by the operator, the race report in review.
+
+### Findings from the three background reviews (adversarial plan review · repo audit · data-API inventory)
+- The store the code calls **"KV" is Upstash Redis** over REST, not Cloudflare KV (no `kv_namespaces`). Cloudflare's KV analytics do not apply; Upstash's developer API does.
+- `lib/analytics/cloudflare.ts:76` sums **every Worker on the account** (prod + three previews); add a `scriptName` filter. The Traffic tab's Cloudflare panel is a hard-coded placeholder. The `billable-usage` endpoint is now marked deprecated in Cloudflare's reference.
+- **Thirteen in-Worker crons**; `warm-results` and `warm-sessions` write KV keys the loader also writes: named exceptions to fold into the loader (Phase 5). **Sessions are still fetched from the 15 ICS feeds at render, on the Worker.**
+- `page_layout` publishes on every save; the draft branch of its schema is unused. Migrations are applied by hand; `supabase/README.md` is stale.
+- Phase 3's content migration is bigger than first written: 13 loaders, 22 files per series, 78 answers, 788 generated entries.
+- GSC and GA4 **are** wired (`lib/analytics/{gsc,ga4}.ts`, service accounts); an earlier prototype card said otherwise and was corrected.
+
+### Next session, flat
+1. Operator: the three actions above. Then browser-check `/series/f1/standings` with the flag on and the Loads panel on `/admin/system`.
+2. Phase 1: `PADDOCK_ENV` + `isProductionWorker()`; the design-tables migration (one idempotent file: application, page, page_group, page_revision with schema_version and the refs projection, list, list_entry, theme, setting, build_option, authz_scheme, text_message, shortcut, asset, redirect); layout API draft save + publish with the version check. Quote `wrangler deploy --dry-run` before and after.
+3. Prototype: select lists in the property editor for long enumerations; keep fixing any dead control the operator reports.
+4. Data: the `scriptName` filter; wire the real Traffic/System fetchers into the prototype's per-service structure, or start `/admin/data`.
+5. Housekeeping: the six merged remote branches can be deleted once confirmed; the main working copy sits on `feat/nav-composer` with an uncommitted, superseded NavComposer plus IDEAS.md annotations that this PR supersedes (operator decides keep or discard). Worktrees: `../Motorsport-editor` (this branch), `../Motorsport-shots`, `../Motorsport-lockfix`, with `node_modules` junctioned into the first two.
+
+---
+
+## Next session pickup — 2026-08-28 (session 40 FINAL — shareability, the season archive, and the outage nobody was told about) — `main` = **0.334.94**, prod verified, zero open PRs, suite **1462**
 
 **Read `docs/next-session.md` next.** It is the ordered queue and it opens with the one red item.
 
