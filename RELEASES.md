@@ -7,6 +7,12 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 ## 1.0.25 — 2026-09-07
 
 **The writing desk no longer loses work quietly.** If a post changed on the server after you opened it, saving now stops and says so, with the choice to reload the newer copy or to overwrite it on purpose. The same check warns when a recovered draft is older than what has been saved since.
+## 1.0.24 — 2026-09-07
+
+**Sharper pictures in the 1.0 announcement.** The six screenshots in the What's New dialog were captured at half the resolution a modern phone or laptop shows, so they looked soft. They are re-taken at full resolution, and each screen now gets the copy that suits it.
+## 1.0.23 — 2026-09-07
+
+**The automatic data refresh is repaired.** Since Thursday morning the job that keeps standings and results current had been failing to start, so the Formula 1 tables were three days old through the Italian Grand Prix weekend and Monza's result was missing. The cause was a bookkeeping mismatch in how the job installs its tools; it is fixed, and the tables catch up on the first refresh after this release.
 
 ## 1.0.22 — 2026-09-07
 

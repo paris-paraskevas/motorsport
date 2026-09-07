@@ -20,6 +20,37 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 **Tests.** `lib/blog.test.ts`: the mock's inner `eq` is now awaitable AND chainable, so the three-link chain `eq(id) → eq(updated_at) → in(status)` is assertable; three new cases (filter added and stamp returned; no filter when none is sent; zero count with the filter → changed-since). `npx vitest run lib/blog.test.ts` → 42 passed.
 
 **Not done.** Working out which of the two mechanisms bit on the 7th. Both are guarded now, so the distinction stopped mattering.
+## 1.0.24 — 2026-09-07
+
+### Fix — the What's-New banners are re-captured at 2× and served by pixel density
+
+The six `public/whats-new/*-{light,dark}.webp` banners were 848×260 captures encoded at quality 82, 8–13 KB each, displayed at 848 CSS px: on every retina phone and laptop the browser upscaled them 2× and they read as smears (operator, 2026-09-07: "shit quality, ours need to be high definition").
+
+- Re-captured all six surfaces from PROD at deviceScaleFactor 2 (1696×520) with the recipe in `components/whats-new/CardShot.tsx`: Playwright, viewport 848×260, CDP `Emulation.setDeviceMetricsOverride`, `screenshot({ scale: 'device' })`, theme through `localStorage['paddock:theme']`, chrome stripped. Offsets recorded in `SHOTS[].at`; the calendar crop moved to the Italian GP week with today outlined under it (y=505; the old y=876 landed on empty cells above the Azerbaijan band).
+- Encoded with sharp at quality 90: `*@2x.webp` (1696×520, twelve NEW files) and the 1× `*.webp` downscaled from the same capture (twelve, replaced). 779 KB across the 24 files; only the first card's pair loads eagerly.
+- `CardShot.tsx`: a plain `<img>` with `srcSet="… 1x, …@2x 2x"` replaces `next/image unoptimized`, which emits no srcset. The `2x` descriptor is also what keeps `object-none` honest on phones: without it the browser would treat the 1696px file as 1696 CSS px and the phone crop would show a quarter of the image at double size. `loading="eager"` + `fetchPriority="high"` on the first card, lazy on the rest (what `priority`/`loading` did before).
+- The writing card's alt text now describes the lead post as it is (the Monza analysis with a Mercedes photo, not a Zandvoort report).
+
+**Caveat.** The standings crop shows the post-Zandvoort totals (242 · 183 · 183) because `warm-live-data` has not run since 4 Sept (#902). Re-shoot `standings-{light,dark}` once the warmer has written fresh snapshots; the recipe makes that a two-minute job.
+## 1.0.23 — 2026-09-07
+
+### Fix — `warm-live-data` had not run since 4 Sept 11:51Z; the lockfile was missing one nested entry
+
+`.github/workflows/warm-live-data.yml` failed at `npm ci` on every scheduled run from 2026-09-04 11:51Z (last success 06:41Z that morning) through today (latest: run 34108117084 at 09:48Z) with
+
+```
+npm error Missing: @swc/helpers@0.5.23 from lock file
+```
+
+**Cause.** 3b4f45b (1.0.9) regenerated `package-lock.json` with npm 11, which omits the nested `node_modules/@serwist/turbopack/node_modules/@swc/helpers` (0.5.23) entry that npm 10 in CI requires. npm 11 tolerates the gap, so nothing failed on a laptop. The lock's root `version` had also been left at 1.0.8 while `package.json` moved on.
+
+**Effect.** The warmer is the only writer of the site's data (`scripts/warm-live-data.mts`; the Worker runs `DATA_SOURCE=db`), so prod served snapshots frozen at 4 Sept 06:41Z through the whole Italian Grand Prix weekend: the F1 standings still showed post-Zandvoort totals a day after Monza and the Monza result was absent from the results tabs. The calendar was unaffected (curated sidecars, audited separately).
+
+**Fix.** Regenerated with `npx npm@10 install --package-lock-only`. The diff is that single nested entry plus the lock's root version catching up to `package.json`.
+
+**Verification.** `npx npm@10 ci --dry-run --ignore-scripts` (what `npm run lockfile:check` runs, minus the husky prepare hook that a bare worktree lacks) exits 0 on this branch; on `main` it exits 1 with the Missing line. The real proof is the first scheduled run after merge writing fresh snapshots: watch the Actions run and the standings' written-at timestamp.
+
+**Follow-up (not done here).** `npm run lockfile:check` already exists; it is not run anywhere in CI. A pull-request step running it would have caught this on 1.0.9's PR. The outage only surfaced because the designer prototype's Data view listed snapshot ages.
 
 ## 1.0.22 — 2026-09-07
 
