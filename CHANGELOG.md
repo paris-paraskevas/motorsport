@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.26 — 2026-09-07
+
+### Fix — the What's-New standings banner shows the post-Monza table
+
+`public/whats-new/standings-{light,dark}.webp` and their `@2x` pairs re-captured from prod after `warm-live-data` run 34135679278 (the first green run since the #902 lockfile fix) refreshed the standings, so the banner now shows Antonelli 267 · Russell 201 · Hamilton 191 instead of the frozen post-Zandvoort totals. Same recipe, viewport and offset as 1.0.24 (`components/whats-new/CardShot.tsx`). Closes the caveat recorded in 1.0.24.
+
 ## 1.0.25 — 2026-09-07
 
 ### Fix — the studio editor can no longer overwrite a newer copy of a post without saying so
