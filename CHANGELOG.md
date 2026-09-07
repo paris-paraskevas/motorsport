@@ -4,6 +4,42 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.22 — 2026-09-07
+
+### Content — the full Monza set, five drafts, fact-checked against the FIA's own documents
+
+Five `drafts/*.md` for the review queue: FP1, FP2, FP3, qualifying and the race report. Per the Blog SOP these are files, **not** DB writes and **not** public MDX; the operator runs the insert and schedules in `/blog`.
+
+**The home page is showing an 11-day-old Dutch GP lead because nothing has been published since 21 August.** Friday's Monza preview was never inserted and is now dead as a preview. This set is what replaces it.
+
+#### Grounding
+
+Practice classifications from **OpenF1** (session keys 11354/11355/11356), which is what the site's own session pages read; Ergast and Jolpica carry no practice data. Qualifying, race and standings from the same upstream the results layer reads. Antonelli's seven wins counted from our own season results rather than a press summary.
+
+As a by-product, **OpenF1's session start times independently confirmed Friday's schedule fix**: Practice 1 at `10:30Z`, Practice 2 at `14:00Z`.
+
+#### What reading the FIA documents changed
+
+The drafts were written first from reports, then checked against the primary documents, and the documents moved five things:
+
+- **Lawson and Alonso started from the PIT LANE**, not from grid slots 22 and 21. Ergast-derived feeds record a pit-lane start as an ordinary slot, so the feed is misleading and two drafts had it wrong. Doc 59, Final Starting Grid.
+- **The penalties are specific**: Antonelli 30 places, Albon 20, Lawson 35 and then the pit lane, all for power unit elements; Alonso the pit lane for parc ferme work.
+- **Piastri's three-place drop was for impeding Lawson at Turn 2**, and Doc 47 records the stewards accepting he "had, at this stage, no other options available" and applying the standard penalty anyway. That is now its own section rather than a shrug about the grid shuffling.
+- **Audi have lodged a notice of intention to appeal the Tsunoda decision, which is not an appeal.** It buys 96 hours to decide whether to file. An earlier draft said they had appealed. Doc 69 also gave the stewards' actual reasoning to quote instead of a paraphrase.
+- **Antonelli set the fastest lap of the race**, 1:23.504 on lap 53, from Doc 70. Nothing in the reports mentioned it.
+
+#### What the fact-check caught in my own writing
+
+Recorded because they were all plausible and all wrong: Leclerc was said to have gone out on the **opening** lap when he completed one and crashed on the second (three places); Ferrari's FP1 one-two was said to have become "fourth and sixth on the grid" when it was third and fourth; FP3's top eight was said to span six teams when it spans five; Antonelli was called a **nineteen**-year-old when he turned twenty on 25 August, which our own published Dutch preview says; and his Q2 lap was called the fastest of the session when Gasly's pole beat it by 0.096s.
+
+#### Verification
+
+Every figure in every table was audited **mechanically** against its source, not eyeballed: names, times, gaps, grid slots, lap counts, points and the championship table all match, along with fifteen lead-lap finishers, three retirements and a 66-point lead. The only differences the audit reports are formatting, `+1.02` in OpenF1 against `+1.020` in the drafts, three decimals being the convention the published posts already use.
+
+All **80 internal links** resolve on prod and all **8 outbound links** return 200. Zero em or en dashes, zero AI-tell phrases, every draft inside its caps with `publishAt` null.
+
+**NOTED (not done):** `content/series/f1/drivers.json` still carries the pre-injury line-up. Monza ran Verstappen and Lawson at Red Bull with Tsunoda alongside Lindblad at Racing Bulls, so **Tsunoda scored a point and has no `/drivers` page**. He is named without a link in all five drafts. The FP1 rookies Aron, Browning and Iwasa are 404 for the same reason.
+
 ## 1.0.21 — 2026-09-04
 
 ### Fixed — WEC at Fuji and IMSA at Indianapolis, closing the feedless sweep
