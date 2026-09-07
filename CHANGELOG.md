@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.29 — 2026-09-07
+
+### Docs — session handoff for 2026-09-07
+
+`docs/HANDOFF.md` gains the 2026-09-07 pickup section at the top (the three operator actions that gate Phase 0, the proven end of the loader outage, the plan of record with both artifact ids, the eight merges of the day, the findings from the adversarial review, the repo audit and the data-API inventory, and the flat next-session list); the 2026-08-28 section loses its LATEST marker. `SCHEDULE.md` gets the day's entry with done / partial / skipped outcomes. `IDEAS.md`'s DREAM section records that the console became a programme with Supabase as the store, what Phase 0 shipped, the follow-ups the reviews surfaced and the four bugs fixed today. No code.
+
 ## 1.0.28 — 2026-09-07
 
 ### Feature — Phase 0 of the designer plan: standings as rows with provenance, beside the payloads

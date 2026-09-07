@@ -133,6 +133,18 @@ Not scheduled. Recorded because it is the direction, and because three pieces of
 - **ISR.** `/app` is `revalidate = 300` and deliberately identical for every visitor — `app/(app)/app/page.tsx` says so, and that sameness is what makes it cacheable. Operator-chosen ordering has to come from a config the *server* reads at render (KV or a Supabase row), never from per-user state, or the page stops being cacheable and the landing-stall class of bug returns.
 - **Learn content lives in files, not a database.** `content/` markdown is the source of truth and `/information` **memoises its registry per process**, so an edit needs a deliberate invalidation path (a CLAUDE.md landmine: a content edit currently needs a dev restart to surface). Editing live means either committing to the repo from the UI or moving that content into Supabase. That is the fork in the road and it should be decided before any code.
 
+**Update 2026-09-07 — the DREAM became a programme, and the fork was taken: Supabase.** The operator's direction is an Oracle-APEX-style Page Designer that edits Paddock from database rows, with no AI in the design path ("I'll use AI for research for articles but not for site design"). Plan of record: the **Paddock Designer Field Guide** artifact (`6fb2f726-1b9d-4226-bfc4-5cb594b6b124`), sections 03–07: one enforced write path per table (updated_at checks for design rows, run-id swap for data rows), revisions not overwrites, provenance on every load, ISR plus a `/api/cron/revalidate` nudge, `PADDOCK_ENV` so previews cannot write, the database as the audit trail. Prototype: artifact `cf8ff9e2-bc1c-4dcc-8239-2e6d3f8da713` (v2.4). **Phase 0 shipped in #907 (1.0.28)**: `source` · `source_run` · `standing` · view `standing_current`; the loader writes one run per series; the F1 standings tab reads rows behind `DATA_TABLES=on`; the migration awaits the operator naming it. Phase 1 (design tables, the environment gate, draft/publish with a version check) is next.
+
+Follow-ups the reviews surfaced, none started:
+- `lib/analytics/cloudflare.ts:76` sums every Worker on the account (prod plus three previews): add `scriptName: "motorsport"`. The Traffic tab's Cloudflare panel (`app/(admin)/admin/traffic/page.tsx:218-220`) is a placeholder with no fetcher. The `billable-usage` endpoint is marked deprecated; re-verify the replacement.
+- The store the code calls KV is Upstash Redis; its developer API (new key) gives throughput, latency and monthly totals.
+- Tables nothing records today: `push_send` (per-send status), `indexnow_submission`, `upstream_request` (per-request outcome and latency from the loader), Clerk daily snapshots or `session.created` webhooks for sign-in history.
+- `www.wrc.com` answers 403 to GitHub's runners (the WRC standings fallback is in use); `motorsportweek.com` 404s twice per run.
+- Cloudflare's limits page now states a 64 MiB uncompressed Worker size with no compressed limit; verify against the 10 MiB gzipped ceiling before either is trusted.
+- The two in-Worker data crons (`warm-results`, `warm-sessions`) and the render-time ICS fetches move into the loader in Phase 5.
+
+Fixed today, from the 2026-09-07 bug list: the loader lockfile outage (#902), the What's-New banner quality (#904, #905), the studio lost update (#903), the deprecated Actions runtimes (#906).
+
 ## Parked (might do — revisit trigger)
 
 - **Results / standings / rounds body rework** — 0.314.0 kept their table bodies deliberately; **revisit only as a fresh operator ask**.
