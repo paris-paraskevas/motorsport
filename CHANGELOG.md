@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.36 — 2026-09-08
+
+### Docs — migration 20260908090000 applied to prod, and the first export run
+
+The operator named it in the morning ("apply 20260908090000"); applied through the Management API at ~06:30Z, `HTTP 201`, `[]`, the file's blob identical to `main`'s. **Proof, same endpoint:** all fifteen tables present with RLS on (`application` 13 columns, `asset` 13, `authz_scheme` 7, `build_option` 5, `list` 5, `list_entry` 10, `page` 16, `page_group` 5, `page_revision` 8, `page_revision_ref` 7, `redirect` 6, `setting` 6, `shortcut` 4, `text_message` 5, `theme` 6); **anon and authenticated hold no privilege on any of them** (the explicit revoke worked, unlike every earlier table); service_role holds all seven on each; the thirteen `*_updated_at` triggers and `design_set_updated_at()` (plpgsql) exist; the five non-key indexes exist (`page_revision_live_idx`, `page_revision_newest_idx`, `page_revision_ref_uniq`, `list_entry_order_idx`, `theme_one_default_idx`); seeds: `application` 1, `page_group` 6 (home, calendar, series, editorial, account, site), `authz_scheme` 4 (administrator, contributor, public, signed_in), `build_option` 4, all `include`.
+
+**First export.** `export-design` run 34195192063 dispatched right after: 18 tables written (the fifteen, empty but for the seeds, plus `page_layout` 3 rows, `post` 34, `author` 3), branch `export/design` created as an orphan with commit `8addfe4 export: design and editorial tables, 2026-09-08T06:34Z`, nineteen files under `export/` including the manifest. Sundays 04:00Z from here on; a week without edits commits nothing.
+
+`docs/HANDOFF.md`: morning action 1 marked done.
+
 ## 1.0.35 — 2026-09-08
 
 ### Docs — session records for the night shift of 2026-09-07/08
