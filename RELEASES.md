@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.61 — 2026-09-08
+
+**Who sees what, in the menus too.** A link in the header, the phone bar or the footer that is meant for signed-in readers, or for writers, now shows only to them; everyone else sees the site without it. The people who run the site can also add rules of their own, such as "an account with this role" or "an email at this domain", and remove them again.
+
 ## 1.0.60 — 2026-09-08
 
 **Pages made in the design tool now go live.** A page built by the people who run the site is served at its own address the moment it is published, in the site's usual look: its text, photos with their credits, and link lists, laid out as designed. Such a page stays out of search engines until it is marked ready, and one meant for signed-in readers asks you to sign in.

@@ -17,6 +17,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { isActivePath, resolveDestination, type NavEntry } from '@/lib/design/destinations';
+import type { AuthzScheme } from '@/lib/design/authz-defaults';
+import { useVisibleEntries } from './useVisitor';
 
 // The doors on phones (design handoff §2, panel 8b): equal cells, hairline
 // dividers, a 2px accent rule across the active cell's top. The bar NEVER
@@ -45,16 +47,28 @@ const ICONS: Record<string, LucideIcon> = {
 };
 export const BAR_ICON_NAMES = Object.keys(ICONS);
 
-export function BottomBar({ entries, preview = false }: { entries: NavEntry[]; preview?: boolean }) {
+// An entry asking for an authorization scheme shows only to a visitor who
+// passes it (Phase 3 step 4); with no schemes given (the designer's preview)
+// every entry shows.
+export function BottomBar({
+  entries,
+  schemes,
+  preview = false,
+}: {
+  entries: NavEntry[];
+  schemes?: readonly AuthzScheme[];
+  preview?: boolean;
+}) {
   const pathname = usePathname();
   // The signed-in user's picture on the Account cell (falls back to the
   // generic icon when signed-out). Clerk is already mounted by the (app)
   // layout, so this adds no new SDK cost.
   const { isSignedIn } = useAuth();
   const { user } = useUser();
+  const visible = useVisibleEntries(entries, schemes);
 
   const cells: { entry: NavEntry; href: string }[] = [];
-  for (const entry of entries) {
+  for (const entry of visible) {
     const dest = resolveDestination(entry.dest);
     if (dest && dest.kind === 'route') cells.push({ entry, href: dest.href });
   }
