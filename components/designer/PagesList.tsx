@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import { PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
 import type { PageRow } from '@/lib/design/pages';
 import { CreatePageDialog } from './CreatePageDialog';
+import type { PageFilter } from './Rails';
 
 // The App Builder's first screen (Phase 3 steps 1 and 2a): every page the site
 // serves, by group. A code page shows the facts its row carries and nothing
@@ -28,26 +29,34 @@ const PBTN =
 
 export function PagesList({
   pages,
+  filter = 'all',
   readOnly,
   onOpen,
   onCreated,
 }: {
   pages: PageRow[];
+  /** From the rail: every page, the operator's own, or one group. */
+  filter?: PageFilter;
   readOnly: boolean;
   onOpen: (id: string) => void;
   onCreated: (page: PageRow) => void;
 }) {
   const [creating, setCreating] = useState(false);
 
-  const groups: (PageGroup | null)[] = [...PAGE_GROUPS, null];
+  const groups: (PageGroup | null)[] = filter === 'all' || filter === 'row' ? [...PAGE_GROUPS, null] : [filter];
+  const shown = (p: PageRow) => (filter === 'row' ? p.kind === 'row' : true);
   const codeCount = pages.filter(p => p.kind === 'code').length;
   const rowCount = pages.length - codeCount;
   const unseeded = pages.filter(p => p.kind === 'code' && p.updatedAt === null).length;
+  const filterLabel = filter === 'all' ? null : filter === 'row' ? 'Your pages' : PAGE_GROUP_LABELS[filter];
 
   return (
     <div>
       <div className="mb-1 flex items-start justify-between gap-4">
-        <h2 className="m-0 text-20 font-bold text-text">Pages</h2>
+        <h2 className="m-0 text-20 font-bold text-text">
+          Pages
+          {filterLabel && <span className="ml-2 font-mono text-11 font-normal uppercase tracking-[0.14em] text-text-faint">· {filterLabel}</span>}
+        </h2>
         {!readOnly && (
           <button type="button" className={TB_PRIMARY} onClick={() => setCreating(true)}>
             <Plus size={13} /> Create page
@@ -63,8 +72,13 @@ export function PagesList({
         {unseeded > 0 ? ` ${unseeded} code page${unseeded === 1 ? ' has' : 's have'} no row yet on this database.` : ''}
       </p>
 
+      {filter === 'row' && rowCount === 0 && (
+        <p className="mb-4 border border-dashed border-border px-3 py-4 text-12 text-text-faint">
+          No page of your own yet. Create page starts one from a template.
+        </p>
+      )}
       {groups.map(g => {
-        const rows = pages.filter(p => p.group === g);
+        const rows = pages.filter(p => p.group === g && shown(p));
         if (rows.length === 0) return null;
         return (
           <section key={g ?? 'ungrouped'} className="mb-4 border border-border-strong bg-surface">

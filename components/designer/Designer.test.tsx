@@ -157,6 +157,28 @@ describe('Designer keeps the selection in the URL', () => {
     expect(screen.getByRole('button', { name: 'Open Monza, a history' })).toBeTruthy();
   });
 
+  it('the Shared Components rail has a search field that narrows the catalogue, and the App Builder rail filters the pages by group', () => {
+    render(<Designer readOnly={false} who="Test · Administrator · production" initialPages={pagesFromCode()} {...loaded} />);
+    const rail = screen.getByRole('navigation', { name: 'Shared components' });
+    expect(within(rail).getByRole('button', { name: /Build Options/ })).toBeTruthy();
+    fireEvent.change(within(rail).getByLabelText('Find a component'), { target: { value: 'theme' } });
+    expect(within(rail).getByRole('button', { name: /Themes/ })).toBeTruthy();
+    expect(within(rail).queryByRole('button', { name: /Build Options/ })).toBeNull();
+    fireEvent.change(within(rail).getByLabelText('Find a component'), { target: { value: 'zzz' } });
+    expect(within(rail).getByText('Nothing in the catalogue matches.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'App Builder' }));
+    const pagesRail = screen.getByRole('navigation', { name: 'Pages' });
+    expect(within(pagesRail).getByText('Every page the site serves, by group. Yours are served from a revision.')).toBeTruthy();
+    fireEvent.click(within(pagesRail).getByRole('button', { name: /^Editorial/ }));
+    expect(screen.getByText('· Editorial')).toBeTruthy();
+    expect(screen.getByText('/blog')).toBeTruthy();
+    expect(screen.queryByText('/calendar')).toBeNull();
+    fireEvent.click(within(pagesRail).getByRole('button', { name: /^Your pages/ }));
+    expect(screen.getByText('No page of your own yet. Create page starts one from a template.')).toBeTruthy();
+    fireEvent.click(within(pagesRail).getByRole('button', { name: /^All pages/ }));
+    expect(screen.getByText('/calendar')).toBeTruthy();
+  });
+
   it('Create page opens the dialog: a template is chosen, then the page is named; a code-owned path is refused before anything is sent', () => {
     window.history.replaceState(null, '', '/admin/designer?ws=builder');
     render(<Designer readOnly={false} who="Test · Administrator · production" initialWorkspace="builder" initialPages={pagesFromCode()} {...loaded} />);
