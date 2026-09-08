@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -7,6 +8,7 @@ import {
   AUTHZ_APPLICATION_KEY,
   AUTHZ_LABEL_MAX,
   AUTHZ_MESSAGE_MAX,
+  DEFAULT_AUTHZ_SCHEMES,
   loadAuthzForEditing,
   resetAuthzMemo,
 } from '@/lib/design/authz';
@@ -24,7 +26,8 @@ const KEY = /^[a-z0-9_-]{1,40}$/;
 // update, refused when the row's `updated_at` is no longer the stamp the caller
 // loaded (409 with the current rows). Admin-only (404), production-only (403).
 // The stamp travels verbatim: it carries microseconds a JavaScript Date would
-// round away. No page is revalidated: nothing on the site renders a scheme yet.
+// round away. The layout is revalidated: the served pages read a scheme's
+// message and the shell's lists its check.
 export async function PUT(req: Request, { params }: { params: Promise<{ key: string }> }) {
   const user = await currentUser();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
@@ -77,7 +80,62 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
       );
     }
     resetAuthzMemo();
+    // The shell's lists and the served pages read the schemes at render.
+    revalidatePath('/', 'layout');
     return NextResponse.json({ ok: true, key, label, message: message || null, updatedAt: String(rows[0].updated_at) });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'unknown' },
+      { status: 500 },
+    );
+  }
+}
+
+// DELETE /api/admin/design/authz/<key>
+//
+// Removes a scheme of the operator's own (Phase 3 step 4). The shipped four
+// stay: the code's pages and the selects lean on them (400). A scheme a page, a
+// region's reference or a navigation entry still names is refused by the
+// database's foreign keys and answered 409 with the current rows, so nothing is
+// ever left pointing at a rule that is gone. Admin-only (404), production-only (403).
+export async function DELETE(_req: Request, { params }: { params: Promise<{ key: string }> }) {
+  const user = await currentUser();
+  if (!isAdmin(user)) return new Response('not found', { status: 404 });
+  if (!isProductionWorker()) {
+    return NextResponse.json(
+      { error: 'Design edits are made on production; this copy of the site is read-only.' },
+      { status: 403 },
+    );
+  }
+  if (!isBettingConfigured()) {
+    return NextResponse.json({ error: 'database not configured' }, { status: 503 });
+  }
+  const { key } = await params;
+  if (!KEY.test(key)) return new Response('not found', { status: 404 });
+  if (DEFAULT_AUTHZ_SCHEMES.some(s => s.key === key)) {
+    return NextResponse.json({ error: 'the shipped schemes stay; only a scheme of your own can be removed' }, { status: 400 });
+  }
+
+  try {
+    const { data, error } = await betDb()
+      .from('authz_scheme')
+      .delete()
+      .eq('application_key', AUTHZ_APPLICATION_KEY)
+      .eq('key', key)
+      .select('key');
+    if (error) {
+      if (error.code === '23503' || /foreign key/i.test(error.message)) {
+        return NextResponse.json(
+          { error: 'This scheme is still used by a page, a region or a navigation entry. Change those first.', current: await loadAuthzForEditing() },
+          { status: 409 },
+        );
+      }
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    if (((data ?? []) as unknown[]).length === 0) return new Response('not found', { status: 404 });
+    resetAuthzMemo();
+    revalidatePath('/', 'layout');
+    return NextResponse.json({ ok: true, key });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'unknown' },

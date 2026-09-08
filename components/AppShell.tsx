@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useAuth, useUser, SignOutButton } from '@clerk/nextjs';
 import { NavSeriesMeta } from '@/lib/types';
 import type { NavLists } from '@/lib/design/destinations';
+import type { AuthzScheme } from '@/lib/design/authz-defaults';
 import type { ChromeText } from '@/lib/design/text-defaults';
 import { BottomBar } from './BottomBar';
 import { DoorLinks } from './DoorLinks';
@@ -31,6 +32,7 @@ export function AppShell({
   bettingEnabled,
   nav,
   text,
+  schemes,
 }: {
   children: React.ReactNode;
   seriesList: NavSeriesMeta[];
@@ -42,6 +44,9 @@ export function AppShell({
   nav: NavLists;
   // The chrome's fixed strings, same source and fallback (lib/design/text.ts).
   text: ChromeText;
+  // The authorization schemes (lib/design/authz.ts), so an entry asking for one
+  // shows only to a visitor who passes it (Phase 3 step 4).
+  schemes: readonly AuthzScheme[];
 }) {
   // Pointer glow (operator idea): a soft signal-amber halo trails the cursor to
   // highlight where the mouse is. Desktop-mouse only and off under reduced
@@ -121,7 +126,7 @@ export function AppShell({
           {/* Desktop door links (operator 2026-08-19, revised round-2 ④):
               Calendar, Learn and Series one click from the header — Home stays
               the wordmark, and the panel remains the whole index. */}
-          <DoorLinks entries={nav.doors} />
+          <DoorLinks entries={nav.doors} schemes={schemes} />
 
           <div className="ml-auto flex shrink-0 items-center gap-3 lg:gap-4">
             <HeaderDate />
@@ -138,10 +143,10 @@ export function AppShell({
         className="min-h-screen flex flex-col pt-[50px] lg:pt-[58px] pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0 outline-none"
       >
         <div className="flex-1">{children}</div>
-        <Footer site={nav.footerSite} legal={nav.footerLegal} text={text} />
+        <Footer site={nav.footerSite} legal={nav.footerLegal} text={text} schemes={schemes} />
       </main>
 
-      <BottomBar entries={nav.bar} />
+      <BottomBar entries={nav.bar} schemes={schemes} />
 
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />

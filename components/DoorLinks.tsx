@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { isActivePath, resolveDestination, type NavEntry } from '@/lib/design/destinations';
+import type { AuthzScheme } from '@/lib/design/authz-defaults';
+import { useVisibleEntries } from './useVisitor';
 
 // The non-Home doors as quiet mono links, desktop only. Account left the header
 // (round-2 ④, operator: "instead of account have series here") and stays one
@@ -10,12 +12,24 @@ import { isActivePath, resolveDestination, type NavEntry } from '@/lib/design/de
 // Since Phase 2 the doors are the `doors` list (lib/design/lists.ts), edited in
 // the designer and rendered here. A door is a link, so an entry whose
 // destination is an action is skipped rather than drawn as something it is not.
-export function DoorLinks({ entries, preview = false }: { entries: NavEntry[]; preview?: boolean }) {
+// An entry asking for an authorization scheme shows only to a visitor who
+// passes it (Phase 3 step 4); with no schemes given (the designer's preview)
+// every entry shows.
+export function DoorLinks({
+  entries,
+  schemes,
+  preview = false,
+}: {
+  entries: NavEntry[];
+  schemes?: readonly AuthzScheme[];
+  preview?: boolean;
+}) {
   const pathname = usePathname();
+  const visible = useVisibleEntries(entries, schemes);
   return (
     // `preview`: the designer shows the doors at any width; the header hides them below lg.
     <nav aria-label="Doors" className={`${preview ? 'flex' : 'hidden lg:flex'} items-stretch gap-5 self-stretch`}>
-      {entries.map((entry, i) => {
+      {visible.map((entry, i) => {
         const dest = resolveDestination(entry.dest);
         if (!dest || dest.kind === 'action') return null;
         const active = dest.kind === 'route' && isActivePath(dest.href, pathname);

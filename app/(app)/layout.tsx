@@ -12,6 +12,7 @@ import { HeatmapTracker } from '@/components/HeatmapTracker';
 import { ThemeScript } from '@/components/theme/ThemeScript';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { loadNavLists } from '@/lib/design/lists';
+import { loadAuthzSchemes } from '@/lib/design/authz';
 import { loadTextMessages } from '@/lib/design/text';
 import { loadSettings } from '@/lib/design/settings';
 import { loadThemeSet, resolveThemeAttributes, themeCss, themeOption } from '@/lib/design/themes';
@@ -94,12 +95,13 @@ export default async function RootLayout({
   // the application settings, the themes and the appearance from the design
   // tables, with the code as the fallback (Phase 2). One read each per isolate
   // per minute.
-  const [nav, text, settings, themes, appearance] = await Promise.all([
+  const [nav, text, settings, themes, appearance, schemes] = await Promise.all([
     loadNavLists(),
     loadTextMessages(),
     loadSettings(),
     loadThemeSet(),
     loadAppearance(),
+    loadAuthzSchemes(),
   ]);
   // What a visitor gets before choosing a theme: the set's default, carried by
   // <html> exactly as the pre-paint script would set it, so the server and the
@@ -164,7 +166,7 @@ export default async function RootLayout({
               });
             `}
           </Script>
-          <AppShell seriesList={seriesList} bettingEnabled={isBettingConfigured()} nav={nav} text={text}>
+          <AppShell seriesList={seriesList} bettingEnabled={isBettingConfigured()} nav={nav} text={text} schemes={schemes}>
             {children}
           </AppShell>
           {/* The release announcement, a modal over whatever page the reader

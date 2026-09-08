@@ -1,8 +1,11 @@
+'use client';
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE } from '@/lib/site';
 import { resolveDestination, type NavEntry } from '@/lib/design/destinations';
+import type { AuthzScheme } from '@/lib/design/authz-defaults';
 import type { ChromeText } from '@/lib/design/text-defaults';
+import { useVisibleEntries } from '@/components/useVisitor';
 import { ManageCookiesButton } from '@/components/ManageCookiesButton';
 import { ContactFooterButton } from '@/components/ContactModal';
 import { InstallApp } from '@/components/landing/InstallApp';
@@ -73,21 +76,36 @@ function FooterEntry({ entry }: { entry: NavEntry }) {
 // original run a full screen). Since Phase 2 the two columns are the
 // `footer-site` and `footer-legal` lists (lib/design/lists.ts).
 // The headings, the blurb and the install label are text messages (lib/design/text.ts).
-export function Footer({ site, legal, text }: { site: NavEntry[]; legal: NavEntry[]; text: ChromeText }) {
+// An entry asking for an authorization scheme shows only to a visitor who
+// passes it (Phase 3 step 4); with no schemes given (the designer's preview)
+// every entry shows.
+export function Footer({
+  site,
+  legal,
+  text,
+  schemes,
+}: {
+  site: NavEntry[];
+  legal: NavEntry[];
+  text: ChromeText;
+  schemes?: readonly AuthzScheme[];
+}) {
   const year = 2026;
+  const visibleSite = useVisibleEntries(site, schemes);
+  const visibleLegal = useVisibleEntries(legal, schemes);
   return (
     <footer className="border-t border-border mt-12 bg-bg">
       <div className="w-full px-4 md:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-2 gap-6 text-xs sm:gap-8">
           <div>
             <ColumnHeading>{text['footer.site']}</ColumnHeading>
-            {site.map((entry, i) => (
+            {visibleSite.map((entry, i) => (
               <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
             ))}
           </div>
           <div>
             <ColumnHeading>{text['footer.legal']}</ColumnHeading>
-            {legal.map((entry, i) => (
+            {visibleLegal.map((entry, i) => (
               <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
             ))}
           </div>
