@@ -30,6 +30,16 @@ export interface NavLists {
   footerLegal: NavEntry[];
 }
 
+/** Where a list renders (the `list.role` column). */
+export type ListRole = 'menu' | 'bar' | 'footer' | 'reference' | 'generic';
+
+/** The phone bar is equal cells and cannot fit fewer than three or more than
+ *  five without the design breaking, so the loader, the API and the editor all
+ *  hold this line. Here, and not in lists.ts, because the editor runs in the
+ *  browser and lists.ts is server-only. */
+export const BAR_MIN = 3;
+export const BAR_MAX = 5;
+
 const route = (href: string, label: string): Destination => ({ kind: 'route', href, label });
 
 export const DESTINATIONS: Record<string, Destination> = {

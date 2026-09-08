@@ -45,7 +45,7 @@ const ICONS: Record<string, LucideIcon> = {
 };
 export const BAR_ICON_NAMES = Object.keys(ICONS);
 
-export function BottomBar({ entries }: { entries: NavEntry[] }) {
+export function BottomBar({ entries, preview = false }: { entries: NavEntry[]; preview?: boolean }) {
   const pathname = usePathname();
   // The signed-in user's picture on the Account cell (falls back to the
   // generic icon when signed-out). Clerk is already mounted by the (app)
@@ -60,9 +60,13 @@ export function BottomBar({ entries }: { entries: NavEntry[] }) {
   }
 
   return (
+    // `preview`: the designer draws the bar in place at phone width; on the site
+    // it is fixed to the bottom of the phone viewport and hidden on lg+.
     <nav
       aria-label="Primary"
-      className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated border-t border-text pb-[env(safe-area-inset-bottom)]"
+      className={`${
+        preview ? 'relative' : 'lg:hidden fixed bottom-0 inset-x-0 z-30'
+      } bg-surface-elevated border-t border-text pb-[env(safe-area-inset-bottom)]`}
     >
       <div className="grid" style={{ gridTemplateColumns: `repeat(${cells.length}, minmax(0, 1fr))` }}>
         {cells.map(({ entry, href }, i) => (

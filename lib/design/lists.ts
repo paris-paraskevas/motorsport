@@ -1,8 +1,9 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
-import { resolveDestination, type NavEntry, type NavLists } from './destinations';
+import { BAR_MAX, BAR_MIN, resolveDestination, type ListRole, type NavEntry, type NavLists } from './destinations';
 
-export type { NavEntry, NavLists } from './destinations';
+export { BAR_MAX, BAR_MIN } from './destinations';
+export type { ListRole, NavEntry, NavLists } from './destinations';
 
 // The navigation lists (APEX: Lists, Navigation Menu, Navigation Bar List), read
 // from the `list` / `list_entry` rows for this application and rendered by the
@@ -18,17 +19,9 @@ export type { NavEntry, NavLists } from './destinations';
 // Writes go through the database function design_save_list() and the route
 // app/api/admin/design/lists/[key] only.
 
-export type ListRole = 'menu' | 'bar' | 'footer' | 'reference' | 'generic';
-
 export const APPLICATION_KEY = 'paddock';
 export const NAV_LIST_KEYS = ['doors', 'bar', 'footer-site', 'footer-legal'] as const;
 export type NavListKey = (typeof NAV_LIST_KEYS)[number];
-
-/** The phone bar is four equal cells today and cannot fit fewer than three or
- *  more than five without the design breaking, so the loader and the API both
- *  hold this line. */
-export const BAR_MIN = 3;
-export const BAR_MAX = 5;
 
 /** What the components rendered before Phase 2, and what they fall back to. */
 export const DEFAULT_NAV: NavLists = {

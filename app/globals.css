@@ -302,6 +302,10 @@
   --positive: #5bbe93;
   --negative: #e07a72;
   --series-ink-mix: 100%;
+  /* The designer's edit accent (selection, primary action, focus), the
+     prototype's blue; console themes only, so it exists nowhere on the site. */
+  --edit: #3b9dff;
+  --edit-dim: #12385e;
 }
 
 :root[data-theme='console-light'] {
@@ -325,6 +329,8 @@
   --positive: #2c7a58;
   --negative: #ad4038;
   --series-ink-mix: 52%;
+  --edit: #1668c4;
+  --edit-dim: #cfe2f8;
 }
 
 /* The console mode toggle renders BOTH icons and CSS hides the wrong one, so
@@ -392,6 +398,10 @@
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
   --color-text-faint: var(--text-faint);
+
+  /* Designer edit accent; defined by the console themes only. */
+  --color-edit: var(--edit);
+  --color-edit-dim: var(--edit-dim);
 
   --color-tint: var(--tint);
   --color-tint-fill: var(--tint-fill);
