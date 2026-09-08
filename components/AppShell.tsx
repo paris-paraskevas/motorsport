@@ -33,6 +33,7 @@ export function AppShell({
   nav,
   text,
   schemes,
+  searchHints = [],
 }: {
   children: React.ReactNode;
   seriesList: NavSeriesMeta[];
@@ -47,6 +48,9 @@ export function AppShell({
   // The authorization schemes (lib/design/authz.ts), so an entry asking for one
   // shows only to a visitor who passes it (Phase 3 step 4).
   schemes: readonly AuthzScheme[];
+  // The questions the search field cycles through after the first paint
+  // (lib/design/search-hints.ts); empty keeps the one text message.
+  searchHints?: string[];
 }) {
   // Pointer glow (operator idea): a soft signal-amber halo trails the cursor to
   // highlight where the mouse is. Desktop-mouse only and off under reduced
@@ -121,7 +125,7 @@ export function AppShell({
             <span className="lg:hidden">Paddock</span>
           </Link>
 
-          <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} searchLabel={text['nav.search']} />
+          <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} searchLabel={text['nav.search']} searchHints={searchHints} />
 
           {/* Desktop door links (operator 2026-08-19, revised round-2 ④):
               Calendar, Learn and Series one click from the header — Home stays

@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.63 — 2026-09-08
+
+**The search box suggests questions.** A minute after a page opens, the search field at the top starts showing questions people ask, one at a time, such as when the next race is or who leads the standings; each one is checked to lead to a real page when typed. Searching itself got smarter too: a question typed as you would ask it, small words and all, now finds its page. The suggestions hold still for anyone who prefers reduced motion.
+
 ## 1.0.62 — 2026-09-08
 
 **Internal notes.** The site's design tool gained a clearer side menu: the App Builder lists the site's pages by group and filters them, and the Shared Components side has a search field over its catalogue. Nothing changes for readers.

@@ -38,8 +38,7 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 
 **Designer, queued after the Appearance step (operator, 2026-09-08 afternoon)**
-- **An alive search placeholder.** `nav.search` cycles every minute through frequently asked questions, each verified to lead somewhere on the site when searched; the rotation starts after the first paint so the cached render stays identical for everyone, and holds still under reduced motion. Shape: a list of questions as rows beside the one text message, the site's search as the verifier.
-_(Shipped 2026-09-08 night in 1.0.62: the search bar for the Shared Components catalogue and the side menu redrawn, one rail per workspace: the App Builder's lists the pages by group and filters them, the Shared Components' carries the search field and marks what is editable now.)_
+_(All three shipped in the night of 2026-09-08. 1.0.62: the search bar for the Shared Components catalogue and the side menu redrawn, one rail per workspace. 1.0.63: the alive search placeholder, Search Hints as rows the operator keeps, each verified against the site's own search when saved, rotated a minute apart after the first paint and still under reduced motion; the search itself now drops a question's function words so one typed as asked finds its page.)_
 
 **Bugs and defects**
 
