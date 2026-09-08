@@ -57,7 +57,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 ### Next session, flat
 
 1. The morning actions above; then the `information_schema` proof into the changelog and the first export run.
-2. **Phase 2**: `/admin/designer` as client-only chunks on the real tables, lists and text messages first, with the runtime reading them; ESPA plan before code; budget the bundle with `Total Upload`.
+2. **Phase 2**: `/admin/designer` as client-only chunks on the real tables, lists and text messages first, with the runtime reading them; ESPA plan before code; budget the bundle with `Total Upload`. **Step 0 done 2026-09-08 morning:** migration `20260908110000` made every design table multi-application (`application_key`, default `paddock`; composite keys and foreign keys), rehearsed with a rollback and then applied on the operator's word. Direction behind it: the designer grows into **paddock-developer**, the operator's own builder for themselves and whoever uses it, APEX's concepts without its names or visuals; tenancy, per-tenant code (Workers for Platforms), concurrency and an opt-in MCP surface are its later programme, written up after Phases 2 and 3 prove the designer on Paddock itself.
 3. Phase 0 follow-up: map the multi-class standings payloads (GT World, IMSA, WEC; `class_name`) so the three SKIP lines close.
 4. Data: the Traffic tab's Cloudflare placeholder gets a fetcher; Upstash's developer API; the replacement for the deprecated `billable-usage` endpoint.
 5. Content: the F1 race-weekend answer is still a 404.
