@@ -15,6 +15,7 @@ import { loadNavLists } from '@/lib/design/lists';
 import { loadTextMessages } from '@/lib/design/text';
 import { loadSettings } from '@/lib/design/settings';
 import { loadThemeSet, resolveThemeAttributes, themeCss, themeOption } from '@/lib/design/themes';
+import { appearanceCss, loadAppearance } from '@/lib/design/appearance';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import { SOCIAL_CARD } from '@/lib/seo';
@@ -90,20 +91,25 @@ export default async function RootLayout({
     category,
   }));
   // The doors, the phone bar, the footer columns, the chrome's fixed strings,
-  // the application settings and the themes from the design tables, with the
-  // code as the fallback (Phase 2). One read each per isolate per minute.
-  const [nav, text, settings, themes] = await Promise.all([
+  // the application settings, the themes and the appearance from the design
+  // tables, with the code as the fallback (Phase 2). One read each per isolate
+  // per minute.
+  const [nav, text, settings, themes, appearance] = await Promise.all([
     loadNavLists(),
     loadTextMessages(),
     loadSettings(),
     loadThemeSet(),
+    loadAppearance(),
   ]);
   // What a visitor gets before choosing a theme: the set's default, carried by
   // <html> exactly as the pre-paint script would set it, so the server and the
   // first paint agree. A dark default needs the dark class too, or every dark:
   // utility would render light for one paint.
   const theme = resolveThemeAttributes(themes, themes.defaultKey);
-  const customCss = themeCss(themes);
+  // The operator's themes and the appearance share one generated style block:
+  // the appearance's root rule first (faces, size, spacing, radius, motion),
+  // then one rule per custom theme. Both empty when nothing is stored.
+  const customCss = [appearanceCss(appearance), themeCss(themes)].filter(Boolean).join('\n');
 
   return (
     <ClerkProvider
@@ -138,9 +144,9 @@ export default async function RootLayout({
         <body className="min-h-screen bg-bg text-text">
           {/* First child on purpose: parser-blocking pre-paint theme init. */}
           <ThemeScript set={themes} />
-          {/* The operator's own themes: one rule per theme on
-              [data-theme-custom], after the stylesheet so it wins. Empty
-              when there is none. */}
+          {/* The operator's appearance (one :root rule) and their own themes
+              (one rule per theme on [data-theme-custom]), after the stylesheet
+              so they win at equal specificity. Empty when nothing is stored. */}
           {customCss && <style id="paddock-themes" dangerouslySetInnerHTML={{ __html: customCss }} />}
           {/* Clerk's SDK + frontend API are the single biggest unused-JS item
               (audit baseline); warm the connection early. */}

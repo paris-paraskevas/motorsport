@@ -11,6 +11,7 @@ import type { EditableBuildOption } from '@/lib/design/build-options';
 import type { EditableSetting } from '@/lib/design/settings';
 import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableTheme } from '@/lib/design/themes';
+import type { EditableAppearance } from '@/lib/design/appearance';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
@@ -18,6 +19,7 @@ import { BuildOptionsEditor } from './BuildOptionsEditor';
 import { SettingsEditor, type SeriesOption } from './SettingsEditor';
 import { AuthzEditor } from './AuthzEditor';
 import { ThemesEditor } from './ThemesEditor';
+import { AppearanceEditor } from './AppearanceEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -137,6 +139,21 @@ async function fetchThemes(): Promise<LoadedThemes> {
   }
 }
 
+type LoadedAppearance =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; loaded: EditableAppearance };
+
+async function fetchAppearance(): Promise<LoadedAppearance> {
+  try {
+    const res = await fetch('/api/admin/design/appearance', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The appearance could not be loaded (HTTP ${res.status}).` };
+    return { state: 'ready', loaded: (await res.json()) as EditableAppearance };
+  } catch {
+    return { state: 'error', message: 'The appearance could not be loaded: network error.' };
+  }
+}
+
 export function Designer({
   readOnly,
   who,
@@ -147,6 +164,7 @@ export function Designer({
   initialSettings,
   initialAuthz,
   initialThemes,
+  initialAppearance,
   series = [],
 }: {
   readOnly: boolean;
@@ -166,6 +184,8 @@ export function Designer({
   initialAuthz?: EditableAuthzScheme[] | null;
   /** The themes the server already loaded; fetched when absent. */
   initialThemes?: EditableTheme[] | null;
+  /** The appearance the server already loaded; fetched when absent. */
+  initialAppearance?: EditableAppearance | null;
   /** The championships the settings editor offers in its series controls. */
   series?: SeriesOption[];
 }) {
@@ -183,6 +203,9 @@ export function Designer({
   );
   const [themes, setThemes] = useState<LoadedThemes>(() =>
     initialThemes ? { state: 'ready', themes: initialThemes } : { state: 'loading' },
+  );
+  const [appearance, setAppearance] = useState<LoadedAppearance>(() =>
+    initialAppearance ? { state: 'ready', loaded: initialAppearance } : { state: 'loading' },
   );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
@@ -232,10 +255,15 @@ export function Designer({
         if (!cancelled) setThemes(loaded);
       });
     }
+    if (!initialAppearance) {
+      void fetchAppearance().then(loaded => {
+        if (!cancelled) setAppearance(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -487,6 +515,20 @@ export function Designer({
                 themes={themes.themes}
                 readOnly={readOnly}
                 onSaved={next => setThemes({ state: 'ready', themes: next })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'appearance' && (() => {
+            if (appearance.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Appearance…</p>;
+            }
+            if (appearance.state === 'error') return <p className="text-12 text-negative">{appearance.message}</p>;
+            return (
+              <AppearanceEditor
+                loaded={appearance.loaded}
+                readOnly={readOnly}
+                onSaved={next => setAppearance({ state: 'ready', loaded: next })}
               />
             );
           })()}

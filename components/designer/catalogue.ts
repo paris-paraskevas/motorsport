@@ -4,8 +4,9 @@ import type { NavListKey } from '@/lib/design/lists';
 // (Paddock Designer Field Guide §02). Every entry is listed so the operator sees
 // the whole shape from day one; the four navigation lists (Phase 2 step 2), Text
 // Messages (step 3), Build Options (step 4), Application Settings (step 5),
-// Authorization Schemes (step 6) and Themes (step 7) are editable, and the rest
-// say when they arrive rather than pretend.
+// Authorization Schemes (step 6), Themes (step 7) and Appearance (step 8, APEX's
+// User Interface Attributes) are editable, and the rest say when they arrive
+// rather than pretend.
 
 export interface CatalogueItem {
   key: string;
@@ -13,7 +14,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -70,7 +71,7 @@ export const CATALOGUE: CatalogueGroup[] = [
   {
     group: 'User Interface',
     items: [
-      { key: 'uiattrs', label: 'User Interface Attributes', later: 'Phase 2, later' },
+      { key: 'appearance', label: 'Appearance', editor: 'appearance' },
       { key: 'pwa', label: 'Progressive Web App', later: 'Phase 6' },
       { key: 'themes', label: 'Themes', editor: 'themes' },
       { key: 'templates', label: 'Templates', later: 'read-only, later' },
