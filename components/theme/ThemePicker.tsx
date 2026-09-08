@@ -2,43 +2,42 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { THEME_STORAGE_KEY } from '@/components/theme/ThemeScript';
+import { pickableThemes, resolveThemeAttributes, type ThemeOption, type ThemeSet } from '@/lib/design/theme-defaults';
 
-// Palette metadata for the picker previews only — the live values are the
-// :root[data-theme=…] token blocks in globals.css (WCAG-gated there).
-const THEMES = [
-  { key: 'midnight', label: 'Midnight', hint: 'Classic dark. Night races', bg: '#121215', surface: '#1b1b21', text: '#e4e4e8', accent: '#ffb400', dark: true },
-  { key: 'carbon', label: 'Carbon', hint: 'Cool graphite. Night races', bg: '#060a12', surface: '#111721', text: '#f0f4f9', accent: '#ffb400', dark: true },
-  { key: 'ember', label: 'Ember', hint: 'Amber instrument. Evening', bg: '#0c0a05', surface: '#1a140a', text: '#f8f1e7', accent: '#ffb400', dark: true },
-  { key: 'newsprint', label: 'Newsprint', hint: 'Paper light. Long reads', bg: '#f7f3e8', surface: '#fbf7ec', text: '#1e1a13', accent: '#7d5300', dark: false },
-  { key: 'paper', label: 'Paper', hint: 'Editorial. The default', bg: '#f7f3e8', surface: '#fbf7ec', text: '#1e1a13', accent: '#8c1c13', dark: false },
-  { key: 'circuit', label: 'Circuit', hint: 'High contrast. Daylight', bg: '#f4f4f5', surface: '#ffffff', text: '#09090b', accent: '#7d5300', dark: false },
-] as const;
+// The visitor's theme picker. The themes come from the same set the layout and
+// the pre-paint script read (the six shipped, plus the operator's own from the
+// designer's Themes, 1.0.47), so what is offered here is exactly what the site
+// can render. The swatch previews use each theme's own colours, never the live
+// tokens: each card shows itself.
 
-type ThemeKey = (typeof THEMES)[number]['key'];
-type ThemeChoice = ThemeKey | 'system';
+type ThemeChoice = string;
 
 // Same-tab picks dispatch this so useSyncExternalStore re-reads; cross-tab
 // picks arrive via the native storage event.
 const CHANGE_EVENT = 'paddock:theme-change';
 
-function systemResolved(): ThemeKey {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'paper';
+function systemResolved(set: ThemeSet): string {
+  const wants = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'paper';
+  return pickableThemes(set).some(t => t.key === wants) ? wants : set.defaultKey;
 }
 
-function applyTheme(choice: ThemeChoice) {
-  const resolved = choice === 'system' ? systemResolved() : choice;
-  const def = THEMES.find(t => t.key === resolved) ?? THEMES.find(t => t.key === 'paper')!;
+function applyTheme(choice: ThemeChoice, set: ThemeSet) {
+  const resolved = choice === 'system' ? systemResolved(set) : choice;
+  const attrs = resolveThemeAttributes(set, resolved);
+  const option = set.themes.find(t => t.key === resolved) ?? set.themes.find(t => t.key === set.defaultKey)!;
   const el = document.documentElement;
-  el.dataset.theme = def.key;
-  el.classList.toggle('dark', def.dark);
+  el.dataset.theme = attrs.dataTheme;
+  if (attrs.custom) el.dataset.themeCustom = attrs.custom;
+  else delete el.dataset.themeCustom;
+  el.classList.toggle('dark', attrs.dark);
   // PWA / mobile address bar follows the active chassis.
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', def.bg);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', option.tokens.bg);
 }
 
-function readChoice(): ThemeChoice {
+function readChoice(set: ThemeSet): ThemeChoice {
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
-  if (stored === 'system' || THEMES.some(t => t.key === stored)) return stored as ThemeChoice;
-  return 'paper';
+  if (stored === 'system' || pickableThemes(set).some(t => t.key === stored)) return stored as ThemeChoice;
+  return set.defaultKey;
 }
 
 function subscribe(onStoreChange: () => void) {
@@ -52,19 +51,20 @@ function subscribe(onStoreChange: () => void) {
 
 // Swatch preview: chassis block + card + type sample + accent dot, from the
 // theme's own hexes (intentionally NOT theme tokens — each card shows itself).
-function Swatch({ theme }: { theme: (typeof THEMES)[number] }) {
+export function Swatch({ theme }: { theme: Pick<ThemeOption, 'tokens' | 'family'> }) {
+  const t = theme.tokens;
   return (
     <span
       aria-hidden="true"
       className="flex h-12 w-full items-center justify-center border border-border"
-      style={{ backgroundColor: theme.bg }}
+      style={{ backgroundColor: t.bg }}
     >
       <span
         className="flex items-baseline gap-1.5 px-2 py-1 border"
-        style={{ backgroundColor: theme.surface, borderColor: theme.dark ? '#ffffff26' : '#00000026' }}
+        style={{ backgroundColor: t.surface, borderColor: theme.family === 'dark' ? '#ffffff26' : '#00000026' }}
       >
-        <span className="text-[13px] font-semibold" style={{ color: theme.text }}>Aa</span>
-        <span className="font-mono text-[11px] font-semibold tabular-nums" style={{ color: theme.accent }}>12</span>
+        <span className="text-[13px] font-semibold" style={{ color: t.text }}>Aa</span>
+        <span className="font-mono text-[11px] font-semibold tabular-nums" style={{ color: t.accent }}>12</span>
       </span>
     </span>
   );
@@ -79,41 +79,47 @@ function SystemSwatch() {
   );
 }
 
-export function ThemePicker() {
+export function ThemePicker({ set }: { set: ThemeSet }) {
   // localStorage IS the store; the server snapshot renders the default until
   // hydration, then the real choice takes over (no setState-in-effect).
-  const choice = useSyncExternalStore<ThemeChoice>(subscribe, readChoice, () => 'paper');
+  const choice = useSyncExternalStore<ThemeChoice>(subscribe, () => readChoice(set), () => set.defaultKey);
 
   // External-system sync only (no state): OS appearance flips re-resolve a
   // live 'system' choice; a change made in another tab re-skins this one.
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const onSystem = () => { if (readChoice() === 'system') applyTheme('system'); };
-    const onStorage = (e: StorageEvent) => { if (e.key === THEME_STORAGE_KEY) applyTheme(readChoice()); };
+    const onSystem = () => { if (readChoice(set) === 'system') applyTheme('system', set); };
+    const onStorage = (e: StorageEvent) => { if (e.key === THEME_STORAGE_KEY) applyTheme(readChoice(set), set); };
     mq.addEventListener('change', onSystem);
     window.addEventListener('storage', onStorage);
     return () => {
       mq.removeEventListener('change', onSystem);
       window.removeEventListener('storage', onStorage);
     };
-  }, []);
+  }, [set]);
 
   const pick = (next: ThemeChoice) => {
     localStorage.setItem(THEME_STORAGE_KEY, next);
-    applyTheme(next);
+    applyTheme(next, set);
     window.dispatchEvent(new Event(CHANGE_EVENT));
   };
 
+  const themes = pickableThemes(set);
   const options: { key: ThemeChoice; label: string; hint: string; swatch: React.ReactNode }[] = [
     { key: 'system', label: 'System', hint: 'Match device', swatch: <SystemSwatch /> },
-    ...THEMES.map(t => ({ key: t.key as ThemeChoice, label: t.label, hint: t.hint, swatch: <Swatch theme={t} /> })),
+    ...themes.map(t => ({
+      key: t.key,
+      label: t.label,
+      hint: t.isDefault ? `${t.hint}. The default` : t.hint,
+      swatch: <Swatch theme={t} />,
+    })),
   ];
 
   return (
     <section className="border-t border-border py-5 md:py-6">
       <h2 className="text-text text-base font-semibold">Appearance</h2>
       <p className="mt-1 text-text-faint text-xs">
-        Six themes on the same instrument chassis. Stored on this device.
+        {themes.length} themes on the same instrument chassis. Stored on this device.
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-7" role="group" aria-label="Theme">
         {options.map(o => {
