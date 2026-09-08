@@ -148,8 +148,9 @@ describe('Designer keeps the selection in the URL', () => {
       />,
     );
     expect(screen.getByRole('heading', { level: 2, name: 'Monza, a history' })).toBeTruthy();
-    expect(screen.getByText('Static Content')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Static Content: Monza' })).toBeTruthy();
     expect(screen.getByText('draft')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'All pages' }));
     expect(window.location.search).toBe('?ws=builder');
     expect(screen.getByRole('heading', { level: 2, name: 'Pages' })).toBeTruthy();

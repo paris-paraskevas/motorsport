@@ -1743,6 +1743,13 @@ Active: (no [+Nm] prefixes given this session)
 - Findings: base 20 on a 390 phone truncates the header's search hint, 18 is the practical ceiling; stopping `next dev` right before `cf:build` leaves `.next/dev/types` truncated, clear the folder whole; GitHub closes a stacked PR when its base branch is deleted by the merge, open it again against main; `node -e` cannot take an argument that begins with `--`, pass SQL through the environment; a merge right after a push can hit "Base branch was modified", retry after a few seconds.
 - Won't-touch honoured: pushes only for PR branches; merges and the apply on the operator's word; no post published; no branch deleted beyond a merged PR's own head.
 
+**Session 45, night shift (from 2026-09-08 17:14Z, operator asleep) — intent.** The operator's word at 17:10Z: "apply 20260909010000 then merge #938 … line up the next prs and apply whatever needs applying. you have my wholehearted support and are granted access to finish as many tasks and phases as you can. dont stop for nothing, make sure no mistakes are made, catch your mistakes if there are some."
+- Apply 20260909010000, merge #938 (step 2a), poll the deploy, republish the board.
+- Step 2b, the page editor: the gallery, the properties, Save draft and Publish through the revisions route, the conflict banner; review page, trio, dry-run, merge, poll.
+- Step 3, serving: the catch-all reads the live revision of a row page, region renderers, metadata with noindex until indexable, page attributes editable, publish revalidates the path; review page, trio, dry-run, merge, poll.
+- Then step 4 (access enforced on row pages and list entries), the three designer ideas from the Inbox, and the records after every merge.
+- Won't touch: nothing pushed to `main` except by squash-merging a PR with the trio; no prod write outside a rehearsed migration or the functions the routes call; no post published; no branch or file deleted without the operator; the release header and the six branch deletions stay the operator's; every merge preceded by tsc, eslint, the whole suite, `cf:build` and a dry-run, and followed by `/changelog` showing the version.
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
