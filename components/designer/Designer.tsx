@@ -14,6 +14,7 @@ import type { EditableTheme } from '@/lib/design/themes';
 import type { EditableAppearance } from '@/lib/design/appearance';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import type { EditableAsset } from '@/lib/design/assets';
+import type { EditableSearchHint } from '@/lib/design/search-hints';
 import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
@@ -29,6 +30,7 @@ import { ThemesEditor } from './ThemesEditor';
 import { AppearanceEditor } from './AppearanceEditor';
 import { ShortcutsEditor } from './ShortcutsEditor';
 import { AssetsEditor } from './AssetsEditor';
+import { SearchHintsEditor } from './SearchHintsEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -195,6 +197,22 @@ async function fetchAssets(): Promise<LoadedAssets> {
   }
 }
 
+type LoadedSearchHints =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; hints: EditableSearchHint[] };
+
+async function fetchSearchHints(): Promise<LoadedSearchHints> {
+  try {
+    const res = await fetch('/api/admin/design/search-hints', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The search hints could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { hints: EditableSearchHint[] };
+    return { state: 'ready', hints: d.hints };
+  } catch {
+    return { state: 'error', message: 'The search hints could not be loaded: network error.' };
+  }
+}
+
 type LoadedPages =
   | { state: 'loading' }
   | { state: 'error'; message: string }
@@ -245,6 +263,7 @@ export function Designer({
   initialShortcuts,
   initialAssets,
   mediaConfigured = false,
+  initialSearchHints,
   initialPages,
   initialWorkspace = 'shared',
   initialPageId = null,
@@ -284,6 +303,8 @@ export function Designer({
   initialAssets?: EditableAsset[] | null;
   /** Whether this Worker has the media binding (uploads and photos need it). */
   mediaConfigured?: boolean;
+  /** The search hints the server already loaded; fetched when absent. */
+  initialSearchHints?: EditableSearchHint[] | null;
   /** The championships the settings editor offers in its series controls. */
   series?: SeriesOption[];
 }) {
@@ -313,6 +334,9 @@ export function Designer({
   );
   const [pages, setPages] = useState<LoadedPages>(() =>
     initialPages ? { state: 'ready', pages: initialPages } : { state: 'loading' },
+  );
+  const [searchHints, setSearchHints] = useState<LoadedSearchHints>(() =>
+    initialSearchHints ? { state: 'ready', hints: initialSearchHints } : { state: 'loading' },
   );
   const [workspace, setWorkspace] = useState<Workspace>(initialWorkspace);
   const [pageFilter, setPageFilter] = useState<PageFilter>('all');
@@ -389,6 +413,11 @@ export function Designer({
         if (!cancelled) setPages(loaded);
       });
     }
+    if (!initialSearchHints) {
+      void fetchSearchHints().then(loaded => {
+        if (!cancelled) setSearchHints(loaded);
+      });
+    }
     if (initialPageId && !initialDetail) {
       void fetchDetail(initialPageId).then(loaded => {
         if (!cancelled) setDetail(loaded);
@@ -397,7 +426,7 @@ export function Designer({
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages, initialPageId, initialDetail]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages, initialSearchHints, initialPageId, initialDetail]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -454,6 +483,7 @@ export function Designer({
   const themesCount = themes.state === 'ready' ? themes.themes.length : null;
   const shortcutsCount = shortcuts.state === 'ready' ? shortcuts.shortcuts.length : null;
   const assetsCount = assets.state === 'ready' ? assets.assets.length : null;
+  const searchHintsCount = searchHints.state === 'ready' ? searchHints.hints.length : null;
   // The footer preview shows the strings as they are stored right now, and the
   // lists' authorization select offers the schemes as they are stored right now.
   const chromeText: ChromeText | undefined =
@@ -478,7 +508,9 @@ export function Designer({
                   ? shortcutsCount
                   : it.editor === 'assets'
                     ? assetsCount
-                    : null;
+                    : it.editor === 'searchhints'
+                      ? searchHintsCount
+                      : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -768,6 +800,20 @@ export function Designer({
                 mediaConfigured={assets.mediaConfigured}
                 readOnly={readOnly}
                 onSaved={next => setAssets(s => ({ state: 'ready', assets: next, mediaConfigured: s.state === 'ready' ? s.mediaConfigured : mediaConfigured }))}
+              />
+            );
+          })()}
+
+          {item?.editor === 'searchhints' && (() => {
+            if (searchHints.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Search Hints…</p>;
+            }
+            if (searchHints.state === 'error') return <p className="text-12 text-negative">{searchHints.message}</p>;
+            return (
+              <SearchHintsEditor
+                hints={searchHints.hints}
+                readOnly={readOnly}
+                onSaved={next => setSearchHints({ state: 'ready', hints: next })}
               />
             );
           })()}

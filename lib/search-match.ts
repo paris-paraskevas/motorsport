@@ -52,10 +52,33 @@ function scoreTerm(doc: SearchDoc, term: string): number {
   return 0;
 }
 
+// The function words a question carries that no title, subtitle or keyword
+// holds ("When is the next race?"). Dropped from a query when at least one
+// other term remains, so a question typed as a person asks it still finds its
+// page; a query of nothing but these words is matched as typed.
+const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'do', 'does', 'did',
+  'who', 'whom', 'whose', 'what', 'when', 'where', 'which', 'why', 'how',
+  'of', 'in', 'on', 'at', 'to', 'for', 'from', 'by', 'with', 'about', 'and', 'or',
+  'it', 'its', 'this', 'that', 'these', 'those', 'there', 'here',
+  'can', 'could', 'will', 'would', 'should', 'i', 'you', 'we', 'they', 'my', 'your', 'our', 'me', 'us', 'them',
+]);
+
+/** The terms a query is matched by: lower-cased, sentence punctuation dropped,
+ *  function words dropped when anything else remains. Empty for a blank query. */
+export function queryTerms(query: string): string[] {
+  const all = query
+    .toLowerCase()
+    .replace(/[?!.,;:"()]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+  const kept = all.filter(t => !STOP_WORDS.has(t));
+  return kept.length > 0 ? kept : all;
+}
+
 export function searchDocs(docs: SearchDoc[], query: string, limit = 24): SearchDoc[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return [];
-  const terms = q.split(/\s+/).filter(Boolean);
+  const terms = queryTerms(query);
+  if (terms.length === 0) return [];
 
   const scored: Array<{ doc: SearchDoc; score: number }> = [];
   for (const doc of docs) {

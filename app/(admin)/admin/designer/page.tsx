@@ -10,6 +10,7 @@ import { loadAuthzForEditing } from '@/lib/design/authz';
 import { loadThemesForEditing } from '@/lib/design/themes';
 import { loadAppearanceForEditing } from '@/lib/design/appearance';
 import { loadShortcutsForEditing } from '@/lib/design/shortcuts';
+import { loadSearchHintsForEditing } from '@/lib/design/search-hints';
 import { getMediaBucket, loadAssetsForEditing } from '@/lib/design/assets';
 import { loadPagesForEditing } from '@/lib/design/pages';
 import { loadPageDetail } from '@/lib/design/page-revisions';
@@ -42,6 +43,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     initialShortcuts,
     initialAssets,
     initialPages,
+    initialSearchHints,
     seriesMeta,
     ...loaded
   ] = await Promise.all([
@@ -56,6 +58,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     loadShortcutsForEditing(),
     loadAssetsForEditing(),
     loadPagesForEditing(),
+    loadSearchHintsForEditing(),
     loadAllSeriesMeta(),
     ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
   ]);
@@ -79,6 +82,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialThemes={initialThemes}
       initialAppearance={initialAppearance}
       initialShortcuts={initialShortcuts}
+      initialSearchHints={initialSearchHints}
       initialAssets={initialAssets}
       mediaConfigured={getMediaBucket() !== null}
       initialPages={initialPages}

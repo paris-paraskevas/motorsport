@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { searchDocs } from './search-match';
+import { queryTerms, searchDocs } from './search-match';
 import type { SearchDoc } from './search-index';
 
 const docs: SearchDoc[] = [
@@ -18,6 +18,15 @@ const docs: SearchDoc[] = [
 describe('searchDocs', () => {
   it('returns nothing for an empty / whitespace query', () => {
     expect(searchDocs(docs, '   ')).toEqual([]);
+  });
+
+  it('drops the function words and the punctuation of a question, so one typed as asked finds its page', () => {
+    expect(queryTerms('When is the next race?')).toEqual(['next', 'race']);
+    expect(queryTerms('Who is Lando Norris?')).toEqual(['lando', 'norris']);
+    expect(queryTerms('the')).toEqual(['the']);
+    expect(searchDocs(docs, 'Who is Lando Norris?')[0].url).toBe('/drivers/lando-norris');
+    expect(searchDocs(docs, 'What are the Formula 1 standings?')[0].url).toBe('/series/f1/standings');
+    expect(searchDocs(docs, 'the')).toEqual([]);
   });
 
   it('ranks an exact title match first', () => {

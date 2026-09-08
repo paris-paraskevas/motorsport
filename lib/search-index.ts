@@ -33,14 +33,16 @@ export interface SearchDoc {
 
 // Top-level public pages. Personal / gated surfaces (/social, /settings)
 // are deliberately absent — search only indexes public content.
-const STATIC_PAGES: Array<{ url: string; title: string; subtitle: string }> = [
-  { url: '/', title: 'Home', subtitle: 'Your dashboard' },
-  { url: '/calendar', title: 'Calendar', subtitle: 'Every series, one timeline' },
-  { url: '/news', title: 'News', subtitle: 'Latest across the grid' },
-  { url: '/blog', title: 'Blog', subtitle: 'Analysis & recaps' },
-  { url: '/information', title: 'Information', subtitle: 'Answers, guides & records' },
-  { url: '/social/threads', title: 'Threads', subtitle: 'Fan discussion' },
-  { url: '/series', title: 'All series', subtitle: 'Browse every championship' },
+// `keywords` carry the words a person asks with ("when is the next race") that
+// the title and subtitle do not, so a question typed as asked finds the page.
+const STATIC_PAGES: Array<{ url: string; title: string; subtitle: string; keywords?: string }> = [
+  { url: '/', title: 'Home', subtitle: 'Your dashboard', keywords: 'today now live weekend' },
+  { url: '/calendar', title: 'Calendar', subtitle: 'Every series, one timeline', keywords: 'next race when schedule dates upcoming weekend month' },
+  { url: '/news', title: 'News', subtitle: 'Latest across the grid', keywords: 'headlines latest today' },
+  { url: '/blog', title: 'Blog', subtitle: 'Analysis & recaps', keywords: 'posts articles review preview' },
+  { url: '/information', title: 'Information', subtitle: 'Answers, guides & records', keywords: 'learn how works explained guide champions history' },
+  { url: '/social/threads', title: 'Threads', subtitle: 'Fan discussion', keywords: 'forum talk community' },
+  { url: '/series', title: 'All series', subtitle: 'Browse every championship', keywords: 'championships categories which' },
   { url: '/f1/compare', title: 'F1 head-to-head', subtitle: 'Compare two drivers' },
   // Was only reachable from the retired series mega-menu chips — the four-door
   // shell reaches it by name, so it must be in the index.
@@ -57,7 +59,7 @@ export async function buildSearchIndex(): Promise<SearchDoc[]> {
   const docs: SearchDoc[] = [];
 
   for (const p of STATIC_PAGES) {
-    docs.push({ type: 'page', title: p.title, subtitle: p.subtitle, url: p.url });
+    docs.push({ type: 'page', title: p.title, subtitle: p.subtitle, url: p.url, ...(p.keywords ? { keywords: p.keywords } : {}) });
   }
 
   const meta = await loadAllSeriesMeta();

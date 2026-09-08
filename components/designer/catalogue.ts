@@ -15,7 +15,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets' | 'searchhints';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -66,6 +66,7 @@ export const CATALOGUE: CatalogueGroup[] = [
       { key: 'bar', label: 'Navigation Bar List', listKey: 'bar' },
       { key: 'footer-site', label: 'Footer: Site', listKey: 'footer-site' },
       { key: 'footer-legal', label: 'Footer: Legal', listKey: 'footer-legal' },
+      { key: 'searchhints', label: 'Search Hints', editor: 'searchhints' },
       { key: 'search', label: 'Search Configurations', later: 'Phase 6' },
     ],
   },

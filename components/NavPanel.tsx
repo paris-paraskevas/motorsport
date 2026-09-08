@@ -6,6 +6,7 @@ import type { NavSeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import type { SearchDoc, SearchType } from '@/lib/search-index';
 import { searchDocs } from '@/lib/search-match';
+import { SEARCH_HINT_ROTATE_MS } from '@/lib/design/search-hint-defaults';
 
 // The one nav control (design handoff §2, panel 2a): a single always-visible
 // menu-and-search field in the header. Click or focus opens the panel printing
@@ -71,12 +72,17 @@ export function NavPanel({
   seriesList,
   bettingEnabled,
   searchLabel = 'Browse the site, or search it',
+  searchHints = [],
 }: {
   seriesList: NavSeriesMeta[];
   bettingEnabled: boolean;
   /** The field's desktop placeholder and its spoken label at every width; a
    *  text message (lib/design/text.ts) since Phase 2. */
   searchLabel?: string;
+  /** Questions the desktop placeholder cycles through, a minute apart, after
+   *  the first paint (lib/design/search-hints.ts); each one verified to find a
+   *  page when typed. Empty keeps the label. Still under reduced motion. */
+  searchHints?: string[];
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -87,6 +93,9 @@ export function NavPanel({
   // matchMedia listener does. `aria-label` carries the full phrasing at every
   // width, so shortening the visible hint costs a screen reader nothing.
   const [wide, setWide] = useState(false);
+  // The rotating hint: null until the first tick, so the cached render and the
+  // first paint carry the label for everyone.
+  const [hintIndex, setHintIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -99,6 +108,16 @@ export function NavPanel({
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
   }, []);
+
+  // The hints take over a minute after the first paint and change every minute
+  // after that; a person who prefers reduced motion keeps the label.
+  useEffect(() => {
+    if (searchHints.length === 0) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const id = window.setInterval(() => setHintIndex(i => ((i ?? -1) + 1) % searchHints.length), SEARCH_HINT_ROTATE_MS);
+    return () => window.clearInterval(id);
+  }, [searchHints]);
+  const hint = hintIndex === null ? null : (searchHints[hintIndex] ?? null);
 
   // Fetch the static search index once per session, on first open.
   useEffect(() => {
@@ -419,7 +438,7 @@ export function NavPanel({
           // "Search" on phones, not "Browse or search": the contact and coffee
           // buttons joined the header on 2026-08-28 and took ~112px, which cut
           // the longer string off mid-word. The field is still the same control.
-          placeholder={wide ? searchLabel : 'Search'}
+          placeholder={wide ? (hint ?? searchLabel) : 'Search'}
           aria-label={searchLabel}
           role="combobox"
           aria-expanded={open}
