@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.48 — 2026-09-08
+
+### Docs — the handoff at the close of session 44
+
+`docs/HANDOFF.md` gains the midday pickup at the top: Phase 2 steps 4 to 7 live with their review pages, the two migrations applied with proof, the operator's prod checks, the session's decisions and findings, the two editors left and Phase 3 next; the late-morning section loses its LATEST marker. `SCHEDULE.md` marks session 44 done. `IDEAS.md`'s DREAM section records the four steps and the memo item enters the Inbox. The 1.0.44 and 1.0.47 entries below now carry their applies. Added at the close: the operator's direction that fonts, sizes and "these things and others in css and js" must be fully customisable, recorded in the handoff's Start here 0 and the DREAM section with the tokens-first reading and the rails it touches, to be planned first next session. No code.
+
 ## 1.0.47 — 2026-09-08
 
 ### Feature — Phase 2, step 7: Themes, the default look and the offered looks as rows, and themes of the operator's own
@@ -22,7 +28,7 @@ The `theme` table was empty and read by nothing; the six looks lived only in `ap
 
 **Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.46) `Total Upload 41928.99 KiB / gzip 9725.73 KiB`; after `Total Upload 42028.45 KiB / gzip 9737.38 KiB`. The growth is the four routes, the theme loader in the layout, the settings page and the viewport function; the editor is a client chunk. The build log carries only the known lines.
 
-**Prod rehearsal, before the apply.** Migration `20260908190000` run through the Management API with `commit` replaced by `rollback`: `HTTP 201`, `[]`, then zero `theme` rows and no `design_set_default_theme` in `pg_proc`. The apply waits for the operator's word.
+**Prod rehearsal, then the apply.** Migration `20260908190000` run through the Management API with `commit` replaced by `rollback`: `HTTP 201`, `[]`, then zero `theme` rows and no `design_set_default_theme` in `pg_proc`. **Applied 11:32Z on the operator's word ("apply 20260908190000 and merge")**: `HTTP 201`, `[]`. Proof: six rows for `paddock` (Paper `is_default`, all `available`, `base` null, `tokens '{}'`) stamped `2026-09-08 11:32:07.754872+00`; `design_set_default_theme(text, text, timestamptz, text)` present; columns `available boolean default true` and `base text` present. Deployed 11:36Z; prod's home still carries `data-theme="paper"` and `theme-color #f7f3e8`, now from the rows.
 
 ## 1.0.46 — 2026-09-08
 
@@ -73,7 +79,7 @@ The `setting` table (since 20260908090000, tenanted since 20260908110000) was em
 
 **Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.43) `Total Upload 41833.16 KiB / gzip 9712.49 KiB`; after `Total Upload 41903.68 KiB / gzip 9724.87 KiB`. The editor is a client chunk; the growth is the two routes (the write route pulls the series list), the loader in the home model and the layout, and the page. The build log carries only the known Windows notes.
 
-**Prod rehearsal, before the apply.** Migration `20260908170000` run through the Management API with `commit` replaced by `rollback`: `HTTP 201`, `[]`, then `select count(*) from setting where application_key = 'paddock'` → 0. The apply waits for the operator's word.
+**Prod rehearsal, then the apply.** Migration `20260908170000` run through the Management API with `commit` replaced by `rollback`: `HTTP 201`, `[]`, then `select count(*) from setting where application_key = 'paddock'` → 0. **Applied 09:44Z on the operator's word ("apply 20260908170000 and merge")**: `HTTP 201`, `[]`. Proof: five rows for `paddock` with the shipped values (`f1`; `["motogp","wec","indycar","nascar-cup"]`; `5`; `3`; `v1.0`), stamped `2026-09-08 09:44:21.032734+00`, five rows in the table. Deployed 09:48Z; the operator then changed the wire count 5 → 2 → 10 → 5 and the home page followed each time within about a minute.
 
 ## 1.0.43 — 2026-09-08
 

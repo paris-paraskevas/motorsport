@@ -1717,10 +1717,11 @@ Active: (no [+Nm] prefixes given this session)
 - Housekeeping done at open: nav-composer code parked as a local commit on `feat/nav-composer` (operator: keep); the six Monza drafts committed on `content/monza-drafts-final`.
 - Won't-touch honoured: no push before the operator asked, then only PR branches; no prod Supabase write beyond the one the operator named; no post published; no branch deleted beyond a merged PR's own head; the designer UI (Phase 2) and the multi-class standings mapping untouched.
 
-**Session 44 (late morning, operator present) — intent:**
-- Phase 2 step 4, Build Options: the editor for the four seeded switches and the site honouring Ghost lap 3D and Weather; Include as the fallback on any failure; no migration; trio 1.0.43 with the dry-run figure; screenshots reviewed before merge; merge on the operator's word, then the deploy check.
-- Then Application Settings, presented the same way, one step at a time; the operator's open checks and the release-header decision after this step.
-- Won't touch: Social and Studio gating, new tables, Phase 3, the six branch deletions, prod database writes (none needed), any push beyond the PR branch.
+**Session 44 (09:00Z → 11:45Z, operator present) — outcomes:**
+- → done: step 4 Build Options (#922, 1.0.43, deployed 09:24Z); step 5 Application Settings (#923, 1.0.44; migration 20260908170000 rehearsed then applied 09:44Z; deployed 09:48Z); the refresh fix the operator asked for on first use (#924, 1.0.45); step 6 Authorization Schemes (#925, 1.0.46, deployed 11:01Z); step 7 Themes, widened by the operator to themes of their own with a contrast gate (#926, 1.0.47; migration 20260908190000 rehearsed then applied 11:32Z; deployed 11:36Z); this handoff (1.0.48). Every step: a review page before merge, the trio, the dry-run (41,815 → 42,028 KiB). Suite 1613 → 1692.
+- → done: operator checks on prod: the wire-headline count 5 → 2 → 10 → 5 followed within about a minute each time; the six theme cards with stamps, a theme of their own picked in a private window, a custom default switched and back.
+- → skipped: Shortcuts and Assets (next session, then Phase 3); the release-header decision and the six branch deletions (still the operator's).
+- Won't-touch honoured: no push before approval, PR branches only, merges on the operator's word; prod writes only the two applies the operator named; no post published; no branch deleted beyond a merged PR's own head.
 
 Active: (no [+Nm] prefixes given this session)
 
