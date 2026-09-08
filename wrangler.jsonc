@@ -63,6 +63,13 @@
     {
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "paddock-inc-cache"
+    },
+    // The operator's photos (designer step 10, Assets): uploaded by
+    // /api/admin/design/assets on production only, served by /media/<key> from
+    // every Worker. Created by the operator on 2026-09-08.
+    {
+      "binding": "MEDIA",
+      "bucket_name": "paddock-media"
     }
   ],
   // The DO queue that runs background revalidation of stale pages. `service`

@@ -5,8 +5,9 @@ import type { NavListKey } from '@/lib/design/lists';
 // the whole shape from day one; the four navigation lists (Phase 2 step 2), Text
 // Messages (step 3), Build Options (step 4), Application Settings (step 5),
 // Authorization Schemes (step 6), Themes (step 7), Appearance (step 8, APEX's
-// User Interface Attributes) and Shortcuts (step 9) are editable, and the rest
-// say when they arrive rather than pretend.
+// User Interface Attributes), Shortcuts (step 9) and Assets (step 10, APEX's
+// Static Application Files) are editable, and the rest say when they arrive
+// rather than pretend.
 
 export interface CatalogueItem {
   key: string;
@@ -14,7 +15,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -82,7 +83,7 @@ export const CATALOGUE: CatalogueGroup[] = [
   {
     group: 'Files and Reports',
     items: [
-      { key: 'files', label: 'Static Application Files', later: 'Phase 2, later' },
+      { key: 'assets', label: 'Assets', editor: 'assets' },
       { key: 'reports', label: 'Report Layouts', later: 'read-only, later' },
       { key: 'queries', label: 'Report Queries', later: 'read-only, later' },
     ],

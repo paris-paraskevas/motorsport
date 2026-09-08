@@ -13,6 +13,7 @@ import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableTheme } from '@/lib/design/themes';
 import type { EditableAppearance } from '@/lib/design/appearance';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
+import type { EditableAsset } from '@/lib/design/assets';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
@@ -22,6 +23,7 @@ import { AuthzEditor } from './AuthzEditor';
 import { ThemesEditor } from './ThemesEditor';
 import { AppearanceEditor } from './AppearanceEditor';
 import { ShortcutsEditor } from './ShortcutsEditor';
+import { AssetsEditor } from './AssetsEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -172,6 +174,22 @@ async function fetchShortcuts(): Promise<LoadedShortcuts> {
   }
 }
 
+type LoadedAssets =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; assets: EditableAsset[]; mediaConfigured: boolean };
+
+async function fetchAssets(): Promise<LoadedAssets> {
+  try {
+    const res = await fetch('/api/admin/design/assets', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The assets could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { assets: EditableAsset[]; mediaConfigured: boolean };
+    return { state: 'ready', assets: d.assets, mediaConfigured: d.mediaConfigured };
+  } catch {
+    return { state: 'error', message: 'The assets could not be loaded: network error.' };
+  }
+}
+
 export function Designer({
   readOnly,
   who,
@@ -184,6 +202,8 @@ export function Designer({
   initialThemes,
   initialAppearance,
   initialShortcuts,
+  initialAssets,
+  mediaConfigured = false,
   series = [],
 }: {
   readOnly: boolean;
@@ -207,6 +227,10 @@ export function Designer({
   initialAppearance?: EditableAppearance | null;
   /** The shortcuts the server already loaded; fetched when absent. */
   initialShortcuts?: EditableShortcut[] | null;
+  /** The assets the server already loaded; fetched when absent. */
+  initialAssets?: EditableAsset[] | null;
+  /** Whether this Worker has the media binding (uploads and photos need it). */
+  mediaConfigured?: boolean;
   /** The championships the settings editor offers in its series controls. */
   series?: SeriesOption[];
 }) {
@@ -230,6 +254,9 @@ export function Designer({
   );
   const [shortcuts, setShortcuts] = useState<LoadedShortcuts>(() =>
     initialShortcuts ? { state: 'ready', shortcuts: initialShortcuts } : { state: 'loading' },
+  );
+  const [assets, setAssets] = useState<LoadedAssets>(() =>
+    initialAssets ? { state: 'ready', assets: initialAssets, mediaConfigured } : { state: 'loading' },
   );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
@@ -289,10 +316,15 @@ export function Designer({
         if (!cancelled) setShortcuts(loaded);
       });
     }
+    if (!initialAssets) {
+      void fetchAssets().then(loaded => {
+        if (!cancelled) setAssets(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -322,6 +354,7 @@ export function Designer({
   const authzCount = authz.state === 'ready' ? authz.schemes.length : null;
   const themesCount = themes.state === 'ready' ? themes.themes.length : null;
   const shortcutsCount = shortcuts.state === 'ready' ? shortcuts.shortcuts.length : null;
+  const assetsCount = assets.state === 'ready' ? assets.assets.length : null;
   // The footer preview shows the strings as they are stored right now, and the
   // lists' authorization select offers the schemes as they are stored right now.
   const chromeText: ChromeText | undefined =
@@ -344,7 +377,9 @@ export function Designer({
                 ? themesCount
                 : it.editor === 'shortcuts'
                   ? shortcutsCount
-                  : null;
+                  : it.editor === 'assets'
+                    ? assetsCount
+                    : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -561,6 +596,21 @@ export function Designer({
                 shortcuts={shortcuts.shortcuts}
                 readOnly={readOnly}
                 onSaved={next => setShortcuts({ state: 'ready', shortcuts: next })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'assets' && (() => {
+            if (assets.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Assets…</p>;
+            }
+            if (assets.state === 'error') return <p className="text-12 text-negative">{assets.message}</p>;
+            return (
+              <AssetsEditor
+                assets={assets.assets}
+                mediaConfigured={assets.mediaConfigured}
+                readOnly={readOnly}
+                onSaved={next => setAssets(s => ({ state: 'ready', assets: next, mediaConfigured: s.state === 'ready' ? s.mediaConfigured : mediaConfigured }))}
               />
             );
           })()}
