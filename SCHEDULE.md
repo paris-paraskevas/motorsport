@@ -1725,6 +1725,12 @@ Active: (no [+Nm] prefixes given this session)
 
 Active: (no [+Nm] prefixes given this session)
 
+**Session 45 (opened 2026-09-08 afternoon, operator present) — intent:**
+- Present the customisation direction ("font size, font etc. must be changeable … css and js fully customiseable") as two readings, tokens first beside raw CSS/JS with its security stance, and ask which is meant. Nothing built before the go-ahead.
+- If tokens: Phase 2 step 8, **Appearance** (faces from an open-licence list, base size and scale, leading, density, corners, motion; tokens on the application row, a theme may override; a legibility gate beside the contrast gate; the same generated style block), by the recipe: migration rehearsed then applied on the operator's word, loader with the code as fallback, one write path with the stamp, editor, render probe → review page before merge, trio, dry-run, merge on the operator's word, board republished.
+- Then Shortcuts, then Assets (needs a media bucket in R2 and its binding, an infra action the operator names), then Phase 3 opens with `page` + `page_revision`.
+- Won't touch: no push before approval, PR branches only, merges on the operator's word; prod writes only on "apply <id>"; no raw CSS or JS path unless the operator picks it; no post published; no branch deleted beyond a merged PR's own head; the release header and the six branch deletions stay the operator's.
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
