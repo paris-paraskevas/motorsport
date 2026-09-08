@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.53 — 2026-09-08
+
+### Docs — the records after step 9
+
+`docs/HANDOFF.md`'s afternoon pickup gains step 9 (Shortcuts live, the migration applied, the review page, the board republished and walked through at the operator's request), Assets as the one Phase 2 editor left, two more landmines (GitHub's "Base branch was modified" race right after a push; a placeholder that reached a PR because the pre-commit grep named most placeholders and not all), and the arc table through 1.0.52. `SCHEDULE.md` and `IDEAS.md` carry the step. No code.
+
 ## 1.0.52 — 2026-09-08
 
 ### Feature — Phase 2, step 9: Shortcuts, house-style fragments as rows the operator adds to and removes from
