@@ -21,7 +21,7 @@ The `shortcut` table (20260908090000, tenancy 20260908110000) was empty and read
 
 **Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.50; 1.0.51 changed no code) `Total Upload 41994.79 KiB / gzip 9724.46 KiB`; after `Total Upload 41988.14 KiB / gzip 9730.80 KiB`, the three routes and the loader. 1,189 pages generated; the build log carries only the known lines.
 
-**Prod rehearsal, then the apply.** Migration `20260908230000` run through the Management API with `commit` replaced by `rollback` and a `select` before it: `HTTP 201`, the three seeds visible inside the transaction, and `shortcut_rows: 0` after it. The apply waits for the operator's word. APPLY_LINE
+**Prod rehearsal, then the apply.** Migration `20260908230000` run through the Management API with `commit` replaced by `rollback` and a `select` before it: `HTTP 201`, the three seeds visible inside the transaction, and `shortcut_rows: 0` after it. **Applied 13:50Z on the operator's word ("apply 20260908230000 then merge #932")**: `HTTP 201`, `[]`. Proof: three `shortcut` rows for `paddock` (`data.sources`, `times.local`, `wire.linked_out`), each stamped `2026-09-08 13:50:53.45128+00`.
 
 ## 1.0.51 — 2026-09-08
 
