@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const currentUser = vi.fn();
 vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const revalidatePath = vi.fn();
+vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 
 const rpc = vi.fn();
 const STAMP = '2026-09-08T16:00:00.505502+00:00';
@@ -64,6 +66,7 @@ describe('/api/admin/design/pages/[id]/revisions', () => {
     currentUser.mockReset();
     currentUser.mockResolvedValue(admin);
     rpc.mockReset();
+    revalidatePath.mockReset();
     rpc.mockResolvedValue({ data: [{ id: 'b1b2c3d4-0000-4000-8000-000000000002', created_at: '2026-09-08T16:05:00.000001+00:00', published_at: null }], error: null });
     process.env.PADDOCK_ENV = 'production';
   });
@@ -110,12 +113,15 @@ describe('/api/admin/design/pages/[id]/revisions', () => {
     const json = (await res.json()) as { revision: { id: string; publishedAt: string | null }; refs: { lists: string[] } };
     expect(json.revision.publishedAt).toBeNull();
     expect(json.refs.lists).toEqual(['footer-site']);
+    expect(revalidatePath).not.toHaveBeenCalled();
   });
 
-  it('publishes on the base it was given, and answers 409 with the current detail when the function says stale', async () => {
+  it('publishes on the base it was given and revalidates the served path, and answers 409 with the current detail when the function says stale', async () => {
     const base = 'b1b2c3d4-0000-4000-8000-000000000001';
-    await call(ID, { document: DOC, action: 'publish', base });
+    rpc.mockResolvedValueOnce({ data: [{ id: 'b1b2c3d4-0000-4000-8000-000000000003', created_at: '2026-09-08T16:06:00+00:00', published_at: '2026-09-08T16:06:00+00:00' }], error: null });
+    expect((await call(ID, { document: DOC, action: 'publish', base })).status).toBe(200);
     expect((rpc.mock.calls[0] as [string, Record<string, unknown>])[1]).toMatchObject({ p_base: base, p_publish: true });
+    expect(revalidatePath).toHaveBeenCalledWith('/history/monza');
     rpc.mockResolvedValue({ data: null, error: { message: 'stale', code: 'P0001' } });
     const res = await call(ID, { document: DOC, action: 'publish', base: 'old' });
     expect(res.status).toBe(409);

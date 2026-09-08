@@ -194,6 +194,22 @@ export function documentRefs(doc: PageDocument): DocumentRefs {
   return { lists: sorted(lists), assets: sorted(assets), authz: sorted(authz), shortcuts: sorted(shortcuts) };
 }
 
+/** Static Content as served: every `{shortcut:key}` replaced by the shortcut's
+ *  text, an unknown key by nothing (the refs projection keeps a named shortcut
+ *  from being deleted, so an unknown key is a document older than its rows). */
+export function substituteShortcuts(text: string, shortcuts: Readonly<Record<string, string>>): string {
+  return text.replace(SHORTCUT_TOKEN, (_m, key: string) => shortcuts[key] ?? '');
+}
+
+/** The scheme keys a document asks for beyond public: the page's own and every
+ *  region's, unique. Empty means the page renders the same for everyone. */
+export function schemesAsked(pageAuthz: string | null, doc: PageDocument): string[] {
+  const keys = new Set<string>();
+  if (pageAuthz && pageAuthz !== 'public') keys.add(pageAuthz);
+  for (const r of doc.regions) if (r.authz && r.authz !== 'public') keys.add(r.authz);
+  return [...keys].sort();
+}
+
 /** The refs projection as the database functions take it: `[{ kind, key }]`. */
 export function refRows(refs: DocumentRefs): { kind: 'list' | 'asset' | 'shortcut' | 'authz'; key: string }[] {
   return [
@@ -221,6 +237,8 @@ export function rowsAt(doc: PageDocument, position: Position): Region[][] {
 export const ROW_PAGE_PATH = /^\/[a-z0-9-]+(\/[a-z0-9-]+){0,5}$/;
 export const RESERVED_PREFIXES = ['/api', '/media', '/admin', '/_next', '/serwist', '/sign-in', '/sign-up'] as const;
 export const PAGE_NAME_MAX = 80;
+/** The title a page shows in the browser tab and as its heading; the name when empty. */
+export const PAGE_TITLE_MAX = 120;
 
 /** Whether a route pattern in the registry's convention (`/series/[slug]`) matches a literal path. */
 export function patternMatches(pattern: string, path: string): boolean {
