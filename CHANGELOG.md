@@ -8,7 +8,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 ### Docs — the handoff at the close of session 44
 
-`docs/HANDOFF.md` gains the midday pickup at the top: Phase 2 steps 4 to 7 live with their review pages, the two migrations applied with proof, the operator's prod checks, the session's decisions and findings, the two editors left and Phase 3 next; the late-morning section loses its LATEST marker. `SCHEDULE.md` marks session 44 done. `IDEAS.md`'s DREAM section records the four steps and the memo item enters the Inbox. The 1.0.44 and 1.0.47 entries below now carry their applies. No code.
+`docs/HANDOFF.md` gains the midday pickup at the top: Phase 2 steps 4 to 7 live with their review pages, the two migrations applied with proof, the operator's prod checks, the session's decisions and findings, the two editors left and Phase 3 next; the late-morning section loses its LATEST marker. `SCHEDULE.md` marks session 44 done. `IDEAS.md`'s DREAM section records the four steps and the memo item enters the Inbox. The 1.0.44 and 1.0.47 entries below now carry their applies. Added at the close: the operator's direction that fonts, sizes and "these things and others in css and js" must be fully customisable, recorded in the handoff's Start here 0 and the DREAM section with the tokens-first reading and the rails it touches, to be planned first next session. No code.
 
 ## 1.0.47 — 2026-09-08
 
