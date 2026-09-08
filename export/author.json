@@ -1,0 +1,40 @@
+[
+  {
+    "id": "d4b88858-e5bc-4058-af64-f9b20486eb17",
+    "clerk_user_id": "user_3Dj7VJ9cClEegSAklquQYVpJEbK",
+    "slug": "paris-paraskevas",
+    "display_name": "Paris Paraskevas",
+    "role_title": "Founder & Editor",
+    "bio": "Paris built Paddock Tracker and edits it. He writes most of the Formula 1 coverage here, from Thursday previews through practice, qualifying and race reports to the lap-by-lap race chronologies, and covers MotoGP alongside it. The data pipelines behind every schedule, standings table and results board are his too.",
+    "links": [
+      {
+        "url": "https://www.instagram.com/_paraskevasparis_?igsh=MWx6OWc5ZXRkbHh6eg==",
+        "label": "Instagram"
+      }
+    ],
+    "created_at": "2026-07-28T11:22:29.920016+00:00",
+    "updated_at": "2026-08-06T07:51:17.636+00:00"
+  },
+  {
+    "id": "dd0e64a1-4a11-4191-85cc-a2ccc015b0ce",
+    "clerk_user_id": "user_3FVSTEjKmzQMusyqtqw8mKVcYnA",
+    "slug": "stylianos-christopoulos",
+    "display_name": "Stylianos Christopoulos",
+    "role_title": "Contributor",
+    "bio": "Stylianos writes the Greek-language Formula 1 coverage on Paddock. His team-by-team report cards work through the whole grid after a race weekend and set out what each team got right and what it got wrong.",
+    "links": [],
+    "created_at": "2026-07-28T11:22:29.920016+00:00",
+    "updated_at": "2026-07-28T11:22:29.920016+00:00"
+  },
+  {
+    "id": "e7058743-c449-465b-a9ec-63432d387728",
+    "clerk_user_id": "user_3FVQbdF0fyPTkuq7Em58w6Cxqzm",
+    "slug": "panagiotis-loutriotis",
+    "display_name": "Παναγιώτης Λουτριώτης",
+    "role_title": "Contributor",
+    "bio": "Panagiotis writes Formula 1 opinion for Paddock. His first piece covered the 2026 Hungarian Grand Prix and the moment Lando Norris finally won a race in his title defence.",
+    "links": [],
+    "created_at": "2026-07-28T11:22:29.920016+00:00",
+    "updated_at": "2026-07-28T11:22:29.920016+00:00"
+  }
+]

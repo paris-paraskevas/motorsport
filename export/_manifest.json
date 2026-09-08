@@ -1,0 +1,22 @@
+{
+  "tables": {
+    "application": 1,
+    "page_group": 6,
+    "authz_scheme": 4,
+    "build_option": 4,
+    "asset": 0,
+    "page": 0,
+    "page_revision": 0,
+    "page_revision_ref": 0,
+    "list": 0,
+    "list_entry": 0,
+    "theme": 0,
+    "setting": 0,
+    "text_message": 0,
+    "shortcut": 0,
+    "redirect": 0,
+    "page_layout": 3,
+    "post": 34,
+    "author": 3
+  }
+}

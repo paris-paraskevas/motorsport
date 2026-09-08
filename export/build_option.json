@@ -1,0 +1,30 @@
+[
+  {
+    "key": "ghost_lap_3d",
+    "label": "Ghost lap 3D",
+    "status": "include",
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "social",
+    "label": "Social",
+    "status": "include",
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "studio",
+    "label": "Studio",
+    "status": "include",
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "weather",
+    "label": "Weather",
+    "status": "include",
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  }
+]

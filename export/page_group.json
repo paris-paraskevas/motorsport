@@ -1,0 +1,44 @@
+[
+  {
+    "key": "account",
+    "label": "Account",
+    "seq": 50,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "calendar",
+    "label": "Calendar",
+    "seq": 20,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "editorial",
+    "label": "Editorial",
+    "seq": 40,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "home",
+    "label": "Home",
+    "seq": 10,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "series",
+    "label": "Series",
+    "seq": 30,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "site",
+    "label": "Site",
+    "seq": 60,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  }
+]

@@ -1,0 +1,79 @@
+[
+  {
+    "id": "486e99b9-0000-47bd-bc46-402aa2f3429e",
+    "page_key": "home",
+    "blocks": [
+      {
+        "id": "blog",
+        "hidden": false,
+        "pinnedSlug": "f1-dutch-grand-prix-2026-sprint-recap"
+      },
+      {
+        "id": "live",
+        "hidden": false
+      },
+      {
+        "id": "result",
+        "hidden": false
+      },
+      {
+        "id": "wire",
+        "hidden": false
+      }
+    ],
+    "published_at": "2026-08-24T08:58:13.803666+00:00",
+    "created_at": "2026-08-24T08:58:13.803666+00:00",
+    "created_by": "measurement:session-34"
+  },
+  {
+    "id": "72c991d1-91c5-4394-b0d6-3586a5334591",
+    "page_key": "home",
+    "blocks": [
+      {
+        "id": "blog",
+        "hidden": false
+      },
+      {
+        "id": "live",
+        "hidden": false
+      },
+      {
+        "id": "result",
+        "hidden": false
+      },
+      {
+        "id": "wire",
+        "hidden": false
+      }
+    ],
+    "published_at": "2026-08-24T08:59:50.423292+00:00",
+    "created_at": "2026-08-24T08:59:50.423292+00:00",
+    "created_by": "measurement:session-34 revert"
+  },
+  {
+    "id": "bde87a39-3dd5-46e4-89de-9645f1202271",
+    "page_key": "home",
+    "blocks": [
+      {
+        "id": "blog",
+        "hidden": false,
+        "pinnedSlug": "f1-italian-grand-prix-2026-race-recap"
+      },
+      {
+        "id": "live",
+        "hidden": false
+      },
+      {
+        "id": "result",
+        "hidden": false
+      },
+      {
+        "id": "wire",
+        "hidden": false
+      }
+    ],
+    "published_at": "2026-09-07T20:59:06.696+00:00",
+    "created_at": "2026-09-07T20:59:06.908859+00:00",
+    "created_by": "user_3Dj7VJ9cClEegSAklquQYVpJEbK"
+  }
+]

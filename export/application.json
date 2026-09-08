@@ -1,0 +1,17 @@
+[
+  {
+    "key": "paddock",
+    "name": "Paddock Tracker",
+    "alias": "paddock",
+    "availability": "available",
+    "home_path": "/",
+    "description": null,
+    "wordmark": null,
+    "tagline": null,
+    "date_chip": true,
+    "install_prompt": true,
+    "favicon_asset_id": null,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  }
+]

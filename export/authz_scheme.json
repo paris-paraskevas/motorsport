@@ -1,0 +1,38 @@
+[
+  {
+    "key": "administrator",
+    "label": "Administrator",
+    "type": "role",
+    "value": "admin",
+    "message": null,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "contributor",
+    "label": "Contributor",
+    "type": "author",
+    "value": null,
+    "message": "For approved writers.",
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "public",
+    "label": "Public",
+    "type": "public",
+    "value": null,
+    "message": null,
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  },
+  {
+    "key": "signed_in",
+    "label": "Signed in",
+    "type": "signed_in",
+    "value": null,
+    "message": "Sign in to see this.",
+    "updated_at": "2026-09-08T06:33:01.603356+00:00",
+    "updated_by": null
+  }
+]
