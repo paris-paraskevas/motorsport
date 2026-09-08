@@ -24,7 +24,7 @@ export default async function AssistantInsightsPage() {
     <div className={PAGE_READ}>
       <Link
         href="/settings"
-        className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+        className="mb-4 inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
       >
         <ArrowLeft size={13} /> Account
       </Link>
@@ -100,7 +100,7 @@ export default async function AssistantInsightsPage() {
         )}
       </Section>
 
-      <p className="mt-6 font-mono text-[11px] leading-relaxed text-text-faint">
+      <p className="mt-6 font-mono text-11 leading-relaxed text-text-faint">
         Retention is bounded by count (a capped recent list + rolling counters), not time — see the privacy policy. Data comes from the KV store; empty until questions are asked on prod, and the assistant is currently switched off.
       </p>
     </div>
@@ -111,7 +111,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-xl border border-border bg-surface-elevated p-3">
       <div className="font-display text-2xl font-extrabold tabular-nums text-text">{value.toLocaleString()}</div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</div>
+      <div className="font-mono text-10 uppercase tracking-[0.14em] text-text-muted">{label}</div>
     </div>
   );
 }
@@ -119,7 +119,7 @@ function Stat({ label, value }: { label: string; value: number }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-6">
-      <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">{title}</h2>
+      <h2 className="mb-2 font-mono text-11 uppercase tracking-[0.16em] text-text-muted">{title}</h2>
       {children}
     </section>
   );

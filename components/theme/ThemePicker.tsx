@@ -63,8 +63,8 @@ export function Swatch({ theme }: { theme: Pick<ThemeOption, 'tokens' | 'family'
         className="flex items-baseline gap-1.5 px-2 py-1 border"
         style={{ backgroundColor: t.surface, borderColor: theme.family === 'dark' ? '#ffffff26' : '#00000026' }}
       >
-        <span className="text-[13px] font-semibold" style={{ color: t.text }}>Aa</span>
-        <span className="font-mono text-[11px] font-semibold tabular-nums" style={{ color: t.accent }}>12</span>
+        <span className="text-13 font-semibold" style={{ color: t.text }}>Aa</span>
+        <span className="font-mono text-11 font-semibold tabular-nums" style={{ color: t.accent }}>12</span>
       </span>
     </span>
   );
@@ -135,10 +135,10 @@ export function ThemePicker({ set }: { set: ThemeSet }) {
               }`}
             >
               {o.swatch}
-              <span className="mt-1.5 block font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text">
+              <span className="mt-1.5 block font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text">
                 {o.label}
               </span>
-              <span className="block text-[11px] leading-tight text-text-faint">{o.hint}</span>
+              <span className="block text-11 leading-tight text-text-faint">{o.hint}</span>
             </button>
           );
         })}

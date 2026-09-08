@@ -78,7 +78,7 @@ export function BlogShare({ url, title, slug }: { url: string; title: string; sl
 
   return (
     <section className="border-t border-border pt-4">
-      <h2 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+      <h2 className="mb-3 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
         Share
       </h2>
       <div className="flex flex-wrap gap-2">

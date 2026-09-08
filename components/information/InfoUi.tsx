@@ -23,7 +23,7 @@ export function TopicCard({
           {label}
         </h3>
         {count > 0 && (
-          <span className="font-mono text-[10px] tabular-nums text-text-faint shrink-0">
+          <span className="font-mono text-10 tabular-nums text-text-faint shrink-0">
             {count}
           </span>
         )}
@@ -50,11 +50,11 @@ export function EntryRow({
       className="group block py-3.5 px-2 -mx-2 rounded-md hover:bg-surface transition-colors duration-(--duration-fast)"
     >
       <div className="flex items-baseline gap-2">
-        <h3 className="text-[15px] md:text-base font-semibold leading-snug tracking-tight text-text group-hover:text-tint transition-colors duration-(--duration-fast)">
+        <h3 className="text-15 md:text-base font-semibold leading-snug tracking-tight text-text group-hover:text-tint transition-colors duration-(--duration-fast)">
           {question}
         </h3>
         {draft && (
-          <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint bg-surface border border-border rounded px-1 py-0.5">
+          <span className="shrink-0 font-mono text-9 uppercase tracking-[0.12em] text-text-faint bg-surface border border-border rounded px-1 py-0.5">
             Draft
           </span>
         )}

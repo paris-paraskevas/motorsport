@@ -27,7 +27,7 @@ export function WeekendSchedule({
       <div>
         {byDay.map((day, dayIdx) => (
           <div key={day.label} className={dayIdx > 0 ? 'border-t border-border/60' : undefined}>
-            <div className="pt-3 pb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint font-semibold">
+            <div className="pt-3 pb-2 font-mono text-11 uppercase tracking-[0.14em] text-text-faint font-semibold">
               {day.label}
             </div>
             <ul>
@@ -63,13 +63,13 @@ export function WeekendSchedule({
                           </span>
                         )}
                         {isLive && (
-                          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-live/15 text-live-pill font-semibold">
+                          <span className="inline-flex items-center gap-1 text-10 uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-live/15 text-live-pill font-semibold">
                             <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
                             live
                           </span>
                         )}
                         {s.significance && s.significance.tier !== 'note' && (
-                          <span className="text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
+                          <span className="text-10 uppercase tracking-[0.12em] px-1.5 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
                             {s.significance.tier}
                           </span>
                         )}

@@ -43,7 +43,7 @@ function Stat({ value, label, tone }: { value: string; label: string; tone?: 'go
   return (
     <div className="min-w-0 rounded-xl border border-border bg-surface-elevated p-4">
       <div className={`truncate font-display text-3xl font-extrabold tabular-nums ${colour}`}>{value}</div>
-      <div className="mt-1 truncate font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</div>
+      <div className="mt-1 truncate font-mono text-10 uppercase tracking-[0.14em] text-text-muted">{label}</div>
     </div>
   );
 }
@@ -58,7 +58,7 @@ function TaskRow({ what, detail, href, action }: { what: string; detail: string;
         <span className="block truncate text-sm text-text">{what}</span>
         <span className="block truncate text-xs text-text-muted">{detail}</span>
       </span>
-      <span className="shrink-0 rounded-lg border border-border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted group-hover:border-brand group-hover:text-brand">
+      <span className="shrink-0 rounded-lg border border-border px-2.5 py-1 font-mono text-10 uppercase tracking-[0.14em] text-text-muted group-hover:border-brand group-hover:text-brand">
         {action}
       </span>
     </>
@@ -212,19 +212,19 @@ export default async function AdminPage() {
           <ul className="divide-y divide-border">
             <li className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-sm">
               <span className="text-text-muted">Home page lead</span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text">
+              <span className="font-mono text-11 uppercase tracking-[0.14em] text-text">
                 {pinnedLeadSlug(layout) ? 'pinned by you' : 'automatic'}
               </span>
             </li>
             <li className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-sm">
               <span className="text-text-muted">Last data check</span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text">
+              <span className="font-mono text-11 uppercase tracking-[0.14em] text-text">
                 {report ? (report.ok ? 'all clear' : `${report.down} failing`) : 'none yet'}
               </span>
             </li>
             <li className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-sm">
               <span className="text-text-muted">Clicks tracked</span>
-              <span className="font-mono text-[11px] tabular-nums text-text">{totalClicks.toLocaleString()}</span>
+              <span className="font-mono text-11 tabular-nums text-text">{totalClicks.toLocaleString()}</span>
             </li>
           </ul>
         </TelemetryPanel>

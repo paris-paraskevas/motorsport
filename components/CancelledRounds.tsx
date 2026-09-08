@@ -60,7 +60,7 @@ export function CancelledRoundsSection({
                 </span>
                 {round.name}
               </div>
-              <span className="text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-300/80 font-semibold">
+              <span className="text-10 uppercase tracking-wider text-amber-700 dark:text-amber-300/80 font-semibold">
                 Cancelled
               </span>
             </div>

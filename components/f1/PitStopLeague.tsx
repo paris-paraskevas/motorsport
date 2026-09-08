@@ -38,7 +38,7 @@ export function PitStopLeague({
         <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
           Pit-stop league
         </h3>
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
           Fastest stop
         </span>
       </div>
@@ -50,7 +50,7 @@ export function PitStopLeague({
           const delta = e.fastestStop - fastest; // gap to the fastest stop
           return (
             <li key={e.driverNumber} className="flex items-center gap-2.5 py-2">
-              <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+              <span className="w-5 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                 {i + 1}
               </span>
               <span className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -62,17 +62,17 @@ export function PitStopLeague({
                 <span className="font-display text-xs font-extrabold uppercase tracking-wide text-text">
                   {driver?.code ?? `#${e.driverNumber}`}
                 </span>
-                <span className="truncate font-mono text-[11px] text-text-muted">
+                <span className="truncate font-mono text-11 text-text-muted">
                   {driver?.team ?? ''}
                 </span>
               </span>
-              <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+              <span className="shrink-0 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                 {e.stopCount} stop{e.stopCount === 1 ? '' : 's'}
               </span>
               <span className="w-16 shrink-0 text-right font-mono text-xs font-semibold tabular-nums text-text">
                 {fmtStop(e.fastestStop)}
               </span>
-              <span className="hidden w-16 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint sm:inline">
+              <span className="hidden w-16 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint sm:inline">
                 {i === 0 ? '—' : `+${delta.toFixed(2)}`}
               </span>
             </li>

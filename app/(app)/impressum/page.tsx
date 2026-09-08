@@ -25,7 +25,7 @@ export default async function ImpressumPage() {
   return (
     <div className={PAGE_READ}>
       <header className="mb-8">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
+        <div className="text-11 uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
           Legal
         </div>
       </header>

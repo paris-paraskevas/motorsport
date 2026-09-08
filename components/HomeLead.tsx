@@ -120,9 +120,9 @@ function timeLabel(iso: string): string {
 function SectionRule({ label, right }: { label: string; right?: string }) {
   return (
     <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
-      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</span>
+      <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</span>
       {right !== undefined && (
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{right}</span>
+        <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{right}</span>
       )}
     </div>
   );
@@ -236,7 +236,7 @@ export function HomeLead({
                 // No cover (19 of 24 published posts have none, counted
                 // 2026-08-24): a typographic panel rather than a broken box.
                 <span className="flex aspect-[8/5] items-end bg-surface p-4">
-                  <span className="font-mono text-[28px] font-bold uppercase leading-none tracking-[-0.02em] text-text-faint lg:text-[38px]">
+                  <span className="font-mono text-28 font-bold uppercase leading-none tracking-[-0.02em] text-text-faint lg:text-38">
                     {blog.seriesName ?? 'Paddock'}
                   </span>
                 </span>
@@ -250,11 +250,11 @@ export function HomeLead({
                 the box was dead space until the fluid type below. */}
             <div className="flex min-w-0 flex-col p-[18px] lg:justify-center lg:p-5">
               <div className="flex flex-wrap items-center gap-2.5">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
+                <span className="font-mono text-10 font-bold uppercase tracking-[0.2em] text-brand">
                   Lead story
                 </span>
                 {blog.ageLabel && (
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                  <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
                     {blog.ageLabel}
                   </span>
                 )}
@@ -266,14 +266,14 @@ export function HomeLead({
                       style={{ backgroundColor: blog.seriesColor ?? undefined }}
                     />
                     <span
-                      className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
+                      className="font-mono text-10 font-semibold uppercase tracking-[0.16em]"
                       style={{ color: blog.seriesColor ? seriesInk(blog.seriesColor) : undefined }}
                     >
                       {blog.seriesName}
                     </span>
                   </>
                 )}
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
                   {blog.readMinutes} min read
                 </span>
               </div>
@@ -293,7 +293,7 @@ export function HomeLead({
               </p>
               <Link
                 href={`/blog/${blog.slug}`}
-                className="mt-5 inline-flex min-h-11 items-center self-start bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+                className="mt-5 inline-flex min-h-11 items-center self-start bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
               >
                 Read the story →
               </Link>
@@ -304,7 +304,7 @@ export function HomeLead({
                   own picture. */}
               {blog.suggested && blog.suggested.length > 0 && (
                 <div className="mt-8 hidden border-t border-border pt-4 xl:block">
-                  <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                  <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                     More reading
                   </span>
                   <ul className="mt-2">
@@ -319,7 +319,7 @@ export function HomeLead({
                             the same rule the /blog list follows. */}
                         <Link
                           href={`/blog/${s.slug}`}
-                          className="flex items-center gap-3 border-b border-border py-2 font-serif text-[16px] font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text"
+                          className="flex items-center gap-3 border-b border-border py-2 font-serif text-16 font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text"
                         >
                           {s.heroImage && (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -372,21 +372,21 @@ export function HomeLead({
                 starting inside 24h (page.tsx's DAY_MS lookahead), and on the
                 Friday morning of a race weekend no session has run yet. The
                 countdown on the Up-next row carries the liveness instead. */}
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand">This weekend</span>
+            <span className="font-mono text-10 font-bold uppercase tracking-[0.2em] text-brand">This weekend</span>
             <span
               aria-hidden="true"
               className="h-3.5 w-[3px] shrink-0 self-center"
               style={{ backgroundColor: liveWeekend.color }}
             />
             <span
-              className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
+              className="font-mono text-10 font-semibold uppercase tracking-[0.16em]"
               style={{ color: seriesInk(liveWeekend.color) }}
             >
               {liveWeekend.seriesName}
             </span>
             <Link
               href={liveWeekend.href}
-              className="min-w-0 font-serif text-[22px] font-semibold leading-tight text-text hover:underline lg:text-[26px]"
+              className="min-w-0 font-serif text-22 font-semibold leading-tight text-text hover:underline lg:text-26"
             >
               {liveWeekend.eventName}
             </Link>
@@ -405,7 +405,7 @@ export function HomeLead({
                   cannot drift from theirs. */}
               <Link
                 href={`${liveWeekend.href}/${sessionSlug(liveWeekend.nextSession.name)}`}
-                className="min-w-0 font-serif text-[17px] font-semibold leading-tight text-text hover:underline"
+                className="min-w-0 font-serif text-17 font-semibold leading-tight text-text hover:underline"
               >
                 {liveWeekend.nextSession.name}
               </Link>
@@ -420,7 +420,7 @@ export function HomeLead({
 
           {liveIndex === 0 && liveWeekend.alsoSameDay.length > 0 && liveWeekend.alsoDayIso && (
             <>
-              <span className="mt-4 block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+              <span className="mt-4 block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                 <SessionDayNote dayIso={liveWeekend.alsoDayIso} />
               </span>
               <ul className="mt-1">
@@ -431,11 +431,11 @@ export function HomeLead({
                   >
                     <Link
                       href={`${liveWeekend.href}/${sessionSlug(s.name)}`}
-                      className="min-w-0 truncate font-serif text-[15px] text-text-muted hover:text-text hover:underline"
+                      className="min-w-0 truncate font-serif text-15 text-text-muted hover:text-text hover:underline"
                     >
                       {s.name}
                     </Link>
-                    <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+                    <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">
                       {timeLabel(s.startIso)}
                     </span>
                   </li>
@@ -454,7 +454,7 @@ export function HomeLead({
           aria-label="Also racing this weekend"
           className={`${liveList.length > 0 ? 'mt-3 ' : ''}border-[1.5px] border-border bg-surface-elevated px-[18px] py-3 lg:px-5`}
         >
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted">
+          <span className="font-mono text-10 font-bold uppercase tracking-[0.2em] text-text-muted">
             Also racing
           </span>
           <ul className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
@@ -467,11 +467,11 @@ export function HomeLead({
                 />
                 <Link
                   href={item.href}
-                  className="font-serif text-[15px] text-text-muted hover:text-text hover:underline"
+                  className="font-serif text-15 text-text-muted hover:text-text hover:underline"
                 >
                   {item.seriesName}
                 </Link>
-                <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                <span className="font-mono text-11 tabular-nums text-text-faint">
                   {timeLabel(item.startIso)}
                 </span>
               </li>
@@ -499,17 +499,17 @@ export function HomeLead({
               <div className="flex items-center gap-2.5">
                 <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: result.color }} />
                 <span
-                  className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
+                  className="font-mono text-10 font-semibold uppercase tracking-[0.16em]"
                   style={{ color: seriesInk(result.color) }}
                 >
                   {result.seriesName}
                 </span>
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
                   Round {result.round} · {raceDate}
                 </span>
               </div>
               {championName && (
-                <p className="mt-3 font-mono text-[12px] font-bold uppercase tracking-[0.2em] text-brand">
+                <p className="mt-3 font-mono text-12 font-bold uppercase tracking-[0.2em] text-brand">
                   Season complete
                 </p>
               )}
@@ -517,7 +517,7 @@ export function HomeLead({
                   so the two headlines do not compete for the same rank. */}
               <ResultHeading
                 className={`${championName ? 'mt-1.5' : 'mt-3'} font-serif font-semibold leading-[1.1] text-text ${
-                  blog ? 'text-[24px] lg:text-[30px]' : 'text-[30px] lg:text-[40px]'
+                  blog ? 'text-24 lg:text-30' : 'text-30 lg:text-40'
                 }`}
               >
                 {championName
@@ -525,18 +525,18 @@ export function HomeLead({
                   : headlineFor(winner.name, result.raceName)}
               </ResultHeading>
               {championName ? (
-                <p className="mt-2 font-serif text-[17px] leading-snug text-text-muted">
+                <p className="mt-2 font-serif text-17 leading-snug text-text-muted">
                   {headlineFor(winner.name, result.raceName)}
                   {result.margin ? ` — winning margin ${result.margin}` : ''}.
                 </p>
               ) : (
-                <p className="mt-2 font-mono text-[11px] tabular-nums text-text-muted">
+                <p className="mt-2 font-mono text-11 tabular-nums text-text-muted">
                   {result.margin ? <>Winning margin <span className="text-text">{result.margin}</span></> : winner.detail}
                 </p>
               )}
               <Link
                 href={result.weekendHref}
-                className="mt-4 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+                className="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
               >
                 Full weekend report →
               </Link>
@@ -545,28 +545,28 @@ export function HomeLead({
               <div className="flex items-baseline justify-between border-b border-text pb-1">
                 {/* In champion mode the h1 is about the title, so the podium
                     must name its race itself (operator annotation, 2026-08-20). */}
-                <span className="min-w-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                <span className="min-w-0 truncate font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                   {championName ? `${result.raceName} · Classification` : 'Classification'}
                 </span>
               </div>
               <ul>
                 {result.podium.map(p => (
                   <li key={p.position} className="flex items-baseline gap-3 border-b border-border py-2">
-                    <span className="w-4 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                    <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                       {p.position}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-serif text-[16px] font-semibold leading-tight text-text">
+                      <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">
                         {p.name}
                       </span>
                       {p.detail && (
-                        <span className="block truncate font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+                        <span className="block truncate font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
                           {p.detail}
                         </span>
                       )}
                     </span>
                     {p.time && (
-                      <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">{p.time}</span>
+                      <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">{p.time}</span>
                     )}
                   </li>
                 ))}
@@ -598,7 +598,7 @@ export function HomeLead({
               />
               <div className="grid gap-6 xl:grid-cols-[minmax(0,300px)_1fr]">
                 <div>
-                  <h2 className="font-serif text-[22px] font-semibold leading-snug text-text lg:text-[26px]">
+                  <h2 className="font-serif text-22 font-semibold leading-snug text-text lg:text-26">
                     {changed.seasonComplete
                       ? changed.gapToSecond != null
                         ? `${changed.leader.name} takes the title by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
@@ -614,7 +614,7 @@ export function HomeLead({
                     const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
                     return (
                       <li key={row.position} className="flex items-center gap-3 border-b border-border py-1.5">
-                        <span className="w-4 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                        <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                           {row.position}
                         </span>
                         <span className={`w-28 shrink-0 truncate text-sm sm:w-36 ${isWinner ? 'font-semibold text-text' : 'text-text-muted'}`}>
@@ -626,10 +626,10 @@ export function HomeLead({
                             style={{ width: `${width}%` }}
                           />
                         </span>
-                        <span className="w-10 shrink-0 text-right font-mono text-[12px] font-semibold tabular-nums text-text">
+                        <span className="w-10 shrink-0 text-right font-mono text-12 font-semibold tabular-nums text-text">
                           {row.points}
                         </span>
-                        <span className="hidden w-10 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint sm:block">
+                        <span className="hidden w-10 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint sm:block">
                           {row.position === 1 ? '—' : `−${leaderPoints - row.points}`}
                         </span>
                       </li>
@@ -652,10 +652,10 @@ export function HomeLead({
                     >
                       <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: w.color }} />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate font-serif text-[16px] font-semibold leading-tight text-text">
+                        <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">
                           {w.title}
                         </span>
-                        <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                        <span className="block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                           {w.seriesName}
                           {w.note ? ` · ${w.note}` : ''}
                         </span>
@@ -663,7 +663,7 @@ export function HomeLead({
                       {i === 0 && w.firstStartIso ? (
                         <NextRaceCountdown target={w.firstStartIso} label={w.dateRangeLabel} color={w.color} />
                       ) : (
-                        <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                        <span className="shrink-0 font-mono text-11 uppercase tracking-[0.12em] text-text-muted">
                           {w.dateRangeLabel}
                         </span>
                       )}
@@ -693,14 +693,14 @@ export function HomeLead({
                 >
                   <span aria-hidden="true" className="relative top-[2px] h-3.5 w-[3px] shrink-0 self-start" style={{ backgroundColor: item.seriesColor }} />
                   <span className="min-w-0 flex-1">
-                    <span className="block font-serif text-[16px] font-semibold leading-snug text-text">
+                    <span className="block font-serif text-16 font-semibold leading-snug text-text">
                       {item.title}
                     </span>
-                    <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                    <span className="block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                       {item.seriesName} · {item.sourceHost}
                     </span>
                   </span>
-                  <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">{item.ageLabel}</span>
+                  <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">{item.ageLabel}</span>
                 </a>
               </li>
             ))}

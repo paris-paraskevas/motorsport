@@ -27,7 +27,7 @@ export function CalendarFilterBox({
   onClear: () => void;
 }) {
   const chipBase =
-    'inline-flex min-h-9 items-center gap-2 border px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors duration-(--duration-fast)';
+    'inline-flex min-h-9 items-center gap-2 border px-3 font-mono text-10 font-semibold uppercase tracking-[0.12em] transition-colors duration-(--duration-fast)';
   const on = 'border-text bg-surface-elevated text-text';
   const off = 'border-border-strong text-text-muted hover:text-text';
   const activeCount = seriesSel === null ? series.length : seriesSel.size;
@@ -43,33 +43,33 @@ export function CalendarFilterBox({
           (operator annotation, 2026-08-20: "move this → move here"). */}
       <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-1.5">
         <span className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+          <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
             Filters · {countLabel}
           </span>
           <button
             type="button"
             onClick={onSelectAll}
-            className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+            className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
           >
             Select all
           </button>
           <button
             type="button"
             onClick={onClear}
-            className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+            className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
           >
             Clear
           </button>
         </span>
         <span className="flex items-baseline gap-x-4">
-          <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint sm:inline">
+          <span className="hidden font-mono text-9 uppercase tracking-[0.14em] text-text-faint sm:inline">
             Applied as you tap
           </span>
           <button
             type="button"
             aria-expanded={openOnMobile}
             onClick={() => setOpenOnMobile(v => !v)}
-            className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted hover:text-text md:hidden"
+            className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted hover:text-text md:hidden"
           >
             {openOnMobile ? 'Hide' : 'Edit'}
           </button>

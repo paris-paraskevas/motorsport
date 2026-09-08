@@ -200,7 +200,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: NavSeriesMeta[] }
           {step === 'series' && (
             <>
               <div className="mb-6">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
+                <div className="text-11 uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
                   Welcome
                 </div>
                 <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
@@ -235,7 +235,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: NavSeriesMeta[] }
               <div className="space-y-5 mb-8">
                 {grouped.map(group => (
                   <section key={group.category.id}>
-                    <div className="text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-2 px-1">
+                    <div className="text-10 uppercase tracking-[0.16em] text-text-faint font-semibold mb-2 px-1">
                       {group.category.label}
                     </div>
                     <div className="border-y border-border">
@@ -271,7 +271,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: NavSeriesMeta[] }
           {step === 'notifications' && (
             <>
               <div className="mb-6">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
+                <div className="text-11 uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
                   Step 2 of 2
                 </div>
                 <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">

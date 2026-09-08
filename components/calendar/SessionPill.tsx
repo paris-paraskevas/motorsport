@@ -18,7 +18,7 @@ export function SessionPill({ entry, round }: { entry: CalendarEntry; round?: nu
     <Link
       href={href}
       onClick={e => e.stopPropagation()}
-      className="flex min-w-0 items-center gap-1.5 rounded px-1 py-0.5 text-[11px] hover:bg-surface"
+      className="flex min-w-0 items-center gap-1.5 rounded px-1 py-0.5 text-11 hover:bg-surface"
     >
       <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
       <span className="shrink-0 font-mono tabular-nums text-text-muted">{timeLabel(session)}</span>

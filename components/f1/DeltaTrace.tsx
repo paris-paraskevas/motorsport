@@ -118,7 +118,7 @@ export function DeltaTrace({
         <h3 className="font-display text-sm font-bold uppercase tracking-wide text-text">
           Speed &amp; cumulative delta
         </h3>
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           delta &gt; 0 → {driverA.code} ahead
         </span>
       </div>
@@ -234,7 +234,7 @@ export function DeltaTrace({
         </ResponsiveContainer>
       </div>
       {/* Compact legend — the two speed traces + the delta line. */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-text-muted">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-11 text-text-muted">
         <LegendChip colour={driverA.teamColour} label={`${driverA.code} speed`} />
         <LegendChip colour={driverB.teamColour} label={`${driverB.code} speed`} />
         <LegendChip colour="var(--brand-fill)" label="Cumulative delta" thick />

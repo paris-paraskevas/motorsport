@@ -35,21 +35,21 @@ export function ContributorPosts({
   return (
     <section aria-label="From our contributors" className={className}>
       <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+        <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
           From our contributors
         </span>
-        <span className="font-mono text-[10px] tabular-nums text-text-faint">{posts.length}</span>
+        <span className="font-mono text-10 tabular-nums text-text-faint">{posts.length}</span>
       </div>
       <div className="grid gap-x-10 md:grid-cols-2">
         {posts.map(p => (
           <Link key={p.id} href={`/blog/${p.slug}`} className="group block border-b border-border py-2.5">
-            <span className="block font-serif text-[17px] font-semibold leading-snug text-text group-hover:underline">
+            <span className="block font-serif text-17 font-semibold leading-snug text-text group-hover:underline">
               {p.title}
             </span>
             {p.summary && (
               <span className="mt-0.5 line-clamp-1 block text-sm text-text-muted">{p.summary}</span>
             )}
-            <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+            <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
               {[
                 p.authorName,
                 showTopic && p.learnTopic ? getTopic(p.learnTopic)?.label : null,

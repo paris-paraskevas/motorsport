@@ -7,7 +7,7 @@ function Stat({ value, label }: { value: string | number; label: string }) {
   return (
     <div>
       <span className="block font-display text-lg font-bold tabular-nums leading-none text-text">{value}</span>
-      <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{label}</span>
+      <span className="mt-1 block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{label}</span>
     </div>
   );
 }
@@ -20,7 +20,7 @@ export function AccountStats({ stats }: { stats: Stats }) {
     <div className="mb-6 border-b border-border pb-5">
       <div className="flex items-baseline gap-2">
         <span className="font-display text-2xl font-extrabold tabular-nums text-brand">{stats.balance.toLocaleString()}</span>
-        <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">credits</span>
+        <span className="font-mono text-11 uppercase tracking-[0.16em] text-text-muted">credits</span>
       </div>
       <div className="mt-4 flex gap-8">
         <Stat value={stats.friendCount} label="Friends" />

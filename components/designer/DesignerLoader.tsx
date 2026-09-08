@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 const Designer = dynamic(() => import('./Designer').then(m => m.Designer), {
   ssr: false,
   loading: () => (
-    <p className="p-6 font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading the designer…</p>
+    <p className="p-6 font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading the designer…</p>
   ),
 });
 

@@ -93,7 +93,7 @@ function StatRow({
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-border/60 py-3">
       <div className={`text-left ${cls('a')}`}>{a}</div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold text-center">
+      <div className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint font-semibold text-center">
         {label}
       </div>
       <div className={`text-right ${cls('b')}`}>{b}</div>
@@ -111,7 +111,7 @@ function DriverHead({ driver, align }: { driver: DriverDetail; align: 'left' | '
         {driver.name}
       </Link>
       <div
-        className="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted"
+        className="mt-1 font-mono text-11 uppercase tracking-[0.14em] text-text-muted"
         style={driver.teamColor ? { color: seriesInk(driver.teamColor) } : undefined}
       >
         {driver.team}
@@ -128,7 +128,7 @@ function Last5Column({ form, align }: { form: DriverSeasonForm; align: 'left' | 
           key={`${r.round}-${r.raceName}`}
           className={`flex items-baseline gap-2 py-1.5 ${align === 'right' ? 'flex-row-reverse text-right' : ''}`}
         >
-          <span className="w-8 shrink-0 font-mono text-[11px] font-semibold tabular-nums text-tint">R{r.round}</span>
+          <span className="w-8 shrink-0 font-mono text-11 font-semibold tabular-nums text-tint">R{r.round}</span>
           <span className="flex-1 min-w-0 truncate text-sm text-text-muted">{r.raceName}</span>
           <span className="font-mono text-sm tabular-nums text-text">P{r.position}</span>
         </li>
@@ -190,7 +190,7 @@ export default async function F1ComparePage({
       />
 
       <header className="mb-8 border-b border-border pb-6">
-        <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
+        <div className="font-mono text-11 uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
           Formula 1 · Head-to-head
         </div>
         <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
@@ -205,7 +205,7 @@ export default async function F1ComparePage({
       {/* Picker — a native GET form, so it works without client JS. */}
       <form method="get" action="/f1/compare" className="mb-8 flex flex-wrap items-end gap-3">
         <label className="flex-1 min-w-[9rem]">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-1">
+          <span className="block font-mono text-10 uppercase tracking-[0.16em] text-text-faint font-semibold mb-1">
             Driver A
           </span>
           <select
@@ -222,7 +222,7 @@ export default async function F1ComparePage({
           </select>
         </label>
         <label className="flex-1 min-w-[9rem]">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-1">
+          <span className="block font-mono text-10 uppercase tracking-[0.16em] text-text-faint font-semibold mb-1">
             Driver B
           </span>
           <select
@@ -240,7 +240,7 @@ export default async function F1ComparePage({
         </label>
         <button
           type="submit"
-          className="border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text hover:border-tint transition-colors duration-(--duration-fast)"
+          className="border border-border-strong bg-surface px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text hover:border-tint transition-colors duration-(--duration-fast)"
         >
           Compare
         </button>
@@ -301,7 +301,7 @@ export default async function F1ComparePage({
             </div>
           </section>
 
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          <p className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
             From race results · quali head-to-head coming later
           </p>
         </>

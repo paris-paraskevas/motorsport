@@ -106,12 +106,12 @@ export function YourDevices() {
               <div className="flex items-center gap-2">
                 <span className="truncate text-sm text-text">{d.label || 'Unnamed device'}</span>
                 {d.endpoint === current && (
-                  <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-brand">
+                  <span className="shrink-0 font-mono text-9 uppercase tracking-[0.14em] text-brand">
                     This device
                   </span>
                 )}
               </div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+              <div className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
                 Added {fmt(d.createdAt)}
               </div>
             </div>
@@ -119,7 +119,7 @@ export function YourDevices() {
               type="button"
               onClick={() => test(d.endpoint)}
               disabled={busy !== null}
-              className="inline-flex shrink-0 items-center gap-1 font-mono text-[11px] uppercase tracking-[0.1em] text-text-muted transition-colors hover:text-text disabled:opacity-40"
+              className="inline-flex shrink-0 items-center gap-1 font-mono text-11 uppercase tracking-[0.1em] text-text-muted transition-colors hover:text-text disabled:opacity-40"
             >
               {busy === d.endpoint && <Loader2 size={12} className="animate-spin" aria-hidden />}
               Test
@@ -128,7 +128,7 @@ export function YourDevices() {
               type="button"
               onClick={() => remove(d.endpoint)}
               disabled={busy !== null}
-              className="shrink-0 font-mono text-[11px] uppercase tracking-[0.1em] text-text-faint transition-colors hover:text-red-400 disabled:opacity-40"
+              className="shrink-0 font-mono text-11 uppercase tracking-[0.1em] text-text-faint transition-colors hover:text-red-400 disabled:opacity-40"
             >
               Remove
             </button>

@@ -95,7 +95,7 @@ function DriversTable({
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">{heading}</caption>
           <thead>
-            <tr className="border-b border-border font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            <tr className="border-b border-border font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
               <th scope="col" className="w-10 py-2 pr-3 text-right font-normal">
                 Pos
               </th>
@@ -129,9 +129,9 @@ function DriversTable({
                 </td>
                 <td className="py-2 pr-3 align-baseline">
                   <span className="inline-flex items-baseline gap-2">
-                    <span className="font-condensed text-[15px] font-semibold text-text">{d.driverName}</span>
+                    <span className="font-condensed text-15 font-semibold text-text">{d.driverName}</span>
                     {d.driverCode ? (
-                      <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-faint">
+                      <span className="border border-border px-1.5 py-0.5 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">
                         {d.driverCode}
                       </span>
                     ) : null}
@@ -142,11 +142,11 @@ function DriversTable({
                     {d.team}
                   </td>
                 ) : null}
-                <td className="py-2 pl-3 text-right align-baseline font-mono text-[13px] font-semibold tabular-nums text-numeral">
+                <td className="py-2 pl-3 text-right align-baseline font-mono text-13 font-semibold tabular-nums text-numeral">
                   {d.points}
                 </td>
                 {showWins ? (
-                  <td className="py-2 pl-3 text-right align-baseline font-mono text-[13px] tabular-nums text-text-faint">
+                  <td className="py-2 pl-3 text-right align-baseline font-mono text-13 tabular-nums text-text-faint">
                     {d.wins != null ? d.wins : ''}
                   </td>
                 ) : null}
@@ -183,7 +183,7 @@ function ConstructorsTable({
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">{heading}</caption>
           <thead>
-            <tr className="border-b border-border font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            <tr className="border-b border-border font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
               <th scope="col" className="w-10 py-2 pr-3 text-right font-normal">
                 Pos
               </th>
@@ -210,14 +210,14 @@ function ConstructorsTable({
                 >
                   {c.position}
                 </td>
-                <td className="py-2 pr-3 align-baseline font-condensed text-[15px] font-semibold text-text">
+                <td className="py-2 pr-3 align-baseline font-condensed text-15 font-semibold text-text">
                   {c.name}
                 </td>
-                <td className="py-2 pl-3 text-right align-baseline font-mono text-[13px] font-semibold tabular-nums text-numeral">
+                <td className="py-2 pl-3 text-right align-baseline font-mono text-13 font-semibold tabular-nums text-numeral">
                   {c.points}
                 </td>
                 {showWins ? (
-                  <td className="py-2 pl-3 text-right align-baseline font-mono text-[13px] tabular-nums text-text-faint">
+                  <td className="py-2 pl-3 text-right align-baseline font-mono text-13 tabular-nums text-text-faint">
                     {c.wins != null ? c.wins : ''}
                   </td>
                 ) : null}
@@ -287,7 +287,7 @@ function TrendSection({
   if (!trend || trend.data.length === 0) return null;
   return (
     <section className="border-y border-border py-4">
-      <h2 className="mb-3 border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+      <h2 className="mb-3 border-b border-text pb-1 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
         {title}
       </h2>
       <SeasonTrendChart

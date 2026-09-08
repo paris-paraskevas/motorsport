@@ -82,7 +82,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
               maxLength={60}
               className="rounded border border-border bg-surface/40 px-2 py-1 font-mono text-sm text-text"
             />
-            <button type="submit" disabled={busy} className="bg-text px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40">
+            <button type="submit" disabled={busy} className="bg-text px-3 py-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40">
               Save
             </button>
             <button
@@ -103,7 +103,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
               <button
                 type="button"
                 onClick={() => setRenaming(true)}
-                className="ml-2 align-middle font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text"
+                className="ml-2 align-middle font-mono text-11 uppercase tracking-[0.14em] text-text-muted hover:text-text"
               >
                 edit
               </button>
@@ -114,12 +114,12 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
           type="button"
           onClick={copyInvite}
           disabled={busy}
-          className="rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
+          className="rounded border border-border px-3 py-1.5 font-mono text-11 uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
         >
           {invite ? 'Copied — copy again' : 'Copy invite link'}
         </button>
       </div>
-      {invite && <p className="truncate font-mono text-[11px] text-text-muted">{invite}</p>}
+      {invite && <p className="truncate font-mono text-11 text-text-muted">{invite}</p>}
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
 
       {/* Per-bet stake limit — owner sets it, everyone sees it. */}
@@ -142,7 +142,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
               className="w-24 rounded border border-border bg-surface/40 px-2 py-1 text-text"
             />
             <span className="text-text-faint">credits / bet</span>
-            <button type="submit" disabled={busy} className="bg-text px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40">
+            <button type="submit" disabled={busy} className="bg-text px-3 py-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40">
               Save
             </button>
           </form>
@@ -238,7 +238,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
 
       {league.addableFriends.length > 0 && (
         <div className="border-t border-border pt-3">
-          <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Invite friends</h2>
+          <h2 className="mb-2 font-mono text-11 uppercase tracking-[0.16em] text-text-muted">Invite friends</h2>
           <ul className="space-y-1">
             {league.addableFriends.map(f => (
               <li
@@ -262,7 +262,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
 
       {league.honours.length > 0 && (
         <div className="border-t border-border pt-3">
-          <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Honours</h2>
+          <h2 className="mb-2 font-mono text-11 uppercase tracking-[0.16em] text-text-muted">Honours</h2>
           <ul className="space-y-1.5">
             {league.honours.map(h => (
               <li key={h.period} className="font-mono text-xs text-text-muted">
@@ -311,7 +311,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
             <button
               type="button"
               onClick={() => setConfirmDisband(true)}
-              className="font-mono text-[11px] uppercase tracking-[0.14em] text-red-400/80 hover:text-red-400"
+              className="font-mono text-11 uppercase tracking-[0.14em] text-red-400/80 hover:text-red-400"
             >
               Disband league
             </button>
@@ -329,7 +329,7 @@ function MemberStats({ m }: { m: LeagueMemberDetail }) {
   const netClass = net > 0 ? 'text-emerald-400' : net < 0 ? 'text-red-400' : 'text-text-muted';
   const netLabel = `${net > 0 ? '+' : ''}${net.toLocaleString()}`;
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-text-muted">
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-11 text-text-muted">
       <span className="tabular-nums">
         <span className="text-text">{m.wins}</span>/{m.placed} · {(m.winRate * 100).toFixed(0)}%
       </span>
@@ -404,7 +404,7 @@ function ProfileEditor({
         className="h-8 w-10 rounded border border-border bg-transparent"
         aria-label="Colour"
       />
-      <button type="submit" disabled={busy} className="bg-text px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40">
+      <button type="submit" disabled={busy} className="bg-text px-3 py-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40">
         Save
       </button>
     </form>

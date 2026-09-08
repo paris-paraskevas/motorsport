@@ -17,7 +17,7 @@ const FIELD =
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+      <span className="mb-1 block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
         {label}
       </span>
       {children}
@@ -115,7 +115,7 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
       <div className="min-w-0 space-y-4">
         {recovered && (
           <div className="border border-amber-600/60 bg-amber-50/60 px-4 py-3 dark:bg-amber-950/20">
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
+            <p className="font-mono text-11 font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
               Unsaved draft found
             </p>
             <p className="mt-1 text-sm text-text-muted">
@@ -125,14 +125,14 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
               <button
                 type="button"
                 onClick={restoreDraft}
-                className="rounded border border-border-strong bg-surface px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text"
+                className="rounded border border-border-strong bg-surface px-3 py-1.5 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text"
               >
                 Restore it
               </button>
               <button
                 type="button"
                 onClick={discard}
-                className="rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted"
+                className="rounded border border-border px-3 py-1.5 font-mono text-11 uppercase tracking-[0.16em] text-text-muted"
               >
                 Discard
               </button>
@@ -161,7 +161,7 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
           />
         </Field>
         <div>
-          <span className="mb-1 block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          <span className="mb-1 block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
             Body
           </span>
           <MarkdownEditor value={body} onChange={setBody} minHeightClass="min-h-[55vh]" />
@@ -220,12 +220,12 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
           />
         </Field>
         {originalUrl.trim() && (
-          <p className="font-mono text-[10px] leading-relaxed text-text-faint">
+          <p className="font-mono text-10 leading-relaxed text-text-faint">
             Import: the post will credit and canonically point to this URL, so search engines index
             the original, not our copy. Leave blank for original writing.
           </p>
         )}
-        <p className="font-mono text-[10px] leading-relaxed text-text-faint">
+        <p className="font-mono text-10 leading-relaxed text-text-faint">
           A series-slug tag (e.g. f1) also surfaces the post on that series&apos; page. Cover
           sources: Wikimedia Commons / Flickr (CC filter, credit in the body) · Unsplash · Pexels ·
           Pixabay. Landscape, ≥1200×630.
@@ -234,11 +234,11 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
         <button
           type="submit"
           disabled={busy}
-          className="w-full bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
+          className="w-full bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
         >
           {busy ? 'Saving…' : 'Save draft'}
         </button>
-        <p className="font-mono text-[10px] leading-relaxed text-text-faint">
+        <p className="font-mono text-10 leading-relaxed text-text-faint">
           Saving keeps it private. Submit it for review from the draft&apos;s page when it&apos;s
           ready.
         </p>

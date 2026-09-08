@@ -22,7 +22,7 @@ const RELEASE_PROSE =
   'prose-ul:my-2 prose-li:my-1 prose-li:text-text-muted ' +
   'prose-strong:text-text prose-a:text-tint';
 
-const EYEBROW = 'font-mono text-[10px] font-semibold uppercase tracking-[0.16em]';
+const EYEBROW = 'font-mono text-10 font-semibold uppercase tracking-[0.16em]';
 
 // Compact per-entry date, e.g. "2026-07-01" → "1 Jul". The release header
 // already carries the span, so an entry only needs the day and month; the full
@@ -102,7 +102,7 @@ export default async function ChangelogPage() {
                         </span>
                       )}
                     </div>
-                    <h2 className="font-serif text-[22px] font-semibold leading-snug text-text">
+                    <h2 className="font-serif text-22 font-semibold leading-snug text-text">
                       {release.label}
                     </h2>
                     {release.storyHtml && (

@@ -18,9 +18,9 @@ import {
 // fresh render moves the row between sections.
 
 const BTN_PRIMARY =
-  'bg-text px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40';
+  'bg-text px-3 py-1 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40';
 const BTN_QUIET =
-  'rounded border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40';
+  'rounded border border-border px-3 py-1 font-mono text-11 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40';
 const FIELD_DT = 'rounded border border-border bg-bg px-2 py-1 font-mono text-xs text-text';
 
 export function RowActions({
@@ -86,7 +86,7 @@ export function RowActions({
         </>
       )}
       {status === 'in_review' && !admin && (
-        <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+        <span className="font-mono text-11 uppercase tracking-[0.14em] text-text-faint">
           Submitted, waiting on the editor. You can still edit it.
         </span>
       )}

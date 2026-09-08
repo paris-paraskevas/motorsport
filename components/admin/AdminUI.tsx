@@ -29,7 +29,7 @@ export function AdminPageHeader({ title, tagline }: { title: string; tagline: st
           {title}
           <span className="text-brand">.</span>
         </h1>
-        <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">{tagline}</p>
+        <p className="mt-1 font-mono text-11 uppercase tracking-[0.16em] text-text-muted">{tagline}</p>
       </div>
     </header>
   );
@@ -54,9 +54,9 @@ export function TelemetryPanel({
   return (
     <section className={`overflow-hidden rounded-xl border border-border bg-surface-elevated ${className ?? ''}`}>
       <div className="flex items-baseline justify-between gap-3 border-b border-border px-4 py-2.5">
-        <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">{title}</h2>
+        <h2 className="font-mono text-11 uppercase tracking-[0.16em] text-text-muted">{title}</h2>
         {meta ? (
-          <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] tabular-nums text-text-faint">
+          <span className="shrink-0 font-mono text-10 uppercase tracking-[0.14em] tabular-nums text-text-faint">
             {meta}
           </span>
         ) : null}
@@ -84,12 +84,12 @@ export function KpiTile({
   return (
     <div className="min-w-0 rounded-xl border border-border bg-surface-elevated p-4">
       <div className="flex items-center justify-between gap-2">
-        <span className="min-w-0 truncate font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</span>
+        <span className="min-w-0 truncate font-mono text-10 uppercase tracking-[0.14em] text-text-muted">{label}</span>
         <Icon size={14} className="shrink-0 text-text-faint" />
       </div>
       <div className="mt-2 truncate font-display text-3xl font-extrabold tabular-nums text-text">{value}</div>
       {spark ? <div className="mt-2 text-brand">{spark}</div> : null}
-      {hint ? <div className="mt-0.5 text-[11px] text-text-faint">{hint}</div> : null}
+      {hint ? <div className="mt-0.5 text-11 text-text-faint">{hint}</div> : null}
     </div>
   );
 }
@@ -147,7 +147,7 @@ export function SubmissionRow({ s }: { s: SeriesSubmission }) {
     <li className="px-4 py-3 text-sm">
       <div className="flex items-baseline justify-between gap-3">
         <span className="truncate font-semibold text-text">{s.seriesName}</span>
-        <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+        <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">
           {new Date(s.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
         </span>
       </div>
@@ -180,7 +180,7 @@ export function SubmissionStatusBadge({ status }: { status: SeriesSubmission['st
     ingested: 'text-positive',
     rejected: 'text-text-faint',
   };
-  return <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${tone[status]}`}>{status}</span>;
+  return <span className={`font-mono text-10 uppercase tracking-[0.14em] ${tone[status]}`}>{status}</span>;
 }
 
 // A page's element ranking: Hot (most clicks) and Dead (seen but never clicked)
@@ -191,14 +191,14 @@ export function RankPanel({ panel }: { panel: HeatmapPathPanel }) {
     <div className="overflow-hidden rounded-xl border border-border bg-surface-elevated">
       <div className="flex items-baseline justify-between gap-2 border-b border-border px-4 py-2.5">
         <span className="truncate font-mono text-xs text-text">{panel.path}</span>
-        <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">
+        <span className="shrink-0 font-mono text-10 tabular-nums text-text-faint">
           {panel.total.toLocaleString()} clicks
         </span>
       </div>
       <div className="divide-y divide-border">
         {panel.breakpoints.map(bp => (
           <div key={bp.breakpoint} className="px-4 py-3">
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">{bp.breakpoint}</div>
+            <div className="mb-2 font-mono text-10 uppercase tracking-[0.16em] text-text-faint">{bp.breakpoint}</div>
             <div className="grid gap-4 sm:grid-cols-2">
               <RankList
                 title="Hot"
@@ -239,15 +239,15 @@ export function RankList({
 }) {
   return (
     <div>
-      <div className={`mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] ${tone}`}>{title}</div>
+      <div className={`mb-1.5 font-mono text-10 font-semibold uppercase tracking-[0.14em] ${tone}`}>{title}</div>
       {rows.length === 0 ? (
-        <p className="font-mono text-[11px] text-text-faint">{empty}</p>
+        <p className="font-mono text-11 text-text-faint">{empty}</p>
       ) : (
         <ul className="space-y-1">
           {rows.slice(0, 6).map(r => (
             <li key={r.elementId} className="flex items-baseline justify-between gap-2 text-xs">
               <span className="truncate font-mono text-text">{r.elementId}</span>
-              <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">{render(r)}</span>
+              <span className="shrink-0 font-mono text-10 tabular-nums text-text-faint">{render(r)}</span>
             </li>
           ))}
         </ul>
@@ -286,7 +286,7 @@ export function HubCard({
         <div className="font-display text-lg font-bold uppercase tracking-wide text-text">{title}</div>
         <div className="mt-1 text-xs leading-relaxed text-text-faint">{desc}</div>
       </div>
-      <div className="mt-auto font-mono text-[11px] uppercase tracking-[0.14em] tabular-nums text-text-muted">
+      <div className="mt-auto font-mono text-11 uppercase tracking-[0.14em] tabular-nums text-text-muted">
         {glance ?? 'Open'}
       </div>
     </Link>

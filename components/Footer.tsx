@@ -34,7 +34,7 @@ function FooterLink({
 
 function ColumnHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-faint">{children}</h2>
+    <h2 className="mb-2 font-mono text-11 font-semibold uppercase tracking-[0.2em] text-text-faint">{children}</h2>
   );
 }
 
@@ -102,10 +102,10 @@ export function Footer({ site, legal, text }: { site: NavEntry[]; legal: NavEntr
             The footer renders on every page, which is more reach than the
             landing ever had. */}
         <div className="mt-6 flex flex-col gap-4 border-t border-border pt-5 sm:flex-row sm:items-start sm:justify-between">
-          <p className="max-w-sm text-[12px] leading-relaxed text-text-muted">{text['footer.blurb']}</p>
+          <p className="max-w-sm text-12 leading-relaxed text-text-muted">{text['footer.blurb']}</p>
           <InstallApp label={text['footer.install']} />
         </div>
-        <div className="mt-5 flex flex-col gap-1 border-t border-border pt-4 text-[11px] text-text-faint sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-5 flex flex-col gap-1 border-t border-border pt-4 text-11 text-text-faint sm:flex-row sm:items-center sm:justify-between">
           <span className="font-display font-extrabold uppercase tracking-wide text-text">
             Paddock<span className="text-brand">•</span>Tracker
             <span className="ml-2 font-mono font-normal tracking-normal text-text-faint">v{APP_VERSION}</span>

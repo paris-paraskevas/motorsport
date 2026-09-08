@@ -38,7 +38,7 @@ const NAV: { href: string; label: string; icon: React.ComponentType<{ size?: num
 const STUDIO = `${SITE_URL}/studio`;
 
 const ROW =
-  'flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast)';
+  'flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-11 uppercase tracking-[0.14em] transition-colors duration-(--duration-fast)';
 
 export function AdminNav() {
   const pathname = usePathname();

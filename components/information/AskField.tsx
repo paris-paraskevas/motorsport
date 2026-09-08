@@ -20,7 +20,7 @@ export function AskField({ entries }: { entries: Array<{ q: string; href: string
         onChange={e => setQuery(e.target.value)}
         placeholder="Ask a question — try “what is DRS” or “how do WEC points work”"
         aria-label="Search the answers"
-        className="h-11 w-full border-[1.5px] border-text bg-surface-elevated px-3 font-mono text-[12px] text-text outline-none placeholder:text-text-muted"
+        className="h-11 w-full border-[1.5px] border-text bg-surface-elevated px-3 font-mono text-12 text-text outline-none placeholder:text-text-muted"
       />
       {q && (
         <div className="border-x border-b border-border bg-surface-elevated">
@@ -33,7 +33,7 @@ export function AskField({ entries }: { entries: Array<{ q: string; href: string
               <Link
                 key={h.href}
                 href={h.href}
-                className="block border-b border-border px-3 py-2.5 font-serif text-[15px] font-semibold leading-snug text-text last:border-b-0 hover:bg-surface"
+                className="block border-b border-border px-3 py-2.5 font-serif text-15 font-semibold leading-snug text-text last:border-b-0 hover:bg-surface"
               >
                 {h.q}
               </Link>

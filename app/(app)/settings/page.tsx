@@ -34,10 +34,10 @@ export default async function AccountPage() {
       {/* Paper masthead (round-2 ③): the display-caps register and its accent
           bar were the pre-reimagining language. */}
       <header className="mb-6 border-b border-border pb-5">
-        <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+        <h1 className="font-serif text-38 font-medium leading-none tracking-[-0.02em] text-text md:text-46">
           Account
         </h1>
-        <p className="mt-2 font-serif text-[16px] leading-snug text-text-muted">
+        <p className="mt-2 font-serif text-16 leading-snug text-text-muted">
           What you follow, how the site pings you, and your data.
         </p>
       </header>

@@ -48,25 +48,25 @@ export async function StandingsEmbed({ series: slug }: { series?: string }) {
       const hidden = data.drivers.length - rows.length;
       return (
         <figure className="rounded-xl border border-border bg-surface/40 p-4">
-          <figcaption className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+          <figcaption className="mb-3 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text-faint">
             {data.name} · drivers’ standings{data.through > 0 ? ` · through round ${data.through}` : ''}
           </figcaption>
           <ol className="divide-y divide-border/40">
             {rows.map(d => (
               <li key={d.driverName} className="flex items-center gap-3 py-1.5">
-                <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                <span className="w-5 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                   {d.position}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-sm text-text">{d.driverName}</span>
                 {d.team ? (
                   <span className="hidden max-w-[40%] truncate text-xs text-text-faint sm:block">{d.team}</span>
                 ) : null}
-                <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">{d.points}</span>
+                <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">{d.points}</span>
               </li>
             ))}
           </ol>
           {hidden > 0 && (
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">+{hidden} more</p>
+            <p className="mt-2 font-mono text-11 uppercase tracking-[0.12em] text-text-faint">+{hidden} more</p>
           )}
         </figure>
       );

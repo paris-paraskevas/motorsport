@@ -44,14 +44,14 @@ export interface StudioEditorPost {
 const FIELD =
   'w-full rounded border border-border bg-bg px-3 py-2 text-sm text-text placeholder:text-text-faint';
 const BTN_PRIMARY =
-  'w-full bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40';
+  'w-full bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40';
 const BTN_QUIET =
-  'w-full rounded border border-border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40';
+  'w-full rounded border border-border px-4 py-2 font-mono text-11 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40';
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+      <span className="mb-1 block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
         {label}
       </span>
       {children}
@@ -62,7 +62,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 function RailFact({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+      <div className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
         {label}
       </div>
       <div className="mt-0.5 break-all font-mono text-xs text-text-muted">{value}</div>
@@ -291,7 +291,7 @@ export function StudioEditor({
       <div className="min-w-0 space-y-4">
         {conflict && (
           <div className="border border-red-600/60 bg-red-50/60 px-4 py-3 dark:bg-red-950/20">
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-red-700 dark:text-red-300">
+            <p className="font-mono text-11 font-semibold uppercase tracking-[0.16em] text-red-700 dark:text-red-300">
               Not saved: this post changed since you opened it
             </p>
             <p className="mt-1 text-sm text-text-muted">
@@ -311,7 +311,7 @@ export function StudioEditor({
         )}
         {recovered && (
           <div className="border border-amber-600/60 bg-amber-50/60 px-4 py-3 dark:bg-amber-950/20">
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
+            <p className="font-mono text-11 font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
               Unsaved draft found
             </p>
             <p className="mt-1 text-sm text-text-muted">
@@ -353,7 +353,7 @@ export function StudioEditor({
           />
         </Field>
         <div>
-          <span className="mb-1 block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          <span className="mb-1 block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
             Body
           </span>
           <MarkdownEditor value={body} onChange={setBody} minHeightClass="min-h-[60vh]" />
@@ -361,7 +361,7 @@ export function StudioEditor({
       </div>
 
       <aside className="mt-8 space-y-5 border-t border-border pt-6 lg:sticky lg:top-24 lg:mt-0 lg:border-t-0 lg:pt-0">
-        <div className={`font-mono text-[11px] font-semibold uppercase tracking-[0.16em] ${meta.cls}`}>
+        <div className={`font-mono text-11 font-semibold uppercase tracking-[0.16em] ${meta.cls}`}>
           {meta.label}
           {post.status === 'approved' && post.publishAt && (
             <span className="ml-2 normal-case tracking-normal text-text-faint">
@@ -377,14 +377,14 @@ export function StudioEditor({
           {post.originalUrl !== null && <RailFact label="Imported from" value={post.originalUrl} />}
           <Link
             href={`/blog/${post.slug}`}
-            className="inline-block font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+            className="inline-block font-mono text-11 uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
           >
             Open preview ↗
           </Link>
         </div>
 
         <section>
-          <h3 className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          <h3 className="mb-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
             Post-ready
           </h3>
           <ul className="space-y-1.5">
@@ -404,7 +404,7 @@ export function StudioEditor({
             type="button"
             disabled={busy}
             onClick={autoLink}
-            className="mt-2.5 w-full rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40"
+            className="mt-2.5 w-full rounded border border-border px-3 py-1.5 font-mono text-11 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40"
           >
             Auto-link names
           </button>
@@ -413,7 +413,7 @@ export function StudioEditor({
             type="button"
             disabled={busy || !aiTools}
             onClick={proposeHeadings}
-            className="mt-1.5 w-full rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40"
+            className="mt-1.5 w-full rounded border border-border px-3 py-1.5 font-mono text-11 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40"
           >
             Propose sections (AI)
           </button>
@@ -434,7 +434,7 @@ export function StudioEditor({
           {headingNote && <p className="mt-1.5 text-xs leading-snug text-text-muted">{headingNote}</p>}
           {headingReview && (
             <div className="mt-2 space-y-2 rounded border border-border bg-surface p-2.5">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+              <p className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
                 Proposed sections
               </p>
               <ul className="space-y-1.5">
@@ -454,14 +454,14 @@ export function StudioEditor({
                   <button
                     type="button"
                     onClick={applyHeadings}
-                    className="flex-1 bg-text px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+                    className="flex-1 bg-text px-3 py-1.5 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
                   >
                     Apply
                   </button>
                   <button
                     type="button"
                     onClick={() => setHeadingReview(null)}
-                    className="flex-1 rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+                    className="flex-1 rounded border border-border px-3 py-1.5 font-mono text-11 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
                   >
                     Discard
                   </button>
@@ -552,7 +552,7 @@ export function StudioEditor({
         </div>
 
         {post.status === 'in_review' && !admin && (
-          <p className="font-mono text-[10px] leading-relaxed text-text-faint">
+          <p className="font-mono text-10 leading-relaxed text-text-faint">
             Submitted, waiting on the editor. Edits you save still count until it publishes.
           </p>
         )}

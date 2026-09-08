@@ -87,7 +87,7 @@ function TrackFactsBlock({ entry }: { entry: InfoEntry }) {
       <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {rows.map(([k, v]) => (
           <div key={k}>
-            <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold">
+            <dt className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint font-semibold">
               {k}
             </dt>
             <dd className="mt-1 text-text font-medium">{v}</dd>
@@ -104,7 +104,7 @@ function TrackFactsBlock({ entry }: { entry: InfoEntry }) {
           <MapPin size={14} />
           View on Google Maps
           {t.coordsVerified && (
-            <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+            <span className="font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
               · coords verified
             </span>
           )}
@@ -180,7 +180,7 @@ export default async function InfoEntryPage({
         <div className="min-w-0 max-w-3xl">
       {entry.review === 'unverified' && (
         <div className="mb-6 border border-border bg-surface rounded-md p-3">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-text-faint mb-1">
+          <p className="font-mono text-10 uppercase tracking-[0.14em] font-semibold text-text-faint mb-1">
             Draft · pending review
           </p>
           <p className="text-sm text-text-muted leading-relaxed">
@@ -218,7 +218,7 @@ export default async function InfoEntryPage({
         <aside className="mt-10 lg:mt-0 lg:sticky lg:top-6 space-y-8">
       {entry.sources.length > 0 && (
         <section className="mt-8 border-t border-border pt-4">
-          <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint mb-2">
+          <h2 className="font-mono text-10 uppercase tracking-[0.16em] font-semibold text-text-faint mb-2">
             Sources
           </h2>
           <ul className="space-y-1">
@@ -245,7 +245,7 @@ export default async function InfoEntryPage({
 
       {entry.related.length > 0 && (
         <section className="mt-8 border-t border-border pt-4">
-          <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint mb-3">
+          <h2 className="font-mono text-10 uppercase tracking-[0.16em] font-semibold text-text-faint mb-3">
             Keep exploring
           </h2>
           <ul className="space-y-2">

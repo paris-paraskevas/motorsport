@@ -26,10 +26,10 @@ function A({ href, children }: { href: string; children: React.ReactNode }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+      <h2 className="mb-3 border-b border-text pb-1 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
         {title}
       </h2>
-      <div className="space-y-3 font-serif text-[16px] leading-relaxed text-text-muted">{children}</div>
+      <div className="space-y-3 font-serif text-16 leading-relaxed text-text-muted">{children}</div>
     </section>
   );
 }
@@ -46,10 +46,10 @@ export default function About() {
       {/* Paper masthead — the display-caps "ABOUT." register was the last
           pre-reimagining holdout here (operator, 2026-08-20). */}
       <header className="mb-6 border-b border-border pb-5">
-        <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+        <h1 className="font-serif text-38 font-medium leading-none tracking-[-0.02em] text-text md:text-46">
           About Paddock
         </h1>
-        <p className="mt-2 max-w-[52ch] font-serif text-[17px] leading-snug text-text-muted">
+        <p className="mt-2 max-w-[52ch] font-serif text-17 leading-snug text-text-muted">
           Fifteen racing championships in one place: what is on, when it runs where you live, and what happened once
           it did.
         </p>

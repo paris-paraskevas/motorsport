@@ -51,8 +51,8 @@ function DecadeShell({
   return (
     <section>
       <div className="mb-1 mt-6 flex items-baseline justify-between border-b border-text pb-1 first:mt-0">
-        <h3 className="font-serif text-[19px] font-semibold leading-none text-text">{label}</h3>
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+        <h3 className="font-serif text-19 font-semibold leading-none text-text">{label}</h3>
+        <span className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint">
           {count} {count === 1 ? 'champion' : 'champions'}
         </span>
       </div>
@@ -118,7 +118,7 @@ function TitleTallyBadge({ tally }: { tally: TitleTally | undefined }) {
       title={`Title ${tally.count} of ${tally.total}`}
       aria-label={`Title ${tally.count} of ${tally.total}`}
     >
-      <span className="text-[10px] leading-none font-semibold font-mono tabular-nums text-tint">
+      <span className="text-10 leading-none font-semibold font-mono tabular-nums text-tint">
         ×{tally.total}
       </span>
       <span className="hidden sm:inline-flex items-center gap-[2px]" aria-hidden>
@@ -295,14 +295,14 @@ function DriverCell({
   // Serif names — the Paper register (Round-3 champions rebuild).
   if (driverSlugs.has(slug)) {
     return (
-      <span className="font-serif text-[16px] font-semibold">
+      <span className="font-serif text-16 font-semibold">
         <Link href={`/drivers/${slug}`} className={LINK_CLASS}>
           {name}
         </Link>
       </span>
     );
   }
-  return <span className="font-serif text-[16px] font-semibold">{name}</span>;
+  return <span className="font-serif text-16 font-semibold">{name}</span>;
 }
 
 function TeamCell({
@@ -335,7 +335,7 @@ function ChampionDepth({ c }: { c: Champion }) {
   }
   if (parts.length === 0) return null;
   return (
-    <div className="ml-[3.75rem] mt-1 text-[11px] text-text-faint font-mono tabular-nums leading-snug">
+    <div className="ml-[3.75rem] mt-1 text-11 text-text-faint font-mono tabular-nums leading-snug">
       {parts.join(' · ')}
     </div>
   );
@@ -385,7 +385,7 @@ function DriversSection({
                   <TitleTallyBadge tally={tally.get(c)} />
                 </div>
                 {c.constructor && (
-                  <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
+                  <div className="ml-[3.75rem] mt-0.5 text-11 text-text-faint">
                     <TeamCell name={c.constructor} teamSlugMap={teamSlugMap} />
                   </div>
                 )}
@@ -418,7 +418,7 @@ function ConstructorsSection({
                 <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
                   {c.year}
                 </span>
-                <span className="font-serif text-[16px] font-semibold leading-snug text-text">
+                <span className="font-serif text-16 font-semibold leading-snug text-text">
                   <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
                 </span>
                 <TitleTallyBadge tally={tally.get(c)} />
@@ -475,7 +475,7 @@ function SecondarySection({
                   <TitleTallyBadge tally={tally.get(c)} />
                 </div>
                 {c.team && (
-                  <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
+                  <div className="ml-[3.75rem] mt-0.5 text-11 text-text-faint">
                     <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
                   </div>
                 )}
@@ -493,7 +493,7 @@ function SecondarySection({
 function PanelHead({ count, sparkline }: { count: number; sparkline?: React.ReactNode }) {
   return (
     <div className="mb-4 flex items-center justify-between gap-3">
-      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+      <span className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint">
         {count} {count === 1 ? 'champion' : 'champions'}
       </span>
       {sparkline}
@@ -618,7 +618,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
     'Secondary Championship';
 
   const sourceFooter = (
-    <div className="px-2 py-2 text-[11px] text-text-faint">
+    <div className="px-2 py-2 text-11 text-text-faint">
       {sourceLabel === 'curated' ? (
         <span>Source: curated</span>
       ) : (
@@ -654,7 +654,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
   // reference. Fixed peer names (cd/ct/cs) because Tailwind variants must be
   // static strings.
   const chipLabel =
-    'inline-flex min-h-[38px] cursor-pointer items-center border border-border-strong px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text';
+    'inline-flex min-h-[38px] cursor-pointer items-center border border-border-strong px-3 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text';
   return (
     <div>
       <input type="radio" name="championship" id="champ-drivers" defaultChecked className="peer/cd sr-only" />

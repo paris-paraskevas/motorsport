@@ -92,10 +92,10 @@ export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {tiles.map(tile => (
           <div key={tile.key} className="border border-border p-3">
-            <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text">
+            <div className="font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text">
               {tile.label}
             </div>
-            <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-text-faint">
+            <div className="mt-0.5 font-mono text-10 uppercase tracking-[0.1em] text-text-faint">
               {tile.when}
             </div>
             {tile.hours.length > 0 ? (
@@ -106,7 +106,7 @@ export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
           </div>
         ))}
       </div>
-      <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="mt-2 text-10 uppercase tracking-[0.14em] text-text-faint">
         {`Source: Open-Meteo · ${circuit.name} · hour by hour across each session`}
       </div>
     </section>
@@ -153,7 +153,7 @@ function DayFallback({ daily }: { daily: DailyWeather }) {
       </div>
       <div className="mt-1 truncate text-xs text-text-muted">{w.label}</div>
       {daily.precipProb >= 30 && (
-        <div className="mt-1 font-mono text-[11px] tabular-nums text-sky-700 dark:text-sky-300">
+        <div className="mt-1 font-mono text-11 tabular-nums text-sky-700 dark:text-sky-300">
           {Math.round(daily.precipProb)}% rain
         </div>
       )}

@@ -65,11 +65,11 @@ export function WeekendNewsClient({ slug, round }: { slug: string; round: number
         >
           <div className="mb-1.5 flex flex-wrap items-center gap-2">
             <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: seriesInk(color) }}>
+            <span className="text-10 font-semibold uppercase tracking-[0.14em]" style={{ color: seriesInk(color) }}>
               {seriesName}
             </span>
             <span className="text-border-strong">·</span>
-            <time dateTime={item.pubDate} className="font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-text-faint">
+            <time dateTime={item.pubDate} className="font-mono text-10 font-medium uppercase tracking-[0.12em] text-text-faint">
               {relativeAgo(item.pubDate)}
             </time>
             <ExternalLink size={12} className="ml-auto shrink-0 text-text-faint transition-colors duration-(--duration-fast) group-hover:text-text-muted" />
@@ -77,7 +77,7 @@ export function WeekendNewsClient({ slug, round }: { slug: string; round: number
           <h3 className="text-sm font-semibold leading-snug tracking-tight text-text">{item.title}</h3>
         </a>
       ))}
-      <div className="mt-2 pt-2 text-center text-[10px] uppercase tracking-[0.14em] text-text-faint">Source: motorsport.com</div>
+      <div className="mt-2 pt-2 text-center text-10 uppercase tracking-[0.14em] text-text-faint">Source: motorsport.com</div>
     </div>
   );
 }

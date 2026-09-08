@@ -28,7 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             which 404s (middleware serves only admin routes on dev.*). */}
         <Link
           href={`${SITE_URL}/settings`}
-          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+          className="inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
         >
           <ArrowLeft size={13} /> Account
         </Link>

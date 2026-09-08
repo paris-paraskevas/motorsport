@@ -65,7 +65,7 @@ export function WeekendTabs({
       <nav
         aria-label="Weekend sections"
         role="tablist"
-        className="mb-5 flex gap-5 border-b border-border font-mono text-[11px] uppercase tracking-[0.16em]"
+        className="mb-5 flex gap-5 border-b border-border font-mono text-11 uppercase tracking-[0.16em]"
       >
         {tabs.map(t => (
           <button
@@ -98,7 +98,7 @@ export function WeekendTabs({
             type="button"
             onClick={() => setShowStandings(v => !v)}
             aria-expanded={showStandings}
-            className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+            className="font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
           >
             {showStandings ? 'Hide standings' : 'Standings at this round →'}
           </button>

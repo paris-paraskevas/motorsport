@@ -177,7 +177,7 @@ export function QualifyingDecoder({
               {ghostLap3d ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                    <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
                       Replay
                     </span>
                     <div className="flex gap-1">
@@ -187,7 +187,7 @@ export function QualifyingDecoder({
                           type="button"
                           onClick={() => setGhost3d(is3d)}
                           aria-pressed={ghost3d === is3d}
-                          className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
+                          className={`border px-2 py-0.5 font-mono text-10 uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
                             ghost3d === is3d
                               ? 'border-border-strong bg-surface text-text'
                               : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
@@ -246,12 +246,12 @@ function DriverSlot({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline gap-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">{label}</span>
+        <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">{label}</span>
         {current && (
           <span className="inline-flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: current.teamColour }} />
             <span className="font-display text-sm font-extrabold uppercase tracking-wide text-text">{current.code}</span>
-            <span className="font-mono text-[11px] text-text-muted">{current.team}</span>
+            <span className="font-mono text-11 text-text-muted">{current.team}</span>
           </span>
         )}
       </div>
@@ -269,7 +269,7 @@ function DriverSlot({
               disabled={disabled}
               onClick={() => onSelect(n)}
               title={d.name + (lap ? ` · ${fmtLapShort(lap.lapTime)}` : '')}
-              className={`inline-flex items-center gap-1.5 border px-2 py-1 font-mono text-[11px] font-medium transition-colors duration-(--duration-fast) ${
+              className={`inline-flex items-center gap-1.5 border px-2 py-1 font-mono text-11 font-medium transition-colors duration-(--duration-fast) ${
                 on
                   ? 'border-border-strong bg-surface text-text'
                   : disabled

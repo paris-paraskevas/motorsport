@@ -37,7 +37,7 @@ export function ChampionshipsRow({
         <span className="block text-base font-semibold text-text">Championships</span>
         <span className="block truncate text-xs text-text-faint">{sub}</span>
       </span>
-      {meta && <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted">{meta}</span>}
+      {meta && <span className="shrink-0 font-mono text-10 uppercase tracking-[0.12em] text-text-muted">{meta}</span>}
       <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
     </Link>
   );
@@ -58,12 +58,12 @@ export function TimezoneRow() {
   }, []);
   return (
     <div className="flex items-center gap-3 border-b border-border py-4">
-      <span aria-hidden="true" className="w-[18px] shrink-0 text-center font-mono text-[13px] text-text-muted">⌖</span>
+      <span aria-hidden="true" className="w-[18px] shrink-0 text-center font-mono text-13 text-text-muted">⌖</span>
       <span className="min-w-0 flex-1">
         <span className="block text-base font-semibold text-text">Time zone</span>
         <span className="block text-xs text-text-faint">Every time on the site is shown in it</span>
       </span>
-      <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">{tz ?? '—'}</span>
+      <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">{tz ?? '—'}</span>
     </div>
   );
 }

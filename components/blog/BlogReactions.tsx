@@ -64,7 +64,7 @@ export function BlogReactions({ slug, compact = false }: { slug: string; compact
   // byline row rather than one ambiguous blob.
   const pill = (active: boolean) =>
     `inline-flex items-center gap-1.5 rounded-md border font-medium transition-colors duration-(--duration-fast) disabled:opacity-60 ${
-      compact ? 'px-2.5 py-1.5 text-[13px] tabular-nums' : 'gap-2 px-3 py-2 text-sm'
+      compact ? 'px-2.5 py-1.5 text-13 tabular-nums' : 'gap-2 px-3 py-2 text-sm'
     } ${
       active
         ? 'border-brand text-brand'
@@ -111,7 +111,7 @@ export function BlogReactions({ slug, compact = false }: { slug: string; compact
 
   return (
     <section className="mt-10 border-t border-border pt-4">
-      <h2 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+      <h2 className="mb-3 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
         Did you like this?
       </h2>
       {buttons}

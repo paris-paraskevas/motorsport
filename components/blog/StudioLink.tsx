@@ -13,7 +13,7 @@ import { canAuthor } from '@/lib/threads';
 export function StudioLink() {
   const { user } = useUser();
   const pill =
-    'rounded border border-border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:border-brand/50 hover:text-text';
+    'rounded border border-border px-3 py-1.5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:border-brand/50 hover:text-text';
   if (canAuthor(user)) {
     return (
       <Link href="/studio" className={pill}>

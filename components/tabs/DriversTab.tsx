@@ -81,14 +81,14 @@ export async function DriversTab({ series }: { series: Series }) {
     return (
       <div>
         <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+          <span className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint">
             {driverCount} drivers · {curated.teams.length} teams
             {anyJoined ? ' · ranked by combined points' : ''}
           </span>
           {anyJoined && (
             <Link
               href={`/series/${series.meta.slug}/standings`}
-              className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+              className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
             >
               Full standings →
             </Link>
@@ -106,13 +106,13 @@ export async function DriversTab({ series }: { series: Series }) {
                     )}
                     <Link
                       href={`/teams/${teamSlug}`}
-                      className="truncate font-serif text-[20px] font-semibold leading-tight text-text transition-colors duration-(--duration-fast) hover:text-brand"
+                      className="truncate font-serif text-20 font-semibold leading-tight text-text transition-colors duration-(--duration-fast) hover:text-brand"
                     >
                       {team.name}
                     </Link>
                   </span>
                   {joinedCount > 0 && (
-                    <span className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted">
+                    <span className="shrink-0 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-muted">
                       {combined} pts{best != null ? ` · best P${best}` : ''}
                     </span>
                   )}
@@ -122,21 +122,21 @@ export async function DriversTab({ series }: { series: Series }) {
                     const driverSlug = slugify(d.name);
                     return (
                       <li key={`${d.name}-${i}`} className="flex min-h-10 items-baseline gap-2.5 py-1.5">
-                        <span className="w-6 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                        <span className="w-6 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                           {d.number != null ? d.number : ''}
                         </span>
                         <Link
                           href={`/drivers/${driverSlug}`}
-                          className="min-w-0 flex-1 truncate font-serif text-[16px] font-semibold text-text transition-colors duration-(--duration-fast) hover:text-brand"
+                          className="min-w-0 flex-1 truncate font-serif text-16 font-semibold text-text transition-colors duration-(--duration-fast) hover:text-brand"
                         >
                           {d.name}
                         </Link>
                         {standing ? (
-                          <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">
+                          <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">
                             {standingLine(standing)}
                           </span>
                         ) : d.code ? (
-                          <span className="shrink-0 border border-border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-faint">
+                          <span className="shrink-0 border border-border px-1.5 py-0.5 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">
                             {d.code}
                           </span>
                         ) : null}
@@ -148,7 +148,7 @@ export async function DriversTab({ series }: { series: Series }) {
             );
           })}
         </div>
-        <div className="text-[11px] text-text-faint">Source: curated{anyJoined ? ' · standings live' : ''}</div>
+        <div className="text-11 text-text-faint">Source: curated{anyJoined ? ' · standings live' : ''}</div>
       </div>
     );
   }
@@ -163,12 +163,12 @@ export async function DriversTab({ series }: { series: Series }) {
         <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
           {lineup.map((entry, idx) => (
             <section key={`${entry.team}-${idx}`} className="mb-6">
-              <div className="border-b border-text pb-1 font-serif text-[20px] font-semibold leading-tight text-text">
+              <div className="border-b border-text pb-1 font-serif text-20 font-semibold leading-tight text-text">
                 {entry.team}
               </div>
               <ul className="divide-y divide-border">
                 {entry.drivers.map((d, i) => (
-                  <li key={`${d}-${i}`} className="min-h-10 py-1.5 font-serif text-[16px] font-semibold text-text">
+                  <li key={`${d}-${i}`} className="min-h-10 py-1.5 font-serif text-16 font-semibold text-text">
                     {d}
                   </li>
                 ))}
@@ -176,7 +176,7 @@ export async function DriversTab({ series }: { series: Series }) {
             </section>
           ))}
         </div>
-        <div className="text-[11px] text-text-faint">
+        <div className="text-11 text-text-faint">
           <a
             href={pageUrl}
             target="_blank"
@@ -201,7 +201,7 @@ export async function DriversTab({ series }: { series: Series }) {
 
   return (
     <div className="border border-border-strong bg-surface p-6 text-center md:p-8">
-      <div className="mb-1 font-serif text-[19px] font-semibold text-text">Lineup</div>
+      <div className="mb-1 font-serif text-19 font-semibold text-text">Lineup</div>
       <div className="mx-auto mb-5 max-w-md text-sm text-text-faint">
         We couldn&apos;t parse a clean drivers table for the {series.meta.season}{' '}
         {series.meta.name} season. Check Wikipedia or the official site.
@@ -212,7 +212,7 @@ export async function DriversTab({ series }: { series: Series }) {
             href={wikipediaUrl(seasonPage)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 border border-border-strong px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+            className="inline-flex items-center gap-1.5 border border-border-strong px-3 py-1.5 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
           >
             Season on Wikipedia
             <ExternalLink size={12} />
@@ -223,7 +223,7 @@ export async function DriversTab({ series }: { series: Series }) {
             href={series.meta.officialSite}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 border border-border-strong px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+            className="inline-flex items-center gap-1.5 border border-border-strong px-3 py-1.5 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
           >
             Official site
             <ExternalLink size={12} />

@@ -69,7 +69,7 @@ export default async function CalendarPage() {
       {/* Compact Paper masthead — the display-caps register is gone, and the
           saved height is part of round-2 ⑥'s "make the month fit". */}
       <header className="mb-4">
-        <h1 className="font-serif text-[34px] font-medium leading-none tracking-[-0.02em] text-text md:text-[40px]">
+        <h1 className="font-serif text-34 font-medium leading-none tracking-[-0.02em] text-text md:text-40">
           Calendar
         </h1>
       </header>

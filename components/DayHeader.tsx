@@ -11,7 +11,7 @@ export function DayHeader({
         {label}
       </span>
       {count !== undefined && (
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint tnum">
+        <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint tnum">
           {count}
         </span>
       )}

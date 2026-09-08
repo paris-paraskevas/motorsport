@@ -65,7 +65,7 @@ function Links({ links }: { links: AuthorProfile['links'] }) {
             href={l.url}
             rel="me noopener nofollow"
             target="_blank"
-            className="group inline-flex items-baseline gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-brand"
+            className="group inline-flex items-baseline gap-1.5 font-mono text-11 uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-brand"
           >
             {l.label}
             <span aria-hidden="true" className="text-text-faint transition-colors duration-(--duration-fast) group-hover:text-brand">
@@ -117,7 +117,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
 
       <Link
         href="/authors"
-        className="mb-6 inline-block font-mono text-[10px] uppercase tracking-[0.18em] text-text-faint transition-colors duration-(--duration-fast) hover:text-text-muted"
+        className="mb-6 inline-block font-mono text-10 uppercase tracking-[0.18em] text-text-faint transition-colors duration-(--duration-fast) hover:text-text-muted"
       >
         ← Authors
       </Link>
@@ -138,14 +138,14 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
             />
           )}
           <div className="min-w-0">
-            <div className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+            <div className="mb-2 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-faint">
               {author.roleTitle ?? 'Author'}
             </div>
             <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
               {name}
               <span className="text-brand">.</span>
             </h1>
-            <div className="mt-3 flex flex-wrap items-baseline gap-x-6 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint tabular-nums">
+            <div className="mt-3 flex flex-wrap items-baseline gap-x-6 gap-y-1 font-mono text-11 uppercase tracking-[0.14em] text-text-faint tabular-nums">
               <span>
                 {posts.length} {posts.length === 1 ? 'post' : 'posts'}
               </span>
@@ -159,7 +159,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
       </header>
 
       <section className="mt-8">
-        <h2 className="mb-4 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+        <h2 className="mb-4 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
           Published work
         </h2>
         {posts.length === 0 ? (
@@ -169,7 +169,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
             {posts.map(p => (
               <li key={p.slug} className="py-4">
                 <Link href={`/blog/${p.slug}`} className="group block">
-                  <time className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint tabular-nums">
+                  <time className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint tabular-nums">
                     {formatDate(p.publishedAt ?? p.createdAt)}
                   </time>
                   <h3 className="mt-1 text-lg font-semibold leading-snug tracking-tight text-text transition-colors duration-(--duration-fast) group-hover:text-brand">

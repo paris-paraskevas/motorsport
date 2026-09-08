@@ -10,7 +10,7 @@ export function WeekendUpgrades({ data }: { data: RoundUpgrades }) {
   return (
     <CollapsibleSection title="Upgrades" defaultOpen>
       <div className="border-y border-border py-4">
-        <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <div className="mb-4 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           {data.teams.length} {data.teams.length === 1 ? 'team' : 'teams'} · {totalParts}{' '}
           new {totalParts === 1 ? 'part' : 'parts'} declared
         </div>
@@ -20,7 +20,7 @@ export function WeekendUpgrades({ data }: { data: RoundUpgrades }) {
             <div key={team.team}>
               <div className="flex items-baseline justify-between gap-3 mb-1.5">
                 <h3 className="text-text text-sm font-semibold tracking-tight">{team.team}</h3>
-                <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint tabular-nums">
+                <span className="shrink-0 font-mono text-10 uppercase tracking-[0.14em] text-text-faint tabular-nums">
                   {team.items.length} {team.items.length === 1 ? 'part' : 'parts'}
                 </span>
               </div>
@@ -29,7 +29,7 @@ export function WeekendUpgrades({ data }: { data: RoundUpgrades }) {
                   <li key={i} className="py-2">
                     <div className="flex items-baseline gap-2 flex-wrap">
                       <span className="text-text text-sm font-medium">{it.component}</span>
-                      <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
+                      <span className="font-mono text-10 uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
                         {it.reason}
                       </span>
                     </div>
@@ -43,7 +43,7 @@ export function WeekendUpgrades({ data }: { data: RoundUpgrades }) {
           ))}
         </div>
 
-        <div className="pt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <div className="pt-4 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           Source:{' '}
           <a
             href="https://www.fia.com/documents"

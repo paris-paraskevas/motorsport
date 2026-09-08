@@ -30,7 +30,7 @@ function Stat({ value, label }: { value: number | string; label: string }) {
   return (
     <span className="flex flex-col">
       <span className="font-display text-xl font-extrabold tabular-nums text-text">{value}</span>
-      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{label}</span>
+      <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{label}</span>
     </span>
   );
 }
@@ -61,7 +61,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
     <div>
       <div className="mb-6 border-b border-border pb-5">
         <div className="font-display text-2xl font-extrabold text-text">{name}</div>
-        <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">Joined {joined}</div>
+        <div className="mt-1 font-mono text-11 uppercase tracking-[0.14em] text-text-faint">Joined {joined}</div>
         <div className="mt-4 flex gap-8">
           <Stat value={profile.friendCount} label="Friends" />
           <Stat value={profile.leagueCount} label="Leagues" />
@@ -71,7 +71,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
       {userId == null ? (
         <div className="font-mono text-sm text-text-muted">
           <p className="mb-3">Sign in to add {name} as a friend.</p>
-          <Link href="/sign-in" className="inline-block bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
+          <Link href="/sign-in" className="inline-block bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
             Sign in
           </Link>
         </div>

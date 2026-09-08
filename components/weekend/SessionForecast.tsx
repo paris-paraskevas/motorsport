@@ -59,11 +59,11 @@ export async function SessionForecast({
       <h2 className="mb-1 font-display text-sm font-extrabold uppercase tracking-wide text-text">
         Weather around the session
       </h2>
-      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <p className="mb-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         Venue local time · two hours either side
       </p>
       <HourlyForecastRows hours={hours} className="max-w-md" />
-      <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="mt-2 text-10 uppercase tracking-[0.14em] text-text-faint">
         {`Source: Open-Meteo · ${circuit.name}`}
       </div>
     </section>

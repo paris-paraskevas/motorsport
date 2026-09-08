@@ -48,7 +48,7 @@ export function WeekendStandingsClient({ slug, round, isPast }: { slug: string; 
       <div>
         <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
           <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">Standings</h3>
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">{snap.label}</span>
+          <span className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint">{snap.label}</span>
         </div>
         <a
           href={snap.url}
@@ -66,11 +66,11 @@ export function WeekendStandingsClient({ slug, round, isPast }: { slug: string; 
     <div>
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
         <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">Standings at this round</h3>
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">{snap.label}</span>
+        <span className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint">{snap.label}</span>
       </div>
       <div className="grid items-start gap-x-8 gap-y-4 md:grid-cols-2">
         <div>
-          <div className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">Drivers</div>
+          <div className="mb-2 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text-muted">Drivers</div>
           <ul className="divide-y divide-border/60">
             {snap.drivers.map(d => (
               <li key={`${d.position}-${d.driverName}`} className="flex items-baseline gap-3 py-1.5">
@@ -84,7 +84,7 @@ export function WeekendStandingsClient({ slug, round, isPast }: { slug: string; 
         </div>
         {snap.showTeams && snap.constructors.length > 0 ? (
           <div>
-            <div className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">Teams</div>
+            <div className="mb-2 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text-muted">Teams</div>
             <ul className="divide-y divide-border/60">
               {snap.constructors.map(c => (
                 <li key={`${c.position}-${c.name}`} className="flex items-baseline gap-3 py-1.5">

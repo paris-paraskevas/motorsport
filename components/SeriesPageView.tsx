@@ -173,17 +173,17 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       <header className="mb-6 border-b border-border pb-5">
         <Link
           href={`/series/${slug}`}
-          className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+          className="font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
         >
           ← {series.meta.name}
         </Link>
         <div className="mt-2 flex items-center gap-3">
           <span aria-hidden="true" className="h-9 w-[4px] shrink-0" style={{ backgroundColor: color }} />
-          <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[46px]">
+          <h1 className="font-serif text-38 font-medium leading-none tracking-[-0.02em] text-text lg:text-46">
             {title}
           </h1>
         </div>
-        <p className="mt-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+        <p className="mt-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted">
           {series.meta.name} · {series.meta.season} season
         </p>
         <StaleBanner configured={series.configured} stale={series.stale} />
@@ -196,7 +196,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
         {renderTab(activeTab, series)}
       </Suspense>
 
-      <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-border pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">
+      <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-border pt-3 font-mono text-10 font-semibold uppercase tracking-[0.14em]">
         <span className="text-text-faint">More {series.meta.name}</span>
         {siblings.map(s => (
           <Link key={s.key} href={s.href} className="inline-flex min-h-6 items-center text-brand hover:underline">

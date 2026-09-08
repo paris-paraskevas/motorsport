@@ -9,7 +9,7 @@ export default async function NewPostPage() {
   return (
     <>
       <header className="mb-8">
-        <div className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+        <div className="mb-2 font-mono text-11 font-semibold uppercase tracking-[0.18em] text-text-faint">
           Studio
         </div>
         <h1 className="text-3xl font-bold tracking-tight text-text">New post</h1>

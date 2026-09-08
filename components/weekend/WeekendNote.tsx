@@ -28,18 +28,18 @@ export function WeekendNote({ note }: { note: Note }) {
   return (
     <section id="how-it-was-won" aria-label="How the race was won" className="mb-8 scroll-mt-[62px] lg:scroll-mt-[74px]">
       <div className="mb-1 flex items-baseline justify-between border-b border-text pb-1">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+        <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
           How it was won
         </span>
       </div>
       {lead ? (
-        <p className="pt-3 font-serif text-[17px] leading-snug text-text">{lead}.</p>
+        <p className="pt-3 font-serif text-17 leading-snug text-text">{lead}.</p>
       ) : null}
       {body ? (
-        <p className="mt-2.5 text-[14px] leading-relaxed text-text-muted">{body}</p>
+        <p className="mt-2.5 text-14 leading-relaxed text-text-muted">{body}</p>
       ) : null}
       {note.sources && note.sources.length > 0 ? (
-        <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+        <p className="mt-3 font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
           Checked against{' '}
           {note.sources.map((url, i) => {
             let host = url;

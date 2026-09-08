@@ -291,7 +291,7 @@ export function Designer({
   };
 
   return (
-    <div className="fixed inset-0 z-40 grid grid-rows-[40px_30px_minmax(0,1fr)] bg-bg text-[12.5px] text-text">
+    <div className="fixed inset-0 z-40 grid grid-rows-[40px_30px_minmax(0,1fr)] bg-bg text-12-5 text-text">
       <header className="flex items-center gap-1 border-b border-border-strong bg-surface pl-2 pr-3">
         <Link
           href="/admin"
@@ -301,7 +301,7 @@ export function Designer({
         >
           <ArrowLeft size={14} />
         </Link>
-        <span className="mr-4 whitespace-nowrap font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-text">
+        <span className="mr-4 whitespace-nowrap font-mono text-12 font-semibold uppercase tracking-[0.12em] text-text">
           Paddock<span className="text-brand">•</span>
           <span className="font-normal text-text-muted">Developer</span>
         </span>
@@ -311,11 +311,11 @@ export function Designer({
           <WorkspaceTab label="Data" later="later" />
         </nav>
         <span className="flex-1" />
-        <span className="whitespace-nowrap font-mono text-[10px] tracking-[0.04em] text-text-faint">{who}</span>
+        <span className="whitespace-nowrap font-mono text-10 tracking-[0.04em] text-text-faint">{who}</span>
         <ConsoleModeToggle />
       </header>
 
-      <div className="flex h-[30px] items-center gap-2 border-b border-border bg-surface-elevated px-3.5 text-[11px] text-text-faint">
+      <div className="flex h-[30px] items-center gap-2 border-b border-border bg-surface-elevated px-3.5 text-11 text-text-faint">
         <button
           type="button"
           onClick={() => select(null)}
@@ -338,7 +338,7 @@ export function Designer({
         <nav aria-label="Shared components" className="overflow-auto border-r border-border-strong bg-surface pb-5 pt-2">
           {CATALOGUE.map(group => (
             <div key={group.group}>
-              <div className="px-3.5 pb-1 pt-3 text-[12px] font-semibold text-text-muted">{group.group}</div>
+              <div className="px-3.5 pb-1 pt-3 text-12 font-semibold text-text-muted">{group.group}</div>
               {group.items.map(it => {
                 const active = selected === it.key;
                 const n = badge(it);
@@ -349,7 +349,7 @@ export function Designer({
                     type="button"
                     onClick={() => select(it.key)}
                     aria-current={active ? 'true' : undefined}
-                    className={`flex w-full items-center gap-2.5 py-[7px] pl-[22px] pr-3.5 text-left text-[12px] ${
+                    className={`flex w-full items-center gap-2.5 py-[7px] pl-[22px] pr-3.5 text-left text-12 ${
                       active
                         ? 'bg-edit-dim text-text shadow-[inset_2px_0_0_var(--edit)]'
                         : live
@@ -358,8 +358,8 @@ export function Designer({
                     }`}
                   >
                     <span>{it.label}</span>
-                    {it.later && <span className="ml-auto font-mono text-[9px] text-text-faint">{it.later}</span>}
-                    {n !== null && <span className="ml-auto font-mono text-[9px] text-text-faint">{n}</span>}
+                    {it.later && <span className="ml-auto font-mono text-9 text-text-faint">{it.later}</span>}
+                    {n !== null && <span className="ml-auto font-mono text-9 text-text-faint">{n}</span>}
                   </button>
                 );
               })}
@@ -369,7 +369,7 @@ export function Designer({
 
         <main className="min-w-0 overflow-auto px-6 pb-8 pt-[18px]">
           {readOnly && (
-            <p className="mb-4 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-[12px] text-text-muted">
+            <p className="mb-4 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-12 text-text-muted">
               Design edits are made on production. This copy of the site is read-only: browse and preview here, save on
               paddock-tracker.com.
             </p>
@@ -377,27 +377,27 @@ export function Designer({
 
           {!item && (
             <>
-              <h2 className="m-0 mb-1 text-[20px] font-bold text-text">Shared Components</h2>
-              <p className="m-0 mb-4 max-w-[70ch] text-[13px] text-text-muted">
+              <h2 className="m-0 mb-1 text-20 font-bold text-text">Shared Components</h2>
+              <p className="m-0 mb-4 max-w-[70ch] text-13 text-text-muted">
                 Everything the pages share. The header, the footer and the phone bar are lists here; security, themes and
                 the data the regions read follow in later steps. Edit once, every page follows.
               </p>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3">
                 {CATALOGUE.map(group => (
                   <div key={group.group} className="grid content-start gap-1.5 border border-border-strong bg-surface p-3.5">
-                    <h4 className="m-0 mb-1 text-[13px] font-bold text-text">{group.group}</h4>
+                    <h4 className="m-0 mb-1 text-13 font-bold text-text">{group.group}</h4>
                     {group.items.map(it => (
                       <button
                         key={it.key}
                         type="button"
                         onClick={() => select(it.key)}
-                        className={`py-0.5 text-left text-[12px] ${it.listKey || it.editor ? 'text-edit hover:underline' : 'text-text-faint'}`}
+                        className={`py-0.5 text-left text-12 ${it.listKey || it.editor ? 'text-edit hover:underline' : 'text-text-faint'}`}
                       >
                         {it.label}
                         {badge(it) !== null && (
-                          <span className="ml-1.5 font-mono text-[10px] text-text-faint">{badge(it)}</span>
+                          <span className="ml-1.5 font-mono text-10 text-text-faint">{badge(it)}</span>
                         )}
-                        {it.later && <span className="ml-1.5 font-mono text-[9px] text-text-faint">{it.later}</span>}
+                        {it.later && <span className="ml-1.5 font-mono text-9 text-text-faint">{it.later}</span>}
                       </button>
                     ))}
                   </div>
@@ -408,8 +408,8 @@ export function Designer({
 
           {item && !listKey && !item.editor && (
             <>
-              <h2 className="m-0 mb-1 text-[20px] font-bold text-text">{item.label}</h2>
-              <p className="m-0 max-w-[70ch] text-[13px] text-text-muted">
+              <h2 className="m-0 mb-1 text-20 font-bold text-text">{item.label}</h2>
+              <p className="m-0 max-w-[70ch] text-13 text-text-muted">
                 Not editable yet: {item.later}. The field guide names the table it needs; it arrives with the phase that
                 creates it.
               </p>
@@ -418,9 +418,9 @@ export function Designer({
 
           {item?.editor === 'text' && (() => {
             if (text.state === 'loading') {
-              return <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Text Messages…</p>;
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Text Messages…</p>;
             }
-            if (text.state === 'error') return <p className="text-[12px] text-negative">{text.message}</p>;
+            if (text.state === 'error') return <p className="text-12 text-negative">{text.message}</p>;
             return (
               <TextEditor
                 messages={text.messages}
@@ -432,9 +432,9 @@ export function Designer({
 
           {item?.editor === 'build' && (() => {
             if (build.state === 'loading') {
-              return <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Build Options…</p>;
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Build Options…</p>;
             }
-            if (build.state === 'error') return <p className="text-[12px] text-negative">{build.message}</p>;
+            if (build.state === 'error') return <p className="text-12 text-negative">{build.message}</p>;
             return (
               <BuildOptionsEditor
                 options={build.options}
@@ -447,10 +447,10 @@ export function Designer({
           {item?.editor === 'settings' && (() => {
             if (settings.state === 'loading') {
               return (
-                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Application Settings…</p>
+                <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Application Settings…</p>
               );
             }
-            if (settings.state === 'error') return <p className="text-[12px] text-negative">{settings.message}</p>;
+            if (settings.state === 'error') return <p className="text-12 text-negative">{settings.message}</p>;
             return (
               <SettingsEditor
                 settings={settings.settings}
@@ -464,10 +464,10 @@ export function Designer({
           {item?.editor === 'authz' && (() => {
             if (authz.state === 'loading') {
               return (
-                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Authorization Schemes…</p>
+                <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Authorization Schemes…</p>
               );
             }
-            if (authz.state === 'error') return <p className="text-[12px] text-negative">{authz.message}</p>;
+            if (authz.state === 'error') return <p className="text-12 text-negative">{authz.message}</p>;
             return (
               <AuthzEditor
                 schemes={authz.schemes}
@@ -479,9 +479,9 @@ export function Designer({
 
           {item?.editor === 'themes' && (() => {
             if (themes.state === 'loading') {
-              return <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Themes…</p>;
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Themes…</p>;
             }
-            if (themes.state === 'error') return <p className="text-[12px] text-negative">{themes.message}</p>;
+            if (themes.state === 'error') return <p className="text-12 text-negative">{themes.message}</p>;
             return (
               <ThemesEditor
                 themes={themes.themes}
@@ -494,10 +494,10 @@ export function Designer({
           {item && listKey && (() => {
             const loaded = lists[listKey];
             if (!loaded || loaded.state === 'loading') {
-              return <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading {item.label}…</p>;
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading {item.label}…</p>;
             }
             if (loaded.state === 'error') {
-              return <p className="text-[12px] text-negative">{loaded.message}</p>;
+              return <p className="text-12 text-negative">{loaded.message}</p>;
             }
             const other: NavListKey | null =
               listKey === 'footer-site' ? 'footer-legal' : listKey === 'footer-legal' ? 'footer-site' : null;
@@ -529,12 +529,12 @@ function WorkspaceTab({ label, active = false, later }: { label: string; active?
       type="button"
       disabled={!active}
       title={later ? `${label}: ${later}` : label}
-      className={`relative h-[40px] whitespace-nowrap px-3 text-[12px] font-medium ${
+      className={`relative h-[40px] whitespace-nowrap px-3 text-12 font-medium ${
         active ? 'text-text shadow-[inset_0_-2px_0_var(--edit)]' : 'cursor-default text-text-faint'
       }`}
     >
       {label}
-      {later && <span className="ml-1.5 font-mono text-[9px] text-text-faint">{later}</span>}
+      {later && <span className="ml-1.5 font-mono text-9 text-text-faint">{later}</span>}
     </button>
   );
 }

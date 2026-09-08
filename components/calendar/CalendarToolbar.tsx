@@ -84,7 +84,7 @@ export function CalendarToolbar({
             type="button"
             onClick={() => onView(v)}
             aria-pressed={view === v}
-            className={`-ml-px border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
+            className={`-ml-px border px-3 py-1 font-mono text-11 uppercase tracking-[0.12em] transition-colors ${
               view === v ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
             }`}
           >
@@ -94,7 +94,7 @@ export function CalendarToolbar({
         <button
           type="button"
           onClick={onToday}
-          className="ml-3 border border-border-strong px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors hover:border-text hover:text-text"
+          className="ml-3 border border-border-strong px-3 py-1 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors hover:border-text hover:text-text"
         >
           Today
         </button>

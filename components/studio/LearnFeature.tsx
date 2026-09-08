@@ -21,9 +21,9 @@ import { postAction } from './studio-shared';
 // topic. The toggle just reveals the select; nothing is written until Save.
 
 const BTN_PRIMARY =
-  'bg-text px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40';
+  'bg-text px-3 py-1.5 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40';
 const BTN_QUIET =
-  'rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40';
+  'rounded border border-border px-3 py-1.5 font-mono text-11 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40';
 const FIELD =
   'rounded border border-border bg-bg px-2 py-1.5 font-mono text-xs text-text disabled:opacity-40';
 
@@ -58,7 +58,7 @@ export function LearnFeature({ id, learnTopic }: { id: string; learnTopic: strin
 
   return (
     <div className="mt-6 border-t border-border pt-4">
-      <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+      <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
         Feature in Learn
       </span>
       <p className="mt-1.5 max-w-prose text-sm leading-relaxed text-text-muted">
@@ -79,7 +79,7 @@ export function LearnFeature({ id, learnTopic }: { id: string; learnTopic: strin
             }}
             className="h-4 w-4 accent-[var(--brand-fill)]"
           />
-          <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-text">
+          <span className="font-mono text-11 uppercase tracking-[0.12em] text-text">
             Featured
           </span>
         </label>
@@ -111,7 +111,7 @@ export function LearnFeature({ id, learnTopic }: { id: string; learnTopic: strin
         </button>
 
         {saved && !pending && (
-          <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-tint">Saved</span>
+          <span className="font-mono text-11 uppercase tracking-[0.12em] text-tint">Saved</span>
         )}
         {error && <span className="font-mono text-xs text-red-400">{error}</span>}
       </div>

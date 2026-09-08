@@ -156,16 +156,16 @@ export function FriendsPanel({
           </ul>
         )}
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">Or share your link</span>
+          <span className="font-mono text-11 uppercase tracking-[0.14em] text-text-muted">Or share your link</span>
           <button
             type="button"
             onClick={shareFriendLink}
-            className="rounded border border-border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint"
+            className="rounded border border-border px-2 py-1 font-mono text-11 uppercase tracking-[0.14em] text-text-muted hover:border-text-faint"
           >
             {linkCopied ? 'Link copied — share again' : 'Share invite link'}
           </button>
           {linkCopied && (
-            <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-text-muted">{linkCopied}</span>
+            <span className="min-w-0 flex-1 truncate font-mono text-11 text-text-muted">{linkCopied}</span>
           )}
         </div>
       </div>
@@ -188,7 +188,7 @@ export function FriendsPanel({
                     type="button"
                     disabled={busy}
                     onClick={() => act({ action: 'accept', userId: r.requesterId })}
-                    className="bg-text px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
+                    className="bg-text px-3 py-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
                   >
                     Accept
                   </button>

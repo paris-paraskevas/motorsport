@@ -27,7 +27,7 @@ export default async function StudioPostPage({ params }: { params: Promise<{ id:
   const back = (
     <Link
       href="/studio"
-      className="mb-6 inline-block font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+      className="mb-6 inline-block font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
     >
       ← Studio
     </Link>
@@ -38,7 +38,7 @@ export default async function StudioPostPage({ params }: { params: Promise<{ id:
     return (
       <>
         {back}
-        <div className={`mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] ${meta.cls}`}>
+        <div className={`mb-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] ${meta.cls}`}>
           {meta.label}
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-text">{post.title}</h1>
@@ -50,7 +50,7 @@ export default async function StudioPostPage({ params }: { params: Promise<{ id:
         {post.status === 'published' && (
           <Link
             href={`/blog/${post.slug}`}
-            className="mt-4 inline-block font-mono text-[11px] uppercase tracking-[0.14em] text-tint hover:underline underline-offset-2"
+            className="mt-4 inline-block font-mono text-11 uppercase tracking-[0.14em] text-tint hover:underline underline-offset-2"
           >
             View the live post →
           </Link>

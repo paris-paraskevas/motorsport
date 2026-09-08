@@ -56,7 +56,7 @@ export function VideoEmbed({
         className="relative text-white/90 drop-shadow-lg transition-transform duration-(--duration-fast) group-hover:scale-110"
       />
       {!embeddable && (
-        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-white/85">
+        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 font-mono text-10 uppercase tracking-[0.14em] text-white/85">
           YouTube
           <ExternalLink size={11} />
         </span>

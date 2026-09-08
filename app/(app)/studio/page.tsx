@@ -51,7 +51,7 @@ function Row({
         >
           {post.title}
         </Link>
-        <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+        <span className="font-mono text-11 uppercase tracking-[0.12em] text-text-faint">
           {post.seriesSlug ?? 'site-wide'}
           {admin && post.authorName ? ` · ${post.authorName}` : ''}
           {meta ? ` · ${meta}` : ''}
@@ -59,14 +59,14 @@ function Row({
         {/* Which posts are already in Learn, at a glance — otherwise the only way
             to tell is to open each one. */}
         {featured && (
-          <span className="border border-brand px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-brand">
+          <span className="border border-brand px-1.5 py-0.5 font-mono text-10 uppercase tracking-[0.12em] text-brand">
             Learn · {featured.label}
           </span>
         )}
         {opensStudio && (
           <Link
             href={`/blog/${post.slug}`}
-            className="ml-auto font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+            className="ml-auto font-mono text-11 uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
           >
             {post.status === 'published' ? 'View ↗' : 'Preview ↗'}
           </Link>
@@ -101,7 +101,7 @@ function Section({
   return (
     <section className="mt-10 first:mt-0">
       <h2
-        className={`mb-1 border-b border-border pb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] ${meta.cls}`}
+        className={`mb-1 border-b border-border pb-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] ${meta.cls}`}
       >
         {meta.label} · {count}
       </h2>
@@ -136,7 +136,7 @@ export default async function StudioPage() {
     <>
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+          <div className="mb-2 font-mono text-11 font-semibold uppercase tracking-[0.18em] text-text-faint">
             Blog
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-text md:text-4xl">Studio</h1>
@@ -148,13 +148,13 @@ export default async function StudioPage() {
         </div>
         <Link
           href="/studio/new"
-          className="bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+          className="bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
         >
           + New post
         </Link>
       </header>
 
-      <div className="mb-10 flex flex-wrap gap-x-6 gap-y-1 border-y border-border py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="mb-10 flex flex-wrap gap-x-6 gap-y-1 border-y border-border py-3 font-mono text-11 uppercase tracking-[0.14em] text-text-faint">
         <span>
           Drafts <span className="text-text">{drafts.length}</span>
         </span>
@@ -200,7 +200,7 @@ export default async function StudioPage() {
         ))}
       </Section>
       {live.length > LIVE_CAP && (
-        <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+        <p className="mt-3 font-mono text-11 uppercase tracking-[0.14em] text-text-faint">
           + {live.length - LIVE_CAP} more on{' '}
           <Link href="/blog" className="text-text-muted hover:text-text">
             /blog

@@ -249,7 +249,7 @@ export function AssistantWidget() {
         </span>
         <div className="min-w-0 flex-1">
           <div className="font-display text-sm font-bold uppercase tracking-wide text-text">Race Engineer</div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Paddock help</div>
+          <div className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">Paddock help</div>
         </div>
         {isSignedIn && (
           <>
@@ -358,7 +358,7 @@ export function AssistantWidget() {
                 {m.role === 'assistant' && (
                   <div className="mt-1 flex items-center gap-2 pl-1">
                     {rated[m.content] ? (
-                      <span className="font-mono text-[10px] text-text-faint">thanks for the feedback</span>
+                      <span className="font-mono text-10 text-text-faint">thanks for the feedback</span>
                     ) : (
                       <>
                         <button
@@ -425,7 +425,7 @@ export function AssistantWidget() {
               <Send size={16} aria-hidden />
             </button>
           </div>
-          <p className="mt-2 font-mono text-[10px] leading-relaxed text-text-faint">
+          <p className="mt-2 font-mono text-10 leading-relaxed text-text-faint">
             Beta — helps with using Paddock. For live results or standings, open the page.
             Don&apos;t share anything sensitive; questions go to a third-party model.
           </p>

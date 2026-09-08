@@ -18,7 +18,7 @@ export default async function StudioLayout({ children }: { children: React.React
     <div className={PAGE_WIDE}>
       <Link
         href="/blog"
-        className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+        className="mb-4 inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
       >
         <ChevronLeft size={13} /> Blog
       </Link>

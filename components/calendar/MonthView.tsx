@@ -244,14 +244,14 @@ export function MonthView({
                   className="w-9 shrink-0 pt-0.5 text-center"
                 >
                   <span
-                    className={`mx-auto flex h-7 w-7 items-center justify-center font-mono text-[15px] font-semibold tabular-nums ${
+                    className={`mx-auto flex h-7 w-7 items-center justify-center font-mono text-15 font-semibold tabular-nums ${
                       cell.isToday ? 'rounded-full bg-brand-fill text-bg' : 'text-text'
                     }`}
                   >
                     {dayFmt.format(cell.date)}
                   </span>
                   <span
-                    className={`mt-0.5 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] ${
+                    className={`mt-0.5 block font-mono text-9 font-semibold uppercase tracking-[0.1em] ${
                       cell.isToday ? 'text-brand' : 'text-text-faint'
                     }`}
                   >
@@ -263,21 +263,21 @@ export function MonthView({
                   {lines.map(l => (
                     <Link key={l.key} href={l.href} className="flex min-h-10 min-w-0 items-center gap-2">
                       <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: l.color }} />
-                      <span className="w-12 shrink-0 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-text-faint">
+                      <span className="w-12 shrink-0 font-mono text-9 font-semibold uppercase tracking-[0.08em] text-text-faint">
                         {code(l.seriesSlug)}
                       </span>
                       <span
-                        className={`min-w-0 flex-1 truncate font-serif text-[14px] leading-tight ${
+                        className={`min-w-0 flex-1 truncate font-serif text-14 leading-tight ${
                           l.decides ? 'font-semibold text-text' : 'text-text-muted'
                         }`}
                       >
                         {l.label}
                       </span>
-                      <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">{l.time}</span>
+                      <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">{l.time}</span>
                     </Link>
                   ))}
                   {entries.length === 0 && (
-                    <p className="flex min-h-10 items-center font-serif text-[13px] italic leading-snug text-text-muted">
+                    <p className="flex min-h-10 items-center font-serif text-13 italic leading-snug text-text-muted">
                       Nothing today.
                     </p>
                   )}
@@ -289,7 +289,7 @@ export function MonthView({
       </div>
       <div className="hidden grid-cols-7 border-b border-text md:grid">
         {WEEKDAYS.map(d => (
-          <div key={d} className="px-1.5 pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
+          <div key={d} className="px-1.5 pb-1 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted">
             {d}
           </div>
         ))}
@@ -307,7 +307,7 @@ export function MonthView({
                     <Link
                       href={b.href}
                       style={{ gridColumn: `${b.start + 1} / span ${b.span}`, backgroundColor: seriesInk(b.color) }}
-                      className="mx-[2px] mt-[2px] flex min-h-[22px] items-center truncate px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity duration-(--duration-fast) hover:opacity-90"
+                      className="mx-[2px] mt-[2px] flex min-h-[22px] items-center truncate px-2 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-bg transition-opacity duration-(--duration-fast) hover:opacity-90"
                     >
                       <span className="truncate">{b.label}</span>
                     </Link>
@@ -353,10 +353,10 @@ export function MonthView({
                     <div className="flex items-baseline justify-between">
                       <span className={`font-mono text-xs tabular-nums ${cell.isToday ? 'font-semibold text-brand' : 'text-text-muted'}`}>
                         {cell.date.getDate()}
-                        {cell.isToday && <span className="ml-1.5 text-[9px] uppercase tracking-[0.14em]">Today</span>}
+                        {cell.isToday && <span className="ml-1.5 text-9 uppercase tracking-[0.14em]">Today</span>}
                       </span>
                       {entries.length > 0 && (
-                        <span className="font-mono text-[10px] tabular-nums text-text-faint">{entries.length}</span>
+                        <span className="font-mono text-10 tabular-nums text-text-faint">{entries.length}</span>
                       )}
                     </div>
                     {/* md+: summarising lines, capped — deciders always shown,
@@ -370,17 +370,17 @@ export function MonthView({
                           className="flex min-w-0 items-baseline gap-1.5 hover:underline"
                         >
                           <span aria-hidden="true" className="relative top-[1px] h-3 w-[3px] shrink-0 self-start" style={{ backgroundColor: l.color }} />
-                          <span className="shrink-0 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-text-faint">
+                          <span className="shrink-0 font-mono text-9 font-semibold uppercase tracking-[0.08em] text-text-faint">
                             {code(l.seriesSlug)}
                           </span>
                           <span
-                            className={`min-w-0 flex-1 truncate font-serif text-[12.5px] leading-[1.3] ${
+                            className={`min-w-0 flex-1 truncate font-serif text-12-5 leading-[1.3] ${
                               l.decides ? 'font-semibold text-text' : 'text-text-muted'
                             }`}
                           >
                             {l.label}
                           </span>
-                          <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">{l.time}</span>
+                          <span className="shrink-0 font-mono text-10 tabular-nums text-text-faint">{l.time}</span>
                         </Link>
                       ))}
                       {hiddenCount > 0 && (
@@ -390,7 +390,7 @@ export function MonthView({
                             e.stopPropagation();
                             onSelectDay(cell.date);
                           }}
-                          className="self-start font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
+                          className="self-start font-mono text-9 font-semibold uppercase tracking-[0.12em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
                         >
                           +{hiddenCount} more
                         </button>
@@ -405,14 +405,14 @@ export function MonthView({
       })}
       </div>
       {/* Reading-it legend (mock 6a foot). */}
-      <div className="mt-2 hidden flex-wrap items-baseline gap-x-5 gap-y-1 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint md:flex">
+      <div className="mt-2 hidden flex-wrap items-baseline gap-x-5 gap-y-1 font-mono text-9 uppercase tracking-[0.14em] text-text-faint md:flex">
         <span className="font-semibold text-text-muted">Reading it</span>
         <span className="inline-flex items-center gap-1.5">
           <span aria-hidden="true" className="h-[9px] w-6" style={{ backgroundColor: 'color-mix(in srgb, var(--brand) 70%, black)' }} />
           race weekend, spanning its days
         </span>
         <span>
-          <span className="font-serif text-[11px] font-semibold normal-case tracking-normal text-text">Race</span> bold = a
+          <span className="font-serif text-11 font-semibold normal-case tracking-normal text-text">Race</span> bold = a
           session that decides something
         </span>
         <span>the corner count = total sessions that day</span>

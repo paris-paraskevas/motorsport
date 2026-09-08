@@ -20,7 +20,7 @@ export interface PostAuthor {
 /** Article body wrapper classes — single-sourced so the public path and the
  *  editor's view mode can't drift apart. */
 export const POST_ARTICLE_CLASS =
-  `prose dark:prose-invert prose-zinc max-w-[760px] font-serif text-[17px] leading-[1.62]
+  `prose dark:prose-invert prose-zinc max-w-[760px] font-serif text-17 leading-[1.62]
    prose-headings:font-serif prose-headings:tracking-tight prose-headings:scroll-mt-24
    prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
    prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
@@ -30,7 +30,7 @@ export const POST_ARTICLE_CLASS =
    prose-blockquote:not-italic prose-blockquote:font-serif prose-blockquote:font-medium
    prose-blockquote:border-l-0 prose-blockquote:border-y prose-blockquote:border-text
    prose-blockquote:px-0 prose-blockquote:py-4 prose-blockquote:my-8
-   prose-blockquote:text-[24px] prose-blockquote:leading-snug prose-blockquote:tracking-[-0.01em]
+   prose-blockquote:text-24 prose-blockquote:leading-snug prose-blockquote:tracking-[-0.01em]
    prose-pre:overflow-x-auto prose-pre:font-mono prose-img:rounded-lg prose-img:mx-auto prose-img:max-w-full
    prose-table:block prose-table:overflow-x-auto prose-table:max-w-full`;
 
@@ -62,7 +62,7 @@ function Provenance({ url }: { url: string }) {
     return null; // malformed rows can't render a link worth clicking
   }
   return (
-    <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+    <p className="mt-3 font-mono text-11 uppercase tracking-[0.14em] text-text-faint">
       Originally published at{' '}
       <a
         href={url}
@@ -108,25 +108,25 @@ export function PostHeader({
   return (
     <header className="mb-8">
       {eyebrow ? (
-        <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+        <p className="mb-3 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-brand">
           {eyebrow}
         </p>
       ) : (
         <div className="flex items-baseline gap-3 mb-3 flex-wrap">
-          <time className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
+          <time className="text-11 uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
             {dateLabel}
           </time>
           {tags?.map(tag => (
             <span
               key={tag}
-              className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-muted bg-surface border border-border rounded-full px-2 py-0.5"
+              className="text-10 uppercase tracking-[0.12em] font-semibold text-text-muted bg-surface border border-border rounded-full px-2 py-0.5"
             >
               {tag}
             </span>
           ))}
         </div>
       )}
-      <h1 className="font-serif text-[34px] font-medium tracking-[-0.02em] leading-[1.05] text-text md:text-[44px]">
+      <h1 className="font-serif text-34 font-medium tracking-[-0.02em] leading-[1.05] text-text md:text-44">
         {title}
       </h1>
       {author.name && (
@@ -164,7 +164,7 @@ export function PostHeader({
             {seriesLink && (
               <Link
                 href={seriesLink.href}
-                className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
+                className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
               >
                 {seriesLink.label}
               </Link>
@@ -173,7 +173,7 @@ export function PostHeader({
         </div>
       )}
       {originalUrl != null && originalUrl !== '' && <Provenance url={originalUrl} />}
-      <p className="mt-4 font-serif text-[18px] text-text-muted leading-relaxed">
+      <p className="mt-4 font-serif text-18 text-text-muted leading-relaxed">
         {summary}
       </p>
     </header>

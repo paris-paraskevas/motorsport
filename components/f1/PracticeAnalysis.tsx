@@ -43,7 +43,7 @@ function CompoundChip({ compound }: { compound: string | null }) {
   const style = compound ? COMPOUND_STYLE[compound.toUpperCase()] : undefined;
   return (
     <span
-      className="inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em]"
+      className="inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-10 font-semibold uppercase tracking-[0.1em]"
       style={
         style
           ? { backgroundColor: style.bg, color: style.fg }
@@ -101,7 +101,7 @@ export function PracticeAnalysis({
             <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
               Fastest laps
             </h3>
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+            <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
               One-lap pace · gap to P1
             </span>
           </div>
@@ -118,7 +118,7 @@ export function PracticeAnalysis({
                   : 0;
               return (
                 <li key={e.driverNumber} className="flex items-center gap-2.5">
-                  <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                  <span className="w-5 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                     {i + 1}
                   </span>
                   <span className="flex w-16 shrink-0 items-center gap-1.5">
@@ -142,7 +142,7 @@ export function PracticeAnalysis({
                   >
                     {fmtLap(e.lapDuration)}
                   </span>
-                  <span className="w-16 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                  <span className="w-16 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                     {i === 0 ? '—' : fmtGap(e.lapDuration - fastestLap)}
                   </span>
                 </li>
@@ -158,7 +158,7 @@ export function PracticeAnalysis({
             <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
               Long-run pace
             </h3>
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+            <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
               Race-sim · avg green lap
             </span>
           </div>
@@ -176,7 +176,7 @@ export function PracticeAnalysis({
             ))}
           </ul>
 
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          <p className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
             Avg of clean green laps (in/out + traffic laps excluded). Lap count is
             the representative stint&rsquo;s clean laps.
           </p>
@@ -207,7 +207,7 @@ function LongRunRow({
   const delta = avg != null && bestAvg > 0 ? avg - bestAvg : 0;
   return (
     <li className="flex items-center gap-2.5 py-2">
-      <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+      <span className="w-5 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
         {rank}
       </span>
       <span className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -215,7 +215,7 @@ function LongRunRow({
         <span className="font-display text-xs font-extrabold uppercase tracking-wide text-text">
           {driver?.code ?? `#${run.driverNumber}`}
         </span>
-        <span className="truncate font-mono text-[11px] text-text-muted">
+        <span className="truncate font-mono text-11 text-text-muted">
           {driver?.team ?? ''}
         </span>
       </span>
@@ -224,13 +224,13 @@ function LongRunRow({
           <CompoundChip compound={best.compound} />
         </span>
       ) : null}
-      <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <span className="shrink-0 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         {best?.greenLaps ?? 0} lap{(best?.greenLaps ?? 0) === 1 ? '' : 's'}
       </span>
       <span className="w-[4.5rem] shrink-0 text-right font-mono text-xs font-semibold tabular-nums text-text">
         {fmtLap(avg)}
       </span>
-      <span className="hidden w-16 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint sm:inline">
+      <span className="hidden w-16 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint sm:inline">
         {rank === 1 ? '—' : fmtGap(delta)}
       </span>
     </li>

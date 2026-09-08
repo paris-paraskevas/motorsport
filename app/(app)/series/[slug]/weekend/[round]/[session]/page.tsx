@@ -173,7 +173,7 @@ function SessionChips({ items, noSprint }: {
             href={item.href}
             aria-current={item.isCurrent ? 'page' : undefined}
             title={item.title}
-            className={`inline-flex min-h-[38px] items-center border px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
+            className={`inline-flex min-h-[38px] items-center border px-3 font-mono text-10 font-semibold uppercase tracking-[0.14em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
               item.isCurrent
                 ? 'border-text bg-surface-elevated text-text'
                 : 'border-border-strong text-text-muted hover:text-text'
@@ -183,7 +183,7 @@ function SessionChips({ items, noSprint }: {
           </Link>
         ))}
         {noSprint && (
-          <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+          <span className="ml-1 font-mono text-9 uppercase tracking-[0.14em] text-text-faint">
             No sprint at this round
           </span>
         )}
@@ -201,7 +201,7 @@ function SessionPager({
 }) {
   if (!prev && !next) return null;
   return (
-    <div className="mt-8 flex items-center justify-between font-mono text-[11px] font-semibold uppercase tracking-[0.16em]">
+    <div className="mt-8 flex items-center justify-between font-mono text-11 font-semibold uppercase tracking-[0.16em]">
       {prev ? (
         <Link
           href={prev.href}
@@ -254,7 +254,7 @@ function ResultTable({ data }: { data: SessionClassification }) {
       className={`flex items-baseline gap-3 border-t border-border px-1 py-2.5 ${raised ? 'bg-surface-elevated' : ''}`}
     >
       <span
-        className={`w-7 shrink-0 text-right font-mono text-[13px] tabular-nums ${
+        className={`w-7 shrink-0 text-right font-mono text-13 tabular-nums ${
           raised ? 'font-bold text-brand' : 'text-text-muted'
         }`}
       >
@@ -264,55 +264,55 @@ function ResultTable({ data }: { data: SessionClassification }) {
           read as one number without them). Desktop only — on mobile the team
           stacks under the driver and vertical rules would cut through it. */}
       {hasNo && (
-        <span className="hidden w-8 shrink-0 font-mono text-[11px] tabular-nums text-text-faint sm:block sm:border-l sm:border-border sm:pl-3">
+        <span className="hidden w-8 shrink-0 font-mono text-11 tabular-nums text-text-faint sm:block sm:border-l sm:border-border sm:pl-3">
           {e.carNumber ?? ''}
         </span>
       )}
       <div className="min-w-0 flex-1 sm:border-l sm:border-border sm:pl-3">
         <div className="flex items-baseline gap-2">
-          <span className="truncate font-serif text-[17px] font-semibold leading-tight text-text">
+          <span className="truncate font-serif text-17 font-semibold leading-tight text-text">
             {e.driverName}
           </span>
           {e.coDriverName ? (
             <span className="hidden truncate text-xs text-text-muted md:inline">/ {e.coDriverName}</span>
           ) : null}
         </div>
-        <div className="truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted sm:hidden">
+        <div className="truncate font-mono text-9 uppercase tracking-[0.12em] text-text-muted sm:hidden">
           {teamLine(e)}
         </div>
       </div>
-      <span className="hidden w-[24%] shrink-0 truncate font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
+      <span className="hidden w-[24%] shrink-0 truncate font-mono text-10 uppercase tracking-[0.12em] text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
         {teamLine(e)}
       </span>
       {q ? (
         <>
-          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
+          <span className="hidden w-20 shrink-0 text-right font-mono text-11 tabular-nums text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
             {e.q1 ?? ''}
           </span>
-          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
+          <span className="hidden w-20 shrink-0 text-right font-mono text-11 tabular-nums text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
             {e.q2 ?? ''}
           </span>
-          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
+          <span className="hidden w-20 shrink-0 text-right font-mono text-11 tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
             {e.q3 ?? ''}
           </span>
-          <span className="w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:hidden">
+          <span className="w-20 shrink-0 text-right font-mono text-11 tabular-nums text-text sm:hidden">
             {e.q3 ?? e.q2 ?? e.q1 ?? ''}
           </span>
         </>
       ) : (
         <>
-          <span className="hidden w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
+          <span className="hidden w-24 shrink-0 text-right font-mono text-11 tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
             {e.time ?? ''}
           </span>
           <span
-            className={`hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums sm:block sm:border-l sm:border-border sm:pl-3 ${
+            className={`hidden w-20 shrink-0 text-right font-mono text-11 tabular-nums sm:block sm:border-l sm:border-border sm:pl-3 ${
               e.status ? 'text-brand' : 'text-text-muted'
             }`}
           >
             {e.status ?? e.gap ?? (e.position === 1 && e.time ? '—' : '')}
           </span>
           <span
-            className={`w-24 shrink-0 truncate text-right font-mono text-[11px] tabular-nums sm:hidden ${
+            className={`w-24 shrink-0 truncate text-right font-mono text-11 tabular-nums sm:hidden ${
               e.status ? 'text-brand' : 'text-text'
             }`}
           >
@@ -321,7 +321,7 @@ function ResultTable({ data }: { data: SessionClassification }) {
         </>
       )}
       {data.isRace ? (
-        <span className={`w-9 shrink-0 text-right font-mono text-[12px] tabular-nums ${raised ? 'font-bold text-text' : 'text-text'}`}>
+        <span className={`w-9 shrink-0 text-right font-mono text-12 tabular-nums ${raised ? 'font-bold text-text' : 'text-text'}`}>
           {e.points ?? 0}
         </span>
       ) : null}
@@ -330,7 +330,7 @@ function ResultTable({ data }: { data: SessionClassification }) {
 
   return (
     <div>
-      <div className="flex items-baseline gap-3 border-b border-text px-1 pb-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-text-muted">
+      <div className="flex items-baseline gap-3 border-b border-text px-1 pb-1.5 font-mono text-9 font-semibold uppercase tracking-[0.1em] text-text-muted">
         <span className="w-7 shrink-0 text-right">Pos</span>
         {hasNo && <span className="hidden w-8 shrink-0 sm:block">No</span>}
         <span className="min-w-0 flex-1">Driver</span>
@@ -354,7 +354,7 @@ function ResultTable({ data }: { data: SessionClassification }) {
       <ul>{lead.map((e, i) => row(e, i === 0 && e.position === 1))}</ul>
       {rest.length > 0 && (
         <details className="group border-t border-border">
-          <summary className="flex cursor-pointer select-none flex-wrap items-baseline gap-x-4 gap-y-1 px-1 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer select-none flex-wrap items-baseline gap-x-4 gap-y-1 px-1 py-2.5 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted [&::-webkit-details-marker]:hidden">
             <span>
               {restClassified.length > 0 ? `${restClassified.length} more classified` : ''}
               {restClassified.length > 0 && restRetired.length > 0 ? ' · ' : ''}
@@ -388,28 +388,28 @@ function ClassBlock({ cls, data, idx }: { cls: string; data: SessionClassificati
       className={`flex items-baseline gap-3 border-t border-border px-1 py-2.5 ${raised ? 'bg-surface-elevated' : ''}`}
     >
       <span
-        className={`w-7 shrink-0 text-right font-mono text-[13px] tabular-nums ${
+        className={`w-7 shrink-0 text-right font-mono text-13 tabular-nums ${
           raised ? 'font-bold text-brand' : 'text-text-muted'
         }`}
       >
         {e.position ?? '–'}
       </span>
-      <span className="w-10 shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+      <span className="w-10 shrink-0 font-mono text-11 tabular-nums text-text-faint">
         {e.driverCode ?? ''}
       </span>
       <div className="min-w-0 flex-1">
-        <div className="truncate font-serif text-[17px] font-semibold leading-tight text-text">{e.team}</div>
+        <div className="truncate font-serif text-17 font-semibold leading-tight text-text">{e.team}</div>
         {e.driverName && e.driverName !== e.team ? (
-          <div className="truncate font-mono text-[9px] uppercase tracking-[0.14em] text-text-muted">
+          <div className="truncate font-mono text-9 uppercase tracking-[0.14em] text-text-muted">
             {e.driverName}
           </div>
         ) : null}
       </div>
-      <span className="hidden w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
+      <span className="hidden w-24 shrink-0 text-right font-mono text-11 tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
         {e.time ?? ''}
       </span>
       <span
-        className={`w-20 shrink-0 text-right font-mono text-[11px] tabular-nums ${
+        className={`w-20 shrink-0 text-right font-mono text-11 tabular-nums ${
           e.status ? 'text-brand' : 'text-text-muted'
         }`}
       >
@@ -420,7 +420,7 @@ function ClassBlock({ cls, data, idx }: { cls: string; data: SessionClassificati
 
   return (
     <section className="mt-5">
-      <div className="border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]">
+      <div className="border-b border-text pb-1 font-mono text-10 font-semibold uppercase tracking-[0.16em]">
         <span className="text-brand">{cls}</span>
         <span className="text-text-faint">
           {' '}· {idx === 0 ? 'Racing for the outright win' : 'Its own winner, same track'}
@@ -429,7 +429,7 @@ function ClassBlock({ cls, data, idx }: { cls: string; data: SessionClassificati
       <ul>{lead.map((e, i) => row(e, i === 0))}</ul>
       {rest.length > 0 && (
         <details className="group border-t border-border">
-          <summary className="flex cursor-pointer select-none items-baseline gap-4 px-1 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer select-none items-baseline gap-4 px-1 py-2.5 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted [&::-webkit-details-marker]:hidden">
             <span className="text-brand group-open:hidden">All {entries.length} cars →</span>
             <span className="hidden text-brand group-open:inline">Show fewer</span>
           </summary>
@@ -629,7 +629,7 @@ async function SessionBody({
       {classification ? (
         <section className="mt-2">
           {slug === 'wrc' && (
-            <div className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+            <div className="mb-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand">
               Overall, on cumulative time
             </div>
           )}
@@ -642,7 +642,7 @@ async function SessionBody({
               <ClassBlock key={c.cls} cls={c.cls} data={c.data} idx={i} />
             ))}
           </SessionClassChips>
-          <p className="mt-3 border-t border-text pt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+          <p className="mt-3 border-t border-text pt-2 font-mono text-9 uppercase tracking-[0.14em] text-text-faint">
             Gaps become laps once a class is lapped · a crew shares one result
           </p>
         </section>
@@ -663,7 +663,7 @@ async function SessionBody({
           </p>
           <Link
             href={`/series/${slug}/results`}
-            className="mt-3 inline-block font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+            className="mt-3 inline-block font-mono text-11 uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
           >
             Season results →
           </Link>
@@ -682,7 +682,7 @@ async function SessionBody({
           nothing. */}
       <SessionForecast session={session} weekend={weekend} />
 
-      <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
+      <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 font-mono text-10 uppercase tracking-[0.14em]">
         <Link
           href={weekendHref}
           data-heatmap-id="session:back-to-weekend"
@@ -830,7 +830,7 @@ export default async function SessionPage({
           has run ("Race classification"), the instant + venue in mono. */}
       <section className="mb-6 border-b border-border pb-5">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-          <div className="flex flex-wrap items-center gap-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em]">
+          <div className="flex flex-wrap items-center gap-2.5 font-mono text-11 font-semibold uppercase tracking-[0.16em]">
             <span aria-hidden="true" className="h-3.5 w-[3px]" style={{ backgroundColor: color }} />
             <Link
               href={`/series/${slug}`}
@@ -849,7 +849,7 @@ export default async function SessionPage({
             {isLive && (
               <>
                 <span className="text-border-strong">·</span>
-                <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-live/15 text-live-pill">
+                <span className="inline-flex items-center gap-1.5 text-10 tracking-[0.14em] px-2 py-0.5 bg-live/15 text-live-pill">
                   <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
                   live
                 </span>
@@ -859,7 +859,7 @@ export default async function SessionPage({
           <Link
             href={`/series/${slug}/weekend/${round}`}
             data-heatmap-id="session:masthead:weekend"
-            className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
+            className="font-mono text-11 font-semibold uppercase tracking-[0.14em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
           >
             Back to the weekend →
           </Link>
@@ -891,7 +891,7 @@ export default async function SessionPage({
               href={watch.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
+              className="inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
             >
               <Tv size={13} />
               {isPast ? 'Watch on' : 'Watch live on'} {watch.service}
@@ -918,7 +918,7 @@ export default async function SessionPage({
             </div>
             <figcaption className="min-w-0">
               <div className="text-sm font-medium text-text">{circuitLayout.name}</div>
-              <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+              <div className="mt-0.5 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                 Circuit map ·{' '}
                 <a
                   href={circuitLayout.sourceUrl}

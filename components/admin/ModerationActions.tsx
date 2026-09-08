@@ -16,8 +16,8 @@ import { STATUSES, type FeedbackStatus } from '@/lib/feedback';
 // so the row leaves the server-rendered queue.
 
 const BTN =
-  'rounded border border-border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text disabled:opacity-40';
-const BTN_ON = 'rounded border border-brand bg-surface px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-brand';
+  'rounded border border-border px-2.5 py-1 font-mono text-10 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text disabled:opacity-40';
+const BTN_ON = 'rounded border border-brand bg-surface px-2.5 py-1 font-mono text-10 uppercase tracking-[0.12em] text-brand';
 
 function useAction(url: string) {
   const router = useRouter();
@@ -68,7 +68,7 @@ export function FeedbackActions({ id, status }: { id: string; status: FeedbackSt
           {s}
         </button>
       ))}
-      {error && <span className="font-mono text-[11px] text-negative">{error}</span>}
+      {error && <span className="font-mono text-11 text-negative">{error}</span>}
     </div>
   );
 }
@@ -83,7 +83,7 @@ export function ThreadActions({ id }: { id: string }) {
       <button type="button" disabled={busy} onClick={() => send({ action: 'reject' })} className={BTN}>
         Reject
       </button>
-      {error && <span className="font-mono text-[11px] text-negative">{error}</span>}
+      {error && <span className="font-mono text-11 text-negative">{error}</span>}
     </div>
   );
 }

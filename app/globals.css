@@ -363,6 +363,61 @@
   --breakpoint-3xl: 1700px;
 }
 
+/* The size ladder (designer step 8, "Appearance"). Every fixed text size the
+   components use, named by its pixel value at the default root size and valued
+   in rem, so `text-11` reads 11px today and follows the root font size the
+   Appearance tokens will set. A step emits font-size only, exactly like the
+   `text-[11px]` form it replaced (Tailwind adds a line-height only when a
+   `--text-N--line-height` companion exists; none is defined on purpose). `12-5`
+   is 12.5px: a theme key cannot carry a dot. Not `inline`, so a single step can
+   be re-valued at runtime later. Add a step here before using a new size. */
+@theme {
+  --text-8: 0.5rem;
+  --text-9: 0.5625rem;
+  --text-10: 0.625rem;
+  --text-11: 0.6875rem;
+  --text-12: 0.75rem;
+  --text-12-5: 0.78125rem;
+  --text-13: 0.8125rem;
+  --text-14: 0.875rem;
+  --text-15: 0.9375rem;
+  --text-16: 1rem;
+  --text-17: 1.0625rem;
+  --text-18: 1.125rem;
+  --text-19: 1.1875rem;
+  --text-20: 1.25rem;
+  --text-22: 1.375rem;
+  --text-24: 1.5rem;
+  --text-26: 1.625rem;
+  --text-28: 1.75rem;
+  --text-30: 1.875rem;
+  --text-32: 2rem;
+  --text-34: 2.125rem;
+  --text-36: 2.25rem;
+  --text-38: 2.375rem;
+  --text-40: 2.5rem;
+  --text-44: 2.75rem;
+  --text-46: 2.875rem;
+  --text-50: 3.125rem;
+  --text-58: 3.625rem;
+  --text-96: 6rem;
+  --text-112: 7rem;
+  --text-136: 8.5rem;
+}
+
+/* The four faces by ROLE. next/font puts each family on <html> as a variable
+   (lib/fonts.ts); these role variables are what the font stacks below read, so
+   swapping a role (the dyslexic mode today, the Appearance tokens later) reaches
+   every `font-*` utility, not only the body. The utilities inline their stacks
+   (`@theme inline`), so overriding `--font-sans` itself would reach the body
+   rule and nothing else; overriding `--face-sans` reaches all of them. */
+:root {
+  --face-sans: var(--font-plex-sans);
+  --face-serif: var(--font-newsreader);
+  --face-mono: var(--font-plex-mono);
+  --face-condensed: var(--font-plex-condensed);
+}
+
 /* Expose tokens as Tailwind utilities. */
 @theme inline {
   /* Paddock 2.0 */
@@ -376,17 +431,17 @@
   --color-live-deep: var(--live-deep);
 
   /* The Plex system (operator board 2026-08-03 "READING COMFORT"): Sans 400
-     app-wide, Condensed quarantined to names, Mono for the data register. All
-     three arrive as CSS variables from lib/fonts.ts on <html>, so the dyslexic
-     override below can swap the whole system by reassigning tokens.
+     app-wide, Condensed quarantined to names, Mono for the data register. The
+     stacks read the ROLE variables above (--face-*), which is what lets one
+     reassignment swap the whole system, utilities included.
      --font-display survives as an alias of the sans stack: its ~190 call sites
      keep their weight/tracking classes and simply inherit the body face. */
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-condensed: var(--font-plex-condensed), var(--font-plex-sans), sans-serif;
-  /* Paper editorial serif (Newsreader, lib/fonts.ts). Plex Sans sits second so
-     Greek names fall through per-glyph — Newsreader has no Greek subset. */
-  --font-serif: var(--font-newsreader), var(--font-plex-sans), Georgia, serif;
+  --font-sans: var(--face-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--face-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-condensed: var(--face-condensed), var(--face-sans), sans-serif;
+  /* Paper editorial serif (Newsreader, lib/fonts.ts). The sans face sits second
+     so Greek names fall through per-glyph — Newsreader has no Greek subset. */
+  --font-serif: var(--face-serif), var(--face-sans), Georgia, serif;
 
   /* Paddock-native */
   --color-bg: var(--bg);
@@ -413,7 +468,7 @@
   --color-live-pill: var(--live-pill);
   --color-session-best: var(--session-best);
 
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-mono: var(--face-mono), ui-monospace, monospace;
 
   /* Numerals you scan (times, gaps, points) get FULL brightness — the board's
      rule: body copy sits at --text (#e4e4e8 on dark), white is reserved for
@@ -464,16 +519,18 @@
 }
 
 /* Dyslexic mode (html[data-dyslexic="1"], persisted like the theme): the whole
-   type system swaps to OpenDyslexic by token reassignment — sans, display AND
-   condensed (names must not stay condensed in this mode); mono keeps Plex Mono
-   (tabular data loses alignment in OpenDyslexic). The @fontsource files load
-   lazily: browsers fetch a @font-face only when an element actually uses the
-   family, so readers who never enable the mode never download it. */
+   type system swaps to OpenDyslexic by reassigning the ROLE variables — sans,
+   serif AND condensed (names must not stay condensed in this mode); mono keeps
+   Plex Mono (tabular data loses alignment in OpenDyslexic). Reassigning the
+   roles rather than the stacks is what reaches the `font-*` utilities: until
+   1.0.49 the mode swapped the body only, and headlines, serif titles and names
+   kept their faces. The @fontsource files load lazily: browsers fetch a
+   @font-face only when an element actually uses the family, so readers who
+   never enable the mode never download it. */
 html[data-dyslexic='1'] {
-  --font-sans: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
-  --font-display: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
-  --font-condensed: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
-  --font-serif: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
+  --face-sans: 'OpenDyslexic', var(--font-plex-sans);
+  --face-serif: 'OpenDyslexic', var(--font-plex-sans);
+  --face-condensed: 'OpenDyslexic', var(--font-plex-sans);
 }
 html[data-dyslexic='1'] body {
   /* BDA guidance: looser leading + a little tracking help most dyslexic readers. */

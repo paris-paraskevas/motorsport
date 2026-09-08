@@ -96,14 +96,14 @@ export function ThreadComposer({
         <button
           type="submit"
           disabled={busy || !title.trim() || !body.trim()}
-          className="bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
+          className="bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
         >
           {busy ? 'Posting…' : 'Post for review'}
         </button>
         {msg && <span className="font-mono text-xs text-emerald-400">{msg}</span>}
         {error && <span className="font-mono text-xs text-red-400">{error}</span>}
       </div>
-      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <p className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         Threads are public once a moderator approves them.
       </p>
     </form>

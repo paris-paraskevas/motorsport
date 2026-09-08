@@ -55,7 +55,7 @@ export function WeekendBlock({
         <div className="flex items-baseline gap-3 min-w-0">
           <time
             dateTime={weekendStartISO}
-            className="shrink-0 text-[11px] uppercase tracking-wider text-text-faint font-medium font-mono tnum"
+            className="shrink-0 text-11 uppercase tracking-wider text-text-faint font-medium font-mono tnum"
           >
             {weekend.dateRangeLabel}
           </time>
@@ -96,25 +96,25 @@ export function WeekendBlock({
         </time>
         <span className="ml-auto flex items-center gap-1.5">
           {showNextTag && (
-            <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 bg-brand-fill text-black font-bold">
+            <span className="font-mono text-10 uppercase tracking-wider px-2 py-0.5 bg-brand-fill text-black font-bold">
               next
             </span>
           )}
           {weekend.previousStartDate && weekend.previousEndDate && (
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
+            <span className="text-10 uppercase tracking-wider px-2 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
               rescheduled
             </span>
           )}
           {weekend.label && (
             <span
-              className="inline-flex items-center font-mono text-[10px] uppercase tracking-[0.12em] font-semibold px-2 py-0.5 border"
+              className="inline-flex items-center font-mono text-10 uppercase tracking-[0.12em] font-semibold px-2 py-0.5 border"
               style={{ borderColor: `${color}66`, color }}
             >
               {weekend.label}
             </span>
           )}
           {!weekend.label && weekend.significance && weekend.significance.tier !== 'note' && (
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
+            <span className="text-10 uppercase tracking-wider px-2 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
               {weekend.significance.tier}
             </span>
           )}
@@ -130,7 +130,7 @@ export function WeekendBlock({
       )}
       {!subtitle && hasNamedTitle && <div className="mb-2" />}
       {weekend.previousStartDate && weekend.previousEndDate && (
-        <div className="text-[11px] text-brand/80 mb-2 tnum font-mono">
+        <div className="text-11 text-brand/80 mb-2 tnum font-mono">
           Rescheduled from {formatShortRange(weekend.previousStartDate, weekend.previousEndDate)}
           {weekend.rescheduleNote && (
             <span className="text-text-faint font-sans"> · {weekend.rescheduleNote}</span>
@@ -159,7 +159,7 @@ export function WeekendBlock({
           </li>
         ))}
       </ul>
-      <div className="mt-3 text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold">
+      <div className="mt-3 text-10 uppercase tracking-[0.14em] text-text-faint font-semibold">
         {isChampionshipRound ? (
           <>
             Round {round} <span aria-hidden>→</span>

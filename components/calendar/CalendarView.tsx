@@ -260,7 +260,7 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
       )}
       {/* One subscribe line for the whole timeline (mocks #23/#25): webcal for
           calendar apps, the .ics as a plain download. */}
-      <div className="mt-4 flex flex-wrap items-baseline justify-end gap-x-4 border-t border-border pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">
+      <div className="mt-4 flex flex-wrap items-baseline justify-end gap-x-4 border-t border-border pt-3 font-mono text-10 font-semibold uppercase tracking-[0.14em]">
         <a href="webcal://paddock-tracker.com/api/calendar/all.ics" className="text-brand hover:underline">
           Subscribe to this calendar →
         </a>
@@ -320,7 +320,7 @@ function ThisWeekend({
   return (
     <section aria-label="This weekend" className="mb-5">
       <div className="mb-2 flex items-baseline justify-between border-b border-text pb-1">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+        <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
           This weekend
         </span>
       </div>
@@ -335,10 +335,10 @@ function ThisWeekend({
           >
             <span aria-hidden="true" className="h-4 w-[3px] shrink-0" style={{ backgroundColor: g.color }} />
             <span className="min-w-0 flex-1">
-              <span className="block truncate font-serif text-[15px] font-semibold leading-tight text-text">
+              <span className="block truncate font-serif text-15 font-semibold leading-tight text-text">
                 {roundNames?.[key] ?? `${g.name} · Round ${g.round}`}
               </span>
-              <span className="block truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+              <span className="block truncate font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                 {g.name} · {fmt.format(g.first)} – {fmt.format(g.last)}
               </span>
             </span>

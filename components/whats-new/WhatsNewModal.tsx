@@ -163,7 +163,7 @@ function Panel({
             out are always reachable — the reference's one structural idea worth
             copying outright. */}
         <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-5 py-3.5 md:px-7">
-          <span className="inline-flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text">
+          <span className="inline-flex items-center gap-2 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text">
             <Flag size={11} aria-hidden />
             What&rsquo;s new
             <span className="border border-brand px-1.5 py-0.5 text-brand">{entry.version}</span>
@@ -188,14 +188,14 @@ function Panel({
           <div className="relative overflow-hidden border border-border bg-surface p-5 md:p-6">
             <span
               aria-hidden
-              className="pointer-events-none absolute -right-3 -top-6 select-none font-mono text-[112px] font-bold leading-none text-border-strong opacity-40 md:text-[136px]"
+              className="pointer-events-none absolute -right-3 -top-6 select-none font-mono text-112 font-bold leading-none text-border-strong opacity-40 md:text-136"
             >
               {entry.version}
             </span>
             <div className="relative max-w-[74%]">
               <h2
                 id="whats-new-title"
-                className="font-serif text-[26px] font-semibold leading-tight text-text md:text-[32px]"
+                className="font-serif text-26 font-semibold leading-tight text-text md:text-32"
               >
                 {entry.title}
               </h2>
@@ -215,7 +215,7 @@ function Panel({
                   <h3 className="font-serif text-base font-semibold leading-snug text-text">
                     {card.title}
                   </h3>
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-text-muted">{card.body}</p>
+                  <p className="mt-1.5 text-13 leading-relaxed text-text-muted">{card.body}</p>
                 </div>
               </article>
             ))}
@@ -223,14 +223,14 @@ function Panel({
 
           {entry.chips.length > 0 && (
             <>
-              <p className="mt-6 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+              <p className="mt-6 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-faint">
                 And more
               </p>
               <ul className="mt-2.5 flex flex-wrap gap-2">
                 {entry.chips.map(chip => (
                   <li
                     key={chip}
-                    className="inline-flex items-center gap-1.5 border border-border px-2.5 py-1.5 text-[12px] leading-none text-text-muted"
+                    className="inline-flex items-center gap-1.5 border border-border px-2.5 py-1.5 text-12 leading-none text-text-muted"
                   >
                     <Check size={12} aria-hidden className="text-brand" />
                     {chip}
@@ -251,14 +251,14 @@ function Panel({
               operator-signed per item. */}
           {entry.next.length > 0 && (
             <>
-              <p className="mt-6 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+              <p className="mt-6 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-faint">
                 What comes next
               </p>
               <ul className="mt-1.5">
                 {entry.next.map(item => (
                   <li
                     key={item}
-                    className="flex gap-2 py-1 text-[13px] leading-snug text-text-muted"
+                    className="flex gap-2 py-1 text-13 leading-snug text-text-muted"
                   >
                     <span aria-hidden className="mt-[7px] h-[3px] w-2.5 shrink-0 bg-border-strong" />
                     <span className="min-w-0 flex-1">{item}</span>
@@ -274,7 +274,7 @@ function Panel({
             type="button"
             onClick={dismiss}
             data-heatmap-id={`whats-new:${entry.id}:close`}
-            className={`inline-flex min-h-11 items-center px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) hover:text-text ${FOCUS_RING}`}
+            className={`inline-flex min-h-11 items-center px-3 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) hover:text-text ${FOCUS_RING}`}
           >
             Start browsing
           </button>
@@ -282,7 +282,7 @@ function Panel({
             href={entry.ctaHref}
             onClick={dismiss}
             data-heatmap-id={`whats-new:${entry.id}:cta`}
-            className={`inline-flex min-h-11 items-center justify-center bg-text px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted ${FOCUS_RING}`}
+            className={`inline-flex min-h-11 items-center justify-center bg-text px-4 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted ${FOCUS_RING}`}
           >
             {entry.ctaLabel}
             <span aria-hidden> →</span>

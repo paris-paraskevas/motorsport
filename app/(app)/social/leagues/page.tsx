@@ -21,7 +21,7 @@ function frame(children: ReactNode) {
     <div className={PAGE_WIDE}>
       <Link
         href="/social"
-        className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
+        className="mb-4 inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
       >
         <ArrowLeft size={14} /> Social
       </Link>
@@ -34,7 +34,7 @@ function frame(children: ReactNode) {
       {/* Launch gate A6: no-cashout framing on every betting surface. Inside
           frame() on purpose, so the signed-out, not-configured and signed-in
           states all carry it and a future state cannot quietly lose it. */}
-      <p className="mb-5 max-w-xl font-mono text-[11px] leading-relaxed text-text-muted">
+      <p className="mb-5 max-w-xl font-mono text-11 leading-relaxed text-text-muted">
         {PLAY_MONEY_NOTE}
       </p>
       {children}
@@ -49,7 +49,7 @@ export default async function LeaguesPage() {
     return frame(
       <div className="font-mono text-sm text-text-muted">
         <p className="mb-3">Sign in to create or join a league.</p>
-        <Link href="/sign-in" className="inline-block bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
+        <Link href="/sign-in" className="inline-block bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
           Sign in
         </Link>
       </div>,

@@ -9,7 +9,7 @@ export function SectionHead({ title, sub }: { title: string; sub?: string }) {
         <span className="text-brand">.</span>
       </h2>
       {sub && (
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           {sub}
         </span>
       )}

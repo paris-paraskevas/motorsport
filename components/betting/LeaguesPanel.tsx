@@ -139,7 +139,7 @@ export function LeaguesPanel({
               close();
               setModal('create');
             }}
-            className="bg-text px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+            className="bg-text px-3 py-1.5 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
           >
             Create
           </button>
@@ -171,7 +171,7 @@ export function LeaguesPanel({
                 >
                   {league.name}
                 </Link>
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">
+                <span className="font-mono text-11 uppercase tracking-[0.14em] text-text-muted">
                   code {league.joinCode} · {league.memberCount} member{league.memberCount === 1 ? '' : 's'}
                 </span>
               </div>
@@ -180,12 +180,12 @@ export function LeaguesPanel({
                   type="button"
                   onClick={() => invite(league.id)}
                   disabled={busy}
-                  className="rounded border border-border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
+                  className="rounded border border-border px-2 py-1 font-mono text-11 uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
                 >
                   {invites[league.id] ? 'Copied — copy again' : 'Copy invite link'}
                 </button>
                 {invites[league.id] && (
-                  <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-text-muted">{invites[league.id]}</span>
+                  <span className="min-w-0 flex-1 truncate font-mono text-11 text-text-muted">{invites[league.id]}</span>
                 )}
               </div>
               {rows.length === 0 ? (
@@ -219,24 +219,24 @@ export function LeaguesPanel({
                   readOnly
                   value={createdLink}
                   onFocus={e => e.currentTarget.select()}
-                  className="min-w-0 flex-1 rounded border border-border bg-surface/40 px-2 py-1.5 font-mono text-[11px] text-text-muted"
+                  className="min-w-0 flex-1 rounded border border-border bg-surface/40 px-2 py-1.5 font-mono text-11 text-text-muted"
                 />
                 <button
                   type="button"
                   onClick={() => navigator.clipboard.writeText(createdLink).catch(() => {})}
-                  className="shrink-0 rounded border border-border px-2 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text"
+                  className="shrink-0 rounded border border-border px-2 py-1.5 font-mono text-11 uppercase tracking-[0.14em] text-text-muted hover:text-text"
                 >
                   Copy
                 </button>
               </div>
-              <button type="button" onClick={close} className="bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
+              <button type="button" onClick={close} className="bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
                 Done
               </button>
             </div>
           ) : (
             <div className="space-y-3">
               <label className="block">
-                <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">League name</span>
+                <span className="font-mono text-11 uppercase tracking-[0.16em] text-text-muted">League name</span>
                 <input
                   value={name}
                   onChange={e => setName(e.target.value)}
@@ -246,14 +246,14 @@ export function LeaguesPanel({
                   className="mt-1 w-full rounded border border-border bg-surface/40 px-2 py-1.5 font-mono text-sm text-text"
                 />
               </label>
-              <p className="font-mono text-[11px] text-text-faint">
+              <p className="font-mono text-11 text-text-faint">
                 You&apos;ll get a link to invite friends. (Per-league bet limits + inviting friends directly are coming.)
               </p>
               <button
                 type="button"
                 onClick={create}
                 disabled={busy || !name.trim()}
-                className="bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
+                className="bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
               >
                 {busy ? 'Creating…' : 'Create league'}
               </button>
@@ -267,7 +267,7 @@ export function LeaguesPanel({
         <Modal title="Join a league" onClose={close}>
           <div className="space-y-3">
             <label className="block">
-              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Code or invite link</span>
+              <span className="font-mono text-11 uppercase tracking-[0.16em] text-text-muted">Code or invite link</span>
               <input
                 value={code}
                 onChange={e => setCode(e.target.value)}
@@ -276,14 +276,14 @@ export function LeaguesPanel({
                 className="mt-1 w-full rounded border border-border bg-surface/40 px-2 py-1.5 font-mono text-sm text-text"
               />
             </label>
-            <p className="font-mono text-[11px] text-text-faint">
+            <p className="font-mono text-11 text-text-faint">
               Paste an invite link a friend sent, or enter the 8-character code.
             </p>
             <button
               type="button"
               onClick={join}
               disabled={busy || !code.trim()}
-              className="bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
+              className="bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
             >
               {busy ? 'Joining…' : 'Join league'}
             </button>

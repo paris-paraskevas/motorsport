@@ -71,10 +71,10 @@ export default async function NewsPage() {
       />
       {/* §4.12 / job ⑨: serif masthead + the page's honest standfirst. */}
       <header className="mb-6">
-        <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+        <h1 className="font-serif text-38 font-medium leading-none tracking-[-0.02em] text-text md:text-46">
           The wire
         </h1>
-        <p className="mt-2 max-w-[52ch] font-serif text-[16px] leading-snug text-text-muted">
+        <p className="mt-2 max-w-[52ch] font-serif text-16 leading-snug text-text-muted">
           Other people&rsquo;s reporting, credited and linked out — the latest
           stories across the grid, filterable by series.
         </p>

@@ -21,13 +21,13 @@ export async function BlogTab({ series }: { series: Series }) {
   if (posts.length === 0) {
     return (
       <div className="border-[1.5px] border-text bg-surface-elevated p-5 shadow-lg">
-        <p className="font-serif text-[17px] leading-snug text-text-muted">
+        <p className="font-serif text-17 leading-snug text-text-muted">
           No {series.meta.name} pieces published yet. Race weekend previews, reports and
           lap-by-lap chronologies land here as they go out.
         </p>
         <Link
           href="/blog"
-          className="mt-4 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+          className="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
         >
           Everything on the blog →
         </Link>
@@ -63,14 +63,14 @@ export async function BlogTab({ series }: { series: Series }) {
                   />
                 ) : null}
                 <span className="min-w-0 flex-1">
-                  <span className="block font-serif text-[19px] font-semibold leading-snug text-text">
+                  <span className="block font-serif text-19 font-semibold leading-snug text-text">
                     {p.title}
                   </span>
-                  <span className="mt-1 block line-clamp-2 font-serif text-[15px] leading-snug text-text-muted">
+                  <span className="mt-1 block line-clamp-2 font-serif text-15 leading-snug text-text-muted">
                     {p.summary}
                   </span>
                   {dateLabel && (
-                    <span className="mt-1.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                    <span className="mt-1.5 block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                       {dateLabel}
                     </span>
                   )}
@@ -82,7 +82,7 @@ export async function BlogTab({ series }: { series: Series }) {
       </ul>
       <Link
         href="/blog"
-        className="mt-5 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+        className="mt-5 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
       >
         Everything on the blog →
       </Link>

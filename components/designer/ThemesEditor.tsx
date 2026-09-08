@@ -29,12 +29,12 @@ import { Swatch } from '@/components/theme/ThemePicker';
 // theme is a base plus nine colours.
 
 const TB =
-  'inline-flex h-[30px] items-center gap-1.5 border border-border-strong px-2.5 text-[12px] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-40';
+  'inline-flex h-[30px] items-center gap-1.5 border border-border-strong px-2.5 text-12 text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-40';
 const TB_PRIMARY = `${TB} border-edit text-edit hover:bg-edit-dim hover:text-text`;
 const PBTN =
-  'border border-border-strong px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-35';
+  'border border-border-strong px-2 py-1 font-mono text-9 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-35';
 const FIELD =
-  'border border-border-strong bg-bg px-2 py-1 text-[12.5px] leading-snug text-text focus:border-edit focus:outline-none disabled:opacity-60';
+  'border border-border-strong bg-bg px-2 py-1 text-12-5 leading-snug text-text focus:border-edit focus:outline-none disabled:opacity-60';
 
 interface CustomDraft {
   /** A client id, stable across renders; the key once the row exists. */
@@ -240,8 +240,8 @@ export function ThemesEditor({
 
   return (
     <div>
-      <h2 className="m-0 mb-1 text-[20px] font-bold text-text">Themes</h2>
-      <p className="m-0 mb-4 max-w-[76ch] text-[13px] text-text-muted">
+      <h2 className="m-0 mb-1 text-20 font-bold text-text">Themes</h2>
+      <p className="m-0 mb-4 max-w-[76ch] text-13 text-text-muted">
         The looks the site offers. Pick the one a visitor sees before choosing their own (a visitor’s own choice always
         wins), hide a look from the picker, or add one of your own: a shipped theme as its base and nine colours of yours,
         checked for contrast before they can be saved. The six shipped themes keep their colours in the code.
@@ -257,10 +257,10 @@ export function ThemesEditor({
               <Swatch theme={t} />
               <div className="flex items-baseline justify-between gap-2">
                 <div>
-                  <div className="text-[13px] font-semibold text-text">{t.label}</div>
-                  <div className="text-[11px] text-text-faint">{t.hint}</div>
+                  <div className="text-13 font-semibold text-text">{t.label}</div>
+                  <div className="text-11 text-text-faint">{t.hint}</div>
                 </div>
-                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">shipped</span>
+                <span className="font-mono text-9 uppercase tracking-[0.12em] text-text-faint">shipped</span>
               </div>
               <ThemeSwitches
                 isDefault={isDefault}
@@ -272,7 +272,7 @@ export function ThemesEditor({
                 }}
                 onOffered={v => setShippedAvailable(s => ({ ...s, [t.key]: v }))}
               />
-              {t.updatedAt === null && <span className="text-[9px] uppercase text-text-faint">no row yet</span>}
+              {t.updatedAt === null && <span className="text-9 uppercase text-text-faint">no row yet</span>}
             </div>
           );
         })}
@@ -306,7 +306,7 @@ export function ThemesEditor({
                   <Trash2 size={11} />
                 </button>
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-text-faint">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-11 text-text-faint">
                 <label className="inline-flex items-center gap-1.5">
                   built on
                   <select
@@ -323,7 +323,7 @@ export function ThemesEditor({
                     ))}
                   </select>
                 </label>
-                <span className="font-mono text-[9px] uppercase tracking-[0.12em]">
+                <span className="font-mono text-9 uppercase tracking-[0.12em]">
                   {c.key ?? 'new'}
                   {changed && c.key && <span className="ml-1.5 text-edit">changed</span>}
                 </span>
@@ -335,7 +335,7 @@ export function ThemesEditor({
                   const ok = isHexColour(v);
                   return (
                     <label key={k} className="contents">
-                      <span className="self-center text-[11px] text-text-muted">
+                      <span className="self-center text-11 text-text-muted">
                         {THEME_TOKEN_LABELS[k].label}
                         <span className="text-text-faint"> · {THEME_TOKEN_LABELS[k].paints}</span>
                       </span>
@@ -354,7 +354,7 @@ export function ThemesEditor({
                           disabled={readOnly}
                           spellCheck={false}
                           aria-label={`${THEME_TOKEN_LABELS[k].label} of ${c.label || 'the new theme'} as #rrggbb`}
-                          className={`${FIELD} w-[5.5rem] font-mono text-[11px] ${ok ? '' : 'border-negative'}`}
+                          className={`${FIELD} w-[5.5rem] font-mono text-11 ${ok ? '' : 'border-negative'}`}
                           onChange={e => updateCustom(c.id, { tokens: { ...c.tokens, [k]: e.target.value.trim().toLowerCase() } })}
                         />
                       </span>
@@ -365,7 +365,7 @@ export function ThemesEditor({
 
               {tokens && <Preview tokens={tokens} />}
 
-              <ul className="m-0 grid list-none gap-0.5 p-0 font-mono text-[9px] uppercase tracking-[0.1em]">
+              <ul className="m-0 grid list-none gap-0.5 p-0 font-mono text-9 uppercase tracking-[0.1em]">
                 {(tokens ? themeContrast(tokens) : []).map(r => (
                   <li key={r.id} className={`flex justify-between ${r.pass ? 'text-text-faint' : 'text-negative'}`}>
                     <span>{r.label}</span>
@@ -395,7 +395,7 @@ export function ThemesEditor({
         {!readOnly && (
           <button
             type="button"
-            className="grid min-h-[120px] place-items-center border border-dashed border-border-strong text-[12px] text-text-muted hover:border-edit hover:text-text"
+            className="grid min-h-[120px] place-items-center border border-dashed border-border-strong text-12 text-text-muted hover:border-edit hover:text-text"
             onClick={addTheme}
           >
             <span className="inline-flex items-center gap-1.5">
@@ -406,7 +406,7 @@ export function ThemesEditor({
       </div>
 
       {customs.some(c => c.key && c.deleted) && (
-        <p className="mt-3 text-[12px] text-text-muted">
+        <p className="mt-3 text-12 text-text-muted">
           To be deleted on Save: {customs.filter(c => c.key && c.deleted).map(c => c.label).join(', ')}.
         </p>
       )}
@@ -426,7 +426,7 @@ export function ThemesEditor({
             <RotateCcw size={13} /> Discard changes
           </button>
         )}
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
           {!canSave
             ? 'the theme rows are not seeded yet'
             : work.count > 0
@@ -437,7 +437,7 @@ export function ThemesEditor({
         </span>
       </div>
       {conflict && (
-        <div className="mt-3 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-[12px] text-text">
+        <div className="mt-3 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-12 text-text">
           <p className="m-0">
             The themes were saved again after you loaded them. Reload to see what is stored now; your unsaved changes
             are dropped, because a theme is a whole and not a field.
@@ -449,7 +449,7 @@ export function ThemesEditor({
           </div>
         </div>
       )}
-      {error && <p className="mt-2 text-[12px] text-negative">{error}</p>}
+      {error && <p className="mt-2 text-12 text-negative">{error}</p>}
     </div>
   );
 }
@@ -468,7 +468,7 @@ function ThemeSwitches({
   onOffered: (v: boolean) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-12">
       <label className={`inline-flex items-center gap-1.5 ${disabled ? 'opacity-60' : 'cursor-pointer'} ${isDefault ? 'text-text' : 'text-text-muted'}`}>
         <input type="radio" name="default-theme" checked={isDefault} disabled={disabled} className="accent-(--edit)" onChange={onDefault} />
         Default for everyone
@@ -493,19 +493,19 @@ function ThemeSwitches({
 /** A small page in the theme's own colours, so a change is seen before it is saved. */
 function Preview({ tokens: t }: { tokens: ThemeTokens }) {
   return (
-    <div aria-hidden="true" className="text-[12px]" style={{ background: t.bg, color: t.text, border: `1px solid ${t.borderStrong}` }}>
+    <div aria-hidden="true" className="text-12" style={{ background: t.bg, color: t.text, border: `1px solid ${t.borderStrong}` }}>
       <div className="flex items-center justify-between px-2 py-1.5" style={{ background: t.surface, borderBottom: `1px solid ${t.border}` }}>
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
+        <span className="font-mono text-10 font-semibold uppercase tracking-[0.12em]">
           Paddock<span style={{ color: t.accent }}>•</span>Tracker
         </span>
-        <span className="text-[11px]" style={{ color: t.textMuted }}>
+        <span className="text-11" style={{ color: t.textMuted }}>
           Calendar · Learn · Series
         </span>
       </div>
       <div className="p-2">
         <div className="font-semibold">Italian Grand Prix</div>
         <div style={{ color: t.textMuted }}>Qualifying starts in 2 h 14 min.</div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: t.textFaint }}>
+        <div className="font-mono text-10 uppercase tracking-[0.12em]" style={{ color: t.textFaint }}>
           Sat 6 Sep · 16:00
         </div>
         <div className="mt-2 flex justify-between p-2" style={{ background: t.surfaceElevated, border: `1px solid ${t.border}` }}>

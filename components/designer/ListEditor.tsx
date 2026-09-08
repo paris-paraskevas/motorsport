@@ -29,12 +29,12 @@ import { DEFAULT_AUTHZ_SCHEMES, authzOptions, type AuthzScheme } from '@/lib/des
 // nothing here can type a URL: the destination is always a catalogue key.
 
 const TB =
-  'inline-flex h-[30px] items-center gap-1.5 border border-border-strong px-2.5 text-[12px] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-40';
+  'inline-flex h-[30px] items-center gap-1.5 border border-border-strong px-2.5 text-12 text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-40';
 const TB_PRIMARY = `${TB} border-edit text-edit hover:bg-edit-dim hover:text-text`;
 const PBTN =
-  'border border-border-strong px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-35';
+  'border border-border-strong px-2 py-1 font-mono text-9 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-35';
 const FIELD =
-  'h-7 max-w-full border border-border-strong bg-bg px-1.5 text-[12px] text-text focus:border-edit focus:outline-none';
+  'h-7 max-w-full border border-border-strong bg-bg px-1.5 text-12 text-text focus:border-edit focus:outline-none';
 const MV =
   'grid h-6 w-6 place-items-center border border-border-strong text-text-muted hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-30';
 
@@ -132,11 +132,11 @@ export function ListEditor({
 
   return (
     <div>
-      <h2 className="m-0 mb-1 text-[20px] font-bold text-text">{title}</h2>
-      <p className="m-0 mb-4 max-w-[70ch] text-[13px] text-text-muted">{sub}</p>
+      <h2 className="m-0 mb-1 text-20 font-bold text-text">{title}</h2>
+      <p className="m-0 mb-4 max-w-[70ch] text-13 text-text-muted">{sub}</p>
 
       <div className="border border-border-strong bg-surface">
-        <table className="w-full border-collapse text-[12px]">
+        <table className="w-full border-collapse text-12">
           <thead>
             <tr className="text-left text-text-faint">
               <th className="w-16 px-2.5 py-2 font-semibold">Seq</th>
@@ -199,7 +199,7 @@ export function ListEditor({
                         </option>
                       ))}
                     </select>
-                    {!dest && <span className="ml-2 font-mono text-[9px] uppercase text-negative">not in the catalogue</span>}
+                    {!dest && <span className="ml-2 font-mono text-9 uppercase text-negative">not in the catalogue</span>}
                   </td>
                   {isBar && (
                     <td className="px-2.5 py-1.5">
@@ -277,17 +277,17 @@ export function ListEditor({
               </option>
             ))}
           </select>
-          <span className="text-[11px] text-text-faint">
+          <span className="text-11 text-text-faint">
             {bound === null ? `At least ${minEntries(role)}; any number above that.` : `${minEntries(role)} to ${bound} cells.`}
           </span>
         </div>
       </div>
 
       <div className="mt-4 border border-border-strong bg-surface p-4">
-        <h4 className="m-0 mb-2.5 text-[12px] font-semibold text-text-muted">Preview · the real component, with these entries</h4>
+        <h4 className="m-0 mb-2.5 text-12 font-semibold text-text-muted">Preview · the real component, with these entries</h4>
         {role === 'menu' && (
           <div className="flex h-[58px] items-center gap-[22px] overflow-x-auto border border-border-strong bg-surface-elevated px-10">
-            <span className="shrink-0 font-condensed text-[19px] font-bold uppercase tracking-[0.06em] text-text">
+            <span className="shrink-0 font-condensed text-19 font-bold uppercase tracking-[0.06em] text-text">
               Paddock<span className="text-brand">•</span>Tracker
             </span>
             <DoorLinks entries={entries} preview />
@@ -319,12 +319,12 @@ export function ListEditor({
             <RotateCcw size={13} /> Discard changes
           </button>
         )}
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
           {dirty ? 'Unsaved changes' : saved ? 'Saved · the site picks it up within a minute' : `Stored · ${stamp.replace('T', ' ').slice(0, 19)} UTC`}
         </span>
       </div>
       {conflict && (
-        <div className="mt-3 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-[12px] text-text">
+        <div className="mt-3 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-12 text-text">
           <p className="m-0">
             This list was saved again at {conflict.updatedAt.replace('T', ' ').slice(0, 19)} UTC, after you loaded it. Reload to take
             that version, or save yours over it.
@@ -339,7 +339,7 @@ export function ListEditor({
           </div>
         </div>
       )}
-      {error && <p className="mt-2 text-[12px] text-negative">{error}</p>}
+      {error && <p className="mt-2 text-12 text-negative">{error}</p>}
     </div>
   );
 }

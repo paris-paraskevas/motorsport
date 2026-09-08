@@ -21,12 +21,12 @@ import { WHATS_NEW } from '@/lib/whats-new';
 // not exist yet shows the shipped value and cannot be saved.
 
 const TB =
-  'inline-flex h-[30px] items-center gap-1.5 border border-border-strong px-2.5 text-[12px] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-40';
+  'inline-flex h-[30px] items-center gap-1.5 border border-border-strong px-2.5 text-12 text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-40';
 const TB_PRIMARY = `${TB} border-edit text-edit hover:bg-edit-dim hover:text-text`;
 const PBTN =
-  'border border-border-strong px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-35';
+  'border border-border-strong px-2 py-1 font-mono text-9 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-35';
 const FIELD =
-  'border border-border-strong bg-bg px-2 py-1 text-[12.5px] leading-snug text-text focus:border-edit focus:outline-none disabled:opacity-60';
+  'border border-border-strong bg-bg px-2 py-1 text-12-5 leading-snug text-text focus:border-edit focus:outline-none disabled:opacity-60';
 
 export interface SeriesOption {
   slug: string;
@@ -153,14 +153,14 @@ export function SettingsEditor({
 
   return (
     <div>
-      <h2 className="m-0 mb-1 text-[20px] font-bold text-text">Application Settings</h2>
-      <p className="m-0 mb-4 max-w-[70ch] text-[13px] text-text-muted">
+      <h2 className="m-0 mb-1 text-20 font-bold text-text">Application Settings</h2>
+      <p className="m-0 mb-4 max-w-[70ch] text-13 text-text-muted">
         Named values the site reads when it renders a page. Each row says what it changes; a value outside its rule is
         refused, and the site keeps the shipped value for anything it cannot read.
       </p>
 
       <div className="border border-border-strong bg-surface">
-        <table className="w-full border-collapse text-[12px]">
+        <table className="w-full border-collapse text-12">
           <thead>
             <tr className="text-left text-text-faint">
               <th className="w-52 px-2.5 py-2 font-semibold">Setting</th>
@@ -179,13 +179,13 @@ export function SettingsEditor({
                 <tr key={s.key} className="border-t border-border align-top">
                   <td className="px-2.5 py-2">
                     <div className="text-text">{spec.label}</div>
-                    <div className="mt-0.5 font-mono text-[11px] text-text-muted">{s.key}</div>
-                    {s.updatedAt === null && <span className="mt-1 block text-[9px] uppercase text-text-faint">no row yet</span>}
-                    {isChanged && s.updatedAt !== null && <span className="mt-1 block text-[9px] uppercase text-edit">changed</span>}
+                    <div className="mt-0.5 font-mono text-11 text-text-muted">{s.key}</div>
+                    {s.updatedAt === null && <span className="mt-1 block text-9 uppercase text-text-faint">no row yet</span>}
+                    {isChanged && s.updatedAt !== null && <span className="mt-1 block text-9 uppercase text-edit">changed</span>}
                   </td>
                   <td className="px-2.5 py-2 text-text-muted">
                     {s.description}
-                    <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                    <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                       shipped: {describe(s.key, spec.shipped, sorted)}
                     </span>
                   </td>
@@ -198,7 +198,7 @@ export function SettingsEditor({
                       onChange={v => setDraft(d => ({ ...d, [s.key]: v }))}
                     />
                     {!ok && (
-                      <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-negative">
+                      <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-negative">
                         {settingValueRule(s.key)}
                       </span>
                     )}
@@ -229,7 +229,7 @@ export function SettingsEditor({
             <RotateCcw size={13} /> Discard changes
           </button>
         )}
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
           {changed.length > 0
             ? `${changed.length} unsaved`
             : savedCount
@@ -238,9 +238,9 @@ export function SettingsEditor({
         </span>
       </div>
       {conflicts.map(c => (
-        <div key={c.key} className="mt-3 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-[12px] text-text">
+        <div key={c.key} className="mt-3 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-12 text-text">
           <p className="m-0">
-            <span className="font-mono text-[11px]">{c.key}</span> was saved again after you loaded it. It now reads:{' '}
+            <span className="font-mono text-11">{c.key}</span> was saved again after you loaded it. It now reads:{' '}
             {describe(c.key, c.current.value, sorted)}. Reload to take that, or save yours over it.
           </p>
           <div className="mt-2 flex gap-3">
@@ -257,7 +257,7 @@ export function SettingsEditor({
           </div>
         </div>
       ))}
-      {error && <p className="mt-2 text-[12px] text-negative">{error}</p>}
+      {error && <p className="mt-2 text-12 text-negative">{error}</p>}
     </div>
   );
 }
