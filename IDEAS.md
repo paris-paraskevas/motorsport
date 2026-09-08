@@ -136,13 +136,16 @@ Not scheduled. Recorded because it is the direction, and because three pieces of
 
 **Update 2026-09-07 — the DREAM became a programme, and the fork was taken: Supabase.** The operator's direction is an Oracle-APEX-style Page Designer that edits Paddock from database rows, with no AI in the design path ("I'll use AI for research for articles but not for site design"). Plan of record: the **Paddock Designer Field Guide** artifact (`6fb2f726-1b9d-4226-bfc4-5cb594b6b124`), sections 03–07: one enforced write path per table (updated_at checks for design rows, run-id swap for data rows), revisions not overwrites, provenance on every load, ISR plus a `/api/cron/revalidate` nudge, `PADDOCK_ENV` so previews cannot write, the database as the audit trail. Prototype: artifact `cf8ff9e2-bc1c-4dcc-8239-2e6d3f8da713` (v2.4). **Phase 0 shipped in #907 (1.0.28)**: `source` · `source_run` · `standing` · view `standing_current`; the loader writes one run per series; the F1 standings tab reads rows behind `DATA_TABLES=on`; the migration awaits the operator naming it. Phase 1 (design tables, the environment gate, draft/publish with a version check) is next.
 
-Follow-ups the reviews surfaced, none started:
-- `lib/analytics/cloudflare.ts:76` sums every Worker on the account (prod plus three previews): add `scriptName: "motorsport"`. The Traffic tab's Cloudflare panel (`app/(admin)/admin/traffic/page.tsx:218-220`) is a placeholder with no fetcher. The `billable-usage` endpoint is marked deprecated; re-verify the replacement.
+**Update 2026-09-08 — Phase 0 is live and Phase 1 is shipped.** Migration `20260907190000` applied, the loader writes rows for ten series, `DATA_TABLES=on` is in `wrangler.jsonc`, and the F1 tab's first fresh render read `standing_current`. Phase 1: #909 `PADDOCK_ENV` gate (designer writes are production-only, the operator's answer to question 1), #910 the fifteen design tables in one idempotent migration plus the weekly JSON export to branch `export/design` (the operator's answer to question 2, taken once the Management API showed the Supabase organisation on the Free plan with no backups), #911 home-layout drafts and a publish that refuses a stale base. **The design-tables migration is merged but not yet applied**: morning action "apply 20260908090000". Next: Phase 2, `/admin/designer` on the real tables, lists and text messages first.
+
+Follow-ups the reviews surfaced:
+- _(Done 2026-09-08, 1.0.33: the `scriptName` filter.)_ The Traffic tab's Cloudflare panel (`app/(admin)/admin/traffic/page.tsx:218-220`) is still a placeholder with no fetcher. The `billable-usage` endpoint is marked deprecated; re-verify the replacement.
 - The store the code calls KV is Upstash Redis; its developer API (new key) gives throughput, latency and monthly totals.
 - Tables nothing records today: `push_send` (per-send status), `indexnow_submission`, `upstream_request` (per-request outcome and latency from the loader), Clerk daily snapshots or `session.created` webhooks for sign-in history.
 - `www.wrc.com` answers 403 to GitHub's runners (the WRC standings fallback is in use); `motorsportweek.com` 404s twice per run.
-- Cloudflare's limits page now states a 64 MiB uncompressed Worker size with no compressed limit; verify against the 10 MiB gzipped ceiling before either is trusted.
+- _(Verified 2026-09-08: Cloudflare removed the compressed limit on 2026-09-04; 64 MiB uncompressed on every plan; the bundle is 41.8 MiB. CLAUDE.md corrected in 1.0.30.)_
 - The two in-Worker data crons (`warm-results`, `warm-sessions`) and the render-time ICS fetches move into the loader in Phase 5.
+- Phase 0 follow-up: the multi-class standings payloads (GT World, IMSA, WEC) are not mapped to rows yet; the loader logs a SKIP per run for each.
 
 Fixed today, from the 2026-09-07 bug list: the loader lockfile outage (#902), the What's-New banner quality (#904, #905), the studio lost update (#903), the deprecated Actions runtimes (#906).
 

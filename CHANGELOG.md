@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.35 — 2026-09-08
+
+### Docs — session records for the night shift of 2026-09-07/08
+
+`docs/HANDOFF.md` gains the 2026-09-08 pickup section at the top: the morning actions (apply `20260908090000`, the three checks behind the admin sign-in, a hard reload, the release-header decision, the six branch deletions), the six merges 1.0.30 → 1.0.35, every prod-state change made under the operator's delegation (migration `20260907190000` applied, the loader run, the `DATA_TABLES` dashboard version and its move into `wrangler.jsonc`, the `CRON_SECRET` rotation, the Free-plan finding, the 1.0.34 headers on prod), the operator's decisions, seven findings and the flat next-session list; the 2026-09-07 section loses its LATEST marker. `SCHEDULE.md` converts the Tue 2026-09-08 intents to outcomes. `IDEAS.md`'s DREAM section records Phase 0 live and Phase 1 shipped, marks the `scriptName` and Worker-size follow-ups done, and adds the multi-class mapping follow-up. No code.
+
 ## 1.0.34 — 2026-09-08
 
 ### Fix — browsers reused the previous build's pages and payloads for up to a month after a deploy
