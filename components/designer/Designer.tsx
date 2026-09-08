@@ -8,20 +8,23 @@ import type { EditableList, NavListKey } from '@/lib/design/lists';
 import type { EditableText } from '@/lib/design/text';
 import type { ChromeText } from '@/lib/design/text-defaults';
 import type { EditableBuildOption } from '@/lib/design/build-options';
+import type { EditableSetting } from '@/lib/design/settings';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
 import { BuildOptionsEditor } from './BuildOptionsEditor';
+import { SettingsEditor, type SeriesOption } from './SettingsEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
 // 300-pixel catalogue beside the editor. Full viewport over the console, so the
 // rail never competes with the panes; the arrow at the top left goes back.
 //
-// Phase 2 opened the four navigation lists (step 2), Text Messages (step 3) and
-// Build Options (step 4). Everything else in the catalogue is listed with the
-// phase that brings it: the operator sees the whole shape, and nothing pretends
-// to be editable before it is. App Builder and Data are the next workspaces.
+// Phase 2 opened the four navigation lists (step 2), Text Messages (step 3),
+// Build Options (step 4) and Application Settings (step 5). Everything else in
+// the catalogue is listed with the phase that brings it: the operator sees the
+// whole shape, and nothing pretends to be editable before it is. App Builder and
+// Data are the next workspaces.
 //
 // This file is loaded as a browser-only chunk (DesignerLoader.tsx), so the
 // editor never enters the Worker bundle.
@@ -81,6 +84,22 @@ async function fetchBuildOptions(): Promise<LoadedBuild> {
   }
 }
 
+type LoadedSettings =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; settings: EditableSetting[] };
+
+async function fetchSettings(): Promise<LoadedSettings> {
+  try {
+    const res = await fetch('/api/admin/design/settings', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The settings could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { settings: EditableSetting[] };
+    return { state: 'ready', settings: d.settings };
+  } catch {
+    return { state: 'error', message: 'The settings could not be loaded: network error.' };
+  }
+}
+
 export function Designer({
   readOnly,
   who,
@@ -88,6 +107,8 @@ export function Designer({
   initialLists,
   initialText,
   initialBuildOptions,
+  initialSettings,
+  series = [],
 }: {
   readOnly: boolean;
   who: string;
@@ -100,12 +121,19 @@ export function Designer({
   initialText?: EditableText[] | null;
   /** The build options the server already loaded; fetched when absent. */
   initialBuildOptions?: EditableBuildOption[] | null;
+  /** The application settings the server already loaded; fetched when absent. */
+  initialSettings?: EditableSetting[] | null;
+  /** The championships the settings editor offers in its series controls. */
+  series?: SeriesOption[];
 }) {
   const [text, setText] = useState<LoadedText>(() =>
     initialText ? { state: 'ready', messages: initialText } : { state: 'loading' },
   );
   const [build, setBuild] = useState<LoadedBuild>(() =>
     initialBuildOptions ? { state: 'ready', options: initialBuildOptions } : { state: 'loading' },
+  );
+  const [settings, setSettings] = useState<LoadedSettings>(() =>
+    initialSettings ? { state: 'ready', settings: initialSettings } : { state: 'loading' },
   );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
@@ -140,10 +168,15 @@ export function Designer({
         if (!cancelled) setBuild(loaded);
       });
     }
+    if (!initialSettings) {
+      void fetchSettings().then(loaded => {
+        if (!cancelled) setSettings(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings]);
 
   const item: CatalogueItem | undefined = selected
     ? CATALOGUE.flatMap(g => g.items).find(i => i.key === selected)
@@ -156,13 +189,22 @@ export function Designer({
   };
   const textCount = text.state === 'ready' ? text.messages.length : null;
   const buildCount = build.state === 'ready' ? build.options.length : null;
+  const settingsCount = settings.state === 'ready' ? settings.settings.length : null;
   // The footer preview shows the strings as they are stored right now.
   const chromeText: ChromeText | undefined =
     text.state === 'ready'
       ? (Object.fromEntries(text.messages.map(m => [m.key, m.text])) as ChromeText)
       : undefined;
   const badge = (it: CatalogueItem): number | null =>
-    it.listKey ? count(it.listKey) : it.editor === 'text' ? textCount : it.editor === 'build' ? buildCount : null;
+    it.listKey
+      ? count(it.listKey)
+      : it.editor === 'text'
+        ? textCount
+        : it.editor === 'build'
+          ? buildCount
+          : it.editor === 'settings'
+            ? settingsCount
+            : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -311,6 +353,23 @@ export function Designer({
                 options={build.options}
                 readOnly={readOnly}
                 onSaved={options => setBuild({ state: 'ready', options })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'settings' && (() => {
+            if (settings.state === 'loading') {
+              return (
+                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Application Settings…</p>
+              );
+            }
+            if (settings.state === 'error') return <p className="text-[12px] text-negative">{settings.message}</p>;
+            return (
+              <SettingsEditor
+                settings={settings.settings}
+                series={series}
+                readOnly={readOnly}
+                onSaved={next => setSettings({ state: 'ready', settings: next })}
               />
             );
           })()}

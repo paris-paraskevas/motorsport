@@ -70,4 +70,15 @@ describe('rankLiveWeekends', () => {
     expect(featured.length + also.length).toBe(input.length);
     for (const f of featured) expect(also).not.toContain(f);
   });
+
+  it('takes the lead and the majors from the Application Settings when they are given', () => {
+    // The operator's rows can rename the lead and the boxes without a deploy;
+    // the shipped names above are only the fallback.
+    const { featured, also } = rankLiveWeekends([at('f1', 14), at('motogp', 9), at('wec', 10), at('dtm', 8)], {
+      lead: 'motogp',
+      majors: ['wec', 'dtm'],
+    });
+    expect(featured.map(f => f.slug)).toEqual(['motogp', 'dtm', 'wec']);
+    expect(also.map(f => f.slug)).toEqual(['f1']);
+  });
 });

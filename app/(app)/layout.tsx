@@ -13,6 +13,7 @@ import { ThemeScript } from '@/components/theme/ThemeScript';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { loadNavLists } from '@/lib/design/lists';
 import { loadTextMessages } from '@/lib/design/text';
+import { loadSettings } from '@/lib/design/settings';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import { SOCIAL_CARD } from '@/lib/seo';
@@ -82,10 +83,10 @@ export default async function RootLayout({
     color,
     category,
   }));
-  // The doors, the phone bar, the footer columns and the chrome's fixed strings
-  // from the design tables, with the code as the fallback (Phase 2). One read
-  // each per isolate per minute.
-  const [nav, text] = await Promise.all([loadNavLists(), loadTextMessages()]);
+  // The doors, the phone bar, the footer columns, the chrome's fixed strings and
+  // the application settings from the design tables, with the code as the
+  // fallback (Phase 2). One read each per isolate per minute.
+  const [nav, text, settings] = await Promise.all([loadNavLists(), loadTextMessages(), loadSettings()]);
 
   return (
     <ClerkProvider
@@ -141,10 +142,12 @@ export default async function RootLayout({
           {/* The release announcement, a modal over whatever page the reader
               landed on (operator, 2026-08-25). Layout level beside the other
               dialogs rather than inside AppShell, because it is fixed-position
-              and not an inline bar. Ships dark until an entry is `active`.
-              `LaunchBanner` used to sit beside this one carrying the same
-              'v1.0' id — retired in 0.334.88, see WhatsNewModal's roadmap note. */}
-          <WhatsNewModal />
+              and not an inline bar. Ships dark until an entry is `active`; the
+              Application Setting `announcement.active_id` names the entry in
+              force from 1.0.44 on. `LaunchBanner` used to sit beside this one
+              carrying the same 'v1.0' id — retired in 0.334.88, see
+              WhatsNewModal's roadmap note. */}
+          <WhatsNewModal activeId={settings['announcement.active_id']} />
           {/* Custom consent UI replacing Google Funding Choices (0.12.6). FC
               was dropped because adsbygoogle.js never summons a banner until
               the AdSense site is approved, leaving Consent Mode v2 stuck on

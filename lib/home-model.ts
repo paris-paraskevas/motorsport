@@ -8,6 +8,8 @@ import { fetchLatestPodium, HOME_RESULTS_SLUGS, type LatestRace } from '@/lib/ho
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
 import { fetchHomeBlogLead, publishedPosts } from '@/lib/blog';
 import { pinnedLeadSlug, visibleBlocks, type HomeLayout } from '@/lib/home-layout';
+import { loadSettings } from '@/lib/design/settings';
+import { DEFAULT_SETTINGS } from '@/lib/design/setting-defaults';
 import type {
   HomeLeadBlog,
   HomeLeadChanged,
@@ -47,14 +49,25 @@ export interface HomeModel {
 // temporal, with no series ever preferred by name. On Italian Grand Prix Friday
 // that put FORMULA 3 in the hero band, because F3's qualifying happened to come
 // before F1's second practice, and the Grand Prix appeared nowhere on the page.
-const LEAD_SLUG = 'f1';
-const MAJOR_SLUGS = ['motogp', 'wec', 'indycar', 'nascar-cup'];
+// Since 1.0.44 the names are Application Settings (`home.lead_series`,
+// `home.major_series`, lib/design/setting-defaults.ts) and the values below are
+// what the code ships and falls back to.
+export interface HomePriority {
+  /** The series that always leads the live band when it is running. */
+  lead: string;
+  /** The series that earn their own box when running. */
+  majors: readonly string[];
+}
+const SHIPPED_PRIORITY: HomePriority = {
+  lead: DEFAULT_SETTINGS['home.lead_series'],
+  majors: DEFAULT_SETTINGS['home.major_series'],
+};
 
 /**
  * Decide which live weekends get their own box and in what order.
  *
- * Formula 1 always leads when it is running. Each of the four other
- * championships the operator named gets its own box, ordered by whichever has
+ * The lead series always leads when it is running. Each of the other
+ * championships named as majors gets its own box, ordered by whichever has
  * the next session SOONEST — the reader's question is "what is about to
  * happen", so a series with nothing left to run sinks rather than jumping the
  * queue. Everything else goes to `also`, which the page renders as one compact
@@ -67,10 +80,11 @@ const MAJOR_SLUGS = ['motogp', 'wec', 'indycar', 'nascar-cup'];
  */
 export function rankLiveWeekends<T extends { slug: string; nextStartMs: number }>(
   candidates: readonly T[],
+  priority: HomePriority = SHIPPED_PRIORITY,
 ): { featured: T[]; also: T[] } {
-  const lead = candidates.filter(c => c.slug === LEAD_SLUG);
+  const lead = candidates.filter(c => c.slug === priority.lead);
   const majors = candidates
-    .filter(c => MAJOR_SLUGS.includes(c.slug))
+    .filter(c => priority.majors.includes(c.slug))
     .sort((a, b) => a.nextStartMs - b.nextStartMs);
 
   let featured = [...lead, ...majors];
@@ -95,6 +109,9 @@ function ageLabel(pubDate: Date, now: Date): string {
 export async function buildHomeModel(layout: HomeLayout, now = new Date()): Promise<HomeModel> {
   const all = await loadAllSeries();
   const metaBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
+  // The operator's named values (the designer's Application Settings), the
+  // shipped ones on any failure: which series lead, and how long two bands are.
+  const settings = await loadSettings();
 
   // ── 0. Happening now: the weekend whose session window straddles `now`. This
   // outranks the finished-result lead below — on Dutch GP Sunday the page led
@@ -146,6 +163,7 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
       slug: c.s.meta.slug,
       nextStartMs: nextTimed(c)?.start.getTime() ?? Number.POSITIVE_INFINITY,
     })),
+    { lead: settings['home.lead_series'], majors: settings['home.major_series'] },
   );
 
   const liveWeekends: HomeLeadLiveWeekend[] = ranked.featured.map(({ cand: live }) => {
@@ -301,12 +319,13 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
     href: `/series/${s.meta.slug}/weekend/${w.round}`,
   }));
 
-  // ── 4. The wire: the five newest aggregated headlines, source named. ──
+  // ── 4. The wire: the newest aggregated headlines, source named; how many is
+  // the `home.wire_count` setting (five shipped). ──
   const rawNews = await fetchAggregatedNews();
   const wire: HomeLeadWireItem[] = rawNews
     .slice()
     .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
-    .slice(0, 5)
+    .slice(0, settings['home.wire_count'])
     .flatMap(item => {
       const meta = metaBySlug.get(item.seriesSlug);
       if (!meta) return [];
@@ -339,13 +358,14 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
     if (lead) {
       const meta = lead.seriesSlug ? metaBySlug.get(lead.seriesSlug) : undefined;
       const stamp = new Date(lead.publishedAtIso);
-      // Further reading beside the cover. A second read of the same table, but
-      // publishedPosts() is the warm path /blog and the feed already use and the
-      // table is a couple of dozen rows; the alternative was duplicating
-      // fetchHomeBlogLead's ordering rules here.
+      // Further reading beside the cover, as many as the
+      // `home.blog_suggested_count` setting says (three shipped). A second read
+      // of the same table, but publishedPosts() is the warm path /blog and the
+      // feed already use and the table is a couple of dozen rows; the
+      // alternative was duplicating fetchHomeBlogLead's ordering rules here.
       const suggested = (await publishedPosts())
         .filter(p => p.slug !== lead.slug)
-        .slice(0, 3)
+        .slice(0, settings['home.blog_suggested_count'])
         .map(p => ({ slug: p.slug, title: p.title, heroImage: p.heroImage ?? null }));
       blog = {
         ...lead,

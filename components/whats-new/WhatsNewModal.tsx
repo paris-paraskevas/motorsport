@@ -37,15 +37,17 @@ const FOCUS_RING =
  *
  * Ships DARK — `currentWhatsNew()` returns null while every entry is inactive,
  * so this renders nothing at all until an entry is switched on in the same commit
- * as its version bump.
+ * as its version bump. `activeId` is the Application Setting
+ * `announcement.active_id`, read by the layout on the server: it names the
+ * entry in force, '' hides the notice, and it is seeded with the active entry.
  *
  * The shell — backdrop, focus trap, scroll lock, dismissal to localStorage plus
  * the Clerk account, and an entrance gated behind `motion-safe:` — follows
  * SupportPrompt and the banner it replaces rather than inventing a third dialog
  * language.
  */
-export function WhatsNewModal() {
-  const entry = currentWhatsNew();
+export function WhatsNewModal({ activeId }: { activeId: string }) {
+  const entry = currentWhatsNew(activeId);
   const { isLoaded, isSignedIn, user } = useUser();
   const [open, setOpen] = useState(false);
   const [entered, setEntered] = useState(false);
