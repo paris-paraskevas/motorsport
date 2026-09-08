@@ -70,12 +70,15 @@ function RegionTile({ region, selected, onSelect }: { region: Region; selected: 
       ? region.text.trim().replace(/\s+/g, ' ').slice(0, 60) || 'empty text'
       : region.kind === 'image'
         ? `photo ${region.assetId.slice(0, 8)}`
-        : `list ${region.listKey} · ${region.style}`;
+        : region.kind === 'list'
+          ? `list ${region.listKey} · ${region.style}`
+          : `“${region.label}”${region.dest ? ` → ${region.dest}` : ' · actions only'}`;
   const body = (
     <>
       <span className="block truncate font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
         {kind}
         {region.authz ? ` · ${region.authz}` : ''}
+        {region.hidden ? ' · hidden at first' : ''}
       </span>
       <span className="block truncate text-12 font-semibold text-text">{region.title || region.id}</span>
       <span className="block truncate text-11 text-text-muted">{detail}</span>

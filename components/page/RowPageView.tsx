@@ -5,6 +5,7 @@ import { resolveDestination, type NavEntry, type NavLists } from '@/lib/design/d
 import { rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
+import { DynamicActions } from './DynamicActions';
 
 // A row page as visitors see it (Phase 3 step 3): the live revision's regions
 // placed into the site's standard template. Header regions sit above the page
@@ -64,6 +65,7 @@ export function RowPageView(d: RowPageData) {
       </div>
       <Strip d={d} position="footer" className="mt-8" />
       <Strip d={d} position="phonebar" className="mt-8 lg:hidden" />
+      {d.document.actions.length > 0 && <DynamicActions actions={d.document.actions} />}
     </article>
   );
 }
@@ -76,8 +78,13 @@ function Strip({ d, position, className = '' }: { d: RowPageData; position: Posi
       {rows.map((row, i) => (
         <div key={i} className="grid grid-cols-12 gap-6">
           {row.map(r => (
+            // `data-region` is what a dynamic action finds; `hidden` is the
+            // region's starting state, so a "read more" never flashes.
             <div
               key={r.id}
+              id={`region-${r.id}`}
+              data-region={r.id}
+              hidden={r.hidden || undefined}
               className="col-span-12 min-w-0 lg:[grid-column:var(--gc)]"
               style={{ ['--gc' as string]: `${r.column} / span ${r.span}` }}
             >
@@ -143,6 +150,31 @@ function RegionBlock({ d, region }: { d: RowPageData; region: Region }) {
           </figcaption>
         )}
       </figure>
+    );
+  }
+  if (region.kind === 'button') {
+    const dest = region.dest ? resolveDestination(region.dest) : null;
+    const cls =
+      'inline-flex min-h-11 items-center bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted';
+    return (
+      <div>
+        {title && <h2 className={H2}>{title}</h2>}
+        {dest && dest.kind === 'external' ? (
+          <a href={dest.href} target="_blank" rel="noopener noreferrer" className={cls}>
+            {region.label}
+          </a>
+        ) : dest && dest.kind === 'route' ? (
+          <Link href={dest.href} className={cls}>
+            {region.label}
+          </Link>
+        ) : (
+          // No destination: the button exists for its dynamic actions, bound to
+          // the region wrapper by DynamicActions.
+          <button type="button" className={cls}>
+            {region.label}
+          </button>
+        )}
+      </div>
     );
   }
   const field = LIST_FIELD[region.listKey];

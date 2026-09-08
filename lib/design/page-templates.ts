@@ -30,7 +30,7 @@ export interface PageTemplate {
 export const TEMPLATE_LIST_KEYS = ['doors', 'bar', 'footer-site', 'footer-legal'] as const;
 
 function text(id: string, title: string, position: Position, seq: number, column: number, span: number, body: string, newRow = false): StaticRegion {
-  return { id, kind: 'static', title, position, seq, column, span, newRow, authz: null, text: body };
+  return { id, kind: 'static', title, position, seq, column, span, newRow, authz: null, hidden: false, text: body };
 }
 
 function list(
@@ -44,7 +44,7 @@ function list(
   style: ListRegion['style'],
   newRow = false,
 ): ListRegion {
-  return { id, kind: 'list', title, position, seq, column, span, newRow, authz: null, listKey, style };
+  return { id, kind: 'list', title, position, seq, column, span, newRow, authz: null, hidden: false, listKey, style };
 }
 
 export const PAGE_TEMPLATES: readonly PageTemplate[] = [
@@ -56,6 +56,7 @@ export const PAGE_TEMPLATES: readonly PageTemplate[] = [
     group: 'editorial',
     document: {
       version: PAGE_DOCUMENT_VERSION,
+      actions: [],
       regions: [
         text('standfirst', 'Standfirst', 'body', 10, 1, 12, 'One or two sentences that say what this page is about.'),
         text('story', 'The story', 'body', 20, 1, 8, 'Write the story here.', true),
@@ -72,6 +73,7 @@ export const PAGE_TEMPLATES: readonly PageTemplate[] = [
     group: 'editorial',
     document: {
       version: PAGE_DOCUMENT_VERSION,
+      actions: [],
       regions: [
         text('answer', 'The answer', 'body', 10, 1, 12, 'Answer the question here, from the top down.'),
         list('related', 'Related', 'right', 10, 1, 12, 'bar', 'links'),
@@ -87,6 +89,7 @@ export const PAGE_TEMPLATES: readonly PageTemplate[] = [
     group: 'home',
     document: {
       version: PAGE_DOCUMENT_VERSION,
+      actions: [],
       regions: [
         text('intro', 'Introduction', 'header', 10, 1, 12, 'Say what this part of the site holds.'),
         list('around', 'Around the site', 'body', 10, 1, 6, 'doors', 'cards'),
@@ -102,6 +105,7 @@ export const PAGE_TEMPLATES: readonly PageTemplate[] = [
     group: 'home',
     document: {
       version: PAGE_DOCUMENT_VERSION,
+      actions: [],
       regions: [
         text('headline', 'Headline', 'header', 10, 1, 12, 'The one line this page is for.'),
         text('lead', 'Lead', 'body', 10, 1, 7, 'The opening paragraphs.'),
@@ -118,6 +122,7 @@ export const PAGE_TEMPLATES: readonly PageTemplate[] = [
     group: 'site',
     document: {
       version: PAGE_DOCUMENT_VERSION,
+      actions: [],
       regions: [
         text('notice', 'The notice', 'body', 10, 1, 12, 'The text of the notice.'),
         list('legal', '', 'footer', 10, 1, 12, 'footer-legal', 'links'),
@@ -130,7 +135,7 @@ export const PAGE_TEMPLATES: readonly PageTemplate[] = [
     like: 'nothing yet',
     description: 'An empty schematic: place every region yourself.',
     group: 'editorial',
-    document: { version: PAGE_DOCUMENT_VERSION, regions: [] },
+    document: { version: PAGE_DOCUMENT_VERSION, regions: [], actions: [] },
   },
 ];
 

@@ -4,6 +4,7 @@ import {
   documentRefs,
   parsePageDocument,
   patternMatches,
+  refRows,
   rowPagePathProblem,
   rowsAt,
   schemesAsked,
@@ -14,10 +15,11 @@ import {
 const ASSET = 'a1b2c3d4-0000-4000-8000-000000000001';
 const DOC: PageDocument = {
   version: 1,
+  actions: [],
   regions: [
-    { id: 'intro', kind: 'static', title: 'Monza, a history', position: 'body', seq: 10, column: 1, span: 8, newRow: false, authz: null, text: 'The Autodromo opened in 1922. {shortcut:times.local} {shortcut:data.sources}' },
-    { id: 'photo', kind: 'image', title: '', position: 'body', seq: 20, column: 9, span: 4, newRow: false, authz: null, assetId: ASSET, alt: 'The grid at Monza', showCaption: true },
-    { id: 'more', kind: 'list', title: 'More', position: 'right', seq: 10, column: 1, span: 12, newRow: false, authz: 'signed_in', listKey: 'footer-site', style: 'links' },
+    { id: 'intro', kind: 'static', title: 'Monza, a history', position: 'body', seq: 10, column: 1, span: 8, newRow: false, hidden: false, authz: null, text: 'The Autodromo opened in 1922. {shortcut:times.local} {shortcut:data.sources}' },
+    { id: 'photo', kind: 'image', title: '', position: 'body', seq: 20, column: 9, span: 4, newRow: false, hidden: false, authz: null, assetId: ASSET, alt: 'The grid at Monza', showCaption: true },
+    { id: 'more', kind: 'list', title: 'More', position: 'right', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: 'signed_in', listKey: 'footer-site', style: 'links' },
   ],
 };
 
@@ -67,8 +69,53 @@ describe('parsePageDocument', () => {
       assets: [ASSET],
       authz: ['signed_in'],
       shortcuts: ['data.sources', 'times.local'],
+      dests: [],
     });
-    expect(documentRefs(EMPTY_DOCUMENT)).toEqual({ lists: [], assets: [], authz: [], shortcuts: [] });
+    expect(documentRefs(EMPTY_DOCUMENT)).toEqual({ lists: [], assets: [], authz: [], shortcuts: [], dests: [] });
+  });
+
+  it('parses a Button region and the dynamic actions, refusing what names nothing on the page', () => {
+    const raw = {
+      version: 1,
+      regions: [
+        { id: 'teaser', kind: 'static', position: 'body', seq: 10, column: 1, span: 12, text: 'Read on.' },
+        { id: 'more', kind: 'static', position: 'body', seq: 20, column: 1, span: 12, hidden: true, text: 'The rest.' },
+        { id: 'open', kind: 'button', position: 'body', seq: 30, column: 1, span: 4, label: ' Read more ', dest: null },
+        { id: 'cal', kind: 'button', position: 'body', seq: 40, column: 5, span: 4, label: 'Calendar', dest: 'calendar' },
+        { id: 'bad-dest', kind: 'button', position: 'body', seq: 50, column: 9, span: 4, label: 'x', dest: 'action:contact' },
+        { id: 'no-label', kind: 'button', position: 'footer', seq: 10, column: 1, span: 12, label: ' ' },
+      ],
+      actions: [
+        { id: 'reveal', name: 'Reveal the rest', when: { event: 'click', region: 'open' }, do: [{ action: 'show', region: 'more' }, { action: 'hide', region: 'open' }] },
+        { id: 'tick', when: { event: 'timer', seconds: 30 }, do: [{ action: 'toggle', region: 'teaser' }] },
+        { id: 'away', when: { event: 'load' }, do: [{ action: 'go', dest: 'calendar' }] },
+        { id: 'seen', when: { event: 'visible', region: 'more' }, do: [{ action: 'scroll-to', region: 'teaser' }] },
+        { id: 'ghost', when: { event: 'click', region: 'nowhere' }, do: [{ action: 'show', region: 'more' }] },
+        { id: 'empty', when: { event: 'load' }, do: [] },
+        { id: 'fast', when: { event: 'timer', seconds: 1 }, do: [{ action: 'show', region: 'more' }] },
+        { id: 'lost', when: { event: 'load' }, do: [{ action: 'show', region: 'nowhere' }, { action: 'go', dest: 'action:contact' }] },
+        { id: 'reveal', when: { event: 'load' }, do: [{ action: 'show', region: 'more' }] },
+      ],
+    };
+    const { value, problems } = parsePageDocument(raw);
+    expect(value.regions.map(r => r.id)).toEqual(['teaser', 'more', 'open', 'cal']);
+    expect(value.regions[1].hidden).toBe(true);
+    expect(value.regions[2]).toMatchObject({ kind: 'button', label: 'Read more', dest: null, hidden: false });
+    expect(value.actions.map(a => a.id)).toEqual(['reveal', 'tick', 'away', 'seen']);
+    expect(value.actions[0]).toEqual({ id: 'reveal', name: 'Reveal the rest', when: { event: 'click', region: 'open' }, do: [{ action: 'show', region: 'more' }, { action: 'hide', region: 'open' }] });
+    expect(problems).toEqual([
+      'region bad-dest: the destination must be a page or a link from the catalogue',
+      'region no-label: the button needs a label',
+      'action ghost: when must name a region of this page',
+      'action empty: needs at least one effect',
+      'action fast: the timer is 5 to 3600 seconds',
+      'action lost, effect 1: must name a region of this page',
+      'action lost, effect 2: go must name a page or a link from the catalogue',
+      'action reveal: the id is used twice',
+    ]);
+    expect(documentRefs(value).dests).toEqual(['calendar']);
+    expect(refRows(documentRefs(value))).toContainEqual({ kind: 'dest', key: 'calendar' });
+    expect(parsePageDocument({ version: 1, regions: [], actions: 'x' }).problems).toEqual(['actions must be a list']);
   });
 
   it('substitutes shortcuts by key and drops an unknown one, and lists the schemes a page asks for beyond public', () => {
@@ -82,6 +129,7 @@ describe('parsePageDocument', () => {
   it('splits a position into rows where a region starts a new row', () => {
     const doc: PageDocument = {
       version: 1,
+      actions: [],
       regions: [
         { ...DOC.regions[0], id: 'a', seq: 10 },
         { ...DOC.regions[0], id: 'b', seq: 20, column: 9, span: 4 },
