@@ -37,6 +37,11 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 
+**Designer, queued after the Appearance step (operator, 2026-09-08 afternoon)**
+- **An alive search placeholder.** `nav.search` cycles every minute through frequently asked questions, each verified to lead somewhere on the site when searched; the rotation starts after the first paint so the cached render stays identical for everyone, and holds still under reduced motion. Shape: a list of questions as rows beside the one text message, the site's search as the verifier.
+- **A search bar for the Shared Components catalogue** in the designer.
+- **The designer's side menu redrawn** so pages and shared components read as different things; the operator cannot tell them apart today.
+
 **Bugs and defects**
 
 _(Removed 2026-09-04: blog editor autosave. **Already built** — `components/studio/useDraftBackup.ts`, wired into BOTH writing surfaces with a "Unsaved draft found / Restore it / Discard" banner. localStorage only, deliberately: a debounced PATCH would keep rewriting a row that may be sitting in the review queue. Claude asserted twice that this did not exist, having searched `components/blog/` and `app/(app)/studio/` but not `components/studio/`; the operator was right both times.)_
