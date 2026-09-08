@@ -103,7 +103,7 @@ describe('Designer keeps the selection in the URL', () => {
     expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
   });
 
-  it('opens a page the server handed over, with its schematic, and the crumb returns to all pages', () => {
+  it('opens a page the server handed over in the Page Designer, and the back arrow returns to all pages', () => {
     window.history.replaceState(null, '', '/admin/designer?ws=builder&page=a1b2c3d4-0000-4000-8000-000000000010');
     const page: PageRow = {
       id: 'a1b2c3d4-0000-4000-8000-000000000010',
@@ -148,17 +148,18 @@ describe('Designer keeps the selection in the URL', () => {
         {...loaded}
       />,
     );
-    expect(screen.getByRole('heading', { level: 2, name: 'Monza, a history' })).toBeTruthy();
+    expect(screen.getByLabelText('Page Designer')).toBeTruthy();
+    expect(screen.getByText('Page Designer', { selector: 'span' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Static Content: Monza' })).toBeTruthy();
-    expect(screen.getByText('draft')).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toMatch(/draft/);
     expect(screen.getByRole('button', { name: 'Publish' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'All pages' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to all pages' }));
     expect(window.location.search).toBe('?ws=builder');
     expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Open Monza, a history' })).toBeTruthy();
   });
 
-  it('the Shared Components rail has a search field that narrows the catalogue, and the App Builder rail filters the pages by group', () => {
+  it('the Shared Components rail has a search field that narrows the catalogue, and the App Builder filters the pages through Page Groups', () => {
     render(<Designer readOnly={false} who="Test · Administrator · production" initialPages={pagesFromCode()} {...loaded} />);
     const rail = screen.getByRole('navigation', { name: 'Shared components' });
     expect(within(rail).getByRole('button', { name: /Build Options/ })).toBeTruthy();
@@ -167,16 +168,20 @@ describe('Designer keeps the selection in the URL', () => {
     expect(within(rail).queryByRole('button', { name: /Build Options/ })).toBeNull();
     fireEvent.change(within(rail).getByLabelText('Find a component'), { target: { value: 'zzz' } });
     expect(within(rail).getByText('Nothing in the catalogue matches.')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'App Builder' }));
-    const pagesRail = screen.getByRole('navigation', { name: 'Pages' });
-    expect(within(pagesRail).getByText('Every page the site serves, by group. Yours are served from a revision.')).toBeTruthy();
-    fireEvent.click(within(pagesRail).getByRole('button', { name: /^Editorial/ }));
-    expect(screen.getByText('· Editorial')).toBeTruthy();
+    fireEvent.click(screen.getAllByRole('button', { name: 'App Builder' })[0]);
+    expect(screen.queryByRole('navigation', { name: 'Shared components' })).toBeNull();
+    const groups = () => {
+      fireEvent.click(screen.getByRole('button', { name: /^Page Groups/ }));
+      return screen.getByRole('dialog');
+    };
+    const row = (dialog: HTMLElement, label: string) => within(within(dialog).getByText(label).closest('tr')!).getByRole('button');
+    fireEvent.click(row(groups(), 'Editorial'));
+    expect(screen.getByRole('heading', { level: 2 }).textContent).toContain('· Editorial');
     expect(screen.getByText('/blog')).toBeTruthy();
     expect(screen.queryByText('/calendar')).toBeNull();
-    fireEvent.click(within(pagesRail).getByRole('button', { name: /^Your pages/ }));
+    fireEvent.click(row(groups(), 'Your pages · made here'));
     expect(screen.getByText('No page of your own yet. Create page starts one from a template.')).toBeTruthy();
-    fireEvent.click(within(pagesRail).getByRole('button', { name: /^All pages/ }));
+    fireEvent.click(row(groups(), 'All pages'));
     expect(screen.getByText('/calendar')).toBeTruthy();
   });
 
