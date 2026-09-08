@@ -10,10 +10,11 @@ import { isActivePath, resolveDestination, type NavEntry } from '@/lib/design/de
 // Since Phase 2 the doors are the `doors` list (lib/design/lists.ts), edited in
 // the designer and rendered here. A door is a link, so an entry whose
 // destination is an action is skipped rather than drawn as something it is not.
-export function DoorLinks({ entries }: { entries: NavEntry[] }) {
+export function DoorLinks({ entries, preview = false }: { entries: NavEntry[]; preview?: boolean }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Doors" className="hidden items-stretch gap-5 self-stretch lg:flex">
+    // `preview`: the designer shows the doors at any width; the header hides them below lg.
+    <nav aria-label="Doors" className={`${preview ? 'flex' : 'hidden lg:flex'} items-stretch gap-5 self-stretch`}>
       {entries.map((entry, i) => {
         const dest = resolveDestination(entry.dest);
         if (!dest || dest.kind === 'action') return null;

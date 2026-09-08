@@ -4,6 +4,30 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.39 — 2026-09-08
+
+### Feature — Phase 2, step 2: Paddock Developer's first screen, the Shared Components workspace with the four navigation lists editable
+
+The designer exists. `/admin/designer` opens the prototype's shell (2026-09-07, v2.4): the workspace header, the crumbs, the 300-pixel catalogue of every APEX group, and an editor for the four navigation lists that reads and writes through the step-1 route with the version check. The operator's direction ("paddock-developer", their own builder) and their pick of the prototype's blue edit accent are built in.
+
+- **`app/(admin)/admin/designer/page.tsx`** (NEW): the admin gate, the production flag (`isProductionWorker`), the four lists loaded once with `loadListForEditing` so the screen opens with them, `?sc=<key>` opens a catalogue entry; renders `DesignerLoader`.
+- **`components/designer/DesignerLoader.tsx`** (NEW): `next/dynamic` with `ssr: false`, so the editor is a browser-only chunk and never enters the Worker bundle.
+- **`components/designer/Designer.tsx`** (NEW): the shell, full viewport over the console with a back arrow (the rail would compete with the panes); the workspace tabs with App Builder and Data marked by their phases; the catalogue with counts on the live lists; the overview cards; the "not editable yet" page for later items; lists fetched for anything the server did not hand over.
+- **`components/designer/ListEditor.tsx`** (NEW): the table (sequence arrows, label, destination select over the catalogue, icon select for the bar, authorization select for the doors and the bar, Remove), an add row as a catalogue picker that states the bound, a preview rendering the REAL `DoorLinks`, `BottomBar` or `Footer` with the edited entries, Save with the stamp, 409 → Reload or Save anyway, everything disabled with a banner on a preview Worker. State follows a new `list` prop by the render-time adjustment React documents, not an effect.
+- **`components/designer/catalogue.ts`** (NEW): the ten APEX groups with every item, the four lists as `listKey`, everything else with `later` (the phase, or "derived, never edited"); `LIST_COPY`; `SCHEMES` mirroring the seeded rows.
+- **`lib/design/list-edit.ts`** (NEW, pure, client-safe): `moveEntry`, `updateEntry`, `removeEntry`, `addEntry`, `canAdd`, `canRemove`, `minEntries`, `maxEntries`, `sameEntries`, the bounds the API enforces, so a button greys before the server would refuse. `ListRole`, `BAR_MIN` and `BAR_MAX` moved to `lib/design/destinations.ts` (client-safe) and re-exported from `lists.ts`.
+- **`components/DoorLinks.tsx`**, **`components/BottomBar.tsx`**: a `preview` prop (visible at any width, drawn in place) so the editor shows the real component rather than a facsimile.
+- **`app/globals.css`**: `--edit` / `--edit-dim` on the two console themes and `--color-edit` / `--color-edit-dim` utilities: the designer's accent, console themes only, so it exists nowhere on the public site.
+- **`components/admin/AdminNav.tsx`**: the Designer entry.
+
+**Tests.** `lib/design/list-edit.test.ts` (NEW, 7: bounds, move, update with emptied optionals, remove at the bound, add with the catalogue label and the bar's default icon, same-rows comparison), `components/designer/catalogue.test.ts` (NEW, 3: unique keys, every item editable or dated, exactly the four lists, Public first). `npx vitest run` → 131 files, **1603 passed** with the temporary render probe, 1602 without it. `tsc` and `eslint` clean; the two `react-hooks/set-state-in-effect` errors the first draft raised were fixed by design (state initialised in `useState`, adjusted during render), not silenced.
+
+**Seen before merge.** The probe's static markup of four screens wrapped in the build's own CSS and photographed at 1440×900: the bar editor, the overview, the doors, and the doors read-only on a preview. Published for the operator as a review page (artifact `87b1b504-afb9-4bba-98c0-04b25ec96223`). Fonts in the stills are Google's IBM Plex standing in for the self-hosted files.
+
+**Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.38) `Total Upload 41719.98 KiB / gzip 9690.33 KiB`; after `Total Upload 41776.56 KiB / gzip 9705.46 KiB`. The editor itself is a client chunk; the growth is the page, the server-side list loads and the styles.
+
+**Not browser-verified live** (admin session). After merge, on prod: `/admin/designer` opens on the overview with the four counts; Navigation Bar List → move a cell → Save → the site at phone width shows the new order within a minute.
+
 ## 1.0.38 — 2026-09-08
 
 ### Feature — Phase 2, step 1: the four navigation lists become rows, and the site renders them

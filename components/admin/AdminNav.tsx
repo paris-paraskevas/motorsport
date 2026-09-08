@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Activity, BarChart3, FileText, LayoutDashboard, LayoutTemplate, NotebookPen, Users } from 'lucide-react';
+import { Activity, BarChart3, FileText, Hammer, LayoutDashboard, LayoutTemplate, NotebookPen, Users } from 'lucide-react';
 import { SITE_URL } from '@/lib/site';
 
 // Admin console nav rail: six tabs, each answering one question, on the shape
@@ -16,6 +16,7 @@ import { SITE_URL } from '@/lib/site';
 //   Traffic   is anyone reading, and how did they find it?
 //   System    is the machine healthy and what does it cost?
 //   Site      what do visitors see, and who decided?
+//   Designer  Paddock Developer: the shared components, and later the pages
 //
 // Studio is NOT a tab. It is a different surface on the main host, so it sits
 // below a divider as an external link — the rail should not imply you are
@@ -27,6 +28,7 @@ const NAV: { href: string; label: string; icon: React.ComponentType<{ size?: num
   { href: '/admin/traffic', label: 'Traffic', icon: BarChart3 },
   { href: '/admin/system', label: 'System', icon: Activity },
   { href: '/admin/site', label: 'Site', icon: LayoutTemplate },
+  { href: '/admin/designer', label: 'Designer', icon: Hammer },
 ];
 
 // ABSOLUTE, and it has to be. The console is served from
