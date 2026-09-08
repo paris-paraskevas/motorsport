@@ -7,6 +7,7 @@ import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { TracksMap, type MapTrack } from '@/components/information/TracksMap';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Revalidate hourly like the rest of the information hub (new/edited tracks
 // flow in without a redeploy).
@@ -16,13 +17,14 @@ const TITLE = 'Circuit Map';
 const DESCRIPTION =
   'Every circuit and racing venue we cover, mapped worldwide — search by name or country, filter by series, and open any circuit for the full guide.';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   ...withSocialMeta({ title: TITLE, description: DESCRIPTION, path: '/information/map' }),
 };
+export const generateMetadata = pageMetadata('/information/map', BASE_METADATA);
 
-export default async function CircuitMapPage() {
+async function CircuitMapPage() {
   // Reuse the information loader (server-only) rather than re-reading the JSON.
   // getTopicEntries('tracks') also returns the country/famous aggregate Q&A
   // pages — keep only real track entries with usable coordinates.
@@ -76,3 +78,5 @@ export default async function CircuitMapPage() {
     </div>
   );
 }
+
+export default withPageGate('/information/map', CircuitMapPage);

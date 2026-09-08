@@ -50,6 +50,21 @@ describe('the page registry', () => {
     }
   });
 
+  it('routes every page through pageMetadata and withPageGate with its own path, and exports nothing around them', () => {
+    // THE COVERAGE TEST (the Page Designer plan, PR 1): a route added later
+    // cannot skip the frame, and a path copied from another page cannot pass.
+    for (const f of files) {
+      const src = fs.readFileSync(f.file, 'utf8');
+      const p = registryPathOf(f.route);
+      expect(src, `${f.route} imports the frame`).toContain("from '@/lib/design/page-frame'");
+      expect(src, `${f.route} metadata through the frame`).toContain(`pageMetadata('${p}'`);
+      expect(src, `${f.route} page through the frame`).toContain(`withPageGate('${p}'`);
+      expect(src, `${f.route} exports metadata directly`).not.toMatch(/^export const metadata\b/m);
+      expect(src, `${f.route} exports generateMetadata directly`).not.toMatch(/^export (async )?function generateMetadata\b/m);
+      expect(src, `${f.route} exports its component directly`).not.toMatch(/^export default (async )?function\b/m);
+    }
+  });
+
   it('uses the seeded groups and folds a library catch-all into its parent', () => {
     for (const p of CODE_PAGES) expect(PAGE_GROUPS, p.path).toContain(p.group);
     expect(registryPathOf('/sign-in/[[...sign-in]]')).toBe('/sign-in');

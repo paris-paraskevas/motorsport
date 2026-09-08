@@ -6,9 +6,11 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getThread, isAdmin } from '@/lib/threads';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Thread', robots: { index: false, follow: false } };
+const BASE_METADATA: Metadata = { title: 'Thread', robots: { index: false, follow: false } };
+export const generateMetadata = pageMetadata('/threads/[id]', BASE_METADATA);
 
 function frame(children: ReactNode) {
   return (
@@ -24,7 +26,7 @@ function frame(children: ReactNode) {
   );
 }
 
-export default async function ThreadPage({ params }: { params: Promise<{ id: string }> }) {
+async function ThreadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
 
@@ -55,3 +57,5 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
     </article>,
   );
 }
+
+export default withPageGate('/threads/[id]', ThreadPage);

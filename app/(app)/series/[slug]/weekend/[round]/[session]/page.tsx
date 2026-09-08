@@ -65,6 +65,7 @@ import { PracticeAnalysis } from '@/components/f1/PracticeAnalysis';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
 import { SessionClassChips } from '@/components/weekend/SessionClassChips';
 import { PAGE_WIDE, SITE_URL } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // STILL force-dynamic, and the reason is now measured rather than assumed.
 //
@@ -132,7 +133,7 @@ async function resolve(params: Promise<{ slug: string; round: string; session: s
   return { series, weekend, session, round, slug, sessionParam };
 }
 
-export async function generateMetadata(
+async function baseMetadata(
   { params }: { params: Promise<{ slug: string; round: string; session: string }> },
 ): Promise<Metadata> {
   const ctx = await resolve(params);
@@ -155,6 +156,7 @@ export async function generateMetadata(
     ...withSocialMeta({ title, description, path, ownCard: true }),
   };
 }
+export const generateMetadata = pageMetadata('/series/[slug]/weekend/[round]/[session]', baseMetadata);
 
 // Panel 11d: the weekend's sessions as boxed chips, chronological, the current
 // one lit — the row reads as a weekend rather than a menu. A session that does
@@ -732,7 +734,7 @@ async function SessionBody({
   );
 }
 
-export default async function SessionPage({
+async function SessionPage({
   params,
 }: {
   params: Promise<{ slug: string; round: string; session: string }>;
@@ -955,3 +957,5 @@ export default async function SessionPage({
     </div>
   );
 }
+
+export default withPageGate('/series/[slug]/weekend/[round]/[session]', SessionPage);

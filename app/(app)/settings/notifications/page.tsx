@@ -5,15 +5,17 @@ import { EnableNotifications } from '@/components/EnableNotifications';
 import { YourDevices } from '@/components/YourDevices';
 import { NotifPrefsSection } from '@/components/NotifPrefsSection';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Notifications',
   robots: { index: false, follow: false },
 };
+export const generateMetadata = pageMetadata('/settings/notifications', BASE_METADATA);
 
-export default function NotificationsPage() {
+function NotificationsPage() {
   return (
     <div className={PAGE_WIDE}>
       <Link
@@ -37,3 +39,5 @@ export default function NotificationsPage() {
     </div>
   );
 }
+
+export default withPageGate('/settings/notifications', NotificationsPage);

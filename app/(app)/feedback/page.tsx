@@ -5,12 +5,14 @@ import { isBettingConfigured } from '@/lib/betting/client';
 import { isStaff, isAdmin } from '@/lib/threads';
 import { FeedbackBoard } from '@/components/feedback/FeedbackBoard';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
 // Private staff page — keep it out of search + the sitemap.
-export const metadata: Metadata = { title: 'Feedback', robots: { index: false, follow: false } };
+const BASE_METADATA: Metadata = { title: 'Feedback', robots: { index: false, follow: false } };
+export const generateMetadata = pageMetadata('/feedback', BASE_METADATA);
 
-export default async function FeedbackPage() {
+async function FeedbackPage() {
   if (!isBettingConfigured()) notFound();
   const { userId } = await auth();
   const user = userId ? await currentUser() : null;
@@ -32,3 +34,5 @@ export default async function FeedbackPage() {
     </div>
   );
 }
+
+export default withPageGate('/feedback', FeedbackPage);

@@ -12,6 +12,7 @@ import type { RaceResult } from '@/lib/types';
 import { AnalysisGate } from '@/components/f1/AnalysisGate';
 import { auth } from '@clerk/nextjs/server';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // F1 driver head-to-head. Reuses the SAME season-form + trend cumulation the
 // driver pages and weekend snapshots use (lib/profile-stats + lib/season-trend
@@ -26,7 +27,7 @@ const TITLE = 'F1 head-to-head';
 const DESCRIPTION =
   'Compare any two Formula 1 drivers this season — points, championship position, wins, recent form, their race-by-race head-to-head record and points trajectory.';
 
-export async function generateMetadata(): Promise<Metadata> {
+async function baseMetadata(): Promise<Metadata> {
   return {
     title: TITLE,
     description: DESCRIPTION,
@@ -35,6 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ...withSocialMeta({ title: TITLE, description: DESCRIPTION, path: '/f1/compare' }),
   };
 }
+export const generateMetadata = pageMetadata('/f1/compare', baseMetadata);
 
 // Race-by-race head-to-head over the rounds both drivers finished (classified).
 function raceH2H(races: RaceResult[], nameA: string, nameB: string): { aAhead: number; bAhead: number; shared: number } {
@@ -137,7 +139,7 @@ function Last5Column({ form, align }: { form: DriverSeasonForm; align: 'left' | 
   );
 }
 
-export default async function F1ComparePage({
+async function F1ComparePage({
   searchParams,
 }: {
   searchParams: Promise<{ a?: string; b?: string }>;
@@ -309,3 +311,5 @@ export default async function F1ComparePage({
     </div>
   );
 }
+
+export default withPageGate('/f1/compare', F1ComparePage);

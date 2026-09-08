@@ -2,16 +2,18 @@ import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Do Not Sell or Share',
   description:
     'Exercise your CCPA/CPRA right to opt out of the sale or sharing of personal information on Paddock Tracker — including the GPC signal we honor.',
 };
+export const generateMetadata = pageMetadata('/do-not-sell', BASE_METADATA);
 
-export default async function DoNotSellPage() {
+async function DoNotSellPage() {
   const html = await loadMarkdownAsHtml(
     path.join(process.cwd(), 'content', 'legal', 'do-not-sell.md'),
   );
@@ -39,3 +41,5 @@ export default async function DoNotSellPage() {
     </div>
   );
 }
+
+export default withPageGate('/do-not-sell', DoNotSellPage);

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { listArchivedSeasons, listArchivedSeries, loadSeasonArchive } from '@/lib/season-archive';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Build-time only — the archive lives in `data/`, outside the Worker bundle.
 export const dynamic = 'force-static';
@@ -11,14 +12,15 @@ const TITLE = 'Season archive';
 const DESCRIPTION =
   'Past seasons as they were run — every race weekend of every championship we track, with session schedules and final classifications.';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: '/archive' },
   ...withSocialMeta({ title: TITLE, description: DESCRIPTION, path: '/archive' }),
 };
+export const generateMetadata = pageMetadata('/archive', BASE_METADATA);
 
-export default async function ArchiveIndexPage() {
+async function ArchiveIndexPage() {
   const seasons = await listArchivedSeasons();
   const groups = await Promise.all(
     seasons.map(async season => {
@@ -72,3 +74,5 @@ export default async function ArchiveIndexPage() {
     </div>
   );
 }
+
+export default withPageGate('/archive', ArchiveIndexPage);

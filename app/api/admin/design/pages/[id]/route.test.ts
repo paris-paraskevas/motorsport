@@ -51,7 +51,8 @@ const put = (id: string, body: unknown) =>
     }),
     { params: Promise.resolve({ id }) },
   );
-const attrs = { name: 'Monza', title: 'Monza, a history of speed', group: 'editorial', authz: 'signed_in', indexable: true, updatedAt: STAMP };
+const attrs = { name: 'Monza', title: 'Monza, a history of speed', group: 'editorial', authz: 'signed_in', indexable: true, comments: null, updatedAt: STAMP };
+const codeRow = { ...row, id: 'c0de0000-0000-4000-8000-000000000008', path: '/series/[slug]/[tab]', name: 'Series tab', kind: 'code', group_key: 'series', indexable: true };
 
 describe('/api/admin/design/pages/[id]', () => {
   beforeEach(() => {
@@ -92,9 +93,10 @@ describe('/api/admin/design/pages/[id]', () => {
     expect(update).not.toHaveBeenCalled();
   });
 
-  it('PUT refuses an empty name, a long title, an unknown group, a scheme that is not a key, a non-boolean indexable and a missing stamp', async () => {
+  it('PUT refuses an empty name, a long title, long comments, an unknown group, a scheme that is not a key, a non-boolean indexable and a missing stamp', async () => {
     expect((await put(ID, { ...attrs, name: ' ' })).status).toBe(400);
     expect((await put(ID, { ...attrs, title: 'x'.repeat(121) })).status).toBe(400);
+    expect((await put(ID, { ...attrs, comments: 'x'.repeat(501) })).status).toBe(400);
     expect((await put(ID, { ...attrs, group: 'nope' })).status).toBe(400);
     expect((await put(ID, { ...attrs, authz: 'Not A Key' })).status).toBe(400);
     expect((await put(ID, { ...attrs, indexable: 'yes' })).status).toBe(400);
@@ -105,15 +107,26 @@ describe('/api/admin/design/pages/[id]', () => {
   it('PUT updates the row on its stamp, revalidates the served path and answers the row as stored', async () => {
     const res = await put(ID, attrs);
     expect(res.status).toBe(200);
-    expect(update).toHaveBeenCalledWith({ name: 'Monza', title: 'Monza, a history of speed', group_key: 'editorial', authz_key: 'signed_in', indexable: true, updated_by: 'user_admin' });
+    expect(update).toHaveBeenCalledWith({ name: 'Monza', title: 'Monza, a history of speed', group_key: 'editorial', authz_key: 'signed_in', indexable: true, comments: null, updated_by: 'user_admin' });
     expect(revalidatePath).toHaveBeenCalledWith('/history/monza');
     const json = (await res.json()) as { page: { name: string; authz: string; indexable: boolean; updatedAt: string } };
     expect(json.page).toMatchObject({ name: 'Monza', authz: 'signed_in', indexable: true, updatedAt: '2026-09-08T18:00:00+00:00' });
   });
 
-  it('PUT stores Everyone as the public scheme and an empty title as null', async () => {
-    await put(ID, { ...attrs, authz: '', title: '  ' });
-    expect(update).toHaveBeenCalledWith(expect.objectContaining({ authz_key: 'public', title: null }));
+  it('PUT stores Everyone as the public scheme, an empty title as null and trimmed comments', async () => {
+    await put(ID, { ...attrs, authz: '', title: '  ', comments: '  For the Monza weekend.  ' });
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ authz_key: 'public', title: null, comments: 'For the Monza weekend.' }));
+  });
+
+  it("PUT accepts a page the code serves and revalidates a dynamic route as a whole (the Page Designer plan, PR 1)", async () => {
+    pageRows = { data: [codeRow], error: null };
+    updated = { data: [{ ...codeRow, title: 'Standings and results', updated_at: '2026-09-08T18:00:00+00:00' }], error: null };
+    const res = await put(codeRow.id, { ...attrs, name: 'Series tab', title: 'Standings and results', group: 'series', authz: 'public' });
+    expect(res.status).toBe(200);
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ title: 'Standings and results', authz_key: 'public' }));
+    expect(revalidatePath).toHaveBeenCalledWith('/series/[slug]/[tab]', 'page');
+    const json = (await res.json()) as { page: { kind: string; path: string; title: string } };
+    expect(json.page).toMatchObject({ kind: 'code', path: '/series/[slug]/[tab]', title: 'Standings and results' });
   });
 
   it('PUT answers 409 with the detail as stored when the stamp moved, 404 when the page is gone, and 400 when the scheme does not exist', async () => {

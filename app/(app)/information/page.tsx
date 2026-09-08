@@ -11,6 +11,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // The hub is curated + indexable. Entries revalidate hourly (new champions,
 // newly-verified answers) without a redeploy.
@@ -20,11 +21,12 @@ const TITLE = 'Motorsport Answers & Information';
 const DESCRIPTION =
   'Clear, sourced answers to motorsport questions — champions, records, rules, tracks and the junior ladder, across F1, MotoGP, endurance, rally, stock cars and more.';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   ...withSocialMeta({ title: TITLE, description: DESCRIPTION, path: '/information' }),
 };
+export const generateMetadata = pageMetadata('/information', BASE_METADATA);
 
 // Series slug → the token its weekend-works answer slug carries (where they
 // differ). F1 and ADAC have no weekend-works answer yet (content gap).
@@ -43,7 +45,7 @@ const FIRST_READS = [
 // The inverted hub (design handoff §4.3, panel 9a): the ~75 written answers
 // ARE the product, so they lead — ask field, most-asked, the weekend-format
 // band — and the topic filing cabinet drops to the foot.
-export default async function InformationHub() {
+async function InformationHub() {
   const [all, featured, seriesMeta, contributorPosts] = await Promise.all([
     getAllInfoEntries(),
     getIndexedInfoEntries(),
@@ -236,3 +238,5 @@ export default async function InformationHub() {
     </div>
   );
 }
+
+export default withPageGate('/information', InformationHub);

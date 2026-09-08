@@ -16,6 +16,7 @@ import { loadDriverPortraits, loadDriverBios, type DriverBio } from '@/lib/serie
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // ISR: profile pages edge-cache (was force-dynamic). Season form comes from
 // the cached results fetchers (loadSnapshotSource excludes WEC's no-store).
@@ -27,7 +28,7 @@ export function generateStaticParams() {
   return [];
 }
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -47,6 +48,7 @@ export async function generateMetadata({
     ...withSocialMeta({ title: driver.name, description, path: `/drivers/${slug}`, ownCard: true }),
   };
 }
+export const generateMetadata = pageMetadata('/drivers/[slug]', baseMetadata);
 
 // Curated portraits are stored as full-resolution Commons file URLs; the
 // header slot is 176 px, so the original is ~180 KB of wasted bytes on the LCP
@@ -543,7 +545,7 @@ async function DriverBody({
   );
 }
 
-export default async function DriverPage({
+async function DriverPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -557,3 +559,5 @@ export default async function DriverPage({
     </Suspense>
   );
 }
+
+export default withPageGate('/drivers/[slug]', DriverPage);

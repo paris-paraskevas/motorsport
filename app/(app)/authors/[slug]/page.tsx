@@ -7,6 +7,7 @@ import { resolveAuthorIdentity } from '@/lib/author-identity';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, profilePageLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // ISR at the same cadence as /blog (revalidate 300): a profile changes about as
 // often as the post list it fronts. Params come from the `author` table, and
@@ -33,7 +34,7 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+async function baseMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const author = await getAuthorBySlug(slug);
   // notFound() in metadata, not a noindex fallback: the streamed shell flushes
@@ -51,6 +52,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     },
   };
 }
+export const generateMetadata = pageMetadata('/authors/[slug]', baseMetadata);
 
 function Links({ links }: { links: AuthorProfile['links'] }) {
   if (links.length === 0) return null;
@@ -78,7 +80,7 @@ function Links({ links }: { links: AuthorProfile['links'] }) {
   );
 }
 
-export default async function AuthorPage({ params }: { params: Promise<{ slug: string }> }) {
+async function AuthorPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const author = await getAuthorBySlug(slug);
   if (!author) notFound();
@@ -185,3 +187,5 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
     </div>
   );
 }
+
+export default withPageGate('/authors/[slug]', AuthorPage);

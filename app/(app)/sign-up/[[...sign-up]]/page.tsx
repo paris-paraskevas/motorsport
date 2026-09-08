@@ -1,14 +1,16 @@
 import type { Metadata } from 'next';
 import { SignUp } from '@clerk/nextjs';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Sign up',
   robots: { index: false, follow: false },
 };
+export const generateMetadata = pageMetadata('/sign-up', BASE_METADATA);
 
-export default function SignUpPage() {
+function SignUpPage() {
   return (
     <div className="min-h-[calc(100vh-3.5rem)] flex items-center justify-center p-4">
       {/* Brand appearance inherited from the ClerkProvider in the layout. */}
@@ -22,3 +24,5 @@ export default function SignUpPage() {
     </div>
   );
 }
+
+export default withPageGate('/sign-up', SignUpPage);

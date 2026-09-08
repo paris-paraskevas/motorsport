@@ -7,14 +7,16 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { StudioLink } from '@/components/blog/StudioLink';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 300;
 
-export const metadata = {
+const BASE_METADATA = {
   title: 'Blog',
   description:
     'Original analysis, race recaps, championship deep-dives, and commentary across F1, MotoGP, WEC, IndyCar, NASCAR and more motorsport categories.',
 };
+export const generateMetadata = pageMetadata('/blog', BASE_METADATA);
 
 // Cards from two sources: DB-backed posts (lib/blog) + file-based MDX posts
 // (lib/posts). DB wins on a slug collision; the merged list is newest-first.
@@ -180,7 +182,7 @@ function formatDate(iso: string): string {
   });
 }
 
-export default async function BlogIndexPage() {
+async function BlogIndexPage() {
   const [dbPosts, mdxPosts, seriesMetas, authors] = await Promise.all([
     publishedPosts(),
     loadAllPosts(),
@@ -336,3 +338,5 @@ export default async function BlogIndexPage() {
     </div>
   );
 }
+
+export default withPageGate('/blog', BlogIndexPage);

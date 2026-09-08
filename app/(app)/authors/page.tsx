@@ -6,15 +6,17 @@ import { resolveAuthorIdentity } from '@/lib/author-identity';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Authors',
   description:
     'The people writing Paddock Tracker: race reports, championship analysis and motorsport commentary across F1, MotoGP, WEC and more.',
   alternates: { canonical: '/authors' },
 };
+export const generateMetadata = pageMetadata('/authors', BASE_METADATA);
 
 // One bio line for the index. Cut on a word boundary; the full bio lives on the
 // profile page.
@@ -24,7 +26,7 @@ function excerpt(bio: string, max = 190): string {
   return `${flat.slice(0, max).replace(/\s+\S*$/, '')}…`;
 }
 
-export default async function AuthorsPage() {
+async function AuthorsPage() {
   const [authors, posts] = await Promise.all([listAuthors(), publishedPosts()]);
 
   // One query for every count instead of one per author; ids with no profile
@@ -118,3 +120,5 @@ export default async function AuthorsPage() {
     </div>
   );
 }
+
+export default withPageGate('/authors', AuthorsPage);

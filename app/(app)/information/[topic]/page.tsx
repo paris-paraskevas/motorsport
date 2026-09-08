@@ -12,6 +12,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 3600;
 // Topics are a fixed set — anything else 404s.
@@ -21,7 +22,7 @@ export function generateStaticParams() {
   return INFO_TOPICS.map((t) => ({ topic: t.id }));
 }
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ topic: string }>;
@@ -43,6 +44,7 @@ export async function generateMetadata({
     ...withSocialMeta({ title, description, path: `/information/${topic}` }),
   };
 }
+export const generateMetadata = pageMetadata('/information/[topic]', baseMetadata);
 
 // A callout shown above any list of still-unreviewed draft entries.
 function DraftNotice({ label }: { label: string }) {
@@ -56,7 +58,7 @@ function DraftNotice({ label }: { label: string }) {
   );
 }
 
-export default async function TopicPage({
+async function TopicPage({
   params,
 }: {
   params: Promise<{ topic: string }>;
@@ -236,3 +238,5 @@ function TrackDirectory({
     </>
   );
 }
+
+export default withPageGate('/information/[topic]', TopicPage);

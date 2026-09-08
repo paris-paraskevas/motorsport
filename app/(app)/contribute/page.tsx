@@ -3,19 +3,21 @@ import { Suspense } from 'react';
 import { Database } from 'lucide-react';
 import { PAGE_READ } from '@/lib/site';
 import { ContributeForm } from './ContributeForm';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Add your series',
   description:
     'Run a karting, junior open-wheel or regional championship? Send us your schedule and results and we’ll add your series to Paddock.',
   // A public outreach page, but not a page we want ranking/competing in search.
   robots: { index: false, follow: true },
 };
+export const generateMetadata = pageMetadata('/contribute', BASE_METADATA);
 
 // Public feeder-series intake page (design: docs/research/2026-07-06-feeder-series-intake.md).
 // Linked from an outreach email (optionally with a ?ref= attribution token). No
 // account required. The form posts to /api/contribute → staging for operator review.
-export default function ContributePage() {
+function ContributePage() {
   return (
     <div className={PAGE_READ}>
       <header className="mb-6 flex items-stretch gap-3">
@@ -46,3 +48,5 @@ export default function ContributePage() {
     </div>
   );
 }
+
+export default withPageGate('/contribute', ContributePage);

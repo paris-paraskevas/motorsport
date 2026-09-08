@@ -2,16 +2,18 @@ import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Accessibility',
   description:
     "Paddock Tracker's accessibility commitment — the standards we target (WCAG 2.2), known gaps, and how to report a barrier.",
 };
+export const generateMetadata = pageMetadata('/accessibility', BASE_METADATA);
 
-export default async function AccessibilityPage() {
+async function AccessibilityPage() {
   const html = await loadMarkdownAsHtml(
     path.join(process.cwd(), 'content', 'legal', 'accessibility.md'),
   );
@@ -39,3 +41,5 @@ export default async function AccessibilityPage() {
     </div>
   );
 }
+
+export default withPageGate('/accessibility', AccessibilityPage);

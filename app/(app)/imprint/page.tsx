@@ -2,16 +2,18 @@ import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Imprint',
   description:
     'Editorial responsibility and contact details for paddock-tracker.com under German § 18 Abs. 2 MStV and EU § 5 DDG.',
 };
+export const generateMetadata = pageMetadata('/imprint', BASE_METADATA);
 
-export default async function ImprintPage() {
+async function ImprintPage() {
   const html = await loadMarkdownAsHtml(
     path.join(process.cwd(), 'content', 'legal', 'imprint.md'),
   );
@@ -42,3 +44,5 @@ export default async function ImprintPage() {
     </div>
   );
 }
+
+export default withPageGate('/imprint', ImprintPage);

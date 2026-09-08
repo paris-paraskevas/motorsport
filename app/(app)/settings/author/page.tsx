@@ -10,19 +10,21 @@ import { authorPostVisibility } from '@/lib/blog';
 import { slugify } from '@/lib/slug';
 import { AuthorProfileForm } from '@/components/author/AuthorProfileForm';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Author profile',
   robots: { index: false, follow: false },
 };
+export const generateMetadata = pageMetadata('/settings/author', BASE_METADATA);
 
 // Where a writer creates and edits their own public /authors/<slug> page. Sits in
 // the /settings family (theme, notifications, series) because it is account
 // configuration, not an admin surface. 404 for non-writers rather than 403: this
 // URL should not confirm the existence of a writing role to a reader who guesses it.
-export default async function AuthorProfileSettingsPage() {
+async function AuthorProfileSettingsPage() {
   const { userId } = await auth();
   const user = await currentUser();
   if (!userId || !isBettingConfigured() || !canAuthor(user)) notFound();
@@ -81,3 +83,5 @@ export default async function AuthorProfileSettingsPage() {
     </div>
   );
 }
+
+export default withPageGate('/settings/author', AuthorProfileSettingsPage);

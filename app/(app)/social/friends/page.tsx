@@ -15,9 +15,11 @@ import {
 } from '@/lib/betting/friends';
 import { FriendsPanel } from '@/components/betting/FriendsPanel';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Friends', robots: { index: false, follow: false } };
+const BASE_METADATA: Metadata = { title: 'Friends', robots: { index: false, follow: false } };
+export const generateMetadata = pageMetadata('/social/friends', BASE_METADATA);
 
 // Dedicated friends page — reached from the Social hub's "Friends" card (operator
 // 2026-06-25). Was a redirect to /social; promoted to its own page so friends,
@@ -43,7 +45,7 @@ function frame(children: ReactNode) {
   );
 }
 
-export default async function FriendsPage() {
+async function FriendsPage() {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
   const { userId } = await auth();
   if (!userId) {
@@ -90,3 +92,5 @@ function PanelSkeleton() {
     </div>
   );
 }
+
+export default withPageGate('/social/friends', FriendsPage);

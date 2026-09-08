@@ -6,6 +6,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 300;
 
@@ -13,7 +14,7 @@ const CALENDAR_TITLE = 'Calendar';
 const CALENDAR_DESCRIPTION =
   'Upcoming F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA and more sessions in one timeline — month-by-month, in your local time.';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: CALENDAR_TITLE,
   description: CALENDAR_DESCRIPTION,
   ...withSocialMeta({
@@ -24,8 +25,9 @@ export const metadata: Metadata = {
     path: '/calendar',
   }),
 };
+export const generateMetadata = pageMetadata('/calendar', BASE_METADATA);
 
-export default async function CalendarPage() {
+async function CalendarPage() {
   const all = await loadAllSeries();
   const now = new Date();
 
@@ -78,3 +80,5 @@ export default async function CalendarPage() {
     </div>
   );
 }
+
+export default withPageGate('/calendar', CalendarPage);

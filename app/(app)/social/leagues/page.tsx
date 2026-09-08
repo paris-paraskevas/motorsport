@@ -8,9 +8,11 @@ import { ensureBettingUser } from '@/lib/betting/credits';
 import { getUserLeagues, getLeaderboardsForLeagues } from '@/lib/betting/leagues';
 import { LeaguesPanel } from '@/components/betting/LeaguesPanel';
 import { PAGE_WIDE, PLAY_MONEY_NOTE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Leagues', robots: { index: false, follow: false } };
+const BASE_METADATA: Metadata = { title: 'Leagues', robots: { index: false, follow: false } };
+export const generateMetadata = pageMetadata('/social/leagues', BASE_METADATA);
 
 // Dedicated leagues page — reached from the Social hub's "Play with friends" card.
 // (Was a redirect to /social; promoted to its own page on operator feedback so the
@@ -42,7 +44,7 @@ function frame(children: ReactNode) {
   );
 }
 
-export default async function LeaguesPage() {
+async function LeaguesPage() {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
   const { userId } = await auth();
   if (!userId) {
@@ -78,3 +80,5 @@ function LeaguesSkeleton() {
     </div>
   );
 }
+
+export default withPageGate('/social/leagues', LeaguesPage);

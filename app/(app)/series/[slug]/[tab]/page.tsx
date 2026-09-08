@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { listSeriesSlugs, loadSeriesMeta } from '@/lib/series';
 import { tabsFor, type TabKey } from '@/lib/tabs';
 import { SeriesPageView, seriesTabMetadata } from '@/components/SeriesPageView';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Path-based series tabs (B11): /series/[slug]/standings etc. The calendar tab
 // lives at the bare /series/[slug] (this route 301-redirects `calendar` there),
@@ -31,7 +32,7 @@ export async function generateStaticParams() {
   return params;
 }
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ slug: string; tab: string }>;
@@ -39,8 +40,9 @@ export async function generateMetadata({
   const { slug, tab } = await params;
   return seriesTabMetadata(slug, tab);
 }
+export const generateMetadata = pageMetadata('/series/[slug]/[tab]', baseMetadata);
 
-export default async function SeriesTabPage({
+async function SeriesTabPage({
   params,
 }: {
   params: Promise<{ slug: string; tab: string }>;
@@ -56,3 +58,5 @@ export default async function SeriesTabPage({
 
   return <SeriesPageView slug={slug} activeTab={tab as TabKey} />;
 }
+
+export default withPageGate('/series/[slug]/[tab]', SeriesTabPage);

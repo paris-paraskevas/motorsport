@@ -16,10 +16,11 @@ import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { topicForSeries, aboutGuideForSeries, pointsGuideForSeries } from '@/lib/information/topics';
 import { seriesHasTracksTab } from '@/lib/tabs';
 import type { Weekend } from '@/lib/types';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 300;
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -27,6 +28,7 @@ export async function generateMetadata({
   const { slug } = await params;
   return seriesTabMetadata(slug, undefined);
 }
+export const generateMetadata = pageMetadata('/series/[slug]', baseMetadata);
 
 export function generateStaticParams() {
   return [];
@@ -152,7 +154,7 @@ async function LastPodiumLine({ slug, round }: { slug: string; round: number }) 
   );
 }
 
-export default async function SeriesPage({
+async function SeriesPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -500,3 +502,5 @@ export default async function SeriesPage({
     </div>
   );
 }
+
+export default withPageGate('/series/[slug]', SeriesPage);

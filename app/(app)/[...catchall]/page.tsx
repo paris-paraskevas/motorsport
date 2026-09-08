@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { PAGE_READ, SITE_URL } from '@/lib/site';
+import { SITE_URL } from '@/lib/site';
 import { loadAssetsById, loadLivePage } from '@/lib/design/live-page';
 import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadNavLists } from '@/lib/design/lists';
@@ -9,6 +8,7 @@ import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
 import { documentRefs, schemesAsked, substituteShortcuts } from '@/lib/design/page-document';
 import { RowPageView } from '@/components/page/RowPageView';
+import { RefusedPage } from '@/components/page/RefusedPage';
 
 // With two root layouts there is no shared segment to own a global 404, and
 // Next 16's global-not-found.js is still experimental. Unmatched URLs fall
@@ -59,7 +59,6 @@ export default async function CatchAll({ params }: { params: Params }) {
   const asked = schemesAsked(live.page.authz, live.document);
   let allowed = new Set<string>();
   const messages: Record<string, string | null> = {};
-  let signInHelps = false;
   if (asked.length > 0) {
     const [visitor, schemes] = await Promise.all([currentVisitor(), loadAuthzSchemes()]);
     allowed = allowedKeys(asked, schemes, visitor);
@@ -68,25 +67,8 @@ export default async function CatchAll({ params }: { params: Params }) {
     if (pageScheme && !allowed.has(pageScheme)) {
       const message = messages[pageScheme];
       if (!message) notFound();
-      signInHelps = !visitor.signedIn && schemes.find(s => s.key === pageScheme)?.type !== 'public';
-      return (
-        <main className={PAGE_READ}>
-          <header className="mb-6 border-b border-border pb-5">
-            <h1 className="font-serif text-38 font-medium leading-none tracking-[-0.02em] text-text md:text-46">
-              {live.page.title ?? live.page.name}
-            </h1>
-          </header>
-          <p className="max-w-[52ch] font-serif text-17 leading-snug text-text-muted">{message}</p>
-          {signInHelps && (
-            <Link
-              href="/sign-in"
-              className="mt-6 inline-flex min-h-11 items-center bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
-            >
-              Sign in
-            </Link>
-          )}
-        </main>
-      );
+      const signInHelps = !visitor.signedIn && schemes.find(s => s.key === pageScheme)?.type !== 'public';
+      return <RefusedPage title={live.page.title ?? live.page.name} message={message} signInHelps={signInHelps} />;
     }
   }
 

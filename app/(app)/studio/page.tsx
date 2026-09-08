@@ -7,8 +7,10 @@ import { listPosts, publishedPosts, type BlogPost } from '@/lib/blog';
 import { getTopic } from '@/lib/information/topics';
 import { RowActions } from '@/components/studio/RowActions';
 import { STATUS_META, fmtWhen } from '@/components/studio/studio-shared';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-export const metadata: Metadata = { title: 'Studio' };
+const BASE_METADATA: Metadata = { title: 'Studio' };
+export const generateMetadata = pageMetadata('/studio', BASE_METADATA);
 
 // The studio dashboard: the whole pipeline on one page, newest first inside each
 // stage. Admins see every writer's posts; a writer sees only their own (the same
@@ -110,7 +112,7 @@ function Section({
   );
 }
 
-export default async function StudioPage() {
+async function StudioPage() {
   const user = await requireAuthor();
   const admin = isAdmin(user);
   const scope = admin ? undefined : user.id;
@@ -210,3 +212,5 @@ export default async function StudioPage() {
     </>
   );
 }
+
+export default withPageGate('/studio', StudioPage);

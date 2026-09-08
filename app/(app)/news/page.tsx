@@ -6,6 +6,7 @@ import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { NewsPageContent, type NewsPageItem } from './NewsPageContent';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Same 30-min ISR window as the home wire's fetchAggregatedNews / fetchNews
 // (next.revalidate: 1800) so this page reuses the SAME cached upstream RSS
@@ -21,7 +22,7 @@ const NEWS_DESCRIPTION =
 // deduped by article slug across cross-posts, sorted newest-first upstream.
 const PER_SERIES = 10;
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: NEWS_TITLE,
   description: NEWS_DESCRIPTION,
   alternates: { canonical: '/news' },
@@ -33,8 +34,9 @@ export const metadata: Metadata = {
     path: '/news',
   }),
 };
+export const generateMetadata = pageMetadata('/news', BASE_METADATA);
 
-export default async function NewsPage() {
+async function NewsPage() {
   const [allMeta, rawNews] = await Promise.all([
     loadAllSeriesMeta(),
     fetchAggregatedNews(PER_SERIES),
@@ -84,3 +86,5 @@ export default async function NewsPage() {
     </div>
   );
 }
+
+export default withPageGate('/news', NewsPage);

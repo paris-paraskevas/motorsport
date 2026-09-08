@@ -5,6 +5,7 @@ import { loadSeasonArchive, listArchivePairs, isArchiveLiveSeason } from '@/lib/
 import { ArchiveStandings } from '@/components/ArchiveStandings';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // A finished season never changes, and the archive it reads lives in `data/`,
 // outside the Worker's content bundle — so this MUST be build-time only. Give
@@ -16,7 +17,7 @@ export async function generateStaticParams() {
   return (await listArchivePairs()).map(p => ({ season: String(p.season), slug: p.slug }));
 }
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ season: string; slug: string }>;
@@ -35,8 +36,9 @@ export async function generateMetadata({
     ...withSocialMeta({ title, description, path: `/archive/${season}/${slug}` }),
   };
 }
+export const generateMetadata = pageMetadata('/archive/[season]/[slug]', baseMetadata);
 
-export default async function ArchiveSeasonPage({
+async function ArchiveSeasonPage({
   params,
 }: {
   params: Promise<{ season: string; slug: string }>;
@@ -109,3 +111,5 @@ export default async function ArchiveSeasonPage({
     </div>
   );
 }
+
+export default withPageGate('/archive/[season]/[slug]', ArchiveSeasonPage);

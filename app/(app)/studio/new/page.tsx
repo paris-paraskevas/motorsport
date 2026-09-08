@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { StudioComposer } from '@/components/studio/StudioComposer';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-export const metadata: Metadata = { title: 'New post' };
+const BASE_METADATA: Metadata = { title: 'New post' };
+export const generateMetadata = pageMetadata('/studio/new', BASE_METADATA);
 
-export default async function NewPostPage() {
+async function NewPostPage() {
   const metas = await loadAllSeriesMeta();
   return (
     <>
@@ -21,3 +23,5 @@ export default async function NewPostPage() {
     </>
   );
 }
+
+export default withPageGate('/studio/new', NewPostPage);
