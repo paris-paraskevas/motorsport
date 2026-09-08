@@ -6,6 +6,8 @@ import {
   patternMatches,
   rowPagePathProblem,
   rowsAt,
+  schemesAsked,
+  substituteShortcuts,
   type PageDocument,
 } from './page-document';
 
@@ -67,6 +69,14 @@ describe('parsePageDocument', () => {
       shortcuts: ['data.sources', 'times.local'],
     });
     expect(documentRefs(EMPTY_DOCUMENT)).toEqual({ lists: [], assets: [], authz: [], shortcuts: [] });
+  });
+
+  it('substitutes shortcuts by key and drops an unknown one, and lists the schemes a page asks for beyond public', () => {
+    expect(substituteShortcuts('A {shortcut:times.local} B {shortcut:nope} C', { 'times.local': 'local' })).toBe('A local B  C');
+    expect(substituteShortcuts('no tokens', {})).toBe('no tokens');
+    expect(schemesAsked('public', DOC)).toEqual(['signed_in']);
+    expect(schemesAsked('administrator', DOC)).toEqual(['administrator', 'signed_in']);
+    expect(schemesAsked(null, EMPTY_DOCUMENT)).toEqual([]);
   });
 
   it('splits a position into rows where a region starts a new row', () => {

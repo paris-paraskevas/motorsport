@@ -1,0 +1,105 @@
+import { describe, expect, it, vi } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
+import React from 'react';
+
+vi.mock('next/link', () => ({
+  default: ({ href, children, className }: { href: unknown; children: React.ReactNode; className?: string }) => (
+    <a href={String(href)} className={className}>
+      {children}
+    </a>
+  ),
+}));
+// The stand-in for next/image renders a plain image element.
+vi.mock('next/image', () => ({
+  default: ({ src, alt, width, height, className }: { src: string; alt: string; width: number; height: number; className?: string }) =>
+    React.createElement('img', { src, alt, width, height, className }),
+}));
+
+import { RowPageView, type RowPageData } from './RowPageView';
+import { DEFAULT_NAV } from '@/lib/design/lists';
+import type { PageDocument } from '@/lib/design/page-document';
+
+const ASSET = 'c1b2c3d4-0000-4000-8000-000000000031';
+const document: PageDocument = {
+  version: 1,
+  regions: [
+    { id: 'kicker', kind: 'static', title: '', position: 'header', seq: 10, column: 1, span: 12, newRow: false, authz: null, text: 'A circuit history' },
+    { id: 'crumbs', kind: 'list', title: '', position: 'breadcrumb', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'doors', style: 'links' },
+    { id: 'intro', kind: 'static', title: 'A century of speed', position: 'body', seq: 10, column: 1, span: 8, newRow: false, authz: null, text: 'Opened in 1922.\nStill racing.\n\n{shortcut:times.local} {shortcut:missing}' },
+    { id: 'grid', kind: 'image', title: '', position: 'body', seq: 20, column: 9, span: 4, newRow: false, authz: null, assetId: ASSET, alt: 'The banking', showCaption: true },
+    { id: 'members', kind: 'static', title: 'Members', position: 'body', seq: 30, column: 1, span: 12, newRow: true, authz: 'signed_in', text: 'Secret' },
+    { id: 'staff', kind: 'static', title: 'Staff', position: 'body', seq: 40, column: 1, span: 12, newRow: true, authz: 'administrator', text: 'Very secret' },
+    { id: 'more', kind: 'list', title: 'Elsewhere', position: 'right', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'footer-site', style: 'cards' },
+    { id: 'legal', kind: 'list', title: '', position: 'footer', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'footer-legal', style: 'links' },
+    { id: 'bar', kind: 'list', title: '', position: 'phonebar', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'bar', style: 'links' },
+  ],
+};
+const data: RowPageData = {
+  page: { id: 'p', path: '/history/monza', name: 'Monza, a history', kind: 'row', group: 'editorial', template: 'paddock-standard', authz: 'public', title: 'Monza', rendering: 'cached', indexable: true, comments: null, updatedAt: 'x' },
+  document,
+  shortcuts: { 'times.local': 'All times are local.' },
+  assets: new Map([[ASSET, { id: ASSET, key: '2026/09/a.jpg', url: '/media/2026/09/a.jpg', caption: 'The banking', credit: 'P.P.', licence: 'CC BY 4.0', width: 600, height: 400, bytes: 1, contentType: 'image/jpeg', createdAt: 'x', updatedAt: 'x' }]]),
+  nav: DEFAULT_NAV,
+  allowed: new Set(),
+  messages: { signed_in: 'Sign in to see this.', administrator: null },
+};
+
+describe('RowPageView', () => {
+  const html = renderToStaticMarkup(<RowPageView {...data} />);
+
+  it('places the positions in the template order with the title between header and breadcrumb', () => {
+    const at = (s: string) => html.indexOf(s);
+    expect(at('A circuit history')).toBeGreaterThan(-1);
+    expect(at('A circuit history')).toBeLessThan(at('<h1'));
+    expect(html).toContain('>Monza</h1>');
+    expect(at('<h1')).toBeLessThan(at('aria-label="crumbs"'));
+    expect(at('aria-label="crumbs"')).toBeLessThan(at('A century of speed'));
+    expect(at('A century of speed')).toBeLessThan(at('aria-label="Elsewhere"'));
+    expect(at('aria-label="Elsewhere"')).toBeLessThan(at('aria-label="legal"'));
+    expect(at('aria-label="legal"')).toBeLessThan(at('aria-label="bar"'));
+    expect(html).toContain('lg:col-span-8');
+    expect(html).toContain('lg:col-span-4');
+  });
+
+  it('keeps a region’s column and span for wide screens as a custom property and the full width on phones', () => {
+    expect(html).toContain('--gc:1 / span 8');
+    expect(html).toContain('--gc:9 / span 4');
+    expect(html).toContain('col-span-12 min-w-0 lg:[grid-column:var(--gc)]');
+  });
+
+  it('renders Static Content as paragraphs with line breaks and shortcuts substituted, an unknown one dropped', () => {
+    expect(html).toContain('<span>Opened in 1922.<br/></span><span>Still racing.</span></p>');
+    expect(html).toContain('<span>All times are local.</span></p>');
+    expect(html).not.toContain('{shortcut:');
+  });
+
+  it('renders the photo with its alternative text, caption, credit and licence', () => {
+    expect(html).toContain('src="/media/2026/09/a.jpg"');
+    expect(html).toContain('alt="The banking"');
+    expect(html).toContain('The banking</span><span> · </span>P.P. · CC BY 4.0');
+  });
+
+  it('shows a refused region’s message in its place when it has one and nothing when it does not, and the region itself to a visitor who passes', () => {
+    expect(html).not.toContain('Secret');
+    expect(html).not.toContain('>Members<');
+    expect(html).toContain('Sign in to see this.');
+    expect(html).not.toContain('Very secret');
+    expect(html).not.toContain('>Staff<');
+    const member = renderToStaticMarkup(<RowPageView {...data} allowed={new Set(['signed_in'])} />);
+    expect(member).toContain('>Members<');
+    expect(member).toContain('Secret');
+    expect(member).not.toContain('Sign in to see this.');
+  });
+
+  it('renders lists as links or cards from the navigation lists, skipping actions', () => {
+    expect(html).toContain('href="/calendar"');
+    expect(html).toContain('sm:grid-cols-2');
+    expect(html).not.toContain('Contact');
+  });
+
+  it('spans the body over twelve columns when nothing sits in the right column', () => {
+    const noRight = renderToStaticMarkup(<RowPageView {...data} document={{ ...document, regions: document.regions.filter(r => r.position !== 'right') }} />);
+    expect(noRight).toContain('lg:col-span-12');
+    expect(noRight).not.toContain('lg:col-span-4');
+  });
+});

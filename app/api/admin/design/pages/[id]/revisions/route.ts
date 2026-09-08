@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -20,8 +21,8 @@ export const dynamic = 'force-dynamic';
 // designer loaded (or null when nothing was live); the function refuses a
 // publish whose base is no longer live (409 with what is stored now). A row the
 // document names that does not exist is a foreign-key refusal, answered 400.
-// Admin-only (404), production-only (403). Nothing serves a row page until step
-// 3, so no page is revalidated yet.
+// Admin-only (404), production-only (403). A publish revalidates the page's
+// path, so the catch-all serves the new revision on the next visit.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await currentUser();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
@@ -83,6 +84,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     }
     const row = (Array.isArray(data) ? data[0] : data) as { id: string; created_at: string; published_at: string | null } | undefined;
     if (!row) return NextResponse.json({ error: 'the revision was not returned' }, { status: 500 });
+    if (action === 'publish') {
+      // The served page follows at once; a draft changes nothing visitors see.
+      const detail = await loadPageDetail(id);
+      if (detail) revalidatePath(detail.page.path);
+    }
     return NextResponse.json({
       ok: true,
       action,
