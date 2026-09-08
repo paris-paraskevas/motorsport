@@ -21,6 +21,8 @@ import { default as handler } from './.open-next/worker.js';
 export { DOQueueHandler, DOShardedTagCache, BucketCachePurge } from './.open-next/worker.js';
 /* eslint-enable @typescript-eslint/ban-ts-comment */
 
+import { withBrowserSafeCache } from './lib/cache-headers';
+
 // Cron string (must match wrangler `triggers.crons`) -> /api/cron/<name> route(s).
 // notify runs every minute for tight session-relative reminders; the rest keep
 // the cadence they had as GitHub Actions workflows.
@@ -43,7 +45,12 @@ const CRON_JOBS: Record<string, string[]> = {
 type Ctx = { waitUntil(p: Promise<unknown>): void };
 
 const workerHandler = {
-  fetch: handler.fetch,
+  // Every page and RSC payload passes through one header correction on the way
+  // out: OpenNext's month-long stale-while-revalidate let browsers reuse the
+  // previous build's payloads after a deploy. See lib/cache-headers.ts.
+  async fetch(request: Request, env: unknown, ctx: Ctx): Promise<Response> {
+    return withBrowserSafeCache(await handler.fetch(request, env, ctx));
+  },
   async scheduled(event: { cron: string }, env: { CRON_SECRET?: string }, ctx: Ctx): Promise<void> {
     const jobs = CRON_JOBS[event.cron] ?? [];
     for (const job of jobs) {
