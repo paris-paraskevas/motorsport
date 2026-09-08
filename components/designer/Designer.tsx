@@ -15,8 +15,10 @@ import type { EditableAppearance } from '@/lib/design/appearance';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
+import type { PageDetail } from '@/lib/design/page-revisions';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { PagesList } from './PagesList';
+import { PageDetailPanel } from './PageDetailPanel';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
 import { BuildOptionsEditor } from './BuildOptionsEditor';
@@ -208,8 +210,24 @@ async function fetchPages(): Promise<LoadedPages> {
   }
 }
 
+type LoadedDetail =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; detail: PageDetail };
+
+async function fetchDetail(id: string): Promise<LoadedDetail> {
+  try {
+    const res = await fetch(`/api/admin/design/pages/${id}`, { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The page could not be loaded (HTTP ${res.status}).` };
+    return { state: 'ready', detail: (await res.json()) as PageDetail };
+  } catch {
+    return { state: 'error', message: 'The page could not be loaded: network error.' };
+  }
+}
+
 /** The two workspaces that exist; Data is later. The App Builder lists the
- *  pages (Phase 3 step 1); Shared Components holds the catalogue and its editors. */
+ *  pages (Phase 3 step 1) and opens one (step 2); Shared Components holds the
+ *  catalogue and its editors. */
 export type Workspace = 'builder' | 'shared';
 
 export function Designer({
@@ -228,6 +246,8 @@ export function Designer({
   mediaConfigured = false,
   initialPages,
   initialWorkspace = 'shared',
+  initialPageId = null,
+  initialDetail = null,
   series = [],
 }: {
   readOnly: boolean;
@@ -238,6 +258,10 @@ export function Designer({
   initialPages?: PageRow[] | null;
   /** The workspace to open on, from `?ws=` on the page. */
   initialWorkspace?: Workspace;
+  /** A page to open in the App Builder, from `?page=` on the page. */
+  initialPageId?: string | null;
+  /** That page's detail when the server already loaded it; fetched when absent. */
+  initialDetail?: PageDetail | null;
   /** Lists the server already loaded, so opening needs no round trip; any list
    *  missing here is fetched. */
   initialLists?: Partial<Record<NavListKey, EditableList>>;
@@ -290,6 +314,10 @@ export function Designer({
     initialPages ? { state: 'ready', pages: initialPages } : { state: 'loading' },
   );
   const [workspace, setWorkspace] = useState<Workspace>(initialWorkspace);
+  const [openPage, setOpenPage] = useState<string | null>(initialPageId);
+  const [detail, setDetail] = useState<LoadedDetail>(() =>
+    initialDetail ? { state: 'ready', detail: initialDetail } : { state: 'loading' },
+  );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
   );
@@ -358,10 +386,15 @@ export function Designer({
         if (!cancelled) setPages(loaded);
       });
     }
+    if (initialPageId && !initialDetail) {
+      void fetchDetail(initialPageId).then(loaded => {
+        if (!cancelled) setDetail(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages, initialPageId, initialDetail]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -382,7 +415,23 @@ export function Designer({
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
     if (ws === 'builder') url.searchParams.set('ws', 'builder');
-    else url.searchParams.delete('ws');
+    else {
+      url.searchParams.delete('ws');
+      url.searchParams.delete('page');
+    }
+    window.history.replaceState(null, '', url);
+  };
+  // An open page lives in the URL too (`?page=<id>`), fetched when opened.
+  const openPageDetail = (id: string | null) => {
+    setOpenPage(id);
+    if (id) {
+      setDetail({ state: 'loading' });
+      void fetchDetail(id).then(loaded => setDetail(loaded));
+    }
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (id) url.searchParams.set('page', id);
+    else url.searchParams.delete('page');
     window.history.replaceState(null, '', url);
   };
 
@@ -464,7 +513,17 @@ export function Designer({
             <span>›</span>
             <span>Application 100 · Paddock</span>
             <span>›</span>
-            <span>Pages</span>
+            {openPage ? (
+              <>
+                <button type="button" onClick={() => openPageDetail(null)} title="Back to all pages" className="font-medium text-text-muted hover:text-text">
+                  Pages
+                </button>
+                <span>›</span>
+                <span>{detail.state === 'ready' ? detail.detail.page.name : '…'}</span>
+              </>
+            ) : (
+              <span>Pages</span>
+            )}
           </>
         ) : (
           <>
@@ -496,11 +555,33 @@ export function Designer({
               paddock-tracker.com.
             </p>
           )}
-          {pages.state === 'loading' && (
-            <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Pages…</p>
+          {openPage ? (
+            <>
+              {detail.state === 'loading' && (
+                <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading the page…</p>
+              )}
+              {detail.state === 'error' && <p className="text-12 text-negative">{detail.message}</p>}
+              {detail.state === 'ready' && <PageDetailPanel detail={detail.detail} onBack={() => openPageDetail(null)} />}
+            </>
+          ) : (
+            <>
+              {pages.state === 'loading' && (
+                <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Pages…</p>
+              )}
+              {pages.state === 'error' && <p className="text-12 text-negative">{pages.message}</p>}
+              {pages.state === 'ready' && (
+                <PagesList
+                  pages={pages.pages}
+                  readOnly={readOnly}
+                  onOpen={id => openPageDetail(id)}
+                  onCreated={page => {
+                    setPages(s => (s.state === 'ready' ? { state: 'ready', pages: [...s.pages, page] } : s));
+                    if (page.id) openPageDetail(page.id);
+                  }}
+                />
+              )}
+            </>
           )}
-          {pages.state === 'error' && <p className="text-12 text-negative">{pages.message}</p>}
-          {pages.state === 'ready' && <PagesList pages={pages.pages} />}
         </main>
       ) : (
       <div className="grid min-h-0 grid-cols-[300px_minmax(0,1fr)]">

@@ -12,6 +12,7 @@ import { loadAppearanceForEditing } from '@/lib/design/appearance';
 import { loadShortcutsForEditing } from '@/lib/design/shortcuts';
 import { getMediaBucket, loadAssetsForEditing } from '@/lib/design/assets';
 import { loadPagesForEditing } from '@/lib/design/pages';
+import { loadPageDetail } from '@/lib/design/page-revisions';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { DesignerLoader } from '@/components/designer/DesignerLoader';
 
@@ -25,8 +26,10 @@ export const metadata: Metadata = { title: 'Designer · Admin' };
 // the build options and the settings loaded once so the designer opens with
 // them. The editor itself is a browser-only chunk (DesignerLoader). `?sc=<key>`
 // opens a catalogue entry directly.
-export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string; ws?: string }> }) {
+export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string; ws?: string; page?: string }> }) {
   await requireAdmin();
+  const { page: pageId } = await searchParams;
+  const initialDetail = typeof pageId === 'string' && pageId ? await loadPageDetail(pageId) : null;
   const [
     user,
     params,
@@ -79,7 +82,9 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialAssets={initialAssets}
       mediaConfigured={getMediaBucket() !== null}
       initialPages={initialPages}
-      initialWorkspace={params.ws === 'builder' ? 'builder' : 'shared'}
+      initialWorkspace={params.ws === 'builder' || initialDetail ? 'builder' : 'shared'}
+      initialPageId={initialDetail ? initialDetail.page.id : null}
+      initialDetail={initialDetail}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
     />
   );
