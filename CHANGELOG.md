@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.68 — 2026-09-08
+
+### Docs — the operator's standing rule for every designer screen
+
+Added to the top of `docs/HANDOFF.md` as item 0a, verbatim: *"i need you to stick as close to the verified designer as possible. if any changes need to be made ask me."* The verified designer is the v2.4 prototype; every designer screen reproduces its structure, labels, groups, tabs, toolbar order, keyboard set and skin, and any difference forced by the data, the rails or a technical limit is asked about first with the two screens side by side. Recorded in memory as `feedback-paddock-verified-designer`. No code.
+
 ## 1.0.67 — 2026-09-08
 
 ### Docs — the handoff for the next session: execute the Page Designer plan
