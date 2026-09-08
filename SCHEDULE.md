@@ -1760,6 +1760,13 @@ Active: (no [+Nm] prefixes given this session)
 - Findings: a `! grep | head` guard inside an `&&` chain took head's exit status and skipped the commit once (caught before the PR); a rehearsal's counts must sit in a separate statement from the functions they count; `/changelog` reads "Currently running v 1.0.NN"; the search matcher AND-matches every term, so natural questions needed stop-word stripping; full-page screenshots of the console need its fixed root released.
 - Won't-touch honoured: pushes only for PR branches, merges by squash on the operator's standing word; prod writes only the three rehearsed migrations and the functions the routes call; no post published; no branch or file deleted; the release header and the branch deletions untouched.
 
+**Session 45 close (~19:40Z → 20:00Z, operator awake):**
+- → found by the operator: existing (code) pages cannot be edited; the editor built overnight looks nothing like the approved design. Both true, both acknowledged as Claude's. Decisions: rebuild the editor to the approved design now, before Phase 4; for code pages, attributes first, then regions around the code's body.
+- → done: the plan page with the approved prototype beside today's editor (artifact `05b2cea5-…`); the handoff rewritten so the next session's job is executing it (PR 1 attributes, PR 2 the Page Designer rebuild, PR 3+ regions), a mock before each; the prototype's temp location recorded with the ask to commit it.
+- → not started: PR 1 (the operator asked for the handoff rather than a go-ahead).
+
+**Next session — 2026-09-09 (stub):** first ask permission to commit the prototype under `docs/prototypes/`; then PR 1 (attributes on code pages) on "go ahead", mock first; then PR 2; then PR 3. Phase 4 waits.
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

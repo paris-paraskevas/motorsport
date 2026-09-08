@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.67 — 2026-09-08
+
+### Docs — the handoff for the next session: execute the Page Designer plan
+
+On waking, the operator found two things: existing (code) pages cannot be edited in the App Builder, and the editor built overnight looks nothing like the approved design of 2026-09-07. Both are true; both are recorded as Claude's. The operator decided (two AskUserQuestion previews) to rebuild the editor to the approved design now, before Phase 4, and, for code pages, attributes first and then regions around the code's body; then asked for a handoff with the next session's job being that plan. `docs/HANDOFF.md`'s new top section carries the findings verbatim, the plan page (artifact `05b2cea5-9541-475d-8950-2a4c96bd7c55`, the approved prototype beside today's editor), the three PRs in order with their design in enough detail to start (PR 1 the wrapper `pageMetadata` + `withPageGate` on all 59 code routes with a coverage test; PR 2 the prototype's screen ported over the real document, pane by pane, with the approved keyboard set; PR 3+ regions around the code's body), the gates (a mock before each, merge on the operator's word), the prototype's temp location with the ask to commit it under `docs/prototypes/`, and what is not to be touched. `SCHEDULE.md` carries the close and a stub for tomorrow. No code.
+
 ## 1.0.66 — 2026-09-08
 
 ### Docs — the records at the close of the night shift, Phase 3 complete
