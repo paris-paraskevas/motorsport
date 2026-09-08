@@ -6,7 +6,69 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-09-07 (LATEST, session 42 — the designer programme, Phase 0 shipped, the loader outage fixed) — `main` = **1.0.29**, prod verified at 1.0.25+, zero open PRs, suite **1548**
+## ⚡ Next session pickup — 2026-09-08 (LATEST, session 43 — the night shift: Phase 0 live, Phase 1 shipped, the stale-payload bug found and fixed) — `main` = **1.0.35**, prod verified through 1.0.34, zero open PRs, suite **1572**
+
+### 🔴 Morning actions, in order
+
+1. **Say "apply 20260908090000".** The design-tables migration (#910, 1.0.31) is merged but **NOT applied**: after you delegated the night and left, the harness's permission rail refused an unattended prod database write, and that refusal was respected rather than routed around. Nothing reads the fifteen tables yet, so nothing is wrong meanwhile. Once applied I paste the `information_schema` proof into the changelog and dispatch `export-design` for its first run, which creates branch `export/design`. Until then that workflow must not be dispatched: it exits 1 on the missing tables and writes nothing.
+2. **Three checks behind your sign-in**, the only things this session could not reach. `/admin/site` on prod shows no banner; move a band → Save draft → reload: the composer reopens on the draft ("Editing the draft saved …") → Publish → live within a minute. `/admin/system`: the Loads panel lists ten series from run 34171116946 or later, and the Cloudflare requests figure should have dropped by the previews' share (1.0.33).
+3. **Hard-reload any tab you had open on the site.** 1.0.34 stops browsers reusing month-old payloads after a deploy, but the copies your browser already holds clear only on their next revalidation. The `0ej-ohiw8omjz.css` console error should not return.
+4. **Decide the release header.** Six pushes now sit under `# 1.0 · Lights out`; the designer programme could open its own named release. Your call, per the version scheme.
+5. **Confirm the six branch deletions** whenever convenient: chore/ci-actions-v7, chore/handoff-2026-09-07, feat/whats-new-hd, fix/lockfile-swc-helpers, fix/standings-banner, fix/studio-lost-update. Tonight's PR branches were deleted by their merges.
+
+### ✅ Shipped — 6 merges, 1.0.30 → 1.0.35, each built green on Workers Builds and checked on prod
+
+| Version | PR | What |
+|---|---|---|
+| **1.0.30** | #909 | `PADDOCK_ENV` + `isProductionWorker()`; the layout route answers 403 off production; the composer opens read-only on a preview; `DATA_TABLES` moved into `wrangler.jsonc`; CLAUDE.md's Worker-size law rewritten for the 64 MiB uncompressed limit |
+| **1.0.31** | #910 | Fifteen design tables in one idempotent, transaction-wrapped migration (**not applied**, see above); the weekly export job to branch `export/design` |
+| **1.0.32** | #911 | Home-layout drafts; a publish refuses a stale base with 409; Reload or Publish anyway |
+| **1.0.33** | #912 | The console's Cloudflare usage counts the production Worker alone (`scriptName`) |
+| **1.0.34** | #913 | Browsers must revalidate pages and payloads: the root cause of the stylesheet-served-as-HTML error |
+| **1.0.35** | this | Records |
+
+### Prod state changed this session (not code, so recorded here)
+
+- Migration `20260907190000` applied ~20:30Z through the Management API. Proof: `source`, `source_run`, `standing` as base tables with RLS on and no policies, view `standing_current`, five indexes, service_role with full grants.
+- Loader run 34160583323 wrote rows for ten series; GT World, IMSA and WEC log `SKIP payload shape not mapped yet` (a Phase 0 follow-up).
+- `DATA_TABLES=on`: the operator saved a dashboard version at 20:53Z, which does not deploy until Deploy is clicked (seven minutes went to finding that out); deployed 21:01Z as 9bf36e7f; the first fresh render at 21:15:30Z read `standing_current` (Supabase `edge_logs`). 1.0.30 then moved the flag into `wrangler.jsonc`, because a deploy replaces dashboard vars.
+- `CRON_SECRET` rotated on the Worker and in GitHub with one generated value at 23:44Z, never displayed; run 34171116946 logged `revalidate: HTTP 200 for 27 paths`, where every run since #907 had logged 401.
+- The Supabase organisation "Paris Dev Motorsport" is on the **Free plan**: `backups=[]`, PITR off (Management API, 21:11Z). That is why the audit-trail answer became "revisions plus a weekly export branch".
+- 1.0.34's header fix on prod: HTML and RSC responses now carry `s-maxage=N, max-age=0, must-revalidate` (checked after the deploy; the CSS chunks keep `public, max-age=0, must-revalidate`).
+
+### Decisions the operator took this session
+
+- Nav-composer code: **keep**, parked as a local commit on `feat/nav-composer` (0d245b0). The six Monza drafts are committed on `content/monza-drafts-final` (6f1abdd), local only, no PR yet.
+- Designer writes: **production only**, behind `PADDOCK_ENV`; previews open the designer read-only.
+- Audit trail: **the database** (append-only revisions) **plus a weekly JSON export** to branch `export/design`, never main, never under `content/`.
+- `CRON_SECRET`: **rotate both**.
+- For the night: "create and merge PRs and keep doing the next tasks ensuring it has deployed."
+
+### Findings worth carrying
+
+1. **Cloudflare removed the compressed Worker-size limit on 2026-09-04**; 64 MiB uncompressed on every plan; the bundle is 41.8 MiB (`Total Upload`). The "at the ceiling" law is gone from CLAUDE.md.
+2. **Dashboard variables are wiped by every deploy** (no `keep_vars`), and a saved dashboard version is not a deployed one. Every flag lives in `wrangler.jsonc` now (landmine 10).
+3. **OpenNext hard-codes `stale-while-revalidate=2592000`** on ISR pages and RSC payloads (a first render carries Next's year); with no `max-age`, browsers reuse previous-build payloads after deploys, chunk names and content included. `worker.ts` rewrites HTML and RSC to `s-maxage=N, max-age=0, must-revalidate` (`lib/cache-headers.ts`). `expireTime` in `next.config.ts` would not have helped; OpenNext overrides it.
+4. **The Management API logs endpoint** (`/analytics/endpoints/logs.all`) needs both `iso_timestamp_start` and `iso_timestamp_end`; start alone returns odd slices; ingestion lags about a minute. Filtering `edge_logs` by `request.path` is how the rows-path proof and the stale-payload diagnosis were made.
+5. **The schema's default privileges** grant anon and authenticated everything on a new table, and views run as `postgres`, which bypasses RLS. Harmless today (the app never ships the anon key; standings are public) but Phase 1's migration revokes both roles explicitly; Phase 0's tables still carry the grants.
+6. **The permission rail blocks unattended prod database writes even under delegation.** Plan migrations for when the operator is present (memory `project-paddock-unattended-limits`).
+7. **A temporary render probe** (`renderToStaticMarkup` + `vi.mock('next/navigation')`, deleted before commit) checks a client component's states without Testing Library; it caught nothing wrong in the composer and found the year-long header case in the cache fix.
+
+### Next session, flat
+
+1. The morning actions above; then the `information_schema` proof into the changelog and the first export run.
+2. **Phase 2**: `/admin/designer` as client-only chunks on the real tables, lists and text messages first, with the runtime reading them; ESPA plan before code; budget the bundle with `Total Upload`.
+3. Phase 0 follow-up: map the multi-class standings payloads (GT World, IMSA, WEC; `class_name`) so the three SKIP lines close.
+4. Data: the Traffic tab's Cloudflare placeholder gets a fetcher; Upstash's developer API; the replacement for the deprecated `billable-usage` endpoint.
+5. Content: the F1 race-weekend answer is still a 404.
+
+### Worktrees and branches
+
+`../Motorsport-editor` (chore/handoff-2026-09-07, merged), `../Motorsport-shots`, `../Motorsport-lockfix`, `../Motorsport-testing` (Fotis's `testing`), `node_modules` junctioned into the first two. The main working copy ends on `main`.
+
+---
+
+## Next session pickup — 2026-09-07 (session 42 — the designer programme, Phase 0 shipped, the loader outage fixed) — `main` = **1.0.29**, prod verified at 1.0.25+, zero open PRs, suite **1548**
 
 ### 🔴 Read first — three operator actions gate the next step, in this order
 
