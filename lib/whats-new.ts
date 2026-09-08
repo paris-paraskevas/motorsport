@@ -10,6 +10,9 @@
  *  content ahead of a launch is a no-op for readers. Flip `active` in the SAME
  *  commit that bumps `package.json` to the matching version — `/changelog`
  *  reports the running version, and announcing 1.0 while running 0.334.x lies.
+ *  Since 1.0.44 the Application Setting `announcement.active_id` (the
+ *  designer's Application Settings) decides which entry is in force at render,
+ *  seeded with the active one; `active` stays the shipped fallback.
  *
  *  ⚠ COPY NEEDS THE OPERATOR'S SIGN-OFF BEFORE `active` GOES TRUE. `chips` and
  *  card bodies describe what EXISTS.
@@ -133,8 +136,12 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
 ];
 
-/** The newest entry that is live. Null when nothing is announced, which is the
- *  normal state between releases. */
-export function currentWhatsNew(): WhatsNewEntry | null {
-  return WHATS_NEW.find(e => e.active) ?? null;
+/** The entry in force. With no argument, the newest entry flagged `active` in
+ *  code, which is the shipped behaviour. Given the `announcement.active_id`
+ *  setting, that entry by id; null for '' (hidden) and for an id no entry
+ *  carries. Null is the normal state between releases. */
+export function currentWhatsNew(activeId?: string): WhatsNewEntry | null {
+  if (activeId === undefined) return WHATS_NEW.find(e => e.active) ?? null;
+  if (activeId === '') return null;
+  return WHATS_NEW.find(e => e.id === activeId) ?? null;
 }

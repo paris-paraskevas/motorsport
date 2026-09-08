@@ -3,8 +3,8 @@ import type { NavListKey } from '@/lib/design/lists';
 // The Shared Components catalogue, APEX's ten groups mapped to what Paddock has
 // (Paddock Designer Field Guide §02). Every entry is listed so the operator sees
 // the whole shape from day one; the four navigation lists (Phase 2 step 2), Text
-// Messages (step 3) and Build Options (step 4) are editable, and the rest say
-// when they arrive rather than pretend.
+// Messages (step 3), Build Options (step 4) and Application Settings (step 5)
+// are editable, and the rest say when they arrive rather than pretend.
 
 export interface CatalogueItem {
   key: string;
@@ -12,7 +12,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build';
+  editor?: 'text' | 'build' | 'settings';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -30,7 +30,7 @@ export const CATALOGUE: CatalogueGroup[] = [
       { key: 'appitems', label: 'Application Items', later: 'read-only, later' },
       { key: 'appprocs', label: 'Application Processes', later: 'read-only, later' },
       { key: 'appcomps', label: 'Application Computations', later: 'Phase 3' },
-      { key: 'settings', label: 'Application Settings', later: 'Phase 2, later' },
+      { key: 'settings', label: 'Application Settings', editor: 'settings' },
       { key: 'build', label: 'Build Options', editor: 'build' },
     ],
   },
