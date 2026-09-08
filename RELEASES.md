@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.50 — 2026-09-08
+
+**Behind the scenes.** The people who run the site can now choose its typefaces from a small list of open-licence faces, and set the type size, the line spacing, the space between things, the corner radius and how quickly things move, for the whole site and without a new version. Every value is checked for legibility before it can be saved, and the site shows exactly what it did until one is changed. Nothing changes for readers today.
+
 ## 1.0.49 — 2026-09-08
 
 **Behind the scenes.** The site's text sizes now sit on one ladder, groundwork for letting the people who run the site change type size and typefaces without a new version. Nothing changes for readers, with one exception: the dyslexia-friendly mode now applies its typeface to headlines and names as well as paragraphs, which it had missed.

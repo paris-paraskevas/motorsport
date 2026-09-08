@@ -8,6 +8,7 @@ import { loadBuildOptionsForEditing } from '@/lib/design/build-options';
 import { loadSettingsForEditing } from '@/lib/design/settings';
 import { loadAuthzForEditing } from '@/lib/design/authz';
 import { loadThemesForEditing } from '@/lib/design/themes';
+import { loadAppearanceForEditing } from '@/lib/design/appearance';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { DesignerLoader } from '@/components/designer/DesignerLoader';
 
@@ -23,18 +24,29 @@ export const metadata: Metadata = { title: 'Designer · Admin' };
 // opens a catalogue entry directly.
 export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string }> }) {
   await requireAdmin();
-  const [user, params, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, seriesMeta, ...loaded] =
-    await Promise.all([
-      currentUser(),
-      searchParams,
-      loadTextForEditing(),
-      loadBuildOptionsForEditing(),
-      loadSettingsForEditing(),
-      loadAuthzForEditing(),
-      loadThemesForEditing(),
-      loadAllSeriesMeta(),
-      ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
-    ]);
+  const [
+    user,
+    params,
+    initialText,
+    initialBuildOptions,
+    initialSettings,
+    initialAuthz,
+    initialThemes,
+    initialAppearance,
+    seriesMeta,
+    ...loaded
+  ] = await Promise.all([
+    currentUser(),
+    searchParams,
+    loadTextForEditing(),
+    loadBuildOptionsForEditing(),
+    loadSettingsForEditing(),
+    loadAuthzForEditing(),
+    loadThemesForEditing(),
+    loadAppearanceForEditing(),
+    loadAllSeriesMeta(),
+    ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
+  ]);
   const initialLists: Partial<Record<NavListKey, EditableList>> = {};
   NAV_LIST_KEYS.forEach((key, i) => {
     const list = loaded[i];
@@ -53,6 +65,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialSettings={initialSettings}
       initialAuthz={initialAuthz}
       initialThemes={initialThemes}
+      initialAppearance={initialAppearance}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
     />
   );
