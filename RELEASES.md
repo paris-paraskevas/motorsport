@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.51 — 2026-09-08
+
+**Internal notes.** The running handoff, the time plan and the ideas ledger record the afternoon's close; nothing changes for readers.
+
 ## 1.0.50 — 2026-09-08
 
 **Behind the scenes.** The people who run the site can now choose its typefaces from a small list of open-licence faces, and set the type size, the line spacing, the space between things, the corner radius and how quickly things move, for the whole site and without a new version. Every value is checked for legibility before it can be saved, and the site shows exactly what it did until one is changed. Nothing changes for readers today.
