@@ -10,12 +10,14 @@ import type { ChromeText } from '@/lib/design/text-defaults';
 import type { EditableBuildOption } from '@/lib/design/build-options';
 import type { EditableSetting } from '@/lib/design/settings';
 import type { EditableAuthzScheme } from '@/lib/design/authz';
+import type { EditableTheme } from '@/lib/design/themes';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
 import { BuildOptionsEditor } from './BuildOptionsEditor';
 import { SettingsEditor, type SeriesOption } from './SettingsEditor';
 import { AuthzEditor } from './AuthzEditor';
+import { ThemesEditor } from './ThemesEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -23,10 +25,11 @@ import { AuthzEditor } from './AuthzEditor';
 // rail never competes with the panes; the arrow at the top left goes back.
 //
 // Phase 2 opened the four navigation lists (step 2), Text Messages (step 3),
-// Build Options (step 4), Application Settings (step 5) and Authorization
-// Schemes (step 6). Everything else in the catalogue is listed with the phase
-// that brings it: the operator sees the whole shape, and nothing pretends to be
-// editable before it is. App Builder and Data are the next workspaces.
+// Build Options (step 4), Application Settings (step 5), Authorization Schemes
+// (step 6) and Themes (step 7). Everything else in the catalogue is listed with
+// the phase that brings it: the operator sees the whole shape, and nothing
+// pretends to be editable before it is. App Builder and Data are the next
+// workspaces.
 //
 // This file is loaded as a browser-only chunk (DesignerLoader.tsx), so the
 // editor never enters the Worker bundle.
@@ -118,6 +121,22 @@ async function fetchAuthz(): Promise<LoadedAuthz> {
   }
 }
 
+type LoadedThemes =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; themes: EditableTheme[] };
+
+async function fetchThemes(): Promise<LoadedThemes> {
+  try {
+    const res = await fetch('/api/admin/design/themes', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The themes could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { themes: EditableTheme[] };
+    return { state: 'ready', themes: d.themes };
+  } catch {
+    return { state: 'error', message: 'The themes could not be loaded: network error.' };
+  }
+}
+
 export function Designer({
   readOnly,
   who,
@@ -127,6 +146,7 @@ export function Designer({
   initialBuildOptions,
   initialSettings,
   initialAuthz,
+  initialThemes,
   series = [],
 }: {
   readOnly: boolean;
@@ -144,6 +164,8 @@ export function Designer({
   initialSettings?: EditableSetting[] | null;
   /** The authorization schemes the server already loaded; fetched when absent. */
   initialAuthz?: EditableAuthzScheme[] | null;
+  /** The themes the server already loaded; fetched when absent. */
+  initialThemes?: EditableTheme[] | null;
   /** The championships the settings editor offers in its series controls. */
   series?: SeriesOption[];
 }) {
@@ -158,6 +180,9 @@ export function Designer({
   );
   const [authz, setAuthz] = useState<LoadedAuthz>(() =>
     initialAuthz ? { state: 'ready', schemes: initialAuthz } : { state: 'loading' },
+  );
+  const [themes, setThemes] = useState<LoadedThemes>(() =>
+    initialThemes ? { state: 'ready', themes: initialThemes } : { state: 'loading' },
   );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
@@ -202,10 +227,15 @@ export function Designer({
         if (!cancelled) setAuthz(loaded);
       });
     }
+    if (!initialThemes) {
+      void fetchThemes().then(loaded => {
+        if (!cancelled) setThemes(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -233,6 +263,7 @@ export function Designer({
   const buildCount = build.state === 'ready' ? build.options.length : null;
   const settingsCount = settings.state === 'ready' ? settings.settings.length : null;
   const authzCount = authz.state === 'ready' ? authz.schemes.length : null;
+  const themesCount = themes.state === 'ready' ? themes.themes.length : null;
   // The footer preview shows the strings as they are stored right now, and the
   // lists' authorization select offers the schemes as they are stored right now.
   const chromeText: ChromeText | undefined =
@@ -251,7 +282,9 @@ export function Designer({
             ? settingsCount
             : it.editor === 'authz'
               ? authzCount
-              : null;
+              : it.editor === 'themes'
+                ? themesCount
+                : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -440,6 +473,20 @@ export function Designer({
                 schemes={authz.schemes}
                 readOnly={readOnly}
                 onSaved={next => setAuthz({ state: 'ready', schemes: next })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'themes' && (() => {
+            if (themes.state === 'loading') {
+              return <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Themes…</p>;
+            }
+            if (themes.state === 'error') return <p className="text-[12px] text-negative">{themes.message}</p>;
+            return (
+              <ThemesEditor
+                themes={themes.themes}
+                readOnly={readOnly}
+                onSaved={next => setThemes({ state: 'ready', themes: next })}
               />
             );
           })()}

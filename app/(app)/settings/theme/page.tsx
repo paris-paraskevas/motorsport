@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { ThemePicker } from '@/components/theme/ThemePicker';
 import { DyslexicToggle } from '@/components/theme/DyslexicToggle';
+import { loadThemeSet } from '@/lib/design/themes';
 import { PAGE_READ } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -10,9 +11,15 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// The themes on offer come from the design rows (the six shipped plus the
+// operator's own), read once per isolate per minute like the rest of the
+// chrome; the page itself is cached like the site.
+export const revalidate = 300;
+
 // Appearance is device-local (localStorage), so unlike the sibling settings
 // pages this one has no auth-dependent content — guests theme too.
-export default function ThemePage() {
+export default async function ThemePage() {
+  const set = await loadThemeSet();
   return (
     <div className={PAGE_READ}>
       <Link
@@ -27,7 +34,7 @@ export default function ThemePage() {
           Theme<span className="text-brand">.</span>
         </h1>
       </header>
-      <ThemePicker />
+      <ThemePicker set={set} />
       <DyslexicToggle />
     </div>
   );

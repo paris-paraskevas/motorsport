@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.47 — 2026-09-08
+
+**Themes, from the people who run the site.** The look a new visitor gets, and which of the six looks are offered on the theme page, can now be chosen without a new version, and new looks can be added with their own colours, each checked for readable contrast before it can appear. Your own choice of theme always wins, and nothing changes until one of those choices is made.
+
 ## 1.0.46 — 2026-09-08
 
 **Behind the scenes.** The names and messages of the site's access rules (who may see what) can now be edited by the people who run the site without a new version. The rules are not applied anywhere yet, so nothing changes for readers.

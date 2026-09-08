@@ -7,6 +7,7 @@ import { loadTextForEditing } from '@/lib/design/text';
 import { loadBuildOptionsForEditing } from '@/lib/design/build-options';
 import { loadSettingsForEditing } from '@/lib/design/settings';
 import { loadAuthzForEditing } from '@/lib/design/authz';
+import { loadThemesForEditing } from '@/lib/design/themes';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { DesignerLoader } from '@/components/designer/DesignerLoader';
 
@@ -22,7 +23,7 @@ export const metadata: Metadata = { title: 'Designer · Admin' };
 // opens a catalogue entry directly.
 export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string }> }) {
   await requireAdmin();
-  const [user, params, initialText, initialBuildOptions, initialSettings, initialAuthz, seriesMeta, ...loaded] =
+  const [user, params, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, seriesMeta, ...loaded] =
     await Promise.all([
       currentUser(),
       searchParams,
@@ -30,6 +31,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       loadBuildOptionsForEditing(),
       loadSettingsForEditing(),
       loadAuthzForEditing(),
+      loadThemesForEditing(),
       loadAllSeriesMeta(),
       ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
     ]);
@@ -50,6 +52,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialBuildOptions={initialBuildOptions}
       initialSettings={initialSettings}
       initialAuthz={initialAuthz}
+      initialThemes={initialThemes}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
     />
   );

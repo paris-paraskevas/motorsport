@@ -14,6 +14,7 @@ import { loadAllSeriesMeta } from '@/lib/series';
 import { loadNavLists } from '@/lib/design/lists';
 import { loadTextMessages } from '@/lib/design/text';
 import { loadSettings } from '@/lib/design/settings';
+import { loadThemeSet, resolveThemeAttributes, themeCss, themeOption } from '@/lib/design/themes';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import { SOCIAL_CARD } from '@/lib/seo';
@@ -62,11 +63,16 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = {
-  themeColor: '#f7f3e8',
-  width: 'device-width',
-  initialScale: 1,
-};
+// The address-bar colour follows the default theme's page colour (the designer's
+// Themes, 1.0.47); Paper's warm paper when the rows cannot be read.
+export async function generateViewport(): Promise<Viewport> {
+  const set = await loadThemeSet();
+  return {
+    themeColor: themeOption(set, set.defaultKey)?.tokens.bg ?? '#f7f3e8',
+    width: 'device-width',
+    initialScale: 1,
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -83,10 +89,21 @@ export default async function RootLayout({
     color,
     category,
   }));
-  // The doors, the phone bar, the footer columns, the chrome's fixed strings and
-  // the application settings from the design tables, with the code as the
-  // fallback (Phase 2). One read each per isolate per minute.
-  const [nav, text, settings] = await Promise.all([loadNavLists(), loadTextMessages(), loadSettings()]);
+  // The doors, the phone bar, the footer columns, the chrome's fixed strings,
+  // the application settings and the themes from the design tables, with the
+  // code as the fallback (Phase 2). One read each per isolate per minute.
+  const [nav, text, settings, themes] = await Promise.all([
+    loadNavLists(),
+    loadTextMessages(),
+    loadSettings(),
+    loadThemeSet(),
+  ]);
+  // What a visitor gets before choosing a theme: the set's default, carried by
+  // <html> exactly as the pre-paint script would set it, so the server and the
+  // first paint agree. A dark default needs the dark class too, or every dark:
+  // utility would render light for one paint.
+  const theme = resolveThemeAttributes(themes, themes.defaultKey);
+  const customCss = themeCss(themes);
 
   return (
     <ClerkProvider
@@ -114,12 +131,17 @@ export default async function RootLayout({
     >
       <html
         lang="en"
-        data-theme="paper"
-        className={FONT_CLASSES}
+        data-theme={theme.dataTheme}
+        data-theme-custom={theme.custom ?? undefined}
+        className={`${theme.dark ? 'dark ' : ''}${FONT_CLASSES}`}
       >
         <body className="min-h-screen bg-bg text-text">
           {/* First child on purpose: parser-blocking pre-paint theme init. */}
-          <ThemeScript />
+          <ThemeScript set={themes} />
+          {/* The operator's own themes: one rule per theme on
+              [data-theme-custom], after the stylesheet so it wins. Empty
+              when there is none. */}
+          {customCss && <style id="paddock-themes" dangerouslySetInnerHTML={{ __html: customCss }} />}
           {/* Clerk's SDK + frontend API are the single biggest unused-JS item
               (audit baseline); warm the connection early. */}
           <link rel="preconnect" href="https://clerk.paddock-tracker.com" />

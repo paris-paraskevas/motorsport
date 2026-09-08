@@ -3,9 +3,9 @@ import type { NavListKey } from '@/lib/design/lists';
 // The Shared Components catalogue, APEX's ten groups mapped to what Paddock has
 // (Paddock Designer Field Guide §02). Every entry is listed so the operator sees
 // the whole shape from day one; the four navigation lists (Phase 2 step 2), Text
-// Messages (step 3), Build Options (step 4), Application Settings (step 5) and
-// Authorization Schemes (step 6) are editable, and the rest say when they arrive
-// rather than pretend.
+// Messages (step 3), Build Options (step 4), Application Settings (step 5),
+// Authorization Schemes (step 6) and Themes (step 7) are editable, and the rest
+// say when they arrive rather than pretend.
 
 export interface CatalogueItem {
   key: string;
@@ -13,7 +13,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -72,7 +72,7 @@ export const CATALOGUE: CatalogueGroup[] = [
     items: [
       { key: 'uiattrs', label: 'User Interface Attributes', later: 'Phase 2, later' },
       { key: 'pwa', label: 'Progressive Web App', later: 'Phase 6' },
-      { key: 'themes', label: 'Themes', later: 'Phase 2, later' },
+      { key: 'themes', label: 'Themes', editor: 'themes' },
       { key: 'templates', label: 'Templates', later: 'read-only, later' },
       { key: 'email', label: 'Email Templates', later: 'Phase 6' },
       { key: 'maps', label: 'Map Backgrounds', later: 'Phase 6' },
