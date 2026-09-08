@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useAuth, useUser, SignOutButton } from '@clerk/nextjs';
 import { NavSeriesMeta } from '@/lib/types';
+import type { NavLists } from '@/lib/design/destinations';
 import { BottomBar } from './BottomBar';
+import { DoorLinks } from './DoorLinks';
 import { Footer } from './Footer';
 import { OnboardingWizard } from './OnboardingWizard';
 import { Coffee, Mail } from 'lucide-react';
@@ -27,12 +28,16 @@ export function AppShell({
   children,
   seriesList,
   bettingEnabled,
+  nav,
 }: {
   children: React.ReactNode;
   seriesList: NavSeriesMeta[];
   // Server-resolved (isBettingConfigured) — gates the Social row in the nav
   // panel so the betting/social surface only appears once Supabase env exists.
   bettingEnabled: boolean;
+  // The doors, the phone bar and the footer's two columns, resolved on the
+  // server from the design tables with the code as fallback (lib/design/lists.ts).
+  nav: NavLists;
 }) {
   // Pointer glow (operator idea): a soft signal-amber halo trails the cursor to
   // highlight where the mouse is. Desktop-mouse only and off under reduced
@@ -112,7 +117,7 @@ export function AppShell({
           {/* Desktop door links (operator 2026-08-19, revised round-2 ④):
               Calendar, Learn and Series one click from the header — Home stays
               the wordmark, and the panel remains the whole index. */}
-          <DoorLinks />
+          <DoorLinks entries={nav.doors} />
 
           <div className="ml-auto flex shrink-0 items-center gap-3 lg:gap-4">
             <HeaderDate />
@@ -129,10 +134,10 @@ export function AppShell({
         className="min-h-screen flex flex-col pt-[50px] lg:pt-[58px] pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0 outline-none"
       >
         <div className="flex-1">{children}</div>
-        <Footer />
+        <Footer site={nav.footerSite} legal={nav.footerLegal} />
       </main>
 
-      <BottomBar />
+      <BottomBar entries={nav.bar} />
 
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />
@@ -153,39 +158,6 @@ export function AppShell({
         }}
       />
     </>
-  );
-}
-
-// The three non-Home doors as quiet mono links, desktop only. Account left
-// the header (round-2 ④, operator: "instead of account have series here") —
-// it stays one tap away via the panel's Settings → and the avatar.
-function DoorLinks() {
-  const pathname = usePathname();
-  const doors = [
-    { href: '/calendar', label: 'Calendar' },
-    { href: '/information', label: 'Learn' },
-    { href: '/series', label: 'Series' },
-    { href: '/blog', label: 'Blog' },
-  ];
-  return (
-    <nav aria-label="Doors" className="hidden items-stretch gap-5 self-stretch lg:flex">
-      {doors.map(d => {
-        const active = pathname === d.href || pathname.startsWith(`${d.href}/`);
-        return (
-          <Link
-            key={d.href}
-            href={d.href}
-            aria-current={active ? 'page' : undefined}
-            data-heatmap-id={`nav:door:${d.label.toLowerCase()}`}
-            className={`inline-flex items-center border-b-2 px-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] transition-colors duration-(--duration-fast) ${
-              active ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'
-            }`}
-          >
-            {d.label}
-          </Link>
-        );
-      })}
-    </nav>
   );
 }
 
