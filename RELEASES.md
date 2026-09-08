@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.71 — 2026-09-09
+
+**The Page Designer, rebuilt to the approved design.** The people who run the site now edit a page in three panes, the way Oracle's APEX does it: the page's tree on the left, the layout of its positions with a gallery of building blocks in the middle, and the properties of whatever is selected on the right, with a toolbar for Save, Publish and a preview of the running page. Regions move by drag and drop, problems are listed in Messages before anything is saved, and undo and redo cover every change. Nothing changes for readers.
+
 ## 1.0.70 — 2026-09-09
 
 **The design tool can now open every page of the site.** The people who run the site can open any of its 58 pages in the design tool and set its name, its browser-tab title, where it sits in the tool, who may see it and whether search engines may index it; the page's content stays exactly as it is. The tool's page list and its property editor now follow the approved design more closely. Nothing changes for readers until an operator changes something.

@@ -18,9 +18,9 @@ import type { EditableSearchHint } from '@/lib/design/search-hints';
 import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
-import { BuilderRail, SharedRail, type PageFilter } from './Rails';
+import { SharedRail } from './Rails';
 import { PagesList } from './PagesList';
-import { PageDetailPanel } from './PageDetailPanel';
+import { PageDesigner } from './PageDesigner';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
 import { BuildOptionsEditor } from './BuildOptionsEditor';
@@ -34,8 +34,11 @@ import { SearchHintsEditor } from './SearchHintsEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
-// 300-pixel catalogue beside the editor. Full viewport over the console, so the
-// rail never competes with the panes; the arrow at the top left goes back.
+// 300-pixel catalogue beside the editor. The App Builder follows the
+// prototype's home (the pages report, full width) and its Page Designer (the
+// three panes under the toolbar, full width, PageDesigner.tsx); it has no rail
+// (the operator, 2026-09-09: "the app builder takes precedent"). Full viewport
+// over the console; the arrow at the top left goes back.
 //
 // Phase 2 opened the four navigation lists (step 2), Text Messages (step 3),
 // Build Options (step 4), Application Settings (step 5), Authorization Schemes
@@ -339,7 +342,6 @@ export function Designer({
     initialSearchHints ? { state: 'ready', hints: initialSearchHints } : { state: 'loading' },
   );
   const [workspace, setWorkspace] = useState<Workspace>(initialWorkspace);
-  const [pageFilter, setPageFilter] = useState<PageFilter>('all');
   const [catalogueQuery, setCatalogueQuery] = useState('');
   const [openPage, setOpenPage] = useState<string | null>(initialPageId);
   const [detail, setDetail] = useState<LoadedDetail>(() =>
@@ -515,6 +517,9 @@ export function Designer({
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
   };
+  const listCounts = Object.fromEntries(LIST_KEYS.map(k => [k, count(k) ?? 0]));
+  const themeDefault = themes.state === 'ready' ? (themes.themes.find(t => t.isDefault)?.label ?? 'Paper') : 'Paper';
+  const openDetail = openPage && detail.state === 'ready' ? detail.detail : null;
 
   return (
     <div className="fixed inset-0 z-40 grid grid-rows-[40px_30px_minmax(0,1fr)] bg-bg text-12-5 text-text">
@@ -544,20 +549,18 @@ export function Designer({
       <div className="flex h-[30px] items-center gap-2 border-b border-border bg-surface-elevated px-3.5 text-11 text-text-faint">
         {workspace === 'builder' ? (
           <>
-            <span className="font-medium text-text-muted">App Builder</span>
+            <button type="button" onClick={() => openPageDetail(null)} title="Back to all pages" className="font-medium text-text-muted hover:text-text">
+              App Builder
+            </button>
             <span>›</span>
             <span>Application 100 · Paddock</span>
-            <span>›</span>
-            {openPage ? (
+            {openPage && (
               <>
-                <button type="button" onClick={() => openPageDetail(null)} title="Back to all pages" className="font-medium text-text-muted hover:text-text">
-                  Pages
-                </button>
                 <span>›</span>
-                <span>{detail.state === 'ready' ? detail.detail.page.name : '…'}</span>
+                <span>Page Designer</span>
+                <span>›</span>
+                <span>{openDetail ? `Page ${openDetail.page.id ? openDetail.page.id.slice(0, 8) : ''}: ${openDetail.page.name}` : '…'}</span>
               </>
-            ) : (
-              <span>Pages</span>
             )}
           </>
         ) : (
@@ -582,25 +585,45 @@ export function Designer({
         )}
       </div>
 
-      <div className="grid min-h-0 grid-cols-[300px_minmax(0,1fr)]">
-        <nav
-          aria-label={workspace === 'builder' ? 'Pages' : 'Shared components'}
-          className="overflow-auto border-r border-border-strong bg-surface pb-5"
-        >
-          {workspace === 'builder' ? (
-            <BuilderRail
-              pages={pages.state === 'ready' ? pages.pages : null}
-              filter={pageFilter}
-              onFilter={f => {
-                setPageFilter(f);
-                if (openPage) openPageDetail(null);
+      {workspace === 'builder' && openPage ? (
+        <div className="min-h-0 min-w-0">
+          {detail.state === 'loading' && <p className="px-6 pt-[18px] font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading the page…</p>}
+          {detail.state === 'error' && <p className="px-6 pt-[18px] text-12 text-negative">{detail.message}</p>}
+          {detail.state === 'ready' && (
+            <PageDesigner
+              detail={detail.detail}
+              pages={pages.state === 'ready' ? pages.pages : [detail.detail.page]}
+              readOnly={readOnly}
+              lists={LIST_KEYS.map(k => ({ key: k, label: LIST_COPY[k].title }))}
+              listCounts={listCounts}
+              assets={assets.state === 'ready' ? assets.assets : []}
+              schemes={schemes}
+              shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
+              themeDefault={themeDefault}
+              onSaved={next => {
+                setDetail({ state: 'ready', detail: next });
+                setPages(s => (s.state === 'ready' ? { state: 'ready', pages: s.pages.map(p => (p.id && p.id === next.page.id ? next.page : p)) } : s));
               }}
-              openPage={openPage && detail.state === 'ready' ? detail.detail.page : null}
+              onOpenPage={id => openPageDetail(id)}
+              onBack={() => openPageDetail(null)}
+              onWorkspace={(ws, sc) => {
+                if (sc) select(sc);
+                selectWorkspace(ws);
+              }}
+              onCreated={page => {
+                setPages(s => (s.state === 'ready' ? { state: 'ready', pages: [...s.pages, page] } : s));
+                if (page.id) openPageDetail(page.id);
+              }}
             />
-          ) : (
-            <SharedRail query={catalogueQuery} onQuery={setCatalogueQuery} selected={selected} onSelect={select} badge={badge} />
           )}
-        </nav>
+        </div>
+      ) : (
+      <div className={`grid min-h-0 ${workspace === 'builder' ? 'grid-cols-1' : 'grid-cols-[300px_minmax(0,1fr)]'}`}>
+        {workspace === 'shared' && (
+          <nav aria-label="Shared components" className="overflow-auto border-r border-border-strong bg-surface pb-5">
+            <SharedRail query={catalogueQuery} onQuery={setCatalogueQuery} selected={selected} onSelect={select} badge={badge} />
+          </nav>
+        )}
 
       {workspace === 'builder' ? (
         <main className="min-w-0 overflow-auto px-6 pb-8 pt-[18px]">
@@ -610,44 +633,24 @@ export function Designer({
               paddock-tracker.com.
             </p>
           )}
-          {openPage ? (
-            <>
-              {detail.state === 'loading' && (
-                <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading the page…</p>
-              )}
-              {detail.state === 'error' && <p className="text-12 text-negative">{detail.message}</p>}
-              {detail.state === 'ready' && (
-                <PageDetailPanel
-                  detail={detail.detail}
-                  readOnly={readOnly}
-                  lists={LIST_KEYS.map(k => ({ key: k, label: LIST_COPY[k].title }))}
-                  assets={assets.state === 'ready' ? assets.assets : []}
-                  schemes={schemes}
-                  shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
-                  onBack={() => openPageDetail(null)}
-                  onSaved={next => setDetail({ state: 'ready', detail: next })}
-                />
-              )}
-            </>
-          ) : (
-            <>
-              {pages.state === 'loading' && (
-                <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Pages…</p>
-              )}
-              {pages.state === 'error' && <p className="text-12 text-negative">{pages.message}</p>}
-              {pages.state === 'ready' && (
-                <PagesList
-                  pages={pages.pages}
-                  filter={pageFilter}
-                  readOnly={readOnly}
-                  onOpen={id => openPageDetail(id)}
-                  onCreated={page => {
-                    setPages(s => (s.state === 'ready' ? { state: 'ready', pages: [...s.pages, page] } : s));
-                    if (page.id) openPageDetail(page.id);
-                  }}
-                />
-              )}
-            </>
+          {pages.state === 'loading' && (
+            <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Pages…</p>
+          )}
+          {pages.state === 'error' && <p className="text-12 text-negative">{pages.message}</p>}
+          {pages.state === 'ready' && (
+            <PagesList
+              pages={pages.pages}
+              readOnly={readOnly}
+              onOpen={id => openPageDetail(id)}
+              onCreated={page => {
+                setPages(s => (s.state === 'ready' ? { state: 'ready', pages: [...s.pages, page] } : s));
+                if (page.id) openPageDetail(page.id);
+              }}
+              onOpenShared={sc => {
+                select(sc);
+                selectWorkspace('shared');
+              }}
+            />
           )}
         </main>
       ) : (
@@ -861,6 +864,7 @@ export function Designer({
         </main>
       )}
       </div>
+      )}
     </div>
   );
 }

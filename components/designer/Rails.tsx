@@ -1,18 +1,14 @@
 'use client';
 
-import { FileText, Puzzle, Search } from 'lucide-react';
-import { PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
-import type { PageRow } from '@/lib/design/pages';
+import { Puzzle, Search } from 'lucide-react';
 import { CATALOGUE, type CatalogueItem } from './catalogue';
 
-// The designer's left rail, one per workspace, drawn so the two read as
-// different things (operator, 2026-09-08: "i cant really differentiate between
-// all pages/shared components"). The App Builder's rail is the pages by group,
-// with counts, and filters the list; the Shared Components' rail is the
-// catalogue with a search field over it. Each carries its own eyebrow, icon
-// and title, so a glance says which workspace is open.
-
-export type PageFilter = 'all' | 'row' | PageGroup;
+// The Shared Components rail: the catalogue with a search field over it, its
+// own eyebrow, icon and title (operator, 2026-09-08: "i cant really
+// differentiate between all pages/shared components"). The App Builder has no
+// rail: it follows the approved designer's home and Page Designer (the
+// operator's call, 2026-09-09: "the app builder takes precedent"), where the
+// pages list carries the group filter as the Page Groups button.
 
 const ITEM =
   'flex w-full items-center gap-2.5 py-[7px] pl-[22px] pr-3.5 text-left text-12 transition-colors duration-(--duration-fast)';
@@ -28,59 +24,6 @@ function RailHead({ icon, eyebrow, title, children }: { icon: React.ReactNode; e
       <span className="mt-1 block text-14 font-bold text-text">{title}</span>
       {children}
     </div>
-  );
-}
-
-export function BuilderRail({
-  pages,
-  filter,
-  onFilter,
-  openPage,
-}: {
-  pages: PageRow[] | null;
-  filter: PageFilter;
-  /** Chosen from the rail; the list follows and an open page closes. */
-  onFilter: (filter: PageFilter) => void;
-  openPage: PageRow | null;
-}) {
-  const count = (f: PageFilter) =>
-    pages === null ? null : f === 'all' ? pages.length : f === 'row' ? pages.filter(p => p.kind === 'row').length : pages.filter(p => p.group === f).length;
-  const item = (f: PageFilter, label: string, hint?: string) => {
-    const n = count(f);
-    const active = filter === f && !openPage;
-    return (
-      <button
-        key={f}
-        type="button"
-        onClick={() => onFilter(f)}
-        aria-current={active ? 'true' : undefined}
-        className={`${ITEM} ${active ? ACTIVE : 'text-text-muted hover:bg-surface-elevated hover:text-text'}`}
-      >
-        <span>{label}</span>
-        {hint && <span className="font-mono text-9 text-text-faint">{hint}</span>}
-        {n !== null && <span className="ml-auto font-mono text-9 tabular-nums text-text-faint">{n}</span>}
-      </button>
-    );
-  };
-  return (
-    <>
-      <RailHead icon={<FileText size={11} />} eyebrow="App Builder" title="Pages">
-        <span className="mt-0.5 block text-11 text-text-faint">Every page the site serves, by group. Yours are served from a revision.</span>
-      </RailHead>
-      <div className="pt-2">
-        {item('all', 'All pages')}
-        {item('row', 'Your pages', 'made here')}
-      </div>
-      <div className="px-3.5 pb-1 pt-3 text-12 font-semibold text-text-muted">Groups</div>
-      {PAGE_GROUPS.map(g => item(g, PAGE_GROUP_LABELS[g]))}
-      {openPage && (
-        <div className="mt-4 border-t border-border px-3.5 pt-3">
-          <span className="block font-mono text-9 uppercase tracking-[0.16em] text-text-faint">Open</span>
-          <span className="mt-1 block text-12 font-semibold text-text">{openPage.name}</span>
-          <span className="block font-mono text-10 text-text-muted">{openPage.path}</span>
-        </div>
-      )}
-    </>
   );
 }
 

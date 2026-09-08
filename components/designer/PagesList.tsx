@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { PAGE_GROUP_LABELS } from '@/lib/design/page-registry';
+import { PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
 import type { PageRow } from '@/lib/design/pages';
 import { CreatePageDialog } from './CreatePageDialog';
-import type { PageFilter } from './Rails';
+import { Sheet } from './DesignerMenu';
+
+export type PageFilter = 'all' | 'row' | PageGroup;
 
 // The App Builder's home, as the approved designer draws it (Paddock Designer
 // v2.4, docs/prototypes/paddock-designer-v2.4, renderHome): the application's
@@ -14,8 +16,9 @@ import type { PageFilter } from './Rails';
 // see it, whether it is indexed and when its row last changed; a row opens the
 // page. Beside the report, the cards the prototype keeps there: the
 // application's facts, the pages edited most recently, and the shared
-// components. The rail on the left filters by group (the operator's own
-// addition, #942); the prototype's Page Groups sheet is that rail.
+// components. Page Groups opens the prototype's sheet of groups with their
+// counts, and a group filters the report (the App Builder has no rail: the
+// operator, 2026-09-09, "the app builder takes precedent").
 //
 // A code page opens to its attributes (the Page Designer plan, PR 1: name,
 // title, group, who sees it, indexed, comments) with its body as the one region
@@ -34,7 +37,7 @@ const TB =
   'inline-flex h-[30px] items-center gap-1.5 border border-border-strong px-2.5 text-12 text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-40';
 const TB_PRIMARY = `${TB} border-edit text-edit hover:bg-edit-dim hover:text-text`;
 const PBTN =
-  'border border-border-strong px-2 py-1 font-mono text-9 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-35';
+  'whitespace-nowrap border border-border-strong px-2 py-1 font-mono text-9 uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-35';
 const LNK = 'block w-full py-0.5 text-left text-12 text-edit hover:underline';
 
 const SHARED: { sc: string; label: string }[] = [
@@ -57,19 +60,24 @@ function updatedOn(stamp: string | null): string {
 
 export function PagesList({
   pages,
-  filter = 'all',
+  initialFilter = 'all',
   readOnly,
   onOpen,
   onCreated,
+  onOpenShared,
 }: {
   pages: PageRow[];
-  /** From the rail: every page, the operator's own, or one group. */
-  filter?: PageFilter;
+  /** Every page, the operator's own, or one group; Page Groups changes it. */
+  initialFilter?: PageFilter;
   readOnly: boolean;
   onOpen: (id: string) => void;
   onCreated: (page: PageRow) => void;
+  /** A shared component from the side card opens in its workspace, in the app. */
+  onOpenShared?: (sc: string) => void;
 }) {
   const [creating, setCreating] = useState(false);
+  const [groupsOpen, setGroupsOpen] = useState(false);
+  const [filter, setFilter] = useState<PageFilter>(initialFilter);
   const [query, setQuery] = useState('');
 
   const codeCount = pages.filter(p => p.kind === 'code').length;
@@ -111,12 +119,54 @@ export function PagesList({
           onChange={e => setQuery(e.target.value)}
         />
         <span className="flex-1" />
+        <button type="button" className={TB} aria-haspopup="dialog" onClick={() => setGroupsOpen(true)}>
+          Page Groups
+          {filterLabel && <span className="font-mono text-9 uppercase tracking-[0.12em] text-edit">· {filterLabel}</span>}
+        </button>
         {!readOnly && (
           <button type="button" className={TB_PRIMARY} onClick={() => setCreating(true)}>
             <Plus size={13} /> Create page <span aria-hidden="true">›</span>
           </button>
         )}
       </div>
+      {groupsOpen && (
+        <Sheet title="Page Groups" sub="How the pages list is organised. A group is a label; pages keep their paths." onClose={() => setGroupsOpen(false)}>
+          <table className="w-full border-collapse text-12">
+            <thead>
+              <tr className="text-left text-text-faint">
+                <th className="px-[18px] py-2 font-mono text-9 font-medium uppercase tracking-[0.14em]">Group</th>
+                <th className="px-2.5 py-2 text-right font-mono text-9 font-medium uppercase tracking-[0.14em]">Pages</th>
+                <th className="px-2.5 py-2" />
+              </tr>
+            </thead>
+            <tbody>
+              {(['all', 'row', ...PAGE_GROUPS] as PageFilter[]).map(f => {
+                const n = f === 'all' ? pages.length : f === 'row' ? rowCount : pages.filter(p => p.group === f).length;
+                const label = f === 'all' ? 'All pages' : f === 'row' ? 'Your pages · made here' : PAGE_GROUP_LABELS[f];
+                return (
+                  <tr key={f} className={`border-t border-border ${filter === f ? 'bg-surface-elevated' : ''}`}>
+                    <td className="px-[18px] py-2 text-text">{label}</td>
+                    <td className="px-2.5 py-2 text-right font-mono tabular-nums text-text-muted">{n}</td>
+                    <td className="px-2.5 py-2 text-right">
+                      <button
+                        type="button"
+                        className={PBTN}
+                        aria-pressed={filter === f}
+                        onClick={() => {
+                          setFilter(f);
+                          setGroupsOpen(false);
+                        }}
+                      >
+                        {filter === f ? 'showing' : 'show'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Sheet>
+      )}
 
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
         <div>
@@ -215,11 +265,17 @@ export function PagesList({
           )}
           <section className="border border-border-strong bg-surface p-3">
             <h4 className="m-0 mb-1 text-13 font-bold text-text">Shared components</h4>
-            {SHARED.map(s => (
-              <a key={s.sc} href={`/admin/designer?sc=${s.sc}`} className={LNK}>
-                {s.label}
-              </a>
-            ))}
+            {SHARED.map(s =>
+              onOpenShared ? (
+                <button key={s.sc} type="button" className={LNK} onClick={() => onOpenShared(s.sc)}>
+                  {s.label}
+                </button>
+              ) : (
+                <a key={s.sc} href={`/admin/designer?sc=${s.sc}`} className={LNK}>
+                  {s.label}
+                </a>
+              ),
+            )}
           </section>
         </aside>
       </div>
