@@ -22,7 +22,7 @@ The skip link, the header search hint, the footer's two headings, its one-paragr
 
 **Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.40) `Total Upload 41776.56 KiB / gzip 9705.46 KiB`; after `Total Upload 41815.51 KiB / gzip 9711.15 KiB`.
 
-**Prod apply**: the operator names it ("apply 20260908150000"); rehearsal with rollback first; proof appended here before merge.
+**Prod apply, on the operator's word ("apply 20260908150000"), before merge.** Rehearsal with `commit` replaced by `rollback`: `HTTP 201`, then zero `text_message` rows persisted. Apply: `HTTP 201`, `[]`. Proof: six rows for `paddock` (`a11y.skip`, `footer.blurb`, `footer.install`, `footer.legal`, `footer.site`, `nav.search`), every text the shipped one, all stamped `2026-09-08 08:33:32.994153+00`, six rows in the table in total. The stale path exercised live: a conditional update against a year-2000 stamp touched 0 rows.
 
 ## 1.0.40 — 2026-09-08
 
