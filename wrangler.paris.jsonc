@@ -54,6 +54,10 @@
     {
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "paddock-inc-cache"
+    },
+    {
+      "binding": "MEDIA",
+      "bucket_name": "paddock-media"
     }
   ],
   "services": [

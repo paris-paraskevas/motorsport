@@ -10,6 +10,7 @@ import { loadAuthzForEditing } from '@/lib/design/authz';
 import { loadThemesForEditing } from '@/lib/design/themes';
 import { loadAppearanceForEditing } from '@/lib/design/appearance';
 import { loadShortcutsForEditing } from '@/lib/design/shortcuts';
+import { getMediaBucket, loadAssetsForEditing } from '@/lib/design/assets';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { DesignerLoader } from '@/components/designer/DesignerLoader';
 
@@ -35,6 +36,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     initialThemes,
     initialAppearance,
     initialShortcuts,
+    initialAssets,
     seriesMeta,
     ...loaded
   ] = await Promise.all([
@@ -47,6 +49,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     loadThemesForEditing(),
     loadAppearanceForEditing(),
     loadShortcutsForEditing(),
+    loadAssetsForEditing(),
     loadAllSeriesMeta(),
     ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
   ]);
@@ -70,6 +73,8 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialThemes={initialThemes}
       initialAppearance={initialAppearance}
       initialShortcuts={initialShortcuts}
+      initialAssets={initialAssets}
+      mediaConfigured={getMediaBucket() !== null}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
     />
   );
