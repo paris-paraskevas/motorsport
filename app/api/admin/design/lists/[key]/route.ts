@@ -6,6 +6,7 @@ import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
 import { resolveDestination, type NavEntry } from '@/lib/design/destinations';
 import { APPLICATION_KEY, BAR_MAX, BAR_MIN, loadListForEditing, resetNavListsMemo } from '@/lib/design/lists';
+import { loadAuthzSchemes } from '@/lib/design/authz';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,14 +22,15 @@ export const dynamic = 'force-dynamic';
 // the database function design_save_list() refuses the save when the list has
 // moved since (409), and the designer offers Reload or Save anyway with the
 // current stamp. Every entry's destination must be a catalogue key; a typed URL
-// cannot enter the table through here. The phone bar takes three to five entries.
+// cannot enter the table through here. An entry's authorization must name a
+// scheme row (lib/design/authz.ts). The phone bar takes three to five entries.
 
 const LABEL_MAX = 60;
 const NAME_MAX = 40;
 
 type Rejection = { error: string };
 
-function validateEntries(raw: unknown, role: string): NavEntry[] | Rejection {
+function validateEntries(raw: unknown, role: string, schemeKeys: ReadonlySet<string>): NavEntry[] | Rejection {
   if (!Array.isArray(raw)) return { error: 'entries must be an array' };
   const out: NavEntry[] = [];
   for (const [i, item] of raw.entries()) {
@@ -45,7 +47,9 @@ function validateEntries(raw: unknown, role: string): NavEntry[] | Rejection {
       entry.icon = r.icon;
     }
     if (r.authz !== undefined && r.authz !== null && r.authz !== '') {
-      if (typeof r.authz !== 'string' || r.authz.length > NAME_MAX) return { error: `entry ${i + 1}: authz must be a scheme key` };
+      if (typeof r.authz !== 'string' || r.authz.length > NAME_MAX || !schemeKeys.has(r.authz)) {
+        return { error: `entry ${i + 1}: "${String(r.authz)}" is not an authorization scheme` };
+      }
       entry.authz = r.authz;
     }
     out.push(entry);
@@ -95,7 +99,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
   const list = await loadListForEditing(key);
   if (!list) return new Response('not found', { status: 404 });
 
-  const entries = validateEntries(body.entries, list.role);
+  const schemes = await loadAuthzSchemes();
+  const entries = validateEntries(body.entries, list.role, new Set(schemes.map(s => s.key)));
   if (!Array.isArray(entries)) return NextResponse.json(entries, { status: 400 });
 
   try {

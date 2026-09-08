@@ -3,8 +3,9 @@ import type { NavListKey } from '@/lib/design/lists';
 // The Shared Components catalogue, APEX's ten groups mapped to what Paddock has
 // (Paddock Designer Field Guide §02). Every entry is listed so the operator sees
 // the whole shape from day one; the four navigation lists (Phase 2 step 2), Text
-// Messages (step 3), Build Options (step 4) and Application Settings (step 5)
-// are editable, and the rest say when they arrive rather than pretend.
+// Messages (step 3), Build Options (step 4), Application Settings (step 5) and
+// Authorization Schemes (step 6) are editable, and the rest say when they arrive
+// rather than pretend.
 
 export interface CatalogueItem {
   key: string;
@@ -12,7 +13,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings';
+  editor?: 'text' | 'build' | 'settings' | 'authz';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -39,7 +40,7 @@ export const CATALOGUE: CatalogueGroup[] = [
     items: [
       { key: 'secattrs', label: 'Security Attributes', later: 'read-only, later' },
       { key: 'auth', label: 'Authentication Schemes', later: 'read-only, later' },
-      { key: 'authz', label: 'Authorization Schemes', later: 'Phase 2, later' },
+      { key: 'authz', label: 'Authorization Schemes', editor: 'authz' },
       { key: 'access', label: 'Application Access Control', later: 'read-only, later' },
       { key: 'session', label: 'Session Management', later: 'read-only, later' },
     ],
@@ -128,13 +129,3 @@ export const LIST_COPY: Record<NavListKey, { title: string; sub: string }> = {
     sub: 'The second column of the footer on every page.',
   },
 };
-
-/** The authorization schemes an entry may name. Mirrors the rows migration
- *  20260908090000 seeded; the Authorization Schemes editor reads them from the
- *  table when it arrives. */
-export const SCHEMES: { key: string; label: string }[] = [
-  { key: '', label: 'Public' },
-  { key: 'signed_in', label: 'Signed in' },
-  { key: 'contributor', label: 'Contributor' },
-  { key: 'administrator', label: 'Administrator' },
-];
