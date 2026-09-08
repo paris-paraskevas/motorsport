@@ -186,6 +186,25 @@ describe('PageEditor', () => {
     expect(onSaved).toHaveBeenCalledWith(current);
   });
 
+  it('Save and run opens the newest revision when nothing changed, and saves a draft first when something did', async () => {
+    const open = vi.fn();
+    vi.stubGlobal('open', open);
+    const after: PageDetail = { ...detail, newest: { ...detail.newest!, id: 'b1b2c3d4-0000-4000-8000-000000000005', createdAt: '2026-09-08T19:20:00Z' } };
+    fetchMock
+      .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ ok: true, revision: { id: 'b1b2c3d4-0000-4000-8000-000000000005' } }) })
+      .mockResolvedValueOnce({ ok: true, status: 200, json: async () => after });
+    const { onSaved } = mount();
+    fireEvent.click(screen.getByRole('button', { name: 'Save and run' }));
+    expect(open).toHaveBeenCalledWith(`/preview/${R2}`, '_blank', 'noopener');
+    expect(fetchMock).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Static Content: A century of speed' }));
+    fireEvent.change(screen.getByLabelText('Region title'), { target: { value: 'Monza' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save and run' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalledWith(after));
+    expect(open).toHaveBeenLastCalledWith('/preview/b1b2c3d4-0000-4000-8000-000000000005', '_blank', 'noopener');
+    expect(JSON.parse(String((fetchMock.mock.calls[0] as [string, RequestInit])[1].body)).action).toBe('draft');
+  });
+
   it('inserts a shortcut token at the cursor of the text', () => {
     mount();
     fireEvent.click(screen.getByRole('button', { name: 'Static Content: A century of speed' }));

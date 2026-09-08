@@ -3,29 +3,40 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 let configured = true;
 let tables: Record<string, { data: unknown; error: { message: string } | null }> = {};
 const calls: string[] = [];
+// The fake answers a table's reads with its rows; `.not(col, 'is', null)` is
+// honoured (the live-revision read filters published ones), the other filters
+// are not.
 vi.mock('@/lib/betting/client', () => ({
   isBettingConfigured: () => configured,
   betDb: () => ({
     from: (table: string) => {
       calls.push(table);
+      let notNull: string | null = null;
       const q: Record<string, unknown> = {};
       const chain = () => q;
       Object.assign(q, {
         select: chain,
         eq: chain,
-        not: chain,
         order: chain,
         limit: chain,
         in: chain,
-        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
-          Promise.resolve(tables[table] ?? { data: [], error: null }).then(resolve, reject),
+        not: (col: string) => {
+          notNull = col;
+          return q;
+        },
+        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) => {
+          const res = tables[table] ?? { data: [], error: null };
+          const data =
+            notNull && Array.isArray(res.data) ? (res.data as Record<string, unknown>[]).filter(r => r[notNull!] != null) : res.data;
+          return Promise.resolve({ ...res, data }).then(resolve, reject);
+        },
       });
       return q;
     },
   }),
 }));
 
-import { loadAssetsById, loadLivePage } from './live-page';
+import { loadAssetsById, loadLivePage, loadRevisionPreview } from './live-page';
 
 const ID = 'a1b2c3d4-0000-4000-8000-000000000010';
 const ASSET = 'c1b2c3d4-0000-4000-8000-000000000031';
@@ -91,6 +102,43 @@ describe('loadLivePage', () => {
     expect(live?.revisionId).toBe(revision.id);
     expect(live?.publishedAt).toBe(revision.published_at);
     expect(live?.document.regions.map(r => r.id)).toEqual(['intro']);
+  });
+});
+
+describe('loadRevisionPreview', () => {
+  const stored = { ...revision, page_id: ID, created_at: '2026-09-08T17:10:00+00:00' };
+  const draft = { ...stored, id: 'b1b2c3d4-0000-4000-8000-000000000002', created_at: '2026-09-08T19:20:00+00:00', published_at: null };
+  beforeEach(() => {
+    configured = true;
+    calls.length = 0;
+    tables = { page: { data: [page], error: null }, page_revision: { data: [stored], error: null } };
+  });
+
+  it('is null when unconfigured, for an id that is not one, for a missing revision, or for a page that is not a row page', async () => {
+    configured = false;
+    expect(await loadRevisionPreview(revision.id)).toBeNull();
+    configured = true;
+    expect(await loadRevisionPreview('nope')).toBeNull();
+    expect(calls).toEqual([]);
+    tables.page_revision = { data: [], error: null };
+    expect(await loadRevisionPreview(revision.id)).toBeNull();
+    tables.page_revision = { data: [stored], error: null };
+    tables.page = { data: [{ ...page, kind: 'code' }], error: null };
+    expect(await loadRevisionPreview(revision.id)).toBeNull();
+  });
+
+  it('returns the revision with its page, whether it is the live one, and the usable part of the document with its problems', async () => {
+    // The fake answers every page_revision read with the same rows: the
+    // revision looked up is also the newest published one, so it is live.
+    const live = await loadRevisionPreview(revision.id);
+    expect(live?.page.path).toBe('/history/monza');
+    expect(live?.isLive).toBe(true);
+    expect(live?.document.regions.map(r => r.id)).toEqual(['intro']);
+    expect(live?.problems).toEqual(['region broken: the image must name one of your photos']);
+    tables.page_revision = { data: [draft], error: null };
+    const d = await loadRevisionPreview(draft.id);
+    expect(d?.publishedAt).toBeNull();
+    expect(d?.isLive).toBe(false);
   });
 });
 

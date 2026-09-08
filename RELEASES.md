@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.65 — 2026-09-08
+
+**Internal notes.** The people who run the site can now save a draft of a page and open it in a new tab exactly as readers would see it, with a strip along the top saying which version it is and a way back to the design tool. Only they can open such a preview; nothing changes for readers.
+
 ## 1.0.64 — 2026-09-08
 
 **Pages made in the design tool can now behave.** A page of the site's own making can carry buttons, and simple behaviours set up without any code: a click, a timer, the page loading or a part scrolling into view can show, hide or reveal another part, scroll to it, or open another page. A "read more" that unfolds on a click is the first use.

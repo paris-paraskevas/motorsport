@@ -159,6 +159,7 @@ describe('row page paths', () => {
     expect(rowPagePathProblem('/History', code)).toMatch(/lower-case letters/);
     expect(rowPagePathProblem('/api/anything', code)).toBe('that part of the site is reserved');
     expect(rowPagePathProblem('/media', code)).toBe('that part of the site is reserved');
+    expect(rowPagePathProblem('/preview/anything', code)).toBe('that part of the site is reserved');
     expect(rowPagePathProblem('/about', code)).toBe('the code already serves /about');
     expect(rowPagePathProblem('/series/monza', code)).toBe('the code already serves /series/[slug]');
     expect(rowPagePathProblem('/history/monza', code, ['/history/monza'])).toBe('a page with this path exists already');
