@@ -34,6 +34,8 @@ import { BUILD_OPTION_DEFAULTS, BUILD_OPTION_KEYS } from '@/lib/design/build-opt
 import { SETTING_KEYS, SETTING_SPECS } from '@/lib/design/setting-defaults';
 import type { EditableBuildOption } from '@/lib/design/build-options';
 import type { EditableSetting } from '@/lib/design/settings';
+import type { PageRow } from '@/lib/design/pages';
+import { CODE_PAGES } from '@/lib/design/page-registry';
 
 const STAMP = '2026-09-08T08:33:32.994153+00:00';
 const lists: Partial<Record<NavListKey, EditableList>> = {
@@ -85,4 +87,36 @@ describe('Designer keeps the selection in the URL', () => {
     render(<Designer readOnly={false} who="Test · Administrator · production" initialSelected="no-such-entry" {...loaded} />);
     expect(screen.getByRole('heading', { level: 2, name: 'Shared Components' })).toBeTruthy();
   });
+
+  it('opens the App Builder from ?ws=builder with the pages listed, and the tabs switch and write the URL', () => {
+    window.history.replaceState(null, '', '/admin/designer?ws=builder');
+    const pages = pagesFromCode();
+    render(<Designer readOnly={false} who="Test · Administrator · production" initialWorkspace="builder" initialPages={pages} {...loaded} />);
+    expect(screen.getByRole('heading', { level: 2, name: 'Pages' })).toBeTruthy();
+    expect(screen.getByText('/series/[slug]/[tab]')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Shared Components' }));
+    expect(window.location.search).toBe('');
+    expect(screen.getByRole('heading', { level: 2, name: 'Shared Components' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'App Builder' }));
+    expect(window.location.search).toBe('?ws=builder');
+    expect(screen.getByRole('heading', { level: 2, name: 'Pages' })).toBeTruthy();
+  });
 });
+
+/** The registry as the server would hand it over when no row exists yet. */
+function pagesFromCode(): PageRow[] {
+  return CODE_PAGES.map(c => ({
+    id: null,
+    path: c.path,
+    name: c.name,
+    kind: 'code',
+    group: c.group,
+    template: 'paddock-standard',
+    authz: c.authz,
+    title: null,
+    rendering: c.rendering,
+    indexable: c.indexable,
+    comments: c.note ?? null,
+    updatedAt: null,
+  }));
+}

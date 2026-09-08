@@ -11,6 +11,7 @@ import { loadThemesForEditing } from '@/lib/design/themes';
 import { loadAppearanceForEditing } from '@/lib/design/appearance';
 import { loadShortcutsForEditing } from '@/lib/design/shortcuts';
 import { getMediaBucket, loadAssetsForEditing } from '@/lib/design/assets';
+import { loadPagesForEditing } from '@/lib/design/pages';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { DesignerLoader } from '@/components/designer/DesignerLoader';
 
@@ -24,7 +25,7 @@ export const metadata: Metadata = { title: 'Designer · Admin' };
 // the build options and the settings loaded once so the designer opens with
 // them. The editor itself is a browser-only chunk (DesignerLoader). `?sc=<key>`
 // opens a catalogue entry directly.
-export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string }> }) {
+export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string; ws?: string }> }) {
   await requireAdmin();
   const [
     user,
@@ -37,6 +38,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     initialAppearance,
     initialShortcuts,
     initialAssets,
+    initialPages,
     seriesMeta,
     ...loaded
   ] = await Promise.all([
@@ -50,6 +52,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     loadAppearanceForEditing(),
     loadShortcutsForEditing(),
     loadAssetsForEditing(),
+    loadPagesForEditing(),
     loadAllSeriesMeta(),
     ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
   ]);
@@ -75,6 +78,8 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialShortcuts={initialShortcuts}
       initialAssets={initialAssets}
       mediaConfigured={getMediaBucket() !== null}
+      initialPages={initialPages}
+      initialWorkspace={params.ws === 'builder' ? 'builder' : 'shared'}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
     />
   );

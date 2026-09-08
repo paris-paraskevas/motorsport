@@ -14,7 +14,9 @@ import type { EditableTheme } from '@/lib/design/themes';
 import type { EditableAppearance } from '@/lib/design/appearance';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import type { EditableAsset } from '@/lib/design/assets';
+import type { PageRow } from '@/lib/design/pages';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
+import { PagesList } from './PagesList';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
 import { BuildOptionsEditor } from './BuildOptionsEditor';
@@ -190,6 +192,26 @@ async function fetchAssets(): Promise<LoadedAssets> {
   }
 }
 
+type LoadedPages =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; pages: PageRow[] };
+
+async function fetchPages(): Promise<LoadedPages> {
+  try {
+    const res = await fetch('/api/admin/design/pages', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The pages could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { pages: PageRow[] };
+    return { state: 'ready', pages: d.pages };
+  } catch {
+    return { state: 'error', message: 'The pages could not be loaded: network error.' };
+  }
+}
+
+/** The two workspaces that exist; Data is later. The App Builder lists the
+ *  pages (Phase 3 step 1); Shared Components holds the catalogue and its editors. */
+export type Workspace = 'builder' | 'shared';
+
 export function Designer({
   readOnly,
   who,
@@ -204,12 +226,18 @@ export function Designer({
   initialShortcuts,
   initialAssets,
   mediaConfigured = false,
+  initialPages,
+  initialWorkspace = 'shared',
   series = [],
 }: {
   readOnly: boolean;
   who: string;
   /** A catalogue key to open on, from `?sc=` on the page. Unknown keys open the overview. */
   initialSelected?: string | null;
+  /** The pages the server already loaded; fetched when absent. */
+  initialPages?: PageRow[] | null;
+  /** The workspace to open on, from `?ws=` on the page. */
+  initialWorkspace?: Workspace;
   /** Lists the server already loaded, so opening needs no round trip; any list
    *  missing here is fetched. */
   initialLists?: Partial<Record<NavListKey, EditableList>>;
@@ -258,6 +286,10 @@ export function Designer({
   const [assets, setAssets] = useState<LoadedAssets>(() =>
     initialAssets ? { state: 'ready', assets: initialAssets, mediaConfigured } : { state: 'loading' },
   );
+  const [pages, setPages] = useState<LoadedPages>(() =>
+    initialPages ? { state: 'ready', pages: initialPages } : { state: 'loading' },
+  );
+  const [workspace, setWorkspace] = useState<Workspace>(initialWorkspace);
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
   );
@@ -321,10 +353,15 @@ export function Designer({
         if (!cancelled) setAssets(loaded);
       });
     }
+    if (!initialPages) {
+      void fetchPages().then(loaded => {
+        if (!cancelled) setPages(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -336,6 +373,16 @@ export function Designer({
     const url = new URL(window.location.href);
     if (key) url.searchParams.set('sc', key);
     else url.searchParams.delete('sc');
+    window.history.replaceState(null, '', url);
+  };
+  // The workspace lives in the URL the same way (`?ws=builder`); Shared
+  // Components is the default and carries no parameter.
+  const selectWorkspace = (ws: Workspace) => {
+    setWorkspace(ws);
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (ws === 'builder') url.searchParams.set('ws', 'builder');
+    else url.searchParams.delete('ws');
     window.history.replaceState(null, '', url);
   };
 
@@ -401,8 +448,8 @@ export function Designer({
           <span className="font-normal text-text-muted">Developer</span>
         </span>
         <nav aria-label="Workspaces" className="flex self-stretch">
-          <WorkspaceTab label="App Builder" later="Phase 3" />
-          <WorkspaceTab label="Shared Components" active />
+          <WorkspaceTab label="App Builder" active={workspace === 'builder'} onClick={() => selectWorkspace('builder')} />
+          <WorkspaceTab label="Shared Components" active={workspace === 'shared'} onClick={() => selectWorkspace('shared')} />
           <WorkspaceTab label="Data" later="later" />
         </nav>
         <span className="flex-1" />
@@ -411,24 +458,51 @@ export function Designer({
       </header>
 
       <div className="flex h-[30px] items-center gap-2 border-b border-border bg-surface-elevated px-3.5 text-11 text-text-faint">
-        <button
-          type="button"
-          onClick={() => select(null)}
-          title="Back to the overview"
-          className="font-medium text-text-muted hover:text-text"
-        >
-          Shared Components
-        </button>
-        <span>›</span>
-        <span>Application 100 · Paddock</span>
-        {item && (
+        {workspace === 'builder' ? (
           <>
+            <span className="font-medium text-text-muted">App Builder</span>
             <span>›</span>
-            <span>{item.label}</span>
+            <span>Application 100 · Paddock</span>
+            <span>›</span>
+            <span>Pages</span>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => select(null)}
+              title="Back to the overview"
+              className="font-medium text-text-muted hover:text-text"
+            >
+              Shared Components
+            </button>
+            <span>›</span>
+            <span>Application 100 · Paddock</span>
+            {item && (
+              <>
+                <span>›</span>
+                <span>{item.label}</span>
+              </>
+            )}
           </>
         )}
       </div>
 
+      {workspace === 'builder' ? (
+        <main className="min-h-0 overflow-auto px-6 pb-8 pt-[18px]">
+          {readOnly && (
+            <p className="mb-4 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-12 text-text-muted">
+              Design edits are made on production. This copy of the site is read-only: browse and preview here, save on
+              paddock-tracker.com.
+            </p>
+          )}
+          {pages.state === 'loading' && (
+            <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Pages…</p>
+          )}
+          {pages.state === 'error' && <p className="text-12 text-negative">{pages.message}</p>}
+          {pages.state === 'ready' && <PagesList pages={pages.pages} />}
+        </main>
+      ) : (
       <div className="grid min-h-0 grid-cols-[300px_minmax(0,1fr)]">
         <nav aria-label="Shared components" className="overflow-auto border-r border-border-strong bg-surface pb-5 pt-2">
           {CATALOGUE.map(group => (
@@ -657,18 +731,38 @@ export function Designer({
           })()}
         </main>
       </div>
+      )}
     </div>
   );
 }
 
-function WorkspaceTab({ label, active = false, later }: { label: string; active?: boolean; later?: string }) {
+/** A workspace tab: clickable when it has an `onClick`, otherwise a placeholder
+ *  that names the phase bringing it. */
+function WorkspaceTab({
+  label,
+  active = false,
+  later,
+  onClick,
+}: {
+  label: string;
+  active?: boolean;
+  later?: string;
+  onClick?: () => void;
+}) {
+  const live = Boolean(onClick);
   return (
     <button
       type="button"
-      disabled={!active}
+      disabled={!live}
+      aria-current={active ? 'page' : undefined}
       title={later ? `${label}: ${later}` : label}
+      onClick={onClick}
       className={`relative h-[40px] whitespace-nowrap px-3 text-12 font-medium ${
-        active ? 'text-text shadow-[inset_0_-2px_0_var(--edit)]' : 'cursor-default text-text-faint'
+        active
+          ? 'text-text shadow-[inset_0_-2px_0_var(--edit)]'
+          : live
+            ? 'text-text-muted hover:text-text'
+            : 'cursor-default text-text-faint'
       }`}
     >
       {label}
