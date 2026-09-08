@@ -19,7 +19,7 @@ export default function SeriesError({
   return (
     <div className="max-w-2xl mx-auto px-4 md:px-6 py-16">
       <div className="rounded-2xl border border-border bg-surface/60 p-8">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
+        <div className="text-11 uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
           Yellow flag
         </div>
         <h1 className="text-text text-2xl font-bold tracking-tight mb-2">

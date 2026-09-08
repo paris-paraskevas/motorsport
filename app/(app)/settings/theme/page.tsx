@@ -24,7 +24,7 @@ export default async function ThemePage() {
     <div className={PAGE_READ}>
       <Link
         href="/settings"
-        className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+        className="mb-4 inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
       >
         <ArrowLeft size={13} /> Account
       </Link>

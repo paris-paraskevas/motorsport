@@ -356,7 +356,7 @@ export default async function PostPage({
           <aside className="mt-10 space-y-8 lg:sticky lg:top-[calc(58px+1.5rem)] lg:mt-0 lg:max-h-[calc(100vh-58px-3rem)] lg:overflow-y-auto lg:pr-1">
             {toc.length >= 2 && (
               <nav aria-label="On this page" className="hidden lg:block">
-                <h2 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+                <h2 className="mb-3 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
                   On this page
                 </h2>
                 <ul className="space-y-1.5 border-l border-border">
@@ -376,7 +376,7 @@ export default async function PostPage({
 
             {recent.length > 0 && (
               <section className="border-t border-border pt-4">
-                <h2 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+                <h2 className="mb-3 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
                   More from the blog
                 </h2>
                 <ul className="space-y-3">
@@ -386,7 +386,7 @@ export default async function PostPage({
                         <span className="block text-sm font-medium leading-snug text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
                           {p.title}
                         </span>
-                        <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.14em] tabular-nums text-text-faint">
+                        <span className="mt-0.5 block font-mono text-10 uppercase tracking-[0.14em] tabular-nums text-text-faint">
                           {formatDate(p.publishedAt)}
                         </span>
                       </Link>

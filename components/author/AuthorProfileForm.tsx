@@ -144,7 +144,7 @@ export function AuthorProfileForm({
             className={`${INPUT} resize-none`}
           />
           <span
-            className={`mt-1.5 block font-mono text-[11px] tabular-nums ${
+            className={`mt-1.5 block font-mono text-11 tabular-nums ${
               bioLength > 0 && bioLength < BIO_MIN ? 'text-amber-400' : 'text-text-faint'
             }`}
           >
@@ -156,10 +156,10 @@ export function AuthorProfileForm({
 
       <section>
         <div className="mb-2 flex items-baseline justify-between gap-3">
-          <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          <h2 className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
             Where to find you
           </h2>
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint tabular-nums">
+          <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint tabular-nums">
             {links.length}/{LINKS_MAX}
           </span>
         </div>
@@ -200,7 +200,7 @@ export function AuthorProfileForm({
           <button
             type="button"
             onClick={() => setLinks(prev => [...prev, { label: '', url: '' }])}
-            className="mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-brand"
+            className="mt-2 inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-brand"
           >
             <Plus size={13} /> Add a link
           </button>
@@ -209,7 +209,7 @@ export function AuthorProfileForm({
 
       {posts.length > 0 && (
         <section>
-          <h2 className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          <h2 className="mb-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
             Posts on your profile
           </h2>
           <p className="mb-3 text-xs text-text-faint">
@@ -227,7 +227,7 @@ export function AuthorProfileForm({
                 />
                 <label htmlFor={`post-${p.id}`} className="min-w-0 flex-1 cursor-pointer">
                   <span className="block text-sm font-medium leading-snug text-text">{p.title}</span>
-                  <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint tabular-nums">
+                  <span className="mt-0.5 block font-mono text-10 uppercase tracking-[0.14em] text-text-faint tabular-nums">
                     {formatDate(p.publishedAt)}
                   </span>
                 </label>

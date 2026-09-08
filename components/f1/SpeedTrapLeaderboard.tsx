@@ -46,7 +46,7 @@ export function SpeedTrapLeaderboard({
         <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
           Speed trap
         </h3>
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
           Top speed · km/h
         </span>
       </div>
@@ -60,7 +60,7 @@ export function SpeedTrapLeaderboard({
           const widthPct = max > 0 ? Math.max(8, (e.topSpeed / max) * 100) : 0;
           return (
             <li key={e.driverNumber} className="flex items-center gap-2.5">
-              <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+              <span className="w-5 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                 {i + 1}
               </span>
               <span className="flex w-16 shrink-0 items-center gap-1.5">
@@ -83,7 +83,7 @@ export function SpeedTrapLeaderboard({
                 }`}
               >
                 {Math.round(e.topSpeed)}
-                <span className="ml-1 text-[10px] font-normal text-text-faint">km/h</span>
+                <span className="ml-1 text-10 font-normal text-text-faint">km/h</span>
               </span>
             </li>
           );

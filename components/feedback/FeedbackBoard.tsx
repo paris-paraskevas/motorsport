@@ -177,7 +177,7 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
           <button
             type="submit"
             disabled={busy}
-            className="bg-text px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
+            className="bg-text px-4 py-1.5 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
           >
             {busy ? 'Posting…' : 'Post'}
           </button>
@@ -202,7 +202,7 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
                   type="button"
                   onClick={() => toggle(s)}
                   aria-pressed={on}
-                  className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
+                  className={`rounded-full border px-2.5 py-1 font-mono text-10 uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
                     on ? 'border-brand bg-brand-fill/10 text-text' : 'border-border text-text-faint hover:text-text-muted'
                   }`}
                 >
@@ -214,7 +214,7 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
               type="button"
               onClick={copyAllOpen}
               disabled={counts.open === 0}
-              className="ml-auto rounded border border-border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text disabled:opacity-40"
+              className="ml-auto rounded border border-border px-2.5 py-1 font-mono text-10 uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text disabled:opacity-40"
             >
               {copied ? 'Copied ✓' : `Copy all open (${counts.open})`}
             </button>
@@ -222,7 +222,7 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
               <button
                 type="button"
                 onClick={closeAllDone}
-                className="rounded border border-border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text"
+                className="rounded border border-border px-2.5 py-1 font-mono text-10 uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text"
               >
                 Close all done ({counts.done})
               </button>
@@ -238,11 +238,11 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
                 return (
                   <li key={it.id} className={`rounded-lg border border-border p-3 ${dimmed ? 'opacity-60' : ''}`}>
                     <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted">
+                      <span className="rounded-full border border-border px-2 py-0.5 font-mono text-10 uppercase tracking-[0.12em] text-text-muted">
                         {KIND_LABEL[it.kind]}
                       </span>
-                      <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${STATUS_TONE[it.status]}`}>{it.status}</span>
-                      <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+                      <span className={`font-mono text-10 uppercase tracking-[0.14em] ${STATUS_TONE[it.status]}`}>{it.status}</span>
+                      <span className="ml-auto font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
                         {it.authorName ?? `Racer ${it.authorId.slice(-4)}`}
                       </span>
                     </div>
@@ -255,7 +255,7 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
                             key={s}
                             type="button"
                             onClick={() => move(it.id, s)}
-                            className="rounded border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted hover:text-text"
+                            className="rounded border border-border px-2 py-0.5 font-mono text-10 uppercase tracking-[0.12em] text-text-muted hover:text-text"
                           >
                             → {s}
                           </button>

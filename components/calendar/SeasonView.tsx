@@ -131,7 +131,7 @@ export function SeasonView({
       {/* Jump-to chips scroll the one surface — month buttons never page it,
           so "behind you" stays reachable at the foot (§4.2/5a). */}
       <div className="mb-4 flex flex-wrap items-baseline gap-1.5">
-        <span className="mr-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+        <span className="mr-1 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-faint">
           Jump to
         </span>
         {[...sections.keys()].map(key => (
@@ -139,7 +139,7 @@ export function SeasonView({
             key={key}
             type="button"
             onClick={() => jump(key)}
-            className="border border-border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
+            className="border border-border px-2.5 py-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
           >
             {sections.get(key)!.label.slice(0, 3)}
           </button>
@@ -149,18 +149,18 @@ export function SeasonView({
       {[...sections.entries()].map(([key, s]) => (
         <div key={key} id={`season-${key}`} className="mb-8 scroll-mt-20">
           <div className="mb-1 flex items-baseline gap-3 border-b border-text pb-1">
-            <h2 className="font-serif text-[24px] font-semibold leading-none text-text">{s.label}</h2>
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            <h2 className="font-serif text-24 font-semibold leading-none text-text">{s.label}</h2>
+            <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
               {s.windows.length} weekend{s.windows.length === 1 ? '' : 's'}
             </span>
           </div>
           {s.windows.map((w, wi) => (
             <div key={wi} className="flex gap-4 border-b border-border py-3">
               <div className="w-24 shrink-0 pt-0.5 sm:w-28">
-                <div className="font-mono text-[12px] font-semibold tabular-nums text-text">
+                <div className="font-mono text-12 font-semibold tabular-nums text-text">
                   {rangeLabel(w.start, w.end)}
                 </div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">{subLabel(w)}</div>
+                <div className="font-mono text-9 uppercase tracking-[0.12em] text-text-faint">{subLabel(w)}</div>
               </div>
               <div className="min-w-0 flex-1">
                 {w.rows.map(r => {
@@ -173,31 +173,31 @@ export function SeasonView({
                       className="group flex min-h-10 items-baseline gap-3 py-1 transition-colors duration-(--duration-fast) hover:bg-surface"
                     >
                       <span aria-hidden="true" className="relative top-[2px] h-3.5 w-[3px] shrink-0 self-start" style={{ backgroundColor: r.color }} />
-                      <span className="w-24 shrink-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted sm:w-28">
+                      <span className="w-24 shrink-0 truncate font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-muted sm:w-28">
                         {r.name}
                       </span>
-                      <span className="w-12 shrink-0 font-mono text-[10px] tabular-nums text-text-faint">
+                      <span className="w-12 shrink-0 font-mono text-10 tabular-nums text-text-faint">
                         R{r.rounds.join('·')}
                       </span>
-                      <span className="min-w-0 flex-1 truncate font-serif text-[16px] font-semibold text-text group-hover:underline">
+                      <span className="min-w-0 flex-1 truncate font-serif text-16 font-semibold text-text group-hover:underline">
                         {r.roundName ?? `Round ${r.rounds[0]}`}
                       </span>
                       {r.rounds.length > 1 && (
-                        <span className="shrink-0 border border-brand px-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-brand">
+                        <span className="shrink-0 border border-brand px-1.5 font-mono text-9 font-semibold uppercase tracking-[0.1em] text-brand">
                           Double
                         </span>
                       )}
                       {r.finale && (
-                        <span className="shrink-0 border border-brand px-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-brand">
+                        <span className="shrink-0 border border-brand px-1.5 font-mono text-9 font-semibold uppercase tracking-[0.1em] text-brand">
                           Finale
                         </span>
                       )}
                       {rowRange !== windowRange && (
-                        <span className="hidden shrink-0 border border-border px-1.5 font-mono text-[9px] tabular-nums text-text-muted sm:inline">
+                        <span className="hidden shrink-0 border border-border px-1.5 font-mono text-9 tabular-nums text-text-muted sm:inline">
                           {rowRange}
                         </span>
                       )}
-                      <span aria-hidden="true" className="shrink-0 font-mono text-[10px] text-text-faint">→</span>
+                      <span aria-hidden="true" className="shrink-0 font-mono text-10 text-text-faint">→</span>
                     </Link>
                   );
                 })}
@@ -208,7 +208,7 @@ export function SeasonView({
       ))}
 
       {past.length > 0 && (
-        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-border pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-border pt-3 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           <span className="font-semibold">Behind you</span>
           {past.slice(-2).reverse().flatMap(w =>
             w.rows.slice(0, 1).map(r => (

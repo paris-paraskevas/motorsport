@@ -27,7 +27,7 @@ const TracksMapInner = dynamic(() => import('./TracksMapInner'), {
       className="flex h-[70vh] min-h-[520px] w-full items-center justify-center rounded-lg border border-border bg-surface"
       aria-hidden="true"
     >
-      <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+      <span className="font-mono text-11 uppercase tracking-[0.14em] text-text-faint">
         Loading map…
       </span>
     </div>

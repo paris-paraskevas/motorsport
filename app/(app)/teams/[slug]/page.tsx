@@ -138,11 +138,11 @@ function NewsMentionsSection({ items }: { items: NewsItem[] }) {
               <div className="flex items-center gap-2 mb-1 min-w-0">
                 <time
                   dateTime={item.pubDate.toISOString()}
-                  className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
+                  className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
                 >
                   {item.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                 </time>
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint shrink-0">
+                <span className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint shrink-0">
                   · motorsport.com
                 </span>
                 <ExternalLink
@@ -150,7 +150,7 @@ function NewsMentionsSection({ items }: { items: NewsItem[] }) {
                   className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
                 />
               </div>
-              <h3 className="text-[15px] md:text-base font-semibold leading-snug tracking-tight text-text">
+              <h3 className="text-15 md:text-base font-semibold leading-snug tracking-tight text-text">
                 {item.title}
               </h3>
               {excerpt && (
@@ -162,7 +162,7 @@ function NewsMentionsSection({ items }: { items: NewsItem[] }) {
           );
         })}
       </div>
-      <div className="pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="pt-3 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         Source:{' '}
         <a
           href="https://www.motorsport.com/"
@@ -250,7 +250,7 @@ export default async function TeamPage({
       />
 
       <header className="mb-8 border-y border-border py-5 md:py-6">
-        <div className="flex items-center gap-2.5 mb-3 font-mono text-[11px] uppercase tracking-[0.18em] font-semibold">
+        <div className="flex items-center gap-2.5 mb-3 font-mono text-11 uppercase tracking-[0.18em] font-semibold">
           <Link
             href={`/series/${team.seriesSlug}`}
             className="hover:underline underline-offset-4"
@@ -276,7 +276,7 @@ export default async function TeamPage({
           </h2>
           <div className="flex gap-10 flex-wrap">
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold">
+              <div className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint font-semibold">
                 Position
               </div>
               <div className="mt-1 font-mono text-2xl md:text-3xl font-bold tabular-nums text-text">
@@ -284,7 +284,7 @@ export default async function TeamPage({
               </div>
             </div>
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold">
+              <div className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint font-semibold">
                 Points
               </div>
               <div className="mt-1 font-mono text-2xl md:text-3xl font-bold tabular-nums text-text">
@@ -292,7 +292,7 @@ export default async function TeamPage({
               </div>
             </div>
           </div>
-          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          <div className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
             of {teamForm.fieldSize} teams · from race results
           </div>
         </section>
@@ -304,7 +304,7 @@ export default async function TeamPage({
             Points trajectory
           </h2>
           <LazySeasonTrendChart {...trend} emphasize={team.name} />
-          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          <div className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
             Constructors&apos; points by round · {team.name} highlighted · from race results
           </div>
         </section>
@@ -322,7 +322,7 @@ export default async function TeamPage({
                 className="group flex items-baseline gap-3 py-2.5"
               >
                 {d.number != null && (
-                  <span className="text-[11px] tabular-nums font-mono text-text-faint w-8 text-right shrink-0">
+                  <span className="text-11 tabular-nums font-mono text-text-faint w-8 text-right shrink-0">
                     #{d.number}
                   </span>
                 )}
@@ -330,7 +330,7 @@ export default async function TeamPage({
                   {d.name}
                 </span>
                 {d.code && (
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
+                  <span className="font-mono text-10 uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
                     {d.code}
                   </span>
                 )}
@@ -344,7 +344,7 @@ export default async function TeamPage({
           ))}
         </ul>
         {anyDriverForm && (
-          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          <div className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
             Positions and points from race results
           </div>
         )}

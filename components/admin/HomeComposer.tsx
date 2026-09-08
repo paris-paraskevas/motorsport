@@ -239,11 +239,11 @@ export function HomeComposer({
   const rowBtn =
     'flex w-full items-center gap-2 border-b border-border px-2 py-2 text-left text-sm transition-colors duration-(--duration-fast) hover:bg-surface';
   const primaryBtn =
-    'inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-text disabled:opacity-50';
+    'inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-text disabled:opacity-50';
   const secondaryBtn =
-    'inline-flex items-center gap-2 border border-border bg-transparent px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text disabled:opacity-50';
+    'inline-flex items-center gap-2 border border-border bg-transparent px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text disabled:opacity-50';
   const quietBtn =
-    'inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text disabled:opacity-50';
+    'inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.14em] text-text-muted hover:text-text disabled:opacity-50';
 
   return (
     <div className="min-w-0">
@@ -253,7 +253,7 @@ export function HomeComposer({
           preview here, publish on paddock-tracker.com.
         </p>
       )}
-      <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+      <p className="mb-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
         Bands · drag to reorder
       </p>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
@@ -267,7 +267,7 @@ export function HomeComposer({
       </DndContext>
 
       <div className="mb-2 mt-6 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+        <p className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
           Lead story
         </p>
         {/* Local state only — deliberately NOT pushed into the URL like the
@@ -279,7 +279,7 @@ export function HomeComposer({
           onChange={e => setQuery(e.target.value)}
           placeholder="Filter posts…"
           aria-label="Filter the post list"
-          className="min-w-0 flex-1 border border-border bg-surface px-2 py-1 font-mono text-[11px] text-text placeholder:text-text-faint focus:border-text focus:outline-none"
+          className="min-w-0 flex-1 border border-border bg-surface px-2 py-1 font-mono text-11 text-text placeholder:text-text-faint focus:border-text focus:outline-none"
         />
       </div>
       {/* radiogroup, not a column of checkboxes: exactly one lead can be chosen,
@@ -315,7 +315,7 @@ export function HomeComposer({
               {/* Series and date were already being passed to this component and
                   thrown away. Two dozen truncated headlines with no other
                   signal is not a list you can pick from. */}
-              <span className="mt-0.5 flex items-baseline gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+              <span className="mt-0.5 flex items-baseline gap-2 font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                 {p.seriesSlug && <span className="font-semibold">{p.seriesSlug}</span>}
                 {p.publishedAt && <span className="tabular-nums">{shortDate(p.publishedAt)}</span>}
               </span>

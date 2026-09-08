@@ -44,9 +44,9 @@ export function generateStaticParams() {
 function SectionRule({ label, right }: { label: string; right?: string }) {
   return (
     <div className="mb-3 flex items-baseline justify-between gap-4 border-b border-text pb-1">
-      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</span>
+      <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</span>
       {right !== undefined && (
-        <span className="text-right font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{right}</span>
+        <span className="text-right font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{right}</span>
       )}
     </div>
   );
@@ -83,7 +83,7 @@ async function ChampionshipBlock({
         <div className="mt-2">
           <Link
             href={`/series/${slug}/standings`}
-            className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+            className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
           >
             Standings →
           </Link>
@@ -98,7 +98,7 @@ async function ChampionshipBlock({
         right={seasonOver ? 'season complete' : `after ${complete} rounds`}
       />
       {seasonOver && (
-        <p className="mb-3 border-l-[3px] border-brand bg-surface-elevated px-3 py-2 font-serif text-[19px] leading-snug text-text">
+        <p className="mb-3 border-l-[3px] border-brand bg-surface-elevated px-3 py-2 font-serif text-19 leading-snug text-text">
           <span className="font-semibold">{brief.leader.name}</span> is the {season} champion.
         </p>
       )}
@@ -107,7 +107,7 @@ async function ChampionshipBlock({
           const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
           return (
             <li key={row.position} className="flex items-center gap-3 border-b border-border py-1.5">
-              <span className="w-4 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+              <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                 {row.position}
               </span>
               <span className="w-32 shrink-0 truncate text-sm text-text sm:w-40">{row.name}</span>
@@ -117,10 +117,10 @@ async function ChampionshipBlock({
                   style={{ width: `${width}%` }}
                 />
               </span>
-              <span className="w-10 shrink-0 text-right font-mono text-[12px] font-semibold tabular-nums text-text">
+              <span className="w-10 shrink-0 text-right font-mono text-12 font-semibold tabular-nums text-text">
                 {row.points}
               </span>
-              <span className="hidden w-10 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint sm:block">
+              <span className="hidden w-10 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint sm:block">
                 {row.position === 1 ? '—' : `−${leaderPoints - row.points}`}
               </span>
             </li>
@@ -130,7 +130,7 @@ async function ChampionshipBlock({
       <div className="mt-2">
         <Link
           href={`/series/${slug}/standings`}
-          className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+          className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
         >
           Full table →
         </Link>
@@ -145,7 +145,7 @@ async function LastPodiumLine({ slug, round }: { slug: string; round: number }) 
   const podium = homeResultsSupported(slug) ? await fetchLatestPodium(slug).catch(() => null) : null;
   if (!podium || podium.round !== round || !podium.podium[0]) return null;
   return (
-    <p className="mt-0.5 font-mono text-[11px] tabular-nums text-text-muted">
+    <p className="mt-0.5 font-mono text-11 tabular-nums text-text-muted">
       {podium.podium[0].name.split(' ').slice(-1)[0]}
       {podium.podium[1]?.time?.startsWith('+') ? ` · ${podium.podium[1].time}` : ''}
     </p>
@@ -246,12 +246,12 @@ export default async function SeriesPage({
           <div className="min-w-0">
             <div className="flex items-center gap-3">
               <span aria-hidden="true" className="h-9 w-[4px] shrink-0" style={{ backgroundColor: color }} />
-              <h1 className="truncate font-serif text-[40px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[50px]">
+              <h1 className="truncate font-serif text-40 font-medium leading-none tracking-[-0.02em] text-text lg:text-50">
                 {meta.name}
               </h1>
             </div>
-            <p className="mt-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
-              {seasonOver && <span className="text-[11px] text-brand">Season complete · </span>}
+            <p className="mt-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted">
+              {seasonOver && <span className="text-11 text-brand">Season complete · </span>}
               {meta.season} season
               {weekends.length > 0 && !meta.singleEvent
                 ? ` · ${weekends.length} rounds${seasonOver ? '' : ` · ${complete} complete`}`
@@ -291,7 +291,7 @@ export default async function SeriesPage({
               key={l.label}
               href={l.href}
               title={l.blurb}
-              className="inline-flex min-h-10 items-center justify-center border border-border px-2 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
+              className="inline-flex min-h-10 items-center justify-center border border-border px-2 text-center font-mono text-11 font-semibold uppercase tracking-[0.1em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
             >
               {l.label}
             </Link>
@@ -306,13 +306,13 @@ export default async function SeriesPage({
             {meta.singleEvent ? (
               <>
                 <SectionRule label="The event" />
-                <p className="font-serif text-[19px] leading-snug text-text">
+                <p className="font-serif text-19 leading-snug text-text">
                   One race a year — no championship at all. Past winners carry the history.
                 </p>
                 <div className="mt-2">
                   <Link
                     href={`/series/${slug}/champions`}
-                    className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+                    className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
                   >
                     Past winners →
                   </Link>
@@ -338,7 +338,7 @@ export default async function SeriesPage({
             {lastW && (
               <div className="mb-5">
                 <SectionRule label="Last round" />
-                <p className="font-serif text-[19px] font-semibold leading-tight text-text">
+                <p className="font-serif text-19 font-semibold leading-tight text-text">
                   {lastW.roundName ?? weekendLabel(lastW, lastW.round).title}
                 </p>
                 <Suspense fallback={null}>
@@ -346,7 +346,7 @@ export default async function SeriesPage({
                 </Suspense>
                 <Link
                   href={`/series/${slug}/weekend/${lastW.round}`}
-                  className="mt-1 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+                  className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
                 >
                   Report →
                 </Link>
@@ -355,15 +355,15 @@ export default async function SeriesPage({
             {nextW && (
               <div className="mb-5">
                 <SectionRule label="Next round" />
-                <p className="font-serif text-[19px] font-semibold leading-tight text-text">
+                <p className="font-serif text-19 font-semibold leading-tight text-text">
                   {nextW.roundName ?? weekendLabel(nextW, nextW.round).title}
                 </p>
-                <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                <p className="mt-0.5 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                   {fmtRange(nextW)}
                 </p>
                 <Link
                   href={`/series/${slug}/weekend/${nextW.round}`}
-                  className="mt-1 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+                  className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
                 >
                   Preview →
                 </Link>
@@ -372,7 +372,7 @@ export default async function SeriesPage({
             {seasonOver && (
               <div className="mb-5">
                 <SectionRule label="Season" />
-                <p className="font-serif text-[17px] leading-snug text-text">
+                <p className="font-serif text-17 leading-snug text-text">
                   Complete — all {weekends.length} rounds run.
                 </p>
               </div>
@@ -380,13 +380,13 @@ export default async function SeriesPage({
             <div className="border-t border-border pt-3">
               <a
                 href={`${SITE_URL.replace(/^https?:/, 'webcal:')}/api/calendar/${slug}.ics`}
-                className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+                className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
               >
                 Subscribe to the calendar →
               </a>
               <a
                 href={`/api/calendar/${slug}.ics`}
-                className="ml-4 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint hover:text-text-muted"
+                className="ml-4 font-mono text-10 uppercase tracking-[0.14em] text-text-faint hover:text-text-muted"
               >
                 .ics
               </a>
@@ -413,22 +413,22 @@ export default async function SeriesPage({
                       isNext ? 'border-[1.5px] border-text bg-surface-elevated px-2' : ''
                     }`}
                   >
-                    <span className="w-6 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                    <span className="w-6 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                       {w.round >= 1 ? w.round : '–'}
                     </span>
-                    <span className="min-w-0 flex-1 truncate font-serif text-[16px] font-semibold text-text">
+                    <span className="min-w-0 flex-1 truncate font-serif text-16 font-semibold text-text">
                       {w.roundName ?? weekendLabel(w, w.round).title}
                     </span>
                     {relocated && (
-                      <span className="shrink-0 border border-brand px-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-brand">
+                      <span className="shrink-0 border border-brand px-1.5 font-mono text-9 font-semibold uppercase tracking-[0.1em] text-brand">
                         {relocated}
                       </span>
                     )}
-                    <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">{fmtRange(w)}</span>
+                    <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">{fmtRange(w)}</span>
                     {/* Hidden on phones: the whole row is the tap target, and
                         the 74px this frees stops race names truncating at 375px. */}
                     <span
-                      className={`hidden w-[74px] shrink-0 text-right font-mono text-[9px] font-semibold uppercase tracking-[0.12em] sm:block ${
+                      className={`hidden w-[74px] shrink-0 text-right font-mono text-9 font-semibold uppercase tracking-[0.12em] sm:block ${
                         w.isPast ? 'text-brand' : isNext ? 'text-text' : 'text-text-faint'
                       }`}
                     >
@@ -440,7 +440,7 @@ export default async function SeriesPage({
             </div>
             {cancelled.map(c => (
               <div key={c.originalRound} className="mt-4 border-l-[3px] border-brand bg-surface-elevated px-4 py-3">
-                <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-brand">
+                <span className="font-mono text-9 font-semibold uppercase tracking-[0.16em] text-brand">
                   Cancelled
                 </span>
                 <p className="mt-1 text-sm leading-snug text-text">
@@ -481,8 +481,8 @@ export default async function SeriesPage({
                 href={l.href}
                 className="group flex flex-col gap-0.5 bg-surface-elevated px-3 py-2.5 transition-colors duration-(--duration-fast) hover:bg-surface"
               >
-                <span className="font-serif text-[15px] font-semibold text-text">{l.label}</span>
-                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">{l.blurb}</span>
+                <span className="font-serif text-15 font-semibold text-text">{l.label}</span>
+                <span className="font-mono text-9 uppercase tracking-[0.12em] text-text-faint">{l.blurb}</span>
               </Link>
             ))}
             {Array.from({ length: (8 - (refs.length % 8)) % 8 }, (_, i) => (

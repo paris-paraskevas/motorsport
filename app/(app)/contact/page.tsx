@@ -17,10 +17,10 @@ export default function ContactPage() {
   return (
     <div className={PAGE_READ}>
       <header className="mb-6 border-b border-border pb-5">
-        <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+        <h1 className="font-serif text-38 font-medium leading-none tracking-[-0.02em] text-text md:text-46">
           Contact
         </h1>
-        <p className="mt-2 max-w-[52ch] font-serif text-[16px] leading-snug text-text-muted">
+        <p className="mt-2 max-w-[52ch] font-serif text-16 leading-snug text-text-muted">
           Bugs, ideas, corrections, or a copy of your data — write and we reply
           by email.
         </p>
@@ -30,7 +30,7 @@ export default function ContactPage() {
         <ContactForm />
       </div>
 
-      <p className="mt-4 max-w-[68ch] font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <p className="mt-4 max-w-[68ch] font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         Asking for your data? Say so in the message and we send everything we
         hold to your address. Messages are kept for twelve months, then deleted
         — the privacy page has the full policy.

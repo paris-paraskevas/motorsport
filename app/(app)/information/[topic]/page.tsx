@@ -48,7 +48,7 @@ export async function generateMetadata({
 function DraftNotice({ label }: { label: string }) {
   return (
     <div className="mb-4 border border-border bg-surface rounded-md p-3">
-      <p className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-text-faint mb-1">
+      <p className="font-mono text-10 uppercase tracking-[0.14em] font-semibold text-text-faint mb-1">
         Pending review
       </p>
       <p className="text-sm text-text-muted leading-relaxed">{label}</p>
@@ -217,7 +217,7 @@ function TrackDirectory({
       <DraftNotice label="This tracks directory is drafted from web research and awaiting a fact-check, so it is not indexed by search engines yet. Coordinates are verified against our circuit data where a match exists." />
       {countries.map((country) => (
         <section key={country} className="mb-8">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-tint mb-2">
+          <h2 className="font-mono text-11 uppercase tracking-[0.16em] font-semibold text-tint mb-2">
             {country}
           </h2>
           <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">

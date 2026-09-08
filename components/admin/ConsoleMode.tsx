@@ -61,7 +61,7 @@ export function ConsoleModeToggle() {
       onClick={flip}
       aria-label="Switch the console between dark and light"
       title="Switch the console between dark and light"
-      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 font-mono text-11 uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text"
     >
       <Moon size={13} data-mode-icon="dark" aria-hidden />
       <Sun size={13} data-mode-icon="light" aria-hidden />

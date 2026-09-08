@@ -43,7 +43,7 @@ export function DyslexicToggle() {
 
   return (
     <section className="mt-10 border-t border-border pt-6">
-      <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+      <h2 className="font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text-faint">
         Readability
       </h2>
       <div className="mt-3 flex items-start justify-between gap-4">

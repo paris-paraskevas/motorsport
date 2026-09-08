@@ -28,7 +28,7 @@ function frame(children: ReactNode) {
     <div className={PAGE_WIDE}>
       <Link
         href="/social"
-        className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
+        className="mb-4 inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
       >
         <ArrowLeft size={14} /> Social
       </Link>
@@ -50,7 +50,7 @@ export default async function FriendsPage() {
     return frame(
       <div className="font-mono text-sm text-text-muted">
         <p className="mb-3">Sign in to manage friends and requests.</p>
-        <Link href="/sign-in" className="inline-block bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
+        <Link href="/sign-in" className="inline-block bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
           Sign in
         </Link>
       </div>,

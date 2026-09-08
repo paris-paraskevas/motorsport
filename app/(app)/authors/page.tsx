@@ -54,7 +54,7 @@ export default async function AuthorsPage() {
       <header className="mb-8 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
         <div>
-          <div className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+          <div className="mb-1 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-faint">
             Writing
           </div>
           <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
@@ -93,7 +93,7 @@ export default async function AuthorsPage() {
                     <span className="font-display text-xl font-extrabold uppercase tracking-wide text-text transition-colors duration-(--duration-fast) group-hover:text-brand">
                       {profile.displayName}
                     </span>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint tabular-nums">
+                    <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint tabular-nums">
                       {profile.roleTitle ? `${profile.roleTitle} · ` : ''}
                       {count} {count === 1 ? 'post' : 'posts'}
                     </span>

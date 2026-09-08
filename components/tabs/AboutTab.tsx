@@ -159,7 +159,7 @@ function ExternalSourcesCard({ series }: { series: Series }) {
 
   return (
     <div className="border-y border-border py-5">
-      <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-3">
+      <div className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint font-semibold mb-3">
         Further reading
       </div>
       <div className="flex flex-wrap gap-2">

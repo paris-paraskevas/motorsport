@@ -48,7 +48,7 @@ export async function ChartEmbed({ series: slug }: { series?: string }) {
     case 'ok':
       return (
         <figure className="border border-border bg-surface/40 p-4">
-          <figcaption className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+          <figcaption className="mb-3 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text-faint">
             {data.name} · championship trend
           </figcaption>
           <LazySeasonTrendChart {...data.trend} />

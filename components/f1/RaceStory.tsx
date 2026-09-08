@@ -107,7 +107,7 @@ export function RaceStory({
             <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
               Tyre strategy
             </h3>
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+            <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
               {totalLaps} laps
             </span>
           </div>
@@ -144,7 +144,7 @@ export function RaceStory({
                           style={{ width: `${widthPct}%`, backgroundColor: fill }}
                         >
                           <span
-                            className={`font-mono text-[10px] font-bold leading-none ${
+                            className={`font-mono text-10 font-bold leading-none ${
                               text === 'dark' ? 'text-black/80' : 'text-white/90'
                             }`}
                           >
@@ -217,13 +217,13 @@ export function RaceStory({
                                 className="h-1.5 w-1.5 rounded-full"
                                 style={{ backgroundColor: driver.teamColour }}
                               />
-                              <span className="font-mono text-[11px] font-medium uppercase tracking-wide text-text-muted">
+                              <span className="font-mono text-11 font-medium uppercase tracking-wide text-text-muted">
                                 {driver.code}
                               </span>
                             </span>
                           )}
                           {m.lap != null && (
-                            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                            <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
                               L{m.lap}
                             </span>
                           )}
@@ -243,7 +243,7 @@ export function RaceStory({
               </ol>
             </div>
             {visibleMoments.length > MAX_VISIBLE && (
-              <p className="pt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+              <p className="pt-2 font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
                 Showing {MAX_VISIBLE} of {visibleMoments.length} — use the filters to narrow
               </p>
             )}
@@ -270,7 +270,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
+      className={`border px-2 py-0.5 font-mono text-10 uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
         active
           ? 'border-border-strong bg-surface text-text'
           : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
@@ -297,7 +297,7 @@ function TyreLegend() {
             className="h-2.5 w-2.5 rounded-sm"
             style={{ backgroundColor: compoundStyle(e.compound).fill }}
           />
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
             {e.label}
           </span>
         </span>

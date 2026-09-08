@@ -24,7 +24,7 @@ export function StandingsView({
       <nav
         aria-label="Standings sections"
         role="tablist"
-        className="mb-5 flex gap-5 border-b border-border font-mono text-[11px] uppercase tracking-[0.16em]"
+        className="mb-5 flex gap-5 border-b border-border font-mono text-11 uppercase tracking-[0.16em]"
       >
         {sections.map(s => (
           <button

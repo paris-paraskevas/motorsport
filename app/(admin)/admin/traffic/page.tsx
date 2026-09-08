@@ -57,8 +57,8 @@ function Kpi({ value, label, hint }: { value: string; label: string; hint?: stri
   return (
     <div className="min-w-0 rounded-xl border border-border bg-surface-elevated p-4">
       <div className="truncate font-display text-3xl font-extrabold tabular-nums text-text">{value}</div>
-      <div className="mt-1 truncate font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</div>
-      {hint ? <div className="mt-0.5 truncate text-[11px] text-text-faint">{hint}</div> : null}
+      <div className="mt-1 truncate font-mono text-10 uppercase tracking-[0.14em] text-text-muted">{label}</div>
+      {hint ? <div className="mt-0.5 truncate text-11 text-text-faint">{hint}</div> : null}
     </div>
   );
 }
@@ -67,7 +67,7 @@ function NotConnected({ what, env }: { what: string; env: string }) {
   return (
     <div className="space-y-1.5">
       <p className="text-sm text-text-muted">{what} is not connected.</p>
-      <p className="font-mono text-[11px] text-text-faint">Needs {env} as Worker secrets.</p>
+      <p className="font-mono text-11 text-text-faint">Needs {env} as Worker secrets.</p>
     </div>
   );
 }
@@ -79,8 +79,8 @@ function Rows({ rows }: { rows: { label: string; right: string; sub?: string }[]
         <li key={`${r.label}-${i}`} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
           <span className="min-w-0 truncate text-text">{r.label}</span>
           <span className="flex shrink-0 items-baseline gap-3">
-            {r.sub ? <span className="font-mono text-[10px] text-text-faint">{r.sub}</span> : null}
-            <span className="font-mono text-[11px] tabular-nums text-text">{r.right}</span>
+            {r.sub ? <span className="font-mono text-10 text-text-faint">{r.sub}</span> : null}
+            <span className="font-mono text-11 tabular-nums text-text">{r.right}</span>
           </span>
         </li>
       ))}
@@ -138,7 +138,7 @@ export default async function AdminTrafficPage() {
                 <Sparkline values={ga4.trend} width={480} height={44} />
               </div>
             ) : null}
-            <div className="flex flex-wrap gap-x-6 gap-y-1 font-mono text-[11px] tabular-nums text-text-muted">
+            <div className="flex flex-wrap gap-x-6 gap-y-1 font-mono text-11 tabular-nums text-text-muted">
               <span>{ga4.users.toLocaleString()} users</span>
               <span>{ga4.sessions.toLocaleString()} sessions</span>
               <span>{ga4.pageViews.toLocaleString()} views</span>
@@ -220,7 +220,7 @@ export default async function AdminTrafficPage() {
       </TelemetryPanel>
 
       <div>
-        <h2 className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
+        <h2 className="mb-3 font-mono text-11 uppercase tracking-[0.16em] text-text-muted">
           What readers reach for
         </h2>
         {heat.length === 0 ? (

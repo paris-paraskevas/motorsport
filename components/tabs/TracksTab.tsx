@@ -64,12 +64,12 @@ export async function TracksTab({ series }: { series: Series }) {
                   className="h-full w-full object-contain"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-border font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-border font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                   No map yet
                 </div>
               )}
             </div>
-            <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint tnum">
+            <div className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint tnum">
               Round {c.round}
             </div>
             <div className="mt-0.5 text-sm font-semibold text-text leading-snug group-hover:text-tint transition-colors duration-(--duration-fast)">
@@ -83,7 +83,7 @@ export async function TracksTab({ series }: { series: Series }) {
       </div>
 
       {credit && (
-        <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <p className="mt-4 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           Circuit maps ·{' '}
           <a
             href={credit.sourceUrl}

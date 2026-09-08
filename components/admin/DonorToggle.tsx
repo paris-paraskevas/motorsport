@@ -39,7 +39,7 @@ export function DonorToggle({ userId, donor }: { userId: string; donor: boolean 
       disabled={busy}
       onClick={toggle}
       title={donor ? 'Remove the supporter flag' : 'Mark as supporter (unlocks AI tools)'}
-      className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) disabled:opacity-40 ${
+      className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-10 uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) disabled:opacity-40 ${
         error
           ? 'border-red-400 text-red-400'
           : donor

@@ -108,7 +108,7 @@ export function AppShell({
           <Link
             href="/"
             data-heatmap-id="nav:wordmark"
-            className="shrink-0 font-condensed text-[16px] font-bold uppercase tracking-[0.06em] text-text lg:text-[19px]"
+            className="shrink-0 font-condensed text-16 font-bold uppercase tracking-[0.06em] text-text lg:text-19"
           >
             <span className="hidden lg:inline">
               Paddock<span className="text-brand">•</span>Tracker
@@ -178,7 +178,7 @@ function todayLabel() {
 function HeaderDate() {
   const date = useSyncExternalStore(subscribeNever, todayLabel, () => null);
   return (
-    <span className="hidden font-mono text-[10px] uppercase tracking-[0.16em] text-text-muted lg:block">
+    <span className="hidden font-mono text-10 uppercase tracking-[0.16em] text-text-muted lg:block">
       {date}
     </span>
   );
@@ -216,7 +216,7 @@ function HeaderAccount() {
   const isAdminUser = user?.publicMetadata?.role === 'admin';
 
   const itemClass =
-    'block w-full px-3 py-2 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text';
+    'block w-full px-3 py-2 text-left font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text';
   const close = () => setOpen(false);
 
   return (
@@ -278,11 +278,11 @@ function HeaderAccount() {
         >
           {isSignedIn && user ? (
             <div className="border-b border-border px-3 py-2.5">
-              <span className="block truncate font-serif text-[15px] font-semibold leading-tight text-text">
+              <span className="block truncate font-serif text-15 font-semibold leading-tight text-text">
                 {user.fullName ?? user.username ?? 'Signed in'}
               </span>
               {user.primaryEmailAddress?.emailAddress && (
-                <span className="mt-0.5 block truncate font-mono text-[10px] text-text-faint">
+                <span className="mt-0.5 block truncate font-mono text-10 text-text-faint">
                   {user.primaryEmailAddress.emailAddress}
                 </span>
               )}

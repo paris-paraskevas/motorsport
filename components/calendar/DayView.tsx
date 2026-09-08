@@ -68,7 +68,7 @@ export function DayView({
       {/* Always present when the day has sessions (we returned early on empty) —
           the control belongs on the day screen regardless of how many series run. */}
       <div className="mb-3 flex items-center justify-end gap-2">
-        <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">Order by</span>
+        <span className="font-mono text-11 uppercase tracking-[0.12em] text-text-faint">Order by</span>
         <div className="flex">
           {(['time', 'series'] as OrderBy[]).map(o => (
             <button
@@ -76,7 +76,7 @@ export function DayView({
               type="button"
               onClick={() => setOrderBy(o)}
               aria-pressed={orderBy === o}
-              className={`-ml-px border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
+              className={`-ml-px border px-3 py-1 font-mono text-11 uppercase tracking-[0.12em] transition-colors ${
                 orderBy === o ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
               }`}
             >
@@ -96,7 +96,7 @@ export function DayView({
                   className="h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ backgroundColor: g.color }}
                 />
-                <h3 className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">{g.name}</h3>
+                <h3 className="font-mono text-11 uppercase tracking-[0.14em] text-text-muted">{g.name}</h3>
               </div>
               <div className="border-t border-border">{g.entries.map(card)}</div>
             </section>

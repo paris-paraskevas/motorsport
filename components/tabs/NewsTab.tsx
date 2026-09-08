@@ -68,11 +68,11 @@ export async function NewsTab({ series }: { series: Series }) {
               <div className="flex items-center gap-2 mb-1 min-w-0">
                 <time
                   dateTime={item.pubDate.toISOString()}
-                  className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
+                  className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
                 >
                   {relativeAgo(item.pubDate)}
                 </time>
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint shrink-0">
+                <span className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint shrink-0">
                   · motorsport.com
                 </span>
                 <ExternalLink
@@ -80,7 +80,7 @@ export async function NewsTab({ series }: { series: Series }) {
                   className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
                 />
               </div>
-              <h3 className="text-[15px] md:text-base font-semibold leading-snug tracking-tight text-text">
+              <h3 className="text-15 md:text-base font-semibold leading-snug tracking-tight text-text">
                 {item.title}
               </h3>
               {excerpt && (
@@ -92,7 +92,7 @@ export async function NewsTab({ series }: { series: Series }) {
           );
         })}
       </div>
-      <div className="pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="pt-3 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         Source:{' '}
         <a
           href="https://www.motorsport.com/"

@@ -212,7 +212,7 @@ export function HeatmapOverlay({
   }, [render]);
 
   const pill = (active: boolean) =>
-    `border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors ${
+    `border px-2.5 py-1 font-mono text-10 uppercase tracking-[0.12em] transition-colors ${
       active ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
     }`;
 
@@ -248,7 +248,7 @@ export function HeatmapOverlay({
           value={source}
           onChange={e => setSource(e.target.value as 'all' | Source)}
           title="Traffic source"
-          className="border border-border bg-bg px-2 py-1 font-mono text-[11px] text-text"
+          className="border border-border bg-bg px-2 py-1 font-mono text-11 text-text"
         >
           <option value="all">all sources</option>
           <option value="direct">direct</option>
@@ -261,7 +261,7 @@ export function HeatmapOverlay({
           value={visitor}
           onChange={e => setVisitor(e.target.value as 'all' | Visitor)}
           title="Visitor type"
-          className="border border-border bg-bg px-2 py-1 font-mono text-[11px] text-text"
+          className="border border-border bg-bg px-2 py-1 font-mono text-11 text-text"
         >
           <option value="all">all visitors</option>
           <option value="new">new</option>
@@ -271,7 +271,7 @@ export function HeatmapOverlay({
           value={range}
           onChange={e => setRange(e.target.value as 'all' | '7d' | '30d' | '90d')}
           title="Date range"
-          className="border border-border bg-bg px-2 py-1 font-mono text-[11px] text-text"
+          className="border border-border bg-bg px-2 py-1 font-mono text-11 text-text"
         >
           <option value="all">all time</option>
           <option value="7d">7 days</option>
@@ -281,7 +281,7 @@ export function HeatmapOverlay({
         <button type="button" onClick={render} className={pill(false)}>
           Re-measure
         </button>
-        <span className="ml-auto font-mono text-[11px] tabular-nums text-text-faint">
+        <span className="ml-auto font-mono text-11 tabular-nums text-text-faint">
           {loading
             ? 'loading…'
             : mode === 'scroll'
@@ -293,7 +293,7 @@ export function HeatmapOverlay({
       </div>
 
       {frameError && (
-        <p className="rounded-lg border border-dashed border-border bg-surface/40 px-3 py-2 font-mono text-[11px] text-text-faint">
+        <p className="rounded-lg border border-dashed border-border bg-surface/40 px-3 py-2 font-mono text-11 text-text-faint">
           Couldn&apos;t read the framed page — needs same-origin + <span className="text-text">X-Frame-Options: SAMEORIGIN</span>.
         </p>
       )}
@@ -316,7 +316,7 @@ export function HeatmapOverlay({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="flex items-center gap-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         <span>{mode === 'scroll' ? 'few' : 'cold'}</span>
         <span className="h-2 w-40 rounded-full" style={{ background: 'linear-gradient(90deg,#2563eb,#22d3ee,#22c55e,#facc15,#ef4444)' }} />
         <span>{mode === 'scroll' ? 'most' : 'hot'}</span>
@@ -340,17 +340,17 @@ export function HeatmapOverlay({
 function FrustrationList({ title, note, rows, tone }: { title: string; note: string; rows: FrustrationItem[]; tone: string }) {
   return (
     <div>
-      <div className={`mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] ${tone}`}>
+      <div className={`mb-1.5 font-mono text-10 font-semibold uppercase tracking-[0.14em] ${tone}`}>
         {title} <span className="text-text-faint">· {note}</span>
       </div>
       {rows.length === 0 ? (
-        <p className="font-mono text-[11px] text-text-faint">None yet</p>
+        <p className="font-mono text-11 text-text-faint">None yet</p>
       ) : (
         <ul className="space-y-1">
           {rows.slice(0, 8).map(r => (
             <li key={r.anchor} className="flex items-baseline justify-between gap-2 text-xs">
               <span className="truncate font-mono text-text">{r.anchor}</span>
-              <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">{r.count.toLocaleString()}</span>
+              <span className="shrink-0 font-mono text-10 tabular-nums text-text-faint">{r.count.toLocaleString()}</span>
             </li>
           ))}
         </ul>

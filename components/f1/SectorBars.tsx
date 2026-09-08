@@ -59,7 +59,7 @@ export function SectorBars({
       {/* Lap-time header: each driver's full lap, faster one tinted. */}
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         <DriverHead driver={driverA} lapTime={lapA.lapTime} faster={lapA.lapTime <= lapB.lapTime} align="left" />
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">vs</span>
+        <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">vs</span>
         <DriverHead driver={driverB} lapTime={lapB.lapTime} faster={lapB.lapTime < lapA.lapTime} align="right" />
       </div>
 
@@ -84,7 +84,7 @@ export function SectorBars({
               <span className="font-display text-xs font-bold uppercase tracking-wide text-text">{r.label}</span>
               {r.delta != null && (
                 <span
-                  className="font-mono text-[11px] font-semibold tabular-nums"
+                  className="font-mono text-11 font-semibold tabular-nums"
                   style={{ color: r.aFaster ? seriesInk(driverA.teamColour) : r.bFaster ? seriesInk(driverB.teamColour) : 'var(--text-faint)' }}
                   // gap is expressed from the faster driver's perspective
                 >

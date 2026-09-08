@@ -36,12 +36,12 @@ export function InstallApp({ label = 'Install as an app' }: { label?: string }) 
             setHint(h => !h);
           }
         }}
-        className="inline-flex min-h-11 items-center border border-border-strong px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text transition-colors duration-(--duration-fast) hover:bg-surface"
+        className="inline-flex min-h-11 items-center border border-border-strong px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text transition-colors duration-(--duration-fast) hover:bg-surface"
       >
         {label}
       </button>
       {hint && !deferred && (
-        <p className="mt-2 max-w-[38ch] font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+        <p className="mt-2 max-w-[38ch] font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
           Use your browser&apos;s own menu: &quot;Install app&quot; on Android and desktop Chrome, Share → &quot;Add to Home Screen&quot; on iPhone.
         </p>
       )}

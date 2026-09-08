@@ -85,10 +85,10 @@ export default async function InformationHub() {
       <div>
         {/* 1 — title + the ask field. */}
         <header className="mb-8">
-          <h1 className="font-serif text-[40px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[50px]">
+          <h1 className="font-serif text-40 font-medium leading-none tracking-[-0.02em] text-text lg:text-50">
             Motorsport, explained
           </h1>
-          <p className="mt-2 mb-4 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+          <p className="mt-2 mb-4 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted">
             {askIndex.length} answers, all sourced · linked into the live data
           </p>
           <AskField entries={askIndex} />
@@ -100,14 +100,14 @@ export default async function InformationHub() {
             {mostAsked.length > 0 && (
               <section aria-label="Most asked" className="mb-10">
                 <div className="mb-3 border-b border-text pb-1">
-                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                  <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                     Most asked
                   </span>
                 </div>
                 <div className="grid gap-x-10 md:grid-cols-2">
                   {mostAsked.map(e => (
                     <Link key={entryHref(e)} href={entryHref(e)} className="group block border-b border-border py-2.5">
-                      <span className="block font-serif text-[17px] font-semibold leading-snug text-text group-hover:underline">
+                      <span className="block font-serif text-17 font-semibold leading-snug text-text group-hover:underline">
                         {e.question}
                       </span>
                       {e.summary && (
@@ -125,17 +125,17 @@ export default async function InformationHub() {
             {weekendChips.length > 0 && (
               <section aria-label="How a race weekend works" className="mb-10">
                 <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
-                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                  <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                     How a race weekend works
                   </span>
-                  <span className="font-mono text-[10px] tabular-nums text-text-faint">{weekendChips.length}</span>
+                  <span className="font-mono text-10 tabular-nums text-text-faint">{weekendChips.length}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {weekendChips.map(c => (
                     <Link
                       key={c.href}
                       href={c.href}
-                      className="inline-flex min-h-11 items-center gap-2 border border-border-strong px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
+                      className="inline-flex min-h-11 items-center gap-2 border border-border-strong px-3 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
                     >
                       <span aria-hidden="true" className="h-[13px] w-[3px] shrink-0" style={{ backgroundColor: c.color }} />
                       {c.name}
@@ -153,7 +153,7 @@ export default async function InformationHub() {
             {/* 5 — the ten topics, at the foot where a filing cabinet belongs. */}
             <section aria-label="Browse by topic">
               <div className="mb-3 border-b border-text pb-1">
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                   Browse by topic
                 </span>
               </div>
@@ -165,12 +165,12 @@ export default async function InformationHub() {
                     className="flex min-h-11 items-baseline justify-between gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
                   >
                     <span className="min-w-0">
-                      <span className="block truncate font-serif text-[16px] font-semibold text-text">{t.label}</span>
-                      <span className="block truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                      <span className="block truncate font-serif text-16 font-semibold text-text">{t.label}</span>
+                      <span className="block truncate font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                         /{t.id} →
                       </span>
                     </span>
-                    <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">
+                    <span className="shrink-0 font-mono text-10 tabular-nums text-text-faint">
                       {verifiedByTopic.get(t.id) ?? 0}
                     </span>
                   </Link>
@@ -182,7 +182,7 @@ export default async function InformationHub() {
           {/* 3 — the rail: three numbered first reads + the circuit map. */}
           <aside>
             <div className="mb-3 border-b border-text pb-1">
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+              <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                 New to motorsport?
               </span>
             </div>
@@ -193,10 +193,10 @@ export default async function InformationHub() {
                     href={r.href}
                     className="flex min-h-11 items-baseline gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
                   >
-                    <span className="w-4 shrink-0 text-right font-mono text-[12px] font-semibold tabular-nums text-brand">
+                    <span className="w-4 shrink-0 text-right font-mono text-12 font-semibold tabular-nums text-brand">
                       {i + 1}
                     </span>
-                    <span className="font-serif text-[15px] font-semibold leading-snug text-text">{r.label}</span>
+                    <span className="font-serif text-15 font-semibold leading-snug text-text">{r.label}</span>
                   </Link>
                 </li>
               ))}
@@ -205,15 +205,15 @@ export default async function InformationHub() {
               href="/information/map"
               className="mt-4 block border border-border-strong p-3 transition-colors duration-(--duration-fast) hover:border-text"
             >
-              <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+              <span className="block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand">
                 Circuit map
               </span>
-              <span className="mt-1 block font-serif text-[15px] font-semibold leading-snug text-text">
+              <span className="mt-1 block font-serif text-15 font-semibold leading-snug text-text">
                 All 138 venues on one map
               </span>
             </Link>
             <div className="mt-6 border-t border-border pt-3">
-              <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+              <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                 Per-series guides
               </span>
               <div className="mt-2 grid grid-cols-2 gap-x-3">
@@ -223,7 +223,7 @@ export default async function InformationHub() {
                     <Link
                       key={s.slug}
                       href={`/information/${topicForSeries(s.slug)}/the-history-of-${s.slug}`}
-                      className="truncate py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-text-faint hover:text-text"
+                      className="truncate py-0.5 font-mono text-10 uppercase tracking-[0.1em] text-text-faint hover:text-text"
                     >
                       {s.name}
                     </Link>

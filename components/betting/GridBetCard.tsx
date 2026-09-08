@@ -65,7 +65,7 @@ export function GridBetCard({
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <div>
           <h3 className="font-display text-sm font-bold text-text">{meta.label}</h3>
-          <p className="font-mono text-[11px] text-text-muted">{meta.blurb}</p>
+          <p className="font-mono text-11 text-text-muted">{meta.blurb}</p>
         </div>
         {leagues.length > 0 && (
           <select
@@ -127,12 +127,12 @@ export function GridBetCard({
           type="button"
           onClick={place}
           disabled={busy || !driver || mult == null || stake < 1 || stake > balance}
-          className="bg-text px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
+          className="bg-text px-4 py-1.5 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
         >
           {busy ? 'Placing…' : `Bet ${stake} on ${driver} grid P${position}`}
         </button>
         {mult != null && (
-          <span className="font-mono text-[11px] text-text-muted">
+          <span className="font-mono text-11 text-text-muted">
             {context
               ? 'pari-mutuel — winners split the pool'
               : `to win ${Math.floor(stake * mult).toLocaleString()}`}
@@ -150,7 +150,7 @@ export function GridBetCard({
             return (
               <li key={b.id} className="flex items-center justify-between py-1.5 font-mono text-sm">
                 <span className="text-text">Your bet · {d} grid P{String(b.selection.position)} · {b.stake}</span>
-                <span className={`text-[11px] uppercase tracking-[0.14em] ${tone}`}>
+                <span className={`text-11 uppercase tracking-[0.14em] ${tone}`}>
                   {b.outcome}
                   {b.multiplier ? ` ×${b.multiplier}` : ''}
                 </span>

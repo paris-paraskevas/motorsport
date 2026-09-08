@@ -131,7 +131,7 @@ export function MarkdownEditor({
             aria-label={t.title}
             onClick={() => apply(t)}
             disabled={preview}
-            className="rounded border border-border bg-surface/60 px-2 py-1 font-mono text-[11px] font-semibold text-text-muted transition-colors hover:border-brand/50 hover:text-text disabled:opacity-40"
+            className="rounded border border-border bg-surface/60 px-2 py-1 font-mono text-11 font-semibold text-text-muted transition-colors hover:border-brand/50 hover:text-text disabled:opacity-40"
           >
             {t.label}
           </button>
@@ -142,7 +142,7 @@ export function MarkdownEditor({
           aria-pressed={showLint}
           disabled={preview}
           title="Check for AI-writing tells"
-          className={`ml-auto rounded border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors disabled:opacity-40 ${
+          className={`ml-auto rounded border px-2 py-1 font-mono text-11 uppercase tracking-[0.1em] transition-colors disabled:opacity-40 ${
             summary.errors
               ? 'border-red-500/60 text-red-400'
               : summary.warnings
@@ -158,7 +158,7 @@ export function MarkdownEditor({
           type="button"
           onClick={() => setPreview(p => !p)}
           aria-pressed={preview}
-          className={`rounded border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors ${
+          className={`rounded border px-2 py-1 font-mono text-11 uppercase tracking-[0.1em] transition-colors ${
             preview ? 'border-brand/60 text-brand' : 'border-border text-text-muted hover:text-text'
           }`}
         >
@@ -167,7 +167,7 @@ export function MarkdownEditor({
       </div>
 
       {!preview && (
-        <p className="font-mono text-[10px] leading-relaxed text-text-faint">
+        <p className="font-mono text-10 leading-relaxed text-text-faint">
           Data embeds (own line): <code>{'[[chart series=f1]]'}</code> ·{' '}
           <code>{'[[standings series=f1]]'}</code>. Render for series with per-round
           championship points; endurance series (WEC, IMSA, GT World, NLS) show a note instead.
@@ -202,11 +202,11 @@ export function MarkdownEditor({
       {!preview && showLint && (
         <div className="space-y-2 rounded border border-border bg-bg p-2.5">
           {flags.length === 0 ? (
-            <p className="font-mono text-[11px] text-text-faint">No AI-writing tells found. Reads clean.</p>
+            <p className="font-mono text-11 text-text-faint">No AI-writing tells found. Reads clean.</p>
           ) : (
             flags.map(f => (
               <div key={f.id} className="space-y-0.5">
-                <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                <div className="flex items-center gap-1.5 font-mono text-11">
                   <span
                     className={`inline-block h-1.5 w-1.5 rounded-full ${
                       f.severity === 'error'
@@ -219,20 +219,20 @@ export function MarkdownEditor({
                   <span className="font-semibold text-text">{f.name}</span>
                   <span className="text-text-faint">×{f.count}</span>
                 </div>
-                <p className="text-[11px] leading-snug text-text-muted">{f.message}</p>
+                <p className="text-11 leading-snug text-text-muted">{f.message}</p>
                 <div className="flex flex-wrap gap-1">
                   {f.matches.slice(0, 6).map((mt, i) => (
                     <button
                       key={i}
                       type="button"
                       onClick={() => jumpTo(mt.start, mt.end)}
-                      className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-text-faint transition-colors hover:border-border-strong hover:text-text"
+                      className="rounded border border-border px-1.5 py-0.5 font-mono text-10 tabular-nums text-text-faint transition-colors hover:border-border-strong hover:text-text"
                     >
                       L{mt.line}
                     </button>
                   ))}
                   {f.matches.length > 6 && (
-                    <span className="font-mono text-[10px] text-text-faint">+{f.matches.length - 6}</span>
+                    <span className="font-mono text-10 text-text-faint">+{f.matches.length - 6}</span>
                   )}
                 </div>
               </div>

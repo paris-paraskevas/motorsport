@@ -73,7 +73,7 @@ export function SeriesTabs({
               href={href}
               scroll={false}
               aria-current={isActive ? 'page' : undefined}
-              className={`shrink-0 sm:flex-1 inline-flex items-center justify-center h-11 border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
+              className={`shrink-0 sm:flex-1 inline-flex items-center justify-center h-11 border-b-2 px-0.5 font-mono text-11 font-semibold uppercase tracking-[0.16em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
                 isActive
                   ? 'border-tint text-text'
                   : 'border-transparent text-text-muted hover:text-text'

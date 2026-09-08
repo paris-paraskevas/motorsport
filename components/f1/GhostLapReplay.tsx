@@ -168,7 +168,7 @@ export function GhostLapReplay({
     <div className="space-y-2">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3 className="font-display text-sm font-bold uppercase tracking-wide text-text">Lap replay</h3>
-        <span className="font-mono text-[11px] tabular-nums text-text-muted">
+        <span className="font-mono text-11 tabular-nums text-text-muted">
           {gap == null ? (
             <span className="text-text-faint">gap unavailable</span>
           ) : (
@@ -225,17 +225,17 @@ export function GhostLapReplay({
           aria-label="Scrub replay position"
           className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-border accent-brand"
         />
-        <span className="w-14 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted">
+        <span className="w-14 shrink-0 text-right font-mono text-11 tabular-nums text-text-muted">
           {t.toFixed(2)}s
         </span>
       </div>
 
       {reduced && (
-        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <p className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           Reduced-motion: drag to scrub.
         </p>
       )}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-text-muted">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-11 text-text-muted">
         <LegendDot colour={driverA.teamColour} label={driverA.code} />
         <LegendDot colour={driverB.teamColour} label={driverB.code} />
       </div>

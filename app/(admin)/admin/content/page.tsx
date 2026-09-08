@@ -52,7 +52,7 @@ function Flag({ tone, children }: { tone: 'on' | 'off' | 'neutral'; children: Re
         ? 'border-negative/50 text-negative'
         : 'border-border text-text-muted';
   return (
-    <span className={`inline-block whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[10px] ${cls}`}>
+    <span className={`inline-block whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-10 ${cls}`}>
       {children}
     </span>
   );
@@ -70,7 +70,7 @@ function PostRow({ p }: { p: BlogPost }) {
           {p.title}
         </a>
         <span
-          className={`shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] ${STATUS_TONE[p.status] ?? 'text-text-faint'}`}
+          className={`shrink-0 font-mono text-10 uppercase tracking-[0.14em] ${STATUS_TONE[p.status] ?? 'text-text-faint'}`}
         >
           {p.status.replace('_', ' ')}
         </span>
@@ -151,7 +151,7 @@ export default async function AdminContentPage() {
         ].map(s => (
           <div key={s.l} className="min-w-0 rounded-xl border border-border bg-surface-elevated p-4">
             <div className="truncate font-display text-3xl font-extrabold tabular-nums text-text">{s.v}</div>
-            <div className="mt-1 truncate font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{s.l}</div>
+            <div className="mt-1 truncate font-mono text-10 uppercase tracking-[0.14em] text-text-muted">{s.l}</div>
           </div>
         ))}
       </div>
@@ -180,7 +180,7 @@ export default async function AdminContentPage() {
             {byTopic.map(t => (
               <li key={t.id} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
                 <span className="min-w-0 truncate text-text-muted">{t.label}</span>
-                <span className="flex shrink-0 items-baseline gap-3 font-mono text-[11px] tabular-nums">
+                <span className="flex shrink-0 items-baseline gap-3 font-mono text-11 tabular-nums">
                   <span className={t.posts === 0 ? 'text-text-faint' : 'text-brand'}>{t.posts} posts</span>
                   <span className="text-text-faint">{t.answers} answers</span>
                 </span>
@@ -207,7 +207,7 @@ export default async function AdminContentPage() {
                     <div className="flex items-baseline justify-between gap-3 text-sm">
                       <span className="min-w-0 truncate text-text-muted">{c.name}</span>
                       <span
-                        className={`shrink-0 font-mono text-[11px] tabular-nums ${
+                        className={`shrink-0 font-mono text-11 tabular-nums ${
                           c.done === 0 ? 'text-negative' : c.done === c.total ? 'text-positive' : 'text-text'
                         }`}
                       >

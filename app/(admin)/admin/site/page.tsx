@@ -78,7 +78,7 @@ export default async function AdminHomePage({
             pointer-events disabled so a stray click inside it cannot navigate
             away from the composer mid-edit. */}
         <div className="min-w-0">
-          <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          <p className="mb-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">
             Preview · exactly what visitors will see
           </p>
           <div className="overflow-hidden border border-border bg-bg p-4">

@@ -45,7 +45,7 @@ interface Card {
  *  newspaper shape, instead of the right-hand thumbnail the other rows take. */
 function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
   const meta = (
-    <div className="mb-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 font-mono text-[10px] uppercase tracking-[0.14em]">
+    <div className="mb-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 font-mono text-10 uppercase tracking-[0.14em]">
       {post.seriesName && <span className="font-semibold text-text-muted">{post.seriesName}</span>}
       <time className="tabular-nums text-text-faint">{formatDate(post.publishedAt)}</time>
       {post.author && (
@@ -64,7 +64,7 @@ function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
       <h2
         className={
           'font-serif font-semibold leading-snug text-text group-hover:underline ' +
-          (lead ? 'text-[26px] md:text-[30px]' : 'text-[22px]')
+          (lead ? 'text-26 md:text-30' : 'text-22')
         }
       >
         {post.title}
@@ -77,7 +77,7 @@ function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
       <p
         className={
           'mt-1.5 leading-relaxed text-text-muted ' +
-          (lead ? 'max-w-[60ch] text-[15px] line-clamp-3' : 'line-clamp-2 max-w-[95ch] text-sm')
+          (lead ? 'max-w-[60ch] text-15 line-clamp-3' : 'line-clamp-2 max-w-[95ch] text-sm')
         }
       >
         {post.summary}
@@ -249,7 +249,7 @@ export default async function BlogIndexPage() {
       />
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
+          <div className="text-11 uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
             Writing
           </div>
           <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
@@ -269,7 +269,7 @@ export default async function BlogIndexPage() {
         className="mb-8 flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface/40 px-5 py-4 transition-colors duration-(--duration-fast) hover:border-brand/50"
       >
         <div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-brand font-semibold">
+          <div className="font-mono text-11 uppercase tracking-[0.16em] text-brand font-semibold">
             Community
           </div>
           <div className="mt-1 text-text font-semibold">
@@ -304,7 +304,7 @@ export default async function BlogIndexPage() {
             {bySeries.size > 0 && (
               <>
                 <div className="mb-1 border-b border-text pb-1">
-                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                  <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
                     By series
                   </span>
                 </div>
@@ -314,7 +314,7 @@ export default async function BlogIndexPage() {
                     <div key={slug} className="flex items-center gap-2.5 border-b border-border py-2">
                       <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: x.color }} />
                       <span className="min-w-0 flex-1 truncate text-sm text-text">{x.name}</span>
-                      <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">{x.count}</span>
+                      <span className="shrink-0 font-mono text-10 tabular-nums text-text-faint">{x.count}</span>
                     </div>
                   ))}
               </>
@@ -323,10 +323,10 @@ export default async function BlogIndexPage() {
               href="/write-for-us"
               className="mt-4 block border border-border-strong p-3 transition-colors duration-(--duration-fast) hover:border-text"
             >
-              <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+              <span className="block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand">
                 Write for Paddock
               </span>
-              <span className="mt-1 block font-serif text-[15px] font-semibold leading-snug text-text">
+              <span className="mt-1 block font-serif text-15 font-semibold leading-snug text-text">
                 Pitch a piece — the data is already here
               </span>
             </Link>

@@ -193,14 +193,14 @@ export async function WeekendStandingsSnapshot({
           <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
             Standings at this round
           </h2>
-          <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
+          <span className="text-10 uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
             {countedLabel}
           </span>
         </div>
 
         <div className="grid gap-x-8 gap-y-4 md:grid-cols-2 items-start">
           <div>
-            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
+            <div className="font-mono text-11 uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
               Drivers
             </div>
             <ul className="divide-y divide-border/60">
@@ -223,7 +223,7 @@ export async function WeekendStandingsSnapshot({
 
           {source.showTeams && snap.constructors.length > 0 ? (
             <div>
-              <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
+              <div className="font-mono text-11 uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
                 Teams
               </div>
               <ul className="divide-y divide-border/60">
@@ -260,7 +260,7 @@ function LinkOutFallback({ series, label }: { series: Series; label: string }) {
         <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
           Standings
         </h2>
-        <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">{label}</span>
+        <span className="text-10 uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">{label}</span>
       </div>
       <a
         href={series.meta.officialStandingsUrl}

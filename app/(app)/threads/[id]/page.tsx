@@ -15,7 +15,7 @@ function frame(children: ReactNode) {
     <div className={PAGE_READ}>
       <Link
         href="/threads"
-        className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+        className="mb-4 inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
       >
         <ArrowLeft size={13} /> Threads
       </Link>
@@ -41,17 +41,17 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
   return frame(
     <article>
       {thread.status !== 'approved' && (
-        <span className="mb-2 inline-block font-mono text-[10px] uppercase tracking-[0.16em] text-brand">
+        <span className="mb-2 inline-block font-mono text-10 uppercase tracking-[0.16em] text-brand">
           {thread.status === 'pending' ? 'Pending review' : 'Rejected'}
         </span>
       )}
-      <h1 className="font-serif text-[30px] font-medium leading-[1.1] tracking-[-0.02em] text-text md:text-[38px]">
+      <h1 className="font-serif text-30 font-medium leading-[1.1] tracking-[-0.02em] text-text md:text-38">
         {thread.title}
       </h1>
-      <div className="mt-2 border-y border-border py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="mt-2 border-y border-border py-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         {thread.authorName ?? `Racer ${thread.authorId.slice(-4)}`}
       </div>
-      <p className="mt-4 max-w-[68ch] whitespace-pre-wrap font-serif text-[17px] leading-relaxed text-text">{thread.body}</p>
+      <p className="mt-4 max-w-[68ch] whitespace-pre-wrap font-serif text-17 leading-relaxed text-text">{thread.body}</p>
     </article>,
   );
 }

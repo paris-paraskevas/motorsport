@@ -82,7 +82,7 @@ export function WeekendBetting({
           Paddock Betting<span className="text-brand">.</span>
         </h2>
         {data.signedIn && (
-          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
+          <span className="font-mono text-11 uppercase tracking-[0.16em] text-text-muted">
             Balance{' '}
             <span className="font-display text-base font-extrabold tabular-nums text-brand">
               {(data.balance ?? 0).toLocaleString()}
@@ -93,7 +93,7 @@ export function WeekendBetting({
 
       {/* Quick links to the form that informs a pick — standings charts, results,
           and driver pages (last-5 etc.) for this series. */}
-      <div className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
+      <div className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-11 uppercase tracking-[0.14em]">
         <span className="text-text-faint">Form</span>
         <Link href={`/series/${seriesSlug}/standings`} className="text-text-muted hover:text-brand">Standings</Link>
         <span className="text-text-faint">·</span>
@@ -136,7 +136,7 @@ export function WeekendBetting({
                   <span className="font-display text-sm font-bold text-text">
                     {meta.label}
                     {myBets > 0 && (
-                      <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.14em] text-brand">
+                      <span className="ml-2 font-mono text-10 uppercase tracking-[0.14em] text-brand">
                         {myBets} bet{myBets > 1 ? 's' : ''}
                       </span>
                     )}
@@ -190,7 +190,7 @@ function SignedOutTeaser({ market }: { market: OpenMarket }) {
           ))}
         </div>
       )}
-      <Link href="/sign-in" className="inline-block bg-text px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
+      <Link href="/sign-in" className="inline-block bg-text px-4 py-1.5 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
         Sign in to {meta.cta}
       </Link>
     </div>

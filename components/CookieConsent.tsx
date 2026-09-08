@@ -407,7 +407,7 @@ function CategoryRow({
               browser's GPC signal. One badge for both would read "Always on"
               beside a switch that is off. */}
           {locked && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider text-text-muted bg-bg border border-border">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-10 font-medium uppercase tracking-wider text-text-muted bg-bg border border-border">
               {checked ? 'Always on' : 'Off — your browser'}
             </span>
           )}

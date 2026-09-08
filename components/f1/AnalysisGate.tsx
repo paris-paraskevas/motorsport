@@ -29,11 +29,11 @@ export function AnalysisGate({
       <p className="mx-auto mt-1 max-w-sm text-sm text-text-muted">{blurb}</p>
       <Link
         href="/sign-in"
-        className="mt-4 inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text hover:border-tint transition-colors duration-(--duration-fast)"
+        className="mt-4 inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text hover:border-tint transition-colors duration-(--duration-fast)"
       >
         Sign in to unlock
       </Link>
-      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <p className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         Free — an account keeps it free
       </p>
     </section>

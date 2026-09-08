@@ -39,7 +39,7 @@ export default async function SeriesGuidesPage() {
       />
 
       <header className="mb-8 border-b border-border pb-6">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] font-semibold text-tint mb-3">
+        <p className="font-mono text-11 uppercase tracking-[0.18em] font-semibold text-tint mb-3">
           Learn
         </p>
         <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
@@ -71,7 +71,7 @@ export default async function SeriesGuidesPage() {
           return (
             <div key={s.slug} className="border-b border-border py-2">
               <div className="text-text font-semibold">{s.name}</div>
-              <div className="mt-1 flex flex-wrap gap-x-4 font-mono text-[10px] uppercase tracking-[0.12em]">
+              <div className="mt-1 flex flex-wrap gap-x-4 font-mono text-10 uppercase tracking-[0.12em]">
                 {links.map((l) => (
                   <Link
                     key={l.label}

@@ -831,7 +831,7 @@ function turnRateAt(points: TrackPoint[], t: number): number {
 function StateChip({ driver, state, turn }: { driver: EnrichedDriver; state: InputState; turn: number }) {
   const turning = Math.abs(turn) >= 4; // °/s threshold for "in a corner"
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-[11px]">
+    <span className="inline-flex items-center gap-1.5 font-mono text-11">
       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: driver.teamColour }} />
       <span className="font-semibold text-text">{driver.code}</span>
       <span
@@ -893,7 +893,7 @@ function TelemetryStrip({
   return (
     <div className="space-y-1.5">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">Throttle / brake</span>
+        <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">Throttle / brake</span>
         <div className="flex items-center gap-3">
           <StateChip driver={driverA} state={stateA} turn={turnA} />
           <StateChip driver={driverB} state={stateB} turn={turnB} />
@@ -932,7 +932,7 @@ function TelemetryStrip({
         {/* playhead */}
         <line x1={phX} y1={4} x2={phX} y2={130} stroke="var(--text)" strokeWidth={1.25} strokeOpacity={0.7} vectorEffect="non-scaling-stroke" />
       </svg>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 font-mono text-[10px] text-text-faint">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 font-mono text-10 text-text-faint">
         <span>100% throttle (top) → 0% (bottom)</span>
         <span aria-hidden>·</span>
         <span>brake on = filled bar</span>
@@ -1094,7 +1094,7 @@ export function GhostLap3D({
     <div className="space-y-2">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3 className="font-display text-sm font-bold uppercase tracking-wide text-text">Onboard · ghost comparison</h3>
-        <span className="font-mono text-[11px] tabular-nums text-text-muted">
+        <span className="font-mono text-11 tabular-nums text-text-muted">
           {gap == null ? (
             <span className="text-text-faint">gap unavailable</span>
           ) : (
@@ -1150,7 +1150,7 @@ export function GhostLap3D({
           aria-label="Scrub replay position"
           className="h-1 min-w-[6rem] flex-1 cursor-pointer appearance-none rounded-full bg-border accent-brand"
         />
-        <span className="w-14 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted">
+        <span className="w-14 shrink-0 text-right font-mono text-11 tabular-nums text-text-muted">
           {t.toFixed(2)}s
         </span>
         <div className="ml-auto flex shrink-0 items-center gap-0.5" role="group" aria-label="Playback speed">
@@ -1160,7 +1160,7 @@ export function GhostLap3D({
               type="button"
               onClick={() => setSpeed(s)}
               aria-pressed={speed === s}
-              className={`border px-1.5 py-0.5 font-mono text-[10px] tabular-nums transition-colors duration-(--duration-fast) ${
+              className={`border px-1.5 py-0.5 font-mono text-10 tabular-nums transition-colors duration-(--duration-fast) ${
                 speed === s
                   ? 'border-border-strong bg-surface text-text'
                   : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
@@ -1173,13 +1173,13 @@ export function GhostLap3D({
       </div>
 
       {reduced && (
-        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <p className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           Reduced-motion: drag to scrub.
         </p>
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-text-muted">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-11 text-text-muted">
           <LegendDot colour={followColour} label={`${followingA ? driverA.code : driverB.code} (you)`} />
           <LegendDot colour={otherColour} label={`${followingA ? driverB.code : driverA.code} (ghost)`} />
         </div>
@@ -1187,14 +1187,14 @@ export function GhostLap3D({
           {/* Camera view — Chase (best for comparing) or Cockpit (immersive onboard
               T-cam above the head; the time-synced rival is a glimpse on straights). */}
           <div className="flex items-center gap-1">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">View</span>
+            <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">View</span>
             {([['Chase', 'chase'], ['Cockpit', 'cockpit']] as const).map(([label, m]) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setCameraMode(m)}
                 aria-pressed={cameraMode === m}
-                className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
+                className={`border px-2 py-0.5 font-mono text-10 uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
                   cameraMode === m
                     ? 'border-border-strong bg-surface text-text'
                     : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
@@ -1206,7 +1206,7 @@ export function GhostLap3D({
           </div>
           {/* Follow toggle — which car the camera rides. Disabled for a car with no trace. */}
           <div className="flex items-center gap-1">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Follow</span>
+            <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">Follow</span>
             {([[driverA.code, true, aHasTrack], [driverB.code, false, bHasTrack]] as const).map(
               ([label, isA, enabled]) => (
                 <button
@@ -1215,7 +1215,7 @@ export function GhostLap3D({
                   disabled={!enabled}
                   onClick={() => setFollowAState(isA)}
                   aria-pressed={followingA === isA}
-                  className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
+                  className={`border px-2 py-0.5 font-mono text-10 uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
                     followingA === isA
                       ? 'border-border-strong bg-surface text-text'
                       : enabled

@@ -111,7 +111,7 @@ function CuratedAboutSection({ bio }: { bio: DriverBio }) {
           </p>
         ))}
       </div>
-      <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="mt-3 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         Profile by Paddock
       </div>
     </section>
@@ -124,7 +124,7 @@ function CuratedAboutSection({ bio }: { bio: DriverBio }) {
 function NewsMentionsRail({ items }: { items: NewsItem[] }) {
   return (
     <div className="mt-6 border-t border-border pt-3">
-      <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+      <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
         In the news
       </span>
       <div className="divide-y divide-border/60">
@@ -139,7 +139,7 @@ function NewsMentionsRail({ items }: { items: NewsItem[] }) {
             <div className="mb-1 flex items-center gap-2">
               <time
                 dateTime={item.pubDate.toISOString()}
-                className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint tnum"
+                className="font-mono text-9 uppercase tracking-[0.12em] text-text-faint tnum"
               >
                 {item.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
               </time>
@@ -154,7 +154,7 @@ function NewsMentionsRail({ items }: { items: NewsItem[] }) {
           </a>
         ))}
       </div>
-      <div className="pt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="pt-2 font-mono text-9 uppercase tracking-[0.14em] text-text-faint">
         Source:{' '}
         <a
           href="https://www.motorsport.com/"
@@ -172,7 +172,7 @@ function NewsMentionsRail({ items }: { items: NewsItem[] }) {
 function StatBlock({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold">
+      <div className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint font-semibold">
         {label}
       </div>
       <div className="mt-1 font-mono text-2xl md:text-3xl font-bold tabular-nums text-text">
@@ -194,7 +194,7 @@ function SeasonStats({ form }: { form: DriverSeasonForm }) {
         <StatBlock label="Best finish" value={form.bestFinish != null ? `P${form.bestFinish}` : '—'} />
         <StatBlock label="Starts" value={String(form.starts)} />
       </div>
-      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         of {form.fieldSize} classified this season · every figure from the results below
       </div>
     </section>
@@ -207,25 +207,25 @@ function EveryRound({ rounds }: { rounds: DriverSeasonForm['rounds'] }) {
   return (
     <section className="mb-8 border-y border-border py-4">
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+        <h2 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
           Every round this season
         </h2>
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
           finish · points · total · championship
         </span>
       </div>
       <ul>
         {rounds.map((r, i) => (
           <li key={`${r.round}-${r.raceName}-${i}`} className="flex items-baseline gap-3 border-b border-border py-1.5">
-            <span className="w-9 shrink-0 text-right font-mono text-[11px] font-semibold tabular-nums text-tint">
+            <span className="w-9 shrink-0 text-right font-mono text-11 font-semibold tabular-nums text-tint">
               R{r.round}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate font-serif text-[15px] font-semibold text-text">
+              <span className="block truncate font-serif text-15 font-semibold text-text">
                 {r.raceName}
               </span>
               {r.circuit && (
-                <span className="block truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                <span className="block truncate font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                   {r.circuit}
                 </span>
               )}
@@ -383,7 +383,7 @@ async function DriverBody({
                 decoding="async"
                 className="h-32 w-32 md:h-44 md:w-44 rounded-2xl object-cover bg-surface border border-border"
               />
-              <figcaption className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+              <figcaption className="mt-1.5 font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
                 {portrait ? (
                   <>
                     Photo:{' '}
@@ -403,7 +403,7 @@ async function DriverBody({
           )}
 
           <div className="min-w-0">
-            <div className="flex items-center gap-2.5 mb-3 flex-wrap font-mono text-[11px] uppercase tracking-[0.18em] font-semibold">
+            <div className="flex items-center gap-2.5 mb-3 flex-wrap font-mono text-11 uppercase tracking-[0.18em] font-semibold">
               <Link
                 href={`/series/${driver.seriesSlug}`}
                 className="text-tint hover:underline underline-offset-4"
@@ -419,12 +419,12 @@ async function DriverBody({
               </Link>
             </div>
 
-            <h1 className="font-serif text-[38px] md:text-[58px] font-medium tracking-[-0.02em] leading-[0.98] text-text">
+            <h1 className="font-serif text-38 md:text-58 font-medium tracking-[-0.02em] leading-[0.98] text-text">
               {driver.name}
             </h1>
 
             {(nationality || age != null) && (
-              <div className="mt-3 flex items-center gap-2 flex-wrap font-mono text-[12px] uppercase tracking-[0.14em] text-text-muted">
+              <div className="mt-3 flex items-center gap-2 flex-wrap font-mono text-12 uppercase tracking-[0.14em] text-text-muted">
                 {nationality && (
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true" className="text-base leading-none">
@@ -445,7 +445,7 @@ async function DriverBody({
                 </span>
               )}
               {driver.code && (
-                <span className="font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted border border-border px-2 py-1">
+                <span className="font-mono text-11 uppercase tracking-[0.16em] font-semibold text-text-muted border border-border px-2 py-1">
                   {driver.code}
                 </span>
               )}
@@ -470,16 +470,16 @@ async function DriverBody({
 
         <aside>
           <div className="border-b border-text pb-1">
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
               Next out
             </span>
           </div>
           {nextW ? (
             <div className="mt-2">
-              <p className="font-serif text-[17px] font-semibold leading-tight text-text">
+              <p className="font-serif text-17 font-semibold leading-tight text-text">
                 {nextW.roundName ?? weekendLabel(nextW, nextW.round).title}
               </p>
-              <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+              <p className="mt-0.5 font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                 Round {nextW.round} · {nextW.dateRangeLabel}
               </p>
               {nextSession && (
@@ -493,13 +493,13 @@ async function DriverBody({
               )}
               <Link
                 href={`/series/${driver.seriesSlug}/weekend/${nextW.round}`}
-                className="mt-1 inline-block font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+                className="mt-1 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
               >
                 Preview →
               </Link>
             </div>
           ) : (
-            <p className="mt-2 font-serif text-[15px] italic text-text-muted">Season complete.</p>
+            <p className="mt-2 font-serif text-15 italic text-text-muted">Season complete.</p>
           )}
 
           {mentions.length > 0 && <NewsMentionsRail items={mentions.slice(0, 3)} />}
@@ -509,7 +509,7 @@ async function DriverBody({
               <Link
                 href={`/f1/compare?a=${slug}`}
                 data-heatmap-id="driver:compare"
-                className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
+                className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
               >
                 Compare with a team-mate →
               </Link>
@@ -517,7 +517,7 @@ async function DriverBody({
           )}
 
           <div className="mt-6 border-t border-border pt-3">
-            <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
               Team
             </span>
             <Link
@@ -529,10 +529,10 @@ async function DriverBody({
                   : undefined
               }
             >
-              <span className="font-serif text-[17px] font-semibold text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
+              <span className="font-serif text-17 font-semibold text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
                 {driver.team}
               </span>
-              <span className="ml-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) group-hover:text-text-muted">
+              <span className="ml-2 font-mono text-9 font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) group-hover:text-text-muted">
                 Team page →
               </span>
             </Link>

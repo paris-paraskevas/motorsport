@@ -56,7 +56,7 @@ export function TeamRadioPlayer({ src, label }: { src: string; label?: string })
         />
       </div>
 
-      <span className="w-[4.5rem] shrink-0 text-right font-mono text-[10px] tabular-nums text-text-muted">
+      <span className="w-[4.5rem] shrink-0 text-right font-mono text-10 tabular-nums text-text-muted">
         {fmt(t)} / {fmt(duration)}
       </span>
 

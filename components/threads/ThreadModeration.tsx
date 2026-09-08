@@ -39,7 +39,7 @@ export function ThreadModeration({ threads }: { threads: Thread[] }) {
         {threads.map(t => (
           <li key={t.id} className="rounded border border-border p-3">
             <div className="font-semibold text-text">{t.title}</div>
-            <div className="mb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+            <div className="mb-1 font-mono text-11 uppercase tracking-[0.12em] text-text-faint">
               {t.authorName ?? `Racer ${t.authorId.slice(-4)}`}
             </div>
             <p className="mb-2 whitespace-pre-wrap text-sm text-text-muted">{t.body}</p>
@@ -48,7 +48,7 @@ export function ThreadModeration({ threads }: { threads: Thread[] }) {
                 type="button"
                 disabled={busy === t.id}
                 onClick={() => decide(t.id, 'approve')}
-                className="bg-text px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
+                className="bg-text px-3 py-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
               >
                 Approve
               </button>

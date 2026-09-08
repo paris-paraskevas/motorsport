@@ -59,7 +59,7 @@ const STATUS_TONE: Record<string, string> = {
 
 function StatusPill({ status }: { status: string }) {
   return (
-    <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${STATUS_TONE[status] ?? 'text-text-faint'}`}>
+    <span className={`font-mono text-10 uppercase tracking-[0.14em] ${STATUS_TONE[status] ?? 'text-text-faint'}`}>
       {status}
     </span>
   );
@@ -102,7 +102,7 @@ function HealthMatrix({ report }: { report: HealthReport }) {
             {['Series', 'Standings', 'Results', 'Sessions', 'Slowest'].map(h => (
               <th
                 key={h}
-                className="px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] font-medium text-text-faint"
+                className="px-4 py-2 text-left font-mono text-10 uppercase tracking-[0.14em] font-medium text-text-faint"
               >
                 {h}
               </th>
@@ -119,7 +119,7 @@ function HealthMatrix({ report }: { report: HealthReport }) {
                   {r.standings ? (
                     <span className="flex items-baseline gap-2">
                       <StatusPill status={r.standings.status} />
-                      <span className="font-mono text-[11px] tabular-nums text-text-faint">{r.standings.rows}</span>
+                      <span className="font-mono text-11 tabular-nums text-text-faint">{r.standings.rows}</span>
                     </span>
                   ) : (
                     <span className="text-text-faint">—</span>
@@ -129,7 +129,7 @@ function HealthMatrix({ report }: { report: HealthReport }) {
                   {r.results ? (
                     <span className="flex items-baseline gap-2">
                       <StatusPill status={r.results.status} />
-                      <span className="font-mono text-[11px] tabular-nums text-text-faint">{r.results.rows}</span>
+                      <span className="font-mono text-11 tabular-nums text-text-faint">{r.results.rows}</span>
                     </span>
                   ) : (
                     <span className="text-text-faint">—</span>
@@ -140,7 +140,7 @@ function HealthMatrix({ report }: { report: HealthReport }) {
                     <span className="flex items-baseline gap-2">
                       <StatusPill status={r.sessions.status} />
                       {r.sessions.thin.length > 0 ? (
-                        <span className="font-mono text-[11px] text-text-faint">
+                        <span className="font-mono text-11 text-text-faint">
                           {r.sessions.thin.length} thin
                         </span>
                       ) : null}
@@ -149,7 +149,7 @@ function HealthMatrix({ report }: { report: HealthReport }) {
                     <span className="text-text-faint">—</span>
                   )}
                 </td>
-                <td className="px-4 py-2 font-mono text-[11px] tabular-nums text-text-faint">
+                <td className="px-4 py-2 font-mono text-11 tabular-nums text-text-faint">
                   {ms > 0 ? `${(ms / 1000).toFixed(1)}s` : '—'}
                 </td>
               </tr>
@@ -171,9 +171,9 @@ function FreshnessPanel({ sources }: { sources: SourceHealth[] }) {
         <li key={s.key} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
           <span className="min-w-0 truncate font-mono text-xs text-text">{s.key}</span>
           <span className="flex shrink-0 items-baseline gap-3">
-            {!s.ok ? <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-negative">failed</span> : null}
+            {!s.ok ? <span className="font-mono text-10 uppercase tracking-[0.14em] text-negative">failed</span> : null}
             <span
-              className={`font-mono text-[11px] tabular-nums ${s.stale ? 'text-negative' : 'text-text-faint'}`}
+              className={`font-mono text-11 tabular-nums ${s.stale ? 'text-negative' : 'text-text-faint'}`}
             >
               {s.ageMinutes == null
                 ? 'never'
@@ -308,12 +308,12 @@ export default async function AdminSystemPage() {
                 <span className="min-w-0 truncate font-mono text-xs text-text">{r.sourceKey}</span>
                 <span className="flex shrink-0 items-baseline gap-3">
                   {r.status !== 'ok' ? (
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-negative">{r.status}</span>
+                    <span className="font-mono text-10 uppercase tracking-[0.14em] text-negative">{r.status}</span>
                   ) : (
-                    <span className="font-mono text-[11px] tabular-nums text-text-faint">{r.rowsWritten} rows</span>
+                    <span className="font-mono text-11 tabular-nums text-text-faint">{r.rowsWritten} rows</span>
                   )}
                   <span
-                    className={`font-mono text-[11px] tabular-nums ${
+                    className={`font-mono text-11 tabular-nums ${
                       r.ageMinutes != null && r.ageMinutes > 12 * 60 ? 'text-negative' : 'text-text-faint'
                     }`}
                   >
@@ -342,7 +342,7 @@ export default async function AdminSystemPage() {
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-sm text-text">{f.label}</span>
                   <span
-                    className={`shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] ${
+                    className={`shrink-0 font-mono text-10 uppercase tracking-[0.14em] ${
                       f.on ? 'text-positive' : 'text-text-faint'
                     }`}
                   >
@@ -369,12 +369,12 @@ export default async function AdminSystemPage() {
               {markets.slice(0, 8).map(m => (
                 <li key={m.id} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
                   <span className="min-w-0 truncate text-text">
-                    <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+                    <span className="font-mono text-11 uppercase tracking-[0.12em] text-text-faint">
                       {m.seriesSlug} R{m.round}
                     </span>{' '}
                     {m.type}
                   </span>
-                  <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+                  <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">
                     <LocalTime instant={Date.parse(m.locksAt)} />
                   </span>
                 </li>
@@ -399,7 +399,7 @@ export default async function AdminSystemPage() {
               <div>
                 <div className="flex items-baseline justify-between gap-3 text-sm">
                   <span className="text-text-muted">Worker requests</span>
-                  <span className="font-mono text-[11px] tabular-nums text-text">
+                  <span className="font-mono text-11 tabular-nums text-text">
                     {usage.requests.toLocaleString()} / {(WORKERS_INCLUDED_REQUESTS / 1_000_000).toFixed(0)}M
                   </span>
                 </div>
@@ -418,14 +418,14 @@ export default async function AdminSystemPage() {
                 <li className="flex items-baseline justify-between gap-3 py-2 text-sm">
                   <span className="text-text-muted">Errors</span>
                   <span
-                    className={`font-mono text-[11px] tabular-nums ${usage.errors > 0 ? 'text-negative' : 'text-positive'}`}
+                    className={`font-mono text-11 tabular-nums ${usage.errors > 0 ? 'text-negative' : 'text-positive'}`}
                   >
                     {usage.errors.toLocaleString()}
                   </span>
                 </li>
                 <li className="flex items-baseline justify-between gap-3 py-2 text-sm">
                   <span className="text-text-muted">Subrequests</span>
-                  <span className="font-mono text-[11px] tabular-nums text-text">
+                  <span className="font-mono text-11 tabular-nums text-text">
                     {usage.subrequests.toLocaleString()}
                   </span>
                 </li>
@@ -461,17 +461,17 @@ export default async function AdminSystemPage() {
                     <li key={sv.name} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
                       <span className="min-w-0 truncate text-text-muted">{sv.name}</span>
                       <span className="flex shrink-0 items-baseline gap-3">
-                        <span className="font-mono text-[10px] text-text-faint">
+                        <span className="font-mono text-10 text-text-faint">
                           {sv.quantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} {sv.unit}
                         </span>
-                        <span className="font-mono text-[11px] tabular-nums text-text">{sv.cost.toFixed(2)}</span>
+                        <span className="font-mono text-11 tabular-nums text-text">{sv.cost.toFixed(2)}</span>
                       </span>
                     </li>
                   ))
                 )}
                 <li className="flex items-baseline justify-between gap-3 border-t border-border-strong px-4 py-2.5 text-sm">
                   <span className="font-semibold text-text">Total</span>
-                  <span className="font-mono text-[11px] tabular-nums font-semibold text-text">
+                  <span className="font-mono text-11 tabular-nums font-semibold text-text">
                     {billing.total.toFixed(2)} {billing.currency}
                   </span>
                 </li>

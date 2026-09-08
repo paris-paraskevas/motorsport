@@ -34,7 +34,7 @@ export function OvertakesBoard({
         <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
           Overtakes
         </h3>
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
           {data.totalOvertakes} in the race
         </span>
       </div>
@@ -46,7 +46,7 @@ export function OvertakesBoard({
           const widthPct = max > 0 ? Math.max(8, (e.overtakes / max) * 100) : 0;
           return (
             <li key={e.driverNumber} className="flex items-center gap-2.5">
-              <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+              <span className="w-5 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                 {i + 1}
               </span>
               <span className="flex w-16 shrink-0 items-center gap-1.5">

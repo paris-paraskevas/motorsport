@@ -164,7 +164,7 @@ export function NewsPageContent({
                 setScope(k);
                 setVisible(PAGE_SIZE);
               }}
-              className={`shrink-0 border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
+              className={`shrink-0 border px-3 py-1.5 font-mono text-11 font-semibold uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
                 scope === k ? 'border-text bg-surface-elevated text-text' : 'border-border text-text-muted hover:text-text'
               }`}
             >
@@ -178,7 +178,7 @@ export function NewsPageContent({
           <button
             type="button"
             onClick={() => selectNewsFilter(null)}
-            className={`shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 border transition-colors duration-(--duration-fast) ${
+            className={`shrink-0 font-mono text-11 uppercase tracking-[0.12em] font-semibold px-3 py-1.5 border transition-colors duration-(--duration-fast) ${
               effectiveNewsFilter === null
                 ? 'bg-text text-bg border-text'
                 : 'text-text-muted border-border hover:text-text hover:border-border-strong'
@@ -194,7 +194,7 @@ export function NewsPageContent({
                 key={s.slug}
                 type="button"
                 onClick={() => selectNewsFilter(s.slug)}
-                className={`shrink-0 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 border transition-colors duration-(--duration-fast) ${
+                className={`shrink-0 inline-flex items-center gap-1.5 font-mono text-11 uppercase tracking-[0.12em] font-semibold px-3 py-1.5 border transition-colors duration-(--duration-fast) ${
                   active
                     ? 'text-black border-transparent'
                     : 'text-text-muted border-border hover:text-text hover:border-border-strong'
@@ -270,16 +270,16 @@ export function NewsPageContent({
                     style={{ backgroundColor: item.seriesColor }}
                   />
                   <span className="min-w-0 flex-1">
-                    <h2 className="font-serif text-[17px] font-semibold leading-snug text-text group-hover:underline">
+                    <h2 className="font-serif text-17 font-semibold leading-snug text-text group-hover:underline">
                       {item.title}
                     </h2>
-                    <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                    <span className="mt-0.5 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                       {item.seriesName} · {host}
                     </span>
                   </span>
                   <time
                     dateTime={pubDate.toISOString()}
-                    className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint"
+                    className="shrink-0 font-mono text-10 tabular-nums text-text-faint"
                   >
                     {relativeAgo(pubDate, now)}
                   </time>
@@ -292,14 +292,14 @@ export function NewsPageContent({
             <button
               type="button"
               onClick={() => setVisible(v => v + PAGE_SIZE)}
-              className="mt-5 w-full font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text border border-border hover:border-border-strong py-2.5 transition-colors duration-(--duration-fast)"
+              className="mt-5 w-full font-mono text-11 uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text border border-border hover:border-border-strong py-2.5 transition-colors duration-(--duration-fast)"
             >
               Load more
               <span className="ml-1.5 tnum opacity-70">{deduped.length - rows.length}</span>
             </button>
           )}
 
-          <div className="flex flex-wrap items-baseline justify-between gap-3 pt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          <div className="flex flex-wrap items-baseline justify-between gap-3 pt-4 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
             <span>
               Ten per series, deduped across cross-posts, newest first — credited and linked out, aggregated from{' '}
               <a

@@ -73,11 +73,11 @@ export default async function F1AnalysisPage() {
           <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: color }} />
           {/* §4.14: F1-only, and it says so at the top instead of pretending
               to be universal. */}
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: seriesInk(color) }}>
+          <span className="font-mono text-10 font-semibold uppercase tracking-[0.16em]" style={{ color: seriesInk(color) }}>
             Formula 1 only · {season} season
           </span>
         </div>
-        <h1 className="font-serif text-[40px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[50px]">
+        <h1 className="font-serif text-40 font-medium leading-none tracking-[-0.02em] text-text lg:text-50">
           Telemetry &amp; analysis
         </h1>
         <p className="mt-3 max-w-prose text-sm leading-relaxed text-text-muted md:text-base">
@@ -94,10 +94,10 @@ export default async function F1AnalysisPage() {
       {latest && (
         <section aria-label="The latest weekend" className="mb-10 border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5">
           <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3 border-b border-text pb-1">
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
               The latest weekend
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
               {latest.name} · R{latest.round}
             </span>
           </div>
@@ -106,10 +106,10 @@ export default async function F1AnalysisPage() {
               href={`/series/f1/weekend/${latest.round}/qualifying`}
               className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
             >
-              <span className="block font-serif text-[17px] font-semibold leading-tight text-text">
+              <span className="block font-serif text-17 font-semibold leading-tight text-text">
                 How pole was taken
               </span>
-              <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+              <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                 Qualifying Analysis →
               </span>
             </Link>
@@ -117,10 +117,10 @@ export default async function F1AnalysisPage() {
               href={`/series/f1/weekend/${latest.round}/race`}
               className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
             >
-              <span className="block font-serif text-[17px] font-semibold leading-tight text-text">
+              <span className="block font-serif text-17 font-semibold leading-tight text-text">
                 How the race was won
               </span>
-              <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+              <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                 Race Story →
               </span>
             </Link>
@@ -128,10 +128,10 @@ export default async function F1AnalysisPage() {
               href="/f1/compare"
               className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
             >
-              <span className="block font-serif text-[17px] font-semibold leading-tight text-text">
+              <span className="block font-serif text-17 font-semibold leading-tight text-text">
                 Compare two drivers
               </span>
-              <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+              <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                 Head-to-head, all season →
               </span>
             </Link>
@@ -143,10 +143,10 @@ export default async function F1AnalysisPage() {
           rather than looking broken (§4.14). */}
       <section aria-label="Every round">
         <div className="mb-1 flex items-baseline justify-between border-b border-text pb-1">
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+          <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
             Every round
           </span>
-          <span className="font-mono text-[10px] tabular-nums text-text-faint">{allRounds.length}</span>
+          <span className="font-mono text-10 tabular-nums text-text-faint">{allRounds.length}</span>
         </div>
         <div className="lg:columns-2 lg:gap-10">
         {allRounds.map(r => {
@@ -157,34 +157,34 @@ export default async function F1AnalysisPage() {
               key={r.round}
               className={`flex min-h-11 flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-border py-1.5 lg:break-inside-avoid ${past ? '' : 'opacity-55'}`}
             >
-              <span className="w-7 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+              <span className="w-7 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                 R{r.round}
               </span>
-              <span className="min-w-0 flex-1 truncate font-serif text-[16px] font-semibold text-text">
+              <span className="min-w-0 flex-1 truncate font-serif text-16 font-semibold text-text">
                 {r.name}
               </span>
-              <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">{range}</span>
+              <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">{range}</span>
               {r.cancelled ? (
-                <span className="shrink-0 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-text-faint">
+                <span className="shrink-0 font-mono text-9 font-semibold uppercase tracking-[0.12em] text-text-faint">
                   Cancelled
                 </span>
               ) : past ? (
                 <span className="flex shrink-0 gap-3">
                   <Link
                     href={`/series/f1/weekend/${r.round}/qualifying`}
-                    className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+                    className="font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
                   >
                     Qualifying →
                   </Link>
                   <Link
                     href={`/series/f1/weekend/${r.round}/race`}
-                    className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+                    className="font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
                   >
                     Race story →
                   </Link>
                 </span>
               ) : (
-                <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                <span className="shrink-0 font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
                   When the cars run
                 </span>
               )}

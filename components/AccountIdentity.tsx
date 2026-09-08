@@ -19,7 +19,7 @@ export function AccountIdentity() {
     return (
       <div className="border-y border-border py-5 md:py-6 mb-6 flex flex-wrap items-center gap-4">
         <div className="flex-1 min-w-0">
-          <h2 className="font-serif text-[19px] font-semibold text-text">You&apos;re browsing as a guest</h2>
+          <h2 className="font-serif text-19 font-semibold text-text">You&apos;re browsing as a guest</h2>
           <p className="text-text-faint text-xs mt-1 leading-relaxed">
             Following championships, customising your home and notifications
             are free account features — sign in to unlock them.
@@ -28,7 +28,7 @@ export function AccountIdentity() {
         <SignInButton mode="modal">
           <button
             type="button"
-            className="inline-flex items-center gap-2 bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+            className="inline-flex items-center gap-2 bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
           >
             <LogIn size={14} />
             Sign in
@@ -43,11 +43,11 @@ export function AccountIdentity() {
     <div className="border-y border-border py-5 md:py-6 mb-6 flex items-center gap-4">
       <UserButton appearance={{ elements: { avatarBox: 'w-10 h-10' } }} />
       <div className="min-w-0">
-        <h2 className="truncate font-serif text-[19px] font-semibold text-text">
+        <h2 className="truncate font-serif text-19 font-semibold text-text">
           {user.fullName || user.username || 'Signed in'}
         </h2>
         {email && (
-          <p className="font-mono text-[11px] text-text-faint truncate mt-0.5">{email}</p>
+          <p className="font-mono text-11 text-text-faint truncate mt-0.5">{email}</p>
         )}
         <p className="text-text-faint text-xs mt-1">
           Preferences sync to your account. Manage profile or sign out from the avatar.

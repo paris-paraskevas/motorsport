@@ -35,7 +35,7 @@ export function WeekView({
               <span className="font-mono text-xs tabular-nums text-text-muted">{cell.date.getDate()}</span>
             </button>
             {entries.length === 0 ? (
-              <span className="font-mono text-[11px] text-text-faint">—</span>
+              <span className="font-mono text-11 text-text-faint">—</span>
             ) : (
               <div className="flex flex-col gap-0.5">
                 {entries.map(e => (

@@ -36,7 +36,7 @@ const CATEGORIES = [
 type Category = (typeof CATEGORIES)[number]['value'];
 
 const FIELD_CLASS =
-  'w-full border border-border-strong bg-surface-elevated px-3 py-2.5 font-mono text-[12px] text-text placeholder:text-text-muted outline-none transition-colors duration-(--duration-fast) focus:border-text';
+  'w-full border border-border-strong bg-surface-elevated px-3 py-2.5 font-mono text-12 text-text placeholder:text-text-muted outline-none transition-colors duration-(--duration-fast) focus:border-text';
 
 // The one contact form — shared by the footer's modal and the /contact page
 // (where the Account "Export your data" row lands; round-2 fix ① — the row
@@ -94,7 +94,7 @@ export function ContactForm({ onCancel }: { onCancel?: () => void }) {
   return (
     <form onSubmit={submit} className="space-y-3">
       <label className="block">
-        <span className="mb-1.5 block font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
+        <span className="mb-1.5 block font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted">
           Your email
         </span>
         <input
@@ -107,7 +107,7 @@ export function ContactForm({ onCancel }: { onCancel?: () => void }) {
         />
       </label>
       <label className="block">
-        <span className="mb-1.5 block font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
+        <span className="mb-1.5 block font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted">
           Category
         </span>
         <select
@@ -121,7 +121,7 @@ export function ContactForm({ onCancel }: { onCancel?: () => void }) {
         </select>
       </label>
       <label className="block">
-        <span className="mb-1.5 block font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
+        <span className="mb-1.5 block font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted">
           Message
         </span>
         <textarea
@@ -138,7 +138,7 @@ export function ContactForm({ onCancel }: { onCancel?: () => void }) {
         <div
           role="status"
           aria-live="polite"
-          className={`font-mono text-[11px] uppercase tracking-[0.12em] ${
+          className={`font-mono text-11 uppercase tracking-[0.12em] ${
             result.ok ? 'text-text' : 'text-brand'
           }`}
         >
@@ -151,7 +151,7 @@ export function ContactForm({ onCancel }: { onCancel?: () => void }) {
           <button
             type="button"
             onClick={onCancel}
-            className="px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) hover:text-text"
+            className="px-3 py-2 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) hover:text-text"
           >
             Cancel
           </button>
@@ -159,7 +159,7 @@ export function ContactForm({ onCancel }: { onCancel?: () => void }) {
         <button
           type="submit"
           disabled={!valid || submitting}
-          className="inline-flex min-h-10 items-center bg-text px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-10 items-center bg-text px-4 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? 'Sending…' : 'Send'}
         </button>
@@ -211,7 +211,7 @@ export function ContactModal() {
           <div className="mb-4 flex items-start justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <Mail size={18} className="text-text-muted" />
-              <h2 className="font-serif text-[19px] font-semibold text-text">Contact</h2>
+              <h2 className="font-serif text-19 font-semibold text-text">Contact</h2>
             </div>
             <button
               type="button"

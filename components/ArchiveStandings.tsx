@@ -47,7 +47,7 @@ export function ArchiveStandings({ standings }: { standings: unknown }): ReactNo
 
   return (
     <section aria-label="Final classifications" className="mt-10">
-      <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+      <h2 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-faint">
         Final classifications
       </h2>
       <div className="mt-3 grid gap-8 md:grid-cols-2">
@@ -57,9 +57,9 @@ export function ArchiveStandings({ standings }: { standings: unknown }): ReactNo
           return (
             <div key={key}>
               <h3 className="font-serif text-base font-semibold text-text">{label}</h3>
-              <table className="mt-2 w-full text-[13px]">
+              <table className="mt-2 w-full text-13">
                 <thead>
-                  <tr className="border-b border-border text-left font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+                  <tr className="border-b border-border text-left font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
                     <th scope="col" className="w-8 py-1.5 font-semibold">Pos</th>
                     <th scope="col" className="py-1.5 font-semibold">Name</th>
                     <th scope="col" className="w-14 py-1.5 text-right font-semibold">Pts</th>

@@ -74,11 +74,11 @@ export async function PlayMarkets({
         <div className="min-w-0">
           {/* OPEN NOW — the window you must not miss. */}
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-text pb-1">
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+            <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-brand">
               Open now{leadName ? ` · ${leadName}` : ''}
             </span>
             {leadLock != null && (
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+              <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                 Locks <LocalTime instant={leadLock} />
               </span>
             )}
@@ -95,7 +95,7 @@ export async function PlayMarkets({
                       data-heatmap-id={`predictions:market:${m.type}`}
                       className="block border border-border-strong p-3 transition-colors duration-(--duration-fast) hover:border-text hover:bg-surface"
                     >
-                      <span className="block font-serif text-[17px] font-semibold leading-tight text-text">
+                      <span className="block font-serif text-17 font-semibold leading-tight text-text">
                         {meta?.label ?? m.type}
                       </span>
                       <span className="mt-1 block text-xs leading-snug text-text-muted">
@@ -106,7 +106,7 @@ export async function PlayMarkets({
                 })}
               </div>
               {alsoOpen.length > 0 && (
-                <p className="mt-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                <p className="mt-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                   <span>Also open</span>
                   {alsoOpen.map(g => (
                     <Link
@@ -121,19 +121,19 @@ export async function PlayMarkets({
               )}
             </>
           ) : (
-            <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">
+            <p className="mt-3 font-mono text-11 uppercase tracking-[0.14em] text-text-muted">
               No open markets — they open as a race weekend approaches.
             </p>
           )}
 
           {/* YOUR OPEN CALLS — live positions, then the settled ledger. */}
           <div className="mt-8 border-b border-text pb-1">
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
               Your open calls
             </span>
           </div>
           {openCalls.length === 0 ? (
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+            <p className="mt-2 font-mono text-11 uppercase tracking-[0.14em] text-text-faint">
               None open — back a call on a race weekend page before it locks.
             </p>
           ) : (
@@ -141,10 +141,10 @@ export async function PlayMarkets({
               {openCalls.map(b => (
                 <li key={b.id} className="flex items-baseline gap-3 border-b border-border py-2">
                   <span aria-hidden="true" className="h-3 w-[3px] shrink-0 self-center bg-brand" />
-                  <span className="min-w-0 flex-1 truncate font-serif text-[16px] font-semibold text-text">
+                  <span className="min-w-0 flex-1 truncate font-serif text-16 font-semibold text-text">
                     {formatBetSelection(b.type, b.selection)} — {b.seriesSlug.toUpperCase()} R{b.round}
                   </span>
-                  <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">
+                  <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">
                     {b.stake} staked
                   </span>
                 </li>
@@ -153,7 +153,7 @@ export async function PlayMarkets({
           )}
           {settled.length > 0 && (
             <details className="group mt-3">
-              <summary className="cursor-pointer select-none font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted [&::-webkit-details-marker]:hidden">
+              <summary className="cursor-pointer select-none font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted [&::-webkit-details-marker]:hidden">
                 <span className="group-open:hidden">Settled · {settled.length} →</span>
                 <span className="hidden group-open:inline">Settled · {settled.length}</span>
               </summary>
@@ -162,12 +162,12 @@ export async function PlayMarkets({
                   const tone =
                     b.outcome === 'won' ? 'text-brand' : 'text-text-faint';
                   return (
-                    <li key={b.id} className="flex items-baseline gap-3 border-b border-border py-1.5 font-mono text-[12px]">
+                    <li key={b.id} className="flex items-baseline gap-3 border-b border-border py-1.5 font-mono text-12">
                       <span className="min-w-0 flex-1 truncate text-text-muted">
                         {formatBetSelection(b.type, b.selection)} — {b.seriesSlug.toUpperCase()} R{b.round}
                       </span>
                       <span className="shrink-0 tabular-nums text-text-faint">{b.stake}</span>
-                      <span className={`w-20 shrink-0 text-right text-[10px] uppercase tracking-[0.14em] ${tone}`}>
+                      <span className={`w-20 shrink-0 text-right text-10 uppercase tracking-[0.14em] ${tone}`}>
                         {b.outcome}
                         {b.multiplier ? ` ×${b.multiplier}` : ''}
                       </span>
@@ -182,7 +182,7 @@ export async function PlayMarkets({
         {/* YOUR LEAGUE — ranked on win rate, not winnings. */}
         <aside>
           <div className="border-b border-text pb-1">
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
               {league ? `Your league · ${league.name}` : 'Your league'}
             </span>
           </div>
@@ -193,25 +193,25 @@ export async function PlayMarkets({
                   const you = row.userId === youId;
                   return (
                     <li key={row.userId} className="flex items-baseline gap-3 border-b border-border py-1.5">
-                      <span className="w-4 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                      <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                         {i + 1}
                       </span>
-                      <span className={`min-w-0 flex-1 truncate font-serif text-[15px] ${you ? 'font-bold' : 'font-semibold'} text-text`}>
+                      <span className={`min-w-0 flex-1 truncate font-serif text-15 ${you ? 'font-bold' : 'font-semibold'} text-text`}>
                         {you ? 'You' : row.nickname ?? row.displayName ?? 'Racer'}
                       </span>
-                      <span className={`shrink-0 font-mono text-[12px] tabular-nums ${you ? 'font-bold text-text' : 'text-text-muted'}`}>
+                      <span className={`shrink-0 font-mono text-12 tabular-nums ${you ? 'font-bold text-text' : 'text-text-muted'}`}>
                         {Math.round(row.winRate * 100)}%
                       </span>
                     </li>
                   );
                 })}
               </ul>
-              <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+              <p className="mt-2 font-mono text-9 uppercase tracking-[0.14em] text-text-faint">
                 Win rate, not winnings
               </p>
               <Link
                 href="/social/friends"
-                className="mt-2 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
+                className="mt-2 inline-block font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
               >
                 Invite a friend →
               </Link>
@@ -224,7 +224,7 @@ export async function PlayMarkets({
               </p>
               <Link
                 href="/social/leagues"
-                className="mt-2 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
+                className="mt-2 inline-block font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
               >
                 Start a league →
               </Link>
@@ -234,7 +234,7 @@ export async function PlayMarkets({
       </div>
 
       {/* HOUSE RULES — plain type, every number from constants.ts. */}
-      <p className="mt-8 border-t border-text pt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <p className="mt-8 border-t border-text pt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
         House rules · {PER_WEEKEND_CREDITS} credits a weekend · {BASE_CREDITS} floor in empty months ·{' '}
         {BETTABLE_SERIES.map(s => s.toUpperCase()).join(' and ')} only · No money in, none out
       </p>

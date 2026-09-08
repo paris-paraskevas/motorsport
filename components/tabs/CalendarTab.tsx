@@ -51,7 +51,7 @@ export async function CalendarTab({ series }: { series: Series }) {
       />
       {circuitLinks.length > 0 && (
         <section className="mt-8 border-t border-border pt-4">
-          <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint mb-3">
+          <h2 className="font-mono text-10 uppercase tracking-[0.16em] font-semibold text-text-faint mb-3">
             Circuits this season
           </h2>
           <div className="flex flex-wrap gap-x-4 gap-y-2">

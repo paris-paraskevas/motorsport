@@ -133,7 +133,7 @@ function BarLink({
       ) : (
         <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
       )}
-      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">
+      <span className="font-mono text-10 font-semibold uppercase tracking-[0.14em]">
         {label}
       </span>
     </Link>

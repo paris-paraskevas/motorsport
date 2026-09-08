@@ -50,18 +50,18 @@ export function SessionCard({
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap min-w-0">
-          <span className="text-[15px] text-text font-semibold tracking-tight truncate min-w-0 flex-1 basis-full">
+          <span className="text-15 text-text font-semibold tracking-tight truncate min-w-0 flex-1 basis-full">
             {session.title}
           </span>
           {isLive && (
-            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-live/15 text-live-pill font-semibold">
+            <span className="inline-flex items-center gap-1 text-10 uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-live/15 text-live-pill font-semibold">
               <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
               live
             </span>
           )}
           {session.significance && (
             <span
-              className="font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 border border-brand/40 text-brand font-semibold"
+              className="font-mono text-9 uppercase tracking-[0.14em] px-1.5 py-0.5 border border-brand/40 text-brand font-semibold"
             >
               {session.significance.tier}
             </span>

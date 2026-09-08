@@ -20,7 +20,7 @@ function frame(children: ReactNode) {
       {/* Launch gate A6: no-cashout framing on every betting surface. A league
           leaderboard is one. Rendered from the shared constant so it cannot
           drift from the wording on /social/leagues. */}
-      <p className="mt-8 border-t border-border pt-4 font-mono text-[11px] leading-relaxed text-text-muted">
+      <p className="mt-8 border-t border-border pt-4 font-mono text-11 leading-relaxed text-text-muted">
         {PLAY_MONEY_NOTE}
       </p>
     </div>
@@ -48,7 +48,7 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
     <>
       <Link
         href="/social/leagues"
-        className="mb-4 inline-block font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text"
+        className="mb-4 inline-block font-mono text-11 uppercase tracking-[0.16em] text-text-muted hover:text-text"
       >
         ← Leagues
       </Link>

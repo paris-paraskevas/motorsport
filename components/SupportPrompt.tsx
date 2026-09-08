@@ -253,7 +253,7 @@ export function SupportPrompt() {
         <div aria-hidden className="h-[3px] w-full bg-live" />
         <div className="p-5 md:p-6">
           <div className="flex items-start justify-between gap-3">
-            <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-live">
+            <span className="inline-flex items-center gap-1.5 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-live">
               <Heart size={11} fill="currentColor" aria-hidden />
               {isLast ? 'Last ask' : 'Made by hand'}
             </span>
@@ -269,7 +269,7 @@ export function SupportPrompt() {
 
           <h2
             id="support-prompt-title"
-            className="mt-2.5 font-serif text-[20px] font-semibold leading-tight text-text"
+            className="mt-2.5 font-serif text-20 font-semibold leading-tight text-text"
           >
             {isLast ? "Last time I'll ask, promise :)" : "Hi, I'm Paris :)"}
           </h2>
@@ -298,7 +298,7 @@ export function SupportPrompt() {
               rel="noopener noreferrer"
               onClick={() => settle(true)}
               data-heatmap-id={`support:ask-${stage}:donate`}
-              className={`inline-flex min-h-10 flex-1 items-center justify-center gap-2 bg-text px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted ${FOCUS_RING}`}
+              className={`inline-flex min-h-10 flex-1 items-center justify-center gap-2 bg-text px-4 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted ${FOCUS_RING}`}
             >
               <Coffee size={14} aria-hidden />
               Buy me a coffee
@@ -308,7 +308,7 @@ export function SupportPrompt() {
               type="button"
               onClick={softDismiss}
               data-heatmap-id={`support:ask-${stage}:not-now`}
-              className={`inline-flex min-h-10 items-center px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) hover:text-text ${FOCUS_RING}`}
+              className={`inline-flex min-h-10 items-center px-3 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) hover:text-text ${FOCUS_RING}`}
             >
               {isLast ? 'Close' : 'Not now'}
             </button>
@@ -319,11 +319,11 @@ export function SupportPrompt() {
               type="button"
               onClick={neverAgain}
               data-heatmap-id={`support:ask-${stage}:never`}
-              className={`font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint underline decoration-border decoration-1 underline-offset-4 transition-colors duration-(--duration-fast) hover:text-text hover:decoration-text ${FOCUS_RING}`}
+              className={`font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint underline decoration-border decoration-1 underline-offset-4 transition-colors duration-(--duration-fast) hover:text-text hover:decoration-text ${FOCUS_RING}`}
             >
               Don&apos;t show this again
             </button>
-            <p className="mt-2 text-[11px] leading-relaxed text-text-faint">
+            <p className="mt-2 text-11 leading-relaxed text-text-faint">
               {isSignedIn
                 ? 'Signed in, so that sticks on every device you use.'
                 : 'You are signed out, so that lasts until you close the tab. Preferences live with an account, which is what makes it permanent.'}

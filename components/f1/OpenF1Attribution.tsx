@@ -5,7 +5,7 @@
 export function OpenF1Attribution({ className = '' }: { className?: string }) {
   return (
     <p
-      className={`font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint ${className}`}
+      className={`font-mono text-10 uppercase tracking-[0.14em] text-text-faint ${className}`}
     >
       Timing data via{' '}
       <a

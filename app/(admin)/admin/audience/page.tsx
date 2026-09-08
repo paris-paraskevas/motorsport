@@ -107,12 +107,12 @@ export default async function AdminUsersPage() {
                 <li key={t.id} className="space-y-2 px-4 py-3">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <span className="font-semibold text-text">{t.title}</span>
-                    <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                    <span className="font-mono text-11 tabular-nums text-text-faint">
                       {new Date(t.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
                   <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-muted">{t.body}</p>
-                  <p className="font-mono text-[11px] text-text-faint">
+                  <p className="font-mono text-11 text-text-faint">
                     {t.authorName ?? t.authorId}
                     {t.seriesSlug ? ` · ${t.seriesSlug}` : ''}
                   </p>
@@ -132,12 +132,12 @@ export default async function AdminUsersPage() {
                 <li key={f.id} className="space-y-2 px-4 py-3">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <span className="font-semibold text-text">{f.title}</span>
-                    <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+                    <span className="font-mono text-11 uppercase tracking-[0.14em] text-text-faint">
                       {f.kind}
                     </span>
                   </div>
                   <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-muted">{f.body}</p>
-                  <p className="font-mono text-[11px] text-text-faint">
+                  <p className="font-mono text-11 text-text-faint">
                     {f.authorName ?? f.authorId} ·{' '}
                     {new Date(f.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                   </p>
@@ -156,17 +156,17 @@ export default async function AdminUsersPage() {
                 <li key={r.id} className="space-y-2 px-4 py-3">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <span className="font-semibold text-text">{r.displayName}</span>
-                    <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                    <span className="font-mono text-11 tabular-nums text-text-faint">
                       {new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
                   <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-muted">{r.pitch}</p>
                   {r.links && (
-                    <p className="break-all font-mono text-[11px] text-text-faint">{r.links}</p>
+                    <p className="break-all font-mono text-11 text-text-faint">{r.links}</p>
                   )}
                   {r.sample && (
                     <details className="text-sm text-text-muted">
-                      <summary className="cursor-pointer font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+                      <summary className="cursor-pointer font-mono text-11 uppercase tracking-[0.14em] text-text-faint">
                         Writing sample
                       </summary>
                       <p className="mt-2 whitespace-pre-wrap leading-relaxed">{r.sample}</p>
@@ -202,14 +202,14 @@ export default async function AdminUsersPage() {
                     <span className="flex min-w-0 items-baseline gap-2">
                       <span className="truncate text-text">{u.name}</span>
                       {u.role ? (
-                        <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-brand">
+                        <span className="shrink-0 font-mono text-10 uppercase tracking-[0.14em] text-brand">
                           {u.role}
                         </span>
                       ) : null}
                     </span>
                     <span className="flex shrink-0 items-baseline gap-2">
                       <DonorToggle userId={u.id} donor={u.donor} />
-                      <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                      <span className="font-mono text-11 tabular-nums text-text-faint">
                         {new Date(u.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>
                     </span>

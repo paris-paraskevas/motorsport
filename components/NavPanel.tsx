@@ -253,7 +253,7 @@ export function NavPanel({
               data-nav-row
               data-heatmap-id={`nav:panel:now:${d.label.toLowerCase().replace(/\s+/g, '-')}`}
               aria-current={active ? 'page' : undefined}
-              className={`flex min-h-11 items-center border border-border-strong px-3 font-serif text-[17px] font-semibold leading-tight transition-colors duration-(--duration-fast) hover:bg-surface lg:border-0 lg:border-b lg:border-border lg:px-0 lg:py-2 lg:text-[19px] ${
+              className={`flex min-h-11 items-center border border-border-strong px-3 font-serif text-17 font-semibold leading-tight transition-colors duration-(--duration-fast) hover:bg-surface lg:border-0 lg:border-b lg:border-border lg:px-0 lg:py-2 lg:text-19 ${
                 active ? 'text-brand' : 'text-text'
               }`}
             >
@@ -274,7 +274,7 @@ export function NavPanel({
           href={r.href}
           data-nav-row
           data-heatmap-id={`nav:panel:${r.label.toLowerCase().replace(/\s+/g, '-')}`}
-          className="flex min-h-11 items-center border-b border-border py-1.5 font-serif text-[16px] font-semibold text-text transition-colors duration-(--duration-fast) hover:bg-surface"
+          className="flex min-h-11 items-center border-b border-border py-1.5 font-serif text-16 font-semibold text-text transition-colors duration-(--duration-fast) hover:bg-surface"
         >
           {r.label}
         </Link>
@@ -286,13 +286,13 @@ export function NavPanel({
     <section aria-label="Series">
       <PanelRule label="Series" right={`${seriesGroups.reduce((n, g) => n + g.series.length, 0)}`} />
       {/* Stated once, as a line of type — never fifteen times behind a hover. */}
-      <p className="mt-1 hidden font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint lg:block">
+      <p className="mt-1 hidden font-mono text-9 uppercase tracking-[0.14em] text-text-faint lg:block">
         Every series opens with calendar · standings · results · drivers · champions
       </p>
       <div className="lg:columns-2 lg:gap-6">
         {seriesGroups.map(g => (
           <div key={g.category.id} className="lg:break-inside-avoid">
-            <div className="mt-3 mb-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+            <div className="mt-3 mb-0.5 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted">
               {g.category.label}
             </div>
             {g.series.map(s => (
@@ -304,7 +304,7 @@ export function NavPanel({
                 className="flex min-h-11 items-center gap-2.5 border-b border-border py-1.5 transition-colors duration-(--duration-fast) hover:bg-surface"
               >
                 <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
-                <span className="truncate font-serif text-[16px] font-semibold text-text">{s.name}</span>
+                <span className="truncate font-serif text-16 font-semibold text-text">{s.name}</span>
               </Link>
             ))}
           </div>
@@ -321,7 +321,7 @@ export function NavPanel({
           key={l.href}
           href={l.href}
           data-nav-row
-          className="block min-h-11 border-b border-border py-2.5 font-serif text-[16px] font-semibold leading-tight text-text transition-colors duration-(--duration-fast) hover:bg-surface"
+          className="block min-h-11 border-b border-border py-2.5 font-serif text-16 font-semibold leading-tight text-text transition-colors duration-(--duration-fast) hover:bg-surface"
         >
           {l.label}
         </Link>
@@ -332,10 +332,10 @@ export function NavPanel({
           data-nav-row
           className="mt-3 block border border-border-strong p-3 transition-colors duration-(--duration-fast) hover:bg-surface"
         >
-          <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+          <span className="block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand">
             Circuit map
           </span>
-          <span className="mt-1 block font-serif text-[15px] font-semibold leading-snug text-text">
+          <span className="mt-1 block font-serif text-15 font-semibold leading-snug text-text">
             All 138 venues on one map
           </span>
         </Link>
@@ -345,13 +345,13 @@ export function NavPanel({
 
   const alsoFoot = alsoHits.length > 0 && (
     <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-1 border-t border-text pt-2 pb-1">
-      <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-text-faint">Also</span>
+      <span className="font-mono text-9 font-semibold uppercase tracking-[0.18em] text-text-faint">Also</span>
       {alsoHits.map(l => (
         <Link
           key={l.href}
           href={l.href}
           data-nav-row
-          className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+          className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
         >
           {l.label}
         </Link>
@@ -360,7 +360,7 @@ export function NavPanel({
         href="/settings"
         data-nav-row
         data-heatmap-id="nav:panel:settings"
-        className="ml-auto font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
+        className="ml-auto font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
       >
         Settings →
       </Link>
@@ -425,10 +425,10 @@ export function NavPanel({
           aria-expanded={open}
           aria-controls="nav-panel"
           data-heatmap-id="nav:search-field"
-          className="min-w-0 flex-1 bg-transparent font-mono text-[11px] text-text outline-none placeholder:text-text-muted"
+          className="min-w-0 flex-1 bg-transparent font-mono text-11 text-text outline-none placeholder:text-text-muted"
         />
         {open && (
-          <span aria-hidden="true" className="hidden shrink-0 font-mono text-[9px] uppercase tracking-[0.16em] text-text-faint lg:block">
+          <span aria-hidden="true" className="hidden shrink-0 font-mono text-9 uppercase tracking-[0.16em] text-text-faint lg:block">
             Esc to close
           </span>
         )}
@@ -473,7 +473,7 @@ export function NavPanel({
                     >
                       <span className="block truncate text-sm text-text">{d.title}</span>
                       {d.subtitle && (
-                        <span className="block truncate font-mono text-[11px] text-text-faint">{d.subtitle}</span>
+                        <span className="block truncate font-mono text-11 text-text-faint">{d.subtitle}</span>
                       )}
                     </Link>
                   ))}
@@ -481,7 +481,7 @@ export function NavPanel({
               ))}
 
               {q.length > 0 && docs === null && (
-                <p className="px-1 py-4 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                <p className="px-1 py-4 text-center font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                   Loading the index…
                 </p>
               )}
@@ -501,9 +501,9 @@ export function NavPanel({
 function PanelRule({ label, right }: { label: string; right?: string }) {
   return (
     <div className="mt-4 flex items-baseline justify-between border-b border-text pb-1">
-      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</span>
+      <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</span>
       {right !== undefined && (
-        <span className="font-mono text-[10px] tabular-nums text-text-faint">{right}</span>
+        <span className="font-mono text-10 tabular-nums text-text-faint">{right}</span>
       )}
     </div>
   );

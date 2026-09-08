@@ -160,7 +160,7 @@ export function MinisectorMap({
     <div className="space-y-2">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3 className="font-display text-sm font-bold uppercase tracking-wide text-text">Dominance map</h3>
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           {mode === 'sector' ? 'by sector winner' : 'who leads, by track position'}
         </span>
       </div>
@@ -186,7 +186,7 @@ export function MinisectorMap({
           ))}
         </svg>
       </div>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-text-muted">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-11 text-text-muted">
         <LegendDot colour={driverA.teamColour} label={`${driverA.code} ahead`} />
         <LegendDot colour={driverB.teamColour} label={`${driverB.code} ahead`} />
       </div>

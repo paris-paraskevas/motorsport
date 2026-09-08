@@ -141,7 +141,7 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
                     style={{ backgroundColor: colorFor(t.categories) }}
                   />
                   <span className="truncate font-medium">{t.name}</span>
-                  <span className="ml-auto shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+                  <span className="ml-auto shrink-0 font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
                     {t.country}
                   </span>
                 </button>
@@ -157,7 +157,7 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
           type="button"
           onClick={toggleAll}
           aria-pressed={allActive}
-          className="inline-flex items-center rounded-full border border-border-strong px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-text transition-colors duration-(--duration-fast) hover:bg-surface"
+          className="inline-flex items-center rounded-full border border-border-strong px-2.5 py-1 font-mono text-11 font-semibold uppercase tracking-[0.1em] text-text transition-colors duration-(--duration-fast) hover:bg-surface"
         >
           {allActive ? 'Clear' : 'Select all'}
         </button>
@@ -170,7 +170,7 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
               type="button"
               onClick={() => toggleCategory(c)}
               aria-pressed={on}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors duration-(--duration-fast) ${
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-11 uppercase tracking-[0.1em] transition-colors duration-(--duration-fast) ${
                 on ? 'border-border-strong text-text' : 'border-border text-text-faint opacity-60'
               }`}
             >
@@ -246,7 +246,7 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
         })}
       </MapContainer>
 
-      <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+      <p className="font-mono text-11 uppercase tracking-[0.12em] text-text-faint">
         Showing {visible.length} of {tracks.length} circuits
       </p>
     </div>

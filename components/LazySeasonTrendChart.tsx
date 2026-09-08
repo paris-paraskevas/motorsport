@@ -223,7 +223,7 @@ export function LazySeasonTrendChart({
             the chart on smaller viewports; same colour dots as the lines,
             capped behind a "+N more" expander like the chip legend. */}
         <div className="mt-3 lg:mt-0 lg:w-60 lg:shrink-0">
-          <h3 className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-text-faint">
+          <h3 className="mb-1.5 font-mono text-10 uppercase tracking-[0.14em] font-semibold text-text-faint">
             Points
           </h3>
           <ol className="divide-y divide-border/40" aria-label="Season points, ranked">
@@ -232,7 +232,7 @@ export function LazySeasonTrendChart({
                 key={d.name}
                 className="flex items-center gap-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface"
               >
-                <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                <span className="w-5 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                   {i + 1}
                 </span>
                 <span
@@ -242,7 +242,7 @@ export function LazySeasonTrendChart({
                 <span className="flex-1 min-w-0 truncate text-sm text-text">
                   {legendLabel(d.name)}
                 </span>
-                <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">
+                <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">
                   {totalsByDriver[d.name] ?? 0}
                 </span>
               </li>
@@ -252,7 +252,7 @@ export function LazySeasonTrendChart({
             <button
               type="button"
               onClick={() => setListExpanded(true)}
-              className="mt-2 inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+              className="mt-2 inline-flex items-center gap-1 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
             >
               Show all {ranked.length}
               <ChevronDown size={12} />
@@ -262,7 +262,7 @@ export function LazySeasonTrendChart({
             <button
               type="button"
               onClick={() => setListExpanded(false)}
-              className="mt-2 inline-flex items-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
+              className="mt-2 inline-flex items-center font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
             >
               Collapse
             </button>
@@ -278,7 +278,7 @@ export function LazySeasonTrendChart({
               key={d.name}
               type="button"
               onClick={() => toggle(d.name)}
-              className={`inline-flex items-center gap-1.5 font-mono text-[11px] font-medium px-2.5 py-1 border transition-colors duration-(--duration-fast) ${
+              className={`inline-flex items-center gap-1.5 font-mono text-11 font-medium px-2.5 py-1 border transition-colors duration-(--duration-fast) ${
                 on
                   ? 'border-border-strong text-text bg-surface'
                   : 'border-border text-text-faint hover:text-text-muted hover:border-border-strong'
@@ -297,7 +297,7 @@ export function LazySeasonTrendChart({
           <button
             type="button"
             onClick={() => setLegendExpanded(true)}
-            className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] px-2.5 py-1 border border-border text-text-muted hover:text-text hover:border-border-strong transition-colors duration-(--duration-fast)"
+            className="inline-flex items-center gap-1 font-mono text-11 font-semibold uppercase tracking-[0.12em] px-2.5 py-1 border border-border text-text-muted hover:text-text hover:border-border-strong transition-colors duration-(--duration-fast)"
           >
             +{hiddenCount} more
             <ChevronDown size={12} />
@@ -307,7 +307,7 @@ export function LazySeasonTrendChart({
           <button
             type="button"
             onClick={() => setLegendExpanded(false)}
-            className="inline-flex items-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] px-2.5 py-1 border border-border text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
+            className="inline-flex items-center font-mono text-11 font-semibold uppercase tracking-[0.12em] px-2.5 py-1 border border-border text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
           >
             Collapse
           </button>

@@ -69,7 +69,7 @@ export function NextRaceCountdown({
   if (live) {
     return (
       <span
-        className="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-live-pill"
+        className="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-2 py-0.5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-live-pill"
         aria-label={`${label} is live now`}
       >
         <span aria-hidden="true" className="live-pulse h-2 w-2 rounded-full bg-live" />
@@ -86,7 +86,7 @@ export function NextRaceCountdown({
       style={color ? { borderColor: color } : undefined}
       aria-label={`Time until ${label}`}
     >
-      <span className="font-mono text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint">
+      <span className="font-mono text-10 uppercase tracking-[0.16em] font-semibold text-text-faint">
         {label}
       </span>
       {/* suppressHydrationWarning: the server renders wall-clock seconds that

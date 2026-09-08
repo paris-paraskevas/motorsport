@@ -83,8 +83,8 @@ function RowInner({ r, compact }: { r: HubRow; compact?: boolean }) {
       <span aria-hidden="true" className="h-4 w-[3px] shrink-0 self-center" style={{ backgroundColor: r.color }} />
       {compact ? (
         <span className="min-w-0 flex-1 py-0.5">
-          <span className="block truncate font-serif text-[16px] font-semibold leading-tight text-text">{r.name}</span>
-          <span className={`block truncate font-mono text-[10px] uppercase tracking-[0.12em] ${r.isCurrent ? 'font-semibold text-brand' : 'text-text-faint'}`}>
+          <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">{r.name}</span>
+          <span className={`block truncate font-mono text-10 uppercase tracking-[0.12em] ${r.isCurrent ? 'font-semibold text-brand' : 'text-text-faint'}`}>
             {r.round != null ? `R${r.round} · ` : ''}
             {r.event}
             {r.dates !== '—' ? ` · ${r.dates}` : ''}
@@ -92,22 +92,22 @@ function RowInner({ r, compact }: { r: HubRow; compact?: boolean }) {
         </span>
       ) : (
         <>
-          <span className="w-[220px] shrink-0 truncate font-serif text-[17px] font-semibold text-text xl:w-[274px]">
+          <span className="w-[220px] shrink-0 truncate font-serif text-17 font-semibold text-text xl:w-[274px]">
             {r.name}
           </span>
-          <span className="w-10 shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-text-faint">
+          <span className="w-10 shrink-0 font-mono text-10 font-semibold uppercase tracking-[0.08em] text-text-faint">
             {r.round != null ? `R${r.round}` : '–'}
           </span>
-          <span className={`min-w-0 flex-1 truncate font-serif text-[15px] ${r.italic ? 'italic text-text-muted' : 'text-text'}`}>
+          <span className={`min-w-0 flex-1 truncate font-serif text-15 ${r.italic ? 'italic text-text-muted' : 'text-text'}`}>
             {r.event}
           </span>
-          <span className={`w-[104px] shrink-0 text-right font-mono text-[11px] tabular-nums ${r.isCurrent ? 'font-semibold text-brand' : 'text-text-muted'}`}>
+          <span className={`w-[104px] shrink-0 text-right font-mono text-11 tabular-nums ${r.isCurrent ? 'font-semibold text-brand' : 'text-text-muted'}`}>
             {r.dates}
           </span>
-          <span className="hidden w-[150px] shrink-0 truncate text-right font-mono text-[10px] uppercase tracking-[0.1em] text-text-muted lg:block">
+          <span className="hidden w-[150px] shrink-0 truncate text-right font-mono text-10 uppercase tracking-[0.1em] text-text-muted lg:block">
             {r.broadcaster ?? '—'}
           </span>
-          <span aria-hidden="true" className="shrink-0 font-mono text-[11px] text-text-faint">→</span>
+          <span aria-hidden="true" className="shrink-0 font-mono text-11 text-text-faint">→</span>
         </>
       )}
     </>
@@ -146,14 +146,14 @@ export default async function SeriesHubPage() {
     <div className={PAGE_WIDE}>
       <div>
         <header className="mb-6">
-          <h1 className="font-serif text-[40px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[50px]">
+          <h1 className="font-serif text-40 font-medium leading-none tracking-[-0.02em] text-text lg:text-50">
             Series
           </h1>
-          <p className="mt-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+          <p className="mt-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted">
             {all.length === 15 ? 'Fifteen' : all.length} championships · {season} season
           </p>
           {/* Stated once, instead of seventy-five times (§4.5). */}
-          <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+          <p className="mt-1 font-mono text-9 uppercase tracking-[0.14em] text-text-faint">
             Every series opens with calendar · standings · results · drivers · champions
           </p>
         </header>
@@ -161,11 +161,11 @@ export default async function SeriesHubPage() {
         {racing.length > 0 && (
           <section aria-label="Racing this weekend" className="mb-7">
             <div className="mb-2 flex items-baseline gap-3 border-b border-text pb-1">
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+              <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-brand">
                 Racing this weekend
               </span>
               {racingDates && (
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{racingDates}</span>
+                <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{racingDates}</span>
               )}
             </div>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -177,11 +177,11 @@ export default async function SeriesHubPage() {
                 >
                   <span aria-hidden="true" className="h-4 w-[3px] shrink-0" style={{ backgroundColor: r.color }} />
                   <span className="min-w-0 flex-1">
-                    <span className="block font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+                    <span className="block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-text-faint">
                       {r.name}
                       {r.round != null ? ` · R${r.round}` : ''}
                     </span>
-                    <span className="block truncate font-serif text-[16px] font-semibold leading-tight text-text">
+                    <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">
                       {r.event}
                     </span>
                   </span>
@@ -197,8 +197,8 @@ export default async function SeriesHubPage() {
           {groups.map(group => (
             <section key={group.category.id} aria-label={group.category.label} className="mb-7">
               <div className="flex items-baseline gap-2 border-b border-text pb-1">
-                <h2 className="font-serif text-[22px] font-semibold text-text">{group.category.label}</h2>
-                <span className="font-mono text-[10px] tabular-nums text-text-faint">{group.series.length}</span>
+                <h2 className="font-serif text-22 font-semibold text-text">{group.category.label}</h2>
+                <span className="font-mono text-10 tabular-nums text-text-faint">{group.series.length}</span>
               </div>
               {group.series.map(s => {
                 const r = rows.get(s.slug);
@@ -247,10 +247,10 @@ export default async function SeriesHubPage() {
             the template. Data verbatim from the README's contract table. */}
         <section aria-label="One layout, fifteen sports" className="mt-12">
           <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4 border-b border-text pb-1">
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
               One layout, fifteen sports
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
               The F1 weekend is the exception, not the template
             </span>
           </div>
@@ -258,17 +258,17 @@ export default async function SeriesHubPage() {
             <table className="w-full min-w-[640px] border-collapse">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="py-1.5 pr-4 text-left font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-text-muted">Series</th>
-                  <th className="py-1.5 pr-4 text-left font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-text-muted">A round is</th>
-                  <th className="py-1.5 text-left font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-text-muted">Sessions, in order</th>
+                  <th className="py-1.5 pr-4 text-left font-mono text-9 font-semibold uppercase tracking-[0.1em] text-text-muted">Series</th>
+                  <th className="py-1.5 pr-4 text-left font-mono text-9 font-semibold uppercase tracking-[0.1em] text-text-muted">A round is</th>
+                  <th className="py-1.5 text-left font-mono text-9 font-semibold uppercase tracking-[0.1em] text-text-muted">Sessions, in order</th>
                 </tr>
               </thead>
               <tbody>
                 {CONTRACT_MATRIX.map(row => (
                   <tr key={row[0]} className="border-b border-border">
-                    <td className="py-2 pr-4 font-serif text-[15px] font-semibold text-text">{row[0]}</td>
-                    <td className="py-2 pr-4 font-mono text-[10px] uppercase tracking-[0.1em] text-text-muted">{row[1]}</td>
-                    <td className="py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-text-muted">{row[2]}</td>
+                    <td className="py-2 pr-4 font-serif text-15 font-semibold text-text">{row[0]}</td>
+                    <td className="py-2 pr-4 font-mono text-10 uppercase tracking-[0.1em] text-text-muted">{row[1]}</td>
+                    <td className="py-2 font-mono text-10 uppercase tracking-[0.1em] text-text-muted">{row[2]}</td>
                   </tr>
                 ))}
               </tbody>

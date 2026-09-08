@@ -19,7 +19,7 @@ export function DoorLinks({ entries, preview = false }: { entries: NavEntry[]; p
         const dest = resolveDestination(entry.dest);
         if (!dest || dest.kind === 'action') return null;
         const active = dest.kind === 'route' && isActivePath(dest.href, pathname);
-        const className = `inline-flex items-center border-b-2 px-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] transition-colors duration-(--duration-fast) ${
+        const className = `inline-flex items-center border-b-2 px-0.5 font-mono text-10 font-semibold uppercase tracking-[0.16em] transition-colors duration-(--duration-fast) ${
           active ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'
         }`;
         if (dest.kind === 'external') {

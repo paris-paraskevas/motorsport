@@ -65,11 +65,11 @@ export function SettingsClient({ seriesList }: { seriesList: NavSeriesMeta[] }) 
         </p>
         <Link
           href="/sign-in"
-          className="mt-4 inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-brand"
+          className="mt-4 inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-brand"
         >
           <Lock size={13} aria-hidden /> Sign in to follow
         </Link>
-        <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        <p className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
           Free — an account keeps it free
         </p>
       </div>

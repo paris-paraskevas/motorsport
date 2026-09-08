@@ -31,10 +31,10 @@ function frame(children: ReactNode, balance?: ReactNode) {
     <div className={PAGE_WIDE}>
       <header className="mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3 border-b border-border pb-5">
         <div className="min-w-0">
-          <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+          <h1 className="font-serif text-38 font-medium leading-none tracking-[-0.02em] text-text md:text-46">
             Predictions
           </h1>
-          <p className="mt-2 max-w-[52ch] font-serif text-[16px] leading-snug text-text-muted">
+          <p className="mt-2 max-w-[52ch] font-serif text-16 leading-snug text-text-muted">
             Call the race before the grid does. Virtual credits only — nothing
             to buy, nothing to cash out.
           </p>
@@ -51,13 +51,13 @@ async function BalanceBlock({ userId }: { userId: string }) {
   const balance = await ensureBettingUser(userId);
   return (
     <div className="text-right">
-      <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+      <div className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
         Your balance
       </div>
-      <div className="font-mono text-[36px] font-bold leading-none tabular-nums text-text">
+      <div className="font-mono text-36 font-bold leading-none tabular-nums text-text">
         {balance.toLocaleString()}
       </div>
-      <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="mt-1 font-mono text-9 uppercase tracking-[0.14em] text-text-faint">
         +{PER_WEEKEND_CREDITS} per race weekend
       </div>
     </div>
@@ -78,10 +78,10 @@ function Row({ href, icon, eyebrow, title, desc }: {
     <Link href={href} className={rowClass}>
       <span className="shrink-0 text-text-muted">{icon}</span>
       <span className="min-w-0 flex-1">
-        <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+        <span className="block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand">
           {eyebrow}
         </span>
-        <span className="block font-serif text-[17px] font-semibold text-text">{title}</span>
+        <span className="block font-serif text-17 font-semibold text-text">{title}</span>
         <span className="block text-xs text-text-faint">{desc}</span>
       </span>
       <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
@@ -97,14 +97,14 @@ export default async function SocialPage() {
     <>
       {!signedIn && (
         <div className="mb-6 border-b border-border pb-5">
-          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Free to play</div>
+          <div className="font-mono text-11 font-semibold uppercase tracking-[0.16em] text-brand">Free to play</div>
           <p className="mt-1 max-w-xl text-sm text-text-muted">
             Predict race results with free monthly virtual credits, build private leagues with friends, and
             climb the win-rate leaderboard. No cash, no catch — just bragging rights.
           </p>
           <Link
             href="/sign-in"
-            className="mt-3 inline-flex min-h-11 items-center bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+            className="mt-3 inline-flex min-h-11 items-center bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
           >
             Sign in — it&rsquo;s free
           </Link>

@@ -37,7 +37,7 @@ export default function Error({
           }}
         />
         <div className="relative">
-          <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-3">
+          <div className="text-11 uppercase tracking-[0.18em] text-text-faint font-semibold mb-3">
             Yellow flag
           </div>
           <div className="flex items-baseline gap-4 mb-4 flex-wrap">

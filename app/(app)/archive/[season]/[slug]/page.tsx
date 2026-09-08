@@ -50,7 +50,7 @@ export default async function ArchiveSeasonPage({
     <div className={PAGE_READ}>
       <Link
         href="/archive"
-        className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint hover:text-text"
+        className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint hover:text-text"
       >
         ← Archive
       </Link>
@@ -72,7 +72,7 @@ export default async function ArchiveSeasonPage({
       </p>
 
       <section aria-label="Race weekends" className="mt-8">
-        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+        <h2 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-faint">
           Race weekends
         </h2>
         <ul className="mt-3 border-t border-border">
@@ -82,13 +82,13 @@ export default async function ArchiveSeasonPage({
                 href={`/archive/${season}/${slug}/weekend/${w.round}`}
                 className="flex items-baseline gap-3 py-2.5 hover:bg-surface-elevated"
               >
-                <span className="w-10 shrink-0 font-mono text-[11px] text-text-faint">
+                <span className="w-10 shrink-0 font-mono text-11 text-text-faint">
                   R{w.round}
                 </span>
-                <span className="min-w-0 flex-1 text-[15px] text-text">
+                <span className="min-w-0 flex-1 text-15 text-text">
                   {w.roundName ?? w.label ?? `Round ${w.round}`}
                 </span>
-                <span className="shrink-0 font-mono text-[11px] text-text-faint">
+                <span className="shrink-0 font-mono text-11 text-text-faint">
                   {w.dateRangeLabel}
                 </span>
               </Link>
@@ -102,7 +102,7 @@ export default async function ArchiveSeasonPage({
       {/* Honest about what the snapshot holds. `none` means no fetcher exists
           for that series at all — ADAC and NLS are curated families — rather
           than a capture that failed. */}
-      <p className="mt-10 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+      <p className="mt-10 font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
         Archived {archive.capturedAt.slice(0, 10)} · standings{' '}
         {archive.captured.standings === 'ok' ? 'as at capture' : 'not recorded for this series'}
       </p>

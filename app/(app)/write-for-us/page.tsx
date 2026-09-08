@@ -28,7 +28,7 @@ export default function WriteForUsPage() {
         ])}
       />
       <header className="mb-8">
-        <div className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-text-faint">
+        <div className="mb-2 font-mono text-11 font-semibold uppercase tracking-[0.18em] text-text-faint">
           Writing
         </div>
         <h1 className="text-3xl font-bold tracking-tight text-text md:text-4xl">Write for Paddock</h1>
@@ -40,7 +40,7 @@ export default function WriteForUsPage() {
 
       <div className="mb-8 grid gap-6 sm:grid-cols-2">
         <section>
-          <h2 className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          <h2 className="mb-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text-faint">
             What you get
           </h2>
           <ul className="space-y-1.5 text-sm leading-relaxed text-text-muted">
@@ -50,7 +50,7 @@ export default function WriteForUsPage() {
           </ul>
         </section>
         <section>
-          <h2 className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          <h2 className="mb-2 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text-faint">
             What we ask
           </h2>
           <ul className="space-y-1.5 text-sm leading-relaxed text-text-muted">

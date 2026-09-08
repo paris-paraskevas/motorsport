@@ -23,7 +23,7 @@ export function SessionClassChips({
         onClick={() => setActive(idx)}
         aria-pressed={current}
         data-heatmap-id={`session:class:${label.toLowerCase().replace(/\s+/g, '-')}`}
-        className={`inline-flex min-h-[38px] items-center border px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
+        className={`inline-flex min-h-[38px] items-center border px-3 font-mono text-10 font-semibold uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
           current
             ? 'border-text bg-surface-elevated text-text'
             : 'border-border-strong text-text-muted hover:text-text'
@@ -38,7 +38,7 @@ export function SessionClassChips({
       <div className="flex flex-wrap items-center gap-2">
         {chip('Overall', -1)}
         {labels.map((l, i) => chip(l, i))}
-        <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+        <span className="ml-1 font-mono text-9 uppercase tracking-[0.14em] text-text-faint">
           Class is the primary filter, not a column
         </span>
       </div>
