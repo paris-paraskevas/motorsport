@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE } from '@/lib/site';
 import { resolveDestination, type NavEntry } from '@/lib/design/destinations';
+import type { ChromeText } from '@/lib/design/text-defaults';
 import { ManageCookiesButton } from '@/components/ManageCookiesButton';
 import { ContactFooterButton } from '@/components/ContactModal';
 import { InstallApp } from '@/components/landing/InstallApp';
@@ -71,20 +72,21 @@ function FooterEntry({ entry }: { entry: NavEntry }) {
 // over a thin version / copyright line. No tall brand strip (that's what made the
 // original run a full screen). Since Phase 2 the two columns are the
 // `footer-site` and `footer-legal` lists (lib/design/lists.ts).
-export function Footer({ site, legal }: { site: NavEntry[]; legal: NavEntry[] }) {
+// The headings, the blurb and the install label are text messages (lib/design/text.ts).
+export function Footer({ site, legal, text }: { site: NavEntry[]; legal: NavEntry[]; text: ChromeText }) {
   const year = 2026;
   return (
     <footer className="border-t border-border mt-12 bg-bg">
       <div className="w-full px-4 md:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-2 gap-6 text-xs sm:gap-8">
           <div>
-            <ColumnHeading>Site</ColumnHeading>
+            <ColumnHeading>{text['footer.site']}</ColumnHeading>
             {site.map((entry, i) => (
               <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
             ))}
           </div>
           <div>
-            <ColumnHeading>Legal</ColumnHeading>
+            <ColumnHeading>{text['footer.legal']}</ColumnHeading>
             {legal.map((entry, i) => (
               <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
             ))}
@@ -100,12 +102,8 @@ export function Footer({ site, legal }: { site: NavEntry[]; legal: NavEntry[] })
             The footer renders on every page, which is more reach than the
             landing ever had. */}
         <div className="mt-6 flex flex-col gap-4 border-t border-border pt-5 sm:flex-row sm:items-start sm:justify-between">
-          <p className="max-w-sm text-[12px] leading-relaxed text-text-muted">
-            Independent motorsport companion, built in the open. Fifteen
-            championships, every session in your own time zone. No account needed
-            to browse.
-          </p>
-          <InstallApp />
+          <p className="max-w-sm text-[12px] leading-relaxed text-text-muted">{text['footer.blurb']}</p>
+          <InstallApp label={text['footer.install']} />
         </div>
         <div className="mt-5 flex flex-col gap-1 border-t border-border pt-4 text-[11px] text-text-faint sm:flex-row sm:items-center sm:justify-between">
           <span className="font-display font-extrabold uppercase tracking-wide text-text">

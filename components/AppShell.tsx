@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useAuth, useUser, SignOutButton } from '@clerk/nextjs';
 import { NavSeriesMeta } from '@/lib/types';
 import type { NavLists } from '@/lib/design/destinations';
+import type { ChromeText } from '@/lib/design/text-defaults';
 import { BottomBar } from './BottomBar';
 import { DoorLinks } from './DoorLinks';
 import { Footer } from './Footer';
@@ -29,6 +30,7 @@ export function AppShell({
   seriesList,
   bettingEnabled,
   nav,
+  text,
 }: {
   children: React.ReactNode;
   seriesList: NavSeriesMeta[];
@@ -38,6 +40,8 @@ export function AppShell({
   // The doors, the phone bar and the footer's two columns, resolved on the
   // server from the design tables with the code as fallback (lib/design/lists.ts).
   nav: NavLists;
+  // The chrome's fixed strings, same source and fallback (lib/design/text.ts).
+  text: ChromeText;
 }) {
   // Pointer glow (operator idea): a soft signal-amber halo trails the cursor to
   // highlight where the mouse is. Desktop-mouse only and off under reduced
@@ -90,7 +94,7 @@ export function AppShell({
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[70] focus:rounded-md focus:border focus:border-border focus:bg-surface-elevated focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-text"
       >
-        Skip to content
+        {text['a11y.skip']}
       </a>
       {/* Fixed (not sticky — overflow-x: hidden on body kills sticky). 50px on
           phones, the spec's 58px on lg+, closed by a hard 1px ink rule. */}
@@ -112,7 +116,7 @@ export function AppShell({
             <span className="lg:hidden">Paddock</span>
           </Link>
 
-          <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} />
+          <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} searchLabel={text['nav.search']} />
 
           {/* Desktop door links (operator 2026-08-19, revised round-2 ④):
               Calendar, Learn and Series one click from the header — Home stays
@@ -134,7 +138,7 @@ export function AppShell({
         className="min-h-screen flex flex-col pt-[50px] lg:pt-[58px] pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0 outline-none"
       >
         <div className="flex-1">{children}</div>
-        <Footer site={nav.footerSite} legal={nav.footerLegal} />
+        <Footer site={nav.footerSite} legal={nav.footerLegal} text={text} />
       </main>
 
       <BottomBar entries={nav.bar} />

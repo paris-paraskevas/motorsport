@@ -12,6 +12,7 @@ import { HeatmapTracker } from '@/components/HeatmapTracker';
 import { ThemeScript } from '@/components/theme/ThemeScript';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { loadNavLists } from '@/lib/design/lists';
+import { loadTextMessages } from '@/lib/design/text';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import { SOCIAL_CARD } from '@/lib/seo';
@@ -81,9 +82,10 @@ export default async function RootLayout({
     color,
     category,
   }));
-  // The doors, the phone bar and the footer columns from the design tables,
-  // with the code as the fallback (Phase 2). One read per isolate per minute.
-  const nav = await loadNavLists();
+  // The doors, the phone bar, the footer columns and the chrome's fixed strings
+  // from the design tables, with the code as the fallback (Phase 2). One read
+  // each per isolate per minute.
+  const [nav, text] = await Promise.all([loadNavLists(), loadTextMessages()]);
 
   return (
     <ClerkProvider
@@ -133,7 +135,7 @@ export default async function RootLayout({
               });
             `}
           </Script>
-          <AppShell seriesList={seriesList} bettingEnabled={isBettingConfigured()} nav={nav}>
+          <AppShell seriesList={seriesList} bettingEnabled={isBettingConfigured()} nav={nav} text={text}>
             {children}
           </AppShell>
           {/* The release announcement, a modal over whatever page the reader

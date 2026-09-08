@@ -10,6 +10,8 @@ export interface CatalogueItem {
   label: string;
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
+  /** Set when the item opens another editor of its own. */
+  editor?: 'text';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -101,7 +103,7 @@ export const CATALOGUE: CatalogueGroup[] = [
     group: 'Globalization',
     items: [
       { key: 'glob', label: 'Globalization Attributes', later: 'read-only, later' },
-      { key: 'textmsgs', label: 'Text Messages', later: 'Phase 2, next' },
+      { key: 'textmsgs', label: 'Text Messages', editor: 'text' },
     ],
   },
 ];

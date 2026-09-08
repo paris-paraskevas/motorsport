@@ -5,8 +5,11 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { ConsoleModeToggle } from '@/components/admin/ConsoleMode';
 import type { EditableList, NavListKey } from '@/lib/design/lists';
+import type { EditableText } from '@/lib/design/text';
+import type { ChromeText } from '@/lib/design/text-defaults';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { ListEditor } from './ListEditor';
+import { TextEditor } from './TextEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -34,6 +37,11 @@ const ROLE_OF: Record<NavListKey, 'menu' | 'bar' | 'footer'> = {
   'footer-legal': 'footer',
 };
 
+type LoadedText =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; messages: EditableText[] };
+
 async function fetchList(key: NavListKey): Promise<Loaded> {
   try {
     const res = await fetch(`/api/admin/design/lists/${key}`, { cache: 'no-store' });
@@ -44,11 +52,23 @@ async function fetchList(key: NavListKey): Promise<Loaded> {
   }
 }
 
+async function fetchText(): Promise<LoadedText> {
+  try {
+    const res = await fetch('/api/admin/design/text', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The messages could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { messages: EditableText[] };
+    return { state: 'ready', messages: d.messages };
+  } catch {
+    return { state: 'error', message: 'The messages could not be loaded: network error.' };
+  }
+}
+
 export function Designer({
   readOnly,
   who,
   initialSelected = null,
   initialLists,
+  initialText,
 }: {
   readOnly: boolean;
   who: string;
@@ -57,7 +77,12 @@ export function Designer({
   /** Lists the server already loaded, so opening needs no round trip; any list
    *  missing here is fetched. */
   initialLists?: Partial<Record<NavListKey, EditableList>>;
+  /** The text messages the server already loaded; fetched when absent. */
+  initialText?: EditableText[] | null;
 }) {
+  const [text, setText] = useState<LoadedText>(() =>
+    initialText ? { state: 'ready', messages: initialText } : { state: 'loading' },
+  );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
   );
@@ -81,10 +106,15 @@ export function Designer({
         if (!cancelled) setLists(s => ({ ...s, [key]: loaded }));
       });
     }
+    if (!initialText) {
+      void fetchText().then(loaded => {
+        if (!cancelled) setText(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists]);
+  }, [initialLists, initialText]);
 
   const item: CatalogueItem | undefined = selected
     ? CATALOGUE.flatMap(g => g.items).find(i => i.key === selected)
@@ -95,6 +125,14 @@ export function Designer({
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries.length : null;
   };
+  const textCount = text.state === 'ready' ? text.messages.length : null;
+  // The footer preview shows the strings as they are stored right now.
+  const chromeText: ChromeText | undefined =
+    text.state === 'ready'
+      ? (Object.fromEntries(text.messages.map(m => [m.key, m.text])) as ChromeText)
+      : undefined;
+  const badge = (it: CatalogueItem): number | null =>
+    it.listKey ? count(it.listKey) : it.editor === 'text' ? textCount : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -144,7 +182,8 @@ export function Designer({
               <div className="px-3.5 pb-1 pt-3 text-[12px] font-semibold text-text-muted">{group.group}</div>
               {group.items.map(it => {
                 const active = selected === it.key;
-                const n = it.listKey ? count(it.listKey) : null;
+                const n = badge(it);
+                const live = Boolean(it.listKey || it.editor);
                 return (
                   <button
                     key={it.key}
@@ -154,7 +193,7 @@ export function Designer({
                     className={`flex w-full items-center gap-2.5 py-[7px] pl-[22px] pr-3.5 text-left text-[12px] ${
                       active
                         ? 'bg-edit-dim text-text shadow-[inset_2px_0_0_var(--edit)]'
-                        : it.listKey
+                        : live
                           ? 'text-text-muted hover:bg-surface-elevated hover:text-text'
                           : 'text-text-faint hover:bg-surface-elevated hover:text-text-muted'
                     }`}
@@ -193,11 +232,11 @@ export function Designer({
                         key={it.key}
                         type="button"
                         onClick={() => setSelected(it.key)}
-                        className={`py-0.5 text-left text-[12px] ${it.listKey ? 'text-edit hover:underline' : 'text-text-faint'}`}
+                        className={`py-0.5 text-left text-[12px] ${it.listKey || it.editor ? 'text-edit hover:underline' : 'text-text-faint'}`}
                       >
                         {it.label}
-                        {it.listKey && count(it.listKey) !== null && (
-                          <span className="ml-1.5 font-mono text-[10px] text-text-faint">{count(it.listKey)}</span>
+                        {badge(it) !== null && (
+                          <span className="ml-1.5 font-mono text-[10px] text-text-faint">{badge(it)}</span>
                         )}
                         {it.later && <span className="ml-1.5 font-mono text-[9px] text-text-faint">{it.later}</span>}
                       </button>
@@ -208,7 +247,7 @@ export function Designer({
             </>
           )}
 
-          {item && !listKey && (
+          {item && !listKey && !item.editor && (
             <>
               <h2 className="m-0 mb-1 text-[20px] font-bold text-text">{item.label}</h2>
               <p className="m-0 max-w-[70ch] text-[13px] text-text-muted">
@@ -217,6 +256,20 @@ export function Designer({
               </p>
             </>
           )}
+
+          {item?.editor === 'text' && (() => {
+            if (text.state === 'loading') {
+              return <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Text Messages…</p>;
+            }
+            if (text.state === 'error') return <p className="text-[12px] text-negative">{text.message}</p>;
+            return (
+              <TextEditor
+                messages={text.messages}
+                readOnly={readOnly}
+                onSaved={messages => setText({ state: 'ready', messages })}
+              />
+            );
+          })()}
 
           {item && listKey && (() => {
             const loaded = lists[listKey];
@@ -238,6 +291,7 @@ export function Designer({
                 sub={LIST_COPY[listKey].sub}
                 readOnly={readOnly}
                 otherFooter={other ? stored(other) : undefined}
+                text={chromeText}
                 onSaved={list => setLists(s => ({ ...s, [listKey]: { state: 'ready', list } }))}
               />
             );

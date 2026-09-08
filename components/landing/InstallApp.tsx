@@ -10,7 +10,9 @@ type BeforeInstallPromptEvent = Event & {
 // us re-trigger it; every other browser (iOS Safari, Firefox) has no install
 // API at all, so there a tap reveals the browser's own path rather than doing
 // nothing silently.
-export function InstallApp() {
+// `label` is a text message (lib/design/text.ts) since Phase 2; the default is
+// what the button always said.
+export function InstallApp({ label = 'Install as an app' }: { label?: string }) {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [hint, setHint] = useState(false);
   useEffect(() => {
@@ -36,7 +38,7 @@ export function InstallApp() {
         }}
         className="inline-flex min-h-11 items-center border border-border-strong px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text transition-colors duration-(--duration-fast) hover:bg-surface"
       >
-        Install as an app
+        {label}
       </button>
       {hint && !deferred && (
         <p className="mt-2 max-w-[38ch] font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
