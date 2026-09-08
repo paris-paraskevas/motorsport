@@ -1,0 +1,195 @@
+
+<div class="app" id="app">
+  <header class="apxhead">
+    <span class="apxlogo">Paddock<span class="dot">•</span><b>Developer</b></span>
+    <nav id="wsTabs" style="display:flex">
+      <button class="wsb sel" type="button" data-ws="builder">App Builder</button>
+      <button class="wsb" type="button" data-ws="shared">Shared Components</button>
+      <button class="wsb" type="button" data-ws="data">Data</button>
+    </nav>
+    <span class="spacer"></span>
+    <span class="apxuser">paris · Administrator · prod</span>
+    <button class="ib" id="themeBtn" type="button" title="Builder theme">◑</button>
+    <button class="ib" id="helpBtn" type="button" title="Help (Alt+F1) · Shortcuts (Alt+Shift+F1)">?</button>
+  </header>
+
+  <!-- ============ APP BUILDER ============ -->
+  <section class="ws" id="ws-builder">
+    <div class="crumbs" id="crumbs"><b>App Builder</b><span class="sep">›</span><span>Application 100 · Paddock</span></div>
+
+    <div class="home" id="home">
+      <div class="home-main">
+        <h2>Application 100 · Paddock</h2>
+        <p class="sub">Every page the site serves, in one list. A page is a template, its positions and its regions; the header, the footer and the phone bar are shared components and are edited under Shared Components, never here.</p>
+        <div class="hrow">
+          <input type="search" id="pageSearch" placeholder="Search pages by number, name or path" aria-label="Search pages">
+          <span class="spacer"></span>
+          <button class="tb" id="grpBtn" type="button">Page Groups</button>
+          <button class="tb primary" id="createPageBtn" type="button">＋ Create Page ›</button>
+        </div>
+        <div id="pageList"></div>
+      </div>
+      <aside class="home-side" id="homeSide"></aside>
+    </div>
+
+    <div class="pd" id="pd" hidden>
+      <div class="pdtb">
+        <span class="grp">
+          <button class="ib" id="backBtn" type="button" title="Application home">←</button>
+          <span class="pagesel">
+            <input id="pageNum" type="text" inputmode="numeric" aria-label="Page number" title="Page number · type and press Enter">
+            <span class="pname" id="pageName">Home</span>
+            <button type="button" id="pageFind" title="Page Finder">⌕</button>
+            <button type="button" id="pagePrev" title="Previous page (Alt+Shift+PgUp)">‹</button>
+            <button type="button" id="pageNext" title="Next page (Alt+Shift+PgDn)">›</button>
+          </span>
+          <button class="ib on" id="lockBtn" type="button" title="Page lock · locked by you">🔒</button>
+        </span>
+        <span class="grp">
+          <button class="ib" id="undoBtn" type="button" title="Undo (Ctrl+Z)" disabled>↶</button>
+          <button class="ib" id="redoBtn" type="button" title="Redo (Ctrl+Y)" disabled>↷</button>
+        </span>
+        <span class="grp">
+          <button class="tb" id="createBtn" type="button">＋ Create <span class="car">▾</span></button>
+          <button class="tb" id="utilBtn" type="button">🔧 Utilities <span class="car">▾</span></button>
+          <button class="tb" id="sharedBtn" type="button" title="Shared Components">⧉ Shared Components</button>
+        </span>
+        <span class="status" id="status"></span>
+        <span class="grp">
+          <button class="tb primary" id="saveBtn" type="button" title="Save (Alt+F7)">Save</button>
+          <button class="tb run" id="runBtn" type="button" title="Save and Run Page (Alt+F8)">▶ Save and Run Page</button>
+        </span>
+      </div>
+
+      <div class="panes" id="panes">
+        <!-- LEFT -->
+        <div class="pane" id="paneL">
+          <div class="itabs" id="leftTabs">
+            <button type="button" data-tab="rend" class="sel" title="Rendering (Ctrl+/ R · Alt+1)">⌗</button>
+            <button type="button" data-tab="da" title="Dynamic Actions (Ctrl+/ A · Alt+2)">⚡<span class="n" id="daCount"></span></button>
+            <button type="button" data-tab="proc" title="Processing (Ctrl+/ P · Alt+3)">⟳</button>
+            <button type="button" data-tab="psc" title="Page Shared Components (Ctrl+/ S · Alt+4)">⧉</button>
+          </div>
+          <div class="searchrow" id="leftSearchRow"><input type="search" id="leftSearch" placeholder="Filter this tree" aria-label="Filter the tree"><button class="ib" id="treeExpand" type="button" title="Expand all">⊞</button><button class="ib" id="treeCollapse" type="button" title="Collapse all">⊟</button></div>
+          <div class="pane-body" id="leftBody"></div>
+        </div>
+        <div class="split" id="splitL" title="Drag to resize · Alt+F11 restores"></div>
+
+        <!-- CENTRE -->
+        <div class="centre" id="centre">
+          <div class="tabs" id="cTabs">
+            <button type="button" data-ctab="layout" class="sel" title="Ctrl+/ L">Layout</button>
+            <button type="button" data-ctab="cv">Component View</button>
+            <button type="button" data-ctab="msgs" title="Ctrl+/ M">Messages<span class="badge" id="msgBadge">0</span></button>
+            <button type="button" data-ctab="search" title="Ctrl+/ F">Page Search</button>
+            <button type="button" data-ctab="help" title="Alt+F1">Help</button>
+            <span class="spacer"></span>
+            <button type="button" id="hideEmptyBtn" title="Hide empty positions (Ctrl+/ D E)" style="font-size:9px">Hide empty positions</button>
+          </div>
+          <div class="ctab sel" id="ctab-layout"><div class="lay" id="lay"></div></div>
+          <div class="ctab" id="ctab-cv"><div class="cv" id="cv"></div></div>
+          <div class="ctab" id="ctab-msgs"><div class="msgs" id="msgs"></div></div>
+          <div class="ctab" id="ctab-search"><div class="psearch"><input type="search" id="pageSearchIn" placeholder="Search every attribute on this page" aria-label="Page search"><div id="pageSearchOut"></div></div></div>
+          <div class="ctab" id="ctab-help"><div class="helpv" id="helpv"></div></div>
+          <div class="gallery" id="gallery">
+            <div class="gtabs" id="gTabs">
+              <button type="button" data-g="regions" class="sel" title="Ctrl+/ G R">Regions</button>
+              <button type="button" data-g="items" title="Ctrl+/ G I">Items</button>
+              <button type="button" data-g="buttons" title="Ctrl+/ G B">Buttons</button>
+              <span class="hint" id="gHint">Drag a tile onto a yellow drop position, or double-click to add it to the Body</span>
+            </div>
+            <div class="gitems" id="gitems"></div>
+          </div>
+        </div>
+        <div class="split" id="splitR" title="Drag to resize · Alt+F11 restores"></div>
+
+        <!-- RIGHT -->
+        <div class="pane" id="paneR">
+          <div class="pehead">
+            <input type="search" id="peFilter" placeholder="Filter properties" aria-label="Filter properties" title="Alt+6">
+            <button class="ib" id="peGroupBtn" type="button" title="Go to Group">☰</button>
+            <button class="ib" id="peCommonBtn" type="button" title="Show Common / Show All">◐</button>
+            <button class="ib" id="peHelpBtn" type="button" title="Show help for the focused property">?</button>
+          </div>
+          <div class="peid" id="peId"></div>
+          <div class="pane-body pe" id="pe"></div>
+          <div class="pehelp" id="peHelp" hidden></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHARED COMPONENTS ============ -->
+  <section class="ws" id="ws-shared" hidden>
+    <div class="crumbs"><b>Shared Components</b><span class="sep">›</span><span>Application 100 · Paddock</span><span class="sep">›</span><span id="scCrumb">Overview</span></div>
+    <div class="shared">
+      <nav class="sc-nav" id="scNav"></nav>
+      <div class="sc-main" id="scMain"></div>
+    </div>
+  </section>
+
+  <!-- ============ DATA ============ -->
+  <section class="ws" id="ws-data" hidden>
+    <div class="crumbs"><b>Data</b><span class="sep">›</span><span>What the outside world reports about paddock-tracker.com</span></div>
+    <div class="data" id="dataMain"></div>
+  </section>
+
+  <!-- ============ SAVE AND RUN ============ -->
+  <section class="ws" id="ws-run" hidden>
+    <div class="runview">
+      <div class="brow">
+        <button class="ib" id="runBack" type="button" title="Back">‹</button>
+        <button class="ib" type="button" title="Forward" disabled>›</button>
+        <button class="ib" id="runReload" type="button" title="Reload">↻</button>
+        <span class="url"><span>🔒</span><b>paddock-tracker.com</b><span id="runUrl">/</span></span>
+        <span class="pill edit" id="runRev">rev 12</span>
+        <button class="tb" id="runClose" type="button">✕ Close <kbd>Esc</kbd></button>
+      </div>
+      <div class="devbar" id="devbar">
+        <span class="lbl">Dimensions:</span>
+        <button class="dsel on" id="devSel" type="button"><span id="devSelName">Responsive</span><span class="car">▾</span></button>
+        <input class="dnum" id="devW" type="text" inputmode="numeric" aria-label="Viewport width">
+        <span class="dx">×</span>
+        <input class="dnum" id="devH" type="text" inputmode="numeric" aria-label="Viewport height">
+        <button class="dsel" id="zoomSel" type="button"><span id="zoomName">Fit to window</span><span class="car">▾</span></button>
+        <button class="dsel" id="thrSel" type="button"><span id="thrName">No throttling</span><span class="car">▾</span></button>
+        <button class="ib" id="rotBtn" type="button" title="Rotate">⟲</button>
+        <span class="spacer"></span>
+        <span class="lbl" id="devDpr" style="font-size:11px;opacity:.6"></span>
+        <button class="ib" id="devMore" type="button" title="More options">⋮</button>
+      </div>
+      <div class="mqbar" id="mqbar"></div>
+      <div class="stage" id="stage">
+        <div class="rul top" id="rulTop"></div><div class="rul left" id="rulLeft"></div>
+        <div class="vpwrap" id="vpwrap">
+          <div class="vpscale" id="vpscale">
+            <div class="devframe"><span class="notch"></span></div>
+            <div class="vp" id="vp"></div>
+            <div class="rz e" id="rzE" title="Drag to resize"></div>
+            <div class="rz s" id="rzS" title="Drag to resize"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="debugp" id="debugp" hidden></div>
+        <div class="devtb" id="devtb">
+          <div class="bar">
+            <button type="button" data-act="home" title="App Builder home"><span class="i">⌂</span><span class="t">Home</span></button>
+            <button type="button" data-act="app"><span class="i">▦</span><span class="t">Application 100</span></button>
+            <button type="button" data-act="page"><span class="i">▭</span><span class="t" id="devtbPage">Page 1</span></button>
+            <button type="button" data-act="session"><span class="i">◔</span><span class="t">Session</span></button>
+            <button type="button" data-act="viewdebug"><span class="i">☰</span><span class="t">View Debug</span></button>
+            <button type="button" data-act="debug" id="debugBtn"><span class="i">◉</span><span class="t">Debug</span></button>
+            <button type="button" data-act="quickedit" id="qeBtn"><span class="i">✎</span><span class="t">Quick Edit</span></button>
+            <button type="button" data-act="customize"><span class="i">◑</span><span class="t">Customize ▾</span></button>
+            <button type="button" data-act="info"><span class="i">ⓘ</span><span class="t">Info ▾</span></button>
+            <button type="button" data-act="opts" title="Toolbar options"><span class="i">⚙</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<input type="file" id="fileIn" accept="image/*" hidden>

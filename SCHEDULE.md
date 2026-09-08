@@ -1765,7 +1765,15 @@ Active: (no [+Nm] prefixes given this session)
 - → done: the plan page with the approved prototype beside today's editor (artifact `05b2cea5-…`); the handoff rewritten so the next session's job is executing it (PR 1 attributes, PR 2 the Page Designer rebuild, PR 3+ regions), a mock before each; the prototype's temp location recorded with the ask to commit it.
 - → not started: PR 1 (the operator asked for the handoff rather than a go-ahead).
 
-**Next session — 2026-09-09 (stub):** first ask permission to commit the prototype under `docs/prototypes/`; then PR 1 (attributes on code pages) on "go ahead", mock first; then PR 2; then PR 3. Phase 4 waits.
+**Session 46 (opened 2026-09-08 ~20:05Z, operator present) — intent.** Standing rule for every designer screen: stick as close to the verified v2.4 designer as possible; any change is asked about first, with the prototype and the proposal side by side. One item at a time, plain language, something to look at for every decision.
+- Housekeeping: PR #948 (records, 1.0.68) is open; ask the operator to merge it, then confirm `/changelog` reads 1.0.68.
+- Item 1: ask permission to commit the approved prototype under `docs/prototypes/paddock-designer-v2.4/` (copied into this session's scratchpad first; checksums identical to the 2026-09-07 originals).
+- Item 2: PR 1, attributes on code pages: a mock first, wait for "go ahead"; then one server-only wrapper module with `pageMetadata` and `withPageGate` over all the code routes, the coverage test, the PUT widened, the attributes editor showing for code pages. No migration.
+- Item 3: PR 2, the Page Designer rebuilt to the v2.4 prototype one for one over the real page document: a mock first, wait for "go ahead"; any forced deviation shown beside the prototype and asked, never decided.
+- Item 4: PR 3 and after, regions of the operator's own around the code's body; the migration widening `design_save_page_revision` rehearsed with a rollback and applied only on "apply <id>".
+- Won't touch: Phase 4 (waits until the three PRs are live); the document format, the functions and the routes from the night; the site's pages' own content; no migration in PR 1 or PR 2; prod Supabase writes only when the operator names them; one write path per table, revisions not overwrites; no AI in the design path; no ⌘, no command palette, visible controls; `eslint-disable` is never the fix; pushes only for PR branches, merges only on the operator's word; browser-verify before "shipped"; the release header and the branch deletions stay the operator's.
+
+Active: (awaiting [+Nm] prefixes)
 
 ---
 

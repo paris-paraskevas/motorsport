@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.69 — 2026-09-08
+
+### Docs — the approved Paddock Designer v2.4 prototype committed as the reference
+
+The verified designer that the operator's standing rule refers to (`docs/HANDOFF.md` item 0a) lived only in a session's temp scratchpad, which Windows may purge. Committed under **`docs/prototypes/paddock-designer-v2.4/`** on the operator's word (AskUserQuestion, three previews with the file trees): `paddock-designer.html` (the whole v2.4, 412,718 bytes: the CSS, the markup and all eight behaviour parts), `pd2-1-head.html` (the CSS and the tokens), `pd2-2-body.html` (the markup: `#pd`, the three panes, the gallery, the property editor, the splitters), and the three screenshots `pd2-look3.png` (the look, 1600×950), `pd2-toolbar.png`, `pd2-toolbar2.png`. Every staged blob is byte-identical to the 2026-09-07 originals (sha256 compared three ways: the originals in session 4b82ce06's scratchpad, the working-tree copy, `git show :path`; the files are LF in the index and the working tree, like every text file in the repo).
+
+**The eight JS parts (`pd2-3a..3d.js`, `pd2-4a..4c.js`, `pd2-4c-data.js`) and their joined copy `pd2-all.js` are deliberately not committed as loose files.** Bare `eslint` lints every `.js` under the repo root, and a probe through `eslint --stdin --stdin-filename docs/prototypes/…` found two fragments that do not parse on their own (`pd2-3a.js`, `pd2-4c.js`: one parse error each) plus 25 `@typescript-eslint/no-unused-vars` warnings across the rest, so committing them would turn `npm run lint` red or need an ignore rule for the folder. Nothing is lost: the concatenation of the eight parts in order equals `pd2-all.js` to the byte (sha256 `c72923357acc4688…`), and `pd2-1-head.html` + `pd2-2-body.html` + `<script>` + `pd2-all.js` + `</script>` rebuilds `paddock-designer.html` to the byte (412,718), so the behaviour sits at lines 937–2880 of the whole file. `docs/HANDOFF.md` item 2 now points at the committed folder; `SCHEDULE.md` carries session 46's plan and its won't-touch line. No code.
+
 ## 1.0.68 — 2026-09-08
 
 ### Docs — the operator's standing rule for every designer screen
