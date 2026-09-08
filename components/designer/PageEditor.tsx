@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { ArrowDown, ArrowUp, Loader2, Plus, Trash2, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, Loader2, Play, Plus, Trash2, Upload } from 'lucide-react';
 import {
   BUTTON_LABEL_MAX,
   COLUMNS,
@@ -204,8 +204,23 @@ export function PageEditor({
     });
   };
 
-  async function save(action: 'draft' | 'publish') {
-    if (busy || readOnly) return;
+  // Save and run (APEX: Save and Run Page): a draft when something changed,
+  // then the newest revision opens in a new tab at /preview/<id>, wearing the
+  // runtime developer toolbar. With nothing changed the newest revision opens
+  // as it is.
+  async function saveAndRun() {
+    if (busy || readOnly || problems.length > 0) return;
+    if (!dirty) {
+      if (newest) window.open(`/preview/${newest.id}`, '_blank', 'noopener');
+      return;
+    }
+    const saved = await save('draft');
+    if (saved) window.open(`/preview/${saved}`, '_blank', 'noopener');
+  }
+
+  /** Saves through the revisions route; resolves to the new revision's id, or null. */
+  async function save(action: 'draft' | 'publish'): Promise<string | null> {
+    if (busy || readOnly) return null;
     setBusy(action);
     setError(null);
     setNote(null);
@@ -224,22 +239,25 @@ export function PageEditor({
         const d = (await res.json().catch(() => ({}))) as { current?: PageDetail | null };
         if (d.current) setConflict(d.current);
         else setError('This page was published again after you loaded it. Reload the page.');
-        return;
+        return null;
       }
       if (!res.ok) {
         const d = (await res.json().catch(() => ({}))) as { error?: string };
         setError(d.error ?? `failed (${res.status})`);
-        return;
+        return null;
       }
+      const saved = (await res.json().catch(() => ({}))) as { revision?: { id?: string } };
       const fresh = await fetch(`/api/admin/design/pages/${pageId}`, { cache: 'no-store' });
       if (!fresh.ok) {
         setError(`Saved, but the page could not be reloaded (HTTP ${fresh.status}).`);
-        return;
+        return null;
       }
       setNote(action === 'publish' ? 'Published' : 'Draft saved');
       onSaved((await fresh.json()) as PageDetail);
+      return saved.revision?.id ?? null;
     } catch {
       setError('Network error. Try again.');
+      return null;
     } finally {
       setBusy(null);
     }
@@ -275,6 +293,16 @@ export function PageEditor({
             <button type="button" className={TB_PRIMARY} disabled={!canPublish} onClick={() => void save('publish')}>
               {busy === 'publish' ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
               Publish
+            </button>
+            <button
+              type="button"
+              className={TB}
+              disabled={Boolean(busy) || problems.length > 0 || (!dirty && !newest)}
+              title="Save a draft and open it in a new tab, wearing the developer toolbar"
+              onClick={() => void saveAndRun()}
+            >
+              <Play size={13} />
+              Save and run
             </button>
           </>
         )}

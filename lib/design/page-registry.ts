@@ -118,6 +118,7 @@ export const CODE_PAGES: readonly CodePage[] = [
   P('/do-not-sell', 'Do not sell', 'site', 'cached', true),
   P('/impressum', 'Impressum', 'site', 'cached', true),
   P('/imprint', 'Imprint', 'site', 'cached', true),
+  P('/preview/[rev]', 'Revision preview', 'site', 'dynamic', false, 'administrator', 'Save and Run: any revision of a row page, for administrators, never indexed'),
 ];
 
 export function isPageGroup(v: unknown): v is PageGroup {

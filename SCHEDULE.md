@@ -1750,6 +1750,16 @@ Active: (no [+Nm] prefixes given this session)
 - Then step 4 (access enforced on row pages and list entries), the three designer ideas from the Inbox, and the records after every merge.
 - Won't touch: nothing pushed to `main` except by squash-merging a PR with the trio; no prod write outside a rehearsed migration or the functions the routes call; no post published; no branch or file deleted without the operator; the release header and the six branch deletions stay the operator's; every merge preceded by tsc, eslint, the whole suite, `cf:build` and a dry-run, and followed by `/changelog` showing the version.
 
+**Session 45, night shift outcomes (17:14Z → ~19:35Z):**
+- → done: migration 20260909010000 applied 17:14Z and #938 (1.0.58, step 2a) merged 17:15Z, live 17:24Z.
+- → done: step 2b, the page editor (#939, 1.0.59, live 17:45Z); step 3, serving row pages with one authorization evaluator and page attributes (#940, 1.0.60, live 18:00Z); step 4, access on the navigation lists and schemes of the operator's own (#941, 1.0.61, live 18:18Z).
+- → done, the three ideas from the afternoon: the designer's two rails with the catalogue search (#942, 1.0.62, live 18:32Z); Search Hints, the alive placeholder verified against the site's own search, with the search itself reading a question as asked (#943, 1.0.63; migration 20260909020000 applied 18:38Z; live 18:52Z).
+- → done: step 5, dynamic actions and the Button region (#944, 1.0.64, live 19:10Z); step 6, Save and Run with the runtime developer toolbar (1.0.65; seed migration 20260909030000 applied 19:09Z). **Phase 3 complete.**
+- → done: a review page before every merge (seven of them, ids in the handoff); the progress board republished, then published afresh at a new address when the old one answered "not found".
+- → skipped: the operator's items (the first photo upload, the release header, the branch deletions, the 60 s memo, the composer and /admin/system checks); Phase 4 planning (a plan comes first, in the morning).
+- Findings: a `! grep | head` guard inside an `&&` chain took head's exit status and skipped the commit once (caught before the PR); a rehearsal's counts must sit in a separate statement from the functions they count; `/changelog` reads "Currently running v 1.0.NN"; the search matcher AND-matches every term, so natural questions needed stop-word stripping; full-page screenshots of the console need its fixed root released.
+- Won't-touch honoured: pushes only for PR branches, merges by squash on the operator's standing word; prod writes only the three rehearsed migrations and the functions the routes call; no post published; no branch or file deleted; the release header and the branch deletions untouched.
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

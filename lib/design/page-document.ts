@@ -384,7 +384,7 @@ export function rowsAt(doc: PageDocument, position: Position): Region[][] {
 
 /** A row page's path: literal, lower-case segments, no brackets, at most six deep. */
 export const ROW_PAGE_PATH = /^\/[a-z0-9-]+(\/[a-z0-9-]+){0,5}$/;
-export const RESERVED_PREFIXES = ['/api', '/media', '/admin', '/_next', '/serwist', '/sign-in', '/sign-up'] as const;
+export const RESERVED_PREFIXES = ['/api', '/media', '/admin', '/preview', '/_next', '/serwist', '/sign-in', '/sign-up'] as const;
 export const PAGE_NAME_MAX = 80;
 /** The title a page shows in the browser tab and as its heading; the name when empty. */
 export const PAGE_TITLE_MAX = 120;

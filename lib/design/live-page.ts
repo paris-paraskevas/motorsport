@@ -55,6 +55,63 @@ async function readLivePage(path: string): Promise<LivePage | null> {
 /** The live row page at a literal path, or null. Memoised per request. */
 export const loadLivePage = cache(readLivePage);
 
+export interface RevisionPreview {
+  page: PageRow;
+  revisionId: string;
+  createdAt: string;
+  publishedAt: string | null;
+  /** Whether this revision is the one visitors see today. */
+  isLive: boolean;
+  document: PageDocument;
+  problems: string[];
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/** One revision of a row page by its id, draft or published, for Save and Run
+ *  (Phase 3 step 6). Null when the id is not one, the revision or its page is
+ *  missing, the page is not a row page, or on any failure. Memoised per request. */
+export const loadRevisionPreview = cache(async function readRevisionPreview(revisionId: string): Promise<RevisionPreview | null> {
+  if (!isBettingConfigured() || !UUID.test(revisionId)) return null;
+  try {
+    const rev = await betDb().from('page_revision').select('id, page_id, created_at, published_at, document').eq('id', revisionId);
+    if (rev.error) return null;
+    const row = ((rev.data ?? []) as unknown[])[0] as
+      | { id?: unknown; page_id?: unknown; created_at?: unknown; published_at?: unknown; document?: unknown }
+      | undefined;
+    if (!row || typeof row.page_id !== 'string' || row.created_at == null) return null;
+    const pageRes = await betDb()
+      .from('page')
+      .select(PAGE_COLUMNS)
+      .eq('application_key', PAGE_APPLICATION_KEY)
+      .eq('id', row.page_id)
+      .eq('kind', 'row');
+    if (pageRes.error) return null;
+    const page = pageFromRow(((pageRes.data ?? []) as unknown[])[0]);
+    if (!page || !page.id || page.kind !== 'row') return null;
+    const live = await betDb()
+      .from('page_revision')
+      .select('id')
+      .eq('page_id', page.id)
+      .not('published_at', 'is', null)
+      .order('published_at', { ascending: false })
+      .limit(1);
+    const liveId = live.error ? null : (((live.data ?? []) as { id?: unknown }[])[0]?.id ?? null);
+    const parsed = parsePageDocument(row.document);
+    return {
+      page,
+      revisionId,
+      createdAt: String(row.created_at),
+      publishedAt: row.published_at != null ? String(row.published_at) : null,
+      isLive: liveId === revisionId,
+      document: parsed.value,
+      problems: parsed.problems,
+    };
+  } catch {
+    return null;
+  }
+});
+
 /** The photos a document names, by id; one that is missing is left out and its
  *  region renders nothing. Empty on any failure. */
 export async function loadAssetsById(ids: readonly string[]): Promise<Map<string, EditableAsset>> {

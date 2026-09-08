@@ -57,8 +57,16 @@ describe('the page registry', () => {
     expect(registryPathOf('/')).toBe('/');
   });
 
-  it('is seeded by migration 20260908233000, every path once and no other', () => {
-    const sql = fs.readFileSync(path.join(process.cwd(), 'supabase', 'migrations', '20260908233000_pages_seed.sql'), 'utf8');
+  it('is seeded by the pages_seed migrations, every path once and no other', () => {
+    // 20260908233000 seeded the first fifty-seven; a route added later brings
+    // its own *_pages_seed_*.sql, so an applied migration is never edited.
+    const dir = path.join(process.cwd(), 'supabase', 'migrations');
+    const sql = fs
+      .readdirSync(dir)
+      .filter(f => /_pages_seed/.test(f))
+      .sort()
+      .map(f => fs.readFileSync(path.join(dir, f), 'utf8'))
+      .join('\n');
     const seeded = [...sql.matchAll(/\('paddock',\s*'([^']+)',/g)].map(m => m[1]);
     expect(seeded.length).toBe(CODE_PAGES.length);
     expect(new Set(seeded).size).toBe(seeded.length);
