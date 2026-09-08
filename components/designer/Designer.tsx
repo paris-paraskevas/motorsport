@@ -7,19 +7,21 @@ import { ConsoleModeToggle } from '@/components/admin/ConsoleMode';
 import type { EditableList, NavListKey } from '@/lib/design/lists';
 import type { EditableText } from '@/lib/design/text';
 import type { ChromeText } from '@/lib/design/text-defaults';
+import type { EditableBuildOption } from '@/lib/design/build-options';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
+import { BuildOptionsEditor } from './BuildOptionsEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
 // 300-pixel catalogue beside the editor. Full viewport over the console, so the
 // rail never competes with the panes; the arrow at the top left goes back.
 //
-// Phase 2 step 2 opens the four navigation lists. Everything else in the
-// catalogue is listed with the phase that brings it: the operator sees the whole
-// shape, and nothing pretends to be editable before it is. App Builder and Data
-// are the next workspaces.
+// Phase 2 opened the four navigation lists (step 2), Text Messages (step 3) and
+// Build Options (step 4). Everything else in the catalogue is listed with the
+// phase that brings it: the operator sees the whole shape, and nothing pretends
+// to be editable before it is. App Builder and Data are the next workspaces.
 //
 // This file is loaded as a browser-only chunk (DesignerLoader.tsx), so the
 // editor never enters the Worker bundle.
@@ -63,12 +65,29 @@ async function fetchText(): Promise<LoadedText> {
   }
 }
 
+type LoadedBuild =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; options: EditableBuildOption[] };
+
+async function fetchBuildOptions(): Promise<LoadedBuild> {
+  try {
+    const res = await fetch('/api/admin/design/build-options', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The build options could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { options: EditableBuildOption[] };
+    return { state: 'ready', options: d.options };
+  } catch {
+    return { state: 'error', message: 'The build options could not be loaded: network error.' };
+  }
+}
+
 export function Designer({
   readOnly,
   who,
   initialSelected = null,
   initialLists,
   initialText,
+  initialBuildOptions,
 }: {
   readOnly: boolean;
   who: string;
@@ -79,9 +98,14 @@ export function Designer({
   initialLists?: Partial<Record<NavListKey, EditableList>>;
   /** The text messages the server already loaded; fetched when absent. */
   initialText?: EditableText[] | null;
+  /** The build options the server already loaded; fetched when absent. */
+  initialBuildOptions?: EditableBuildOption[] | null;
 }) {
   const [text, setText] = useState<LoadedText>(() =>
     initialText ? { state: 'ready', messages: initialText } : { state: 'loading' },
+  );
+  const [build, setBuild] = useState<LoadedBuild>(() =>
+    initialBuildOptions ? { state: 'ready', options: initialBuildOptions } : { state: 'loading' },
   );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
@@ -111,10 +135,15 @@ export function Designer({
         if (!cancelled) setText(loaded);
       });
     }
+    if (!initialBuildOptions) {
+      void fetchBuildOptions().then(loaded => {
+        if (!cancelled) setBuild(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText]);
+  }, [initialLists, initialText, initialBuildOptions]);
 
   const item: CatalogueItem | undefined = selected
     ? CATALOGUE.flatMap(g => g.items).find(i => i.key === selected)
@@ -126,13 +155,14 @@ export function Designer({
     return l && l.state === 'ready' ? l.list.entries.length : null;
   };
   const textCount = text.state === 'ready' ? text.messages.length : null;
+  const buildCount = build.state === 'ready' ? build.options.length : null;
   // The footer preview shows the strings as they are stored right now.
   const chromeText: ChromeText | undefined =
     text.state === 'ready'
       ? (Object.fromEntries(text.messages.map(m => [m.key, m.text])) as ChromeText)
       : undefined;
   const badge = (it: CatalogueItem): number | null =>
-    it.listKey ? count(it.listKey) : it.editor === 'text' ? textCount : null;
+    it.listKey ? count(it.listKey) : it.editor === 'text' ? textCount : it.editor === 'build' ? buildCount : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -267,6 +297,20 @@ export function Designer({
                 messages={text.messages}
                 readOnly={readOnly}
                 onSaved={messages => setText({ state: 'ready', messages })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'build' && (() => {
+            if (build.state === 'loading') {
+              return <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Build Options…</p>;
+            }
+            if (build.state === 'error') return <p className="text-[12px] text-negative">{build.message}</p>;
+            return (
+              <BuildOptionsEditor
+                options={build.options}
+                readOnly={readOnly}
+                onSaved={options => setBuild({ state: 'ready', options })}
               />
             );
           })()}

@@ -13,6 +13,7 @@ import {
   type WeatherForecast,
 } from '@/lib/weather';
 import { HourlyForecastRows } from '@/components/weekend/HourlyForecastRows';
+import { isBuildOptionIncluded } from '@/lib/design/build-options';
 
 /** At most this many hourly rows per tile. Four keeps a 90-minute race exact
  *  (start hour through end hour) while a 24-hour race thins to four readings
@@ -62,6 +63,10 @@ interface Tile {
  * answer when there is no time to read.
  */
 export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
+  // The Weather build option (the designer's Build Options): excluded, the strip
+  // renders nothing, exactly as a weekend without a forecast does.
+  if (!(await isBuildOptionIncluded('weather'))) return null;
+
   const location = weekend.sessions.find(s => s.location)?.location;
   const title = weekend.sessions[0]?.title;
   const circuit = await matchCircuit(location, title);

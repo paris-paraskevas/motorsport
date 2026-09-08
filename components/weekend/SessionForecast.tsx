@@ -2,6 +2,7 @@ import type { Session, Weekend } from '@/lib/types';
 import { matchCircuit } from '@/lib/circuits';
 import { fetchWeather, forecastWindow, thinHours } from '@/lib/weather';
 import { HourlyForecastRows } from '@/components/weekend/HourlyForecastRows';
+import { isBuildOptionIncluded } from '@/lib/design/build-options';
 
 /** How far either side of the running to reach (operator, 2026-08-22: "a couple
  *  hours before until a couple hours after the session"). Two hours before is
@@ -29,6 +30,9 @@ export async function SessionForecast({
   session: Session;
   weekend: Weekend;
 }) {
+  // The Weather build option (the designer's Build Options): excluded, the
+  // forecast renders nothing, exactly as a session without one does.
+  if (!(await isBuildOptionIncluded('weather'))) return null;
   if (session.dateOnly) return null; // no hour to build a window around
   // Individual ICS entries often carry no LOCATION while their siblings do, so
   // fall back to the weekend's, which is how the rest of this page resolves the

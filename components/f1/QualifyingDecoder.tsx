@@ -28,9 +28,14 @@ function driverByNumber(summary: DecoderSummary): Map<number, EnrichedDriver> {
 export function QualifyingDecoder({
   summary,
   seriesColor,
+  ghostLap3d = true,
 }: {
   summary: DecoderSummary;
   seriesColor?: string;
+  /** Whether the Onboard 3D replay is offered: the `ghost_lap_3d` build option,
+   *  read by the page. Off, the 2D replay stands alone and the 3D code is never
+   *  fetched. */
+  ghostLap3d?: boolean;
 }) {
   const laps = useMemo(() => lapByNumber(summary), [summary]);
   const driversById = useMemo(() => driverByNumber(summary), [summary]);
@@ -169,35 +174,39 @@ export function QualifyingDecoder({
           ) : tracesReady && driverA && driverB && traceA && traceB ? (
             <>
               <LazyDeltaTrace driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
-                    Replay
-                  </span>
-                  <div className="flex gap-1">
-                    {([['2D', false], ['Onboard', true]] as const).map(([label, is3d]) => (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => setGhost3d(is3d)}
-                        aria-pressed={ghost3d === is3d}
-                        className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
-                          ghost3d === is3d
-                            ? 'border-border-strong bg-surface text-text'
-                            : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
+              {ghostLap3d ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                      Replay
+                    </span>
+                    <div className="flex gap-1">
+                      {([['2D', false], ['Onboard', true]] as const).map(([label, is3d]) => (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => setGhost3d(is3d)}
+                          aria-pressed={ghost3d === is3d}
+                          className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
+                            ghost3d === is3d
+                              ? 'border-border-strong bg-surface text-text'
+                              : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
+                  {ghost3d ? (
+                    <LazyGhostLap3D driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} circuit={traces?.circuit} />
+                  ) : (
+                    <GhostLapReplay driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
+                  )}
                 </div>
-                {ghost3d ? (
-                  <LazyGhostLap3D driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} circuit={traces?.circuit} />
-                ) : (
-                  <GhostLapReplay driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
-                )}
-              </div>
+              ) : (
+                <GhostLapReplay driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
+              )}
               <MinisectorMap
                 driverA={driverA}
                 driverB={driverB}
