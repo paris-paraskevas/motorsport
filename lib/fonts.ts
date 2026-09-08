@@ -1,4 +1,17 @@
-import { IBM_Plex_Sans, IBM_Plex_Sans_Condensed, IBM_Plex_Mono, Newsreader } from 'next/font/google';
+import {
+  IBM_Plex_Sans,
+  IBM_Plex_Sans_Condensed,
+  IBM_Plex_Mono,
+  Newsreader,
+  Source_Sans_3,
+  Fira_Sans,
+  Source_Serif_4,
+  Literata,
+  JetBrains_Mono,
+  Source_Code_Pro,
+  Roboto_Condensed,
+  Fira_Sans_Condensed,
+} from 'next/font/google';
 
 // The type system (operator board, 2026-08-03 "READING COMFORT"):
 //   PLEX SANS 400 app-wide · PLEX SANS CONDENSED quarantined to names ·
@@ -63,6 +76,86 @@ export const newsreader = Newsreader({
   display: 'swap',
 });
 
+// The Appearance faces (designer step 8, lib/design/appearance-defaults.ts):
+// the alternatives the operator may put in a role. Declared here because
+// next/font bundles only what the build sees, so the offered list is fixed per
+// deploy and adding a face is a deploy, like a new component kind. None is
+// preloaded: a face costs its @font-face rules in the stylesheet and nothing
+// else until the operator picks it, and then it loads on first use with
+// display:swap and next/font's size-adjusted fallback (no head preload can
+// follow a runtime choice; the shipped default keeps its preloads above). The
+// body candidates carry Greek, like Plex Sans; the mono and condensed ones are
+// Latin, like theirs. The catalogue names these variables, and a test reads
+// this file to keep the two lists equal.
+export const sourceSans3 = Source_Sans_3({
+  subsets: ['latin', 'latin-ext', 'greek'],
+  variable: '--font-source-sans-3',
+  display: 'swap',
+  preload: false,
+});
+export const firaSans = Fira_Sans({
+  subsets: ['latin', 'latin-ext', 'greek'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-fira-sans',
+  display: 'swap',
+  preload: false,
+});
+export const sourceSerif4 = Source_Serif_4({
+  subsets: ['latin', 'latin-ext', 'greek'],
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
+  variable: '--font-source-serif-4',
+  display: 'swap',
+  preload: false,
+});
+export const literata = Literata({
+  subsets: ['latin', 'latin-ext', 'greek'],
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
+  variable: '--font-literata',
+  display: 'swap',
+  preload: false,
+});
+export const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+  preload: false,
+});
+export const sourceCodePro = Source_Code_Pro({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-source-code-pro',
+  display: 'swap',
+  preload: false,
+});
+export const robotoCondensed = Roboto_Condensed({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-roboto-condensed',
+  display: 'swap',
+  preload: false,
+});
+export const firaSansCondensed = Fira_Sans_Condensed({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['500', '600', '700'],
+  variable: '--font-fira-sans-condensed',
+  display: 'swap',
+  preload: false,
+});
+
 /** The html-level class string every root layout applies: Sans as the base
- *  family class, the others as CSS variables for the token layer. */
-export const FONT_CLASSES = `${plexSans.variable} ${plexCondensed.variable} ${plexMono.variable} ${newsreader.variable}`;
+ *  family class, the others as CSS variables for the token layer, the Appearance
+ *  alternatives among them so a stored choice resolves on every page. */
+export const FONT_CLASSES = [
+  plexSans.variable,
+  plexCondensed.variable,
+  plexMono.variable,
+  newsreader.variable,
+  sourceSans3.variable,
+  firaSans.variable,
+  sourceSerif4.variable,
+  literata.variable,
+  jetbrainsMono.variable,
+  sourceCodePro.variable,
+  robotoCondensed.variable,
+  firaSansCondensed.variable,
+].join(' ');
