@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.66 — 2026-09-08
+
+### Docs — the records at the close of the night shift, Phase 3 complete
+
+`docs/HANDOFF.md`'s night section carries every step as live with its merge and deploy times (2a 1.0.58 at 17:24Z, 2b 1.0.59 at 17:45Z, 3 1.0.60 at 18:00Z, 4 1.0.61 at 18:18Z, the rails 1.0.62 at 18:32Z, the hints 1.0.63 at 18:52Z, dynamic actions 1.0.64 at 19:10Z, Save and Run 1.0.65 at 19:25Z), the seven review pages, the board's new address, the loose ends, the operator's items for the morning, and **a plan for Phase 4, the Data workspace, to approve before anything is built** (item 3h). `SCHEDULE.md` carries the night's outcomes; `IDEAS.md` marks the three designer ideas shipped. The progress board was republished with Phase 3 complete. No code.
+
 ## 1.0.65 — 2026-09-08
 
 ### Feature — Phase 3, step 6: Save and Run, a revision preview for administrators wearing the runtime developer toolbar. Phase 3 complete.
