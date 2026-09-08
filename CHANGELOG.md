@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.57 — 2026-09-08
+
+### Docs — the records after Phase 3 step 1
+
+`docs/HANDOFF.md`'s afternoon pickup gains step 1 of Phase 3 (the page registry live, the migration applied, the review page, the rebase onto the records PR, three landmines), the arc table through 1.0.56, and step 2 as next. `SCHEDULE.md` and `IDEAS.md` carry the step. No code.
+
 ## 1.0.56 — 2026-09-08
 
 ### Feature — Phase 3, step 1: the page registry, every route as a row and the App Builder's first screen
