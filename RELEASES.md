@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.43 — 2026-09-08
+
+**Behind the scenes.** The people who run the site can now switch two features on and off without a new version: the 3D onboard replay in the F1 qualifying analysis, and the weather on weekend and session pages. Both stay on; nothing changes for readers today.
+
 ## 1.0.42 — 2026-09-08
 
 **Internal notes.** The running handoff and the time plan record the morning's close; nothing changes for readers.

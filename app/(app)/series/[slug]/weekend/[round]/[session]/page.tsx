@@ -47,6 +47,7 @@ import {
 } from '@/lib/results-cache';
 import { buildDecoderSummary, type DecoderSummary } from '@/lib/openf1/decoder';
 import { QualifyingDecoder } from '@/components/f1/QualifyingDecoder';
+import { isBuildOptionIncluded } from '@/lib/design/build-options';
 import { buildRaceStory } from '@/lib/openf1/racestory-loader';
 import type { RaceStoryData } from '@/lib/openf1/racestory';
 import { RaceStory } from '@/components/f1/RaceStory';
@@ -617,6 +618,10 @@ async function SessionBody({
 
   const weekendHref = `/series/${slug}/weekend/${round}`;
 
+  // The Onboard 3D replay is a build option (the designer's Build Options). The
+  // decoder runs in the browser, so the page reads the switch and hands it down.
+  const ghostLap3d = decoderSummary ? await isBuildOptionIncluded('ghost_lap_3d') : true;
+
   return (
     <>
       {sessionVid && <VideoEmbed id={sessionVid} title={`${sessionName} — ${weekendTitle}`} />}
@@ -690,7 +695,7 @@ async function SessionBody({
 
       {decoderSummary && (
         <CollapsibleSection title="Qualifying Analysis" defaultOpen>
-          <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
+          <QualifyingDecoder summary={decoderSummary} seriesColor={color} ghostLap3d={ghostLap3d} />
         </CollapsibleSection>
       )}
 

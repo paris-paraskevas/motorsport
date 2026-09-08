@@ -11,11 +11,14 @@ describe('shared components catalogue', () => {
     for (const item of items) expect(Boolean(item.listKey || item.editor) !== Boolean(item.later), item.key).toBe(true);
   });
 
-  it('opens exactly the four navigation lists, each with its copy, and the text messages', () => {
+  it('opens exactly the four navigation lists, each with its copy, and the two editors', () => {
     const listed = items.filter(i => i.listKey).map(i => i.listKey);
     expect([...listed].sort()).toEqual([...NAV_LIST_KEYS].sort());
     for (const key of NAV_LIST_KEYS) expect(LIST_COPY[key].title.length).toBeGreaterThan(0);
-    expect(items.filter(i => i.editor).map(i => i.key)).toEqual(['textmsgs']);
+    expect(items.filter(i => i.editor).map(i => [i.key, i.editor])).toEqual([
+      ['build', 'build'],
+      ['textmsgs', 'text'],
+    ]);
   });
 
   it('offers Public as the empty scheme, first', () => {

@@ -1717,6 +1717,11 @@ Active: (no [+Nm] prefixes given this session)
 - Housekeeping done at open: nav-composer code parked as a local commit on `feat/nav-composer` (operator: keep); the six Monza drafts committed on `content/monza-drafts-final`.
 - Won't-touch honoured: no push before the operator asked, then only PR branches; no prod Supabase write beyond the one the operator named; no post published; no branch deleted beyond a merged PR's own head; the designer UI (Phase 2) and the multi-class standings mapping untouched.
 
+**Session 44 (late morning, operator present) — intent:**
+- Phase 2 step 4, Build Options: the editor for the four seeded switches and the site honouring Ghost lap 3D and Weather; Include as the fallback on any failure; no migration; trio 1.0.43 with the dry-run figure; screenshots reviewed before merge; merge on the operator's word, then the deploy check.
+- Then Application Settings, presented the same way, one step at a time; the operator's open checks and the release-header decision after this step.
+- Won't touch: Social and Studio gating, new tables, Phase 3, the six branch deletions, prod database writes (none needed), any push beyond the PR branch.
+
 Active: (no [+Nm] prefixes given this session)
 
 ---
