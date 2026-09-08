@@ -8,13 +8,14 @@ describe('shared components catalogue', () => {
   it('has unique keys and every item is either editable or says when it arrives', () => {
     const keys = items.map(i => i.key);
     expect(new Set(keys).size).toBe(keys.length);
-    for (const item of items) expect(Boolean(item.listKey) !== Boolean(item.later), item.key).toBe(true);
+    for (const item of items) expect(Boolean(item.listKey || item.editor) !== Boolean(item.later), item.key).toBe(true);
   });
 
-  it('opens exactly the four navigation lists, each with its copy', () => {
+  it('opens exactly the four navigation lists, each with its copy, and the text messages', () => {
     const listed = items.filter(i => i.listKey).map(i => i.listKey);
     expect([...listed].sort()).toEqual([...NAV_LIST_KEYS].sort());
     for (const key of NAV_LIST_KEYS) expect(LIST_COPY[key].title.length).toBeGreaterThan(0);
+    expect(items.filter(i => i.editor).map(i => i.key)).toEqual(['textmsgs']);
   });
 
   it('offers Public as the empty scheme, first', () => {

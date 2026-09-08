@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.41 — 2026-09-08
+
+### Feature — Phase 2, step 3: Text Messages, six chrome strings as rows and an editor in the same shape
+
+The skip link, the header search hint, the footer's two headings, its one-paragraph description and the install button's label were literals in five components. They now come from `text_message` rows, seeded with today's words, with the shipped text as the fallback for anything the rows get wrong. Visitors see no change.
+
+- **Migration `supabase/migrations/20260908150000_text_messages_seed.sql`** (NEW): six rows for application `paddock` (`a11y.skip`, `nav.search`, `footer.site`, `footer.legal`, `footer.blurb`, `footer.install`), each with a plain-language `where_shown`, `on conflict do nothing`. No function: a message is one row and its write is one conditional update.
+- **`lib/design/text-defaults.ts`** (NEW, client-safe): `TEXT_KEYS`, `TEXT_DEFAULTS` (text + where), `DEFAULT_TEXT`, `TEXT_MAX = 500`, `isTextKey`. **`lib/design/text.ts`** (NEW, server-only): `textFromRows` (blank or over-long or unknown → default, key by key), `loadTextMessages` (one query, one-minute memo, defaults on any failure), `loadTextForEditing` (every key with its row's raw stamp, or the default with no stamp when the row is missing), `resetTextMemo`.
+- **Rendering**: the app layout loads the strings beside the lists and passes `text` to `AppShell`; the skip link, `NavPanel`'s `searchLabel` (desktop placeholder and spoken label), `Footer`'s headings, blurb and `InstallApp`'s `label` read from it, each with its old literal as the default.
+- **`GET /api/admin/design/text`** (NEW) and **`PUT /api/admin/design/text/[key]`** (NEW): the PUT validates the key against the catalogue (404 otherwise), refuses empty text and text over 500 characters (400), and runs one `update … where updated_at = <stamp>` returning the new stamp: **409 with the current messages** when no row matched. Admin-only, production-only. Memo reset and `revalidatePath('/', 'layout')` on success.
+- **`components/designer/TextEditor.tsx`** (NEW): the table of key · where shown · text (a textarea for the blurb) with a live character count and the reasons a value is refused; Save writes every changed row through its own PUT and reports a conflict per row with Reload or Save anyway; a key with no row yet shows the shipped text and cannot be saved. **`Designer.tsx`**: Text Messages goes live in the catalogue (`editor: 'text'`), loaded once by the page (`initialText`) or fetched; the count badge; the lists editor's footer preview now shows the stored strings (`text` prop on `ListEditor`).
+
+**Tests.** `lib/design/text.test.ts` (NEW, 6: the fallback matrix, non-arrays, unconfigured/error/empty, memo and reset, the editor view with a missing row and a verbatim stamp, null on failure), `app/api/admin/design/text/[key]/route.test.ts` (NEW, 5: 404 non-admin and unknown key, 403 off production, three 400s before the database, the conditional update with its three filters and the trimmed text plus the layout revalidation, 409 with the current rows), `components/designer/catalogue.test.ts` updated (text messages is the one non-list editor). `npx vitest run` → 133 files, **1614 passed** with the temporary render probe, 1613 without. `tsc` and `eslint` clean.
+
+**Seen before merge.** The probe's static markup of the Text Messages editor and of the Footer: Site list editor with a changed heading in its preview, wrapped in the build's CSS and photographed at 1440×900, published for the operator as a review page. Fonts are Google's Plex standing in for the self-hosted files.
+
+**Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.40) `Total Upload 41776.56 KiB / gzip 9705.46 KiB`; after `Total Upload 41815.51 KiB / gzip 9711.15 KiB`.
+
+**Prod apply**: the operator names it ("apply 20260908150000"); rehearsal with rollback first; proof appended here before merge.
+
 ## 1.0.40 — 2026-09-08
 
 ### Docs — the morning's records

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, Loader2, RotateCcw } from 'lucide-react';
 import { DESTINATIONS, resolveDestination, type ListRole, type NavEntry } from '@/lib/design/destinations';
+import { DEFAULT_TEXT, type ChromeText } from '@/lib/design/text-defaults';
 import type { EditableList, NavListKey } from '@/lib/design/lists';
 import {
   addEntry,
@@ -49,6 +50,7 @@ export function ListEditor({
   sub,
   readOnly,
   otherFooter,
+  text = DEFAULT_TEXT,
   onSaved,
 }: {
   listKey: NavListKey;
@@ -59,6 +61,8 @@ export function ListEditor({
   readOnly: boolean;
   /** For the footer preview: the other column, as currently stored. */
   otherFooter?: NavEntry[];
+  /** For the footer preview: the chrome's strings as currently stored. */
+  text?: ChromeText;
   onSaved: (list: EditableList) => void;
 }) {
   const [entries, setEntries] = useState<NavEntry[]>(list.entries);
@@ -296,6 +300,7 @@ export function ListEditor({
             <Footer
               site={listKey === 'footer-site' ? entries : (otherFooter ?? [])}
               legal={listKey === 'footer-legal' ? entries : (otherFooter ?? [])}
+              text={text}
             />
           </div>
         )}

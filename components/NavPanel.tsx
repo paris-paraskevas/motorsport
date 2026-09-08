@@ -70,9 +70,13 @@ const TYPE_LABEL: Record<SearchType, string> = {
 export function NavPanel({
   seriesList,
   bettingEnabled,
+  searchLabel = 'Browse the site, or search it',
 }: {
   seriesList: NavSeriesMeta[];
   bettingEnabled: boolean;
+  /** The field's desktop placeholder and its spoken label at every width; a
+   *  text message (lib/design/text.ts) since Phase 2. */
+  searchLabel?: string;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -415,8 +419,8 @@ export function NavPanel({
           // "Search" on phones, not "Browse or search": the contact and coffee
           // buttons joined the header on 2026-08-28 and took ~112px, which cut
           // the longer string off mid-word. The field is still the same control.
-          placeholder={wide ? 'Browse the site, or search it' : 'Search'}
-          aria-label="Browse the site, or search it"
+          placeholder={wide ? searchLabel : 'Search'}
+          aria-label={searchLabel}
           role="combobox"
           aria-expanded={open}
           aria-controls="nav-panel"

@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { requireAdmin } from '@/lib/admin-guard';
 import { isProductionWorker } from '@/lib/env';
 import { NAV_LIST_KEYS, loadListForEditing, type EditableList, type NavListKey } from '@/lib/design/lists';
+import { loadTextForEditing } from '@/lib/design/text';
 import { DesignerLoader } from '@/components/designer/DesignerLoader';
 
 export const dynamic = 'force-dynamic';
@@ -16,9 +17,10 @@ export const metadata: Metadata = { title: 'Designer · Admin' };
 // a catalogue entry directly.
 export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string }> }) {
   await requireAdmin();
-  const [user, params, ...loaded] = await Promise.all([
+  const [user, params, initialText, ...loaded] = await Promise.all([
     currentUser(),
     searchParams,
+    loadTextForEditing(),
     ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
   ]);
   const initialLists: Partial<Record<NavListKey, EditableList>> = {};
@@ -34,6 +36,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       who={`${name} · Administrator · ${production ? 'production' : 'preview'}`}
       initialSelected={typeof params.sc === 'string' ? params.sc : null}
       initialLists={initialLists}
+      initialText={initialText}
     />
   );
 }
