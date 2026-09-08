@@ -3,22 +3,24 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_READ } from '@/lib/site';
 import { WriteForUsForm } from '@/components/authors/WriteForUsForm';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Write for Paddock',
   description:
     'Pitch motorsport writing to Paddock Tracker: race analysis, championship deep-dives and paddock commentary with a byline and a public author page of your own.',
   alternates: { canonical: '/write-for-us' },
 };
+export const generateMetadata = pageMetadata('/write-for-us', BASE_METADATA);
 
 // The become-an-author page (item 14): editorial pitch on top, the application
 // form below. The page is public + indexable (it is recruiting copy); the form
 // itself adapts client-side (sign-in CTA → form → sent), so this stays
 // revalidate-cached like /blog. Approval grants the `contributor` role — the
 // ladder is documented on lib/threads.ts canAuthor.
-export default function WriteForUsPage() {
+function WriteForUsPage() {
   return (
     <div className={PAGE_READ}>
       <JsonLd
@@ -65,3 +67,5 @@ export default function WriteForUsPage() {
     </div>
   );
 }
+
+export default withPageGate('/write-for-us', WriteForUsPage);

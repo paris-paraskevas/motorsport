@@ -6,17 +6,19 @@ import { ArrowLeft } from 'lucide-react';
 import { isAdmin } from '@/lib/threads';
 import { readInsights } from '@/lib/assistant/log';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Assistant insights',
   robots: { index: false, follow: false },
 };
+export const generateMetadata = pageMetadata('/settings/assistant', BASE_METADATA);
 
 // Admin-only view of Race Engineer usage: what people ask, how often, per-user
 // counts, and 👍/👎 — so the operator can expand the help corpus to cover the
 // common questions and fix the down-voted ones. 404s for non-admins.
-export default async function AssistantInsightsPage() {
+async function AssistantInsightsPage() {
   if (!isAdmin(await currentUser())) notFound();
   const d = await readInsights();
 
@@ -128,3 +130,5 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Empty() {
   return <p className="font-mono text-sm text-text-faint">No data yet.</p>;
 }
+
+export default withPageGate('/settings/assistant', AssistantInsightsPage);

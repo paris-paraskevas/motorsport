@@ -8,6 +8,7 @@ import { loadAuthzSchemes } from '@/lib/design/authz';
 import { documentRefs, schemesAsked } from '@/lib/design/page-document';
 import { RowPageView } from '@/components/page/RowPageView';
 import { DeveloperToolbar } from '@/components/page/DeveloperToolbar';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Save and Run (APEX: Save and Run Page), Phase 3 step 6. The designer's "Save
 // and run" saves a draft and opens /preview/<revision id>: this route renders
@@ -21,7 +22,7 @@ export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ rev: string }>;
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+async function baseMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { rev } = await params;
   const preview = await loadRevisionPreview(rev);
   return {
@@ -29,8 +30,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     robots: { index: false, follow: false },
   };
 }
+export const generateMetadata = pageMetadata('/preview/[rev]', baseMetadata);
 
-export default async function RevisionPreviewPage({ params }: { params: Params }) {
+async function RevisionPreviewPage({ params }: { params: Params }) {
   await requireAdmin();
   const { rev } = await params;
   const preview = await loadRevisionPreview(rev);
@@ -69,3 +71,5 @@ export default async function RevisionPreviewPage({ params }: { params: Params }
     </>
   );
 }
+
+export default withPageGate('/preview/[rev]', RevisionPreviewPage);

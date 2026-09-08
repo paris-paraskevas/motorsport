@@ -4,15 +4,17 @@ import { ArrowLeft } from 'lucide-react';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { SettingsClient } from '@/components/SettingsClient';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Championships',
   robots: { index: false, follow: false },
 };
+export const generateMetadata = pageMetadata('/settings/series', BASE_METADATA);
 
-export default async function AccountSeriesPage() {
+async function AccountSeriesPage() {
   // NavSeriesMeta pick — SettingsClient is a client component; see the warning
   // on SeriesMeta (full meta would serialize icsUrl into the page payload).
   const seriesList = (await loadAllSeriesMeta()).map(({ slug, name, color, category }) => ({
@@ -42,3 +44,5 @@ export default async function AccountSeriesPage() {
     </div>
   );
 }
+
+export default withPageGate('/settings/series', AccountSeriesPage);

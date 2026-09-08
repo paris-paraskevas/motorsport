@@ -4,14 +4,16 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { loadReleaseGroups, releasesFilePath } from './releases';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Changelog',
   description:
     'What shipped recently in Paddock Tracker — the currently running version plus a public log of fixes, features, and improvements.',
 };
+export const generateMetadata = pageMetadata('/changelog', BASE_METADATA);
 
 // Prose treatment for each body. Mirrors the tokens the page used when it
 // rendered RELEASES.md as one blob, minus the heading rules (the release name
@@ -37,7 +39,7 @@ function formatDay(dateISO: string): string {
   });
 }
 
-export default async function ChangelogPage() {
+async function ChangelogPage() {
   const releases = await loadReleaseGroups(releasesFilePath());
 
   return (
@@ -177,3 +179,5 @@ export default async function ChangelogPage() {
     </div>
   );
 }
+
+export default withPageGate('/changelog', ChangelogPage);

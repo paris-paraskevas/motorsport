@@ -1,19 +1,21 @@
 import type { Metadata } from 'next';
 import { ContactForm } from '@/components/ContactModal';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Contact',
   description:
     'Write to Paddock Tracker — bug reports, feature requests, suggestions or a data-export request. We reply by email.',
   alternates: { canonical: '/contact' },
 };
+export const generateMetadata = pageMetadata('/contact', BASE_METADATA);
 
 // The durable home for the contact form (round-2 fix ①): the Account page's
 // "Export your data" row linked /contact in 0.298.0 before this route existed
 // — every hit was a 404. The footer's Contact keeps its modal; both render
 // the same ContactForm.
-export default function ContactPage() {
+function ContactPage() {
   return (
     <div className={PAGE_READ}>
       <header className="mb-6 border-b border-border pb-5">
@@ -38,3 +40,5 @@ export default function ContactPage() {
     </div>
   );
 }
+
+export default withPageGate('/contact', ContactPage);

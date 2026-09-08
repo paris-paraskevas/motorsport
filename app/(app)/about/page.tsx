@@ -4,12 +4,14 @@ import { ArrowRight } from 'lucide-react';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'About',
   description:
     'What Paddock is, where its data comes from, and how it stays accurate: fifteen championships, curated schedules, verified results, one installable app.',
 };
+export const generateMetadata = pageMetadata('/about', BASE_METADATA);
 
 // In-prose link: body copy is muted, so links carry full text colour to read as links.
 function A({ href, children }: { href: string; children: React.ReactNode }) {
@@ -34,7 +36,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default function About() {
+function About() {
   return (
     <div className={PAGE_READ}>
       <JsonLd
@@ -127,3 +129,5 @@ function ExploreRow({ href, title, desc }: { href: string; title: string; desc: 
     </li>
   );
 }
+
+export default withPageGate('/about', About);

@@ -7,6 +7,7 @@ import { withSocialMeta } from '@/lib/seo';
 import { OpenF1Attribution } from '@/components/f1/OpenF1Attribution';
 import type { SeriesRoundEntry } from '@/lib/types';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Schedule-based, not data-based: this page enumerates the F1 calendar and
 // links to per-session telemetry surfaces — it does NOT fetch any OpenF1 data
@@ -20,7 +21,7 @@ const TITLE = 'F1 Telemetry & Analysis';
 const DESCRIPTION =
   'Analyse every 2026 Formula 1 weekend — lap-by-lap Qualifying Analysis pole breakdowns and full Race Story strategy timelines, free, for every Grand Prix once the cars have run.';
 
-export async function generateMetadata(): Promise<Metadata> {
+async function baseMetadata(): Promise<Metadata> {
   return {
     title: TITLE,
     description: DESCRIPTION,
@@ -28,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ...withSocialMeta({ title: TITLE, description: DESCRIPTION, path: '/f1/analysis' }),
   };
 }
+export const generateMetadata = pageMetadata('/f1/analysis', baseMetadata);
 
 // Date-key for a YYYY-MM-DD round date. rounds.json carries date-only strings;
 // a round is "past" once its end date is strictly before today's UTC date —
@@ -45,7 +47,7 @@ function roundDate(iso: string): Date {
   return new Date(`${iso}T00:00:00Z`);
 }
 
-export default async function F1AnalysisPage() {
+async function F1AnalysisPage() {
   const series = await loadSeries('f1');
   const color = series.meta.color;
   const season = series.rounds?.season ?? series.meta.season;
@@ -200,3 +202,5 @@ export default async function F1AnalysisPage() {
     </div>
   );
 }
+
+export default withPageGate('/f1/analysis', F1AnalysisPage);

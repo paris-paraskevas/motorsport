@@ -28,6 +28,9 @@ export const PAGE_GROUP_LABELS: Record<PageGroup, string> = {
   site: 'Site',
 };
 
+/** A page's comments (APEX: Comments): notes for the operators, never rendered. */
+export const PAGE_COMMENTS_MAX = 500;
+
 export type PageRendering = 'dynamic' | 'cached';
 export type PageAuthz = 'public' | 'signed_in' | 'contributor' | 'administrator';
 

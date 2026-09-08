@@ -2,16 +2,18 @@ import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Terms of Service',
   description:
     "Paddock Tracker's terms of service — acceptable use, the rules around content and accounts, account termination, and limits of warranty.",
 };
+export const generateMetadata = pageMetadata('/terms', BASE_METADATA);
 
-export default async function TermsPage() {
+async function TermsPage() {
   const html = await loadMarkdownAsHtml(
     path.join(process.cwd(), 'content', 'legal', 'terms.md'),
   );
@@ -39,3 +41,5 @@ export default async function TermsPage() {
     </div>
   );
 }
+
+export default withPageGate('/terms', TermsPage);

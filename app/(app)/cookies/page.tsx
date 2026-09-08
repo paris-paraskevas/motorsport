@@ -2,16 +2,18 @@ import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Cookie Policy',
   description:
     'How Paddock Tracker uses cookies and similar technologies — analytics, push notifications, and ads — plus how to manage your consent choices.',
 };
+export const generateMetadata = pageMetadata('/cookies', BASE_METADATA);
 
-export default async function CookiesPage() {
+async function CookiesPage() {
   const html = await loadMarkdownAsHtml(
     path.join(process.cwd(), 'content', 'legal', 'cookies.md'),
   );
@@ -42,3 +44,5 @@ export default async function CookiesPage() {
     </div>
   );
 }
+
+export default withPageGate('/cookies', CookiesPage);

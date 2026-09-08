@@ -6,15 +6,17 @@ import { groupByWeekend } from '@/lib/group';
 import { weekendLabel } from '@/lib/weekend';
 import { Accordion } from '@/components/Accordion';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Series',
   description:
     'Every championship Paddock tracks — F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more. Schedules, standings, results and news per series.',
   alternates: { canonical: '/series' },
 };
+export const generateMetadata = pageMetadata('/series', BASE_METADATA);
 
 // Day-level labels only: stable across timezones for practical purposes and
 // rendered fully on the server, so this page ships zero hydration risk.
@@ -114,7 +116,7 @@ function RowInner({ r, compact }: { r: HubRow; compact?: boolean }) {
   );
 }
 
-export default async function SeriesHubPage() {
+async function SeriesHubPage() {
   const all = await loadAllSeries();
   const now = new Date();
   const season = Math.max(...all.map(s => s.meta.season));
@@ -300,3 +302,5 @@ const CONTRACT_MATRIX: Array<[string, string, string]> = [
   ['WRC', 'one rally, 3–4 days', 'Shakedown · SS1–SS20 · Power Stage'],
   ['NASCAR Cup', 'one race', 'Practice · Q · Race'],
 ];
+
+export default withPageGate('/series', SeriesHubPage);

@@ -13,13 +13,15 @@ import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends
 import { PlayMarkets } from '@/components/betting/PlayMarkets';
 import { PER_WEEKEND_CREDITS } from '@/lib/betting/constants';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Social — predictions, leagues & threads',
   description:
     'Predict race results with free monthly virtual credits, build private leagues with friends, and join the fan threads on Paddock Tracker. No cash, just bragging rights.',
 };
+export const generateMetadata = pageMetadata('/social', BASE_METADATA);
 
 // The community hub, restyled per panel 10c (reimagining job ⑧): a serif
 // Predictions masthead with the balance in mono at its right, the OPEN NOW
@@ -89,7 +91,7 @@ function Row({ href, icon, eyebrow, title, desc }: {
   );
 }
 
-export default async function SocialPage() {
+async function SocialPage() {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
   const { userId } = await auth();
   const signedIn = Boolean(userId);
@@ -194,3 +196,5 @@ function PredictionsSkeleton() {
     </div>
   );
 }
+
+export default withPageGate('/social', SocialPage);

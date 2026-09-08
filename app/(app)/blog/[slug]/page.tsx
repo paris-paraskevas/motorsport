@@ -20,6 +20,7 @@ import { loadSeriesMeta } from '@/lib/series';
 import type { TocItem } from '@/lib/toc';
 import { BlogShare } from '@/components/blog/BlogShare';
 import { BlogReactions } from '@/components/blog/BlogReactions';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Force-dynamic: required for the admin scheduled-preview branch (currentUser),
 // and DB posts render at request time anyway. generateStaticParams stays
@@ -48,7 +49,7 @@ export async function generateStaticParams() {
   return slugs.map(slug => ({ slug }));
 }
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -113,6 +114,7 @@ export async function generateMetadata({
     },
   };
 }
+export const generateMetadata = pageMetadata('/blog/[slug]', baseMetadata);
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -190,7 +192,7 @@ async function loadRecentPosts(excludeSlug: string, limit = 5): Promise<RecentPo
     .slice(0, limit);
 }
 
-export default async function PostPage({
+async function PostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -416,3 +418,5 @@ export default async function PostPage({
     </div>
   );
 }
+
+export default withPageGate('/blog/[slug]', PostPage);

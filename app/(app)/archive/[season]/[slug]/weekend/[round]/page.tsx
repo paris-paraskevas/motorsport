@@ -11,6 +11,7 @@ import { loadWeekendNotes, weekendNoteKey } from '@/lib/series-content';
 import { WeekendNote } from '@/components/weekend/WeekendNote';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Build-time only — see the note on the season page. `data/` is not readable on
 // workerd, deliberately.
@@ -36,7 +37,7 @@ async function resolve(season: string, slug: string, round: string) {
 
 const titleOf = (w: ArchivedWeekend) => w.roundName ?? w.label ?? `Round ${w.round}`;
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ season: string; slug: string; round: string }>;
@@ -64,6 +65,7 @@ export async function generateMetadata({
     }),
   };
 }
+export const generateMetadata = pageMetadata('/archive/[season]/[slug]/weekend/[round]', baseMetadata);
 
 /** The archive stores ISO instants. Rendered in UTC on purpose: a static page
  *  cannot know the reader's zone, and quietly showing the build machine's zone
@@ -78,7 +80,7 @@ const UTC = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'UTC',
 });
 
-export default async function ArchiveWeekendPage({
+async function ArchiveWeekendPage({
   params,
 }: {
   params: Promise<{ season: string; slug: string; round: string }>;
@@ -157,3 +159,5 @@ export default async function ArchiveWeekendPage({
     </div>
   );
 }
+
+export default withPageGate('/archive/[season]/[slug]/weekend/[round]', ArchiveWeekendPage);

@@ -11,18 +11,20 @@ import { loadAllSeriesMeta } from '@/lib/series';
 import { AccountStats } from '@/components/AccountStats';
 import { AccountStaffLinks } from '@/components/AccountStaffLinks';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Account',
   robots: { index: false, follow: false },
 };
+export const generateMetadata = pageMetadata('/settings', BASE_METADATA);
 
 // The Account hub: identity, your personal stats (own account, signed-in), and
 // links into the dedicated Notifications + Championships pages. URL stays
 // /settings (bookmarks, Clerk redirects); the surface is "Account".
-export default async function AccountPage() {
+async function AccountPage() {
   const { userId } = await auth();
   const stats = userId && isBettingConfigured() ? await getAccountStats(userId).catch(() => null) : null;
   const seriesList = (await loadAllSeriesMeta()).map(({ slug, name, color }) => ({ slug, name, color }));
@@ -111,3 +113,5 @@ export default async function AccountPage() {
     </div>
   );
 }
+
+export default withPageGate('/settings', AccountPage);

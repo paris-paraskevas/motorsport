@@ -8,9 +8,11 @@ import { ensureAppUser, ensureBettingUser } from '@/lib/betting/credits';
 import { getInvite } from '@/lib/betting/leagues';
 import { sendFriendRequest, setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { JoinLeagueFlow } from '@/components/betting/JoinLeagueFlow';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Join league', robots: { index: false, follow: false } };
+const BASE_METADATA: Metadata = { title: 'Join league', robots: { index: false, follow: false } };
+export const generateMetadata = pageMetadata('/social/leagues/join/[token]', BASE_METADATA);
 
 function frame(children: ReactNode) {
   return (
@@ -23,7 +25,7 @@ function frame(children: ReactNode) {
   );
 }
 
-export default async function JoinLeaguePage({ params }: { params: Promise<{ token: string }> }) {
+async function JoinLeaguePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
 
   if (!isBettingConfigured()) {
@@ -117,3 +119,5 @@ export default async function JoinLeaguePage({ params }: { params: Promise<{ tok
     </div>,
   );
 }
+
+export default withPageGate('/social/leagues/join/[token]', JoinLeaguePage);

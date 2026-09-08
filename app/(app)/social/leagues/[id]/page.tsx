@@ -9,9 +9,11 @@ import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends
 import { getLeagueDetail } from '@/lib/betting/leagues';
 import { LeagueDetailView } from '@/components/betting/LeagueDetailView';
 import { PAGE_READ, PLAY_MONEY_NOTE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'League', robots: { index: false, follow: false } };
+const BASE_METADATA: Metadata = { title: 'League', robots: { index: false, follow: false } };
+export const generateMetadata = pageMetadata('/social/leagues/[id]', BASE_METADATA);
 
 function frame(children: ReactNode) {
   return (
@@ -27,7 +29,7 @@ function frame(children: ReactNode) {
   );
 }
 
-export default async function LeaguePage({ params }: { params: Promise<{ id: string }> }) {
+async function LeaguePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!isBettingConfigured()) {
     return frame(<p className="font-mono text-sm text-text-muted">Betting isn&apos;t live yet.</p>);
@@ -95,3 +97,5 @@ function LeagueSkeleton() {
     </div>
   );
 }
+
+export default withPageGate('/social/leagues/[id]', LeaguePage);

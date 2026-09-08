@@ -6,6 +6,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Dedicated "Series guides" landing — every championship's about/history/rules
 // in one indexable page (the Learn + Series nav menus link here). The per-series
@@ -18,14 +19,15 @@ const TITLE = 'Series guides — every motorsport championship explained';
 const DESCRIPTION =
   'Guides to every championship we cover — what each series is, its full history, and how the racing and points work: F1, MotoGP, NASCAR, WEC, IndyCar, WRC, F2, F3 and more.';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: '/information/series-guides' },
   ...withSocialMeta({ title: TITLE, description: DESCRIPTION, path: '/information/series-guides' }),
 };
+export const generateMetadata = pageMetadata('/information/series-guides', BASE_METADATA);
 
-export default async function SeriesGuidesPage() {
+async function SeriesGuidesPage() {
   const series = (await loadAllSeriesMeta()).sort((a, b) => a.name.localeCompare(b.name));
 
   return (
@@ -89,3 +91,5 @@ export default async function SeriesGuidesPage() {
     </div>
   );
 }
+
+export default withPageGate('/information/series-guides', SeriesGuidesPage);

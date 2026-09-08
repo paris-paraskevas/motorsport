@@ -8,9 +8,11 @@ import { getUserProfile } from '@/lib/betting/account';
 import type { FriendState } from '@/lib/betting/friends';
 import { ProfileActions } from '@/components/betting/ProfileActions';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Profile', robots: { index: false, follow: false } };
+const BASE_METADATA: Metadata = { title: 'Profile', robots: { index: false, follow: false } };
+export const generateMetadata = pageMetadata('/social/users/[id]', BASE_METADATA);
 
 function frame(children: ReactNode) {
   return (
@@ -38,7 +40,7 @@ function Stat({ value, label }: { value: number | string; label: string }) {
 // A cross-user public profile. Friends (and you) see the user's leagues; everyone
 // else sees only name + friend/league counts and an "add friend" prompt. The
 // balance is never exposed. Your own /social/users/<you> bounces to Account.
-export default async function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
+async function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
   const { userId } = await auth();
@@ -101,3 +103,5 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
     </div>,
   );
 }
+
+export default withPageGate('/social/users/[id]', UserProfilePage);

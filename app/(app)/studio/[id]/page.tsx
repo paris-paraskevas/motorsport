@@ -8,14 +8,16 @@ import { getPostById } from '@/lib/blog';
 import { StudioEditor } from '@/components/studio/StudioEditor';
 import { LearnFeature } from '@/components/studio/LearnFeature';
 import { STATUS_META } from '@/components/studio/studio-shared';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-export const metadata: Metadata = { title: 'Edit post' };
+const BASE_METADATA: Metadata = { title: 'Edit post' };
+export const generateMetadata = pageMetadata('/studio/[id]', BASE_METADATA);
 
 // One post's editor page. Ownership is the boundary: an admin opens any post, a
 // writer only their own — everyone else (and any unknown id) 404s identically,
 // so the URL leaks nothing. Published and rejected posts are immutable (the
 // PATCH API refuses them), so they render a status card instead of the editor.
-export default async function StudioPostPage({ params }: { params: Promise<{ id: string }> }) {
+async function StudioPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireAuthor();
   const admin = isAdmin(user);
@@ -90,3 +92,5 @@ export default async function StudioPostPage({ params }: { params: Promise<{ id:
     </>
   );
 }
+
+export default withPageGate('/studio/[id]', StudioPostPage);

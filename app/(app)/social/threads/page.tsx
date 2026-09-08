@@ -8,13 +8,15 @@ import { loadAllSeriesMeta } from '@/lib/series';
 import { ThreadComposer } from '@/components/threads/ThreadComposer';
 import { ThreadModeration } from '@/components/threads/ThreadModeration';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Threads',
   description:
     'Community threads on Paddock Tracker — fan discussion across Formula 1, MotoGP, WEC, IndyCar and the rest of the grid. Start a thread or join one; lightly moderated, sign in to post.',
 };
+export const generateMetadata = pageMetadata('/social/threads', BASE_METADATA);
 
 // Paper masthead (round-2 ⑨) — the display-caps register was pre-reimagining.
 function frame(children: ReactNode) {
@@ -33,7 +35,7 @@ function frame(children: ReactNode) {
   );
 }
 
-export default async function ThreadsPage({
+async function ThreadsPage({
   searchParams,
 }: {
   searchParams: Promise<{ series?: string }>;
@@ -116,3 +118,5 @@ export default async function ThreadsPage({
     </div>,
   );
 }
+
+export default withPageGate('/social/threads', ThreadsPage);

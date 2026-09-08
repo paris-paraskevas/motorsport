@@ -5,11 +5,13 @@ import { ThemePicker } from '@/components/theme/ThemePicker';
 import { DyslexicToggle } from '@/components/theme/DyslexicToggle';
 import { loadThemeSet } from '@/lib/design/themes';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Theme',
   robots: { index: false, follow: false },
 };
+export const generateMetadata = pageMetadata('/settings/theme', BASE_METADATA);
 
 // The themes on offer come from the design rows (the six shipped plus the
 // operator's own), read once per isolate per minute like the rest of the
@@ -18,7 +20,7 @@ export const revalidate = 300;
 
 // Appearance is device-local (localStorage), so unlike the sibling settings
 // pages this one has no auth-dependent content — guests theme too.
-export default async function ThemePage() {
+async function ThemePage() {
   const set = await loadThemeSet();
   return (
     <div className={PAGE_READ}>
@@ -39,3 +41,5 @@ export default async function ThemePage() {
     </div>
   );
 }
+
+export default withPageGate('/settings/theme', ThemePage);

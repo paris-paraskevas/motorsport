@@ -93,14 +93,14 @@ describe('Designer keeps the selection in the URL', () => {
     window.history.replaceState(null, '', '/admin/designer?ws=builder');
     const pages = pagesFromCode();
     render(<Designer readOnly={false} who="Test · Administrator · production" initialWorkspace="builder" initialPages={pages} {...loaded} />);
-    expect(screen.getByRole('heading', { level: 2, name: 'Pages' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
     expect(screen.getByText('/series/[slug]/[tab]')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Shared Components' }));
     expect(window.location.search).toBe('');
     expect(screen.getByRole('heading', { level: 2, name: 'Shared Components' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'App Builder' }));
     expect(window.location.search).toBe('?ws=builder');
-    expect(screen.getByRole('heading', { level: 2, name: 'Pages' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
   });
 
   it('opens a page the server handed over, with its schematic, and the crumb returns to all pages', () => {
@@ -154,7 +154,7 @@ describe('Designer keeps the selection in the URL', () => {
     expect(screen.getByRole('button', { name: 'Publish' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'All pages' }));
     expect(window.location.search).toBe('?ws=builder');
-    expect(screen.getByRole('heading', { level: 2, name: 'Pages' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Open Monza, a history' })).toBeTruthy();
   });
 

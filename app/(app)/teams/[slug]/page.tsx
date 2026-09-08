@@ -24,6 +24,7 @@ import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
 import type { NewsItem } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_WIDE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // ISR: team pages edge-cache (was force-dynamic). Same cached snapshot feeds
 // as driver pages (WEC excluded → no no-store).
@@ -34,7 +35,7 @@ export function generateStaticParams() {
   return [];
 }
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -52,6 +53,7 @@ export async function generateMetadata({
     ...withSocialMeta({ title: team.name, description, path: `/teams/${slug}` }),
   };
 }
+export const generateMetadata = pageMetadata('/teams/[slug]', baseMetadata);
 
 // Build EVERY constructor's cumulative-points trajectory for the series (via the
 // tested aggregateTeamsTrend), so a team page shows the championship battle with
@@ -177,7 +179,7 @@ function NewsMentionsSection({ items }: { items: NewsItem[] }) {
   );
 }
 
-export default async function TeamPage({
+async function TeamPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -356,3 +358,5 @@ export default async function TeamPage({
     </div>
   );
 }
+
+export default withPageGate('/teams/[slug]', TeamPage);

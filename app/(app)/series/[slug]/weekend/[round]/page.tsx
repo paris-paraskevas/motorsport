@@ -37,6 +37,7 @@ import { getTrackInfoByCircuitSlug } from '@/lib/information/registry';
 import { WeekendUpgrades } from '@/components/weekend/WeekendUpgrades';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { publishedPostsForSeries } from '@/lib/blog';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // ISR: weekend pages edge-cache (was force-dynamic — uncached, slow per hit).
 // Everything here is cacheable — weather (KV), news, and the standings-snapshot
@@ -56,7 +57,7 @@ function parseRound(raw: string): number | null {
   return Number.isInteger(n) && n >= 1 ? n : null;
 }
 
-export async function generateMetadata(
+async function baseMetadata(
   { params }: { params: Promise<{ slug: string; round: string }> },
 ): Promise<Metadata> {
   const { slug, round: roundRaw } = await params;
@@ -109,6 +110,7 @@ export async function generateMetadata(
     }),
   };
 }
+export const generateMetadata = pageMetadata('/series/[slug]/weekend/[round]', baseMetadata);
 
 // Points-scoring depth per series, for the report's default rows (panel 3a):
 // "Default is the points-scoring positions for the series — 10 in Formula 1,
@@ -633,7 +635,7 @@ async function ReportBody({
   );
 }
 
-export default async function WeekendPage({
+async function WeekendPage({
   params,
 }: {
   params: Promise<{ slug: string; round: string }>;
@@ -1120,3 +1122,5 @@ export default async function WeekendPage({
     </div>
   );
 }
+
+export default withPageGate('/series/[slug]/weekend/[round]', WeekendPage);

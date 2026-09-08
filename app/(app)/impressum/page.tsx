@@ -2,10 +2,11 @@ import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Impressum',
   description:
     'Verantwortlich nach § 18 Abs. 2 MStV und § 5 DDG — Kontakt und Anschrift für paddock-tracker.com.',
@@ -16,8 +17,9 @@ export const metadata: Metadata = {
   // it now points at /imprint as the one to index, and it is out of the sitemap.
   alternates: { canonical: '/imprint' },
 };
+export const generateMetadata = pageMetadata('/impressum', BASE_METADATA);
 
-export default async function ImpressumPage() {
+async function ImpressumPage() {
   const html = await loadMarkdownAsHtml(
     path.join(process.cwd(), 'content', 'legal', 'imprint.md'),
   );
@@ -48,3 +50,5 @@ export default async function ImpressumPage() {
     </div>
   );
 }
+
+export default withPageGate('/impressum', ImpressumPage);

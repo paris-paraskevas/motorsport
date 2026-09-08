@@ -4,6 +4,7 @@ import { buildHomeModel } from '@/lib/home-model';
 import { HomeLead } from '@/components/HomeLead';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_WIDE, SITE_TITLE } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 300;
 
@@ -31,7 +32,7 @@ export const revalidate = 300;
 // previews a DRAFT layout with the same data; two copies would drift and the
 // preview would stop being a preview.
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   // The root's own title, not the layout's template: this is the page people
   // land on from a search for the site itself, so it carries the site name and
   // what it does rather than an internal label.
@@ -48,8 +49,9 @@ export const metadata: Metadata = {
     path: '/',
   }),
 };
+export const generateMetadata = pageMetadata('/', BASE_METADATA);
 
-export default async function Home() {
+async function Home() {
   const layout = await loadLiveHomeLayout();
   const model = await buildHomeModel(layout);
 
@@ -59,3 +61,5 @@ export default async function Home() {
     </div>
   );
 }
+
+export default withPageGate('/', Home);

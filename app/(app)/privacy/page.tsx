@@ -2,16 +2,18 @@ import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
 import { PAGE_READ } from '@/lib/site';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: 'Privacy Policy',
   description:
     "Paddock Tracker's privacy policy — what we collect, how long we keep it, your GDPR/UK GDPR rights, and how to reach us with a request.",
 };
+export const generateMetadata = pageMetadata('/privacy', BASE_METADATA);
 
-export default async function PrivacyPage() {
+async function PrivacyPage() {
   const html = await loadMarkdownAsHtml(
     path.join(process.cwd(), 'content', 'legal', 'privacy.md'),
   );
@@ -42,3 +44,5 @@ export default async function PrivacyPage() {
     </div>
   );
 }
+
+export default withPageGate('/privacy', PrivacyPage);

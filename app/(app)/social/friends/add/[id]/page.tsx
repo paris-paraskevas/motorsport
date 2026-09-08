@@ -6,9 +6,11 @@ import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser, ensureBettingUser } from '@/lib/betting/credits';
 import { displayNames, sendFriendRequest } from '@/lib/betting/friends';
 import { FriendInviteFlow } from '@/components/betting/FriendInviteFlow';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Add friend', robots: { index: false, follow: false } };
+const BASE_METADATA: Metadata = { title: 'Add friend', robots: { index: false, follow: false } };
+export const generateMetadata = pageMetadata('/social/friends/add/[id]', BASE_METADATA);
 
 // A shareable friend-request link. The path id is the inviter's (opaque) user id
 // — knowing it only lets you send/accept a friend request to them (every API
@@ -24,7 +26,7 @@ function frame(children: ReactNode) {
   );
 }
 
-export default async function AddFriendPage({ params }: { params: Promise<{ id: string }> }) {
+async function AddFriendPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   if (!isBettingConfigured()) {
@@ -95,3 +97,5 @@ export default async function AddFriendPage({ params }: { params: Promise<{ id: 
     </div>,
   );
 }
+
+export default withPageGate('/social/friends/add/[id]', AddFriendPage);

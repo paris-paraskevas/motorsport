@@ -11,6 +11,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, qaPageLd, guideArticleLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
+import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const revalidate = 3600;
 
@@ -22,7 +23,7 @@ export async function generateStaticParams() {
   return indexed.map((e) => ({ topic: e.topic, slug: e.slug }));
 }
 
-export async function generateMetadata({
+async function baseMetadata({
   params,
 }: {
   params: Promise<{ topic: string; slug: string }>;
@@ -52,6 +53,7 @@ export async function generateMetadata({
     }),
   };
 }
+export const generateMetadata = pageMetadata('/information/[topic]/[slug]', baseMetadata);
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -114,7 +116,7 @@ function TrackFactsBlock({ entry }: { entry: InfoEntry }) {
   );
 }
 
-export default async function InfoEntryPage({
+async function InfoEntryPage({
   params,
 }: {
   params: Promise<{ topic: string; slug: string }>;
@@ -268,3 +270,5 @@ export default async function InfoEntryPage({
     </div>
   );
 }
+
+export default withPageGate('/information/[topic]/[slug]', InfoEntryPage);

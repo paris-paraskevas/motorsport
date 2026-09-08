@@ -8,12 +8,15 @@ import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import { PageEditor } from './PageEditor';
 import { PageAttributesEditor } from './PageAttributesEditor';
+import { CodePageLayout } from './CodePageLayout';
 
 // One page in the App Builder: its facts, then for a row page its attributes
 // (Phase 3 step 3) and the editor (step 2b: the schematic, the gallery, the
-// properties, Save draft and Publish, the revisions); for a code page a
-// sentence. A row page with a live revision is served at its path (step 3),
-// and the facts line links there.
+// properties, Save draft and Publish, the revisions); for a code page the
+// Layout of its template with the body as the one region the code serves,
+// beside the property editor (the Page Designer plan, PR 1). A row page with
+// a live revision is served at its path (step 3), and the facts line links
+// there; a code page with a fixed path links there too.
 
 const AUTHZ_LABEL: Record<string, string> = {
   public: 'Everyone',
@@ -58,7 +61,7 @@ export function PageDetailPanel({
         <span>{page.rendering === 'dynamic' ? 'renders each visit' : 'cached'}</span>
         <span>{page.indexable ? 'indexed' : 'not indexed'}</span>
         <span>{page.authz ? (AUTHZ_LABEL[page.authz] ?? page.authz) : 'Everyone'}</span>
-        {page.kind === 'row' && live && (
+        {((page.kind === 'row' && live) || (page.kind === 'code' && !page.path.includes('['))) && (
           <a href={page.path} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-edit hover:underline">
             open the page <ExternalLink size={10} />
           </a>
@@ -66,20 +69,41 @@ export function PageDetailPanel({
       </p>
 
       {page.kind === 'code' ? (
-        <p className="mb-4 max-w-[70ch] text-12 text-text-muted">
-          The code serves this page; the designer lists it so a page made here can never take its path. It has no layout
-          document.
-        </p>
+        page.id ? (
+          <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
+            <CodePageLayout page={page} />
+            <PageAttributesEditor
+              key={`${page.id}:${page.updatedAt ?? ''}`}
+              page={page}
+              readOnly={readOnly}
+              schemes={schemes}
+              onSaved={next => onSaved({ ...detail, page: next })}
+              onConflict={onSaved}
+            />
+          </div>
+        ) : (
+          <p className="mb-4 max-w-[70ch] text-12 text-text-muted">
+            The code serves this page and its row is not on this database yet, so its attributes cannot be edited here.
+          </p>
+        )
       ) : (
         <>
-          <PageAttributesEditor
-            key={`${page.id ?? page.path}:${page.updatedAt ?? ''}`}
-            page={page}
-            readOnly={readOnly}
-            schemes={schemes}
-            onSaved={next => onSaved({ ...detail, page: next })}
-            onConflict={onSaved}
-          />
+          <details className="mb-4">
+            <summary className="cursor-pointer select-none py-1 text-12 font-semibold text-text">
+              Page attributes
+              <span className="ml-2 font-mono text-9 font-normal uppercase tracking-[0.12em] text-text-faint">name · title · group · who sees it · indexed</span>
+            </summary>
+            <div className="mt-2 max-w-[560px]">
+              <PageAttributesEditor
+                key={`${page.id ?? page.path}:${page.updatedAt ?? ''}`}
+                page={page}
+                readOnly={readOnly}
+                schemes={schemes}
+                onSaved={next => onSaved({ ...detail, page: next })}
+                onConflict={onSaved}
+              />
+            </div>
+          </details>
           <PageEditor
             key={page.id ?? page.path}
             detail={detail}
