@@ -6,7 +6,47 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-09-08 (LATEST, session 43 — the night shift: Phase 0 live, Phase 1 shipped, the stale-payload bug found and fixed) — `main` = **1.0.35**, prod verified through 1.0.34, zero open PRs, suite **1572**
+## ⚡ Next session pickup — 2026-09-08 morning (LATEST, session 43 continued — paddock-developer named, Phase 2 steps 0 to 2 shipped) — `main` = **1.0.40**, prod verified through 1.0.39, zero open PRs, suite **1602**
+
+### 🔴 Read first
+
+- **The direction widened.** The designer is now **paddock-developer**: the operator's own builder, for themselves and whoever uses it, APEX's concepts without Oracle's names or visuals, its appearance free to grow away from APEX's hard parts. Consequences taken this morning: every design table carries `application_key` (tenancy while the tables were empty), and the review page for each UI step is the operator's approval gate. The product programme itself (tenancy for others, per-tenant code, concurrency, an opt-in MCP surface) is written up after Phases 2 and 3 prove the designer on Paddock.
+- **Prod state, all on the operator's word, each rehearsed with a rollback first:** migrations `20260908090000` (design tables), `20260908110000` (tenancy), `20260908130000` (nav lists seeded + `design_save_list()`) are applied; `export-design` ran once and created branch `export/design` (`8addfe4`, 19 files).
+- **Live on prod:** `/admin/designer` (1.0.39) edits the four navigation lists; the header, the phone bar and the footer render from rows (1.0.38) with the code as fallback.
+
+### Operator checks still open (all behind the admin sign-in)
+1. `/admin/designer` opens on the overview with counts 4 · 4 · 13 · 6; Navigation Bar List → move a cell → Save → the phone bar on the site follows within a minute; Reload/Save anyway appears only after a second save from elsewhere.
+2. From the night: `/admin/site` composer with no banner, Save draft then reload reopens the draft, Publish; `/admin/system` Loads panel with ten series and the Cloudflare figure down by the previews' share.
+3. Decide the release header (six then ten pushes under `# 1.0 · Lights out`), and confirm the six branch deletions listed in the night section.
+
+### ✅ Shipped this morning — 5 merges, 1.0.36 → 1.0.40
+| Version | PR | What |
+|---|---|---|
+| **1.0.36** | #915 | Migration `20260908090000` applied; first export run |
+| **1.0.37** | #916 | **Tenancy**: `application_key` on 13 design tables, composite keys and foreign keys, one-row check dropped |
+| **1.0.38** | #917 | **Navigation lists as rows**: seeds, `design_save_list()`, `lib/design/*`, `GET/PUT /api/admin/design/lists/[key]`, DoorLinks/BottomBar/Footer from rows |
+| **1.0.39** | #918 | **Paddock Developer's first screen**: `/admin/designer`, catalogue of every APEX group, the list editor with real-component preview, Save/409, read-only on previews, blue edit accent |
+| **1.0.40** | this | Records |
+
+### Decisions (operator, 2026-09-08 morning)
+- Tenant column now, not later. · Designer accent: the prototype's blue, console themes only. · The lists editor shows Condition only when Phase 3 evaluates it. · The catalogue lists everything with the phase that brings it rather than hiding what is not ready.
+
+### Findings worth carrying (morning)
+1. **Stop `wrangler dev` by its `npx` root PID with `/T`.** Killing the port's PID leaves workerd and esbuild alive holding `.open-next`, and the next `cf:build` dies with `EPERM … rm .open-next`. Two such trees were found and ended this morning.
+2. **Screenshots of admin UI without a session**: render the component with `renderToStaticMarkup` under vitest (mock `next/navigation` and `@clerk/nextjs`), wrap the markup in the build's CSS (`.next/static/chunks/*.css`), serve the folder with `python -m http.server` (Playwright blocks `file://`), screenshot at 1440×900, publish as an artifact. Worked first time for #918.
+3. **`react-hooks/set-state-in-effect`** fires on syncing state from a prop in an effect; the fix is React's own pattern (adjust during render with a `seen` state), never a disable.
+4. The Management API `database/query` endpoint runs a `begin … rollback` script as a real rehearsal: every statement executes against prod and nothing persists. Used before all three applies.
+5. The console's own accent is already a blue-teal (`--brand #5ea9c4`); "amber" is the public site's. The designer's `--edit` sits beside it.
+
+### Next, flat
+1. **Phase 2 step 3: Text Messages** (`text_message` rows, an editor in the same shape, the footer headings and fixed strings reading from rows with code fallback), then Application Settings, Build Options, Authorization Schemes editors, Themes.
+2. Phase 3: App Builder (pages, the Layout schematic, `page_revision`), dynamic actions.
+3. Phase 0 follow-up: multi-class standings (GT World, IMSA, WEC) need a `manufacturer` kind, a forward migration with a morning apply.
+4. Housekeeping: `supabase/README.md` is stale about how migrations are applied.
+
+---
+
+## Next session pickup — 2026-09-08 (session 43 — the night shift: Phase 0 live, Phase 1 shipped, the stale-payload bug found and fixed) — `main` = **1.0.35**, prod verified through 1.0.34, zero open PRs, suite **1572**
 
 ### 🔴 Morning actions, in order
 
