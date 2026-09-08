@@ -561,7 +561,18 @@ export function Designer({
                 <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading the page…</p>
               )}
               {detail.state === 'error' && <p className="text-12 text-negative">{detail.message}</p>}
-              {detail.state === 'ready' && <PageDetailPanel detail={detail.detail} onBack={() => openPageDetail(null)} />}
+              {detail.state === 'ready' && (
+                <PageDetailPanel
+                  detail={detail.detail}
+                  readOnly={readOnly}
+                  lists={LIST_KEYS.map(k => ({ key: k, label: LIST_COPY[k].title }))}
+                  assets={assets.state === 'ready' ? assets.assets : []}
+                  schemes={schemes}
+                  shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
+                  onBack={() => openPageDetail(null)}
+                  onSaved={next => setDetail({ state: 'ready', detail: next })}
+                />
+              )}
             </>
           ) : (
             <>

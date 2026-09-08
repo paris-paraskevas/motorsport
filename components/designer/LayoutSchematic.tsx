@@ -86,7 +86,14 @@ function RegionTile({ region, selected, onSelect }: { region: Region; selected: 
   }`;
   const style = { gridColumn: `${region.column} / span ${region.span}`, gridRow: 1 };
   return onSelect ? (
-    <button type="button" className={className} style={style} onClick={() => onSelect(region.id)} aria-pressed={selected}>
+    <button
+      type="button"
+      className={className}
+      style={style}
+      onClick={() => onSelect(region.id)}
+      aria-pressed={selected}
+      aria-label={`${kind}: ${region.title || region.id}`}
+    >
       {body}
     </button>
   ) : (
