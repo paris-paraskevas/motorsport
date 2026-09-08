@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.40 — 2026-09-08
+
+### Docs — the morning's records
+
+`docs/HANDOFF.md` gains the 2026-09-08 morning pickup at the top (the widened direction, the three applied migrations and the export branch, the operator checks still open, the five merges 1.0.36 → 1.0.40, the morning's decisions and findings, the flat next list); the night section loses its LATEST marker. `SCHEDULE.md`'s Tue 2026-09-08 entry gains the morning outcomes. `IDEAS.md`'s DREAM section records paddock-developer and the three Phase 2 steps. No code.
+
 ## 1.0.39 — 2026-09-08
 
 ### Feature — Phase 2, step 2: Paddock Developer's first screen, the Shared Components workspace with the four navigation lists editable
