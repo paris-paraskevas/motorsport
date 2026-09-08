@@ -178,6 +178,19 @@ export function Designer({
     };
   }, [initialLists, initialText, initialBuildOptions, initialSettings]);
 
+  // The selection lives in the URL too (`?sc=`), written with the browser's own
+  // replaceState, which Next's router integrates: a refresh reopens the same
+  // editor, and the back arrow still goes straight to the console because
+  // nothing was pushed. Null returns to the overview.
+  const select = (key: string | null) => {
+    setSelected(key);
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (key) url.searchParams.set('sc', key);
+    else url.searchParams.delete('sc');
+    window.history.replaceState(null, '', url);
+  };
+
   const item: CatalogueItem | undefined = selected
     ? CATALOGUE.flatMap(g => g.items).find(i => i.key === selected)
     : undefined;
@@ -236,7 +249,14 @@ export function Designer({
       </header>
 
       <div className="flex h-[30px] items-center gap-2 border-b border-border bg-surface-elevated px-3.5 text-[11px] text-text-faint">
-        <b className="font-medium text-text-muted">Shared Components</b>
+        <button
+          type="button"
+          onClick={() => select(null)}
+          title="Back to the overview"
+          className="font-medium text-text-muted hover:text-text"
+        >
+          Shared Components
+        </button>
         <span>›</span>
         <span>Application 100 · Paddock</span>
         {item && (
@@ -260,7 +280,7 @@ export function Designer({
                   <button
                     key={it.key}
                     type="button"
-                    onClick={() => setSelected(it.key)}
+                    onClick={() => select(it.key)}
                     aria-current={active ? 'true' : undefined}
                     className={`flex w-full items-center gap-2.5 py-[7px] pl-[22px] pr-3.5 text-left text-[12px] ${
                       active
@@ -303,7 +323,7 @@ export function Designer({
                       <button
                         key={it.key}
                         type="button"
-                        onClick={() => setSelected(it.key)}
+                        onClick={() => select(it.key)}
                         className={`py-0.5 text-left text-[12px] ${it.listKey || it.editor ? 'text-edit hover:underline' : 'text-text-faint'}`}
                       >
                         {it.label}
