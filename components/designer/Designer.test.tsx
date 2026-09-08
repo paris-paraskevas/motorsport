@@ -5,7 +5,7 @@
 // should stay on the example page"). These cases pin that round trip: a click
 // writes the URL, the crumb clears it, and the page's `?sc=` opens the entry.
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type React from 'react';
 
@@ -35,6 +35,7 @@ import { SETTING_KEYS, SETTING_SPECS } from '@/lib/design/setting-defaults';
 import type { EditableBuildOption } from '@/lib/design/build-options';
 import type { EditableSetting } from '@/lib/design/settings';
 import type { PageRow } from '@/lib/design/pages';
+import type { PageDetail } from '@/lib/design/page-revisions';
 import { CODE_PAGES } from '@/lib/design/page-registry';
 
 const STAMP = '2026-09-08T08:33:32.994153+00:00';
@@ -100,6 +101,83 @@ describe('Designer keeps the selection in the URL', () => {
     fireEvent.click(screen.getByRole('button', { name: 'App Builder' }));
     expect(window.location.search).toBe('?ws=builder');
     expect(screen.getByRole('heading', { level: 2, name: 'Pages' })).toBeTruthy();
+  });
+
+  it('opens a page the server handed over, with its schematic, and the crumb returns to all pages', () => {
+    window.history.replaceState(null, '', '/admin/designer?ws=builder&page=a1b2c3d4-0000-4000-8000-000000000010');
+    const page: PageRow = {
+      id: 'a1b2c3d4-0000-4000-8000-000000000010',
+      path: '/history/monza',
+      name: 'Monza, a history',
+      kind: 'row',
+      group: 'editorial',
+      template: 'paddock-standard',
+      authz: 'public',
+      title: null,
+      rendering: 'cached',
+      indexable: false,
+      comments: null,
+      updatedAt: STAMP,
+    };
+    const detail: PageDetail = {
+      page,
+      live: null,
+      newest: {
+        id: 'b1b2c3d4-0000-4000-8000-000000000002',
+        createdAt: STAMP,
+        publishedAt: null,
+        author: 'user_admin',
+        base: null,
+        problems: [],
+        document: {
+          version: 1,
+          regions: [{ id: 'intro', kind: 'static', title: 'Monza', position: 'body', seq: 10, column: 1, span: 8, newRow: false, authz: null, text: 'Opened in 1922.' }],
+        },
+      },
+      revisions: [{ id: 'b1b2c3d4-0000-4000-8000-000000000002', createdAt: STAMP, publishedAt: null, author: 'user_admin', base: null }],
+    };
+    render(
+      <Designer
+        readOnly={false}
+        who="Test · Administrator · production"
+        initialWorkspace="builder"
+        initialPages={[...pagesFromCode(), page]}
+        initialPageId={page.id}
+        initialDetail={detail}
+        {...loaded}
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 2, name: 'Monza, a history' })).toBeTruthy();
+    expect(screen.getByText('Static Content')).toBeTruthy();
+    expect(screen.getByText('draft')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'All pages' }));
+    expect(window.location.search).toBe('?ws=builder');
+    expect(screen.getByRole('heading', { level: 2, name: 'Pages' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Open Monza, a history' })).toBeTruthy();
+  });
+
+  it('Create page opens the dialog: a template is chosen, then the page is named; a code-owned path is refused before anything is sent', () => {
+    window.history.replaceState(null, '', '/admin/designer?ws=builder');
+    render(<Designer readOnly={false} who="Test · Administrator · production" initialWorkspace="builder" initialPages={pagesFromCode()} {...loaded} />);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Create page' }));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByRole('heading', { level: 2, name: 'Choose a template' })).toBeTruthy();
+    expect(within(dialog).getByRole('button', { name: /^like a blog post/ }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(within(dialog).getByRole('button', { name: /^like the Privacy page/ }));
+    expect(within(dialog).getByRole('button', { name: /^like the Privacy page/ }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Next' }));
+    expect(within(dialog).getByRole('heading', { level: 2, name: 'Name the page' })).toBeTruthy();
+    expect((within(dialog).getByLabelText('Group of the new page') as HTMLSelectElement).value).toBe('site');
+    fireEvent.change(within(dialog).getByLabelText('Name of the new page'), { target: { value: 'Monza results' } });
+    fireEvent.change(within(dialog).getByLabelText('Path of the new page'), { target: { value: '/series/monza' } });
+    expect(within(dialog).getByText('the code already serves /series/[slug]')).toBeTruthy();
+    expect((within(dialog).getByRole('button', { name: 'Create page' }) as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.change(within(dialog).getByLabelText('Path of the new page'), { target: { value: '/history/monza' } });
+    expect(within(dialog).getByText('ready')).toBeTruthy();
+    expect((within(dialog).getByRole('button', { name: 'Create page' }) as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 });
 
