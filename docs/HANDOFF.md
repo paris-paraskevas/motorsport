@@ -6,7 +6,36 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-09-08 midday (LATEST, session 44 closed at 84% context — Phase 2 steps 4 to 7 live, two editors left, Phase 3 next) — `main` = **1.0.48**, prod verified through 1.0.47, zero open PRs, suite **1692**
+## ⚡ Next session pickup — 2026-09-08 afternoon (LATEST, session 45 — the customisation direction decided and step 8 Appearance live; Shortcuts and Assets left, then Phase 3) — `main` = **1.0.51**, prod verified through 1.0.50, zero open PRs, suite **1712**
+
+### 🔴 Start here
+
+1. **The direction is decided: tokens first.** Presented as three previews (tokens · tokens plus a checked custom-CSS box · raw CSS and JS as APEX has them) with the security stance (the CSP already allows inline styles and scripts for Clerk and Tag Manager, so a stored line would run on every page; raw JS is stored XSS by definition; raw CSS can leak form values and paint a fake sign-in). The operator chose tokens. Raw JS is never to be recommended; checked custom CSS only if a concrete look cannot be reached with tokens, and only on the operator's explicit call.
+2. **Step 8, Appearance, is live in two PRs.** #928 (1.0.49): every fixed text size (1,173 in 187 files) on a 31-step rem ladder `--text-8…--text-136` (`text-11` = 11 px; `text-12-5` = 12.5 px; font-size only, like the arbitrary form), and the four faces as role variables `--face-sans/serif/mono/condensed` read by the `@theme inline` font stacks (the utilities inline their stacks, so only a role variable reaches all 1,362 `font-*` uses; this also fixed the dyslexic mode, which had swapped the body only). Proof of sameness: computed typography of 990 class strings identical before and after (Playwright on `next dev`, keyed by class string). #930 (1.0.50): `application.ui jsonb` (migration `20260908210000`, **applied 13:20Z on the operator's word**), eight faces added to `lib/fonts.ts` unpreloaded (Source Sans 3, Fira Sans, Source Serif 4, Literata, JetBrains Mono, Source Code Pro, Roboto Condensed, Fira Sans Condensed), `lib/design/appearance{-defaults,}.ts` (one `parseAppearance` rule for the loader and the route; the legibility gate base 14–20 px, leading 1.3–1.8, density 0.2–0.35 rem, corners 0–16 px; `appearanceCss` = one `:root` rule in the same `<style id="paddock-themes">` as the custom themes), `GET/PUT /api/admin/design/appearance`, `components/designer/AppearanceEditor.tsx`, catalogue key `appearance` (was `uiattrs`). Deployed 13:25Z; prod's home carries the ladder classes and no style block (nothing stored yet). Review pages: #928 `a4f3556c-2609-4814-b2a9-58b11e8e2753`, #930 `520291ed-bda3-4d0a-b41d-62621038d79b`; board republished.
+3. **Scope calls taken, to revisit only if the operator asks**: application-level tokens only (per-theme overrides later; shipped themes untouched); the type scale as a ratio waits for Phase 3's page roles (31 sizes cannot follow one ratio without changing the look); bare `rounded` stays code. **Finding**: base 20 on a 390 phone truncates the header's search hint and wraps the eyebrow labels; 18 is the practical ceiling, the gate keeps 20.
+4. **Next**: Shortcuts, then Assets (needs a media bucket in R2 and its binding, an infra action the operator names; `wrangler.jsonc` binds only the ISR cache bucket), then Phase 3. Queued after them by the operator this afternoon (IDEAS.md Inbox): an alive rotating `nav.search` placeholder of questions verified to resolve through the site's search (rotation after first paint, still under reduced motion); a search bar for the Shared Components catalogue; the designer's side menu redrawn so pages and shared components read as different things.
+5. **Operator items still open**: the release header on `/changelog`; the six merged remote branches to delete; the design loaders' 60 s memo; the night's composer and `/admin/system` checks.
+
+### Landmines learned this session
+- Stopping `next dev` right before `cf:build` can leave `.next/dev/types/routes.d.ts` truncated; the build's type step reads it (`';' expected`) and removing one file leaves `validator.ts` importing it. Clear `.next/dev/types` whole. A production build under a running dev server also 404s dynamic routes on the next dev start until `.next/dev` is fresh.
+- GitHub **closes** a stacked PR when its base branch is deleted by the squash merge, and a closed PR's base cannot be changed: rebase onto main, force-push with lease, open a new PR (#929 → #930).
+- `node -e … "$sql"` cannot take an argument that begins with `--`: the migration's leading comment dashes were read as a node option and nothing was sent. Pass SQL through the environment (`process.env.SQL`).
+- Playwright is not in the repo; the scratchpad has its own `node_modules/playwright` (1.63, chromium-headless-shell 1243). Static markup carries no `<select>` selection: mark the chosen option before reading `innerHTML` for a render probe.
+- Tailwind v4 utilities from `@theme inline` inline their values: overriding `--font-sans` reaches the body rule only. Role variables inside the stacks are the single point that reaches every utility.
+
+### The session's arc (12:00Z → 13:30Z)
+
+| Version | PR | What |
+|---|---|---|
+| **1.0.49** | #928 | The size ladder and the four faces by role; look-identical; dyslexic mode fixed |
+| **1.0.50** | #930 | Appearance: the editor, twelve faces, the gate, the document on the application row; migration applied 13:20Z |
+| **1.0.51** | this | Records |
+
+Suite 1692 → **1712**. Dry-run 42,028.45 → **41,994.79 KiB**; fonts 45 → 155 `@font-face` rules (13.6 → 43.7 KB), 41 → 143 woff2 (1.4 → 4.4 MiB static, fetched only when picked).
+
+---
+
+## Next session pickup — 2026-09-08 midday (session 44 closed at 84% context — Phase 2 steps 4 to 7 live, two editors left, Phase 3 next) — `main` = **1.0.48**, prod verified through 1.0.47, zero open PRs, suite **1692**
 
 ### 🔴 Start here
 

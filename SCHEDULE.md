@@ -1731,6 +1731,13 @@ Active: (no [+Nm] prefixes given this session)
 - Then Shortcuts, then Assets (needs a media bucket in R2 and its binding, an infra action the operator names), then Phase 3 opens with `page` + `page_revision`.
 - Won't touch: no push before approval, PR branches only, merges on the operator's word; prod writes only on "apply <id>"; no raw CSS or JS path unless the operator picks it; no post published; no branch deleted beyond a merged PR's own head; the release header and the six branch deletions stay the operator's.
 
+**Session 45 outcomes:**
+- → done: the customisation direction decided, **tokens first**, from three previews (raw CSS or JS declined; the security stance recorded in the handoff).
+- → done: Phase 2 step 8, **Appearance**, as two PRs: #928 (1.0.49) every fixed text size onto one rem ladder and the four faces as role variables, look-identical (990 class strings computing the same before and after; the dyslexic mode now reaches headlines and names); #930 (1.0.50) the editor: twelve open-licence faces by role, the root size, the leading, the spacing unit, the corners and the motion as one document on the application row, a legibility gate, the same generated style block as the themes. Migration 20260908210000 rehearsed with a rollback then applied 13:20Z on the operator's word; both PRs merged on the operator's word ("merge #928 then apply 20260908210000 then merge #929 go ahead"); review pages `a4f3556c…` and `520291ed…`; the board republished. Suite 1692 → 1712; dry-run 42,028 → 41,995 KiB.
+- → skipped: Shortcuts, Assets (next session, then Phase 3); the release header and the six branch deletions (the operator's).
+- Findings: base 20 on a 390 phone truncates the header's search hint, 18 is the practical ceiling; stopping `next dev` right before `cf:build` leaves `.next/dev/types` truncated, clear the folder whole; GitHub closes a stacked PR when its base branch is deleted by the merge, open it again against main; `node -e` cannot take an argument that begins with `--`, pass SQL through the environment.
+- Won't-touch honoured: pushes only for PR branches; merges and the apply on the operator's word; no post published; no branch deleted beyond a merged PR's own head.
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
