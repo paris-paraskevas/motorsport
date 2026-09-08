@@ -6,6 +6,7 @@ import { NavSeriesMeta } from '@/lib/types';
 import type { NavLists } from '@/lib/design/destinations';
 import type { AuthzScheme } from '@/lib/design/authz-defaults';
 import type { ChromeText } from '@/lib/design/text-defaults';
+import { DEFAULT_DEFINITION, MAINTENANCE_NOTICE, type ApplicationDefinition } from '@/lib/design/application-defaults';
 import { BottomBar } from './BottomBar';
 import { DoorLinks } from './DoorLinks';
 import { Footer } from './Footer';
@@ -34,6 +35,7 @@ export function AppShell({
   text,
   schemes,
   searchHints = [],
+  definition = DEFAULT_DEFINITION,
 }: {
   children: React.ReactNode;
   seriesList: NavSeriesMeta[];
@@ -51,6 +53,10 @@ export function AppShell({
   // The questions the search field cycles through after the first paint
   // (lib/design/search-hints.ts); empty keeps the one text message.
   searchHints?: string[];
+  // The application definition (lib/design/application.ts, Shared Components →
+  // Application Definition): the wordmark, the date chip, the install button,
+  // and the maintenance notice. The shipped defaults when the row is unreadable.
+  definition?: ApplicationDefinition;
 }) {
   // Pointer glow (operator idea): a soft signal-amber halo trails the cursor to
   // highlight where the mouse is. Desktop-mouse only and off under reduced
@@ -119,10 +125,19 @@ export function AppShell({
             data-heatmap-id="nav:wordmark"
             className="shrink-0 font-condensed text-16 font-bold uppercase tracking-[0.06em] text-text lg:text-19"
           >
-            <span className="hidden lg:inline">
-              Paddock<span className="text-brand">•</span>Tracker
-            </span>
-            <span className="lg:hidden">Paddock</span>
+            {definition.wordmark ? (
+              <>
+                <span className="hidden lg:inline">{definition.wordmark}</span>
+                <span className="lg:hidden">{definition.wordmark.split(/[\s•·]+/)[0]}</span>
+              </>
+            ) : (
+              <>
+                <span className="hidden lg:inline">
+                  Paddock<span className="text-brand">•</span>Tracker
+                </span>
+                <span className="lg:hidden">Paddock</span>
+              </>
+            )}
           </Link>
 
           <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} searchLabel={text['nav.search']} searchHints={searchHints} />
@@ -133,7 +148,7 @@ export function AppShell({
           <DoorLinks entries={nav.doors} schemes={schemes} />
 
           <div className="ml-auto flex shrink-0 items-center gap-3 lg:gap-4">
-            <HeaderDate />
+            {definition.dateChip && <HeaderDate />}
             <HeaderAccount />
           </div>
         </div>
@@ -146,8 +161,13 @@ export function AppShell({
         tabIndex={-1}
         className="min-h-screen flex flex-col pt-[50px] lg:pt-[58px] pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0 outline-none"
       >
+        {definition.availability === 'maintenance' && (
+          <p role="status" className="m-0 border-b border-border bg-surface px-4 py-2 text-center text-12 text-text-muted">
+            {MAINTENANCE_NOTICE}
+          </p>
+        )}
         <div className="flex-1">{children}</div>
-        <Footer site={nav.footerSite} legal={nav.footerLegal} text={text} schemes={schemes} />
+        <Footer site={nav.footerSite} legal={nav.footerLegal} text={text} schemes={schemes} wordmark={definition.wordmark} installPrompt={definition.installPrompt} siteName={definition.name} />
       </main>
 
       <BottomBar entries={nav.bar} schemes={schemes} />

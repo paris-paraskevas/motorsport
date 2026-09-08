@@ -15,7 +15,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets' | 'searchhints';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -29,7 +29,7 @@ export const CATALOGUE: CatalogueGroup[] = [
   {
     group: 'Application Logic',
     items: [
-      { key: 'appdef', label: 'Application Definition', later: 'Phase 2, later' },
+      { key: 'appdef', label: 'Application Definition', editor: 'appdef' },
       { key: 'appitems', label: 'Application Items', later: 'read-only, later' },
       { key: 'appprocs', label: 'Application Processes', later: 'read-only, later' },
       { key: 'appcomps', label: 'Application Computations', later: 'Phase 3' },

@@ -84,11 +84,20 @@ export function Footer({
   legal,
   text,
   schemes,
+  wordmark = null,
+  installPrompt = true,
+  siteName = SITE_TITLE,
 }: {
   site: NavEntry[];
   legal: NavEntry[];
   text: ChromeText;
   schemes?: readonly AuthzScheme[];
+  /** From the Application Definition: null keeps the shipped Paddock•Tracker. */
+  wordmark?: string | null;
+  /** From the Application Definition: the Install as an app button. */
+  installPrompt?: boolean;
+  /** From the Application Definition: the copyright line's name. */
+  siteName?: string;
 }) {
   const year = 2026;
   const visibleSite = useVisibleEntries(site, schemes);
@@ -121,14 +130,18 @@ export function Footer({
             landing ever had. */}
         <div className="mt-6 flex flex-col gap-4 border-t border-border pt-5 sm:flex-row sm:items-start sm:justify-between">
           <p className="max-w-sm text-12 leading-relaxed text-text-muted">{text['footer.blurb']}</p>
-          <InstallApp label={text['footer.install']} />
+          {installPrompt && <InstallApp label={text['footer.install']} />}
         </div>
         <div className="mt-5 flex flex-col gap-1 border-t border-border pt-4 text-11 text-text-faint sm:flex-row sm:items-center sm:justify-between">
           <span className="font-display font-extrabold uppercase tracking-wide text-text">
-            Paddock<span className="text-brand">•</span>Tracker
+            {wordmark ?? (
+              <>
+                Paddock<span className="text-brand">•</span>Tracker
+              </>
+            )}
             <span className="ml-2 font-mono font-normal tracking-normal text-text-faint">v{APP_VERSION}</span>
           </span>
-          <span>© {year} {SITE_TITLE}. All rights reserved.</span>
+          <span>© {year} {siteName}. All rights reserved.</span>
         </div>
       </div>
     </footer>
