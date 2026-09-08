@@ -39,8 +39,7 @@ Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items v
 
 **Designer, queued after the Appearance step (operator, 2026-09-08 afternoon)**
 - **An alive search placeholder.** `nav.search` cycles every minute through frequently asked questions, each verified to lead somewhere on the site when searched; the rotation starts after the first paint so the cached render stays identical for everyone, and holds still under reduced motion. Shape: a list of questions as rows beside the one text message, the site's search as the verifier.
-- **A search bar for the Shared Components catalogue** in the designer.
-- **The designer's side menu redrawn** so pages and shared components read as different things; the operator cannot tell them apart today.
+_(Shipped 2026-09-08 night in 1.0.62: the search bar for the Shared Components catalogue and the side menu redrawn, one rail per workspace: the App Builder's lists the pages by group and filters them, the Shared Components' carries the search field and marks what is editable now.)_
 
 **Bugs and defects**
 

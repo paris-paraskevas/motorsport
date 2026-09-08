@@ -17,6 +17,7 @@ import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
+import { BuilderRail, SharedRail, type PageFilter } from './Rails';
 import { PagesList } from './PagesList';
 import { PageDetailPanel } from './PageDetailPanel';
 import { ListEditor } from './ListEditor';
@@ -314,6 +315,8 @@ export function Designer({
     initialPages ? { state: 'ready', pages: initialPages } : { state: 'loading' },
   );
   const [workspace, setWorkspace] = useState<Workspace>(initialWorkspace);
+  const [pageFilter, setPageFilter] = useState<PageFilter>('all');
+  const [catalogueQuery, setCatalogueQuery] = useState('');
   const [openPage, setOpenPage] = useState<string | null>(initialPageId);
   const [detail, setDetail] = useState<LoadedDetail>(() =>
     initialDetail ? { state: 'ready', detail: initialDetail } : { state: 'loading' },
@@ -547,8 +550,28 @@ export function Designer({
         )}
       </div>
 
+      <div className="grid min-h-0 grid-cols-[300px_minmax(0,1fr)]">
+        <nav
+          aria-label={workspace === 'builder' ? 'Pages' : 'Shared components'}
+          className="overflow-auto border-r border-border-strong bg-surface pb-5"
+        >
+          {workspace === 'builder' ? (
+            <BuilderRail
+              pages={pages.state === 'ready' ? pages.pages : null}
+              filter={pageFilter}
+              onFilter={f => {
+                setPageFilter(f);
+                if (openPage) openPageDetail(null);
+              }}
+              openPage={openPage && detail.state === 'ready' ? detail.detail.page : null}
+            />
+          ) : (
+            <SharedRail query={catalogueQuery} onQuery={setCatalogueQuery} selected={selected} onSelect={select} badge={badge} />
+          )}
+        </nav>
+
       {workspace === 'builder' ? (
-        <main className="min-h-0 overflow-auto px-6 pb-8 pt-[18px]">
+        <main className="min-w-0 overflow-auto px-6 pb-8 pt-[18px]">
           {readOnly && (
             <p className="mb-4 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-12 text-text-muted">
               Design edits are made on production. This copy of the site is read-only: browse and preview here, save on
@@ -583,6 +606,7 @@ export function Designer({
               {pages.state === 'ready' && (
                 <PagesList
                   pages={pages.pages}
+                  filter={pageFilter}
                   readOnly={readOnly}
                   onOpen={id => openPageDetail(id)}
                   onCreated={page => {
@@ -595,39 +619,6 @@ export function Designer({
           )}
         </main>
       ) : (
-      <div className="grid min-h-0 grid-cols-[300px_minmax(0,1fr)]">
-        <nav aria-label="Shared components" className="overflow-auto border-r border-border-strong bg-surface pb-5 pt-2">
-          {CATALOGUE.map(group => (
-            <div key={group.group}>
-              <div className="px-3.5 pb-1 pt-3 text-12 font-semibold text-text-muted">{group.group}</div>
-              {group.items.map(it => {
-                const active = selected === it.key;
-                const n = badge(it);
-                const live = Boolean(it.listKey || it.editor);
-                return (
-                  <button
-                    key={it.key}
-                    type="button"
-                    onClick={() => select(it.key)}
-                    aria-current={active ? 'true' : undefined}
-                    className={`flex w-full items-center gap-2.5 py-[7px] pl-[22px] pr-3.5 text-left text-12 ${
-                      active
-                        ? 'bg-edit-dim text-text shadow-[inset_2px_0_0_var(--edit)]'
-                        : live
-                          ? 'text-text-muted hover:bg-surface-elevated hover:text-text'
-                          : 'text-text-faint hover:bg-surface-elevated hover:text-text-muted'
-                    }`}
-                  >
-                    <span>{it.label}</span>
-                    {it.later && <span className="ml-auto font-mono text-9 text-text-faint">{it.later}</span>}
-                    {n !== null && <span className="ml-auto font-mono text-9 text-text-faint">{n}</span>}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </nav>
-
         <main className="min-w-0 overflow-auto px-6 pb-8 pt-[18px]">
           {readOnly && (
             <p className="mb-4 max-w-[70ch] border border-border-strong bg-surface px-3 py-2 text-12 text-text-muted">
@@ -822,8 +813,8 @@ export function Designer({
             );
           })()}
         </main>
-      </div>
       )}
+      </div>
     </div>
   );
 }

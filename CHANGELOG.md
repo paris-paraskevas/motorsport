@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.62 — 2026-09-08
+
+### Feature — the designer's two rails: the pages by group in the App Builder, a search over the Shared Components catalogue
+
+Two of the three ideas the operator queued on the afternoon of 2026-09-08 ("a search bar in shared components and a ui change of the side menu because i cant really differentiate between all pages/shared components"), built in the night shift. Each workspace now has its own left rail, drawn so the two read as different things. Nothing on the site changes; no migration.
+
+- **`components/designer/Rails.tsx`** (NEW): `BuilderRail` (eyebrow App Builder with a page icon, title Pages, one sentence; All pages · Your pages "made here" · the six groups from `PAGE_GROUPS`, each with its count from the loaded rows; the chosen filter highlighted; an open page named under "Open"), `SharedRail` (eyebrow Shared Components with a puzzle icon, title Components; a search field; the catalogue groups with a filled dot on an editable entry and a hollow one on a later one, the counts as before; a legend at the foot), `filterCatalogue(query)` (every word against the entry's label and its group; an empty catalogue shows "Nothing in the catalogue matches"), `PageFilter = 'all' | 'row' | PageGroup`.
+- **`components/designer/Designer.tsx`**: one two-column grid for both workspaces, the rail on the left (`aria-label` Pages or Shared components) and the pane on the right; `pageFilter` and `catalogueQuery` state; choosing a filter closes an open page. The old inline catalogue list moved into `SharedRail` unchanged in behaviour.
+- **`components/designer/PagesList.tsx`**: takes `filter`; the heading reads "Pages · Editorial" (or "· Your pages") when filtered; "Your pages" with none yet shows one sentence pointing at Create page.
+
+**Tests.** `components/designer/Designer.test.tsx` (+1: the search narrows the catalogue and says when nothing matches; the App Builder rail filters to a group, to the operator's own pages, and back). `npm test` → 173 files, **1849 passed** (1848 before), 1851 with the temporary render probe. `tsc` and `eslint` clean.
+
+**Seen before merge.** Review page (artifact `0c960e4e-6eed-4a46-9cba-f826d5661723`): the Shared Components rail with "foot" typed (the two footer lists remain), the App Builder rail filtering to Editorial with the row page at the foot of the group; what each rail does; what to look for. The operator was asleep; the merge went ahead on their standing word.
+
+**Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.61) `Total Upload 42297.80 KiB / gzip 9780.85 KiB`; after `Total Upload 42297.17 KiB / gzip 9780.83 KiB` (a browser-only chunk).
+
+**Also in this push, the records:** `IDEAS.md` marks the two ideas shipped; `docs/HANDOFF.md` carries steps 3 and 4 as live with their deploy times and outside checks (1.0.60 at 18:00Z: an unpublished row page's path, an unmatched path and the PUT unauthenticated all 404, `/about` 200; 1.0.61 at 18:18Z: the scheme routes 404 unauthenticated, the home page's doors carry the four public entries) and the third idea as next.
+
 ## 1.0.61 — 2026-09-08
 
 ### Feature — Phase 3, step 4: authorization on the navigation lists, schemes of the operator's own
