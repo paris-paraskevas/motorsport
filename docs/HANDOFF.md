@@ -6,7 +6,51 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-09-08 late morning (LATEST, session 43 closed at 95% context — Phase 2 steps 0 to 3 shipped, step 4 planned and approved-pending) — `main` = **1.0.42**, prod verified through 1.0.41, zero open PRs, suite **1613**
+## ⚡ Next session pickup — 2026-09-08 midday (LATEST, session 44 closed at 84% context — Phase 2 steps 4 to 7 live, two editors left, Phase 3 next) — `main` = **1.0.48**, prod verified through 1.0.47, zero open PRs, suite **1692**
+
+### 🔴 Start here
+
+1. **Phase 2 has two editors left, Shortcuts and Assets, then Phase 3 begins.** Shortcuts are house-style text fragments for the Static Content boxes Phase 3 brings (rows nothing reads yet, like the Social and Studio switches); Assets are the operator's photos in R2 with caption, credit and licence, which needs the upload path. Present each with the recipe below; the operator's standing instruction is "finish phase 2 and start phase 3". **Phase 3 is the App Builder**: `page` + `page_revision`, the Layout schematic, region renderers reading a revision, the catch-all route, redirect rows, dynamic actions; it is also where authorization schemes get enforced and Social/Studio get gated.
+2. **Everything is applied.** Migrations `20260908170000` (settings, applied 09:44Z) and `20260908190000` (themes, applied 11:32Z), each rehearsed with `begin … rollback` first and applied on the operator's word; seven applied files in total. **The operator verified prod at the close**: the six theme cards with stamps, a theme of their own saved and picked in a private window, a custom default switched and back; earlier, the wire-headline count 5 → 2 → 10 → 5 followed within about a minute each time.
+3. **Operator items still open, all yours to raise one at a time**: the release header on `/changelog` (twelve pushes now sit under `# 1.0 · Lights out`, the designer programme could open its own); the six merged remote branches to delete (chore/ci-actions-v7, chore/handoff-2026-09-07, feat/whats-new-hd, fix/lockfile-swc-helpers, fix/standings-banner, fix/studio-lost-update); the design loaders' 60 s memo (a save shows everywhere in about a minute; 15 s for settings was offered, undecided); the night's composer and `/admin/system` checks.
+4. **The recipe, proven seven times**: rows seeded by an idempotent migration the operator applies after a rehearsal through the Management API (browser UA, `.supabase-pat`); a client-safe defaults module plus a server-only loader with a one-minute memo and the code as the fallback; one write path with the stamp check (a database function when a save touches more than one row: `design_save_list`, `design_set_default_theme`); the editor in `components/designer/`; the render probe (Testing Library under jsdom for the interactive states, the build's CSS, `python -m http.server`, Playwright at 1440×900) → review artifact for the operator BEFORE merge; the trio and the dry-run; merge only on the operator's word; poll `/changelog` for the version; republish the board.
+
+### The session's arc (09:00Z → 11:45Z, operator present throughout)
+
+| Version | PR | What |
+|---|---|---|
+| **1.0.43** | #922 | **Build Options**: the four switches editable; Ghost lap 3D (`QualifyingDecoder` prop, the 3D code never fetched when excluded) and Weather (`WeekendWeatherStrip`, `SessionForecast`) honoured; Social/Studio stored, labelled inert; a `weather` save nudges the weekend route pattern. Deployed 09:24Z |
+| **1.0.44** | #923 | **Application Settings**: five rows (`home.lead_series`, `home.major_series`, `home.wire_count`, `home.blog_suggested_count`, `announcement.active_id`) with one parse rule shared by the loader and the route; `rankLiveWeekends` takes its priority; `WhatsNewModal` takes `activeId`. Migration applied 09:44Z, deployed 09:48Z |
+| **1.0.45** | #924 | The designer keeps its selection in `?sc=` (`history.replaceState`, Next-integrated); the crumb returns to the overview. Asked for by the operator on first use |
+| **1.0.46** | #925 | **Authorization Schemes**: label and message editable, type and value the code's; the lists editor offers schemes from rows and the lists route refuses an unknown one; enforcement stays Phase 3. Built on #924, rebased before merge. Deployed 11:01Z |
+| **1.0.47** | #926 | **Themes**, widened by the operator to themes of their own: six rows, `available` and `base` columns, `design_set_default_theme()`; custom theme = shipped base + nine colours through a contrast gate (text/muted/faint 4.5:1, accent 3:1; the six pass), applied by a generated `<style>` on `[data-theme-custom]`; the layout, `themeInitScript(set)`, `generateViewport()` and the picker read one set. Migration applied 11:32Z, deployed 11:36Z |
+| **1.0.48** | this | This handoff |
+
+Suite 1613 → **1692**. Dry-run 41,815.51 → **42,028.45 KiB** `Total Upload` (64 MiB limit). Review pages: #922 `50bf5065-265b-4d5a-94aa-569d635144f1`, #923 `e0f8526e-81f0-434f-8fae-5feebd4e54a8`, #925 `33321588-6e13-4208-8df4-6a1021978cf1`, #926 `219a7801-9d0a-4dd7-b0ff-fa4bca7b3957`; progress board `a8d129cd-6c7b-42b9-b030-18a2dcc5dfca` (republished 11:36Z); field guide `6fb2f726-1b9d-4226-bfc4-5cb594b6b124`.
+
+### Decisions (operator, 2026-09-08 midday)
+- **Rows at render are fine** for what changes between deploys, with the code as the fallback and a per-isolate memo ("is it clever to have queriable pages?" answered: structure stays code, values are rows). · **Custom themes now**, as a shipped base plus nine colours; the shipped six keep their colours in CSS. · **Authorization schemes**: name and message only; add, remove and enforcement with Phase 3. · **Settings**: the blog band's visibility stays the composer's, the news source map stays code; "default series for new visitors" became the home lead and featured series (the 2026-09-04 decision as rows). · A minute for a save to show everywhere is acceptable.
+
+### Findings worth carrying
+1. **Next integrates `window.history.replaceState`** (its linking guide), so a browser-only chunk keeps state in the URL without a server round trip, and `replaceState` keeps the console's back arrow one step.
+2. **A partial unique index can trip inside one UPDATE** that clears one row's flag and sets another's; the safe shape is clear-then-set inside a plpgsql function, one transaction (`design_set_default_theme`).
+3. **`revalidatePath('/series/[slug]/weekend/[round]', 'page')` from a Route Handler only marks pages** for a fresh render on their next visit; nothing renders at once (Next's docs). The weekend pages' five-minute cache therefore does not delay a switch.
+4. **Testing Library under jsdom tests a client component's behaviour** once its heavy children are mocked and `fetch` is stubbed (`QualifyingDecoder.test.tsx`, `Designer.test.tsx`); the render probe uses the same to reach states a static render cannot (a changed field, a 409 banner).
+5. **`'fail' in g` over an object-literal union leaves `g.fail` possibly undefined**; type the gate as a discriminated union (`themes/[key]/route.ts`).
+6. **Stacked PRs**: build the second on the first's branch, `git rebase main` after the first squash-merges (git drops the identical patch), `git push --force-with-lease`, check `gh pr view --json files`, then merge.
+7. **A custom theme's rule has the same specificity as a shipped theme's** (`:root[attr]`); it wins by coming later, the `<style>` in body after the stylesheet. Its base keeps supplying `color-scheme`, the dark family and the light themes' per-element tint rule.
+8. **`eslint-disable` for `react-hooks/exhaustive-deps` is never the fix**: inline the reads or move the helper to module scope (done twice, both times before the commit).
+9. **Every design loader has the same four failure paths** (unconfigured, error, empty, unusable row) and the same test file shape; a new one takes twenty minutes when copied from `lib/design/text.ts`.
+
+### Next, flat
+1. Shortcuts editor (small), then Assets (the R2 upload path; caption, credit, licence), each with the recipe.
+2. **Phase 3, App Builder**: `page` + `page_revision` with the refs projection, the Layout schematic, region renderers, the catch-all route with noindex until indexable, redirect rows, the dynamic-action interpreter, the route-collision test; authz enforcement (one evaluator; the nav needs a client-side one because layouts render at ISR time); Social/Studio gating; add/remove schemes.
+3. Phase 0 follow-up: multi-class standings (`manufacturer` kind, forward migration, morning apply).
+4. Housekeeping: `supabase/README.md` is stale about migrations; the memo option; the release header; the six branch deletions.
+
+---
+
+## Next session pickup — 2026-09-08 late morning (session 43 closed at 95% context — Phase 2 steps 0 to 3 shipped, step 4 planned and approved-pending) — `main` = **1.0.42**, prod verified through 1.0.41, zero open PRs, suite **1613**
 
 ### 🔴 Start here
 
