@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.45 — 2026-09-08
+
+### Fix — the designer keeps the selected entry across a refresh
+
+Operator, on the first live use of the designer: "upon refresh of /admin/designer/example we should stay on example page (e.g. build options)". Choosing a catalogue entry only set React state, so a refresh fell back to whatever `?sc=` the URL carried, usually nothing, and there was no control to return to the overview once an entry was open.
+
+- **`components/designer/Designer.tsx`**: one `select(key)` helper sets the state and writes `?sc=<key>` into the URL with `window.history.replaceState` (Next's router integrates the native call, per its linking guide), or removes the parameter for the overview. Both catalogue columns use it. The "Shared Components" crumb becomes a button that returns to the overview. `replaceState`, not `pushState`: the console's back arrow still goes straight back rather than through every click.
+- **`components/designer/Designer.test.tsx`** (NEW, jsdom, 3): a click writes `?sc=build` and opens the editor; the page's `initialSelected` opens the entry and the crumb clears the URL back to the overview; an unknown key opens the overview.
+
+**Tests.** `npm test` → 138 files, **1649 passed** (1646 before). `tsc` and `eslint` clean. No server code changed, so no size dry-run.
+
+**Also confirmed by the operator on prod, 1.0.44:** Home: wire headlines changed 5 → 2 → 10 → 5 and the home page followed each time in about a minute. That minute is the design loader's per-isolate memo (60 s) plus one stale-serving visit of the ISR page; the save resets the memo only in the isolate that handled it.
+
 ## 1.0.44 — 2026-09-08
 
 ### Feature — Phase 2, step 5: Application Settings, five named values the site reads at render, editable
