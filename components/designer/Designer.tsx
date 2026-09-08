@@ -12,6 +12,7 @@ import type { EditableSetting } from '@/lib/design/settings';
 import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableTheme } from '@/lib/design/themes';
 import type { EditableAppearance } from '@/lib/design/appearance';
+import type { EditableShortcut } from '@/lib/design/shortcuts';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
@@ -20,6 +21,7 @@ import { SettingsEditor, type SeriesOption } from './SettingsEditor';
 import { AuthzEditor } from './AuthzEditor';
 import { ThemesEditor } from './ThemesEditor';
 import { AppearanceEditor } from './AppearanceEditor';
+import { ShortcutsEditor } from './ShortcutsEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -154,6 +156,22 @@ async function fetchAppearance(): Promise<LoadedAppearance> {
   }
 }
 
+type LoadedShortcuts =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; shortcuts: EditableShortcut[] };
+
+async function fetchShortcuts(): Promise<LoadedShortcuts> {
+  try {
+    const res = await fetch('/api/admin/design/shortcuts', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The shortcuts could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { shortcuts: EditableShortcut[] };
+    return { state: 'ready', shortcuts: d.shortcuts };
+  } catch {
+    return { state: 'error', message: 'The shortcuts could not be loaded: network error.' };
+  }
+}
+
 export function Designer({
   readOnly,
   who,
@@ -165,6 +183,7 @@ export function Designer({
   initialAuthz,
   initialThemes,
   initialAppearance,
+  initialShortcuts,
   series = [],
 }: {
   readOnly: boolean;
@@ -186,6 +205,8 @@ export function Designer({
   initialThemes?: EditableTheme[] | null;
   /** The appearance the server already loaded; fetched when absent. */
   initialAppearance?: EditableAppearance | null;
+  /** The shortcuts the server already loaded; fetched when absent. */
+  initialShortcuts?: EditableShortcut[] | null;
   /** The championships the settings editor offers in its series controls. */
   series?: SeriesOption[];
 }) {
@@ -206,6 +227,9 @@ export function Designer({
   );
   const [appearance, setAppearance] = useState<LoadedAppearance>(() =>
     initialAppearance ? { state: 'ready', loaded: initialAppearance } : { state: 'loading' },
+  );
+  const [shortcuts, setShortcuts] = useState<LoadedShortcuts>(() =>
+    initialShortcuts ? { state: 'ready', shortcuts: initialShortcuts } : { state: 'loading' },
   );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
@@ -260,10 +284,15 @@ export function Designer({
         if (!cancelled) setAppearance(loaded);
       });
     }
+    if (!initialShortcuts) {
+      void fetchShortcuts().then(loaded => {
+        if (!cancelled) setShortcuts(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -292,6 +321,7 @@ export function Designer({
   const settingsCount = settings.state === 'ready' ? settings.settings.length : null;
   const authzCount = authz.state === 'ready' ? authz.schemes.length : null;
   const themesCount = themes.state === 'ready' ? themes.themes.length : null;
+  const shortcutsCount = shortcuts.state === 'ready' ? shortcuts.shortcuts.length : null;
   // The footer preview shows the strings as they are stored right now, and the
   // lists' authorization select offers the schemes as they are stored right now.
   const chromeText: ChromeText | undefined =
@@ -312,7 +342,9 @@ export function Designer({
               ? authzCount
               : it.editor === 'themes'
                 ? themesCount
-                : null;
+                : it.editor === 'shortcuts'
+                  ? shortcutsCount
+                  : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -515,6 +547,20 @@ export function Designer({
                 themes={themes.themes}
                 readOnly={readOnly}
                 onSaved={next => setThemes({ state: 'ready', themes: next })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'shortcuts' && (() => {
+            if (shortcuts.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Shortcuts…</p>;
+            }
+            if (shortcuts.state === 'error') return <p className="text-12 text-negative">{shortcuts.message}</p>;
+            return (
+              <ShortcutsEditor
+                shortcuts={shortcuts.shortcuts}
+                readOnly={readOnly}
+                onSaved={next => setShortcuts({ state: 'ready', shortcuts: next })}
               />
             );
           })()}
