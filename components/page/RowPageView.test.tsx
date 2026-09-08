@@ -22,16 +22,17 @@ import type { PageDocument } from '@/lib/design/page-document';
 const ASSET = 'c1b2c3d4-0000-4000-8000-000000000031';
 const document: PageDocument = {
   version: 1,
+  actions: [],
   regions: [
-    { id: 'kicker', kind: 'static', title: '', position: 'header', seq: 10, column: 1, span: 12, newRow: false, authz: null, text: 'A circuit history' },
-    { id: 'crumbs', kind: 'list', title: '', position: 'breadcrumb', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'doors', style: 'links' },
-    { id: 'intro', kind: 'static', title: 'A century of speed', position: 'body', seq: 10, column: 1, span: 8, newRow: false, authz: null, text: 'Opened in 1922.\nStill racing.\n\n{shortcut:times.local} {shortcut:missing}' },
-    { id: 'grid', kind: 'image', title: '', position: 'body', seq: 20, column: 9, span: 4, newRow: false, authz: null, assetId: ASSET, alt: 'The banking', showCaption: true },
-    { id: 'members', kind: 'static', title: 'Members', position: 'body', seq: 30, column: 1, span: 12, newRow: true, authz: 'signed_in', text: 'Secret' },
-    { id: 'staff', kind: 'static', title: 'Staff', position: 'body', seq: 40, column: 1, span: 12, newRow: true, authz: 'administrator', text: 'Very secret' },
-    { id: 'more', kind: 'list', title: 'Elsewhere', position: 'right', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'footer-site', style: 'cards' },
-    { id: 'legal', kind: 'list', title: '', position: 'footer', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'footer-legal', style: 'links' },
-    { id: 'bar', kind: 'list', title: '', position: 'phonebar', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'bar', style: 'links' },
+    { id: 'kicker', kind: 'static', title: '', position: 'header', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: null, text: 'A circuit history' },
+    { id: 'crumbs', kind: 'list', title: '', position: 'breadcrumb', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: null, listKey: 'doors', style: 'links' },
+    { id: 'intro', kind: 'static', title: 'A century of speed', position: 'body', seq: 10, column: 1, span: 8, newRow: false, hidden: false, authz: null, text: 'Opened in 1922.\nStill racing.\n\n{shortcut:times.local} {shortcut:missing}' },
+    { id: 'grid', kind: 'image', title: '', position: 'body', seq: 20, column: 9, span: 4, newRow: false, hidden: false, authz: null, assetId: ASSET, alt: 'The banking', showCaption: true },
+    { id: 'members', kind: 'static', title: 'Members', position: 'body', seq: 30, column: 1, span: 12, newRow: true, hidden: false, authz: 'signed_in', text: 'Secret' },
+    { id: 'staff', kind: 'static', title: 'Staff', position: 'body', seq: 40, column: 1, span: 12, newRow: true, hidden: false, authz: 'administrator', text: 'Very secret' },
+    { id: 'more', kind: 'list', title: 'Elsewhere', position: 'right', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: null, listKey: 'footer-site', style: 'cards' },
+    { id: 'legal', kind: 'list', title: '', position: 'footer', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: null, listKey: 'footer-legal', style: 'links' },
+    { id: 'bar', kind: 'list', title: '', position: 'phonebar', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: null, listKey: 'bar', style: 'links' },
   ],
 };
 const data: RowPageData = {
@@ -95,6 +96,31 @@ describe('RowPageView', () => {
     expect(html).toContain('href="/calendar"');
     expect(html).toContain('sm:grid-cols-2');
     expect(html).not.toContain('Contact');
+  });
+
+  it('wraps each region for the dynamic actions, renders a hidden region hidden, a Button as a link or a plain button, and mounts the interpreter only with actions', () => {
+    expect(html).toContain('id="region-intro" data-region="intro"');
+    expect(html).not.toContain('data-dynamic-actions');
+    const withButtons = renderToStaticMarkup(
+      <RowPageView
+        {...data}
+        document={{
+          version: 1,
+          actions: [{ id: 'reveal', name: '', when: { event: 'click', region: 'open' }, do: [{ action: 'show', region: 'more' }] }],
+          regions: [
+            { id: 'more', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: false, hidden: true, authz: null, text: 'The rest.' },
+            { id: 'open', kind: 'button', title: '', position: 'body', seq: 20, column: 1, span: 4, newRow: false, hidden: false, authz: null, label: 'Read more', dest: null },
+            { id: 'cal', kind: 'button', title: 'Next', position: 'body', seq: 30, column: 5, span: 4, newRow: false, hidden: false, authz: null, label: 'Calendar', dest: 'calendar' },
+            { id: 'coffee', kind: 'button', title: '', position: 'body', seq: 40, column: 9, span: 4, newRow: false, hidden: false, authz: null, label: 'Support', dest: 'external:support' },
+          ],
+        }}
+      />,
+    );
+    expect(withButtons).toContain('data-region="more" hidden=""');
+    expect(withButtons).toContain('<button type="button" class="inline-flex min-h-11');
+    expect(withButtons).toContain('href="/calendar"');
+    expect(withButtons).toContain('target="_blank"');
+    expect(withButtons).toContain('>Read more</button>');
   });
 
   it('spans the body over twelve columns when nothing sits in the right column', () => {

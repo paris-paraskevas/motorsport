@@ -45,6 +45,7 @@ const live = (over: Partial<PageRow> = {}, regions: unknown[] = []) => ({
   publishedAt: '2026-09-08T17:10:00Z',
   document: {
     version: 1,
+    actions: [],
     regions: [
       { id: 'intro', kind: 'static', title: 'History', position: 'body', seq: 10, column: 1, span: 12, newRow: false, authz: null, text: 'Opened in 1922. {shortcut:times.local}' },
       ...regions,

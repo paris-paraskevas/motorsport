@@ -32,9 +32,10 @@ const page = {
 };
 const doc: PageDocument = {
   version: 1,
+  actions: [],
   regions: [
-    { id: 'intro', kind: 'static', title: 'A century of speed', position: 'body', seq: 10, column: 1, span: 8, newRow: false, authz: null, text: 'Opened in 1922.' },
-    { id: 'more', kind: 'list', title: 'Elsewhere', position: 'right', seq: 10, column: 1, span: 12, newRow: false, authz: null, listKey: 'footer-site', style: 'links' },
+    { id: 'intro', kind: 'static', title: 'A century of speed', position: 'body', seq: 10, column: 1, span: 8, newRow: false, hidden: false, authz: null, text: 'Opened in 1922.' },
+    { id: 'more', kind: 'list', title: 'Elsewhere', position: 'right', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: null, listKey: 'footer-site', style: 'links' },
   ],
 };
 const detail: PageDetail = {
@@ -75,7 +76,7 @@ afterEach(() => {
 
 describe('renumber and ids', () => {
   it('orders regions by position then sequence and renumbers by tens within each position', () => {
-    const r = (id: string, position: Region['position'], seq: number): Region => ({ id, kind: 'static', title: '', position, seq, column: 1, span: 12, newRow: false, authz: null, text: '' });
+    const r = (id: string, position: Region['position'], seq: number): Region => ({ id, kind: 'static', title: '', position, seq, column: 1, span: 12, newRow: false, hidden: false, authz: null, text: '' });
     expect(renumber([r('c', 'footer', 5), r('b', 'body', 30), r('a', 'body', 7)]).map(x => `${x.id}:${x.position}:${x.seq}`)).toEqual(['a:body:10', 'b:body:20', 'c:footer:10']);
     expect(nextRegionId('static', ['text-1', 'text-2'])).toBe('text-3');
     expect(nextRegionId('image', [])).toBe('photo-1');
@@ -113,6 +114,34 @@ describe('PageEditor', () => {
     expect((screen.getByLabelText('Region span') as HTMLInputElement).value).toBe('3');
     fireEvent.click(screen.getByRole('button', { name: 'Remove photo-1' }));
     expect(screen.queryByText('1 of 1 in Header')).toBeNull();
+  });
+
+  it('adds a Button with a destination, a dynamic action that shows a hidden region on its click, and removing the region takes the action with it', () => {
+    mount();
+    fireEvent.click(screen.getByRole('button', { name: 'Button' }));
+    expect(screen.getByRole('button', { name: 'Button: button-1' })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Button label'), { target: { value: 'Open the calendar' } });
+    fireEvent.change(screen.getByLabelText('Button destination'), { target: { value: 'calendar' } });
+    expect(screen.getByRole('button', { name: 'Button: button-1' }).textContent).toContain('→ calendar');
+    fireEvent.click(screen.getByRole('button', { name: 'Static Content: A century of speed' }));
+    fireEvent.click(screen.getByLabelText('Hidden until an action shows it'));
+    expect(screen.getByRole('button', { name: 'Static Content: A century of speed' }).textContent).toContain('hidden at first');
+    fireEvent.click(screen.getByRole('button', { name: 'Add a dynamic action' }));
+    fireEvent.change(screen.getByLabelText('Name of action-1'), { target: { value: 'Reveal' } });
+    fireEvent.change(screen.getByLabelText('Trigger region of action-1'), { target: { value: 'button-1' } });
+    fireEvent.change(screen.getByLabelText('Effect 1 of action-1'), { target: { value: 'show' } });
+    fireEvent.change(screen.getByLabelText('Region of effect 1 of action-1'), { target: { value: 'intro' } });
+    expect(screen.queryByText(/holds Save/)).toBeNull();
+    expect((screen.getByRole('button', { name: 'Save draft' }) as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.change(screen.getByLabelText('When of action-1'), { target: { value: 'timer' } });
+    fireEvent.change(screen.getByLabelText('Timer of action-1'), { target: { value: '2' } });
+    expect(screen.getByText('action action-1: the timer is 5 to 3600 seconds')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Timer of action-1'), { target: { value: '30' } });
+    expect(screen.queryByText(/holds Save/)).toBeNull();
+    // The text region is still the selected one; removing it takes the action that named it.
+    fireEvent.click(screen.getByRole('button', { name: 'Remove intro' }));
+    expect(screen.queryByLabelText('Name of action-1')).toBeNull();
+    expect(screen.getByText('None yet.')).toBeTruthy();
   });
 
   it('moves a region within its position and starts a new row', () => {

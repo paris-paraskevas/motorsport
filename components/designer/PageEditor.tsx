@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { ArrowDown, ArrowUp, Loader2, Plus, Trash2, Upload } from 'lucide-react';
 import {
+  BUTTON_LABEL_MAX,
   COLUMNS,
   EMPTY_DOCUMENT,
   IMAGE_ALT_MAX,
@@ -19,11 +20,18 @@ import {
   type Region,
   type RegionKind,
 } from '@/lib/design/page-document';
+import { DESTINATIONS } from '@/lib/design/destinations';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import { LayoutSchematic } from './LayoutSchematic';
+import { DynamicActionsEditor } from './DynamicActionsEditor';
+
+const GO_OPTIONS = Object.entries(DESTINATIONS)
+  .filter(([, d]) => d.kind !== 'action')
+  .map(([key, d]) => ({ key, label: d.label }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 // The page editor (APEX: Page Designer's Layout tab with the Gallery and the
 // Property Editor), Phase 3 step 2b. The schematic on the left draws the
@@ -65,18 +73,19 @@ export function renumber(regions: Region[]): Region[] {
   });
 }
 
-/** A fresh id for a region of a kind: text-1, photo-2, list-1. */
+/** A fresh id for a region of a kind: text-1, photo-2, list-1, button-1. */
 export function nextRegionId(kind: RegionKind, taken: readonly string[]): string {
-  const base = kind === 'static' ? 'text' : kind === 'image' ? 'photo' : 'list';
+  const base = kind === 'static' ? 'text' : kind === 'image' ? 'photo' : kind === 'list' ? 'list' : 'button';
   let n = 1;
   while (taken.includes(`${base}-${n}`)) n++;
   return `${base}-${n}`;
 }
 
 function newRegion(kind: RegionKind, position: Position, id: string): Region {
-  const base = { id, title: '', position, seq: 1_000_000, column: 1, span: COLUMNS, newRow: false, authz: null };
+  const base = { id, title: '', position, seq: 1_000_000, column: 1, span: COLUMNS, newRow: false, authz: null, hidden: false };
   if (kind === 'static') return { ...base, kind, text: '' };
   if (kind === 'image') return { ...base, kind, assetId: '', alt: '', showCaption: true };
+  if (kind === 'button') return { ...base, kind, label: 'Read more', dest: null };
   return { ...base, kind, listKey: 'doors', style: 'links' };
 }
 
@@ -144,8 +153,17 @@ export function PageEditor({
     setDoc(d => ({ ...d, regions: renumber([...d.regions, newRegion(kind, addAt, id)]) }));
     setSelected(id);
   };
+  // Removing a region takes with it every trigger and effect that named it; an
+  // action left with no effect goes too, so the parser never sees a dangling name.
   const remove = (id: string) => {
-    setDoc(d => ({ ...d, regions: renumber(d.regions.filter(r => r.id !== id)) }));
+    setDoc(d => ({
+      ...d,
+      regions: renumber(d.regions.filter(r => r.id !== id)),
+      actions: d.actions
+        .filter(a => !('region' in a.when && a.when.region === id))
+        .map(a => ({ ...a, do: a.do.filter(e => e.action === 'go' || e.region !== id) }))
+        .filter(a => a.do.length > 0),
+    }));
     setSelected(null);
   };
   const move = (id: string, dir: -1 | 1) => {
@@ -349,6 +367,13 @@ export function PageEditor({
         </aside>
       </div>
 
+      <DynamicActionsEditor
+        actions={doc.actions}
+        regions={doc.regions}
+        readOnly={readOnly}
+        onChange={actions => setDoc(d => ({ ...d, actions }))}
+      />
+
       <h3 className="mb-2 mt-5 text-13 font-bold text-text">Revisions</h3>
       {revisions.length === 0 ? (
         <p className="text-12 text-text-faint">None yet.</p>
@@ -520,6 +545,16 @@ function RegionProperties({
           />
           Start a new row
         </label>
+        <label className="flex items-center gap-2 text-11 text-text-muted">
+          <input
+            type="checkbox"
+            checked={region.hidden}
+            disabled={readOnly}
+            aria-label="Hidden until an action shows it"
+            onChange={e => onPatch(r => ({ ...r, hidden: e.target.checked }))}
+          />
+          Hidden until a dynamic action shows it
+        </label>
         <span className="font-mono text-9 text-text-faint">
           {index + 1} of {siblings.length} in {POSITION_LABELS[region.position].label}
         </span>
@@ -639,6 +674,39 @@ function RegionProperties({
                 onChange={e => onPatch(r => (r.kind === 'image' ? { ...r, showCaption: e.target.checked } : r))}
               />
               Show the caption and credit
+            </label>
+          </>
+        )}
+        {region.kind === 'button' && (
+          <>
+            <label className={LABEL}>
+              Label
+              <input
+                type="text"
+                value={region.label}
+                maxLength={BUTTON_LABEL_MAX}
+                disabled={readOnly}
+                aria-label="Button label"
+                className={FIELD}
+                onChange={e => onPatch(r => (r.kind === 'button' ? { ...r, label: e.target.value } : r))}
+              />
+            </label>
+            <label className={LABEL}>
+              Goes to
+              <select
+                value={region.dest ?? ''}
+                disabled={readOnly}
+                aria-label="Button destination"
+                className={FIELD}
+                onChange={e => onPatch(r => (r.kind === 'button' ? { ...r, dest: e.target.value || null } : r))}
+              >
+                <option value="">Nowhere: it fires dynamic actions only</option>
+                {GO_OPTIONS.map(o => (
+                  <option key={o.key} value={o.key}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
             </label>
           </>
         )}

@@ -131,7 +131,8 @@ describe('Designer keeps the selection in the URL', () => {
         problems: [],
         document: {
           version: 1,
-          regions: [{ id: 'intro', kind: 'static', title: 'Monza', position: 'body', seq: 10, column: 1, span: 8, newRow: false, authz: null, text: 'Opened in 1922.' }],
+          actions: [],
+          regions: [{ id: 'intro', kind: 'static', title: 'Monza', position: 'body', seq: 10, column: 1, span: 8, newRow: false, hidden: false, authz: null, text: 'Opened in 1922.' }],
         },
       },
       revisions: [{ id: 'b1b2c3d4-0000-4000-8000-000000000002', createdAt: STAMP, publishedAt: null, author: 'user_admin', base: null }],
