@@ -15,6 +15,7 @@ import type { EditableAppearance } from '@/lib/design/appearance';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableSearchHint } from '@/lib/design/search-hints';
+import type { EditableApplication } from '@/lib/design/application';
 import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
@@ -31,6 +32,7 @@ import { AppearanceEditor } from './AppearanceEditor';
 import { ShortcutsEditor } from './ShortcutsEditor';
 import { AssetsEditor } from './AssetsEditor';
 import { SearchHintsEditor } from './SearchHintsEditor';
+import { ApplicationDefinitionEditor } from './ApplicationDefinitionEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -216,6 +218,21 @@ async function fetchSearchHints(): Promise<LoadedSearchHints> {
   }
 }
 
+type LoadedApplication =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; loaded: EditableApplication };
+
+async function fetchApplication(): Promise<LoadedApplication> {
+  try {
+    const res = await fetch('/api/admin/design/application', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The application definition could not be loaded (HTTP ${res.status}).` };
+    return { state: 'ready', loaded: (await res.json()) as EditableApplication };
+  } catch {
+    return { state: 'error', message: 'The application definition could not be loaded: network error.' };
+  }
+}
+
 type LoadedPages =
   | { state: 'loading' }
   | { state: 'error'; message: string }
@@ -267,6 +284,7 @@ export function Designer({
   initialAssets,
   mediaConfigured = false,
   initialSearchHints,
+  initialApplication,
   initialPages,
   initialWorkspace = 'shared',
   initialPageId = null,
@@ -308,6 +326,8 @@ export function Designer({
   mediaConfigured?: boolean;
   /** The search hints the server already loaded; fetched when absent. */
   initialSearchHints?: EditableSearchHint[] | null;
+  /** The application definition the server already loaded; fetched when absent. */
+  initialApplication?: EditableApplication | null;
   /** The championships the settings editor offers in its series controls. */
   series?: SeriesOption[];
 }) {
@@ -340,6 +360,9 @@ export function Designer({
   );
   const [searchHints, setSearchHints] = useState<LoadedSearchHints>(() =>
     initialSearchHints ? { state: 'ready', hints: initialSearchHints } : { state: 'loading' },
+  );
+  const [application, setApplication] = useState<LoadedApplication>(() =>
+    initialApplication ? { state: 'ready', loaded: initialApplication } : { state: 'loading' },
   );
   const [workspace, setWorkspace] = useState<Workspace>(initialWorkspace);
   const [catalogueQuery, setCatalogueQuery] = useState('');
@@ -420,6 +443,11 @@ export function Designer({
         if (!cancelled) setSearchHints(loaded);
       });
     }
+    if (!initialApplication) {
+      void fetchApplication().then(loaded => {
+        if (!cancelled) setApplication(loaded);
+      });
+    }
     if (initialPageId && !initialDetail) {
       void fetchDetail(initialPageId).then(loaded => {
         if (!cancelled) setDetail(loaded);
@@ -428,7 +456,7 @@ export function Designer({
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages, initialSearchHints, initialPageId, initialDetail]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages, initialSearchHints, initialApplication, initialPageId, initialDetail]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -817,6 +845,20 @@ export function Designer({
                 hints={searchHints.hints}
                 readOnly={readOnly}
                 onSaved={next => setSearchHints({ state: 'ready', hints: next })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'appdef' && (() => {
+            if (application.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading the Application Definition…</p>;
+            }
+            if (application.state === 'error') return <p className="text-12 text-negative">{application.message}</p>;
+            return (
+              <ApplicationDefinitionEditor
+                loaded={application.loaded}
+                readOnly={readOnly}
+                onSaved={next => setApplication({ state: 'ready', loaded: next })}
               />
             );
           })()}

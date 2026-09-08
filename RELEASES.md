@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.72 — 2026-09-09
+
+**The application's own definition is now editable in the design tool.** Its name, its availability, the wordmark in the header and footer, the date in the header and the install button in the footer are settings the people who run the site can change; a maintenance notice can be shown on every page without locking anything. Nothing changes for readers unless an operator changes it.
+
 ## 1.0.71 — 2026-09-09
 
 **The Page Designer, rebuilt to the approved design.** The people who run the site now edit a page in three panes, the way Oracle's APEX does it: the page's tree on the left, the layout of its positions with a gallery of building blocks in the middle, and the properties of whatever is selected on the right, with a toolbar for Save, Publish and a preview of the running page. Regions move by drag and drop, problems are listed in Messages before anything is saved, and undo and redo cover every change. Nothing changes for readers.

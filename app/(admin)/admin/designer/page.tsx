@@ -11,6 +11,7 @@ import { loadThemesForEditing } from '@/lib/design/themes';
 import { loadAppearanceForEditing } from '@/lib/design/appearance';
 import { loadShortcutsForEditing } from '@/lib/design/shortcuts';
 import { loadSearchHintsForEditing } from '@/lib/design/search-hints';
+import { loadApplicationForEditing } from '@/lib/design/application';
 import { getMediaBucket, loadAssetsForEditing } from '@/lib/design/assets';
 import { loadPagesForEditing } from '@/lib/design/pages';
 import { loadPageDetail } from '@/lib/design/page-revisions';
@@ -44,6 +45,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     initialAssets,
     initialPages,
     initialSearchHints,
+    initialApplication,
     seriesMeta,
     ...loaded
   ] = await Promise.all([
@@ -59,6 +61,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     loadAssetsForEditing(),
     loadPagesForEditing(),
     loadSearchHintsForEditing(),
+    loadApplicationForEditing(),
     loadAllSeriesMeta(),
     ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
   ]);
@@ -83,6 +86,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialAppearance={initialAppearance}
       initialShortcuts={initialShortcuts}
       initialSearchHints={initialSearchHints}
+      initialApplication={initialApplication}
       initialAssets={initialAssets}
       mediaConfigured={getMediaBucket() !== null}
       initialPages={initialPages}
