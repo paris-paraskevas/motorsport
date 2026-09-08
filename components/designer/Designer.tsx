@@ -9,11 +9,13 @@ import type { EditableText } from '@/lib/design/text';
 import type { ChromeText } from '@/lib/design/text-defaults';
 import type { EditableBuildOption } from '@/lib/design/build-options';
 import type { EditableSetting } from '@/lib/design/settings';
+import type { EditableAuthzScheme } from '@/lib/design/authz';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { ListEditor } from './ListEditor';
 import { TextEditor } from './TextEditor';
 import { BuildOptionsEditor } from './BuildOptionsEditor';
 import { SettingsEditor, type SeriesOption } from './SettingsEditor';
+import { AuthzEditor } from './AuthzEditor';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -21,10 +23,10 @@ import { SettingsEditor, type SeriesOption } from './SettingsEditor';
 // rail never competes with the panes; the arrow at the top left goes back.
 //
 // Phase 2 opened the four navigation lists (step 2), Text Messages (step 3),
-// Build Options (step 4) and Application Settings (step 5). Everything else in
-// the catalogue is listed with the phase that brings it: the operator sees the
-// whole shape, and nothing pretends to be editable before it is. App Builder and
-// Data are the next workspaces.
+// Build Options (step 4), Application Settings (step 5) and Authorization
+// Schemes (step 6). Everything else in the catalogue is listed with the phase
+// that brings it: the operator sees the whole shape, and nothing pretends to be
+// editable before it is. App Builder and Data are the next workspaces.
 //
 // This file is loaded as a browser-only chunk (DesignerLoader.tsx), so the
 // editor never enters the Worker bundle.
@@ -100,6 +102,22 @@ async function fetchSettings(): Promise<LoadedSettings> {
   }
 }
 
+type LoadedAuthz =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; schemes: EditableAuthzScheme[] };
+
+async function fetchAuthz(): Promise<LoadedAuthz> {
+  try {
+    const res = await fetch('/api/admin/design/authz', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The schemes could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { schemes: EditableAuthzScheme[] };
+    return { state: 'ready', schemes: d.schemes };
+  } catch {
+    return { state: 'error', message: 'The schemes could not be loaded: network error.' };
+  }
+}
+
 export function Designer({
   readOnly,
   who,
@@ -108,6 +126,7 @@ export function Designer({
   initialText,
   initialBuildOptions,
   initialSettings,
+  initialAuthz,
   series = [],
 }: {
   readOnly: boolean;
@@ -123,6 +142,8 @@ export function Designer({
   initialBuildOptions?: EditableBuildOption[] | null;
   /** The application settings the server already loaded; fetched when absent. */
   initialSettings?: EditableSetting[] | null;
+  /** The authorization schemes the server already loaded; fetched when absent. */
+  initialAuthz?: EditableAuthzScheme[] | null;
   /** The championships the settings editor offers in its series controls. */
   series?: SeriesOption[];
 }) {
@@ -134,6 +155,9 @@ export function Designer({
   );
   const [settings, setSettings] = useState<LoadedSettings>(() =>
     initialSettings ? { state: 'ready', settings: initialSettings } : { state: 'loading' },
+  );
+  const [authz, setAuthz] = useState<LoadedAuthz>(() =>
+    initialAuthz ? { state: 'ready', schemes: initialAuthz } : { state: 'loading' },
   );
   const [selected, setSelected] = useState<string | null>(() =>
     initialSelected && CATALOGUE.some(g => g.items.some(i => i.key === initialSelected)) ? initialSelected : null,
@@ -173,10 +197,15 @@ export function Designer({
         if (!cancelled) setSettings(loaded);
       });
     }
+    if (!initialAuthz) {
+      void fetchAuthz().then(loaded => {
+        if (!cancelled) setAuthz(loaded);
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings]);
+  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -203,11 +232,14 @@ export function Designer({
   const textCount = text.state === 'ready' ? text.messages.length : null;
   const buildCount = build.state === 'ready' ? build.options.length : null;
   const settingsCount = settings.state === 'ready' ? settings.settings.length : null;
-  // The footer preview shows the strings as they are stored right now.
+  const authzCount = authz.state === 'ready' ? authz.schemes.length : null;
+  // The footer preview shows the strings as they are stored right now, and the
+  // lists' authorization select offers the schemes as they are stored right now.
   const chromeText: ChromeText | undefined =
     text.state === 'ready'
       ? (Object.fromEntries(text.messages.map(m => [m.key, m.text])) as ChromeText)
       : undefined;
+  const schemes = authz.state === 'ready' ? authz.schemes : undefined;
   const badge = (it: CatalogueItem): number | null =>
     it.listKey
       ? count(it.listKey)
@@ -217,7 +249,9 @@ export function Designer({
           ? buildCount
           : it.editor === 'settings'
             ? settingsCount
-            : null;
+            : it.editor === 'authz'
+              ? authzCount
+              : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -394,6 +428,22 @@ export function Designer({
             );
           })()}
 
+          {item?.editor === 'authz' && (() => {
+            if (authz.state === 'loading') {
+              return (
+                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">Loading Authorization Schemes…</p>
+              );
+            }
+            if (authz.state === 'error') return <p className="text-[12px] text-negative">{authz.message}</p>;
+            return (
+              <AuthzEditor
+                schemes={authz.schemes}
+                readOnly={readOnly}
+                onSaved={next => setAuthz({ state: 'ready', schemes: next })}
+              />
+            );
+          })()}
+
           {item && listKey && (() => {
             const loaded = lists[listKey];
             if (!loaded || loaded.state === 'loading') {
@@ -415,6 +465,7 @@ export function Designer({
                 readOnly={readOnly}
                 otherFooter={other ? stored(other) : undefined}
                 text={chromeText}
+                schemes={schemes}
                 onSaved={list => setLists(s => ({ ...s, [listKey]: { state: 'ready', list } }))}
               />
             );

@@ -6,6 +6,7 @@ import { NAV_LIST_KEYS, loadListForEditing, type EditableList, type NavListKey }
 import { loadTextForEditing } from '@/lib/design/text';
 import { loadBuildOptionsForEditing } from '@/lib/design/build-options';
 import { loadSettingsForEditing } from '@/lib/design/settings';
+import { loadAuthzForEditing } from '@/lib/design/authz';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { DesignerLoader } from '@/components/designer/DesignerLoader';
 
@@ -21,15 +22,17 @@ export const metadata: Metadata = { title: 'Designer · Admin' };
 // opens a catalogue entry directly.
 export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string }> }) {
   await requireAdmin();
-  const [user, params, initialText, initialBuildOptions, initialSettings, seriesMeta, ...loaded] = await Promise.all([
-    currentUser(),
-    searchParams,
-    loadTextForEditing(),
-    loadBuildOptionsForEditing(),
-    loadSettingsForEditing(),
-    loadAllSeriesMeta(),
-    ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
-  ]);
+  const [user, params, initialText, initialBuildOptions, initialSettings, initialAuthz, seriesMeta, ...loaded] =
+    await Promise.all([
+      currentUser(),
+      searchParams,
+      loadTextForEditing(),
+      loadBuildOptionsForEditing(),
+      loadSettingsForEditing(),
+      loadAuthzForEditing(),
+      loadAllSeriesMeta(),
+      ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
+    ]);
   const initialLists: Partial<Record<NavListKey, EditableList>> = {};
   NAV_LIST_KEYS.forEach((key, i) => {
     const list = loaded[i];
@@ -46,6 +49,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialText={initialText}
       initialBuildOptions={initialBuildOptions}
       initialSettings={initialSettings}
+      initialAuthz={initialAuthz}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
     />
   );

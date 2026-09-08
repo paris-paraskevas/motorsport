@@ -6,17 +6,25 @@ vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 
-// A fake database: the list row and its entries for the reads, and the
-// design_save_list function for the write.
+// A fake database: the list row and its entries for the reads, the scheme rows
+// the authorization check consults, and the design_save_list function for the
+// write.
 const rpc = vi.fn();
 let listRow: { data: unknown; error: { message: string } | null } = { data: null, error: null };
 let entryRows: { data: unknown; error: { message: string } | null } = { data: [], error: null };
+const schemeRows = {
+  data: [
+    { key: 'public', label: 'Public', type: 'public', value: null, message: null },
+    { key: 'signed_in', label: 'Signed in', type: 'signed_in', value: null, message: 'Sign in to see this.' },
+  ],
+  error: null,
+};
 vi.mock('@/lib/betting/client', () => ({
   isBettingConfigured: () => true,
   betDb: () => ({
     rpc: (fn: string, args: unknown) => rpc(fn, args),
     from: (table: string) => {
-      const result = table === 'list' ? listRow : entryRows;
+      const result = table === 'list' ? listRow : table === 'authz_scheme' ? schemeRows : entryRows;
       const q = {
         select: () => q,
         eq: () => q,
@@ -99,6 +107,15 @@ describe('/api/admin/design/lists/[key]', () => {
     expect(res.status).toBe(400);
     expect(((await res.json()) as { error: string }).error).toMatch(/3 to 5/);
     expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('PUT rejects an authorization that is not a scheme row, and accepts one that is', async () => {
+    let res = await put('doors', { entries: [{ label: 'Learn', dest: 'learn', authz: 'vip' }], updatedAt: STAMP });
+    expect(res.status).toBe(400);
+    expect(((await res.json()) as { error: string }).error).toBe('entry 1: "vip" is not an authorization scheme');
+    expect(rpc).not.toHaveBeenCalled();
+    res = await put('doors', { entries: [{ label: 'Learn', dest: 'learn', authz: 'signed_in' }], updatedAt: STAMP });
+    expect(res.status).toBe(200);
   });
 
   it('PUT saves through design_save_list with the stamp verbatim, then refreshes every page', async () => {

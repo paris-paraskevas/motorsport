@@ -19,7 +19,7 @@ import {
 import { BAR_ICON_NAMES, BottomBar } from '@/components/BottomBar';
 import { DoorLinks } from '@/components/DoorLinks';
 import { Footer } from '@/components/Footer';
-import { SCHEMES } from './catalogue';
+import { DEFAULT_AUTHZ_SCHEMES, authzOptions, type AuthzScheme } from '@/lib/design/authz-defaults';
 
 // One navigation list, edited in a table (APEX's list entries page): sequence,
 // label, destination from the catalogue, icon for the bar, authorization for the
@@ -51,6 +51,7 @@ export function ListEditor({
   readOnly,
   otherFooter,
   text = DEFAULT_TEXT,
+  schemes = DEFAULT_AUTHZ_SCHEMES,
   onSaved,
 }: {
   listKey: NavListKey;
@@ -63,6 +64,8 @@ export function ListEditor({
   otherFooter?: NavEntry[];
   /** For the footer preview: the chrome's strings as currently stored. */
   text?: ChromeText;
+  /** The authorization schemes an entry may name, as currently stored. */
+  schemes?: readonly AuthzScheme[];
   onSaved: (list: EditableList) => void;
 }) {
   const [entries, setEntries] = useState<NavEntry[]>(list.entries);
@@ -224,7 +227,7 @@ export function ListEditor({
                         className={`${FIELD} w-36`}
                         onChange={e => setEntries(list => updateEntry(list, i, { authz: e.target.value }))}
                       >
-                        {SCHEMES.map(s => (
+                        {authzOptions(schemes).map(s => (
                           <option key={s.key} value={s.key}>
                             {s.label}
                           </option>
