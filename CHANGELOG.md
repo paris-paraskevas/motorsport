@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.55 — 2026-09-08
+
+### Docs — the records at Phase 2 complete
+
+`docs/HANDOFF.md`'s afternoon pickup gains step 10 (Assets live, the outside checks after the deploy, the first real upload still the operator's), the cache bucket finding and its lifecycle rule, the unreachable field guide and prototype artifacts, and Phase 3 planned as six steps with the go-ahead pending; the arc table through 1.0.54. `SCHEDULE.md` and `IDEAS.md` mark Phase 2 complete. The 1.0.54 entry below carries its deploy and outside checks. No code.
+
 ## 1.0.54 — 2026-09-08
 
 ### Feature — Phase 2, step 10: Assets, the operator's photos in a media bucket with caption, credit and licence
@@ -23,7 +29,7 @@ The last Phase 2 editor. The `asset` table (20260908090000, tenancy 202609081100
 
 **Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: before (1.0.52; 1.0.53 changed no code) `Total Upload 41988.14 KiB / gzip 9730.80 KiB`; after `Total Upload 42067.77 KiB / gzip 9742.68 KiB`, the two route files, the media route and the header reader; the dry-run lists both bindings, `env.NEXT_INC_CACHE_R2_BUCKET (paddock-inc-cache)` and `env.MEDIA (paddock-media)`. 1,189 pages generated; the build log carries only the known lines.
 
-**Not verified before merge.** A real upload against the real bucket: the preview Workers refuse design writes and the local machine has no database, so the first real upload happens on production after the merge, with a small image, and its row, its file and its served address are checked then; the records entry that follows carries the result. One cosmetic change after the screenshots: the address line under each card truncates with the full address on hover, since a data URI in the probe showed it could spill out of the card.
+**Not verified before merge.** A real upload against the real bucket: the preview Workers refuse design writes and the local machine has no database, so the first real upload happens on production after the merge, with a small image, and its row, its file and its served address are checked then; the records entry that follows carries the result. **After the deploy (15:19Z), from outside:** `GET /media/2026/09/<a well-formed absent uuid>.jpg` → 404 (the bucket was asked and holds nothing; a missing binding answers 503), `/media/photo.jpg` and `/media/../wrangler.jsonc` → 404 before the bucket, `/api/admin/design/assets` unauthenticated → 404. The upload itself waits for the operator. One cosmetic change after the screenshots: the address line under each card truncates with the full address on hover, since a data URI in the probe showed it could spill out of the card.
 
 ## 1.0.53 — 2026-09-08
 
