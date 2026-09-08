@@ -1,11 +1,15 @@
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE } from '@/lib/site';
+import { resolveDestination, type NavEntry } from '@/lib/design/destinations';
 import { ManageCookiesButton } from '@/components/ManageCookiesButton';
 import { ContactFooterButton } from '@/components/ContactModal';
 import { InstallApp } from '@/components/landing/InstallApp';
 
-const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
+// Heatmap ids that predate the rows and stay as they were so the recorded
+// history keeps comparing: "Home" was the marketing landing (footer:landing),
+// the support link was the coffee link (footer:coffee).
+const HEATMAP_ID: Record<string, string> = { home: 'footer:landing', 'external:support': 'footer:coffee' };
 
 function FooterLink({
   href,
@@ -33,10 +37,41 @@ function ColumnHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
+// One footer entry from the list: a route is a link, the support link opens in a
+// new tab, and the two actions place components that carry their own text and
+// behaviour (the entry's label is the designer's name for them, not the button's).
+function FooterEntry({ entry }: { entry: NavEntry }) {
+  const dest = resolveDestination(entry.dest);
+  if (!dest) return null;
+  const heat = HEATMAP_ID[entry.dest] ?? `footer:${entry.dest}`;
+  if (dest.kind === 'route') {
+    return (
+      <FooterLink href={dest.href} dataHeatmapId={heat}>
+        {entry.label}
+      </FooterLink>
+    );
+  }
+  if (dest.kind === 'external') {
+    return (
+      <a
+        href={dest.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-heatmap-id={heat}
+        className="block py-1 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+      >
+        {entry.label}
+      </a>
+    );
+  }
+  return dest.action === 'contact' ? <ContactFooterButton /> : <ManageCookiesButton />;
+}
+
 // Two-column footer — Site | Legal side by side, each a short vertical link list,
 // over a thin version / copyright line. No tall brand strip (that's what made the
-// original run a full screen).
-export function Footer() {
+// original run a full screen). Since Phase 2 the two columns are the
+// `footer-site` and `footer-legal` lists (lib/design/lists.ts).
+export function Footer({ site, legal }: { site: NavEntry[]; legal: NavEntry[] }) {
   const year = 2026;
   return (
     <footer className="border-t border-border mt-12 bg-bg">
@@ -44,40 +79,15 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-6 text-xs sm:gap-8">
           <div>
             <ColumnHeading>Site</ColumnHeading>
-            {/* "Home", not "Landing": the marketing landing page was retired in
-                0.334.42 and `/` IS the home page now. The heatmap id keeps its
-                old value on purpose so the recorded history stays comparable. */}
-            <FooterLink href="/" dataHeatmapId="footer:landing">Home</FooterLink>
-            <FooterLink href="/about" dataHeatmapId="footer:about">About</FooterLink>
-            <FooterLink href="/information" dataHeatmapId="footer:learn">Learn</FooterLink>
-            <FooterLink href="/news" dataHeatmapId="footer:news">News</FooterLink>
-            <FooterLink href="/blog" dataHeatmapId="footer:blog">Blog</FooterLink>
-            <FooterLink href="/write-for-us" dataHeatmapId="footer:write-for-us">Write for Paddock</FooterLink>
-            <FooterLink href="/social/threads" dataHeatmapId="footer:threads">Threads</FooterLink>
-            <FooterLink href="/changelog" dataHeatmapId="footer:changelog">Release notes</FooterLink>
-            <FooterLink href="/archive" dataHeatmapId="footer:archive">Season archive</FooterLink>
-            <FooterLink href="/settings" dataHeatmapId="footer:account">Account</FooterLink>
-            {/* Contact + coffee moved here from the header pills (four-door shell). */}
-            <ContactFooterButton />
-            <a
-              href={COFFEE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-heatmap-id="footer:coffee"
-              className="block py-1 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-            >
-              Buy me a coffee
-            </a>
-            <ManageCookiesButton />
+            {site.map((entry, i) => (
+              <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
+            ))}
           </div>
           <div>
             <ColumnHeading>Legal</ColumnHeading>
-            <FooterLink href="/privacy" dataHeatmapId="footer:privacy">Privacy</FooterLink>
-            <FooterLink href="/terms" dataHeatmapId="footer:terms">Terms</FooterLink>
-            <FooterLink href="/cookies" dataHeatmapId="footer:cookies">Cookies</FooterLink>
-            <FooterLink href="/accessibility" dataHeatmapId="footer:accessibility">Accessibility</FooterLink>
-            <FooterLink href="/do-not-sell" dataHeatmapId="footer:do-not-sell">Do Not Sell or Share</FooterLink>
-            <FooterLink href="/imprint" dataHeatmapId="footer:imprint">Imprint</FooterLink>
+            {legal.map((entry, i) => (
+              <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
+            ))}
           </div>
         </div>
         {/* Install, and the one line saying what this is.

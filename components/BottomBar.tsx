@@ -1,16 +1,51 @@
 'use client';
-import { CalendarDays, CircleUser, Compass, House } from 'lucide-react';
+import {
+  BookOpen,
+  CalendarDays,
+  CircleUser,
+  Compass,
+  Flag,
+  House,
+  Newspaper,
+  Search,
+  Settings,
+  Trophy,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth, useUser } from '@clerk/nextjs';
+import { isActivePath, resolveDestination, type NavEntry } from '@/lib/design/destinations';
 
-// The four doors on phones (design handoff §2, panel 8b): Home, Calendar,
-// Learn, Account — four equal cells, hairline dividers, a 2px accent rule
-// across the active cell's top. The bar NEVER changes per section, and nothing
-// else gets a cell: series, blog, news and social are reached by name through
-// the header's menu-and-search panel. Hidden on lg+ where the header carries
-// the same model.
-export function BottomBar() {
+// The doors on phones (design handoff §2, panel 8b): equal cells, hairline
+// dividers, a 2px accent rule across the active cell's top. The bar NEVER
+// changes per section; series, blog, news and social are reached by name through
+// the header's menu-and-search panel. Hidden on lg+ where the header carries the
+// same model.
+//
+// Since Phase 2 the cells are the `bar` list (lib/design/lists.ts), three to five
+// entries, each a route. The loader guarantees the count; a cell whose
+// destination is not a route is skipped.
+
+// The icon names an entry may carry; the designer offers this set. An unknown
+// name falls back to the compass so a cell is never blank.
+const ICONS: Record<string, LucideIcon> = {
+  house: House,
+  'calendar-days': CalendarDays,
+  compass: Compass,
+  'circle-user': CircleUser,
+  flag: Flag,
+  trophy: Trophy,
+  newspaper: Newspaper,
+  'book-open': BookOpen,
+  users: Users,
+  settings: Settings,
+  search: Search,
+};
+export const BAR_ICON_NAMES = Object.keys(ICONS);
+
+export function BottomBar({ entries }: { entries: NavEntry[] }) {
   const pathname = usePathname();
   // The signed-in user's picture on the Account cell (falls back to the
   // generic icon when signed-out). Clerk is already mounted by the (app)
@@ -18,39 +53,31 @@ export function BottomBar() {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
 
+  const cells: { entry: NavEntry; href: string }[] = [];
+  for (const entry of entries) {
+    const dest = resolveDestination(entry.dest);
+    if (dest && dest.kind === 'route') cells.push({ entry, href: dest.href });
+  }
+
   return (
     <nav
       aria-label="Primary"
       className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated border-t border-text pb-[env(safe-area-inset-bottom)]"
     >
-      <div className="grid grid-cols-4">
-        <BarLink href="/" active={pathname === '/'} label="Home" Icon={House} dataHeatmapId="bottombar:home" />
-        <BarLink
-          href="/calendar"
-          active={pathname === '/calendar' || pathname.startsWith('/calendar/')}
-          label="Calendar"
-          Icon={CalendarDays}
-          divider
-          dataHeatmapId="bottombar:calendar"
-        />
-        <BarLink
-          href="/information"
-          active={pathname === '/information' || pathname.startsWith('/information/')}
-          label="Learn"
-          Icon={Compass}
-          divider
-          dataHeatmapId="bottombar:learn"
-        />
-        <BarLink
-          href="/settings"
-          active={pathname === '/settings' || pathname.startsWith('/settings/')}
-          label="Account"
-          Icon={CircleUser}
-          avatarUrl={isSignedIn ? user?.imageUrl : undefined}
-          divider
-          dataTour="account"
-          dataHeatmapId="bottombar:account"
-        />
+      <div className="grid" style={{ gridTemplateColumns: `repeat(${cells.length}, minmax(0, 1fr))` }}>
+        {cells.map(({ entry, href }, i) => (
+          <BarLink
+            key={`${entry.dest}-${i}`}
+            href={href}
+            active={isActivePath(href, pathname)}
+            label={entry.label}
+            Icon={ICONS[entry.icon ?? ''] ?? Compass}
+            avatarUrl={entry.dest === 'account' && isSignedIn ? user?.imageUrl : undefined}
+            divider={i > 0}
+            dataTour={entry.dest === 'account' ? 'account' : undefined}
+            dataHeatmapId={`bottombar:${entry.dest}`}
+          />
+        ))}
       </div>
     </nav>
   );
