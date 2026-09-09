@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { ConsoleModeToggle } from '@/components/admin/ConsoleMode';
 import { SITE_URL } from '@/lib/site';
-import type { EditableList, NavListKey } from '@/lib/design/lists';
+import type { EditableList, ListSummary, NavListKey } from '@/lib/design/lists';
 import type { EditableText } from '@/lib/design/text';
 import type { ChromeText } from '@/lib/design/text-defaults';
 import type { EditableBuildOption } from '@/lib/design/build-options';
@@ -24,6 +24,7 @@ import { SharedRail } from './Rails';
 import { PagesList } from './PagesList';
 import { PageDesigner } from './PageDesigner';
 import { ListEditor } from './ListEditor';
+import { ListsEditor } from './ListsEditor';
 import { TextEditor } from './TextEditor';
 import { BuildOptionsEditor } from './BuildOptionsEditor';
 import { SettingsEditor, type SeriesOption } from './SettingsEditor';
@@ -78,6 +79,23 @@ async function fetchList(key: NavListKey): Promise<Loaded> {
     return { state: 'ready', list: (await res.json()) as EditableList };
   } catch {
     return { state: 'error', message: 'The list could not be loaded: network error.' };
+  }
+}
+
+type LoadedIndex =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; lists: ListSummary[] };
+
+/** Every list with its entry count: the Lists page and the Page Designer's picker. */
+async function fetchListIndex(): Promise<LoadedIndex> {
+  try {
+    const res = await fetch('/api/admin/design/lists', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The lists could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { lists: ListSummary[] };
+    return { state: 'ready', lists: d.lists };
+  } catch {
+    return { state: 'error', message: 'The lists could not be loaded: network error.' };
   }
 }
 
@@ -275,6 +293,7 @@ export function Designer({
   who,
   initialSelected = null,
   initialLists,
+  initialListIndex,
   initialText,
   initialBuildOptions,
   initialSettings,
@@ -307,6 +326,8 @@ export function Designer({
   /** Lists the server already loaded, so opening needs no round trip; any list
    *  missing here is fetched. */
   initialLists?: Partial<Record<NavListKey, EditableList>>;
+  /** Every list with its entry count, as the server loaded it; fetched when absent. */
+  initialListIndex?: ListSummary[] | null;
   /** The text messages the server already loaded; fetched when absent. */
   initialText?: EditableText[] | null;
   /** The build options the server already loaded; fetched when absent. */
@@ -382,6 +403,9 @@ export function Designer({
       }),
     ),
   );
+  const [listIndex, setListIndex] = useState<LoadedIndex>(() =>
+    initialListIndex ? { state: 'ready', lists: initialListIndex } : { state: 'loading' },
+  );
 
   // All four lists on open: the overview shows their counts, and the footer
   // preview needs the column that is not being edited. Only the ones the server
@@ -392,6 +416,11 @@ export function Designer({
       if (initialLists?.[key]) continue;
       void fetchList(key).then(loaded => {
         if (!cancelled) setLists(s => ({ ...s, [key]: loaded }));
+      });
+    }
+    if (!initialListIndex) {
+      void fetchListIndex().then(loaded => {
+        if (!cancelled) setListIndex(loaded);
       });
     }
     if (!initialText) {
@@ -457,7 +486,7 @@ export function Designer({
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages, initialSearchHints, initialApplication, initialPageId, initialDetail]);
+  }, [initialLists, initialListIndex, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages, initialSearchHints, initialApplication, initialPageId, initialDetail]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -546,7 +575,19 @@ export function Designer({
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
   };
-  const listCounts = Object.fromEntries(LIST_KEYS.map(k => [k, count(k) ?? 0]));
+  // The Page Designer's List region picks from every list: the index when it
+  // has arrived, the shell's four until then.
+  const pdLists =
+    listIndex.state === 'ready'
+      ? listIndex.lists.map(l => ({ key: l.key, label: l.label }))
+      : LIST_KEYS.map(k => ({ key: k, label: LIST_COPY[k].title }));
+  const listCounts =
+    listIndex.state === 'ready'
+      ? Object.fromEntries(listIndex.lists.map(l => [l.key, l.entries]))
+      : Object.fromEntries(LIST_KEYS.map(k => [k, count(k) ?? 0]));
+  /** A shell list saved in its own entry: the index's count and stamp follow. */
+  const indexFollows = (list: EditableList) =>
+    setListIndex(s => (s.state === 'ready' ? { state: 'ready', lists: s.lists.map(l => (l.key === list.key ? { ...l, updatedAt: list.updatedAt, entries: list.entries.length } : l)) } : s));
   const themeDefault = themes.state === 'ready' ? (themes.themes.find(t => t.isDefault)?.label ?? 'Paper') : 'Paper';
   const openDetail = openPage && detail.state === 'ready' ? detail.detail : null;
 
@@ -626,7 +667,7 @@ export function Designer({
               detail={detail.detail}
               pages={pages.state === 'ready' ? pages.pages : [detail.detail.page]}
               readOnly={readOnly}
-              lists={LIST_KEYS.map(k => ({ key: k, label: LIST_COPY[k].title }))}
+              lists={pdLists}
               listCounts={listCounts}
               assets={assets.state === 'ready' ? assets.assets : []}
               schemes={schemes}
@@ -853,6 +894,22 @@ export function Designer({
             );
           })()}
 
+          {item?.editor === 'lists' && (() => {
+            if (listIndex.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Lists…</p>;
+            }
+            if (listIndex.state === 'error') return <p className="text-12 text-negative">{listIndex.message}</p>;
+            return (
+              <ListsEditor
+                lists={listIndex.lists}
+                readOnly={readOnly}
+                schemes={schemes}
+                onOpenShell={key => select(key)}
+                onChanged={next => setListIndex({ state: 'ready', lists: next })}
+              />
+            );
+          })()}
+
           {item?.editor === 'appdef' && (() => {
             if (application.state === 'loading') {
               return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading the Application Definition…</p>;
@@ -903,7 +960,10 @@ export function Designer({
                 otherFooter={other ? stored(other) : undefined}
                 text={chromeText}
                 schemes={schemes}
-                onSaved={list => setLists(s => ({ ...s, [listKey]: { state: 'ready', list } }))}
+                onSaved={list => {
+                  setLists(s => ({ ...s, [listKey]: { state: 'ready', list } }));
+                  indexFollows(list);
+                }}
               />
             );
           })()}

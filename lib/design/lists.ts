@@ -1,9 +1,12 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
-import { BAR_MAX, BAR_MIN, resolveDestination, type ListRole, type NavEntry, type NavLists } from './destinations';
+import { BAR_MAX, BAR_MIN, NAV_LIST_KEYS, resolveDestination, type ListRole, type NavEntry, type NavListKey, type NavLists } from './destinations';
 
-export { BAR_MAX, BAR_MIN } from './destinations';
-export type { ListRole, NavEntry, NavLists } from './destinations';
+export { BAR_MAX, BAR_MIN, NAV_LIST_KEYS } from './destinations';
+export type { ListRole, NavEntry, NavListKey, NavLists } from './destinations';
+// The rules for a list of the operator's own are client-safe (the editor greys
+// Create out before the route would refuse) and live beside the table operations.
+export { LIST_KEY_MAX, LIST_LABEL_MAX, listKeyProblem, listLabelProblem } from './list-edit';
 
 // The navigation lists (APEX: Lists, Navigation Menu, Navigation Bar List), read
 // from the `list` / `list_entry` rows for this application and rendered by the
@@ -20,8 +23,6 @@ export type { ListRole, NavEntry, NavLists } from './destinations';
 // app/api/admin/design/lists/[key] only.
 
 export const APPLICATION_KEY = 'paddock';
-export const NAV_LIST_KEYS = ['doors', 'bar', 'footer-site', 'footer-legal'] as const;
-export type NavListKey = (typeof NAV_LIST_KEYS)[number];
 
 /** What the components rendered before Phase 2, and what they fall back to. */
 export const DEFAULT_NAV: NavLists = {
@@ -189,5 +190,80 @@ export async function loadListForEditing(key: string): Promise<EditableList | nu
     };
   } catch {
     return null;
+  }
+}
+
+// Lists of the operator's own (Phase 3 of the designer plan, the catalogue's
+// Lists entry): rows of `list` with role `generic`, created and deleted through
+// app/api/admin/design/lists, their entries saved through design_save_list()
+// like the shell's four. A List region on any page may name one by key.
+
+/** A list as the Lists page and the Page Designer's picker see it. */
+export interface ListSummary {
+  key: string;
+  role: ListRole;
+  label: string;
+  updatedAt: string;
+  entries: number;
+}
+
+/** Every list of the application with its entry count, by key. Null when the
+ *  database is unconfigured or a read fails. */
+export async function loadListsForEditing(): Promise<ListSummary[] | null> {
+  if (!isBettingConfigured()) return null;
+  try {
+    const [lists, entries] = await Promise.all([
+      betDb().from('list').select('key, role, label, updated_at').eq('application_key', APPLICATION_KEY).order('key', { ascending: true }),
+      betDb().from('list_entry').select('list_key').eq('application_key', APPLICATION_KEY),
+    ]);
+    if (lists.error || !Array.isArray(lists.data) || entries.error) return null;
+    const counts = new Map<string, number>();
+    for (const row of (entries.data ?? []) as { list_key?: unknown }[]) {
+      const k = String(row.list_key);
+      counts.set(k, (counts.get(k) ?? 0) + 1);
+    }
+    return (lists.data as { key: unknown; role: unknown; label: unknown; updated_at: unknown }[]).map(r => ({
+      key: String(r.key),
+      role: r.role as ListRole,
+      label: String(r.label),
+      updatedAt: String(r.updated_at),
+      entries: counts.get(String(r.key)) ?? 0,
+    }));
+  } catch {
+    return null;
+  }
+}
+
+/** The entries of the lists a document names, by key: the shell's four from the
+ *  memoised set it was given, the operator's own read now (a page is rendered
+ *  far less often than the shell), a key with nothing usable empty. Never throws. */
+export async function loadDocumentLists(keys: readonly string[], nav: NavLists): Promise<Record<string, NavEntry[]>> {
+  const out: Record<string, NavEntry[]> = {};
+  const own: string[] = [];
+  for (const key of keys) {
+    if ((NAV_LIST_KEYS as readonly string[]).includes(key)) out[key] = nav[FIELD[key as NavListKey]];
+    else if (!own.includes(key)) own.push(key);
+  }
+  for (const key of own) out[key] = [];
+  if (own.length === 0 || !isBettingConfigured()) return out;
+  try {
+    const { data, error } = await betDb()
+      .from('list_entry')
+      .select('list_key, seq, label, dest_key, icon, authz_key')
+      .eq('application_key', APPLICATION_KEY)
+      .in('list_key', own)
+      .order('seq', { ascending: true });
+    if (error || !Array.isArray(data)) return out;
+    const grouped = new Map<string, unknown[]>();
+    for (const row of data as Array<Record<string, unknown>>) {
+      const key = String(row.list_key);
+      const bucket = grouped.get(key);
+      if (bucket) bucket.push(row);
+      else grouped.set(key, [row]);
+    }
+    for (const key of own) out[key] = parseEntries(grouped.get(key) ?? [], 'generic') ?? [];
+    return out;
+  } catch {
+    return out;
   }
 }

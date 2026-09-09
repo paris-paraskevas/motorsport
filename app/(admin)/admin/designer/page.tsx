@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { currentUser } from '@clerk/nextjs/server';
 import { requireAdmin } from '@/lib/admin-guard';
 import { isProductionWorker } from '@/lib/env';
-import { NAV_LIST_KEYS, loadListForEditing, type EditableList, type NavListKey } from '@/lib/design/lists';
+import { NAV_LIST_KEYS, loadListForEditing, loadListsForEditing, type EditableList, type NavListKey } from '@/lib/design/lists';
 import { loadTextForEditing } from '@/lib/design/text';
 import { loadBuildOptionsForEditing } from '@/lib/design/build-options';
 import { loadSettingsForEditing } from '@/lib/design/settings';
@@ -47,6 +47,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     initialSearchHints,
     initialApplication,
     seriesMeta,
+    initialListIndex,
     ...loaded
   ] = await Promise.all([
     currentUser(),
@@ -63,6 +64,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     loadSearchHintsForEditing(),
     loadApplicationForEditing(),
     loadAllSeriesMeta(),
+    loadListsForEditing(),
     ...NAV_LIST_KEYS.map(key => loadListForEditing(key)),
   ]);
   const initialLists: Partial<Record<NavListKey, EditableList>> = {};
@@ -78,6 +80,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       who={`${name} · Administrator · ${production ? 'production' : 'preview'}`}
       initialSelected={typeof params.sc === 'string' ? params.sc : null}
       initialLists={initialLists}
+      initialListIndex={initialListIndex}
       initialText={initialText}
       initialBuildOptions={initialBuildOptions}
       initialSettings={initialSettings}

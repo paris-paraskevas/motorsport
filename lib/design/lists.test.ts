@@ -162,3 +162,69 @@ describe('loadListForEditing', () => {
     expect(list?.entries).toHaveLength(2);
   });
 });
+
+describe('lists of the operator’s own', () => {
+  beforeEach(() => {
+    configured = true;
+    listRow = { data: [], error: null };
+    entryRows = { data: [], error: null };
+  });
+
+  it('names the key rule and the label rule, keeping the shell’s keys', async () => {
+    const { listKeyProblem, listLabelProblem, LIST_KEY_MAX } = await import('./lists');
+    expect(listKeyProblem('useful-links')).toBeNull();
+    expect(listKeyProblem('')).toMatch(/needed/);
+    expect(listKeyProblem('Useful')).toMatch(/lower-case/);
+    expect(listKeyProblem('-x')).toMatch(/lower-case/);
+    expect(listKeyProblem('a'.repeat(LIST_KEY_MAX + 1))).toMatch(/at most/);
+    expect(listKeyProblem('doors')).toMatch(/shell/);
+    expect(listLabelProblem('  ')).toMatch(/needed/);
+    expect(listLabelProblem('x'.repeat(61))).toMatch(/at most/);
+    expect(listLabelProblem(' Useful links ')).toBeNull();
+  });
+
+  it('reads every list with its entry count, and is null when unconfigured or on an error', async () => {
+    const { loadListsForEditing } = await import('./lists');
+    configured = false;
+    expect(await loadListsForEditing()).toBeNull();
+    configured = true;
+    listRow = { data: null, error: { message: 'down' } };
+    expect(await loadListsForEditing()).toBeNull();
+    listRow = {
+      data: [
+        { key: 'doors', role: 'menu', label: 'Navigation Menu', updated_at: '2026-09-08T06:34:16.728382+00:00' },
+        { key: 'useful-links', role: 'generic', label: 'Useful links', updated_at: '2026-09-09T02:00:00+00:00' },
+      ],
+      error: null,
+    };
+    entryRows = { data: [{ list_key: 'doors' }, { list_key: 'doors' }, { list_key: 'useful-links' }], error: null };
+    expect(await loadListsForEditing()).toEqual([
+      { key: 'doors', role: 'menu', label: 'Navigation Menu', updatedAt: '2026-09-08T06:34:16.728382+00:00', entries: 2 },
+      { key: 'useful-links', role: 'generic', label: 'Useful links', updatedAt: '2026-09-09T02:00:00+00:00', entries: 1 },
+    ]);
+  });
+
+  it('hands a document the shell’s lists from the set it was given and reads the operator’s own, an unknown key empty, without a query when none is its own', async () => {
+    const { loadDocumentLists } = await import('./lists');
+    entryRows = { data: null, error: { message: 'must not be asked' } };
+    expect(await loadDocumentLists(['doors', 'bar'], DEFAULT_NAV)).toEqual({ doors: DEFAULT_NAV.doors, bar: DEFAULT_NAV.bar });
+    entryRows = {
+      data: [
+        { list_key: 'useful-links', seq: 10, label: 'Calendar', dest_key: 'calendar' },
+        { list_key: 'useful-links', seq: 20, label: 'Nowhere', dest_key: 'https://evil' },
+        { list_key: 'useful-links', seq: 30, label: 'Blog', dest_key: 'blog', authz_key: 'signed_in' },
+      ],
+      error: null,
+    };
+    expect(await loadDocumentLists(['footer-site', 'useful-links', 'ghost', 'useful-links'], DEFAULT_NAV)).toEqual({
+      'footer-site': DEFAULT_NAV.footerSite,
+      'useful-links': [
+        { label: 'Calendar', dest: 'calendar' },
+        { label: 'Blog', dest: 'blog', authz: 'signed_in' },
+      ],
+      ghost: [],
+    });
+    configured = false;
+    expect(await loadDocumentLists(['useful-links'], DEFAULT_NAV)).toEqual({ 'useful-links': [] });
+  });
+});

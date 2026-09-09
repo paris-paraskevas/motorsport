@@ -25,7 +25,10 @@ vi.mock('@/lib/design/live-page', () => ({ loadRevisionPreview: (id: string) => 
 vi.mock('@/lib/design/shortcuts', () => ({ loadShortcuts: async () => ({ 'times.local': 'All times are local.' }) }));
 vi.mock('@/lib/design/lists', async () => {
   const actual = await vi.importActual<typeof import('@/lib/design/lists')>('@/lib/design/lists');
-  return { loadNavLists: async () => actual.DEFAULT_NAV };
+  return {
+    loadNavLists: async () => actual.DEFAULT_NAV,
+    loadDocumentLists: async (keys: string[]) => Object.fromEntries(keys.map(k => [k, []])),
+  };
 });
 vi.mock('@/lib/design/authz', async () => {
   const d = await vi.importActual<typeof import('@/lib/design/authz-defaults')>('@/lib/design/authz-defaults');

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/lib/admin-guard';
 import { loadAssetsById, loadRevisionPreview } from '@/lib/design/live-page';
 import { loadShortcuts } from '@/lib/design/shortcuts';
-import { loadNavLists } from '@/lib/design/lists';
+import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { documentRefs, schemesAsked } from '@/lib/design/page-document';
 import { RowPageView } from '@/components/page/RowPageView';
@@ -48,6 +48,7 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   ]);
   const messages: Record<string, string | null> = {};
   for (const key of asked) messages[key] = schemes.find(s => s.key === key)?.message ?? null;
+  const lists = await loadDocumentLists(refs.lists, nav);
 
   return (
     <>
@@ -65,6 +66,7 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
         shortcuts={shortcuts}
         assets={assets}
         nav={nav}
+        lists={lists}
         allowed={new Set(asked)}
         messages={messages}
       />

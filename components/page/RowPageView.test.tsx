@@ -129,3 +129,30 @@ describe('RowPageView', () => {
     expect(noRight).not.toContain('lg:col-span-4');
   });
 });
+
+describe('RowPageView with lists of the operator’s own', () => {
+  it('draws a List region from the entries it was handed by key, before the shell’s set, and nothing for a list with no entries', () => {
+    const own: PageDocument = {
+      version: 1,
+      actions: [],
+      regions: [
+        { id: 'mine', kind: 'list', title: 'Useful links', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, listKey: 'useful-links', style: 'links' },
+        { id: 'empty', kind: 'list', title: 'Ghost', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null, listKey: 'ghost', style: 'cards' },
+        { id: 'doors', kind: 'list', title: 'Doors', position: 'footer', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, listKey: 'doors', style: 'links' },
+      ],
+    };
+    const html = renderToStaticMarkup(
+      <RowPageView
+        {...data}
+        document={own}
+        lists={{ 'useful-links': [{ label: 'Race calendar', dest: 'calendar' }, { label: 'Members', dest: 'blog', authz: 'signed_in' }], ghost: [], doors: [{ label: 'Only door', dest: 'learn' }] }}
+      />,
+    );
+    expect(html).toContain('aria-label="Useful links"');
+    expect(html).toContain('>Race calendar</a>');
+    expect(html).not.toContain('Members');
+    expect(html).not.toContain('aria-label="Ghost"');
+    expect(html).toContain('>Only door</a>');
+    expect(html).not.toContain('>Calendar</a>');
+  });
+});
