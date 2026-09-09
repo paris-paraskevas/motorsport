@@ -31,7 +31,10 @@ vi.mock('./live-page', () => ({
   loadAssetsById: async () => new Map(),
 }));
 vi.mock('./shortcuts', () => ({ loadShortcuts: async () => ({ 'times.local': 'All times are local.' }) }));
-vi.mock('./lists', () => ({ loadNavLists: async () => ({ doors: [], bar: [], footerSite: [], footerLegal: [] }) }));
+vi.mock('./lists', () => ({
+  loadNavLists: async () => ({ doors: [], bar: [], footerSite: [], footerLegal: [] }),
+  loadDocumentLists: async (keys: string[]) => Object.fromEntries(keys.map(k => [k, []])),
+}));
 const currentUser = vi.fn();
 vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
 vi.mock('next/navigation', () => ({

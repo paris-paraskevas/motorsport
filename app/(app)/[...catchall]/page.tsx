@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { SITE_URL } from '@/lib/site';
 import { loadAssetsById, loadLivePage } from '@/lib/design/live-page';
 import { loadShortcuts } from '@/lib/design/shortcuts';
-import { loadNavLists } from '@/lib/design/lists';
+import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
 import { documentRefs, schemesAsked, substituteShortcuts } from '@/lib/design/page-document';
@@ -74,6 +74,7 @@ export default async function CatchAll({ params }: { params: Params }) {
 
   const refs = documentRefs(live.document);
   const [shortcuts, assets, nav] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists()]);
+  const lists = await loadDocumentLists(refs.lists, nav);
   return (
     <RowPageView
       page={live.page}
@@ -81,6 +82,7 @@ export default async function CatchAll({ params }: { params: Params }) {
       shortcuts={shortcuts}
       assets={assets}
       nav={nav}
+      lists={lists}
       allowed={allowed}
       messages={messages}
     />

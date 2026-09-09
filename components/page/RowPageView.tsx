@@ -25,6 +25,10 @@ export interface RowPageData {
   /** The photos the document names, by id. */
   assets: ReadonlyMap<string, EditableAsset>;
   nav: NavLists;
+  /** The entries of every list the document names, by key: the shell's four and
+   *  the operator's own (lib/design/lists.ts loadDocumentLists). A key missing
+   *  here falls back to `nav` for the four and to nothing for the rest. */
+  lists?: Readonly<Record<string, readonly NavEntry[]>>;
   /** The scheme keys the visitor passes; a region asking for another is left out. */
   allowed: ReadonlySet<string>;
   /** What a refused region shows in its place, by scheme key; null shows nothing. */
@@ -207,7 +211,8 @@ function RegionBlock({ d, region }: { d: RowPageData; region: Region }) {
     );
   }
   const field = LIST_FIELD[region.listKey];
-  const entries = (field ? d.nav[field] : []).filter(e => !e.authz || e.authz === 'public' || d.allowed.has(e.authz));
+  const source = d.lists?.[region.listKey] ?? (field ? d.nav[field] : []);
+  const entries = source.filter(e => !e.authz || e.authz === 'public' || d.allowed.has(e.authz));
   if (entries.length === 0) return null;
   return (
     <nav aria-label={title || region.id}>

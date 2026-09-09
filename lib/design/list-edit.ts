@@ -1,4 +1,27 @@
-import { BAR_MAX, BAR_MIN, resolveDestination, type ListRole, type NavEntry } from './destinations';
+import { BAR_MAX, BAR_MIN, NAV_LIST_KEYS, resolveDestination, type ListRole, type NavEntry } from './destinations';
+
+// A list of the operator's own (Phase 3): the key and label rules, shared by the
+// Lists page (which greys Create out) and the collection route (which refuses).
+export const LIST_KEY_MAX = 40;
+export const LIST_LABEL_MAX = 60;
+const LIST_KEY = /^[a-z0-9][a-z0-9-]{0,39}$/;
+
+/** Why a key cannot name a new list, or null. The shell's four keys are taken. */
+export function listKeyProblem(key: string): string | null {
+  if (!key) return 'a key is needed';
+  if (key.length > LIST_KEY_MAX) return `keys are at most ${LIST_KEY_MAX} characters`;
+  if (!LIST_KEY.test(key)) return 'lower-case letters, digits and hyphens, starting with a letter or a digit';
+  if ((NAV_LIST_KEYS as readonly string[]).includes(key)) return 'that key belongs to one of the shell’s lists';
+  return null;
+}
+
+/** Why a label cannot be stored, or null. */
+export function listLabelProblem(label: string): string | null {
+  const t = label.trim();
+  if (!t) return 'a label is needed';
+  if (t.length > LIST_LABEL_MAX) return `labels are at most ${LIST_LABEL_MAX} characters`;
+  return null;
+}
 
 // The list editor's table operations, pure and client-safe, so the designer's
 // buttons and the tests share one definition of what a list may become. The API

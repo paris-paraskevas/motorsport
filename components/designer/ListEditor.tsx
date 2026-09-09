@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, Loader2, RotateCcw } from 'lucide-react';
 import { DESTINATIONS, resolveDestination, type ListRole, type NavEntry } from '@/lib/design/destinations';
 import { DEFAULT_TEXT, type ChromeText } from '@/lib/design/text-defaults';
-import type { EditableList, NavListKey } from '@/lib/design/lists';
+import type { EditableList } from '@/lib/design/lists';
 import {
   addEntry,
   canAdd,
@@ -54,7 +54,8 @@ export function ListEditor({
   schemes = DEFAULT_AUTHZ_SCHEMES,
   onSaved,
 }: {
-  listKey: NavListKey;
+  /** One of the shell's four keys, or the key of a list of the operator's own. */
+  listKey: string;
   role: ListRole;
   list: EditableList;
   title: string;
@@ -91,7 +92,9 @@ export function ListEditor({
 
   const dirty = useMemo(() => !sameEntries(entries, list.entries), [entries, list.entries]);
   const isBar = role === 'bar';
-  const withAuthz = role === 'menu' || role === 'bar';
+  // The footer shows every entry to everyone; the doors, the bar and a list of
+  // the operator's own (shown by a List region) may hide an entry behind a scheme.
+  const withAuthz = role === 'menu' || role === 'bar' || role === 'generic';
 
   async function save(expected: string) {
     if (busy) return;
@@ -306,6 +309,23 @@ export function ListEditor({
               text={text}
             />
           </div>
+        )}
+        {role === 'generic' && (
+          // A List region draws these as links (or cards); the region's own
+          // title and style are set on the page.
+          <ul className="m-0 list-none border border-border-strong bg-bg p-4" aria-label="Preview of the list">
+            {entries.map((e, i) => {
+              const dest = resolveDestination(e.dest);
+              return (
+                <li key={`${e.dest}-${i}`} className="py-1 font-serif text-16 text-text underline underline-offset-2">
+                  {e.label}
+                  {dest && dest.kind !== 'action' && <span className="ml-2 font-mono text-10 no-underline text-text-faint">{dest.href}</span>}
+                  {e.authz && <span className="ml-2 font-mono text-9 uppercase tracking-[0.12em] text-text-faint">{e.authz}</span>}
+                </li>
+              );
+            })}
+            {entries.length === 0 && <li className="text-13 text-text-faint">Nothing yet: a region showing this list renders nothing.</li>}
+          </ul>
         )}
       </div>
 

@@ -5,9 +5,10 @@ import type { NavListKey } from '@/lib/design/lists';
 // the whole shape from day one; the four navigation lists (Phase 2 step 2), Text
 // Messages (step 3), Build Options (step 4), Application Settings (step 5),
 // Authorization Schemes (step 6), Themes (step 7), Appearance (step 8, APEX's
-// User Interface Attributes), Shortcuts (step 9) and Assets (step 10, APEX's
-// Static Application Files) are editable, and the rest say when they arrive
-// rather than pretend.
+// User Interface Attributes), Shortcuts (step 9), Assets (step 10, APEX's
+// Static Application Files), Search Hints, Application Definition and Lists
+// (Phase 3: lists of the operator's own for the List region) are editable, and
+// the rest say when they arrive rather than pretend.
 
 export interface CatalogueItem {
   key: string;
@@ -15,7 +16,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef' | 'lists';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -60,7 +61,7 @@ export const CATALOGUE: CatalogueGroup[] = [
   {
     group: 'Navigation and Search',
     items: [
-      { key: 'lists', label: 'Lists', later: 'Phase 3' },
+      { key: 'lists', label: 'Lists', editor: 'lists' },
       { key: 'doors', label: 'Navigation Menu', listKey: 'doors' },
       { key: 'breadcrumbs', label: 'Breadcrumbs', later: 'derived, never edited' },
       { key: 'bar', label: 'Navigation Bar List', listKey: 'bar' },

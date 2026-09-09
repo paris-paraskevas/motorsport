@@ -194,7 +194,7 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
     } else if (kind === 'list') {
       const listKey = typeof r.listKey === 'string' && SLUG.test(r.listKey) ? r.listKey : null;
       const style = r.style === 'cards' ? 'cards' : r.style === 'links' || r.style === undefined ? 'links' : null;
-      if (!listKey) problems.push(`${who}: the list must name one of the navigation lists`);
+      if (!listKey) problems.push(`${who}: the list must name one of the lists by its key`);
       else if (!style) problems.push(`${who}: the style must be links or cards`);
       else region = { ...base, kind, listKey, style };
     } else {

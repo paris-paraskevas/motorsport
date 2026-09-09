@@ -11,10 +11,12 @@ import { loadAuthzSchemes } from '@/lib/design/authz';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// The one route that reads and writes a navigation list for the designer.
+// The one route that reads and writes a list for the designer: the shell's four
+// and, since Phase 3, the operator's own (created by ../route.ts).
 //
-// GET  /api/admin/design/lists/<key>  → { key, role, label, updatedAt, entries }
-// PUT  /api/admin/design/lists/<key>  ← { entries: NavEntry[], updatedAt }
+// GET    /api/admin/design/lists/<key>  → { key, role, label, updatedAt, entries }
+// PUT    /api/admin/design/lists/<key>  ← { entries: NavEntry[], updatedAt }
+// DELETE /api/admin/design/lists/<key>  ← { updatedAt }   (a list of the operator's own only)
 //
 // Admin-only; 404 for everyone else (the no-existence-oracle shape of the other
 // admin routes). Writes are production-only (lib/env.ts): the three Workers share
@@ -131,6 +133,78 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
     // page is told to re-render. Other isolates keep their memo for up to a minute.
     revalidatePath('/', 'layout');
     return NextResponse.json({ ok: true, updatedAt: String(data), entries });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'unknown' },
+      { status: 500 },
+    );
+  }
+}
+
+// Deleting a list of the operator's own. The shell's four are refused (400):
+// the site renders them. The stamp is the version check (409 with the current
+// list when it moved); the entries go with the list (on delete cascade); a list
+// any page revision names, live or superseded, is refused by the foreign key on
+// page_revision_ref, in the database, whatever tried it (409 with the reason):
+// revisions are kept, so what they name must keep resolving.
+export async function DELETE(req: Request, { params }: { params: Promise<{ key: string }> }) {
+  const user = await currentUser();
+  if (!isAdmin(user)) return new Response('not found', { status: 404 });
+  if (!isProductionWorker()) {
+    return NextResponse.json(
+      { error: 'Design edits are made on production; this copy of the site is read-only.' },
+      { status: 403 },
+    );
+  }
+  if (!isBettingConfigured()) {
+    return NextResponse.json({ error: 'database not configured' }, { status: 503 });
+  }
+  const { key } = await params;
+
+  let body: { updatedAt?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'invalid body' }, { status: 400 });
+  }
+  if (typeof body.updatedAt !== 'string' || !body.updatedAt) {
+    return NextResponse.json({ error: 'updatedAt must be the stamp you loaded' }, { status: 400 });
+  }
+
+  const list = await loadListForEditing(key);
+  if (!list) return new Response('not found', { status: 404 });
+  if (list.role !== 'generic') {
+    return NextResponse.json({ error: 'The shell’s lists cannot be deleted; edit their entries instead.' }, { status: 400 });
+  }
+
+  try {
+    const { data, error } = await betDb()
+      .from('list')
+      .delete()
+      .eq('application_key', APPLICATION_KEY)
+      .eq('key', key)
+      .eq('role', 'generic')
+      .eq('updated_at', body.updatedAt)
+      .select('key');
+    if (error) {
+      if (error.code === '23503' || /foreign key/i.test(error.message)) {
+        return NextResponse.json(
+          // Revisions are kept, superseded ones too, so a list any revision
+          // ever named stays: the audit trail must keep resolving.
+          { error: 'A page’s revision names this list, and revisions are kept, so the list stays. Empty its entries if it should show nothing.' },
+          { status: 409 },
+        );
+      }
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    const rows = (data ?? []) as { key: string }[];
+    if (rows.length === 0) {
+      return NextResponse.json(
+        { error: 'This list was saved again after you loaded it.', current: await loadListForEditing(key) },
+        { status: 409 },
+      );
+    }
+    return NextResponse.json({ ok: true, key });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'unknown' },

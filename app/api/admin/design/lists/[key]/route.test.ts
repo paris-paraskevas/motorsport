@@ -12,6 +12,9 @@ vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePa
 const rpc = vi.fn();
 let listRow: { data: unknown; error: { message: string } | null } = { data: null, error: null };
 let entryRows: { data: unknown; error: { message: string } | null } = { data: [], error: null };
+// A delete answers with the rows it removed, or the store's refusal.
+let deleteResult: { data: unknown; error: { message: string; code?: string } | null } = { data: [], error: null };
+let deleting = false;
 const schemeRows = {
   data: [
     { key: 'public', label: 'Public', type: 'public', value: null, message: null },
@@ -30,16 +33,23 @@ vi.mock('@/lib/betting/client', () => ({
         eq: () => q,
         in: () => q,
         order: () => q,
+        delete: () => {
+          deleting = true;
+          return q;
+        },
         maybeSingle: async () => result,
-        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
-          Promise.resolve(result).then(resolve, reject),
+        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) => {
+          const answer = deleting ? deleteResult : result;
+          deleting = false;
+          return Promise.resolve(answer).then(resolve, reject);
+        },
       };
       return q;
     },
   }),
 }));
 
-import { GET, PUT } from './route';
+import { DELETE, GET, PUT } from './route';
 
 const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
 const STAMP = '2026-09-08T06:34:16.728382+00:00';
@@ -151,5 +161,66 @@ describe('/api/admin/design/lists/[key]', () => {
     const json = (await res.json()) as { error: string; current: { updatedAt: string } | null };
     expect(json.current?.updatedAt).toBe(STAMP);
     expect(revalidatePath).not.toHaveBeenCalled();
+  });
+});
+
+describe('DELETE /api/admin/design/lists/[key]', () => {
+  const del = (key: string, body: unknown) =>
+    DELETE(
+      new Request(`https://paddock-tracker.com/api/admin/design/lists/${key}`, {
+        method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      }),
+      params(key),
+    );
+  const own = { key: 'useful-links', role: 'generic', label: 'Useful links', updated_at: STAMP };
+
+  beforeEach(() => {
+    currentUser.mockReset();
+    currentUser.mockResolvedValue(admin);
+    listRow = { data: own, error: null };
+    entryRows = { data: [], error: null };
+    deleteResult = { data: [{ key: 'useful-links' }], error: null };
+    deleting = false;
+    process.env.PADDOCK_ENV = 'production';
+  });
+  afterEach(() => {
+    delete process.env.PADDOCK_ENV;
+  });
+
+  it('refuses off production, deleting nothing', async () => {
+    delete process.env.PADDOCK_ENV;
+    expect((await del('useful-links', { updatedAt: STAMP })).status).toBe(403);
+  });
+
+  it('is 404 for a non-admin and for a list that does not exist, 400 without the stamp and for one of the shell’s lists', async () => {
+    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    expect((await del('useful-links', { updatedAt: STAMP })).status).toBe(404);
+    currentUser.mockResolvedValue(admin);
+    expect((await del('useful-links', {})).status).toBe(400);
+    listRow = { data: null, error: null };
+    expect((await del('nope', { updatedAt: STAMP })).status).toBe(404);
+    listRow = { data: { key: 'doors', role: 'menu', label: 'Navigation Menu', updated_at: STAMP }, error: null };
+    const shell = await del('doors', { updatedAt: STAMP });
+    expect(shell.status).toBe(400);
+    expect(((await shell.json()) as { error: string }).error).toMatch(/shell/);
+  });
+
+  it('deletes a list of the operator’s own on its stamp, and answers 409 with the current list when the stamp moved', async () => {
+    const res = await del('useful-links', { updatedAt: STAMP });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, key: 'useful-links' });
+    deleteResult = { data: [], error: null };
+    const stale = await del('useful-links', { updatedAt: '2026-09-01T00:00:00+00:00' });
+    expect(stale.status).toBe(409);
+    expect(((await stale.json()) as { current: { key: string } }).current.key).toBe('useful-links');
+  });
+
+  it('answers 409 in words when the database refuses because a revision still names the list', async () => {
+    deleteResult = { data: null, error: { message: 'update or delete on table "list" violates foreign key constraint', code: '23503' } };
+    const res = await del('useful-links', { updatedAt: STAMP });
+    expect(res.status).toBe(409);
+    expect(((await res.json()) as { error: string }).error).toMatch(/revision names this list, and revisions are kept/);
   });
 });

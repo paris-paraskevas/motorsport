@@ -33,6 +33,10 @@ export interface NavLists {
 /** Where a list renders (the `list.role` column). */
 export type ListRole = 'menu' | 'bar' | 'footer' | 'reference' | 'generic';
 
+/** The four lists the shell renders; their keys are fixed and never reused. */
+export const NAV_LIST_KEYS = ['doors', 'bar', 'footer-site', 'footer-legal'] as const;
+export type NavListKey = (typeof NAV_LIST_KEYS)[number];
+
 /** The phone bar is equal cells and cannot fit fewer than three or more than
  *  five without the design breaking, so the loader, the API and the editor all
  *  hold this line. Here, and not in lists.ts, because the editor runs in the

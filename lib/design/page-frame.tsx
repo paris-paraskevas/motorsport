@@ -10,7 +10,7 @@ import { loadAuthzSchemes } from './authz';
 import type { AuthzScheme } from './authz-defaults';
 import { allowedKeys, currentVisitor, type Visitor } from './authz-evaluate';
 import { loadAssetsById, loadLiveFrame } from './live-page';
-import { loadNavLists } from './lists';
+import { loadDocumentLists, loadNavLists } from './lists';
 import { loadShortcuts } from './shortcuts';
 import { documentRefs, schemesAsked } from './page-document';
 import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, pageFromRow, type PageRow } from './pages';
@@ -156,7 +156,8 @@ async function framed(
     const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
     const messages: Record<string, string | null> = {};
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
-    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, allowed, messages } }, await body);
+    const lists = await loadDocumentLists(refs.lists, nav);
+    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages } }, await body);
   } catch {
     return body;
   }
