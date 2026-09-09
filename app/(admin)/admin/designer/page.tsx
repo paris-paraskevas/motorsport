@@ -93,7 +93,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialAssets={initialAssets}
       mediaConfigured={getMediaBucket() !== null}
       initialPages={initialPages}
-      initialWorkspace={params.ws === 'builder' || initialDetail ? 'builder' : 'shared'}
+      initialWorkspace={params.ws === 'builder' || initialDetail ? 'builder' : params.ws === 'data' ? 'data' : 'shared'}
       initialPageId={initialDetail ? initialDetail.page.id : null}
       initialDetail={initialDetail}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
