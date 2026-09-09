@@ -1811,6 +1811,13 @@ Active: (no [+Nm] prefixes given this session)
 - Findings: a stored transitional body on a rows-served page rendered nothing (adoptRecipe fixes it in three places); the preview needed rows-served pages; a stale Playwright session 404s the designer.
 - Won’t-touch honoured: pushes only for PR branches; merges under the standing word; no prod Supabase write; Home not split on production; no branch deleted beyond a merged PR’s own head.
 
+**Session 46, afternoon (2026-09-09 ~12:50Z → ~15:50Z, operator present) — outcomes:**
+- → done: #972 (1.0.92) Run is never refused; an empty page runs as its title alone.
+- → done: **the APEX study**, the cheap way after the operator killed the Fable agents at 78% usage: 192 guide pages to text at zero cost, five Sonnet runs one at a time (455 concepts), the route map at zero cost, two Sonnet audit runs (58 routes, 299 sections); the **Paddock Developer Plan** artifact `4d804904-63ad-4ddf-8d37-67dcb2d2fcc8` (concept map, vocabulary of 25, audit browser, four phases, timeline mid-Oct / late Nov, skip list, catalogue).
+- → answered: the Cloudflare bill (CPU is the request path, R2 falls by itself, DO is the tag cache; under $1.50/month to save; middleware cannot shrink).
+- Findings: subagents inherit Fable unless `model` is set (memory feedback-paddock-agent-model-cost); `const top` breaks an inline browser script; no replies exist anywhere on the site; `/about` prose lives in JSX.
+- Won’t-touch honoured: no build started on the plan; pushes only for PR branches; no prod Supabase write.
+
 Active: (awaiting [+Nm] prefixes)
 
 ---
