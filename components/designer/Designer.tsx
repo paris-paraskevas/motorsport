@@ -37,6 +37,7 @@ import { ShortcutsEditor } from './ShortcutsEditor';
 import { AssetsEditor } from './AssetsEditor';
 import { SearchHintsEditor } from './SearchHintsEditor';
 import { ApplicationDefinitionEditor } from './ApplicationDefinitionEditor';
+import { ComputationsView } from './ComputationsView';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -939,6 +940,8 @@ export function Designer({
               />
             );
           })()}
+
+          {item?.editor === 'computations' && <ComputationsView onOpen={key => select(key)} />}
 
           {item?.editor === 'appdef' && (() => {
             if (application.state === 'loading') {
