@@ -45,6 +45,14 @@ _(All three shipped in the night of 2026-09-08. 1.0.62: the search bar for the S
 - The Right Side Column on a page the code serves: allowed beside the code's body, or never (recommended: never for now).
 - Ctrl+/ pane chords from APEX 22.1+ (the Alt set is built; "no Ctrl set" stands until the operator says otherwise).
 
+**Designer, from session 46 (2026-09-09, morning) — agreed homes and small fixes**
+- **Members** page under Clerk in Data: the accounts table with the supporter flag and the author requests to approve or decline (operator, ~08:30Z).
+- **Moderation** page under Supabase in Data: feedback items through their four states, threads hidden or locked (operator, ~08:30Z).
+- The home composer becomes part of editing the Home page in the App Builder; the heatmap overlay is parked ("see if it fits in any way in the app builder").
+- Application Definition grows the APEX tab row: Security (the Clerk scheme, read-only), Globalization (time zone, date formats), Progressive Web App (manifest, colours, push); one tab per PR, after the redesign.
+- `suppressHydrationWarning` on the admin root's `<html>`: silences the development hydration warning when the stored console mode differs from the server's default. One attribute.
+- The Data thresholds are starting values: Cloudflare amber above 0.5% errors and red above 2%; a source stale after 65 minutes.
+
 **Bugs and defects**
 
 _(Removed 2026-09-04: blog editor autosave. **Already built** — `components/studio/useDraftBackup.ts`, wired into BOTH writing surfaces with a "Unsaved draft found / Restore it / Discard" banner. localStorage only, deliberately: a debounced PATCH would keep rewriting a row that may be sitting in the review queue. Claude asserted twice that this did not exist, having searched `components/blog/` and `app/(app)/studio/` but not `components/studio/`; the operator was right both times.)_

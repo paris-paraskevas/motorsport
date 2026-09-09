@@ -1788,6 +1788,14 @@ Active: (no [+Nm] prefixes given this session)
 - Findings: a cross-request memo feeding a cached page re-caches a stale frame after a publish (fixed with a per-request read); Turbopack refuses a node_modules junction in a worktree; `next dev` under load registers a route late and the catch-all answers instead.
 - Won't-touch honoured: pushes only for PR branches; merges on the operator's word and, after 23:00Z, under the overnight mandate for gated PRs; one prod Supabase write, the migration the operator named at ~00:37Z, rehearsed first; no post published; no branch or file deleted (the two file removals in PR 2 were approved by the operator); the designer follows the verified prototype, deviations asked first.
 
+**Session 46, morning (2026-09-09 06:30Z → ~09:20Z, operator present) — outcomes:**
+- → done: the operator's design brief taken (simpler, bigger, ruled, colour first, no rounded pills), two mocks, the second liked; 37 APEX 26.1 screenshots read and recorded as the reference; five questions asked and answered (Members and Moderation pages in Data; home composer into the Home page's designer; heatmap parked; applications and workspaces wanted; "closer to apex"; a small read-only object browser; Application Definition tabs).
+- → done: the console's files, deleted by the operator, committed with two repairs (#962, 1.0.82).
+- → done: **Phase 4 PR 4.2** — the Data tab redrawn to the second draft and the loader's runs page (#963, 1.0.83, prod 08:53Z); two wrong production figures corrected on the way.
+- → presented, not built: the third draft (App Builder + Shared Components in the APEX shape), the workspaces and applications plan (W1–W5), the 4.3 draft (Standings and Calendar regions, the Object Browser). Each waits for a word.
+- Findings: long or control-character Bash commands fail in this harness (write files instead); `next dev` can leave `routes.d.ts` half-written; the admin root lacks `suppressHydrationWarning`.
+- Won't-touch honoured: pushes only for PR branches; merges under the standing "merge all prs you create"; no prod Supabase write; no post published; no branch deleted beyond a merged PR's own head; the Page Designer untouched.
+
 Active: (awaiting [+Nm] prefixes)
 
 ---
