@@ -4,18 +4,23 @@ import type { PageRow } from '@/lib/design/pages';
 import {
   SHIPPED_REGION_DEFAULTS,
   addAction,
+  addComponent,
   addRegion,
   designerMessages,
   duplicateRegion,
   messageIndex,
   moveRegion,
+  nextComponentId,
   nextRegionId,
   openPositions,
   placeRegion,
+  regionName,
+  regionSummary,
   removeRegion,
   renumber,
   searchPage,
   spanName,
+  withImplicitBody,
 } from './page-designer-model';
 
 // The Page Designer's model: where a region lands, what a removal takes with
@@ -98,18 +103,49 @@ describe('placement', () => {
 });
 
 describe('messages', () => {
-  it('says nothing for a sound page; asks no Body of a code page but refuses a region in the Body the code owns', () => {
+  const legacy = (id: string, over: Partial<Region> = {}): Region => ({ ...region({ id }), kind: 'component', component: 'page.body', settings: {}, ...over }) as Region;
+
+  it('says nothing for a sound page; a code page opens its Body and keeps the Right Side Column for its decision; the transitional body is one per code page and none on a row page', () => {
     expect(designerMessages(doc, page)).toEqual([]);
     const code: PageRow = { ...page, kind: 'code' };
     expect(designerMessages({ version: 1, regions: [], actions: [] }, code)).toEqual([]);
     expect(designerMessages({ version: 1, regions: [region({ id: 'welcome', title: 'Welcome', position: 'header' })], actions: [] }, code)).toEqual([]);
-    const inBody = designerMessages({ version: 1, regions: [region({ id: 'intro', title: 'Intro' })], actions: [] }, code);
-    expect(inBody.map(m => `${m.level}: ${m.text}`)).toEqual([
-      'err: Intro sits in the Body, which the code owns on this page. Move it to the Page Header, the Breadcrumb Bar, the Footer or the Phone Bar.',
+    expect(designerMessages({ version: 1, regions: [region({ id: 'intro', title: 'Intro' })], actions: [] }, code)).toEqual([]);
+    const right = designerMessages({ version: 1, regions: [region({ id: 'aside', title: 'Aside', position: 'right' })], actions: [] }, code);
+    expect(right.map(m => `${m.level}: ${m.text}`)).toEqual([
+      'err: Aside sits in the Right Side Column, which waits for its own decision on a page whose body the code still draws. Move it to the Body or another position.',
     ]);
-    expect(inBody[0].sel).toEqual({ kind: 'region', id: 'intro' });
-    expect(openPositions('code')).toEqual(['header', 'breadcrumb', 'footer', 'phonebar']);
+    expect(right[0].sel).toEqual({ kind: 'region', id: 'aside' });
+    expect(designerMessages({ version: 1, regions: [legacy('code-body'), legacy('code-body-2', { seq: 20 })], actions: [] }, code).map(m => m.text)).toEqual([
+      'The body as the code draws it is placed twice; a page has one.',
+    ]);
+    expect(designerMessages({ version: 1, regions: [legacy('code-body')], actions: [] }, page).map(m => m.text)).toEqual([
+      'Body as the code draws it: this page has no body drawn by the code. Remove the component.',
+    ]);
+    expect(openPositions('code')).toEqual(['header', 'breadcrumb', 'body', 'footer', 'phonebar']);
     expect(openPositions('row')).toHaveLength(6);
+  });
+
+  it('a code page opens with the transitional body first in its Body, once; a row page and a document that names it are left alone', () => {
+    const code: PageRow = { ...page, kind: 'code' };
+    const opened = withImplicitBody({ version: 1, regions: [region({ id: 'welcome', position: 'header' }), region({ id: 'intro', title: 'Intro' })], actions: [] }, code);
+    expect(opened.regions.map(r => `${r.position}:${r.id}:${r.seq}`)).toEqual(['header:welcome:10', 'body:code-body:10', 'body:intro:20']);
+    expect(withImplicitBody(opened, code)).toBe(opened);
+    expect(withImplicitBody(doc, page)).toBe(doc);
+    expect(nextComponentId('page.body', ['code-body'])).toBe('code-body-2');
+    expect(nextComponentId('home.wire', [])).toBe('wire');
+    expect(nextComponentId('home.wire', ['wire', 'wire-2'])).toBe('wire-3');
+  });
+
+  it('places a component from the catalogue with its settings at their defaults, names it and sums it up, and refuses a key the catalogue lacks', () => {
+    const placed = addComponent(doc, 'page.body', { position: 'body' })!;
+    expect(placed.id).toBe('code-body');
+    const r = placed.doc.regions.find(x => x.id === 'code-body')!;
+    expect(r).toMatchObject({ kind: 'component', component: 'page.body', settings: {}, position: 'body', seq: 30, span: 12 });
+    expect(regionName(r)).toBe('Body as the code draws it');
+    expect(regionSummary(r, [], [])).toMatch(/exactly as its code writes it today/);
+    expect(addComponent(doc, 'home.nothing', { position: 'body' })).toBeNull();
+    expect(nextRegionId('component', [])).toBe('component-1');
   });
 
   it("names the parser's problems by component, the empty body, and what leads nowhere", () => {

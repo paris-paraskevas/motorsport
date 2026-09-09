@@ -1,7 +1,7 @@
 'use client';
 
 import type { DragEvent, MouseEvent, ReactNode } from 'react';
-import { Image as ImageIcon, List, Lock, MousePointerClick, Pilcrow, Puzzle, type LucideIcon } from 'lucide-react';
+import { Boxes, Image as ImageIcon, List, Lock, MousePointerClick, Pilcrow, Puzzle, type LucideIcon } from 'lucide-react';
 import { COLUMNS, POSITIONS, REGION_KIND_LABELS, rowsAt, type PageDocument, type Position, type Region, type RegionKind } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -11,6 +11,7 @@ import {
   regionName,
   regionSummary,
   sameSelection,
+  showText,
   spanName,
   type Placement,
   type Selection,
@@ -22,15 +23,15 @@ import {
 // components sit in locked positions (the Header's Navigation Menu, the Footer,
 // the Navigation Bar); the page's own positions carry region tiles, the Body on
 // a twelve-column ruler with the tiles at their column and span. A tile's header
-// drags; yellow drop tiles show where it may land. A page the code serves shows
-// its body as the one region the code renders, with no drop tile there or in
-// the Right Side Column; the operator's own regions go around it (Page Header,
-// Breadcrumb Bar, Footer, Phone Bar). Nothing here renders the page; it draws
-// what the document says.
+// drags; yellow drop tiles show where it may land. Since the components
+// programme (R2a) the Body is the same on every page: a page whose body the
+// code still draws carries it as one component tile among the operator's
+// regions; only the Right Side Column waits there. Nothing here renders the
+// page; it draws what the document says.
 
-export type Drag = { type: 'gallery'; kind: RegionKind } | { type: 'region'; id: string };
+export type Drag = { type: 'gallery'; kind: RegionKind } | { type: 'region'; id: string } | { type: 'component'; key: string };
 
-export const KIND_ICON: Record<RegionKind, LucideIcon> = { static: Pilcrow, image: ImageIcon, list: List, button: MousePointerClick };
+export const KIND_ICON: Record<RegionKind, LucideIcon> = { static: Pilcrow, image: ImageIcon, list: List, button: MousePointerClick, component: Boxes };
 
 const AUTHZ_LABEL: Record<string, string> = { public: 'Public', signed_in: 'Signed in', contributor: 'Contributor', administrator: 'Administrator' };
 
@@ -148,6 +149,7 @@ export function PageDesignerLayout({
           <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">{REGION_KIND_LABELS[r.kind].label}</span>
           {r.authz && r.authz !== 'public' && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">{AUTHZ_LABEL[r.authz] ?? r.authz}</span>}
           {r.hidden && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">hidden at first</span>}
+          {showText(r) && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-[color:var(--amber,#e0a52d)]">{showText(r)}</span>}
           {mark && <span className={`h-2 w-2 shrink-0 rounded-full ${mark === 'err' ? 'bg-negative' : 'bg-[color:var(--amber,#e0a52d)]'}`} aria-label={mark === 'err' ? 'error' : 'warning'} />}
           <span className="ml-auto whitespace-nowrap font-mono text-9 text-text-faint">{r.seq}</span>
         </div>
@@ -235,23 +237,6 @@ export function PageDesignerLayout({
   };
 
   const body = () => {
-    if (code) {
-      return (
-        <div className="pt-1.5">
-          <div className="border border-border-strong bg-bg">
-            <div className="flex items-center gap-1.5 border-b border-border bg-surface-elevated px-2 py-1.5">
-              <Lock size={11} className="text-text-faint" />
-              <span className="text-12 font-semibold text-text">{page.name}</span>
-              <span className="font-mono text-8 uppercase tracking-[0.12em] text-text-faint">Served by the code</span>
-              <span className="ml-auto font-mono text-9 text-text-faint">Full</span>
-            </div>
-            <div className="px-2 pb-2 pt-1.5 text-11 text-text-muted">
-              The code renders this region and its content stays the code’s. Regions of yours go around it: in the Page Header, the Breadcrumb Bar, the Footer or the Phone Bar.
-            </div>
-          </div>
-        </div>
-      );
-    }
     const regs = doc.regions.filter(r => r.position === 'body');
     const rows = rowsAt(doc, 'body');
     const cells: ReactNode[] = [];
@@ -326,13 +311,13 @@ export function PageDesignerLayout({
         {position({ label: PD_POSITION.header.label, count: count('header'), sel: { kind: 'position', id: 'header' }, children: stack('header') })}
         {position({ label: PD_POSITION.breadcrumb.label, count: count('breadcrumb'), sel: { kind: 'position', id: 'breadcrumb' }, children: stack('breadcrumb') })}
 
-        {position({ label: 'Body', count: code ? null : count('body'), sel: code ? undefined : { kind: 'position', id: 'body' }, children: body() })}
+        {position({ label: 'Body', count: count('body'), sel: { kind: 'position', id: 'body' }, children: body() })}
 
         {position({
           label: PD_POSITION.right.label,
           count: code ? null : count('right'),
           sel: code ? undefined : { kind: 'position', id: 'right' },
-          children: code ? <p className="m-0 px-1 pt-1.5 text-11 text-text-faint">Empty on a page the code serves; whether regions of yours may sit beside the code’s body is a decision still to be made.</p> : stack('right'),
+          children: code ? <p className="m-0 px-1 pt-1.5 text-11 text-text-faint">Empty while the code still draws this page’s body; whether regions of yours may sit beside it is a decision still to be made.</p> : stack('right'),
         })}
 
         {position({ label: 'Inline Dialogs', later: true, children: <p className="m-0 px-1 pt-1 text-11 text-text-faint">Modal regions a page can open. Arrives with a later step.</p> })}

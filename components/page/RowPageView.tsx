@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PAGE_WIDE } from '@/lib/site';
 import { resolveDestination, type NavEntry, type NavLists } from '@/lib/design/destinations';
-import { rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
+import { isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
 import { DynamicActions } from './DynamicActions';
@@ -33,6 +33,10 @@ export interface RowPageData {
   allowed: ReadonlySet<string>;
   /** What a refused region shows in its place, by scheme key; null shows nothing. */
   messages: Readonly<Record<string, string | null>>;
+  /** Component regions, drawn by the server before render, by region id. A
+   *  component with nothing here (the transitional body on a page made in the
+   *  designer, a component the server did not draw) shows nothing. */
+  components?: Readonly<Record<string, React.ReactNode>>;
 }
 
 const LIST_FIELD: Record<string, keyof NavLists> = {
@@ -74,15 +78,25 @@ export function RowPageView(d: RowPageData) {
   );
 }
 
-/** A code page's frame (the Page Designer plan, PR 3): the regions of the
- *  operator's own around the code's body. Page Header and Breadcrumb Bar
- *  regions above it, Footer and Phone Bar below, in the site's standard width;
- *  the Body stays the code's and the Right Side Column waits for its own
- *  decision. Rendered only when the live revision has such regions. */
+/** A page whose body the code still draws (the Page Designer plan, PR 3; the
+ *  components programme, R2a): the regions of the operator's own around and
+ *  among the code's body. Page Header and Breadcrumb Bar regions above, Footer
+ *  and Phone Bar below, in the site's standard width. In the Body, the code's
+ *  body is `children`, placed where the transitional component ("Body as the
+ *  code draws it") sits; the operator's own body regions render before and
+ *  after it in the standard width. A document without that component draws
+ *  the code's body first and the body regions after it. The Right Side Column
+ *  waits for its own decision. Rendered only when the live revision has
+ *  regions. */
 export function CodePageFrame({ d, children }: { d: RowPageData; children?: React.ReactNode }) {
   const has = (p: Position) => d.document.regions.some(r => r.position === p);
   const above = has('header') || has('breadcrumb');
   const below = has('footer') || has('phonebar');
+  const bodyRows = rowsAt(d.document, 'body');
+  const at = bodyRows.findIndex(row => row.some(isLegacyBody));
+  const before = at < 0 ? [] : bodyRows.slice(0, at);
+  const sameRow = at < 0 ? [] : bodyRows[at].filter(r => !isLegacyBody(r));
+  const after = [...(sameRow.length ? [sameRow] : []), ...(at < 0 ? bodyRows : bodyRows.slice(at + 1))];
   return (
     <>
       {above && (
@@ -91,7 +105,17 @@ export function CodePageFrame({ d, children }: { d: RowPageData; children?: Reac
           <Strip d={d} position="breadcrumb" className="mt-6" />
         </div>
       )}
+      {before.length > 0 && (
+        <div className={`${PAGE_WIDE} pb-0`} data-page-frame="body-before">
+          <Rows d={d} rows={before} />
+        </div>
+      )}
       {children}
+      {after.length > 0 && (
+        <div className={`${PAGE_WIDE} pt-0`} data-page-frame="body-after">
+          <Rows d={d} rows={after} />
+        </div>
+      )}
       {below && (
         <div className={`${PAGE_WIDE} pt-0`} data-page-frame="below">
           <Strip d={d} position="footer" />
@@ -104,7 +128,15 @@ export function CodePageFrame({ d, children }: { d: RowPageData; children?: Reac
 }
 
 function Strip({ d, position, className = '' }: { d: RowPageData; position: Position; className?: string }) {
-  const rows = rowsAt(d.document, position);
+  return <Rows d={d} rows={rowsAt(d.document, position)} className={className} />;
+}
+
+/** A show rule the stylesheet decides: phones only, or desktop and laptop only. */
+function showClass(r: Region): string {
+  return r.show === 'phones' ? 'lg:hidden' : r.show === 'desktop' ? 'max-lg:hidden' : '';
+}
+
+function Rows({ d, rows, className = '' }: { d: RowPageData; rows: Region[][]; className?: string }) {
   if (rows.length === 0) return null;
   return (
     <div className={`grid gap-6 ${className}`}>
@@ -118,7 +150,7 @@ function Strip({ d, position, className = '' }: { d: RowPageData; position: Posi
               id={`region-${r.id}`}
               data-region={r.id}
               hidden={r.hidden || undefined}
-              className="col-span-12 min-w-0 lg:[grid-column:var(--gc)]"
+              className={`col-span-12 min-w-0 lg:[grid-column:var(--gc)] ${showClass(r)}`}
               style={{ ['--gc' as string]: `${r.column} / span ${r.span}` }}
             >
               <RegionBlock d={d} region={r} />
@@ -135,6 +167,7 @@ function RegionBlock({ d, region }: { d: RowPageData; region: Region }) {
     const message = d.messages[region.authz];
     return message ? <p className="border border-border px-3 py-2 text-13 text-text-faint">{message}</p> : null;
   }
+  if (region.kind === 'component') return <>{d.components?.[region.id] ?? null}</>;
   const title = region.title.trim();
   if (region.kind === 'static') {
     const text = substituteShortcuts(region.text, d.shortcuts);

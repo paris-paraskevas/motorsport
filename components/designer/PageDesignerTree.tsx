@@ -1,7 +1,7 @@
 'use client';
 
 import type { MouseEvent, ReactNode } from 'react';
-import { ChevronDown, ChevronRight, FileText, Lock, Puzzle, RefreshCw, Zap } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileText, Puzzle, RefreshCw, Zap } from 'lucide-react';
 import { POSITIONS, REGION_KIND_LABELS, type PageDocument, type Position } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import {
@@ -139,9 +139,7 @@ export function PageDesignerTree({
       sharedNode('doors', 'Header · Navigation Menu'),
       positionNode('header'),
       positionNode('breadcrumb'),
-      code
-        ? { key: 'pos:body', label: 'Body', cls: 'pos', tag: 'the code’s', children: [{ key: 'code-body', label: page.name, icon: <Lock size={10} />, cls: 'locked', tag: 'Full' }] }
-        : positionNode('body'),
+      positionNode('body'),
       code ? { key: 'pos:right', label: PD_POSITION.right.label, cls: 'pos', tag: 'empty' } : positionNode('right'),
       { key: 'pos:dialog', label: 'Inline Dialogs', cls: 'pos', tag: 'later' },
       positionNode('footer'),

@@ -276,17 +276,22 @@ describe('PageDesigner', () => {
     expect(screen.getByLabelText('Region of effect 1 of action-1')).toBeTruthy();
   });
 
-  it('a page the code serves shows its body as served by the code, takes a region in the Page Header, and saves attributes and draft together', async () => {
+  it('a page whose body the code still draws opens with that body as one component tile, takes a region in the Body beside it, and saves attributes and draft together', async () => {
     const { onSaved } = mount({ page: codePage, live: null, newest: null, revisions: [] });
-    expect(screen.getByText('Served by the code')).toBeTruthy();
+    expect(tile('Component: Body as the code draws it')).toBeTruthy();
+    expect(screen.queryByText('Served by the code')).toBeNull();
     expect((screen.getByRole('button', { name: 'Publish' }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.change(screen.getByLabelText('Page title'), { target: { value: 'Race calendar 2026' } });
     fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Static Content' }));
     expect(tile('Static Content: text-1')).toBeTruthy();
     const where = screen.getByRole('group', { name: 'Region position' });
-    expect(within(where).getByRole('button', { name: 'Page Header' }).getAttribute('aria-pressed')).toBe('true');
-    expect(within(where).queryByRole('button', { name: 'Body' })).toBeNull();
+    expect(within(where).getByRole('button', { name: 'Body' }).getAttribute('aria-pressed')).toBe('true');
     expect(within(where).queryByRole('button', { name: 'Right Side Column' })).toBeNull();
+    // The transitional body is already on the page, so the Components gallery has nothing more for it.
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    expect(screen.getByText('Every component this page can take is already on it.')).toBeTruthy();
+    fireEvent.click(tile('Component: Body as the code draws it'));
+    expect(within(screen.getByLabelText('Property Editor')).getByText(/The page’s body as its code writes it today/)).toBeTruthy();
     expect((screen.getByRole('button', { name: 'Publish' }) as HTMLButtonElement).disabled).toBe(false);
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSaved).toHaveBeenCalled());
@@ -296,7 +301,8 @@ describe('PageDesigner', () => {
     const body = posted.body as { action: string; base: unknown; document: PageDocument };
     expect(body.action).toBe('draft');
     expect(body.base).toBeNull();
-    expect(body.document.regions.map(r => r.position)).toEqual(['header']);
+    // The transitional body is written explicitly once the page is saved, first in the Body, the new region after it.
+    expect(body.document.regions.map(r => `${r.position}:${r.kind}`)).toEqual(['body:component', 'body:static']);
   });
 
   it('is read-only on a preview Worker: nothing saves, the tiles still select', () => {
@@ -352,6 +358,6 @@ describe('PageDesigner', () => {
     fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
     const entry = screen.getByRole('menuitem', { name: /Delete Page/ }) as HTMLButtonElement;
     expect(entry.disabled).toBe(true);
-    expect(entry.textContent).toMatch(/the code serves this page/);
+    expect(entry.textContent).toMatch(/the route file is still in the code/);
   });
 });

@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   EMPTY_DOCUMENT,
+  applyShow,
   documentRefs,
+  isLegacyBody,
   parsePageDocument,
+  passesShow,
+  showAsks,
   patternMatches,
   refRows,
   rowPagePathProblem,
@@ -138,6 +142,65 @@ describe('parsePageDocument', () => {
     };
     expect(rowsAt(doc, 'body').map(row => row.map(r => r.id))).toEqual([['a', 'b'], ['c']]);
     expect(rowsAt(doc, 'footer')).toEqual([]);
+  });
+});
+
+describe('components and show rules (the components programme, R2a)', () => {
+  const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'component', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, ...over });
+  const doc = (regions: unknown[]) => ({ version: 1, regions, actions: [] });
+
+  it('parses a component region against the catalogue: the transitional body with its settings filled, a key the code does not have refused', () => {
+    const ok = parsePageDocument(doc([region({ component: 'page.body' })]));
+    expect(ok.problems).toEqual([]);
+    expect(ok.value.regions[0]).toMatchObject({ kind: 'component', component: 'page.body', settings: {} });
+    expect(isLegacyBody(ok.value.regions[0])).toBe(true);
+    const bad = parsePageDocument(doc([region({ component: 'home.nothing' })]));
+    expect(bad.value.regions).toEqual([]);
+    expect(bad.problems).toEqual(['region r: names a component the code does not have (home.nothing)']);
+    const none = parsePageDocument(doc([region({})]));
+    expect(none.problems[0]).toMatch(/names a component the code does not have \(none\)/);
+    const settings = parsePageDocument(doc([region({ component: 'page.body', settings: { items: 5 } })]));
+    expect(settings.problems).toEqual(['region r: Body as the code draws it has no setting called items']);
+  });
+
+  it('reads a show rule, leaves it out when it is always, and refuses one it does not know', () => {
+    const rule = parsePageDocument(doc([region({ component: 'page.body', show: 'signed-in' })]));
+    expect(rule.problems).toEqual([]);
+    expect(rule.value.regions[0].show).toBe('signed-in');
+    const always = parsePageDocument(doc([region({ component: 'page.body', show: 'always' })]));
+    expect(always.value.regions[0].show).toBeUndefined();
+    const unknown = parsePageDocument(doc([region({ component: 'page.body', show: 'on tuesdays' })]));
+    expect(unknown.value.regions).toEqual([]);
+    expect(unknown.problems[0]).toMatch(/the show rule must be one of always, race-weekend/);
+  });
+
+  it('passesShow: a fact the server lacks shows the region; phones and desktop pass here because the stylesheet decides them', () => {
+    expect(passesShow(undefined, { signedIn: null, raceWeekend: null })).toBe(true);
+    expect(passesShow('signed-in', { signedIn: false, raceWeekend: null })).toBe(false);
+    expect(passesShow('signed-in', { signedIn: true, raceWeekend: null })).toBe(true);
+    expect(passesShow('signed-in', { signedIn: null, raceWeekend: null })).toBe(true);
+    expect(passesShow('signed-out', { signedIn: true, raceWeekend: null })).toBe(false);
+    expect(passesShow('race-weekend', { signedIn: null, raceWeekend: false })).toBe(false);
+    expect(passesShow('between-weekends', { signedIn: null, raceWeekend: true })).toBe(false);
+    expect(passesShow('between-weekends', { signedIn: null, raceWeekend: null })).toBe(true);
+    expect(passesShow('phones', { signedIn: false, raceWeekend: false })).toBe(true);
+    expect(passesShow('desktop', { signedIn: false, raceWeekend: false })).toBe(true);
+  });
+
+  it('applyShow drops the regions whose rule fails and keeps the document as it was when none does; showAsks names the facts the rules need', () => {
+    const parsed = parsePageDocument(
+      doc([
+        region({ id: 'a', component: 'page.body' }),
+        region({ id: 'b', kind: 'static', text: 'members', show: 'signed-in' }),
+        region({ id: 'c', kind: 'static', text: 'guests', show: 'signed-out' }),
+        region({ id: 'd', kind: 'static', text: 'race', show: 'race-weekend' }),
+      ]),
+    ).value;
+    expect(showAsks(parsed)).toEqual({ visitor: true, calendar: true });
+    expect(showAsks(DOC)).toEqual({ visitor: false, calendar: false });
+    expect(applyShow(parsed, { signedIn: true, raceWeekend: false }).regions.map(r => r.id)).toEqual(['a', 'b']);
+    expect(applyShow(parsed, { signedIn: false, raceWeekend: null }).regions.map(r => r.id)).toEqual(['a', 'c', 'd']);
+    expect(applyShow(DOC, { signedIn: false, raceWeekend: false })).toBe(DOC);
   });
 });
 

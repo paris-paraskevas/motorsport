@@ -2,7 +2,8 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Lock, Maximize2, Minimize2, Play, Plus, Puzzle, Redo2, RefreshCw, Search, TriangleAlert, Undo2, Wrench, Zap } from 'lucide-react';
-import { EMPTY_DOCUMENT, SHORTCUT_TOKEN, parsePageDocument, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
+import { EMPTY_DOCUMENT, SHORTCUT_TOKEN, isLegacyBody, parsePageDocument, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
+import { COMPONENTS } from '@/lib/design/components';
 import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -13,7 +14,9 @@ import {
   PD_POSITION,
   SHIPPED_REGION_DEFAULTS,
   addAction,
+  addComponent,
   addRegion,
+  withImplicitBody,
   designerMessages,
   duplicateRegion,
   effectFor,
@@ -36,7 +39,7 @@ import {
 } from './page-designer-model';
 import { PageDesignerLayout, type Drag } from './PageDesignerLayout';
 import { LEFT_TABS, PageDesignerTree, treeKeys, type LeftTab } from './PageDesignerTree';
-import { CENTRE_TABS, ComponentView, Gallery, HelpTab, MessagesTab, PageSearchTab, type CentreTab, type GalleryTab } from './PageDesignerCentre';
+import { CENTRE_TABS, ComponentView, Gallery, HelpTab, MessagesTab, PageSearchTab, type CentreTab, type ComponentTile, type GalleryTab } from './PageDesignerCentre';
 import { PropertyPane } from './PropertyPane';
 import { attrsOf, attrsProblem, groupsFor, type AttrsDraft, type PropsContext } from './PageDesignerProperties';
 import { Menu, Sheet, Toasts, anchorOf, useToasts, type MenuAt, type MenuEntry } from './DesignerMenu';
@@ -122,7 +125,10 @@ export function PageDesigner({
   const pageId = page.id ?? '';
   const number = page.id ? page.id.slice(0, 8) : 'no row';
   const uid = useId();
-  const stored = newest?.document ?? EMPTY_DOCUMENT;
+  // A page whose body the code still draws opens with that body as one
+  // component in its Body (R2a), in the stored copy too, so nothing reads as
+  // unsaved until the operator changes something.
+  const stored = withImplicitBody(newest?.document ?? EMPTY_DOCUMENT, page);
 
   const [doc, setDoc] = useState<PageDocument>(stored);
   const [past, setPast] = useState<PageDocument[]>([]);
@@ -175,10 +181,13 @@ export function PageDesigner({
 
   const parsed = parsePageDocument(doc);
   const docDirty = JSON.stringify(doc) !== JSON.stringify(stored);
-  // Where a new region goes when nothing narrower is chosen: the Body, or the
-  // Page Header on a page whose Body the code owns.
-  const home: Position = code ? 'header' : 'body';
+  // Where a new region goes when nothing narrower is chosen: the Body, on every
+  // page since the components programme opened it (R2a).
+  const home: Position = 'body';
   const open = openPositions(page.kind);
+  // The components this page may still take: the transitional body only on a
+  // page whose body the code draws, and only once.
+  const componentTiles: ComponentTile[] = COMPONENTS.filter(c => !c.legacy || (code && !doc.regions.some(isLegacyBody))).map(c => ({ key: c.key, name: c.name, desc: c.holds }));
   const attrsDirty = JSON.stringify(attrs) !== JSON.stringify(attrsOf(page));
   const dirty = docDirty || attrsDirty;
   const unpublishedNewest = newest !== null && newest.id !== (live?.id ?? null);
@@ -256,7 +265,14 @@ export function PageDesigner({
     addRegion: (kind, position) => {
       if (readOnly) return;
       const r = addRegion(doc, kind, { position: open.includes(position) ? position : home }, regionDefaults);
-      commit(r.doc, `${kind === 'button' ? 'Button' : kind === 'static' ? 'Static Content' : kind === 'image' ? 'Image' : 'List'} created. Its attributes are in the Property Editor.`);
+      commit(r.doc, `${kind === 'button' ? 'Button' : kind === 'static' ? 'Static Content' : kind === 'image' ? 'Image' : kind === 'component' ? 'Component' : 'List'} created. Its attributes are in the Property Editor.`);
+      select({ kind: 'region', id: r.id });
+    },
+    addComponent: (key, position) => {
+      if (readOnly) return;
+      const r = addComponent(doc, key, { position: open.includes(position) ? position : home });
+      if (!r) return;
+      commit(r.doc, 'Component placed. Its settings and its rule are in the Property Editor.');
       select({ kind: 'region', id: r.id });
     },
     duplicate: id => {
@@ -317,6 +333,13 @@ export function PageDesigner({
     if (d.type === 'gallery') {
       const r = addRegion(doc, d.kind, where, regionDefaults);
       commit(r.doc, 'Region created. Its attributes are in the Property Editor.');
+      select({ kind: 'region', id: r.id });
+      return;
+    }
+    if (d.type === 'component') {
+      const r = addComponent(doc, d.key, where);
+      if (!r) return;
+      commit(r.doc, 'Component placed. Its settings and its rule are in the Property Editor.');
       select({ kind: 'region', id: r.id });
       return;
     }
@@ -556,7 +579,7 @@ export function PageDesigner({
     '-',
     {
       label: 'Delete Page…',
-      sub: code ? 'the code serves this page' : `${revisions.length} revision${revisions.length === 1 ? '' : 's'} go with it`,
+      sub: code ? 'the route file is still in the code' : `${revisions.length} revision${revisions.length === 1 ? '' : 's'} go with it`,
       disabled: readOnly || code,
       run: () => setSheet('delete'),
     },
@@ -817,7 +840,7 @@ export function PageDesigner({
           <button
             type="button"
             className={TB_PRIMARY}
-            title={code ? 'Publish the newest revision: its regions show around the code' : 'Publish the newest revision'}
+            title="Publish the newest revision"
             disabled={readOnly || busy !== null || (!docDirty && !unpublishedNewest && !attrsDirty)}
             onClick={() => void publish()}
           >
@@ -946,7 +969,7 @@ export function PageDesigner({
             {cTab === 'search' && <PageSearchTab query={searchQuery} onQuery={setSearchQuery} options={searchOpts} onOptions={setSearchOpts} hits={hits} onPick={h => select(h.sel)} />}
             {cTab === 'help' && <HelpTab helpFor={helpFor?.label ?? null} helpText={helpFor?.text ?? null} selected={selectedName} />}
           </div>
-          <Gallery tab={gTab} onTab={setGTab} disabled={readOnly} onAdd={kind => act.addRegion(kind, home)} onDragStart={setDrag} />
+          <Gallery tab={gTab} onTab={setGTab} disabled={readOnly} components={componentTiles} onAdd={kind => act.addRegion(kind, home)} onAddComponent={key => act.addComponent(key, home)} onDragStart={setDrag} />
         </div>
         {splitter('right')}
 

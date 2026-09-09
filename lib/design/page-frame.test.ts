@@ -222,4 +222,16 @@ describe('withPageGate', () => {
     currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
     expect([...dataOf(await gated(props)).allowed]).toEqual(['signed_in']);
   });
+
+  it('R2a: body regions go around the code’s body, and a signed-in rule reads the session and leaves the region out for an anonymous visitor', async () => {
+    const legacy: Region = { id: 'code-body', kind: 'component', component: 'page.body', settings: {}, title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null };
+    loadLiveFrame.mockResolvedValue(live([welcome({ id: 'above', position: 'body', seq: 10 }), legacy, welcome({ id: 'members', position: 'body', seq: 30, show: 'signed-in' })]));
+    const gated = withPageGate('/calendar', Page);
+    const anonymous = await gated(props);
+    expect(typeOf(anonymous)).toBe(CodePageFrame);
+    expect(dataOf(anonymous).document.regions.map(r => r.id)).toEqual(['above', 'code-body']);
+    expect(currentUser).toHaveBeenCalledTimes(1);
+    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
+    expect(dataOf(await gated(props)).document.regions.map(r => r.id)).toEqual(['above', 'code-body', 'members']);
+  });
 });

@@ -7,6 +7,8 @@ import {
   IMAGE_ALT_MAX,
   REGION_KIND_LABELS,
   REGION_TITLE_MAX,
+  SHOW_RULES,
+  SHOW_RULE_LABELS,
   STATIC_TEXT_MAX,
   TIMER_MAX_SECONDS,
   TIMER_MIN_SECONDS,
@@ -22,6 +24,7 @@ import {
   type TriggerEvent,
 } from '@/lib/design/page-document';
 import { SITE_URL } from '@/lib/site';
+import { findComponent, type SettingValue } from '@/lib/design/components';
 import { PAGE_COMMENTS_MAX, PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
 import { PAGE_NAME_MAX, PAGE_TITLE_MAX } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
@@ -102,6 +105,8 @@ export interface PropsContext {
   openShared: (sc: string) => void;
   act: {
     addRegion: (kind: RegionKind, position: Position) => void;
+    /** A component from the catalogue, by key, at a position. */
+    addComponent: (key: string, position: Position) => void;
     duplicate: (id: string) => void;
     move: (id: string, dir: -1 | 1) => void;
     remove: (id: string) => void;
@@ -177,7 +182,7 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
           label: 'Page Alias',
           common: true,
           control: <Ro>{page.path}</Ro>,
-          note: page.kind === 'code' ? 'Built-in route. Its path is code.' : 'A path of your own, served from the published revision.',
+          note: page.kind === 'code' ? 'The route file is still in the code; the path stays until the page is fully composed.' : 'A path of your own, served from the published revision.',
           help: 'The address. A page keeps its address; a new address is a new page.',
         },
         {
@@ -503,6 +508,37 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
       help: 'A place the site has, chosen from the catalogue. URLs are never typed here.',
     });
   }
+  if (r.kind === 'component') {
+    const spec = findComponent(r.component);
+    source.push({
+      label: 'Component',
+      common: true,
+      control: <Ro>{spec ? `${spec.name} · ${spec.holds}` : `Unknown component ${r.component}`}</Ro>,
+      help: 'A piece the code draws. Its kind is deployed code; its settings and its rule are yours, here.',
+    });
+    for (const s of spec?.settings ?? []) {
+      const value = r.settings[s.key] ?? s.default;
+      const set = (v: SettingValue) => p(`${s.label} set.`, x => (x.kind === 'component' ? { ...x, settings: { ...x.settings, [s.key]: v } } : x));
+      source.push({
+        label: s.label,
+        common: true,
+        control:
+          s.kind === 'boolean' ? (
+            <YesNo label={s.label} value={Boolean(value)} disabled={readOnly} onPick={set} />
+          ) : s.kind === 'choice' ? (
+            <Pills label={s.label} items={(s.options ?? []).map(o => ({ key: o.key, label: o.label }))} current={String(value)} disabled={readOnly} onPick={set} />
+          ) : s.kind === 'number' ? (
+            <input type="number" value={Number(value)} min={s.min} max={s.max} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(Number(e.target.value))} />
+          ) : (
+            <input type="text" value={String(value)} maxLength={s.maxLength ?? 200} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)} />
+          ),
+        help: s.help,
+      });
+    }
+    if (spec?.legacy) {
+      source.push({ label: 'Until split', control: <Ro dim>The page’s body as its code writes it today. Splitting it into components is this page’s next step; nothing is lost until then.</Ro> });
+    }
+  }
 
   const groups: PropGroup[] = [
     {
@@ -577,7 +613,32 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
       ],
     },
     LATER('Appearance'),
-    LATER('Server-side Condition'),
+    {
+      title: 'Rules',
+      props: [
+        {
+          label: 'Show',
+          common: true,
+          control: (
+            <Pills
+              label="Region show rule"
+              items={SHOW_RULES.map(k => ({ key: k, label: SHOW_RULE_LABELS[k] }))}
+              current={r.show ?? 'always'}
+              disabled={readOnly}
+              onPick={k =>
+                p(`Shows: ${SHOW_RULE_LABELS[k]}.`, x => {
+                  const next: Region = { ...x };
+                  delete next.show;
+                  return k === 'always' ? next : { ...next, show: k };
+                })
+              }
+            />
+          ),
+          note: 'Phones and desktop are decided by the stylesheet; the rest by what the server knows when it serves the page.',
+          help: 'When the region shows (APEX: Server-side Condition). Always; during a race weekend or between them; to signed-in or signed-out visitors; on phones or on desktop and laptop only. A fact the server does not have shows the region rather than hiding it.',
+        },
+      ],
+    },
     {
       title: 'Security',
       props: [

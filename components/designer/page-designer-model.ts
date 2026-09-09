@@ -1,8 +1,12 @@
 import {
   COLUMNS,
+  LEGACY_BODY,
   POSITIONS,
   REGION_KIND_LABELS,
+  SHOW_RULE_LABELS,
+  isLegacyBody,
   parsePageDocument,
+  type ComponentRegion,
   type DynamicAction,
   type Effect,
   type EffectAction,
@@ -13,6 +17,7 @@ import {
   type Trigger,
   type TriggerEvent,
 } from '@/lib/design/page-document';
+import { componentDefaults, findComponent, settingsSummary } from '@/lib/design/components';
 import { DESTINATIONS, resolveDestination } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -47,10 +52,24 @@ export function sameSelection(a: Selection, b: Selection): boolean {
 }
 
 /** The positions a page of the given kind may carry regions in: every one for
- *  a page made in the designer; around the code's body for a page the code
- *  serves (the Right Side Column waits for its own decision). */
+ *  a page made in the designer; every one but the Right Side Column for a page
+ *  whose body the code still draws (that column waits for its own decision).
+ *  Since the components programme (R2a) the Body is open on every page: the
+ *  code's body is a component among the operator's regions. */
 export function openPositions(kind: 'row' | 'code'): readonly Position[] {
-  return kind === 'row' ? POSITIONS : (['header', 'breadcrumb', 'footer', 'phonebar'] as const);
+  return kind === 'row' ? POSITIONS : (['header', 'breadcrumb', 'body', 'footer', 'phonebar'] as const);
+}
+
+/** A page whose body the code still draws opens with the transitional
+ *  component in its Body when the stored document has none, so the operator
+ *  sees it, moves it and puts regions around it; saving writes it explicitly.
+ *  A page made in the designer, or a document that already names it, is
+ *  returned as it is. */
+export function withImplicitBody(doc: PageDocument, page: Pick<PageRow, 'kind'>): PageDocument {
+  if (page.kind !== 'code' || doc.regions.some(isLegacyBody)) return doc;
+  const id = nextComponentId(LEGACY_BODY, doc.regions.map(r => r.id));
+  const body: ComponentRegion = { id, kind: 'component', component: LEGACY_BODY, settings: {}, title: '', position: 'body', seq: 5, column: 1, span: COLUMNS, newRow: true, authz: null, hidden: false };
+  return { ...doc, regions: renumber([...doc.regions, body]) };
 }
 
 /** The positions as the Page Designer names them, the prototype's words. */
@@ -95,10 +114,20 @@ export function renumber(regions: Region[]): Region[] {
   });
 }
 
-/** A fresh id for a region of a kind: text-1, photo-2, list-1, button-1. */
+/** A fresh id for a region of a kind: text-1, photo-2, list-1, button-1, component-1. */
 export function nextRegionId(kind: RegionKind, taken: readonly string[]): string {
-  const base = kind === 'static' ? 'text' : kind === 'image' ? 'photo' : kind === 'list' ? 'list' : 'button';
+  const base = kind === 'static' ? 'text' : kind === 'image' ? 'photo' : kind === 'list' ? 'list' : kind === 'button' ? 'button' : 'component';
   let n = 1;
+  while (taken.includes(`${base}-${n}`)) n++;
+  return `${base}-${n}`;
+}
+
+/** A fresh id for a component: `code-body` for the transitional one, else the
+ *  key's last word (`home.wire` → `wire`, then `wire-2`). */
+export function nextComponentId(key: string, taken: readonly string[]): string {
+  const base = key === LEGACY_BODY ? 'code-body' : (key.split('.').pop() ?? 'component').replace(/[^a-z0-9-]/g, '-');
+  if (!taken.includes(base)) return base;
+  let n = 2;
   while (taken.includes(`${base}-${n}`)) n++;
   return `${base}-${n}`;
 }
@@ -124,7 +153,18 @@ export function newRegion(kind: RegionKind, position: Position, id: string, span
   if (kind === 'static') return { ...base, kind, text: '' };
   if (kind === 'image') return { ...base, kind, assetId: '', alt: '', showCaption: defaults.imageShowCaption };
   if (kind === 'button') return { ...base, kind, label: defaults.buttonLabel, dest: null };
+  if (kind === 'component') return { ...base, kind, component: LEGACY_BODY, settings: {} };
   return { ...base, kind, listKey: 'doors', style: defaults.listStyle };
+}
+
+/** A component from the catalogue placed on the page, its settings at their
+ *  defaults; null for a key the catalogue does not have. */
+export function addComponent(doc: PageDocument, key: string, where: Placement): { doc: PageDocument; id: string } | null {
+  const spec = findComponent(key);
+  if (!spec) return null;
+  const id = nextComponentId(key, doc.regions.map(r => r.id));
+  const region: ComponentRegion = { id, kind: 'component', component: spec.key, settings: componentDefaults(spec), title: '', position: where.position, seq: 1_000_000, column: 1, span: COLUMNS, newRow: true, authz: null, hidden: false };
+  return { doc: placeRegion(doc, region, { ...where, newRow: where.newRow ?? true }), id };
 }
 
 /** Where a dropped or created region lands. */
@@ -264,7 +304,13 @@ export function removeAction(doc: PageDocument, id: string): PageDocument {
 
 /** What the tree, the Component View and the Layout call a region. */
 export function regionName(r: Region): string {
+  if (r.kind === 'component') return r.title || findComponent(r.component)?.name || r.component;
   return r.title || (r.kind === 'button' ? r.label : r.id);
+}
+
+/** The show rule in words, for tiles and reports; empty when always. */
+export function showText(r: Region): string {
+  return r.show ? SHOW_RULE_LABELS[r.show] : '';
 }
 
 /** What the tree calls an action. */
@@ -312,6 +358,10 @@ export function regionSummary(r: Region, assets: readonly EditableAsset[], lists
     }
     case 'button':
       return `“${r.label}”${r.dest ? ` → ${destinationLabel(r.dest)}` : ' · fires dynamic actions only'}`;
+    case 'component': {
+      const spec = findComponent(r.component);
+      return spec ? settingsSummary(spec, r.settings) : `Unknown component ${r.component}`;
+    }
   }
 }
 
@@ -345,9 +395,16 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
   if (!code && !doc.regions.some(r => r.position === 'body' && !r.hidden)) {
     out.push({ level: 'err', text: 'The Body has no region showing. The page would be empty.', sel: { kind: 'position', id: 'body' } });
   }
+  const legacies = doc.regions.filter(isLegacyBody);
+  if (code && legacies.length > 1) {
+    out.push({ level: 'err', text: 'The body as the code draws it is placed twice; a page has one.', sel: { kind: 'region', id: legacies[1].id }, group: 'Source' });
+  }
   for (const r of doc.regions) {
-    if (code && (r.position === 'body' || r.position === 'right')) {
-      out.push({ level: 'err', text: `${regionName(r)} sits in the ${PD_POSITION[r.position].label}, which the code owns on this page. Move it to the Page Header, the Breadcrumb Bar, the Footer or the Phone Bar.`, sel: { kind: 'region', id: r.id }, group: 'Layout' });
+    if (code && r.position === 'right') {
+      out.push({ level: 'err', text: `${regionName(r)} sits in the ${PD_POSITION.right.label}, which waits for its own decision on a page whose body the code still draws. Move it to the Body or another position.`, sel: { kind: 'region', id: r.id }, group: 'Layout' });
+    }
+    if (!code && isLegacyBody(r)) {
+      out.push({ level: 'err', text: `${regionName(r)}: this page has no body drawn by the code. Remove the component.`, sel: { kind: 'region', id: r.id }, group: 'Source' });
     }
     if (r.kind === 'static' && !r.text.trim()) out.push({ level: 'warn', text: `${regionName(r)} has no text yet.`, sel: { kind: 'region', id: r.id }, group: 'Source' });
     if (r.kind === 'image' && r.assetId && !r.alt.trim()) out.push({ level: 'info', text: `${regionName(r)} has no alternative text; screen readers will skip the photo.`, sel: { kind: 'region', id: r.id }, group: 'Source' });
@@ -414,9 +471,17 @@ export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { 
   };
   scan(PAGE_SELECTION, `Page · ${page.name}`, { name: page.name, path: page.path, title: page.title, group: page.group, authorization: page.authz, comments: page.comments });
   for (const r of doc.regions) {
-    const base = { name: regionName(r), type: REGION_KIND_LABELS[r.kind].label, position: PD_POSITION[r.position].label, column: r.column, span: r.span, authorization: r.authz, hidden: r.hidden ? 'hidden at first' : null };
+    const base = { name: regionName(r), type: REGION_KIND_LABELS[r.kind].label, position: PD_POSITION[r.position].label, column: r.column, span: r.span, authorization: r.authz, hidden: r.hidden ? 'hidden at first' : null, show: showText(r) || null };
     const src =
-      r.kind === 'static' ? { text: r.text } : r.kind === 'image' ? { photo: r.assetId, alt: r.alt } : r.kind === 'list' ? { list: r.listKey, style: r.style } : { label: r.label, destination: destinationLabel(r.dest) };
+      r.kind === 'static'
+        ? { text: r.text }
+        : r.kind === 'image'
+          ? { photo: r.assetId, alt: r.alt }
+          : r.kind === 'list'
+            ? { list: r.listKey, style: r.style }
+            : r.kind === 'component'
+              ? { component: findComponent(r.component)?.name ?? r.component, ...r.settings }
+              : { label: r.label, destination: destinationLabel(r.dest) };
     scan({ kind: 'region', id: r.id }, `Region · ${regionName(r)}`, { ...base, ...src });
   }
   for (const a of doc.actions) {
@@ -449,11 +514,11 @@ export function systemSteps(kind: 'code' | 'row'): SystemStep[] {
     ];
   }
   return [
-    { id: 'route', point: 'before-header', name: 'Match the route', note: 'The code serves this path; the page cannot take another.' },
+    { id: 'route', point: 'before-header', name: 'Match the route', note: 'The route file is still in the code; the path stays until the page is fully composed.' },
     { id: 'frame', point: 'before-header', name: 'Read the page row', note: 'Title, index rule and scheme, once a minute; the code is the fallback.' },
-    { id: 'session', point: 'before-header', name: 'Read the session when a scheme asks', note: 'A refused visitor meets the scheme’s message or the 404.' },
-    { id: 'body', point: 'after-header', name: 'Render the code’s body', note: 'The page’s own content, as its code writes it.' },
-    { id: 'revalidate', point: 'after-footer', name: 'Revalidate on save', note: 'Saving the attributes refreshes the served page at once.' },
+    { id: 'session', point: 'before-header', name: 'Read the session when a scheme or a rule asks', note: 'A refused visitor meets the scheme’s message or the 404; a signed-in rule leaves its region out.' },
+    { id: 'body', point: 'after-header', name: 'Render the components', note: 'The code’s body where its component sits; your regions before and after it, each under its rule.' },
+    { id: 'revalidate', point: 'after-footer', name: 'Revalidate on save and publish', note: 'Saving the attributes or publishing refreshes the served page at once.' },
   ];
 }
 

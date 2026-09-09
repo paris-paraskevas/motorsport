@@ -64,7 +64,7 @@ describe('loadPageDetail', () => {
     expect(d?.live?.id).toBe(r1.id);
     expect(d?.newest?.id).toBe(r2.id);
     expect(d?.newest?.document.regions.map(r => r.id)).toEqual(['intro']);
-    expect(d?.newest?.problems).toEqual(['region bad: the kind must be static, image or list', 'region bad: the position must be one of the six', 'region bad: the sequence must be a whole number', 'region bad: the column must be 1 to 12', 'region bad: the span must be 1 to 12']);
+    expect(d?.newest?.problems).toEqual(['region bad: the kind must be static, image, list, button or component', 'region bad: the position must be one of the six', 'region bad: the sequence must be a whole number', 'region bad: the column must be 1 to 12', 'region bad: the span must be 1 to 12']);
     expect(d?.revisions.map(r => r.id)).toEqual([r2.id, r1.id]);
   });
 
