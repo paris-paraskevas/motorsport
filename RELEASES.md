@@ -4,6 +4,9 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.97 — 2026-09-10
+
+The Spanish Grand Prix weekend page now shows its real venue, Madrid's new Madring circuit, with the right location and weather, instead of Barcelona-Catalunya. Madring also joins the circuits guide.
 ## 1.0.96 — 2026-09-10
 
 Internal only: the research behind the design tool's roadmap is filed in the repository. Nothing changes for readers.
