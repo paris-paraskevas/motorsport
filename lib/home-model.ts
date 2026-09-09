@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { loadAllSeries } from '@/lib/series';
 import { groupByDay, groupByWeekend } from '@/lib/group';
 import { DAY_MS } from '@/lib/rounds';
@@ -7,7 +8,7 @@ import { fetchAggregatedNews } from '@/lib/news';
 import { fetchLatestPodium, HOME_RESULTS_SLUGS, type LatestRace } from '@/lib/home-results';
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
 import { fetchHomeBlogLead, publishedPosts } from '@/lib/blog';
-import { pinnedLeadSlug, visibleBlocks, type HomeLayout } from '@/lib/home-layout';
+import { loadLiveHomeLayout, pinnedLeadSlug, visibleBlocks, type HomeLayout } from '@/lib/home-layout';
 import { loadSettings } from '@/lib/design/settings';
 import { DEFAULT_SETTINGS } from '@/lib/design/setting-defaults';
 import type {
@@ -105,6 +106,45 @@ function ageLabel(pubDate: Date, now: Date): string {
   if (hours < 36) return `${hours}h ago`;
   return `${Math.round(hours / 24)}d ago`;
 }
+
+/** The wire's rows: the newest `count` aggregated headlines, source named, the
+ *  series resolved to its name and colour. Shared by the page's assembly and
+ *  by The wire component, which may ask for more than the page setting. */
+export async function buildWire(count: number, metaBySlug: ReadonlyMap<string, { name: string; color: string }>, now = new Date()): Promise<HomeLeadWireItem[]> {
+  const rawNews = await fetchAggregatedNews();
+  return rawNews
+    .slice()
+    .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+    .slice(0, count)
+    .flatMap(item => {
+      const meta = metaBySlug.get(item.seriesSlug);
+      if (!meta) return [];
+      let sourceHost = 'source';
+      try {
+        sourceHost = new URL(item.link).hostname.replace(/^www\./, '');
+      } catch {
+        /* keep the fallback label */
+      }
+      return [{
+        title: item.title,
+        link: item.link,
+        sourceHost,
+        ageLabel: ageLabel(item.pubDate, now),
+        seriesName: meta.name,
+        seriesColor: meta.color,
+      }];
+    });
+}
+
+/** The page's assembly once per request (React's cache), so the home route and
+ *  the components a revision places both read the same model. */
+export const loadHomeModel = cache(async (): Promise<HomeModel> => buildHomeModel(await loadLiveHomeLayout()));
+
+/** The series metadata by slug, for a component that resolves names and colours itself. */
+export const loadSeriesMeta = cache(async (): Promise<Map<string, { name: string; color: string }>> => {
+  const all = await loadAllSeries();
+  return new Map(all.map(s => [s.meta.slug, { name: s.meta.name, color: s.meta.color }]));
+});
 
 export async function buildHomeModel(layout: HomeLayout, now = new Date()): Promise<HomeModel> {
   const all = await loadAllSeries();
@@ -321,29 +361,7 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
 
   // ── 4. The wire: the newest aggregated headlines, source named; how many is
   // the `home.wire_count` setting (five shipped). ──
-  const rawNews = await fetchAggregatedNews();
-  const wire: HomeLeadWireItem[] = rawNews
-    .slice()
-    .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
-    .slice(0, settings['home.wire_count'])
-    .flatMap(item => {
-      const meta = metaBySlug.get(item.seriesSlug);
-      if (!meta) return [];
-      let sourceHost = 'source';
-      try {
-        sourceHost = new URL(item.link).hostname.replace(/^www\./, '');
-      } catch {
-        /* keep the fallback label */
-      }
-      return [{
-        title: item.title,
-        link: item.link,
-        sourceHost,
-        ageLabel: ageLabel(item.pubDate, now),
-        seriesName: meta.name,
-        seriesColor: meta.color,
-      }];
-    });
+  const wire = await buildWire(settings['home.wire_count'], metaBySlug, now);
 
   // ── 5. Our own writing: the pinned post if the operator chose one, else the
   // newest. The fetcher returns a series SLUG and only this layer holds the

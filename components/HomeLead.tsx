@@ -13,6 +13,14 @@ import { SessionDayNote } from '@/components/SessionDayNote';
 // eighteen-widget gallery (operator decision 2026-08-18: full cutover, no
 // survivors — bets/leagues live on /social, watch/weather/upgrades on the
 // weekend pages).
+//
+// SINCE THE COMPONENTS PROGRAMME (R2b, 2026-09-09) each band is also a
+// COMPONENT of its own — HomeLeadStory, HomeThisWeekend, HomeLatestResult,
+// HomeWhatChanged, HomeWhatsNext, HomeWire — that the designer places on a page
+// with its settings and its rule, drawn by lib/design/component-render.tsx.
+// HomeLead composes the same pieces in the order the old composer gave it, so
+// the page a visitor sees is unchanged until the operator splits Home in the
+// designer; then the published revision's components render instead of this.
 
 export interface HomeLeadResult {
   seriesSlug: string;
@@ -138,229 +146,170 @@ function headlineFor(winner: string, raceName: string): string {
 const DEFAULT_ORDER = ['blog', 'live', 'result', 'wire'] as const;
 export type HomeLeadBandId = (typeof DEFAULT_ORDER)[number];
 
-export function HomeLead({
-  blog,
-  liveWeekends,
-  alsoRacing,
-  result,
-  changed,
-  next,
-  wire,
-  order,
-}: {
-  blog?: HomeLeadBlog | null;
-  /** F1 first when it is running, then the named majors by soonest next
-   *  session. Composed in lib/home-model.ts; this component renders the order
-   *  it is given and decides nothing about precedence itself. */
-  liveWeekends?: HomeLeadLiveWeekend[];
-  /** Everything else racing, as one compact row beneath the boxes. */
-  alsoRacing?: HomeLeadAlsoRacing[];
-  result: HomeLeadResult | null;
-  changed: HomeLeadChanged | null;
-  next: HomeLeadNextItem[];
-  wire: HomeLeadWireItem[];
-  /** Operator-composed band order (lib/home-layout.ts). Omitted → the default.
-   *  Note `changed` and `next` are NOT separate bands: they render inside the
-   *  result section's own grid, so the three move together. */
-  order?: readonly HomeLeadBandId[];
-}) {
-  const winner = result?.podium.find(p => p.position === 1);
-  const raceDate = result
-    ? new Date(result.dateIso).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
-    : null;
-  const leaderPoints = changed?.top[0]?.points ?? 0;
-  // Season over → the title decision outranks the race result: the band leads
-  // with "Season complete" + the champion, and the race winner drops to a
-  // sub-line (operator, 2026-08-20). `changed` is always the result's series.
-  const championName = changed?.seasonComplete ? changed.leader.name : null;
+/* ── 0a. Our own writing. The lead story is a Paddock post, not a syndicated
+   headline — the wire already carries those. Cover image left, the read
+   right, in the Paper language rather than the testing build's dark
+   treatment. ── */
+export function HomeLeadStory({ blog, suggested }: { blog: HomeLeadBlog; suggested?: number }) {
+  const more = suggested === undefined ? blog.suggested : (blog.suggested ?? []).slice(0, Math.max(0, suggested));
+  return (
+    <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated shadow-lg">
+      <div className="grid lg:grid-cols-[minmax(0,46%)_1fr]">
+        {/* Redundant link: aria-hidden + tabIndex -1 so the picture stays
+            clickable for a mouse without announcing a duplicate of the
+            headline link beside it. */}
+        <Link
+          href={`/blog/${blog.slug}`}
+          aria-hidden="true"
+          tabIndex={-1}
+          className="block border-b-[1.5px] border-text lg:border-b-0 lg:border-r-[1.5px]"
+        >
+          {blog.heroImage ? (
+            // 8/5 = 1.6:1, operator's call: tall and dominant rather than a
+            // letterbox. width/height carry the SAME ratio so the reserved
+            // box matches the CSS one and nothing shifts before Tailwind
+            // lands; object-cover crops whatever the source actually is.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={blog.heroImage}
+              alt=""
+              width={1200}
+              height={750}
+              fetchPriority="high"
+              className="aspect-[8/5] h-full w-full object-cover"
+            />
+          ) : (
+            // No cover (19 of 24 published posts have none, counted
+            // 2026-08-24): a typographic panel rather than a broken box.
+            <span className="flex aspect-[8/5] items-end bg-surface p-4">
+              <span className="font-mono text-28 font-bold uppercase leading-none tracking-[-0.02em] text-text-faint lg:text-38">
+                {blog.seriesName ?? 'Paddock'}
+              </span>
+            </span>
+          )}
+        </Link>
 
-  // Which bands actually have something to render, in the operator's order.
-  // A band with no content is skipped here rather than rendering an empty
-  // section, so "first" below means first VISIBLE band, not first configured.
-  const hasContent: Record<HomeLeadBandId, boolean> = {
-    blog: Boolean(blog),
-    live: (liveWeekends?.length ?? 0) > 0 || (alsoRacing?.length ?? 0) > 0,
-    // The result BAND is the race section plus the championship/next-up pair
-    // below it, so it counts as present if either half has anything.
-    result: Boolean(
-      (result && winner) || (changed && changed.top.length > 0) || next.length > 0,
-    ),
-    wire: wire.length > 0,
-  };
-  const bands = (order ?? DEFAULT_ORDER).filter(id => hasContent[id]);
-
-  // Exactly one h1, and it belongs to whichever band leads the page — the
-  // result band used to assume that was itself unless a blog band existed, which
-  // stops being true once the order is the operator's. Anything above the result
-  // band also pushes it down (the mt-8), so both derive from position now.
-  const resultIndex = bands.indexOf('result');
-  const leadAbove = resultIndex > 0;
-  const ResultHeading = resultIndex === 0 ? 'h1' : 'h2';
-
-  // Every band except the leading one is pushed down. This used to be hard-coded
-  // per band ("mt-8 if a blog band exists"), which silently breaks the moment the
-  // order is the operator's — the second band would sit flush against the first.
-  const topGap = (id: HomeLeadBandId) => (bands[0] === id ? '' : 'mt-8 ');
-
-  /* ── 0a. Our own writing. The lead story is a Paddock post, not a syndicated
-     headline — the wire already carries those. Cover image left, the read
-     right, in the Paper language rather than the testing build's dark
-     treatment. ── */
-  const blogBand = blog && (
-        <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated shadow-lg">
-          <div className="grid lg:grid-cols-[minmax(0,46%)_1fr]">
-            {/* Redundant link: aria-hidden + tabIndex -1 so the picture stays
-                clickable for a mouse without announcing a duplicate of the
-                headline link beside it. */}
-            <Link
-              href={`/blog/${blog.slug}`}
-              aria-hidden="true"
-              tabIndex={-1}
-              className="block border-b-[1.5px] border-text lg:border-b-0 lg:border-r-[1.5px]"
-            >
-              {blog.heroImage ? (
-                // 8/5 = 1.6:1, operator's call: tall and dominant rather than a
-                // letterbox. width/height carry the SAME ratio so the reserved
-                // box matches the CSS one and nothing shifts before Tailwind
-                // lands; object-cover crops whatever the source actually is.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={blog.heroImage}
-                  alt=""
-                  width={1200}
-                  height={750}
-                  fetchPriority="high"
-                  className="aspect-[8/5] h-full w-full object-cover"
+        {/* Vertically centred from lg up, where the grid is two columns and
+            the image's 8/5 ratio drives the row height. PAGE_WIDE is fully
+            fluid with NO max width (lib/site.ts:31), so at 2560px the image
+            cell is 1142x713 while this content is only ~192px tall — 73% of
+            the box was dead space until the fluid type below. */}
+        <div className="flex min-w-0 flex-col p-[18px] lg:justify-center lg:p-5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="font-mono text-10 font-bold uppercase tracking-[0.2em] text-brand">
+              Lead story
+            </span>
+            {blog.ageLabel && (
+              <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
+                {blog.ageLabel}
+              </span>
+            )}
+            {blog.seriesName && (
+              <>
+                <span
+                  aria-hidden="true"
+                  className="h-3.5 w-[3px] shrink-0"
+                  style={{ backgroundColor: blog.seriesColor ?? undefined }}
                 />
-              ) : (
-                // No cover (19 of 24 published posts have none, counted
-                // 2026-08-24): a typographic panel rather than a broken box.
-                <span className="flex aspect-[8/5] items-end bg-surface p-4">
-                  <span className="font-mono text-28 font-bold uppercase leading-none tracking-[-0.02em] text-text-faint lg:text-38">
-                    {blog.seriesName ?? 'Paddock'}
-                  </span>
+                <span
+                  className="font-mono text-10 font-semibold uppercase tracking-[0.16em]"
+                  style={{ color: blog.seriesColor ? seriesInk(blog.seriesColor) : undefined }}
+                >
+                  {blog.seriesName}
                 </span>
-              )}
-            </Link>
-
-            {/* Vertically centred from lg up, where the grid is two columns and
-                the image's 8/5 ratio drives the row height. PAGE_WIDE is fully
-                fluid with NO max width (lib/site.ts:31), so at 2560px the image
-                cell is 1142x713 while this content is only ~192px tall — 73% of
-                the box was dead space until the fluid type below. */}
-            <div className="flex min-w-0 flex-col p-[18px] lg:justify-center lg:p-5">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="font-mono text-10 font-bold uppercase tracking-[0.2em] text-brand">
-                  Lead story
-                </span>
-                {blog.ageLabel && (
-                  <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
-                    {blog.ageLabel}
-                  </span>
-                )}
-                {blog.seriesName && (
-                  <>
-                    <span
-                      aria-hidden="true"
-                      className="h-3.5 w-[3px] shrink-0"
-                      style={{ backgroundColor: blog.seriesColor ?? undefined }}
-                    />
-                    <span
-                      className="font-mono text-10 font-semibold uppercase tracking-[0.16em]"
-                      style={{ color: blog.seriesColor ? seriesInk(blog.seriesColor) : undefined }}
-                    >
-                      {blog.seriesName}
-                    </span>
-                  </>
-                )}
-                <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
-                  {blog.readMinutes} min read
-                </span>
-              </div>
-              {/* Fluid type, not breakpoint steps: the page has no max width, so
-                  a stepped scale leaves the same hole between breakpoints. The
-                  ch-based measure rides the font-size, so the headline gains
-                  lines as it grows instead of running to a 200-character line.
-                  Measured fill of the text cell: 79% at 1280, 80% at 1440, 76%
-                  at 1920, 72% at 2560 — against 27% before. */}
-              <h1 className="mt-3 font-serif text-[clamp(30px,2.7vw,72px)] font-semibold leading-[1.06] text-text lg:max-w-[20ch]">
-                <Link href={`/blog/${blog.slug}`} className="decoration-2 underline-offset-4 hover:underline">
-                  {blog.title}
-                </Link>
-              </h1>
-              <p className="mt-3 line-clamp-3 font-serif text-[clamp(17px,0.85vw,22px)] leading-snug text-text-muted lg:max-w-[56ch]">
-                {blog.summary}
-              </p>
-              <Link
-                href={`/blog/${blog.slug}`}
-                className="mt-5 inline-flex min-h-11 items-center self-start bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
-              >
-                Read the story →
-              </Link>
-
-              {/* Further reading fills the space the 8/5 cover leaves beside it
-                  (operator, 2026-08-21). xl and up only: below that the column
-                  is already full and this would push the band taller than its
-                  own picture. */}
-              {blog.suggested && blog.suggested.length > 0 && (
-                <div className="mt-8 hidden border-t border-border pt-4 xl:block">
-                  <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
-                    More reading
-                  </span>
-                  <ul className="mt-2">
-                    {blog.suggested.map(s => (
-                      <li key={s.slug}>
-                        {/* Cover beside the headline (operator's pick, 2026-08-24:
-                            "we need to have multiple blogs on main screen"). The
-                            thumbnail is deliberately small — this list sits in the
-                            text column beside the band's own 8/5 cover, and a
-                            larger one would compete with the lead it belongs to.
-                            No cover → no thumbnail and the title spans the row,
-                            the same rule the /blog list follows. */}
-                        <Link
-                          href={`/blog/${s.slug}`}
-                          className="flex items-center gap-3 border-b border-border py-2 font-serif text-16 font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text"
-                        >
-                          {s.heroImage && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={s.heroImage}
-                              alt=""
-                              width={1200}
-                              height={630}
-                              className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover"
-                            />
-                          )}
-                          <span className="min-w-0 flex-1">{s.title}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+              </>
+            )}
+            <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
+              {blog.readMinutes} min read
+            </span>
           </div>
-        </section>
+          {/* Fluid type, not breakpoint steps: the page has no max width, so
+              a stepped scale leaves the same hole between breakpoints. The
+              ch-based measure rides the font-size, so the headline gains
+              lines as it grows instead of running to a 200-character line.
+              Measured fill of the text cell: 79% at 1280, 80% at 1440, 76%
+              at 1920, 72% at 2560 — against 27% before. */}
+          <h1 className="mt-3 font-serif text-[clamp(30px,2.7vw,72px)] font-semibold leading-[1.06] text-text lg:max-w-[20ch]">
+            <Link href={`/blog/${blog.slug}`} className="decoration-2 underline-offset-4 hover:underline">
+              {blog.title}
+            </Link>
+          </h1>
+          <p className="mt-3 line-clamp-3 font-serif text-[clamp(17px,0.85vw,22px)] leading-snug text-text-muted lg:max-w-[56ch]">
+            {blog.summary}
+          </p>
+          <Link
+            href={`/blog/${blog.slug}`}
+            className="mt-5 inline-flex min-h-11 items-center self-start bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+          >
+            Read the story →
+          </Link>
+
+          {/* Further reading fills the space the 8/5 cover leaves beside it
+              (operator, 2026-08-21). xl and up only: below that the column
+              is already full and this would push the band taller than its
+              own picture. */}
+          {more && more.length > 0 && (
+            <div className="mt-8 hidden border-t border-border pt-4 xl:block">
+              <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
+                More reading
+              </span>
+              <ul className="mt-2">
+                {more.map(s => (
+                  <li key={s.slug}>
+                    {/* Cover beside the headline (operator's pick, 2026-08-24:
+                        "we need to have multiple blogs on main screen"). The
+                        thumbnail is deliberately small — this list sits in the
+                        text column beside the band's own 8/5 cover, and a
+                        larger one would compete with the lead it belongs to.
+                        No cover → no thumbnail and the title spans the row,
+                        the same rule the /blog list follows. */}
+                    <Link
+                      href={`/blog/${s.slug}`}
+                      className="flex items-center gap-3 border-b border-border py-2 font-serif text-16 font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text"
+                    >
+                      {s.heroImage && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={s.heroImage}
+                          alt=""
+                          width={1200}
+                          height={630}
+                          className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover"
+                        />
+                      )}
+                      <span className="min-w-0 flex-1">{s.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
+}
 
-  /* ── 0b. The weekends in progress. By default this sits above the
-     finished-race band so a completed season elsewhere cannot outrank a race
-     running today; the operator can override that ordering.
+/* ── 0b. The weekends in progress. By default this sits above the
+   finished-race band so a completed season elsewhere cannot outrank a race
+   running today; the operator can override that ordering.
 
-     ONE BOX PER FEATURED SERIES since 2026-09-04, where it used to be a single
-     band for whichever weekend happened to start first. That rule put FORMULA 3
-     at the top of the page on Italian Grand Prix Friday. `liveWeekends` arrives
-     already ordered by lib/home-model.ts — F1 first, then the named majors by
-     soonest session — and this component does not re-sort or re-rank it.
+   ONE BOX PER FEATURED SERIES since 2026-09-04, where it used to be a single
+   band for whichever weekend happened to start first. That rule put FORMULA 3
+   at the top of the page on Italian Grand Prix Friday. `liveWeekends` arrives
+   already ordered by lib/home-model.ts — F1 first, then the named majors by
+   soonest session — and this component does not re-sort or re-rank it.
 
-     Only the FIRST box carries its day's remaining session list. Four full
-     lists would run to most of a screen, and the lead is the one that earns the
-     depth; the others answer "what and when", which is the whole job of a
-     secondary box. ── */
+   Only the FIRST box carries its day's remaining session list. Four full
+   lists would run to most of a screen, and the lead is the one that earns the
+   depth; the others answer "what and when", which is the whole job of a
+   secondary box. ── */
+export function HomeThisWeekend({ liveWeekends, alsoRacing, className = '' }: { liveWeekends?: HomeLeadLiveWeekend[]; alsoRacing?: HomeLeadAlsoRacing[]; className?: string }) {
   const liveList = liveWeekends ?? [];
   const alsoList = alsoRacing ?? [];
-  const liveBand = (liveList.length > 0 || alsoList.length > 0) && (
-    <div className={topGap('live')}>
+  if (liveList.length === 0 && alsoList.length === 0) return null;
+  return (
+    <div className={className}>
       {liveList.map((liveWeekend, liveIndex) => (
         <section
           key={`${liveWeekend.seriesSlug}-${liveWeekend.href}`}
@@ -481,6 +430,305 @@ export function HomeLead({
       )}
     </div>
   );
+}
+
+/* ── 1. The result that just happened. `heading` is h1 when this band leads
+   the page and h2 beneath a lead story; `compact` is the size a step down when
+   a lead sits above it, so the two headlines do not compete for the same rank.
+   `changed` is the result's series and decides champion mode: season over → the
+   title decision outranks the race result (operator, 2026-08-20). ── */
+export function HomeLatestResult({
+  result,
+  changed,
+  heading = 'h1',
+  compact = false,
+  className = '',
+}: {
+  result: HomeLeadResult;
+  changed?: HomeLeadChanged | null;
+  heading?: 'h1' | 'h2';
+  compact?: boolean;
+  className?: string;
+}) {
+  const winner = result.podium.find(p => p.position === 1);
+  if (!winner) return null;
+  const raceDate = new Date(result.dateIso).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  const championName = changed?.seasonComplete ? changed.leader.name : null;
+  const ResultHeading = heading;
+  return (
+    <section
+      aria-label="Latest result"
+      className={`${className ? `${className} ` : ''}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
+    >
+      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2.5">
+            <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: result.color }} />
+            <span
+              className="font-mono text-10 font-semibold uppercase tracking-[0.16em]"
+              style={{ color: seriesInk(result.color) }}
+            >
+              {result.seriesName}
+            </span>
+            <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
+              Round {result.round} · {raceDate}
+            </span>
+          </div>
+          {championName && (
+            <p className="mt-3 font-mono text-12 font-bold uppercase tracking-[0.2em] text-brand">
+              Season complete
+            </p>
+          )}
+          {/* Demoted to h2 and a size down when the blog lead is above it,
+              so the two headlines do not compete for the same rank. */}
+          <ResultHeading
+            className={`${championName ? 'mt-1.5' : 'mt-3'} font-serif font-semibold leading-[1.1] text-text ${
+              compact ? 'text-24 lg:text-30' : 'text-30 lg:text-40'
+            }`}
+          >
+            {championName
+              ? `${championName} is ${result.seriesName} champion`
+              : headlineFor(winner.name, result.raceName)}
+          </ResultHeading>
+          {championName ? (
+            <p className="mt-2 font-serif text-17 leading-snug text-text-muted">
+              {headlineFor(winner.name, result.raceName)}
+              {result.margin ? ` — winning margin ${result.margin}` : ''}.
+            </p>
+          ) : (
+            <p className="mt-2 font-mono text-11 tabular-nums text-text-muted">
+              {result.margin ? <>Winning margin <span className="text-text">{result.margin}</span></> : winner.detail}
+            </p>
+          )}
+          <Link
+            href={result.weekendHref}
+            className="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+          >
+            Full weekend report →
+          </Link>
+        </div>
+        <div>
+          <div className="flex items-baseline justify-between border-b border-text pb-1">
+            {/* In champion mode the h1 is about the title, so the podium
+                must name its race itself (operator annotation, 2026-08-20). */}
+            <span className="min-w-0 truncate font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
+              {championName ? `${result.raceName} · Classification` : 'Classification'}
+            </span>
+          </div>
+          <ul>
+            {result.podium.map(p => (
+              <li key={p.position} className="flex items-baseline gap-3 border-b border-border py-2">
+                <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
+                  {p.position}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">
+                    {p.name}
+                  </span>
+                  {p.detail && (
+                    <span className="block truncate font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
+                      {p.detail}
+                    </span>
+                  )}
+                </span>
+                {p.time && (
+                  <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">{p.time}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── 2. What it changed: the championship read after the race. `rows` caps the
+   table (the designer's setting); every row the brief brought otherwise. ── */
+export function HomeWhatChanged({ changed, rows }: { changed: HomeLeadChanged; rows?: number }) {
+  const top = rows === undefined ? changed.top : changed.top.slice(0, Math.max(1, rows));
+  if (top.length === 0) return null;
+  const leaderPoints = changed.top[0]?.points ?? 0;
+  return (
+    <section aria-label="What it changed" className="min-w-0">
+      <SectionRule
+        label="What it changed"
+        right={`${changed.seriesName} · ${changed.seasonComplete ? 'Final standings' : "Drivers' championship"}`}
+      />
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,300px)_1fr]">
+        <div>
+          <h2 className="font-serif text-22 font-semibold leading-snug text-text lg:text-26">
+            {changed.seasonComplete
+              ? changed.gapToSecond != null
+                ? `${changed.leader.name} takes the title by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
+                : `${changed.leader.name} is champion`
+              : changed.gapToSecond != null
+                ? `${changed.leader.name} leads by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
+                : `${changed.leader.name} leads the championship`}
+          </h2>
+        </div>
+        <ul>
+          {top.map(row => {
+            const isWinner = changed.winnerName != null && row.name === changed.winnerName;
+            const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
+            return (
+              <li key={row.position} className="flex items-center gap-3 border-b border-border py-1.5">
+                <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
+                  {row.position}
+                </span>
+                <span className={`w-28 shrink-0 truncate text-sm sm:w-36 ${isWinner ? 'font-semibold text-text' : 'text-text-muted'}`}>
+                  {row.name}
+                </span>
+                <span aria-hidden="true" className="h-[6px] min-w-0 flex-1 bg-border">
+                  <span
+                    className={`block h-full ${isWinner ? 'bg-brand' : row.position === 1 ? 'bg-text' : 'bg-border-strong'}`}
+                    style={{ width: `${width}%` }}
+                  />
+                </span>
+                <span className="w-10 shrink-0 text-right font-mono text-12 font-semibold tabular-nums text-text">
+                  {row.points}
+                </span>
+                <span className="hidden w-10 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint sm:block">
+                  {row.position === 1 ? '—' : `−${leaderPoints - row.points}`}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* ── 3. What's next: the coming weekends across every series, the first with
+   its countdown. ── */
+export function HomeWhatsNext({ next }: { next: HomeLeadNextItem[] }) {
+  if (next.length === 0) return null;
+  return (
+    <section aria-label="What's next" className="min-w-0">
+      <SectionRule label="What's next" right="All series" />
+      <ul>
+        {next.map((w, i) => (
+          <li key={`${w.seriesSlug}-${w.href}`}>
+            <Link
+              href={w.href}
+              className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+            >
+              <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: w.color }} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">
+                  {w.title}
+                </span>
+                <span className="block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
+                  {w.seriesName}
+                  {w.note ? ` · ${w.note}` : ''}
+                </span>
+              </span>
+              {i === 0 && w.firstStartIso ? (
+                <NextRaceCountdown target={w.firstStartIso} label={w.dateRangeLabel} color={w.color} />
+              ) : (
+                <span className="shrink-0 font-mono text-11 uppercase tracking-[0.12em] text-text-muted">
+                  {w.dateRangeLabel}
+                </span>
+              )}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* ── 4. The wire ──────────────────────────────────────────────────────── */
+export function HomeWire({ wire, className = '' }: { wire: HomeLeadWireItem[]; className?: string }) {
+  if (wire.length === 0) return null;
+  return (
+    <section aria-label="The wire" className={className}>
+      <SectionRule label="The wire" right="Reported elsewhere · linked out" />
+      <ul>
+        {wire.map(item => (
+          <li key={item.link}>
+            <a
+              href={item.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-11 items-baseline gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+            >
+              <span aria-hidden="true" className="relative top-[2px] h-3.5 w-[3px] shrink-0 self-start" style={{ backgroundColor: item.seriesColor }} />
+              <span className="min-w-0 flex-1">
+                <span className="block font-serif text-16 font-semibold leading-snug text-text">
+                  {item.title}
+                </span>
+                <span className="block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
+                  {item.seriesName} · {item.sourceHost}
+                </span>
+              </span>
+              <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">{item.ageLabel}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+export function HomeLead({
+  blog,
+  liveWeekends,
+  alsoRacing,
+  result,
+  changed,
+  next,
+  wire,
+  order,
+}: {
+  blog?: HomeLeadBlog | null;
+  /** F1 first when it is running, then the named majors by soonest next
+   *  session. Composed in lib/home-model.ts; this component renders the order
+   *  it is given and decides nothing about precedence itself. */
+  liveWeekends?: HomeLeadLiveWeekend[];
+  /** Everything else racing, as one compact row beneath the boxes. */
+  alsoRacing?: HomeLeadAlsoRacing[];
+  result: HomeLeadResult | null;
+  changed: HomeLeadChanged | null;
+  next: HomeLeadNextItem[];
+  wire: HomeLeadWireItem[];
+  /** Operator-composed band order (lib/home-layout.ts). Omitted → the default.
+   *  Note `changed` and `next` are NOT separate bands: they render inside the
+   *  result section's own grid, so the three move together. */
+  order?: readonly HomeLeadBandId[];
+}) {
+  const winner = result?.podium.find(p => p.position === 1);
+
+  // Which bands actually have something to render, in the operator's order.
+  // A band with no content is skipped here rather than rendering an empty
+  // section, so "first" below means first VISIBLE band, not first configured.
+  const hasContent: Record<HomeLeadBandId, boolean> = {
+    blog: Boolean(blog),
+    live: (liveWeekends?.length ?? 0) > 0 || (alsoRacing?.length ?? 0) > 0,
+    // The result BAND is the race section plus the championship/next-up pair
+    // below it, so it counts as present if either half has anything.
+    result: Boolean(
+      (result && winner) || (changed && changed.top.length > 0) || next.length > 0,
+    ),
+    wire: wire.length > 0,
+  };
+  const bands = (order ?? DEFAULT_ORDER).filter(id => hasContent[id]);
+
+  // Exactly one h1, and it belongs to whichever band leads the page — the
+  // result band used to assume that was itself unless a blog band existed, which
+  // stops being true once the order is the operator's. Anything above the result
+  // band also pushes it down (the mt-8), so both derive from position now.
+  const resultIndex = bands.indexOf('result');
+  const leadAbove = resultIndex > 0;
+
+  // Every band except the leading one is pushed down. This used to be hard-coded
+  // per band ("mt-8 if a blog band exists"), which silently breaks the moment the
+  // order is the operator's — the second band would sit flush against the first.
+  const topGap = (id: HomeLeadBandId) => (bands[0] === id ? '' : 'mt-8 ');
+
+  const blogBand = blog && <HomeLeadStory blog={blog} />;
+  const liveBand = <HomeThisWeekend liveWeekends={liveWeekends} alsoRacing={alsoRacing} className={topGap('live').trim()} />;
 
   /* ── 1 + 2×3. The result that just happened, and the championship/next-up
      pair beneath it. These are two SIBLING top-level blocks, not one nested in
@@ -490,90 +738,7 @@ export function HomeLead({
   const resultBand = (
     <>
       {result && winner && (
-        <section
-          aria-label="Latest result"
-          className={`${leadAbove ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
-        >
-          <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2.5">
-                <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: result.color }} />
-                <span
-                  className="font-mono text-10 font-semibold uppercase tracking-[0.16em]"
-                  style={{ color: seriesInk(result.color) }}
-                >
-                  {result.seriesName}
-                </span>
-                <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
-                  Round {result.round} · {raceDate}
-                </span>
-              </div>
-              {championName && (
-                <p className="mt-3 font-mono text-12 font-bold uppercase tracking-[0.2em] text-brand">
-                  Season complete
-                </p>
-              )}
-              {/* Demoted to h2 and a size down when the blog lead is above it,
-                  so the two headlines do not compete for the same rank. */}
-              <ResultHeading
-                className={`${championName ? 'mt-1.5' : 'mt-3'} font-serif font-semibold leading-[1.1] text-text ${
-                  blog ? 'text-24 lg:text-30' : 'text-30 lg:text-40'
-                }`}
-              >
-                {championName
-                  ? `${championName} is ${result.seriesName} champion`
-                  : headlineFor(winner.name, result.raceName)}
-              </ResultHeading>
-              {championName ? (
-                <p className="mt-2 font-serif text-17 leading-snug text-text-muted">
-                  {headlineFor(winner.name, result.raceName)}
-                  {result.margin ? ` — winning margin ${result.margin}` : ''}.
-                </p>
-              ) : (
-                <p className="mt-2 font-mono text-11 tabular-nums text-text-muted">
-                  {result.margin ? <>Winning margin <span className="text-text">{result.margin}</span></> : winner.detail}
-                </p>
-              )}
-              <Link
-                href={result.weekendHref}
-                className="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
-              >
-                Full weekend report →
-              </Link>
-            </div>
-            <div>
-              <div className="flex items-baseline justify-between border-b border-text pb-1">
-                {/* In champion mode the h1 is about the title, so the podium
-                    must name its race itself (operator annotation, 2026-08-20). */}
-                <span className="min-w-0 truncate font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
-                  {championName ? `${result.raceName} · Classification` : 'Classification'}
-                </span>
-              </div>
-              <ul>
-                {result.podium.map(p => (
-                  <li key={p.position} className="flex items-baseline gap-3 border-b border-border py-2">
-                    <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
-                      {p.position}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">
-                        {p.name}
-                      </span>
-                      {p.detail && (
-                        <span className="block truncate font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
-                          {p.detail}
-                        </span>
-                      )}
-                    </span>
-                    {p.time && (
-                      <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">{p.time}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
+        <HomeLatestResult result={result} changed={changed} heading={resultIndex === 0 ? 'h1' : 'h2'} compact={Boolean(blog)} className={leadAbove ? 'mt-8' : ''} />
       )}
 
       {/* ── 2 × 3. What it changed beside what's next (round-2 ⑤): the
@@ -590,123 +755,14 @@ export function HomeLead({
               : ''
           }`}
         >
-          {changed && changed.top.length > 0 && (
-            <section aria-label="What it changed" className="min-w-0">
-              <SectionRule
-                label="What it changed"
-                right={`${changed.seriesName} · ${changed.seasonComplete ? 'Final standings' : "Drivers' championship"}`}
-              />
-              <div className="grid gap-6 xl:grid-cols-[minmax(0,300px)_1fr]">
-                <div>
-                  <h2 className="font-serif text-22 font-semibold leading-snug text-text lg:text-26">
-                    {changed.seasonComplete
-                      ? changed.gapToSecond != null
-                        ? `${changed.leader.name} takes the title by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
-                        : `${changed.leader.name} is champion`
-                      : changed.gapToSecond != null
-                        ? `${changed.leader.name} leads by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
-                        : `${changed.leader.name} leads the championship`}
-                  </h2>
-                </div>
-                <ul>
-                  {changed.top.map(row => {
-                    const isWinner = changed.winnerName != null && row.name === changed.winnerName;
-                    const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
-                    return (
-                      <li key={row.position} className="flex items-center gap-3 border-b border-border py-1.5">
-                        <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
-                          {row.position}
-                        </span>
-                        <span className={`w-28 shrink-0 truncate text-sm sm:w-36 ${isWinner ? 'font-semibold text-text' : 'text-text-muted'}`}>
-                          {row.name}
-                        </span>
-                        <span aria-hidden="true" className="h-[6px] min-w-0 flex-1 bg-border">
-                          <span
-                            className={`block h-full ${isWinner ? 'bg-brand' : row.position === 1 ? 'bg-text' : 'bg-border-strong'}`}
-                            style={{ width: `${width}%` }}
-                          />
-                        </span>
-                        <span className="w-10 shrink-0 text-right font-mono text-12 font-semibold tabular-nums text-text">
-                          {row.points}
-                        </span>
-                        <span className="hidden w-10 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint sm:block">
-                          {row.position === 1 ? '—' : `−${leaderPoints - row.points}`}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </section>
-          )}
-
-          {next.length > 0 && (
-            <section aria-label="What's next" className="min-w-0">
-              <SectionRule label="What's next" right="All series" />
-              <ul>
-                {next.map((w, i) => (
-                  <li key={`${w.seriesSlug}-${w.href}`}>
-                    <Link
-                      href={w.href}
-                      className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-                    >
-                      <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: w.color }} />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">
-                          {w.title}
-                        </span>
-                        <span className="block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
-                          {w.seriesName}
-                          {w.note ? ` · ${w.note}` : ''}
-                        </span>
-                      </span>
-                      {i === 0 && w.firstStartIso ? (
-                        <NextRaceCountdown target={w.firstStartIso} label={w.dateRangeLabel} color={w.color} />
-                      ) : (
-                        <span className="shrink-0 font-mono text-11 uppercase tracking-[0.12em] text-text-muted">
-                          {w.dateRangeLabel}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          {changed && changed.top.length > 0 && <HomeWhatChanged changed={changed} />}
+          {next.length > 0 && <HomeWhatsNext next={next} />}
         </div>
       )}
     </>
   );
 
-  /* ── 4. The wire ──────────────────────────────────────────────────────── */
-  const wireBand = wire.length > 0 && (
-        <section aria-label="The wire" className={`${topGap('wire')}`}>
-          <SectionRule label="The wire" right="Reported elsewhere · linked out" />
-          <ul>
-            {wire.map(item => (
-              <li key={item.link}>
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex min-h-11 items-baseline gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-                >
-                  <span aria-hidden="true" className="relative top-[2px] h-3.5 w-[3px] shrink-0 self-start" style={{ backgroundColor: item.seriesColor }} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-serif text-16 font-semibold leading-snug text-text">
-                      {item.title}
-                    </span>
-                    <span className="block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
-                      {item.seriesName} · {item.sourceHost}
-                    </span>
-                  </span>
-                  <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">{item.ageLabel}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-  );
+  const wireBand = <HomeWire wire={wire} className={topGap('wire').trim()} />;
 
   // Rendered in the operator's order. The nodes are keyed by band id, and the
   // DOM order IS the visual order — no CSS `order` trickery, because that would

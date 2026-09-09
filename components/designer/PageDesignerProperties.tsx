@@ -42,6 +42,7 @@ import {
   regionName,
   sharedOf,
   spanName,
+  splitRecipe,
   systemSteps,
   triggerFor,
   type Selection,
@@ -107,6 +108,8 @@ export interface PropsContext {
     addRegion: (kind: RegionKind, position: Position) => void;
     /** A component from the catalogue, by key, at a position. */
     addComponent: (key: string, position: Position) => void;
+    /** The transitional body gives way to the page's components (SPLITS). */
+    splitBody: () => void;
     duplicate: (id: string) => void;
     move: (id: string, dir: -1 | 1) => void;
     remove: (id: string) => void;
@@ -536,7 +539,22 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
       });
     }
     if (spec?.legacy) {
-      source.push({ label: 'Until split', control: <Ro dim>The page’s body as its code writes it today. Splitting it into components is this page’s next step; nothing is lost until then.</Ro> });
+      const recipe = splitRecipe(ctx.page.path);
+      source.push({
+        label: 'Until split',
+        common: true,
+        control: recipe ? (
+          <div className="grid gap-1.5">
+            <Ro dim>The page’s body as its code writes it today. Its {recipe.length} components are ready: split it and each becomes a tile of its own, with its settings and its rule.</Ro>
+            <button type="button" className={`${PBTN} justify-self-start text-edit`} disabled={readOnly} onClick={() => act.splitBody()}>
+              Split into {recipe.length} components
+            </button>
+          </div>
+        ) : (
+          <Ro dim>The page’s body as its code writes it today. Splitting it into components is this page’s next step; nothing is lost until then.</Ro>
+        ),
+        help: 'The transitional component. A page whose components exist in the catalogue can be split here; the code’s body then stops drawing and the components take its place.',
+      });
     }
   }
 

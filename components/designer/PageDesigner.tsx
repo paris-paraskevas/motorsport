@@ -16,6 +16,7 @@ import {
   addAction,
   addComponent,
   addRegion,
+  splitBody,
   withImplicitBody,
   designerMessages,
   duplicateRegion,
@@ -274,6 +275,14 @@ export function PageDesigner({
       if (!r) return;
       commit(r.doc, 'Component placed. Its settings and its rule are in the Property Editor.');
       select({ kind: 'region', id: r.id });
+    },
+    splitBody: () => {
+      if (readOnly) return;
+      const next = splitBody(doc, page.path);
+      if (!next) return;
+      commit(next, 'Split into components. Each has its settings and its rule; Save, then Publish, and the page renders from them.');
+      const first = next.regions.find(r => r.position === 'body');
+      if (first) select({ kind: 'region', id: first.id });
     },
     duplicate: id => {
       const r = duplicateRegion(doc, id);

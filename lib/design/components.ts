@@ -53,7 +53,61 @@ export const COMPONENTS: readonly ComponentSpec[] = [
     settings: [],
     legacy: true,
   },
+  // Home's six (R2b), cut along the sections Home shows today; each draws from
+  // the same assembly the page used (lib/home-model.ts) and applies its own
+  // settings on top. They may sit on any page.
+  {
+    key: 'home.lead',
+    name: 'Lead story',
+    group: 'Home',
+    holds: 'the newest post from the blog, or the one you pin, with its cover and further reading',
+    settings: [
+      { key: 'pinned', label: 'Pinned post', kind: 'text', default: '', maxLength: 120, help: 'The slug of a post to lead with, from its address (/blog/<slug>). Empty leads with the newest.' },
+      { key: 'suggested', label: 'Further reading', kind: 'number', default: 3, min: 0, max: 6, help: 'How many more posts are listed beside the cover on wide screens.' },
+    ],
+  },
+  {
+    key: 'home.live',
+    name: 'This weekend',
+    group: 'Home',
+    holds: 'the weekends under way, one box for the lead series and the majors, one row for the rest',
+    settings: [],
+  },
+  {
+    key: 'home.result',
+    name: 'Latest result',
+    group: 'Home',
+    holds: 'the last race that finished: the headline, the margin, the podium',
+    settings: [],
+  },
+  {
+    key: 'home.changed',
+    name: 'What it changed',
+    group: 'Home',
+    holds: 'the championship read after the race: the leader, the gap, the table',
+    settings: [{ key: 'rows', label: 'Rows', kind: 'number', default: 5, min: 1, max: 10, help: 'How many standings rows the table shows.' }],
+  },
+  {
+    key: 'home.next',
+    name: 'What’s next',
+    group: 'Home',
+    holds: 'the coming weekends across every series, the first with its countdown',
+    settings: [],
+  },
+  {
+    key: 'home.wire',
+    name: 'The wire',
+    group: 'Home',
+    holds: 'the newest headlines reported elsewhere, each linked out with its source',
+    settings: [{ key: 'items', label: 'Items', kind: 'number', default: 5, min: 3, max: 20, help: 'How many headlines.' }],
+  },
 ];
+
+/** How a page not yet split becomes components: the keys that replace its
+ *  transitional body, in order. Only pages whose components exist appear here. */
+export const SPLITS: Readonly<Record<string, readonly string[]>> = {
+  '/': ['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire'],
+};
 
 export function findComponent(key: string): ComponentSpec | null {
   return COMPONENTS.find(c => c.key === key) ?? null;

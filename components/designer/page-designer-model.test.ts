@@ -20,6 +20,8 @@ import {
   renumber,
   searchPage,
   spanName,
+  splitBody,
+  splitRecipe,
   withImplicitBody,
 } from './page-designer-model';
 
@@ -126,12 +128,15 @@ describe('messages', () => {
     expect(openPositions('row')).toHaveLength(6);
   });
 
-  it('a code page opens with the transitional body first in its Body, once; a row page and a document that names it are left alone', () => {
+  it('a code page with no Body regions opens with the transitional body in its Body; a row page, a document that names it, and a split page are left alone', () => {
     const code: PageRow = { ...page, kind: 'code' };
-    const opened = withImplicitBody({ version: 1, regions: [region({ id: 'welcome', position: 'header' }), region({ id: 'intro', title: 'Intro' })], actions: [] }, code);
-    expect(opened.regions.map(r => `${r.position}:${r.id}:${r.seq}`)).toEqual(['header:welcome:10', 'body:code-body:10', 'body:intro:20']);
+    const opened = withImplicitBody({ version: 1, regions: [region({ id: 'welcome', position: 'header' })], actions: [] }, code);
+    expect(opened.regions.map(r => `${r.position}:${r.id}:${r.seq}`)).toEqual(['header:welcome:10', 'body:code-body:10']);
     expect(withImplicitBody(opened, code)).toBe(opened);
     expect(withImplicitBody(doc, page)).toBe(doc);
+    // Split: Body regions without the transitional body stay as they are, or the code's body would draw again.
+    const split: PageDocument = { version: 1, regions: [legacy('wire', { component: 'home.wire' } as Partial<Region>)], actions: [] };
+    expect(withImplicitBody(split, code)).toBe(split);
     expect(nextComponentId('page.body', ['code-body'])).toBe('code-body-2');
     expect(nextComponentId('home.wire', [])).toBe('wire');
     expect(nextComponentId('home.wire', ['wire', 'wire-2'])).toBe('wire-3');
@@ -146,6 +151,29 @@ describe('messages', () => {
     expect(regionSummary(r, [], [])).toMatch(/exactly as its code writes it today/);
     expect(addComponent(doc, 'home.nothing', { position: 'body' })).toBeNull();
     expect(nextRegionId('component', [])).toBe('component-1');
+  });
+
+  it('splits Home: the transitional body gives way to its six components where it sat, What it changed and What’s next as two halves of one row; no recipe or no body, nothing', () => {
+    expect(splitRecipe('/')).toEqual(['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
+    expect(splitRecipe('/calendar')).toBeNull();
+    const home: PageRow = { ...page, path: '/', name: 'Home', kind: 'code' };
+    const fresh = withImplicitBody({ version: 1, regions: [region({ id: 'welcome', position: 'header' })], actions: [] }, home);
+    const opened: PageDocument = { ...fresh, regions: renumber([...fresh.regions, region({ id: 'outro', title: 'Outro', seq: 90 })]) };
+    const split = splitBody(opened, home.path)!;
+    expect(split.regions.map(r => `${r.position}:${r.id}:${r.column}/${r.span}${r.newRow ? '' : ' same row'}`)).toEqual([
+      'header:welcome:1/12',
+      'body:lead:1/12',
+      'body:live:1/12',
+      'body:result:1/12',
+      'body:changed:1/6',
+      'body:next:7/6 same row',
+      'body:wire:1/12',
+      'body:outro:1/12',
+    ]);
+    expect(split.regions.filter(r => r.kind === 'component').every(r => r.kind === 'component' && r.component !== 'page.body')).toBe(true);
+    expect(split.regions.find(r => r.id === 'wire')).toMatchObject({ settings: { items: 5 } });
+    expect(splitBody(split, home.path)).toBeNull();
+    expect(splitBody(opened, '/calendar')).toBeNull();
   });
 
   it("names the parser's problems by component, the empty body, and what leads nowhere", () => {

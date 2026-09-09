@@ -287,9 +287,10 @@ describe('PageDesigner', () => {
     const where = screen.getByRole('group', { name: 'Region position' });
     expect(within(where).getByRole('button', { name: 'Body' }).getAttribute('aria-pressed')).toBe('true');
     expect(within(where).queryByRole('button', { name: 'Right Side Column' })).toBeNull();
-    // The transitional body is already on the page, so the Components gallery has nothing more for it.
+    // The Components gallery offers Home's pieces to any page, and not the transitional body a second time.
     fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
-    expect(screen.getByText('Every component this page can take is already on it.')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Gallery: The wire' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Gallery: Body as the code draws it' })).toBeNull();
     fireEvent.click(tile('Component: Body as the code draws it'));
     expect(within(screen.getByLabelText('Property Editor')).getByText(/The page’s body as its code writes it today/)).toBeTruthy();
     expect((screen.getByRole('button', { name: 'Publish' }) as HTMLButtonElement).disabled).toBe(false);
@@ -303,6 +304,24 @@ describe('PageDesigner', () => {
     expect(body.base).toBeNull();
     // The transitional body is written explicitly once the page is saved, first in the Body, the new region after it.
     expect(body.document.regions.map(r => `${r.position}:${r.kind}`)).toEqual(['body:component', 'body:static']);
+  });
+
+  it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {
+    const home: PageRow = { ...codePage, id: 'c0de0001-0000-4000-8000-000000000001', path: '/', name: 'Home', group: 'home' };
+    const { onSaved } = mount({ page: home, live: null, newest: null, revisions: [] });
+    fireEvent.click(tile('Component: Body as the code draws it'));
+    fireEvent.click(screen.getByRole('button', { name: 'Split into 6 components' }));
+    expect(screen.queryByRole('button', { name: 'Component: Body as the code draws it' })).toBeNull();
+    for (const name of ['Lead story', 'This weekend', 'Latest result', 'What it changed', 'What’s next', 'The wire']) expect(tile(`Component: ${name}`)).toBeTruthy();
+    expect(status()).toMatch(/Split into components/);
+    // The wire's settings render as controls from its spec.
+    fireEvent.click(tile('Component: The wire'));
+    expect((within(screen.getByLabelText('Property Editor')).getByLabelText('Items') as HTMLInputElement).value).toBe('5');
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const posted = calls.find(c => c.method === 'POST')!;
+    const body = posted.body as { document: PageDocument };
+    expect(body.document.regions.map(r => (r.kind === 'component' ? r.component : r.kind))).toEqual(['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
   });
 
   it('is read-only on a preview Worker: nothing saves, the tiles still select', () => {

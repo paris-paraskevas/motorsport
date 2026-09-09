@@ -17,7 +17,7 @@ import {
   type Trigger,
   type TriggerEvent,
 } from '@/lib/design/page-document';
-import { componentDefaults, findComponent, settingsSummary } from '@/lib/design/components';
+import { SPLITS, componentDefaults, findComponent, settingsSummary } from '@/lib/design/components';
 import { DESTINATIONS, resolveDestination } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -61,12 +61,14 @@ export function openPositions(kind: 'row' | 'code'): readonly Position[] {
 }
 
 /** A page whose body the code still draws opens with the transitional
- *  component in its Body when the stored document has none, so the operator
+ *  component in its Body when the stored document has NO Body regions at all
+ *  (the code's body is then implicit, as the frame renders it), so the operator
  *  sees it, moves it and puts regions around it; saving writes it explicitly.
- *  A page made in the designer, or a document that already names it, is
- *  returned as it is. */
+ *  A page made in the designer, a document that already names it, and a page
+ *  the operator has SPLIT (Body regions without it) are returned as they are:
+ *  putting it back on a split page would draw the code's body again. */
 export function withImplicitBody(doc: PageDocument, page: Pick<PageRow, 'kind'>): PageDocument {
-  if (page.kind !== 'code' || doc.regions.some(isLegacyBody)) return doc;
+  if (page.kind !== 'code' || doc.regions.some(r => r.position === 'body')) return doc;
   const id = nextComponentId(LEGACY_BODY, doc.regions.map(r => r.id));
   const body: ComponentRegion = { id, kind: 'component', component: LEGACY_BODY, settings: {}, title: '', position: 'body', seq: 5, column: 1, span: COLUMNS, newRow: true, authz: null, hidden: false };
   return { ...doc, regions: renumber([...doc.regions, body]) };
@@ -165,6 +167,50 @@ export function addComponent(doc: PageDocument, key: string, where: Placement): 
   const id = nextComponentId(key, doc.regions.map(r => r.id));
   const region: ComponentRegion = { id, kind: 'component', component: spec.key, settings: componentDefaults(spec), title: '', position: where.position, seq: 1_000_000, column: 1, span: COLUMNS, newRow: true, authz: null, hidden: false };
   return { doc: placeRegion(doc, region, { ...where, newRow: where.newRow ?? true }), id };
+}
+
+/** The components that replace a page's transitional body, when the catalogue has them. */
+export function splitRecipe(path: string): readonly string[] | null {
+  return SPLITS[path] ?? null;
+}
+
+/**
+ * Split a page: the transitional body gives way to the page's components, in
+ * the recipe's order, where it sat. Home's "What it changed" and "What's next"
+ * share a row as two halves, as the page shows them today. Nothing happens
+ * without a recipe or without the transitional body.
+ */
+export function splitBody(doc: PageDocument, path: string): PageDocument | null {
+  const recipe = splitRecipe(path);
+  const legacy = doc.regions.find(isLegacyBody);
+  if (!recipe || !legacy) return null;
+  const taken = doc.regions.filter(r => r.id !== legacy.id).map(r => r.id);
+  const halves = new Set(['home.changed', 'home.next']);
+  const added: ComponentRegion[] = [];
+  recipe.forEach((key, i) => {
+    const spec = findComponent(key);
+    if (!spec) return;
+    const id = nextComponentId(key, [...taken, ...added.map(a => a.id)]);
+    const half = halves.has(key);
+    const second = half && added.some(a => halves.has(a.component));
+    added.push({
+      id,
+      kind: 'component',
+      component: key,
+      settings: componentDefaults(spec),
+      title: '',
+      position: legacy.position,
+      // Fractions after the legacy seq keep the recipe together where the body sat; renumber tidies them.
+      seq: legacy.seq + (i + 1) / (recipe.length + 1),
+      column: second ? 7 : 1,
+      span: half ? 6 : COLUMNS,
+      newRow: !second,
+      authz: legacy.authz,
+      hidden: false,
+    });
+  });
+  if (added.length === 0) return null;
+  return { ...doc, regions: renumber([...doc.regions.filter(r => r.id !== legacy.id), ...added]) };
 }
 
 /** Where a dropped or created region lands. */

@@ -13,6 +13,7 @@ import { loadAssetsById, loadLiveFrame } from './live-page';
 import { loadDocumentLists, loadNavLists } from './lists';
 import { loadShortcuts } from './shortcuts';
 import { applyShow, documentRefs, schemesAsked, showAsks } from './page-document';
+import { raceWeekendNow, renderComponents } from './component-render';
 import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, pageFromRow, type PageRow } from './pages';
 
 // The frame around a page the code serves (the Page Designer plan, PR 1): the
@@ -146,22 +147,23 @@ async function framed(
     const refs = documentRefs(stored);
     // The page's own scheme was met at the gate; only the regions' matter here.
     // The session is read when a region asks for a scheme or a show rule needs
-    // it; a race weekend is a fact the calendar brings with R2b, unknown here.
+    // it; the race-weekend fact is read when a rule asks for it.
     const asked = schemesAsked(null, stored);
     const asks = showAsks(stored);
-    const [shortcuts, assets, nav, rules, who] = await Promise.all([
+    const [shortcuts, assets, nav, rules, who, raceWeekend] = await Promise.all([
       loadShortcuts(),
       loadAssetsById(refs.assets),
       loadNavLists(),
       asked.length > 0 ? (schemes ?? loadAuthzSchemes()) : Promise.resolve([] as readonly AuthzScheme[]),
       asked.length > 0 || asks.visitor ? (visitor ?? currentVisitor()) : Promise.resolve(null),
+      asks.calendar ? raceWeekendNow() : Promise.resolve<boolean | null>(null),
     ]);
-    const document = applyShow(stored, { signedIn: who ? who.signedIn : null, raceWeekend: null });
+    const document = applyShow(stored, { signedIn: who ? who.signedIn : null, raceWeekend });
     const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
     const messages: Record<string, string | null> = {};
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
-    const lists = await loadDocumentLists(refs.lists, nav);
-    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages } }, await body);
+    const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path })]);
+    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages, components } }, await body);
   } catch {
     return body;
   }
