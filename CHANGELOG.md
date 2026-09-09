@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.84 — 2026-09-09
+
+### Docs — the morning's records: the design brief, the answers, three drafts awaiting a word
+
+`docs/HANDOFF.md` gains the LATEST section for the morning of 2026-09-09 (the operator's design brief and five answers verbatim, what #962 and #963 shipped, the three drafts waiting — the APEX-shaped App Builder and Shared Components `5d4fc3c2-8f63-4cc0-b5dd-6d7e11671f02`, the workspaces and applications plan `a3bfb43e-a167-4634-80f1-fa5618481b64`, the 4.3 data regions and Object Browser `d9dfe6d3-b685-4e05-aa9b-e4e8daba65c0` — and five landmines: the harness's ~8 KB Bash limit and its refusal of control characters, `pg_stat` estimates, a half-written `routes.d.ts`, the admin root's missing `suppressHydrationWarning`). `SCHEDULE.md` gets the session's morning outcomes; `IDEAS.md` the agreed homes for the five orphaned admin actions (Members and Moderation pages in Data, the home composer into the Home page's designer, the heatmap parked), the Application Definition tabs to come, and the two small fixes. No product code changes.
+
 ## 1.0.83 — 2026-09-09
 
 ### Feature — Phase 4, PR 4.2: the Data tab redrawn to the approved second draft, and the loader's runs as a page of their own

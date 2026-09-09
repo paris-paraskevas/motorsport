@@ -6,7 +6,34 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-09-09 early morning (LATEST, session 46 — **PR 1, PR 2, Application Definition, PR 3, Lists, Component Settings, Application Computations and Phase 4's Data workspace (PR 4.1) are live; 20260909050000 applied; the console is retired; waiting for you: the deletion list, PR 4.2 and 4.3**)
+## ⚡ Next session pickup — 2026-09-09 morning (LATEST, session 46, the operator present from 06:30Z — **the console's files are gone (#962, 1.0.82); the Data tab is redrawn to the approved second draft with the loader's runs page, Phase 4 PR 4.2 (#963, 1.0.83, prod 08:53Z); three drafts await a word: the App Builder and Shared Components in the APEX shape, the workspaces and applications plan, the 4.3 data regions and Object Browser**) — `main` = **1.0.84** once this merges, prod verified through 1.0.83, zero open PRs, suite **1953**
+
+### 🔴 Start here
+
+0. **The morning in one line.** The operator woke, looked at the night's screens and set the design brief that now governs everything Claude draws on its own (memory `feedback-paddock-less-cramming`): simpler pages, less information, bigger text, distinct boxes and rows and columns split by lines, colour that shows the state before the words, **no rounded coloured pills** ("look like ai"). A second-draft mock was liked ("i like the second draft"), 37 APEX 26.1 screenshots were sent as the reference, and the operator answered five questions (item 2).
+0b. **The console's files** (#962, 1.0.82): the operator deleted the eighteen files by hand; two repairs came with the commit — `ConsoleMode.tsx` (the designer's light/dark switch and the admin root's pre-paint script) moved to `components/designer/`, and the leftover `admin/audience/page.tsx` (four imports of deleted modules) removed. Five admin actions lost their screen and have homes agreed (item 2).
+0c. **Phase 4, PR 4.2** (#963, 1.0.83; review page `00637373-75ab-4362-9b89-9c90a25cdcec`): the Data tab redrawn — a strip counting fine / attention / problems / not connected, banded ruled cards with one figure each, the service page's four tabs in the same shapes (`components/designer/data-ui.tsx`: `Strip`, `Band`, `Swatch`, `RuledTable`, tone tokens through `light-dark()`); the loader's runs as a page (`DataRuns.tsx`, `GET /api/admin/design/data/runs`, `loadRunsLog()`, states fine · running · failed · stale (65 min, three 20-minute cycles) · never). Two production figures corrected on the way: loads per day were capped at 300 by the read window, and a registered source that had never run was left out of the count. Thresholds to move on the operator's word: Cloudflare amber above 0.5% errors, red above 2%; stale after 65 minutes.
+1. **The operator's answers (verbatim, ~08:30Z):** "1. need to find a place to fit the author requests, same as mark a supporter (this maybe in the data from clerk showing users), the feedback and thread moderation can be in data too (we could call data console and have the management there, or you could suggest smth else), home composer is a part of editing home page in the app builder, heatmap we can park and see if it fits in any way in the app builder 2. ok 3. ok. 4. ok, 5. ok." Earlier: "paddock should just be 1 application that paddock developer covers, i should have the ability to make more, in fact when opening the designer i should be asked to either log into my account or a workspace to access the applications associated with either"; "do whatever brings us closer to apex"; "does it make sense for us to have an object browser?" (Claude: yes, small and read-only, never a SQL runner). Claude's suggestion, standing: keep the tab named Data and put the action pages beside the data they act on (Members under Clerk, Moderation under Supabase); rename only if it outgrows.
+2. **Decisions waiting for you** (one at a time, each with a screen):
+   - **Third draft, App Builder and Shared Components in the APEX shape** (artifact `5d4fc3c2-8f63-4cc0-b5dd-6d7e11671f02`): App Builder opens on the applications list; the left rail leaves the Shared Components entry pages (breadcrumb + Tasks column); JSON Sources opens the Data tab's Upstream page. Say "go".
+   - **Workspaces and applications plan** (artifact `a3bfb43e-a167-4634-80f1-fa5618481b64`): five PRs W1–W5; two defaults to confirm — a second application lives on the same site under `/a/<alias>`; a workspace is a Clerk Organization (free: 100 organizations × 20 members, verified on clerk.com/pricing). Say "W1 go".
+   - **4.3 draft, data regions and the Object Browser** (artifact `d9dfe6d3-b685-4e05-aa9b-e4e8daba65c0`): Standings and Calendar regions first, Results when result rows exist; a read-only Tables page in Data; one catalogue file for both. Say "4.3 go".
+   - **Members and Moderation pages in Data** (from item 1): Claude builds them after the redesign PRs unless told to go first.
+   - The Data thresholds (0.5% / 2% / 65 min): say a number and it moves.
+   - Older, still open: Right Side Column on a code page; Ctrl+/ chords; photo tiles for Image regions; the remote branch `feat/designer-application-definition`.
+3. **Evidence:** review page `00637373-75ab-4362-9b89-9c90a25cdcec` (PR 4.2, dark and light dashboards, the runs page and its filter, the Supabase page's tabs); the browser run `e2e/data2.mjs` in the session scratchpad against a local database seeded with thirteen sources (one failing, one stale, one never run). Prod served 1.0.82 by 08:45Z and 1.0.83 at 08:53Z.
+4. **Won't touch until you say:** prod Supabase (nothing pending), the Page Designer's own look (the operator will go through it "further in depth"), the three drafts above, any branch deletion, the thresholds.
+
+### Landmines learned this morning
+- A Bash command over roughly 8 KB fails in this harness with "unexpected EOF while looking for matching quote" before anything runs; write long texts (release entries, PR bodies, scripts) with the Write tool and reference the file.
+- A Bash command containing a literal control character (a newline inside a JS string) is refused outright ("control characters that would be hidden in the approval dialog"); put the script in a file.
+- `pg_stat_user_tables.n_live_tup` is an estimate and reads 0 for tables never analysed; count with `select count(*)` (the Data tab does).
+- `.next/dev/types/routes.d.ts` can be left mid-write by a running `next dev` and fail `tsc` with syntax errors; stop the server (by PID from the port) and clear `.next/dev/types` and `.next/types`.
+- The admin root's `<html>` has no `suppressHydrationWarning`, so an operator whose stored console mode differs from the server's default sees a hydration warning (the "1 Issue" badge in development). Pre-existing, one attribute to fix, not done.
+
+---
+
+## Next session pickup — 2026-09-09 early morning (session 46 — **PR 1, PR 2, Application Definition, PR 3, Lists, Component Settings, Application Computations and Phase 4's Data workspace (PR 4.1) are live; 20260909050000 applied; the console is retired; waiting for you: the deletion list, PR 4.2 and 4.3**)
 
 ### 🔴 Start here
 
@@ -19,9 +46,9 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 1. **What PR 3 does** (review page, artifact `12aa2bd2-d34c-47fa-a2ae-87582f181a86`; CHANGELOG 1.0.74 has the file-level detail): a page the code serves takes regions in its Page Header, Breadcrumb Bar, Footer and Phone Bar, placed in the same Page Designer and published with the same Publish; the site renders them around the code's body (`CodePageFrame`, through `withPageGate`'s new `framed()`); the Body stays the code's; the Right Side Column waits for your decision (item 2). Seen in a real browser on the local server: a Static Content region in the About page's Page Header, published, shown above the page's own title at 90 px with the title at 212 px; removed and published again, the page back at once.
 2. **Decisions waiting for you** (one at a time, each with something to look at):
    - ~~**Apply, then merge PR 3**~~ Done 00:39Z / 00:40Z (item 0).
-   - **Delete the console's files** (the list in 0b), or keep any screen you still want.
+   - ~~**Delete the console's files**~~ The operator deleted them ~07:40Z; committed as #962 (1.0.82), see the section above.
    - ~~**"apply 20260909050000"**~~ Done 06:34:38Z (0f).
-   - ~~**Phase 4, PR 4.1**~~ Built on your "go ahead" (0f). **PR 4.2 and 4.3** follow on your word, each with a screen first.
+   - ~~**Phase 4, PR 4.1**~~ Built on your "go ahead" (0f). ~~PR 4.2~~ shipped as #963 (1.0.83); 4.3 has its draft (the section above).
    - **Right Side Column on a code page**: allowed (the code's body narrows to eight of twelve columns, a risk on data-heavy pages) or never? Recommendation: never for now; the Layout tile already says the decision is pending. A mock of both on request.
    - **Ctrl+/ pane chords** (APEX 22.1+, Ctrl+/ then a letter): not built, per your "no Ctrl set"; the Alt set is complete. Say the word and it is one PR.
    - **Image regions**: the Property Editor's photo is a select, as the prototype had it; photo tiles with thumbnails would read better. A mock on request.
