@@ -1,0 +1,505 @@
+455 concepts from 5 runs (0 bad lines dropped)
+   45  Templates
+   45  Items
+   22  Faceted Search
+   21  Page Designer
+   18  Theme styles & Theme Roller
+   17  Region types
+   15  Themes
+   14  Region attributes
+   14  Application definition
+   12  Columns
+   12  Lists & navigation
+   12  Security
+   11  Pages
+   11  Layout
+   10  Processing
+   10  Buttons
+   10  Component settings
+   10  Dynamic actions
+   10  Template options
+    8  Forms
+    8  Interactive Grid
+    7  Chart
+    7  Data sources
+    6  Page attributes
+    6  Session & URL
+    6  Calendar
+    6  Map
+    6  Interactive Report
+    6  Validations
+    6  Automations & email
+    6  Settings & build options
+    6  CSS & files
+    5  Search
+    5  Processes
+    5  Breadcrumbs
+    4  Classic Report
+    4  Computations
+    4  Files & comments
+    4  Text & shortcuts
+    3  Lists of values
+    3  Tree
+    3  Cards
+    2  Concepts
+    2  Branches
+    2  Pagination & links
+    2  Smart Filters
+    2  Logos & UI attributes
+    2  Template components
+
+[1] Concepts · Application · 7 attrs
+[1] Concepts · Source Location and Source Type · 10 attrs · SKIP: Table/View, SQL Query and PL/SQL function-body types are Oracle-DB que
+[1] Page attributes · Dialog attributes (page) · 6 attrs
+[1] Page attributes · Dialog Pages (Modal / Non-Modal) · 5 attrs
+[1] Page attributes · JavaScript group (page attributes) · 4 attrs · SKIP: Inlining JS into a database field works around no per-page source file
+[1] Page attributes · Page Attributes (overview) · 7 attrs
+[1] Page attributes · Rejoin Sessions (page attribute) · 6 attrs · SKIP: A cookie-vs-URL identity problem tied to APEX's session model; a JS ap
+[1] Page attributes · Warn on Unsaved Changes (page attribute) · 1 attrs
+[1] Page Designer · Adding/Copying Regions, Items, Buttons · 5 attrs
+[1] Page Designer · Code Editor (Property Editor) · 10 attrs · SKIP: A code-in-a-modal editor exists because APEX attributes are code strin
+[1] Page Designer · Comment Out / Uncomment (page components) · 3 attrs · SKIP: APEX needs a special toggle because deleting and recreating a DB-store
+[1] Page Designer · Copy Page Wizard · 8 attrs · SKIP: Template re-mapping on cross-app copy exists because APEX templates ar
+[1] Page Designer · Create menu (Page Designer toolbar) · 7 attrs
+[1] Page Designer · Deleting Pages (single, multiple, range) · 4 attrs
+[1] Page Designer · Gallery (component palette) · 3 attrs
+[1] Page Designer · Help Tab (attribute help) · 1 attrs
+[1] Page Designer · Layout Tab (visual canvas) · 5 attrs
+[1] Page Designer · Left Pane (Rendering / Dynamic Actions / Processing / Page Shared Components tabs) · 7 attrs
+[1] Page Designer · Locking and Unlocking a Page · 3 attrs · SKIP: Pessimistic whole-page locking compensates for one shared dev database
+[1] Page Designer · Page Designer (IDE) · 7 attrs
+[1] Page Designer · Page Designer Toolbar - navigation, lock, save · 7 attrs
+[1] Page Designer · Page Finder (Page Selector) · 4 attrs
+[1] Page Designer · Page Search Tab · 3 attrs
+[1] Page Designer · Property Editor (attribute groups, filter, pin) · 4 attrs
+[1] Page Designer · Quick Edit (runtime toolbar) · 3 attrs
+[1] Page Designer · Run Application / Run Page · 2 attrs
+[1] Page Designer · Runtime Developer Toolbar (overview) · 9 attrs
+[1] Page Designer · Save and Run Page - Global Page and Modal Dialog behavior · 1 attrs
+[1] Page Designer · Utilities menu (Page Designer toolbar) · 9 attrs · SKIP: Advisor, Checksum and APEXlang View are Oracle-specific integrity/expo
+[1] Pages · Component Page Types - data entry, search and structure · 13 attrs
+[1] Pages · Component Page Types - reports and displays · 11 attrs
+[1] Pages · Create Page Wizard (entry point and categories) · 5 attrs
+[1] Pages · Dashboard Page - per-chart configuration · 7 attrs
+[1] Pages · Feature Page Types · 9 attrs · SKIP: Some of these exist because APEX has no external identity or UI-kit pr
+[1] Pages · Global Page · 4 attrs · SKIP: A Next.js app already has a shared layout file wrapping every page; a 
+[1] Pages · Interactive Report / Interactive Grid - self-service report tooling · 10 attrs · SKIP: A full self-service report toolkit in one region type is a lot of surf
+[1] Pages · Legacy Page Types · 3 attrs · SKIP: Explicitly legacy even within APEX itself; not relevant to a greenfiel
+[1] Pages · Login Page (Feature Page type) · 4 attrs · SKIP: Paddock uses Clerk for authentication; APEX's own login-page-plus-logi
+[1] Pages · Master Detail (page pattern) · 3 attrs
+[1] Pages · Page Groups · 5 attrs · SKIP: A cosmetic grouping tag on numbered pages compensates for APEX having 
+[1] Processing · Authentication (Verifying User Identity) · 3 attrs · SKIP: Paddock already has Clerk for auth; APEX's own authentication-scheme s
+[1] Processing · Authorization Scheme · 4 attrs
+[1] Processing · Branching with Dialog Pages · 2 attrs
+[1] Processing · Build Option (feature toggle) · 3 attrs · SKIP: A DB-row feature flag with only Include/Exclude and manual cleanup; a 
+[1] Processing · Cancel Dialog / Close Dialog (dialog page actions) · 4 attrs · SKIP: A dialog page is a full APEX page rendered in an overlay, needing its 
+[1] Processing · Condition (Conditional Rendering and Processing) · 5 attrs
+[1] Processing · Debug Mode (runtime toolbar) · 5 attrs · SKIP: A leveled server-side processing log is an Oracle/PL-SQL debugging pat
+[1] Processing · Implicit Commit Points · 6 attrs · SKIP: Pure Oracle transaction-management detail tied to one DB session per r
+[1] Processing · Page Processing Engine: Show Page / Accept Page · 2 attrs · SKIP: This two-phase render/submit cycle is a server-rendered-forms pattern;
+[1] Processing · Page Processing Points (Pre-Rendering and Page Submission) · 7 attrs · SKIP: A fixed sequence of DB-transaction checkpoints tied to one HTTP cycle;
+[1] Session & URL · Friendly URL Syntax · 4 attrs
+[1] Session & URL · REQUEST (button-click intent) · 4 attrs · SKIP: A shared global for detecting which button submitted a form works arou
+[1] Session & URL · Session menu (runtime toolbar) · 2 attrs · SKIP: Session state is a server-persisted APEX construct; a JS app inspects 
+[1] Session & URL · Session State · 3 attrs · SKIP: The whole mechanism compensates for stateless server-rendered HTTP; a 
+[1] Session & URL · URL Parameters (query string) · 13 attrs · SKIP: session, cs and clear-cache codes are internal to APEX's server-render
+[1] Session & URL · URL Syntax (Friendly vs f?p) · 3 attrs · SKIP: f?p positional encoding is Oracle legacy; a Next.js app just uses norm
+[1] Templates · Built-in Substitution Strings (system globals) · 14 attrs · SKIP: Each is a differently-spelled accessor for the same handful of request
+[1] Templates · Dialog Template (Page Template Type: Dialog Page) · 6 attrs · SKIP: Wiring dialog geometry through template substitution tokens works arou
+[1] Templates · Substitution Strings · 7 attrs · SKIP: String-token replacement inside server-rendered HTML strings; JSX expr
+[1] Templates · Tabular-form Row Substitutions (APEX$ROW_*) · 3 attrs · SKIP: Row-identity placeholders exist because a tabular form posts every row
+[1] Templates · Template Directives · 7 attrs · SKIP: A bracket-token mini-language for conditionals/loops inside DB-stored 
+[1] Templates · Templates (concept) · 6 attrs · SKIP: APEX stores templates as DB rows rendered server-side with substitutio
+[1] Templates · With and Apply Directives (Template Component invocation) · 4 attrs · SKIP: Directly analogous to passing props to a reusable component; a JS fram
+[2] Buttons · Branching with Buttons · 5 attrs · SKIP: This is Oracle's server-rendered multi-phase page-submit lifecycle; a 
+[2] Buttons · Button · 5 attrs
+[2] Buttons · Button Actions (Behavior, Action) · 6 attrs · SKIP: Submit Page's REQUEST value and server-side branch/process gating on :
+[2] Buttons · Button Confirmation Dialog · 3 attrs
+[2] Buttons · Button Displayed as Menu · 7 attrs
+[2] Buttons · Button Name / REQUEST binding · 2 attrs · SKIP: A single-page-submit-then-inspect-REQUEST dispatch pattern is specific
+[2] Buttons · Button Warn on Unsaved Changes · 2 attrs
+[2] Buttons · Hiding or Disabling a Button · 2 attrs
+[2] Buttons · Show Processing (button) · 2 attrs
+[2] Buttons · Trigger Action (button) · 2 attrs
+[2] Calendar · Calendar (region type) · 5 attrs · SKIP: Drag-and-drop is only supported for local database sources, not extern
+[2] Calendar · Calendar Attributes (two attribute sets) · 4 attrs
+[2] Calendar · Calendar Create/Edit Links · 5 attrs
+[2] Calendar · Calendar Drag and Drop · 4 attrs · SKIP: Persisting the drop via a server PL/SQL block keyed on Oracle bind var
+[2] Calendar · Calendar Initialization JavaScript Code · 1 attrs · SKIP: This hands configuration straight to the FullCalendar library instance
+[2] Calendar · Calendar Source, Location · 6 attrs
+[2] Chart · Chart (region type) · 4 attrs
+[2] Chart · Chart Attribute Structure (Region/Attributes/Series) · 3 attrs
+[2] Chart · Chart Automatic Refresh · 4 attrs
+[2] Chart · Chart Axes · 2 attrs
+[2] Chart · Chart Creation Methods and Types · 3 attrs
+[2] Chart · Chart Custom JavaScript (JET options) · 1 attrs · SKIP: This passes options straight through to the underlying Oracle JET ojCh
+[2] Chart · Chart Series · 4 attrs
+[2] Items · Application Item · 8 attrs · SKIP: Session State Protection's checksum tiers guard Oracle's URL-based sta
+[2] Items · Checkbox (item type) · 3 attrs
+[2] Items · Checkbox Group (item type) · 5 attrs · SKIP: Colon-delimited-string encoding of a multi-select works around a singl
+[2] Items · Color Picker (item type) · 6 attrs
+[2] Items · Combobox (item type) · 10 attrs
+[2] Items · Date Picker (item type) · 11 attrs · SKIP: Native HTML mode's format mask is browser-locked by APEX; a JS date-pi
+[2] Items · Date Picker (jQuery) (item type, desupported) · 2 attrs · SKIP: Purely an Oracle backward-compatibility shim during a widget-library m
+[2] Items · Default (item value source) · 7 attrs · SKIP: SQL/PL-SQL-computed defaults run server-side against Oracle; a JS comp
+[2] Items · Display Image (item type) · 5 attrs · SKIP: BLOB-column image storage plus a last-updated column for browser cachi
+[2] Items · Display Map (item type) · 9 attrs
+[2] Items · Display Only (item type) · 6 attrs
+[2] Items · File Upload (item type) · 10 attrs · SKIP: Storing uploads in an APEX temp-files table or a row's BLOB column is 
+[2] Items · Format Mask (item Appearance attribute) · 1 attrs
+[2] Items · Geocoded Address (item type) · 7 attrs · SKIP: Calls Oracle's own Elocation REST service from the browser; a JS app w
+[2] Items · Hidden (item type) · 3 attrs
+[2] Items · Image Upload (item type) · 7 attrs
+[2] Items · Item Naming Conventions · 2 attrs · SKIP: The 30-char/bind-variable-syntax ceiling is an Oracle SQL/PLSQL bindin
+[2] Items · Item Security group · 4 attrs · SKIP: Checksum-guarded URL state-setting defends Oracle's f?p link format; a
+[2] Items · Item Server-side Condition · 1 attrs
+[2] Items · List Manager (item type) · 5 attrs
+[2] Items · Markdown Editor (item type) · 4 attrs
+[2] Items · Multiple Values (item group) · 4 attrs · SKIP: Delimited-string/JSON-in-a-column encoding works around SQL columns be
+[2] Items · Number Field (item type) · 6 attrs · SKIP: The 15-17 digit IEEE-754 ceiling is a JavaScript number-representation
+[2] Items · Page Item · 6 attrs
+[2] Items · Page Item vs Application Item · 4 attrs · SKIP: Both are Oracle server-session-state slots; a JS app holds page-local 
+[2] Items · Password (item type) · 7 attrs
+[2] Items · Percent Graph (item type) · 1 attrs
+[2] Items · Popup LOV (item type) · 9 attrs
+[2] Items · QR Code (item type) · 3 attrs
+[2] Items · Quick Picks · 6 attrs
+[2] Items · Radio Group (item type) · 5 attrs
+[2] Items · Read Only (item attribute) · 1 attrs
+[2] Items · Referencing Item Values · 5 attrs · SKIP: V()/NV()/bind-variable/substitution syntaxes are all reads of Oracle's
+[2] Items · Rich Text Editor (item type) · 7 attrs
+[2] Items · Select List (item type) · 6 attrs
+[2] Items · Select Many (item type) · 10 attrs
+[2] Items · Select One (item type) · 9 attrs
+[2] Items · Session State Storage (item) · 3 attrs · SKIP: This is Oracle's own server-held session table; a JS app keeps transie
+[2] Items · Shuttle (item type) · 4 attrs
+[2] Items · Star Rating (item type) · 8 attrs
+[2] Items · Switch (item type) · 4 attrs
+[2] Items · Text Field (item type) · 4 attrs
+[2] Items · Text Field with Autocomplete (item type) · 8 attrs
+[2] Items · Textarea (item type) · 6 attrs
+[2] Items · Warn on Unsaved Changes (item) · 2 attrs
+[2] Layout · Copying a Region · 2 attrs
+[2] Layout · Creating a Region (Page Designer) · 3 attrs · SKIP: Legacy region types (deprecated but still supported) are an Oracle upg
+[2] Layout · Deleting Regions · 1 attrs
+[2] Layout · Global Page · 1 attrs
+[2] Layout · Item Layout (Region + Position) · 2 attrs
+[2] Layout · Page Layout Model · 4 attrs
+[2] Layout · Parent Region (nesting) · 3 attrs
+[2] Layout · Parent/Child Data in Regions (BOSS REST nesting) · 2 attrs · SKIP: Oracle Cloud Applications BOSS REST integration is a niche enterprise-
+[2] Layout · Region · 4 attrs
+[2] Layout · Region Grid Layout (Start New Row, Column, Span, Sequence) · 8 attrs · SKIP: A DIV-based 12-column grid substituting for the pre-Universal-Theme HT
+[2] Layout · Tabs · 6 attrs · SKIP: Theme-era HTML-table navigation tied to Oracle's older page templates;
+[2] Lists of values · Cascading List of Values · 4 attrs
+[2] Lists of values · List of Values (LOV) · 4 attrs
+[2] Lists of values · Static List of Values · 5 attrs
+[2] Map · Map (region type) · 5 attrs · SKIP: Background tiles come from Oracle's own Elocation/maps.oracle.com serv
+[2] Map · Map Controls · 10 attrs
+[2] Map · Map Initial Position, Zoom and Bounding Box · 3 attrs
+[2] Map · Map Layer · 5 attrs · SKIP: SDO_GEOMETRY is Oracle Spatial's native column type; a JS app stores g
+[2] Map · Map Layer Styling (Appearance/Tooltip/Info Window/Legend) · 5 attrs
+[2] Map · Map-to-Report Sync Pattern · 4 attrs · SKIP: sdo_anyinteract spatial filtering is Oracle Spatial SQL; a JS map (Map
+[2] Region attributes · Region Accessibility group · 1 attrs
+[2] Region attributes · Region Advanced group · 5 attrs
+[2] Region attributes · Region Appearance group · 1 attrs
+[2] Region attributes · Region Attributes tab (type-specific settings) · 4 attrs
+[2] Region attributes · Region Configuration group · 1 attrs
+[2] Region attributes · Region Customization group (end-user layout) · 3 attrs
+[2] Region attributes · Region Header and Footer group · 6 attrs
+[2] Region attributes · Region Identification group · 3 attrs
+[2] Region attributes · Region Image (Advanced) · 2 attrs
+[2] Region attributes · Region Layout group (Position) · 4 attrs
+[2] Region attributes · Region Security group · 1 attrs
+[2] Region attributes · Region Server Cache group (region caching) · 4 attrs
+[2] Region attributes · Region Server-side Condition group · 3 attrs
+[2] Region attributes · Region Source group · 2 attrs
+[2] Region types · Breadcrumb (region type) · 1 attrs
+[2] Region types · Cards (region type) · 5 attrs
+[2] Region types · Classic Report (region type) · 2 attrs
+[2] Region types · Dynamic Content / PL/SQL Dynamic Content (region type) · 1 attrs · SKIP: Generating markup from a server-side PL/SQL function is Oracle's escap
+[2] Region types · Faceted Search (region type) · 2 attrs
+[2] Region types · Form (region type) · 3 attrs
+[2] Region types · Help Text (region type) · 1 attrs
+[2] Region types · Interactive Grid (region type) · 1 attrs
+[2] Region types · Interactive Report (region type) · 2 attrs
+[2] Region types · List (region type) · 1 attrs
+[2] Region types · Reflow Report (region type, legacy) · 1 attrs
+[2] Region types · Region Display Selector (region type) · 5 attrs
+[2] Region types · Region Type Plug-ins · 8 attrs · SKIP: APEX's plug-in packaging (PL/SQL render/AJAX callbacks registered as a
+[2] Region types · Smart Filters (region type) · 2 attrs
+[2] Region types · Static Content (region type) · 1 attrs
+[2] Region types · URL (region type, detail) · 7 attrs · SKIP: Server-side HTML fetch-and-inline via utl_http and a DB-stored SSL wal
+[2] Region types · Workflow Diagram (region type) · 1 attrs · SKIP: APEX's built-in Workflow engine (approvals, activities) is an Oracle-s
+[2] Search · List Search · 3 attrs
+[2] Search · Search (region type / feature) · 4 attrs
+[2] Search · Search Configuration (Shared Component) · 5 attrs · SKIP: Oracle TEXT and Oracle Ubiquitous Search depend on Oracle-specific dat
+[2] Search · Search Configuration Column Mapping · 6 attrs
+[2] Search · Search Configuration Link · 6 attrs
+[2] Tree · Tree (region type) · 3 attrs · SKIP: START WITH .. CONNECT BY is Oracle SQL's native recursive-hierarchy sy
+[2] Tree · Tree Attributes (node mapping) · 8 attrs
+[2] Tree · Tree via Create Page Wizard (Start Tree) · 4 attrs
+[3] Branches · Branch (overview) · 2 attrs
+[3] Branches · Branch attributes: Point, Type, When Button Pressed · 10 attrs · SKIP: Point names mirror Oracle APEX's page-submit lifecycle; a JS route han
+[3] Cards · Card Actions · 12 attrs · SKIP: Session-state Set Items/Clear Cache targeting page numbers is APEX pag
+[3] Cards · Card Attribute Groups (Title/Subtitle/Body/Secondary Body/Icon/Badge/Media) · 9 attrs
+[3] Cards · Cards Region (overview) · 3 attrs
+[3] Classic Report · Classic Report (overview) · 3 attrs · SKIP: SQL-query-as-source is Oracle-specific; a JS equivalent is an API rout
+[3] Classic Report · Classic Report Appearance: Template and Template Options · 14 attrs
+[3] Classic Report · Classic Report Break Formatting (column breaks) · 2 attrs
+[3] Classic Report · Classic Report Download (CSV/XML export) · 7 attrs
+[3] Columns · Classic Report Column: layout, heading, sort, sum · 7 attrs
+[3] Columns · Column Formatting (HTML Expression) · 3 attrs
+[3] Columns · Column Link (per-column Type: Link) · 6 attrs
+[3] Columns · Column visibility (Authorization Scheme, Server-side Condition) and CSV download link · 3 attrs
+[3] Columns · Filtering on Conditional/Query-built Links (workaround) · 3 attrs
+[3] Columns · Interactive Grid Column: heading, type, width · 7 attrs
+[3] Columns · Interactive Report Column Link · 4 attrs
+[3] Columns · Interactive Report Column: heading, layout, accessibility, classes · 12 attrs
+[3] Columns · Link Column (Interactive Report row-link) · 8 attrs · SKIP: Single Row View is a built-in APEX modal; a JS table implements the eq
+[3] Columns · Link Column: Custom Target (page/URL) options · 6 attrs · SKIP: Session-state Set Items and page-level cache clearing are APEX-specifi
+[3] Columns · Link Column: Single Row View options · 2 attrs
+[3] Columns · Updatable Column and Column as List of Values · 6 attrs · SKIP: Multirow update against an Oracle table via a PL/SQL DML process is AP
+[3] Computations · Application Computation · 10 attrs · SKIP: On New Instance and After Authentication are Oracle-APEX session-lifec
+[3] Computations · Application Computation: Copy and Subscribe · 5 attrs · SKIP: APEX cross-application subscription (one workspace, many apps sharing 
+[3] Computations · Page Computation (points and attributes) · 5 attrs
+[3] Computations · Page Computation Types · 4 attrs · SKIP: PL/SQL Function Body and SQL Query types run inside the Oracle DB sess
+[3] Faceted Search · Adding a facet (types, ordering, Synchronize Facets) · 8 attrs
+[3] Faceted Search · Auto-Discovered Facets (Data Dictionary Cache) · 3 attrs · SKIP: Relies on Oracle's Data Dictionary Cache and a nightly refresh job; a 
+[3] Faceted Search · Batch Facet Changes · 1 attrs
+[3] Faceted Search · Cascading facets (Depending On) and inline vs dialog display · 3 attrs
+[3] Faceted Search · Facet (component attributes) · 7 attrs
+[3] Faceted Search · Facet charts, facet groups, and occurrence counts · 4 attrs
+[3] Faceted Search · Facet Group (bundling flag columns) · 5 attrs
+[3] Faceted Search · Facet List Entries display (filter box, counts) · 4 attrs
+[3] Faceted Search · Facet List of Values size limit · 2 attrs
+[3] Faceted Search · Facet on a multi-value column · 8 attrs · SKIP: Splitting a delimited or JSON column value at query time inside Oracle
+[3] Faceted Search · Facet Types · 6 attrs
+[3] Faceted Search · Facet vs page item, and region Filtered Region · 2 attrs
+[3] Faceted Search · Faceted Search Page · 2 attrs
+[3] Faceted Search · Faceted Search Region · 3 attrs
+[3] Faceted Search · Input Field facet settings · 5 attrs
+[3] Faceted Search · Range facet static bucket editing and NLS separators · 3 attrs · SKIP: NLS locale substitution is an Oracle globalization feature; a JS app f
+[3] Faceted Search · Range facet static value buckets · 2 attrs
+[3] Faceted Search · Region layout grid (Sequence, Column, Column Span) · 4 attrs
+[3] Faceted Search · Reset button (clear all facets) · 4 attrs
+[3] Faceted Search · Search facet across multiple columns · 1 attrs
+[3] Faceted Search · Show Total Row Count · 3 attrs
+[3] Faceted Search · Single Facet Charts · 7 attrs
+[3] Forms · Create Page Wizard: Form Data Source and Primary Key · 12 attrs · SKIP: REST Enabled SQL, Duality View and JSON Source are Oracle-specific dat
+[3] Forms · Form (overview and form-type index) · 4 attrs
+[3] Forms · Form Types: Editable Interactive Grid · 2 attrs
+[3] Forms · Form Types: Form (Form on Table) · 6 attrs
+[3] Forms · Form Types: Master Detail · 3 attrs
+[3] Forms · Form Types: Report with Form · 2 attrs
+[3] Forms · Lost Update Detection · 1 attrs · SKIP: Relies on Oracle session-state row versioning; a JS app achieves the s
+[3] Forms · Master Detail relationship wiring · 4 attrs · SKIP: Foreign-key-driven wizard inference reads Oracle constraint metadata; 
+[3] Interactive Grid · Editable Interactive Grid · 4 attrs · SKIP: Inline spreadsheet-style bulk editing tied to a DB session is Oracle-s
+[3] Interactive Grid · Interactive Grid (overview) · 4 attrs
+[3] Interactive Grid · Interactive Grid Column Filter (LOV Type) · 8 attrs
+[3] Interactive Grid · Interactive Grid Column Link (incl. cross-application target) · 6 attrs
+[3] Interactive Grid · Interactive Grid Column: Enable Users To (Sort/Hide/Aggregate) · 3 attrs
+[3] Interactive Grid · Interactive Grid Multi Select · 2 attrs
+[3] Interactive Grid · Interactive Grid Region attributes · 5 attrs
+[3] Interactive Grid · Interactive Grid toolbar and menus (Column Heading, Actions, Row Actions) · 10 attrs
+[3] Interactive Report · Interactive Report (overview) · 4 attrs
+[3] Interactive Report · Interactive Report Column Filter (search bar/header filter LOV) · 6 attrs
+[3] Interactive Report · Interactive Report Region Server-side Condition · 1 attrs
+[3] Interactive Report · Interactive Report Row Selection · 5 attrs
+[3] Interactive Report · Interactive Report toolbar and menus (Column Heading, Actions) · 11 attrs · SKIP: Report-update email Subscription is an Oracle APEX scheduler and mail 
+[3] Interactive Report · Report page type trade-offs (Classic vs Interactive Report vs Interactive Grid) · 3 attrs
+[3] Pagination & links · BOSS REST Data Source Pagination/Total Results · 2 attrs · SKIP: BOSS REST Data Source config is Oracle-specific plumbing; a Next.js AP
+[3] Pagination & links · Classic Report Pagination · 3 attrs
+[3] Processes · Application Process · 7 attrs · SKIP: On Demand invocation via an f?p= URL keyword and PL/SQL execution are 
+[3] Processes · Application Process Error Message · 3 attrs
+[3] Processes · Page Process (overview) · 2 attrs
+[3] Processes · Page Process Types (core data/flow) · 12 attrs · SKIP: Execute Code (PL/SQL) and Automatic Row Processing (DML) are Oracle DB
+[3] Processes · Page Process Types (integration/notification/AI/workflow) · 9 attrs · SKIP: Server Side Geocoding and Workflow/Human Task are Oracle Autonomous DB
+[3] Smart Filters · Smart Filters chip-based UI · 5 attrs
+[3] Smart Filters · Smart Filters Page · 2 attrs
+[3] Validations · Validation (overview and scope types) · 5 attrs
+[3] Validations · Validation Error Display · 5 attrs
+[3] Validations · Validation Error Message and Display Location · 6 attrs
+[3] Validations · Validation failure behavior and conditional execution · 3 attrs · SKIP: Skipping DB row-refetch on validation failure is specific to APEX fetc
+[3] Validations · Validation: Always Execute · 3 attrs
+[3] Validations · Wizard-generated validations from column metadata · 3 attrs · SKIP: Deriving validations from Oracle column constraints and data-dictionar
+[4] Application definition · Application Definition - Availability · 4 attrs · SKIP: A single Status toggle backed by the database; a JS site gates the sam
+[4] Application definition · Application Definition - Error Handling · 2 attrs · SKIP: The Error Handling Function is a PL/SQL callback matching the apex_err
+[4] Application definition · Application Definition - Global Notification & Substitutions · 2 attrs · SKIP: The &NAME. substitution syntax is APEX's template-rendering mechanism;
+[4] Application definition · Application Definition - Name · 4 attrs
+[4] Application definition · Application Definition - Properties · 12 attrs · SKIP: Compatibility Mode (freezing per-release engine behavior), Text Query 
+[4] Application definition · Application Definition - Workflow, Printing, File Storage, Copyright · 5 attrs · SKIP: PL/SQL vacation-rule procedures, native PDF/RTF/XLS report servers, an
+[4] Application definition · Globalization Attributes · 11 attrs · SKIP: Application-Based translation (a whole cloned app per language) and NL
+[4] Application definition · PWA: General & Installability · 10 attrs · SKIP: Only unlocks when Friendly URLs is On. A hand-built Next.js PWA just s
+[4] Application definition · PWA: Service Worker Configuration · 3 attrs · SKIP: Paddock already hand-rolls its own service worker via @serwist/next; A
+[4] Application definition · PWA: Shortcuts & Push Notifications · 5 attrs · SKIP: The public/private key Credential maps onto the standard Web Push API;
+[4] Application definition · User Interface: Attributes (misc) · 8 attrs · SKIP: Global Page as an APEX region-inheritance mechanism is theme-specific;
+[4] Application definition · User Interface: Concatenated Files & Advanced · 4 attrs · SKIP: Concatenating files into one bundle is what a JS build tool (webpack/V
+[4] Application definition · User Interface: Icon & Logo · 2 attrs
+[4] Application definition · User Interface: JavaScript & CSS File URLs · 4 attrs · SKIP: jQuery Migrate and RequireJS-specific URL prefixes are legacy-APEX-run
+[4] Automations & email · Automation · 6 attrs · SKIP: Automations are PL/SQL-first background jobs run by an Oracle schedule
+[4] Automations & email · Automation Execution Log & History · 3 attrs
+[4] Automations & email · Automation Import/Export behavior · 0 attrs · SKIP: Import-disables-automations is an APEX deployment safety default; a JS
+[4] Automations & email · Automation Scheduling mechanics · 1 attrs · SKIP: The CREATE JOB privilege and Oracle Scheduler coordinator job are data
+[4] Automations & email · Email Template · 7 attrs · SKIP: apex_mail.send/push_queue is Oracle APEX's built-in mail-merge and sen
+[4] Automations & email · Email Template Reports & Sample Templates · 3 attrs
+[4] Breadcrumbs · Breadcrumb Entry · 15 attrs · SKIP: Clear Cache / Set session state and the REQUEST item are Oracle page-s
+[4] Breadcrumbs · Breadcrumb Region & Template · 3 attrs
+[4] Breadcrumbs · Breadcrumb Reports · 3 attrs
+[4] Breadcrumbs · Breadcrumbs · 1 attrs
+[4] Breadcrumbs · Dynamic Breadcrumb Labels · 2 attrs · SKIP: Relies on Oracle's &ITEM. session-state substitution; a JS app just in
+[4] Component settings · Attribute Dictionary · 3 attrs · SKIP: Matching by database column name/synonym across forms and reports is a
+[4] Component settings · Component Settings (concept) · 12 attrs · SKIP: Applies to built-in APEX item types and Oracle integrations (BOSS/SaaS
+[4] Component settings · Component Settings: Checkbox & Color Picker · 4 attrs
+[4] Component settings · Component Settings: Date Picker · 9 attrs
+[4] Component settings · Component Settings: Geocoded Address & Server Side Geocoding · 5 attrs · SKIP: Server-side geocoding with graduated match-relaxation is an Oracle Map
+[4] Component settings · Component Settings: Interactive Report Action Menu & Select Many · 2 attrs
+[4] Component settings · Component Settings: Oracle Cloud Applications REST integrations · 2 attrs · SKIP: Both settings are specific to consuming Oracle Cloud Applications (Fus
+[4] Component settings · Component Settings: Show AI Assistant · 2 attrs
+[4] Component settings · Component Settings: Star Rating & Region Display Selector/Maps · 6 attrs
+[4] Component settings · Component Settings: Switch · 5 attrs
+[4] Data sources · JSON Source · 8 attrs · SKIP: JSON Collection Tables and Data-Profile inference from a JSON Schema a
+[4] Data sources · JSON Source data constraints · 3 attrs · SKIP: Version-gated Oracle Database JSON storage features (Collection Tables
+[4] Data sources · REST Data Source · 4 attrs · SKIP: This is APEX's declarative alternative to writing a fetch() call and p
+[4] Data sources · REST Data Source Credential · 3 attrs · SKIP: Encrypted, write-only Credential storage shared across Remote Servers/
+[4] Data sources · REST Data Source Data Profile details · 3 attrs
+[4] Data sources · REST Data Source Operations vs Legacy Web Services · 2 attrs · SKIP: Mapping HTTP verbs to a fixed CRUD vocabulary so generic report/form r
+[4] Data sources · REST Data Source structure (Source vs Operations) · 2 attrs
+[4] Dynamic actions · Actions: Component & Navigation · 14 attrs
+[4] Dynamic actions · Actions: Execute, Style & Notification · 14 attrs · SKIP: Execute Server-side Code and Generate Text With AI (Oracle's configure
+[4] Dynamic actions · Actions: Miscellaneous, AI extras & Report Dialog · 4 attrs · SKIP: Get Current Position/Share map directly onto the browser's Geolocation
+[4] Dynamic actions · Calling JavaScript from a Dynamic Action · 2 attrs
+[4] Dynamic actions · Debugging Dynamic Actions · 1 attrs · SKIP: This is literally browser-devtools console output; a JS app already ge
+[4] Dynamic actions · Dynamic Action · 0 attrs
+[4] Dynamic actions · Dynamic Action - Action attributes · 7 attrs
+[4] Dynamic actions · Dynamic Action attributes (the trigger) · 8 attrs
+[4] Dynamic actions · Dynamic Action Event Scope & Execution Type · 7 attrs · SKIP: Partial Page Refresh rebinding is an artifact of APEX's server-rendere
+[4] Dynamic actions · Dynamic Action Events · 15 attrs
+[4] Files & comments · Developer Comments · 1 attrs
+[4] Files & comments · Static Application Files · 2 attrs · SKIP: Storing static assets inside database rows is an APEX-specific pattern
+[4] Files & comments · Static Application Files vs Static Workspace Files · 0 attrs · SKIP: Workspace-level shared file storage across multiple APEX apps has no d
+[4] Files & comments · Team Development Issue Comments · 4 attrs · SKIP: This is Oracle APEX's own bundled issue-tracker for the development te
+[4] Lists & navigation · Dynamic List Query Contract · 9 attrs · SKIP: Entirely Oracle SQL/PL-SQL driven (CONNECT BY hierarchy queries, posit
+[4] Lists & navigation · Hierarchical (Sublist) Lists · 2 attrs · SKIP: Template-driven sublist rendering is an APEX theming mechanic; a JS co
+[4] Lists & navigation · List Entry Click Counting · 2 attrs · SKIP: COUNT_CLICK is an Oracle APEX PL/SQL API writing to an APEX-internal t
+[4] Lists & navigation · List management & reports · 0 attrs
+[4] Lists & navigation · List Region · 9 attrs
+[4] Lists & navigation · List Subscription (shared component pattern) · 5 attrs · SKIP: Cross-application component subscription/sync is an APEX workspace con
+[4] Lists & navigation · Lists as Navigation · 0 attrs
+[4] Lists & navigation · Navigation Bar (list-based) · 4 attrs
+[4] Lists & navigation · Navigation Menu · 5 attrs · SKIP: Auto-generated per-page nav list and theme-level Side/Top/Mega positio
+[4] Lists & navigation · Static List Entry · 14 attrs · SKIP: Target session-state fields (Request, Clear Cache, Set these items/Wit
+[4] Lists & navigation · Static List vs Dynamic List · 0 attrs · SKIP: Dynamic lists driven by SQL/PL-SQL are Oracle-DB-specific; a JS site w
+[4] Lists & navigation · Switching from Tabs to Navigation Menus · 0 attrs · SKIP: Tabs vs Navigation Menu is a Universal-Theme-generation migration path
+[4] Security · Attaching an Authorization Scheme · 5 attrs · SKIP: Run on Background Job's cloned-session-state caveat is specific to APE
+[4] Security · Authentication (concept) · 2 attrs · SKIP: Paddock uses Clerk for authentication, so APEX's Authentication Scheme
+[4] Security · Authorization Scheme · 5 attrs
+[4] Security · Authorization Scheme Reports · 2 attrs
+[4] Security · Authorization Scheme Types · 8 attrs · SKIP: Exists/NOT Exists SQL Query and PL/SQL Function Returning Boolean run 
+[4] Security · Security: Advanced (Runtime API / ECID) · 2 attrs · SKIP: Both are Oracle-APEX-platform self-modification/tracing concepts; a JS
+[4] Security · Security: Authentication (app-level) · 3 attrs · SKIP: Paddock uses Clerk for authentication, so APEX's Authentication Scheme
+[4] Security · Security: Authorization (app-level) · 3 attrs
+[4] Security · Security: Browser Security · 4 attrs
+[4] Security · Security: Database Session · 4 attrs · SKIP: Parsing Schema and Initialization/Cleanup PL/SQL blocks are Oracle-dat
+[4] Security · Security: Session Management · 8 attrs · SKIP: Rejoin Sessions and Session State Commits are APEX's own server-sessio
+[4] Security · Security: Session State Protection · 4 attrs · SKIP: URL-embedded checksums are specific to APEX's f?p= URL scheme; a JS ap
+[4] Settings & build options · Application Setting · 9 attrs
+[4] Settings & build options · Application Setting vs Build Option (which to use) · 0 attrs
+[4] Settings & build options · Build Option - Selecting & Deleting · 1 attrs
+[4] Settings & build options · Build Option (component attributes) · 8 attrs
+[4] Settings & build options · Build Option reports & export · 3 attrs
+[4] Settings & build options · Build Options (concept) · 2 attrs · SKIP: Evaluated by the Oracle APEX engine server-side at render time; a JS a
+[4] Text & shortcuts · Shortcut · 5 attrs · SKIP: Function Body Returning VARCHAR2 is server-rendered-string logic speci
+[4] Text & shortcuts · Shortcut Reports & Referencing Locations · 3 attrs
+[4] Text & shortcuts · Text Message · 6 attrs · SKIP: APEX_LANG/APEX.LANG.* runtime message lookup by language is APEX's own
+[4] Text & shortcuts · Translating Messages workflow · 0 attrs
+[5] CSS & files · Calling a JavaScript file from the Page Template · 1 attrs
+[5] CSS & files · Files (theme attribute: File Prefix + Create File) · 5 attrs · SKIP: Choosing between DB-stored theme files and a web-server path is an Ora
+[5] CSS & files · Referencing an uploaded CSS file (page template Header) · 3 attrs
+[5] CSS & files · Static CSS file upload + scope · 2 attrs · SKIP: Workspace-scoped file sharing across multiple apps only matters in Ora
+[5] CSS & files · Theme CSS/image file locations · 4 attrs · SKIP: Version-suffixed CSS paths solve cross-version app import compatibilit
+[5] CSS & files · Theme-level JavaScript File URLs / CSS File URLs · 7 attrs · SKIP: The #MIN#/#MIN_DIRECTORY# debug-mode auto-swap is specific to APEX's r
+[5] Logos & UI attributes · Application Logo (User Interface Attributes) · 7 attrs
+[5] Logos & UI attributes · Editing App Logo at Runtime (Edit Logo dialog) · 4 attrs
+[5] Template components · Template Component (plug-in type) · 5 attrs · SKIP: The plug-in-not-PL/SQL framing and Page Designer registration model ar
+[5] Template components · Template Component region capabilities · 5 attrs
+[5] Template options · Creating / Editing a Template Option Group · 8 attrs
+[5] Template options · Creating a Template Option · 7 attrs
+[5] Template options · Default Template Option / #DEFAULT# · 2 attrs
+[5] Template options · Editing / Deleting a Template Option · 8 attrs
+[5] Template options · Global Template Option · 8 attrs
+[5] Template options · Global Template Option Group · 9 attrs
+[5] Template options · Live Template Options (Quick Edit dialog) · 4 attrs
+[5] Template options · Template Option · 2 attrs
+[5] Template options · Template Option Group: Advanced flag (Basic vs Advanced) · 1 attrs
+[5] Template options · Template Option Groups and Presets · 2 attrs
+[5] Templates · Breadcrumb Template · 6 attrs
+[5] Templates · Breadcrumb Template: substitution strings · 4 attrs
+[5] Templates · Button Template · 4 attrs
+[5] Templates · Button Template: substitution strings · 9 attrs
+[5] Templates · Creating a New Template (procedure) · 4 attrs
+[5] Templates · Custom template workflow (general) · 2 attrs
+[5] Templates · Default Page Template selection · 2 attrs
+[5] Templates · Escaping syntax in substitution strings · 1 attrs
+[5] Templates · Generic Column Template vs Named Column Template · 3 attrs
+[5] Templates · Label Templates · 1 attrs
+[5] Templates · List Template / Hierarchical Lists · 2 attrs
+[5] Templates · List Template: Sublist Entry and substitution strings · 6 attrs
+[5] Templates · List Template: wrapper and per-entry HTML · 8 attrs
+[5] Templates · Page Template · 5 attrs
+[5] Templates · Page Template: Definition (Header/Body/Footer) · 3 attrs
+[5] Templates · Page Template: Dialog attributes (template-level + required) · 6 attrs
+[5] Templates · Page Template: JavaScript and CSS attributes · 8 attrs
+[5] Templates · Page Template: Layout types and Positions · 4 attrs
+[5] Templates · Page Template: Name section · 4 attrs
+[5] Templates · Page Template: Subtemplates and Image-Based Tab Attributes · 6 attrs
+[5] Templates · Popup LOV Templates · 1 attrs
+[5] Templates · Region Display Point / Position utilization · 2 attrs
+[5] Templates · Region Template · 3 attrs
+[5] Templates · Region Template: Image sub-template · 4 attrs
+[5] Templates · Region Template: JavaScript and CSS attributes · 3 attrs
+[5] Templates · Region Template: Name section · 4 attrs
+[5] Templates · Region Template: Positions (region position slots) · 4 attrs
+[5] Templates · Region Template: reserved substitution strings · 14 attrs
+[5] Templates · Region Template: Sub Regions sub-templates · 4 attrs
+[5] Templates · Replace All Templates within an Application · 5 attrs · SKIP: Cross-application template borrowing assumes an Oracle multi-app works
+[5] Templates · Replace Templates wizard · 3 attrs
+[5] Templates · Report (Column) Template · 3 attrs
+[5] Templates · Report Template: Before Rows / After Rows / Pagination wrapper · 5 attrs
+[5] Templates · Report Template: Column Headings, Row Highlighting, Subscription · 6 attrs · SKIP: Template subscription/master-refresh is Oracle's own reuse mechanism.
+[5] Templates · Report Template: Column/Row Templates (conditional styling) · 7 attrs · SKIP: PL/SQL-expression row conditions are Oracle-SQL-specific; a JS/TS app 
+[5] Templates · Template Reports (utilization/subscription/publish/history) · 4 attrs
+[5] Templates · Template Subscription: Unsubscribe / Publish · 3 attrs · SKIP: Master/subscriber template propagation is Oracle's multi-app content-s
+[5] Templates · Templates page (Shared Components) · 3 attrs
+[5] Theme styles & Theme Roller · apex.utr.config() developer-console API · 2 attrs · SKIP: A console-exposed live-config API is an APEX developer-tooling conveni
+[5] Theme styles & Theme Roller · Creating a Theme Style · 10 attrs
+[5] Theme styles & Theme Roller · Editing / Deleting a Theme Style · 4 attrs
+[5] Theme styles & Theme Roller · Enable End Users to choose Theme Style · 3 attrs
+[5] Theme styles & Theme Roller · Import / Export Theme Styles (Theme Roller) · 3 attrs
+[5] Theme styles & Theme Roller · Redwood Light: Pillar / Layout / Appearance classes · 8 attrs
+[5] Theme styles & Theme Roller · Reset a Theme Style (Theme Roller) · 1 attrs
+[5] Theme styles & Theme Roller · Selecting a Theme Style (User Interface Attributes page) · 1 attrs
+[5] Theme styles & Theme Roller · Styles (theme attribute section) · 2 attrs
+[5] Theme styles & Theme Roller · Theme Roller · 7 attrs
+[5] Theme styles & Theme Roller · Theme Roller / Live Template Options / Logo Editor: mutual exclusion · 0 attrs
+[5] Theme styles & Theme Roller · Theme Roller Style Compatibility (Iris/Vita/Redwood Light) · 3 attrs
+[5] Theme styles & Theme Roller · Theme Roller: Custom CSS box + LESS · 2 attrs · SKIP: LESS compilation toggle is specific to Theme Roller's own LESS-based b
+[5] Theme styles & Theme Roller · Theme Roller: out-of-the-box themes are locked · 1 attrs
+[5] Theme styles & Theme Roller · Theme Style · 3 attrs
+[5] Theme styles & Theme Roller · Theme Style: File URLs / CSS Classes · 6 attrs
+[5] Theme styles & Theme Roller · Theme Style: Is Public / Accessibility Tested · 2 attrs
+[5] Theme styles & Theme Roller · Theme Style: Theme Roller Attributes (Read Only / LESS / JSON) · 4 attrs · SKIP: LESS-based compile-on-save pipeline is Theme Roller's own build step; 
+[5] Themes · Component Defaults (theme attribute) · 14 attrs
+[5] Themes · Dialog Defaults (theme attribute) · 3 attrs
+[5] Themes · Editing a Theme (procedure) · 4 attrs
+[5] Themes · Icons (theme attribute) · 6 attrs
+[5] Themes · Migrate to Universal Theme · 1 attrs · SKIP: Legacy-theme migration is only relevant because Oracle ships multiple 
+[5] Themes · Public Theme (instance-level) · 1 attrs · SKIP: PL/SQL/Oracle instance-administration concept; a single-tenant Next.js
+[5] Themes · Refresh Theme · 1 attrs · SKIP: Versioned theme-refresh mechanism is specific to APEX's shipped-theme 
+[5] Themes · Region Defaults (theme attribute) · 7 attrs
+[5] Themes · Switch Theme Wizard · 4 attrs · SKIP: Whole-app template-swap-by-class-matching only matters when multiple i
+[5] Themes · Template class mapping (theme switch) · 3 attrs
+[5] Themes · Theme · 3 attrs
+[5] Themes · Theme Attributes (sections overview) · 10 attrs
+[5] Themes · Theme Attributes: Name section · 6 attrs
+[5] Themes · Theme Subscription (theme attribute) · 2 attrs · SKIP: Cross-application master-subscription publishing model is an Oracle mu
+[5] Themes · Universal Theme (Theme 42) · 4 attrs
