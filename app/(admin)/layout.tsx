@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { FONT_CLASSES } from '@/lib/fonts';
 import { SITE_URL } from '@/lib/site';
-import { ConsoleModeScript } from '@/components/admin/ConsoleMode';
+import { ConsoleModeScript } from '@/components/designer/ConsoleMode';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
 import '../globals.css';
