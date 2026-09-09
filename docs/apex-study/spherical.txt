@@ -1,0 +1,94 @@
+# The spherical view (from the plan page, 2026-09-09 night)
+
+All fourteen runs home · 2026-09-09 night · proposed, nothing changed yet
+    The spherical view
+    
+The whole guide is read: 742 pages, 1,212 concepts, of which the 549 pages of the full read yielded 757 concepts, 454 relevant. Cost of the full read: about 2.6 million Sonnet tokens; of the whole study, audit and map: about 5 million. Everything below is proposed for your word, grouped as you asked: what changes the rules, what changes the phases and slots, what changes the vocabulary, what changes nothing. Each line names the run and area it came from; the findings table beneath has the page.
+
+    
+
+## A · What changes the rules
+
+      
+Export and records. The weekly design export keys every file by a stable internal id, one file per page or component, grouped by kind into folders, structure only, never named after a display name: a rename must not orphan history and a re-export must not diff everything. (Deploying, run 13; Appendix C, run 14)
+
+      
+Applying changes. Any apply from a branch or any bulk write is atomic, validated for its dependencies first, refused while the page or application is locked, staged before it is applied, and warns when a loader run is in flight. (Deploying, run 13)
+
+      
+Shared objects. Every shared object (list, list of values, data source, credential, component type, build option, email template) shows where it is used and its history, and cannot be deleted while referenced. (Shared Components, runs 9 and 10; Extending, run 11; Deploying, run 13)
+
+      
+Text safety. Every text a component renders is escaped by default; raw markup is an explicit, labelled exception. (Concepts, run 6; Security, run 12)
+
+      
+Security posture. The API surface is an allow-list, deny by default; any URL an administrator types is checked against an allow-list of hosts; the designer's code stays out of the public bundle. (Security, runs 11 and 12)
+
+      
+Instrumentation. Every component render and every loader step logs with a correlation id and a short phase code, from the server and from the browser, into one Debug panel. (Debugging, run 13; Appendix D, run 14)
+
+      
+Drafts over live processes. An approval flow or a page is edited on a draft version while in-flight work keeps running on the active one; promotion is a deliberate step. (Working copies, run 6; Workflows, run 11)
+
+      
+Generated, not hand-edited. A page scaffolded from a definition is regenerated from it, never patched by hand. (Legacy, run 14)
+
+      
+AI. Where AI appears in the designer it drafts, a rule extracts, a human clicks Apply, behind a remembered consent and a token budget; never anywhere else. Your rule, now with APEX's shape. (Creating applications, run 7; Generative AI, run 10)
+
+      
+Locks with an administrator override, and a second administrator's rights, become rules only when a second administrator exists. (Creating applications, run 7; Security, run 12)
+
+    
+
+## B · What changes the phases and slots
+
+      
+Phase 1 stays first and in order, with three small additions: the gallery hides superseded component types by default; a picker icon on any text field inserts a shared value with live preview; the region's disable toggle is named and behaves as Comment Out. (Deploying and Globalization, run 13; Debugging, run 13)
+
+      
+Phase 2 gains a first slot: the component definition model. Before any component, the shape every component is declared in: attributes with a scope (application, component, report), typed editors (colour, icon, code, select, link, boolean), named attribute groups, declared events other components can listen to, capability flags that decide which editor sections appear, slots as typed nesting points. Component Settings grows into this. (Plug-ins, runs 10 and 11)
+
+      
+Phase 2's source slot becomes a Data Sources shared component. A data profile discovered from a live call or from an uploaded sample response, a Remote Server base URL per environment, named pagination presets, per-source caching with scheduled invalidation, a delete guard, and the synchronisation vocabulary (append, merge, replace; one step per parameter set; a run log) that the Data workspace adopts for the loader. (Data, runs 9 and 10)
+
+      
+Phase 2's Table and Cards merge into one data region with views (table, cards, list, timeline, detail) and row templates as column types; sort options for card views; saved views in four tiers with share links; a URL filter vocabulary; master-detail between two regions on a page; column types Percent Graph, Link, Rich Text, Image, Download. Filters becomes a decoupled layer with cascading facets, chip previews, search within a facet, a size guardrail and facet charts. (Reports, runs 7 and 8)
+
+      
+Phase 2 adds Map Backgrounds as a shared component, Calendar events other regions react to, Search as a results region over named search configurations, Field templates as the Form's contract, and the Conditions vocabulary: the 42 condition types become one typed Condition attribute every component shares, replacing bespoke show rules. (Components, run 8; Shared Components, run 9; Appendix E, run 14)
+
+      
+Phase 3 is unchanged, because it rests on the audit of our own pages; Delete Page gains a cascade (menus, breadcrumbs, lists) and a soft delete, reinstate, purge sequence; Duplicate Page asks whether to share or fork the underlying lists. (Creating applications, runs 6 and 7)
+
+      
+Phase 4 is reshaped and grows. The App Builder home follows the onboarding screens (workspace home with tool cards, an App Builder home with the empty-state twin actions Create and Install a starter, an application home with Run, Create Page, Shared Components, Utilities, Export as siblings, Tasks and Recently Edited). A New Application wizard with a features checklist decided once (PWA, push, roles, activity reporting, feedback widget, configuration flags, theme choice) and a page-type picker. Working Copies: a linked copy compared against Main, merged selectively with an automatic backup, a persistent badge naming the copy. Members and Moderation become Tasks: six participant roles, the Info Requested outcome, expire or renew policies, a vacation rule, a details screen with state-gated actions, a unified task list with My, Admin and Initiated-by-me views; approval flows with versions, timeouts and escalation. The Security tab holds the CSP with its rollout, audit rollups, and an access-control template. The Health page gains an Advisor lint, activity sections and a durable activity table. Utilities: an application dashboard, change history, recently updated pages, an inventory of code snippets, page and application locks, backups with restore, a data loading page for bulk imports, and a view-and-edit-as-JSON escape hatch tied to the export. (Quick Start, run 6; Creating applications, runs 6 and 7; Workflows and Tasks, run 11; Security, run 12; Performance and Debugging, run 13)
+
+      
+The timeline moves. Phase 2 gains about a week for the definition model and the merged data region; Phase 4 gains one to two weeks for Working Copies, the Tasks model, the Security tab and Health. At this week's pace: early November 2026 instead of mid-October. At half pace: mid-December instead of late November. You can shorten it by leaving Working Copies or the utilities for later; the estimate assumes everything above.
+
+    
+
+## C · What changes the vocabulary
+
+      
+Fewer, stronger regions. Table, Cards, Media list and Timeline become one Data region with views and row templates; Chart, Map, Calendar, Filters, Metric cards, Search, Form, Comments, Embed, Breadcrumb, Page heading, Static content, Image and Buttons stay; Countdown, Live band, Weather, Circuit and the Clerk widget stay as domain components. Twenty-five becomes about twenty-one, each carrying more.
+
+      
+New shared components, not regions: Data Sources, Map Backgrounds, Search Configurations, Email Templates, Conditions, Field templates, and Component Settings as the attribute model. Lists of values (static, dynamic, cascading) return as the Form's option source and the sort-options list.
+
+      
+Every component gets the same five things: a Condition, an authorization scheme, a build option, template options with a preset, and Utilization and History. (Appendix E, run 14; Shared Components, runs 9 to 11)
+
+    
+
+## D · What changes nothing, and is now confirmed
+
+      
+Our loader that writes snapshots and tables which the site reads is APEX's Data Synchronization under another name. One responsive theme, no mobile mode. The Universal Theme's philosophy is our mission statement. Clerk for authentication; the PWA and push as they are. Component Settings is the right concept with the right name. The 409 on a moved base is Lost Update Detection. The default page template cascade is what Component Settings already does. Separate subdomains per environment are workspace isolation. Content and design as files in git is what APEXlang formalises. The 12-column grid and the Page Designer's shell match. (Runs 6 to 13)
+
+      
+Not relevant, 303 concepts: Oracle-database mechanics, instance and workspace administration, legacy components, translation mechanics for a second language, Oracle Cloud connectors, the issue tracker's screens. Listed in the table below under "Judged not relevant", each with its reason.
+
+    
+The order you set stands: the rules first, then the ledger, then the plan, each on your word. The rules draft below is v2; part A above is what v3 would add.

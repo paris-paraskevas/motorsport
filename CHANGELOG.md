@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.96 — 2026-09-10
+
+### Docs — the APEX study moves into the repo (`docs/apex-study/`)
+
+Twenty-two derived files from the study of the APEX 26.1 App Builder User's Guide and the audit of Paddock's own pages, so they survive the session scratchpad: `notes-all.json` (the first study, 455 concepts), `notes-6.jsonl` to `notes-14.jsonl` (the full read, 757 concepts with relevance verdicts), `digest.txt`, `findings-digest.txt` and its script, `verdicts.json` (the skips scrutinised), `coverage.json`, `runs.json`, `ux-map.jsonl` (the Page Designer click-level map), `imports.txt` and `audit-A/B.jsonl` (the 58 routes, 299 sections), `spherical.txt`, `rules.md`, `components-programme.md`, `batches.md`, `audit-overnight.md`, and a `README.md` describing each. Oracle's documentation text is not committed; every note carries its source URL. Nothing reads these files at build or run time; the content bundle covers `content/**` only. Approved by the operator on 2026-09-10 (~20:40Z) as one of the two items allowed to merge overnight.
+
 ## 1.0.95 — 2026-09-09
 
 ### Docs — the night's records: the whole APEX guide read, the spherical view published, nothing changed yet

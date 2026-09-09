@@ -1,0 +1,407 @@
+### app/(app)/[...catchall]/page.tsx  [revalidate 300s]
+components (3):
+  components/page/RowPageView.tsx
+  components/page/RefusedPage.tsx
+    components/page/DynamicActions.tsx
+lib (14): lib/design/assets.ts, lib/design/authz-evaluate.ts, lib/design/authz.ts, lib/design/component-render.tsx, lib/design/composed-page.ts, lib/design/destinations.ts, lib/design/lists.ts, lib/design/live-page.ts, lib/design/page-document.ts, lib/design/page-families.ts, lib/design/page-frame.tsx, lib/design/pages.ts, lib/design/shortcuts.ts, lib/site.ts
+
+### app/(app)/about/page.tsx  [default]
+components (1):
+  components/JsonLd.tsx
+lib (3): lib/design/page-frame.tsx, lib/json-ld.ts, lib/site.ts
+
+### app/(app)/accessibility/page.tsx  [static]
+components (0):
+  (none: the route draws its own markup)
+lib (3): lib/content.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/archive/[season]/[slug]/page.tsx  [static, generateStaticParams]
+components (1):
+  components/ArchiveStandings.tsx
+lib (4): lib/design/page-frame.tsx, lib/season-archive.ts, lib/seo.ts, lib/site.ts
+
+### app/(app)/archive/[season]/[slug]/weekend/[round]/page.tsx  [static, generateStaticParams]
+components (1):
+  components/weekend/WeekendNote.tsx
+lib (5): lib/design/page-frame.tsx, lib/season-archive.ts, lib/seo.ts, lib/series-content.ts, lib/site.ts
+
+### app/(app)/archive/page.tsx  [static]
+components (0):
+  (none: the route draws its own markup)
+lib (4): lib/design/page-frame.tsx, lib/season-archive.ts, lib/seo.ts, lib/site.ts
+
+### app/(app)/authors/[slug]/page.tsx  [revalidate 300s, generateStaticParams]
+components (1):
+  components/JsonLd.tsx
+lib (6): lib/author-identity.ts, lib/authors.ts, lib/blog.ts, lib/design/page-frame.tsx, lib/json-ld.ts, lib/site.ts
+
+### app/(app)/authors/page.tsx  [revalidate 300s]
+components (1):
+  components/JsonLd.tsx
+lib (6): lib/author-identity.ts, lib/authors.ts, lib/blog.ts, lib/design/page-frame.tsx, lib/json-ld.ts, lib/site.ts
+
+### app/(app)/blog/[slug]/page.tsx  [dynamic, generateStaticParams]
+components (9):
+  components/blog/DraftPreview.tsx
+  components/blog/PostArticle.tsx
+  components/blog/PostHeader.tsx
+  components/JsonLd.tsx
+  components/blog/BlogShare.tsx
+  components/blog/BlogReactions.tsx
+    components/blog/embeds/BlogEmbed.tsx
+      components/blog/embeds/ChartEmbed.tsx
+      components/blog/embeds/StandingsEmbed.tsx
+lib (12): lib/author-identity.ts, lib/authors.ts, lib/blog-embeds.ts, lib/blog.ts, lib/design/page-frame.tsx, lib/json-ld.ts, lib/posts.ts, lib/series.ts, lib/site.ts, lib/threads.ts, lib/toc.ts, lib/types.ts
+
+### app/(app)/blog/page.tsx  [revalidate 300s]
+components (2):
+  components/JsonLd.tsx
+  components/blog/StudioLink.tsx
+lib (8): lib/authors.ts, lib/blog.ts, lib/design/page-frame.tsx, lib/json-ld.ts, lib/posts.ts, lib/series.ts, lib/site.ts, lib/threads.ts
+
+### app/(app)/changelog/page.tsx  [static]
+components (1):
+  components/JsonLd.tsx
+lib (4): lib/design/page-frame.tsx, lib/json-ld.ts, lib/site.ts, lib/version.ts
+
+### app/(app)/contact/page.tsx  [default]
+components (1):
+  components/ContactModal.tsx
+lib (3): lib/design/page-frame.tsx, lib/site.ts, lib/useFocusTrap.ts
+
+### app/(app)/contribute/page.tsx  [default]
+components (0):
+  (none: the route draws its own markup)
+lib (2): lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/cookies/page.tsx  [static]
+components (0):
+  (none: the route draws its own markup)
+lib (3): lib/content.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/do-not-sell/page.tsx  [static]
+components (0):
+  (none: the route draws its own markup)
+lib (3): lib/content.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/drivers/[slug]/page.tsx  [dynamic, generateStaticParams]
+components (4):
+  components/weekend/WeekendStandingsSnapshot.tsx
+  components/NextRaceCountdown.tsx
+    components/tabs/ResultsTab.tsx
+      components/tabs/PlaceholderTab.tsx
+lib (29): lib/design/page-frame.tsx, lib/group.ts, lib/news.ts, lib/people.ts, lib/profile-stats.ts, lib/results/dtm.ts, lib/results/f1.ts, lib/results/f2.ts, lib/results/f3.ts, lib/results/formula-e.ts, lib/results/gt-world.ts, lib/results/imsa.ts, lib/results/indycar.ts, lib/results/motogp.ts, lib/results/nascar-cup.ts, lib/results/nls.ts, lib/results/overrides.ts, lib/results/wec.ts, lib/results/wrc.ts, lib/results/wsbk.ts, lib/season-trend.ts, lib/seo.ts, lib/series-content.ts, lib/series.ts, lib/site.ts, lib/standings/imsa.ts, lib/types.ts, lib/weekend.ts, lib/wikipedia-bio.ts
+
+### app/(app)/f1/analysis/page.tsx  [revalidate 3600s]
+components (1):
+  components/f1/OpenF1Attribution.tsx
+lib (6): lib/design/page-frame.tsx, lib/rounds.ts, lib/seo.ts, lib/series.ts, lib/site.ts, lib/types.ts
+
+### app/(app)/f1/compare/page.tsx  [revalidate 3600s]
+components (5):
+  components/weekend/WeekendStandingsSnapshot.tsx
+  components/LazySeasonTrendChart.tsx
+  components/f1/AnalysisGate.tsx
+    components/tabs/ResultsTab.tsx
+      components/tabs/PlaceholderTab.tsx
+lib (26): lib/design/page-frame.tsx, lib/group.ts, lib/people.ts, lib/profile-stats.ts, lib/results/dtm.ts, lib/results/f1.ts, lib/results/f2.ts, lib/results/f3.ts, lib/results/formula-e.ts, lib/results/gt-world.ts, lib/results/imsa.ts, lib/results/indycar.ts, lib/results/motogp.ts, lib/results/nascar-cup.ts, lib/results/nls.ts, lib/results/overrides.ts, lib/results/wec.ts, lib/results/wrc.ts, lib/results/wsbk.ts, lib/season-trend.ts, lib/seo.ts, lib/series-content.ts, lib/series.ts, lib/site.ts, lib/standings/imsa.ts, lib/types.ts
+
+### app/(app)/feedback/page.tsx  [dynamic]
+components (1):
+  components/feedback/FeedbackBoard.tsx
+lib (4): lib/betting/client.ts, lib/design/page-frame.tsx, lib/site.ts, lib/threads.ts
+
+### app/(app)/impressum/page.tsx  [static]
+components (0):
+  (none: the route draws its own markup)
+lib (3): lib/content.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/imprint/page.tsx  [static]
+components (0):
+  (none: the route draws its own markup)
+lib (3): lib/content.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/information/[topic]/[slug]/page.tsx  [revalidate 3600s, generateStaticParams]
+components (2):
+  components/blog/PostHeader.tsx
+  components/JsonLd.tsx
+lib (8): lib/content.ts, lib/design/page-frame.tsx, lib/information/registry.ts, lib/information/topics.ts, lib/information/types.ts, lib/json-ld.ts, lib/seo.ts, lib/site.ts
+
+### app/(app)/information/[topic]/page.tsx  [revalidate 3600s, generateStaticParams]
+components (3):
+  components/information/InfoUi.tsx
+  components/information/ContributorPosts.tsx
+  components/JsonLd.tsx
+lib (8): lib/blog.ts, lib/design/page-frame.tsx, lib/information/registry.ts, lib/information/topics.ts, lib/information/types.ts, lib/json-ld.ts, lib/seo.ts, lib/site.ts
+
+### app/(app)/information/map/page.tsx  [revalidate 3600s]
+components (2):
+  components/JsonLd.tsx
+  components/information/TracksMap.tsx
+lib (5): lib/design/page-frame.tsx, lib/information/registry.ts, lib/json-ld.ts, lib/seo.ts, lib/site.ts
+
+### app/(app)/information/page.tsx  [revalidate 3600s]
+components (3):
+  components/information/AskField.tsx
+  components/information/ContributorPosts.tsx
+  components/JsonLd.tsx
+lib (9): lib/blog.ts, lib/design/page-frame.tsx, lib/information/registry.ts, lib/information/topics.ts, lib/information/types.ts, lib/json-ld.ts, lib/seo.ts, lib/series.ts, lib/site.ts
+
+### app/(app)/information/series-guides/page.tsx  [revalidate 3600s]
+components (1):
+  components/JsonLd.tsx
+lib (6): lib/design/page-frame.tsx, lib/information/topics.ts, lib/json-ld.ts, lib/seo.ts, lib/series.ts, lib/site.ts
+
+### app/(app)/news/page.tsx  [revalidate 1800s]
+components (1):
+  components/JsonLd.tsx
+lib (6): lib/design/page-frame.tsx, lib/json-ld.ts, lib/news.ts, lib/seo.ts, lib/series.ts, lib/site.ts
+
+### app/(app)/page.tsx  [revalidate 300s]
+components (3):
+  components/HomeLead.tsx
+    components/NextRaceCountdown.tsx
+    components/SessionDayNote.tsx
+lib (7): lib/date.ts, lib/design/page-frame.tsx, lib/home-model.ts, lib/home-results.ts, lib/seo.ts, lib/site.ts, lib/weekend.ts
+
+### app/(app)/preview/[rev]/page.tsx  [dynamic]
+components (3):
+  components/page/RowPageView.tsx
+  components/page/DeveloperToolbar.tsx
+    components/page/DynamicActions.tsx
+lib (14): lib/admin-guard.ts, lib/design/assets.ts, lib/design/authz.ts, lib/design/component-render.tsx, lib/design/composed-page.ts, lib/design/destinations.ts, lib/design/lists.ts, lib/design/live-page.ts, lib/design/page-document.ts, lib/design/page-families.ts, lib/design/page-frame.tsx, lib/design/pages.ts, lib/design/shortcuts.ts, lib/site.ts
+
+### app/(app)/privacy/page.tsx  [static]
+components (0):
+  (none: the route draws its own markup)
+lib (3): lib/content.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/series/[slug]/[tab]/page.tsx  [dynamic, generateStaticParams]
+components (15):
+  components/SeriesPageView.tsx
+    components/JsonLd.tsx
+    components/StaleBanner.tsx
+    components/tabs/AboutTab.tsx
+    components/tabs/HistoryTab.tsx
+    components/tabs/ChampionsTab.tsx
+    components/tabs/StandingsTab.tsx
+    components/tabs/ResultsTab.tsx
+    components/tabs/DriversTab.tsx
+    components/tabs/NewsTab.tsx
+    components/tabs/BlogTab.tsx
+    components/tabs/TracksTab.tsx
+    components/tabs/PlaceholderTab.tsx
+      components/LazySeasonTrendChart.tsx
+      components/tabs/StandingsView.tsx
+lib (50): lib/blog.ts, lib/circuit-layout.ts, lib/content.ts, lib/design/page-frame.tsx, lib/group.ts, lib/json-ld.ts, lib/news.ts, lib/results/dtm.ts, lib/results/f1.ts, lib/results/f2.ts, lib/results/f3.ts, lib/results/formula-e.ts, lib/results/gt-world.ts, lib/results/imsa.ts, lib/results/indycar.ts, lib/results/motogp.ts, lib/results/nascar-cup.ts, lib/results/nls.ts, lib/results/overrides.ts, lib/results/wec.ts, lib/results/wrc.ts, lib/results/wsbk.ts, lib/season-trend.ts, lib/seo.ts, lib/series-content.ts, lib/series.ts, lib/site.ts, lib/slug.ts, lib/standing-rows.ts, lib/standings/brief.ts, lib/standings/dtm.ts, lib/standings/f1.ts, lib/standings/f2.ts, lib/standings/f3.ts, lib/standings/formula-e.ts, lib/standings/gt-world.ts, lib/standings/imsa.ts, lib/standings/indycar.ts, lib/standings/motogp.ts, lib/standings/nascar-cup.ts, lib/standings/overrides.ts, lib/standings/wec.ts, lib/standings/wrc.ts, lib/standings/wsbk.ts, lib/tabs.ts, lib/types.ts, lib/weekend.ts, lib/wikipedia-champions.ts, lib/wikipedia-season.ts, lib/wikipedia.ts
+
+### app/(app)/series/[slug]/page.tsx  [revalidate 300s, generateStaticParams]
+components (16):
+  components/SeriesPageView.tsx
+  components/NextRaceCountdown.tsx
+  components/StaleBanner.tsx
+  components/JsonLd.tsx
+    components/tabs/AboutTab.tsx
+    components/tabs/HistoryTab.tsx
+    components/tabs/ChampionsTab.tsx
+    components/tabs/StandingsTab.tsx
+    components/tabs/ResultsTab.tsx
+    components/tabs/DriversTab.tsx
+    components/tabs/NewsTab.tsx
+    components/tabs/BlogTab.tsx
+    components/tabs/TracksTab.tsx
+    components/tabs/PlaceholderTab.tsx
+      components/LazySeasonTrendChart.tsx
+      components/tabs/StandingsView.tsx
+lib (52): lib/blog.ts, lib/circuit-layout.ts, lib/content.ts, lib/design/page-frame.tsx, lib/group.ts, lib/home-results.ts, lib/information/topics.ts, lib/json-ld.ts, lib/news.ts, lib/results/dtm.ts, lib/results/f1.ts, lib/results/f2.ts, lib/results/f3.ts, lib/results/formula-e.ts, lib/results/gt-world.ts, lib/results/imsa.ts, lib/results/indycar.ts, lib/results/motogp.ts, lib/results/nascar-cup.ts, lib/results/nls.ts, lib/results/overrides.ts, lib/results/wec.ts, lib/results/wrc.ts, lib/results/wsbk.ts, lib/season-trend.ts, lib/seo.ts, lib/series-content.ts, lib/series.ts, lib/site.ts, lib/slug.ts, lib/standing-rows.ts, lib/standings/brief.ts, lib/standings/dtm.ts, lib/standings/f1.ts, lib/standings/f2.ts, lib/standings/f3.ts, lib/standings/formula-e.ts, lib/standings/gt-world.ts, lib/standings/imsa.ts, lib/standings/indycar.ts, lib/standings/motogp.ts, lib/standings/nascar-cup.ts, lib/standings/overrides.ts, lib/standings/wec.ts, lib/standings/wrc.ts, lib/standings/wsbk.ts, lib/tabs.ts, lib/types.ts, lib/weekend.ts, lib/wikipedia-champions.ts, lib/wikipedia-season.ts, lib/wikipedia.ts
+
+### app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx  [dynamic, generateStaticParams]
+components (20):
+  components/LocalTime.tsx
+  components/JsonLd.tsx
+  components/VideoEmbed.tsx
+  components/weekend/SessionForecast.tsx
+  components/f1/QualifyingDecoder.tsx
+  components/f1/RaceStory.tsx
+  components/f1/SpeedTrapLeaderboard.tsx
+  components/f1/PitStopLeague.tsx
+  components/f1/OvertakesBoard.tsx
+  components/f1/PracticeAnalysis.tsx
+  components/CollapsibleSection.tsx
+  components/weekend/SessionClassChips.tsx
+    components/weekend/HourlyForecastRows.tsx
+    components/f1/OpenF1Attribution.tsx
+    components/f1/SectorBars.tsx
+    components/f1/LazyDeltaTrace.tsx
+    components/f1/MinisectorMap.tsx
+    components/f1/GhostLapReplay.tsx
+    components/f1/LazyGhostLap3D.tsx
+    components/f1/TeamRadioPlayer.tsx
+lib (30): lib/circuit-layout.ts, lib/circuits.ts, lib/date.ts, lib/design/build-options.ts, lib/design/page-frame.tsx, lib/json-ld.ts, lib/media.ts, lib/openf1/decoder.ts, lib/openf1/delta.ts, lib/openf1/drivers.ts, lib/openf1/moments.ts, lib/openf1/overtakes.ts, lib/openf1/pit-league.ts, lib/openf1/practice.ts, lib/openf1/racestory-loader.ts, lib/openf1/racestory.ts, lib/openf1/speed-traps.ts, lib/openf1/track.ts, lib/results-cache.ts, lib/results/motogp.ts, lib/results/openf1.ts, lib/results/session-classification.ts, lib/results/wrc.ts, lib/results/wsbk.ts, lib/seo.ts, lib/series.ts, lib/site.ts, lib/types.ts, lib/weather.ts, lib/weekend.ts
+
+### app/(app)/series/[slug]/weekend/[round]/page.tsx  [dynamic, generateStaticParams]
+components (20):
+  components/weekend/WeekendNote.tsx
+  components/LocalTime.tsx
+  components/weekend/WeekendStandingsSnapshot.tsx
+  components/weekend/WeekendWeatherStrip.tsx
+  components/weekend/WeekendSchedule.tsx
+  components/weekend/WeekendTabs.tsx
+  components/JsonLd.tsx
+  components/VideoEmbed.tsx
+  components/weekend/WeekendUpgrades.tsx
+  components/NextRaceCountdown.tsx
+    components/tabs/ResultsTab.tsx
+    components/weekend/HourlyForecastRows.tsx
+    components/weekend/WeekendBetting.tsx
+    components/weekend/WeekendNewsClient.tsx
+    components/weekend/WeekendStandingsClient.tsx
+    components/CollapsibleSection.tsx
+      components/tabs/PlaceholderTab.tsx
+      components/betting/MarketBetCard.tsx
+      components/betting/ExactPositionBetCard.tsx
+      components/betting/ForecastBetCard.tsx
+lib (42): lib/betting/bets.ts, lib/betting/client.ts, lib/betting/constants.ts, lib/betting/leagues.ts, lib/betting/markets.ts, lib/blog.ts, lib/circuit-layout.ts, lib/circuits.ts, lib/date.ts, lib/design/build-options.ts, lib/design/page-frame.tsx, lib/group.ts, lib/information/registry.ts, lib/json-ld.ts, lib/media.ts, lib/news.ts, lib/results/dtm.ts, lib/results/f1.ts, lib/results/f2.ts, lib/results/f3.ts, lib/results/formula-e.ts, lib/results/gt-world.ts, lib/results/imsa.ts, lib/results/indycar.ts, lib/results/motogp.ts, lib/results/nascar-cup.ts, lib/results/nls.ts, lib/results/overrides.ts, lib/results/session-classification.ts, lib/results/wec.ts, lib/results/wrc.ts, lib/results/wsbk.ts, lib/season-trend.ts, lib/seo.ts, lib/series-content.ts, lib/series.ts, lib/site.ts, lib/standings/brief.ts, lib/standings/imsa.ts, lib/types.ts, lib/weather.ts, lib/weekend.ts
+
+### app/(app)/series/page.tsx  [revalidate 300s]
+components (1):
+  components/Accordion.tsx
+lib (6): lib/categories.ts, lib/design/page-frame.tsx, lib/group.ts, lib/series.ts, lib/site.ts, lib/weekend.ts
+
+### app/(app)/settings/assistant/page.tsx  [dynamic]
+components (0):
+  (none: the route draws its own markup)
+lib (4): lib/assistant/log.ts, lib/design/page-frame.tsx, lib/site.ts, lib/threads.ts
+
+### app/(app)/settings/author/page.tsx  [dynamic]
+components (1):
+  components/author/AuthorProfileForm.tsx
+lib (8): lib/author-profile.ts, lib/authors.ts, lib/betting/client.ts, lib/blog.ts, lib/design/page-frame.tsx, lib/site.ts, lib/slug.ts, lib/threads.ts
+
+### app/(app)/settings/notifications/page.tsx  [dynamic]
+components (3):
+  components/EnableNotifications.tsx
+  components/YourDevices.tsx
+  components/NotifPrefsSection.tsx
+lib (3): lib/design/page-frame.tsx, lib/pushClient.ts, lib/site.ts
+
+### app/(app)/settings/page.tsx  [dynamic]
+components (4):
+  components/AccountIdentity.tsx
+  components/FollowedChips.tsx
+  components/AccountStats.tsx
+  components/AccountStaffLinks.tsx
+lib (6): lib/betting/account.ts, lib/betting/client.ts, lib/design/page-frame.tsx, lib/series.ts, lib/site.ts, lib/useFollowedSeries.ts
+
+### app/(app)/settings/series/page.tsx  [dynamic]
+components (1):
+  components/SettingsClient.tsx
+lib (5): lib/design/page-frame.tsx, lib/series.ts, lib/site.ts, lib/types.ts, lib/useFollowedSeries.ts
+
+### app/(app)/settings/theme/page.tsx  [revalidate 300s]
+components (3):
+  components/theme/ThemePicker.tsx
+  components/theme/DyslexicToggle.tsx
+    components/theme/ThemeScript.tsx
+lib (4): lib/design/page-frame.tsx, lib/design/theme-defaults.ts, lib/design/themes.ts, lib/site.ts
+
+### app/(app)/sign-in/[[...sign-in]]/page.tsx  [dynamic]
+components (0):
+  (none: the route draws its own markup)
+lib (1): lib/design/page-frame.tsx
+
+### app/(app)/sign-up/[[...sign-up]]/page.tsx  [dynamic]
+components (0):
+  (none: the route draws its own markup)
+lib (1): lib/design/page-frame.tsx
+
+### app/(app)/social/friends/add/[id]/page.tsx  [dynamic]
+components (1):
+  components/betting/FriendInviteFlow.tsx
+lib (4): lib/betting/client.ts, lib/betting/credits.ts, lib/betting/friends.ts, lib/design/page-frame.tsx
+
+### app/(app)/social/friends/page.tsx  [dynamic]
+components (1):
+  components/betting/FriendsPanel.tsx
+lib (5): lib/betting/client.ts, lib/betting/credits.ts, lib/betting/friends.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/social/leagues/[id]/page.tsx  [dynamic]
+components (1):
+  components/betting/LeagueDetailView.tsx
+lib (6): lib/betting/client.ts, lib/betting/credits.ts, lib/betting/friends.ts, lib/betting/leagues.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/social/leagues/join/[token]/page.tsx  [dynamic]
+components (1):
+  components/betting/JoinLeagueFlow.tsx
+lib (5): lib/betting/client.ts, lib/betting/credits.ts, lib/betting/friends.ts, lib/betting/leagues.ts, lib/design/page-frame.tsx
+
+### app/(app)/social/leagues/page.tsx  [dynamic]
+components (2):
+  components/betting/LeaguesPanel.tsx
+    components/Modal.tsx
+lib (6): lib/betting/client.ts, lib/betting/credits.ts, lib/betting/leagues.ts, lib/design/page-frame.tsx, lib/site.ts, lib/useFocusTrap.ts
+
+### app/(app)/social/page.tsx  [dynamic]
+components (2):
+  components/betting/PlayMarkets.tsx
+    components/LocalTime.tsx
+lib (11): lib/betting/bets.ts, lib/betting/client.ts, lib/betting/constants.ts, lib/betting/credits.ts, lib/betting/friends.ts, lib/betting/leagues.ts, lib/betting/markets.ts, lib/date.ts, lib/design/page-frame.tsx, lib/rounds-loader.ts, lib/site.ts
+
+### app/(app)/social/threads/page.tsx  [dynamic]
+components (2):
+  components/threads/ThreadComposer.tsx
+  components/threads/ThreadModeration.tsx
+lib (5): lib/betting/client.ts, lib/design/page-frame.tsx, lib/series.ts, lib/site.ts, lib/threads.ts
+
+### app/(app)/social/users/[id]/page.tsx  [dynamic]
+components (1):
+  components/betting/ProfileActions.tsx
+lib (5): lib/betting/account.ts, lib/betting/client.ts, lib/betting/friends.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/studio/[id]/page.tsx  [default]
+components (6):
+  components/studio/StudioEditor.tsx
+  components/studio/LearnFeature.tsx
+  components/studio/studio-shared.ts
+    components/blog/MarkdownEditor.tsx
+    components/studio/useDraftBackup.ts
+      components/blog/PostHeader.tsx
+lib (8): lib/admin-guard.ts, lib/ai-prose-lint.ts, lib/betting/client.ts, lib/blog.ts, lib/design/page-frame.tsx, lib/information/topics.ts, lib/post-ready.ts, lib/threads.ts
+
+### app/(app)/studio/new/page.tsx  [default]
+components (4):
+  components/studio/StudioComposer.tsx
+    components/blog/MarkdownEditor.tsx
+    components/studio/useDraftBackup.ts
+      components/blog/PostHeader.tsx
+lib (3): lib/ai-prose-lint.ts, lib/design/page-frame.tsx, lib/series.ts
+
+### app/(app)/studio/page.tsx  [default]
+components (2):
+  components/studio/RowActions.tsx
+  components/studio/studio-shared.ts
+lib (6): lib/admin-guard.ts, lib/betting/client.ts, lib/blog.ts, lib/design/page-frame.tsx, lib/information/topics.ts, lib/threads.ts
+
+### app/(app)/teams/[slug]/page.tsx  [dynamic, generateStaticParams]
+components (4):
+  components/weekend/WeekendStandingsSnapshot.tsx
+  components/LazySeasonTrendChart.tsx
+    components/tabs/ResultsTab.tsx
+      components/tabs/PlaceholderTab.tsx
+lib (28): lib/design/page-frame.tsx, lib/group.ts, lib/news.ts, lib/people.ts, lib/profile-stats.ts, lib/results/dtm.ts, lib/results/f1.ts, lib/results/f2.ts, lib/results/f3.ts, lib/results/formula-e.ts, lib/results/gt-world.ts, lib/results/imsa.ts, lib/results/indycar.ts, lib/results/motogp.ts, lib/results/nascar-cup.ts, lib/results/nls.ts, lib/results/overrides.ts, lib/results/wec.ts, lib/results/wrc.ts, lib/results/wsbk.ts, lib/season-trend.ts, lib/seo.ts, lib/series-content.ts, lib/series.ts, lib/site.ts, lib/standings/imsa.ts, lib/types.ts, lib/wikipedia-bio.ts
+
+### app/(app)/terms/page.tsx  [static]
+components (0):
+  (none: the route draws its own markup)
+lib (3): lib/content.ts, lib/design/page-frame.tsx, lib/site.ts
+
+### app/(app)/threads/[id]/page.tsx  [dynamic]
+components (0):
+  (none: the route draws its own markup)
+lib (4): lib/betting/client.ts, lib/design/page-frame.tsx, lib/site.ts, lib/threads.ts
+
+### app/(app)/write-for-us/page.tsx  [revalidate 300s]
+components (2):
+  components/JsonLd.tsx
+  components/authors/WriteForUsForm.tsx
+lib (3): lib/design/page-frame.tsx, lib/json-ld.ts, lib/site.ts
