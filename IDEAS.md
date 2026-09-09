@@ -53,6 +53,13 @@ _(All three shipped in the night of 2026-09-08. 1.0.62: the search bar for the S
 - `suppressHydrationWarning` on the admin root's `<html>`: silences the development hydration warning when the stored console mode differs from the server's default. One attribute.
 - The Data thresholds are starting values: Cloudflare amber above 0.5% errors and red above 2%; a source stale after 65 minutes.
 
+**The components programme (operator, 2026-09-09 late morning: "code pages should not exist. FINAL!") — the queue after Home**
+- R4.1 the foundation: address parts in the render context, the catch-all matching patterns, `rendering` honoured per row, a metadata hook and a sitemap enumerator per page family, a parity check before a route file leaves; Calendar as the proof (plan artifact 6816ce59-9fe5-4c8b-9691-e056d42528a8).
+- Families in order: Series hub and tabs → race weekend and session (the venue component is where the Madrid fix lands) → drivers, teams, F1 analysis → series list and archive → editorial (16 pages; where the operator's new pages mostly are) → account and site (28) → templates (Learn page, Blog post, plain content, a series page).
+- The 4.3 data regions (Standings table, Calendar list) become components in the Series family; the Object Browser stays a Data page of its own.
+- The Right Side Column opens on a page the moment it is split (a split page is a page like any other).
+- **Content bug (operator, ~10:20Z):** the Spanish Grand Prix (Madrid) weekend shows Circuit de Barcelona-Catalunya as venue and track map; fix the round → venue mapping against the official 2026 calendar.
+
 **Bugs and defects**
 
 _(Removed 2026-09-04: blog editor autosave. **Already built** — `components/studio/useDraftBackup.ts`, wired into BOTH writing surfaces with a "Unsaved draft found / Restore it / Discard" banner. localStorage only, deliberately: a debounced PATCH would keep rewriting a row that may be sitting in the review queue. Claude asserted twice that this did not exist, having searched `components/blog/` and `app/(app)/studio/` but not `components/studio/`; the operator was right both times.)_

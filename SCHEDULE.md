@@ -1796,6 +1796,14 @@ Active: (no [+Nm] prefixes given this session)
 - Findings: long or control-character Bash commands fail in this harness (write files instead); `next dev` can leave `routes.d.ts` half-written; the admin root lacks `suppressHydrationWarning`.
 - Won't-touch honoured: pushes only for PR branches; merges under the standing "merge all prs you create"; no prod Supabase write; no post published; no branch deleted beyond a merged PR's own head; the Page Designer untouched.
 
+**Session 46, late morning (2026-09-09 ~09:20Z → ~10:50Z, operator present) — outcomes:**
+- → done: the operator's Page Designer walkthrough taken item by item (finder search, Delete Page, Run links, the code-served bodies, the components direction, "code pages should not exist. FINAL!", "for all pages", the Madrid venue bug); the roadmap written and republished (artifact 84259cc8).
+- → done: **R1** quick fixes (#966, 1.0.86); **R2a** components exist (#967, 1.0.87); **R2b** Home's six components with the split (#968, 1.0.88); W1 the workspace rows (#965, 1.0.85, apply pending).
+- → presented, not built: the **R4 plan** (every page a composition; the foundation and the family order; artifact 6816ce59); the R2 draft (artifact c9430e32) it grew from.
+- → parked: the third draft's build (branch feat/designer-apex-shape, WIP commit 2732f2b) for the components work, on the operator's priority.
+- Findings: the page-frame import graph multiplies into every route's chunk (58 MiB before the renderers' dynamic imports, 42.9 MiB after); the transitional body re-injected on a split page drew Home twice (fixed before merge); long or control-character Bash commands fail in this harness.
+- Won't-touch honoured: pushes only for PR branches; merges under the standing "merge all prs you create"; no prod Supabase write; Home not split on production; no post published; no branch deleted beyond a merged PR's own head.
+
 Active: (awaiting [+Nm] prefixes)
 
 ---

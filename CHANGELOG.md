@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.89 — 2026-09-09
+
+### Docs — the late morning's records: the walkthrough, the components programme's first PRs, the R4 plan
+
+`docs/HANDOFF.md` gains the LATEST section for the late morning of 2026-09-09: the operator's Page Designer walkthrough verbatim ("code pages should not exist. FINAL!", the components direction, the quick fixes), what #966 (1.0.86), #967 (1.0.87) and #968 (1.0.88) shipped, the R4 plan (`6816ce59-9fe5-4c8b-9691-e056d42528a8`) and its two questions, the pending W1 apply, the parked third draft, the landmines (the page-frame import graph and the 58 MiB build; the transitional body re-injected on a split page; the harness's Bash limits) and the Madrid venue bug. `SCHEDULE.md` gets the outcomes; `IDEAS.md` the components queue after Home. No product code changes.
+
 ## 1.0.88 — 2026-09-09
 
 ### Feature — the components programme, R2b: Home's six components, split from the designer; the page renders from its revision; the race-weekend fact
