@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.81 — 2026-09-09
+
+**The design tool's Data tab.** The people who run the site can now see, in one place, what the outside services report about it: visitors, search clicks, requests and costs, accounts, the site's own tables, and which services would need one more credential to be read. Nothing changes for readers.
+
 ## 1.0.80 — 2026-09-09
 
 Internal only: the working notes closed for the night. Nothing changes for readers.

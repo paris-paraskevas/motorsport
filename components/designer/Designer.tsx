@@ -38,6 +38,7 @@ import { AssetsEditor } from './AssetsEditor';
 import { SearchHintsEditor } from './SearchHintsEditor';
 import { ApplicationDefinitionEditor } from './ApplicationDefinitionEditor';
 import { ComputationsView } from './ComputationsView';
+import { DataWorkspace } from './DataWorkspace';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -286,10 +287,10 @@ async function fetchDetail(id: string): Promise<LoadedDetail> {
   }
 }
 
-/** The two workspaces that exist; Data is later. The App Builder lists the
+/** The three workspaces: Data (Phase 4) reads the outside services. The App Builder lists the
  *  pages (Phase 3 step 1) and opens one (step 2); Shared Components holds the
  *  catalogue and its editors. */
-export type Workspace = 'builder' | 'shared';
+export type Workspace = 'builder' | 'shared' | 'data';
 
 export function Designer({
   readOnly,
@@ -509,8 +510,10 @@ export function Designer({
     setWorkspace(ws);
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
-    if (ws === 'builder') url.searchParams.set('ws', 'builder');
-    else {
+    if (ws === 'builder' || ws === 'data') {
+      url.searchParams.set('ws', ws);
+      if (ws === 'data') url.searchParams.delete('page');
+    } else {
       url.searchParams.delete('ws');
       url.searchParams.delete('page');
     }
@@ -623,7 +626,7 @@ export function Designer({
         <nav aria-label="Workspaces" className="flex self-stretch">
           <WorkspaceTab label="App Builder" active={workspace === 'builder'} onClick={() => selectWorkspace('builder')} />
           <WorkspaceTab label="Shared Components" active={workspace === 'shared'} onClick={() => selectWorkspace('shared')} />
-          <WorkspaceTab label="Data" later="later" />
+          <WorkspaceTab label="Data" active={workspace === 'data'} onClick={() => selectWorkspace('data')} />
         </nav>
         <span className="flex-1" />
         <span className="whitespace-nowrap font-mono text-10 tracking-[0.04em] text-text-faint">{who}</span>
@@ -631,7 +634,13 @@ export function Designer({
       </header>
 
       <div className="flex h-[30px] items-center gap-2 border-b border-border bg-surface-elevated px-3.5 text-11 text-text-faint">
-        {workspace === 'builder' ? (
+        {workspace === 'data' ? (
+          <>
+            <span className="font-medium text-text-muted">Data</span>
+            <span>›</span>
+            <span>What the outside world reports about paddock-tracker.com</span>
+          </>
+        ) : workspace === 'builder' ? (
           <>
             <button type="button" onClick={() => openPageDetail(null)} title="Back to all pages" className="font-medium text-text-muted hover:text-text">
               App Builder
@@ -703,7 +712,7 @@ export function Designer({
           )}
         </div>
       ) : (
-      <div className={`grid min-h-0 ${workspace === 'builder' ? 'grid-cols-1' : 'grid-cols-[300px_minmax(0,1fr)]'}`}>
+      <div className={`grid min-h-0 ${workspace === 'shared' ? 'grid-cols-[300px_minmax(0,1fr)]' : 'grid-cols-1'}`}>
         {workspace === 'shared' && (
           <nav aria-label="Shared components" className="overflow-auto border-r border-border-strong bg-surface pb-5">
             <SharedRail query={catalogueQuery} onQuery={setCatalogueQuery} selected={selected} onSelect={select} badge={badge} />
@@ -737,6 +746,10 @@ export function Designer({
               }}
             />
           )}
+        </main>
+      ) : workspace === 'data' ? (
+        <main className="min-w-0 overflow-auto px-6 pb-8 pt-[18px]">
+          <DataWorkspace />
         </main>
       ) : (
         <main className="min-w-0 overflow-auto px-6 pb-8 pt-[18px]">
