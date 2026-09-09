@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.78 — 2026-09-09
+
+### Feature — Shared Components: Component Settings, the Phase 3 entry, what a new region starts with
+
+The second of the three entries the operator found still marked Phase 3 (~01:50Z: "merge all prs you create and apply all db changes you might have"). Component Settings (APEX: Component Settings, the defaults of a component type) are the values a region of each kind starts with when it is placed on a page: three more rows of `setting`, read by the Page Designer when it creates a region. A region carries its own values from then on, so a default changes no existing page, and the site's renderers do not read these at all.
+
+- **`lib/design/setting-defaults.ts`**: keys `region.image.show_caption` (yes/no, shipped yes), `region.list.style` (`links` or `cards`, shipped `links`), `region.button.label` (up to 40 characters, shipped "Read more"); three new control kinds (`boolean`, `choice`, `text`) with their parse and rule cases; `COMPONENT_SETTING_KEYS` and `APPLICATION_SETTING_KEYS` split the one key set between the two catalogue entries.
+- **`components/designer/SettingsEditor.tsx`** takes `keys`, `title` and `intro`: the Application Settings entry shows the site's values, the new **Component Settings** entry (catalogue key `compsettings`, `editor: 'compsettings'`) the region defaults, both over the same table and the same routes (`PUT /api/admin/design/settings/[key]`, unchanged: the parser already carried every kind).
+- **`components/designer/page-designer-model.ts`**: `RegionDefaults`, `SHIPPED_REGION_DEFAULTS`, `newRegion` / `addRegion` take the defaults; `PageDesigner` takes `regionDefaults` and hands them to every creation (gallery, drop, Create menu, context menu); `Designer.tsx` derives them from the settings as stored, the shipped values until they load or when a row is missing.
+- **Migration `supabase/migrations/20260909050000_component_settings_seed.sql`**: the three rows, seeded only when absent. Applied to the local database; **rehearsed on production** (`begin … rollback` through the Management API, 3 rows inside the transaction, 0 after) **but not applied**: the permission rail refused the unattended write (the same limit the 2026-09-08 handoff records), so **the operator says "apply 20260909050000"** in the morning. Until then the entry shows the three defaults as "no row yet" with the shipped values and cannot save them; the Page Designer uses the shipped values; nothing else changes.
+
+**Tests.** `lib/design/settings.test.ts` (+2: the three kinds parsed from the column and the editor alike, the split of the key set), `page-designer-model.test.ts` (+1: a new region starts with the defaults it is given), `catalogue.test.ts` (twelve editors), the settings loader's key list. `npm test` → 187 files, **1942 passed** (1939 before). `tsc` clean; `eslint` 0 errors and the two known warnings.
+
+**Seen in a real browser** (review page, artifact `7f17bd52-22b8-47ec-901a-44c8d51d20b4`; Playwright on the local development server against the local Supabase with the seed applied, signed in as the development-instance administrator): the Component Settings entry with its three rows; caption set to No, style to cards, label to "Read on", saved ("Saved 3 · the site picks it up within a minute"); on the Monza page an Image, a List and a Button added from the gallery started with caption No, style Cards and label "Read on"; the defaults put back.
+
+**Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: `Total Upload 43047.31 KiB / gzip 9966.74 KiB` (43040.69 / 9963.92 at 1.0.77).
+
 ## 1.0.77 — 2026-09-09
 
 ### Feature — Shared Components: Lists, the Phase 3 entry, lists of the operator's own for the List region

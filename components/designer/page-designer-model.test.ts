@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { PageDocument, Region } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import {
+  SHIPPED_REGION_DEFAULTS,
   addAction,
   addRegion,
   designerMessages,
@@ -142,5 +143,20 @@ describe('page search', () => {
     expect(hits.map(h => `${h.what} · ${h.where}`)).toEqual(expect.arrayContaining(['Region · Aside · name', 'Action · Unfold · effect']));
     expect(searchPage('monza', doc, page)[0]).toMatchObject({ sel: { kind: 'page' }, where: 'name' });
     expect(searchPage('', doc, page)).toEqual([]);
+  });
+});
+
+describe('region defaults from Component Settings', () => {
+  it('start a new region with the defaults it is given, the shipped ones otherwise', () => {
+    const shipped = addRegion(doc, 'image', { position: 'body' });
+    expect((shipped.doc.regions.find(r => r.id === shipped.id) as { showCaption: boolean }).showCaption).toBe(true);
+    const own = { imageShowCaption: false, listStyle: 'cards' as const, buttonLabel: 'Read on' };
+    const image = addRegion(doc, 'image', { position: 'body' }, own);
+    expect((image.doc.regions.find(r => r.id === image.id) as { showCaption: boolean }).showCaption).toBe(false);
+    const list = addRegion(doc, 'list', { position: 'right' }, own);
+    expect((list.doc.regions.find(r => r.id === list.id) as { style: string }).style).toBe('cards');
+    const button = addRegion(doc, 'button', { position: 'footer' }, own);
+    expect((button.doc.regions.find(r => r.id === button.id) as { label: string }).label).toBe('Read on');
+    expect(SHIPPED_REGION_DEFAULTS).toEqual({ imageShowCaption: true, listStyle: 'links', buttonLabel: 'Read more' });
   });
 });

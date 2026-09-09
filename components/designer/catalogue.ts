@@ -16,7 +16,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef' | 'lists';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef' | 'lists' | 'compsettings';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -53,7 +53,7 @@ export const CATALOGUE: CatalogueGroup[] = [
     items: [
       { key: 'lovs', label: 'Lists of Values', later: 'read-only, later' },
       { key: 'plugins', label: 'Plug-ins', later: 'read-only, later' },
-      { key: 'compsettings', label: 'Component Settings', later: 'Phase 3' },
+      { key: 'compsettings', label: 'Component Settings', editor: 'compsettings' },
       { key: 'shortcuts', label: 'Shortcuts', editor: 'shortcuts' },
       { key: 'dataload', label: 'Data Load Definitions', later: 'read-only, later' },
     ],

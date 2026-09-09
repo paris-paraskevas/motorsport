@@ -10,6 +10,8 @@ import type { EditableText } from '@/lib/design/text';
 import type { ChromeText } from '@/lib/design/text-defaults';
 import type { EditableBuildOption } from '@/lib/design/build-options';
 import type { EditableSetting } from '@/lib/design/settings';
+import { APPLICATION_SETTING_KEYS, COMPONENT_SETTING_KEYS, DEFAULT_SETTINGS } from '@/lib/design/setting-defaults';
+import { SHIPPED_REGION_DEFAULTS, type RegionDefaults } from './page-designer-model';
 import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableTheme } from '@/lib/design/themes';
 import type { EditableAppearance } from '@/lib/design/appearance';
@@ -585,6 +587,14 @@ export function Designer({
     listIndex.state === 'ready'
       ? Object.fromEntries(listIndex.lists.map(l => [l.key, l.entries]))
       : Object.fromEntries(LIST_KEYS.map(k => [k, count(k) ?? 0]));
+  // What a new region starts with: Component Settings as stored, the shipped
+  // values until they have loaded or when a row is missing.
+  const regionDefaults: RegionDefaults = (() => {
+    if (settings.state !== 'ready') return SHIPPED_REGION_DEFAULTS;
+    const v = <K extends keyof typeof DEFAULT_SETTINGS>(key: K): (typeof DEFAULT_SETTINGS)[K] =>
+      (settings.settings.find(s => s.key === key)?.value as (typeof DEFAULT_SETTINGS)[K] | undefined) ?? DEFAULT_SETTINGS[key];
+    return { imageShowCaption: v('region.image.show_caption'), listStyle: v('region.list.style'), buttonLabel: v('region.button.label') };
+  })();
   /** A shell list saved in its own entry: the index's count and stamp follow. */
   const indexFollows = (list: EditableList) =>
     setListIndex(s => (s.state === 'ready' ? { state: 'ready', lists: s.lists.map(l => (l.key === list.key ? { ...l, updatedAt: list.updatedAt, entries: list.entries.length } : l)) } : s));
@@ -669,6 +679,7 @@ export function Designer({
               readOnly={readOnly}
               lists={pdLists}
               listCounts={listCounts}
+              regionDefaults={regionDefaults}
               assets={assets.state === 'ready' ? assets.assets : []}
               schemes={schemes}
               shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
@@ -814,6 +825,25 @@ export function Designer({
             return (
               <SettingsEditor
                 settings={settings.settings}
+                keys={APPLICATION_SETTING_KEYS}
+                series={series}
+                readOnly={readOnly}
+                onSaved={next => setSettings({ state: 'ready', settings: next })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'compsettings' && (() => {
+            if (settings.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Component Settings…</p>;
+            }
+            if (settings.state === 'error') return <p className="text-12 text-negative">{settings.message}</p>;
+            return (
+              <SettingsEditor
+                settings={settings.settings}
+                keys={COMPONENT_SETTING_KEYS}
+                title="Component Settings"
+                intro="What a region of each kind starts with when it is placed on a page: the Page Designer reads these when it creates one. A region keeps its own values from then on, so changing a default changes no existing page."
                 series={series}
                 readOnly={readOnly}
                 onSaved={next => setSettings({ state: 'ready', settings: next })}

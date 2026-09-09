@@ -110,12 +110,21 @@ export function nextActionId(taken: readonly string[]): string {
   return `action-${n}`;
 }
 
-export function newRegion(kind: RegionKind, position: Position, id: string, span = COLUMNS): Region {
+/** What a new region of each kind starts with: Component Settings (Shared
+ *  Components), read by the designer when it creates a region. */
+export interface RegionDefaults {
+  imageShowCaption: boolean;
+  listStyle: 'links' | 'cards';
+  buttonLabel: string;
+}
+export const SHIPPED_REGION_DEFAULTS: RegionDefaults = { imageShowCaption: true, listStyle: 'links', buttonLabel: 'Read more' };
+
+export function newRegion(kind: RegionKind, position: Position, id: string, span = COLUMNS, defaults: RegionDefaults = SHIPPED_REGION_DEFAULTS): Region {
   const base = { id, title: '', position, seq: 1_000_000, column: 1, span, newRow: true, authz: null, hidden: false };
   if (kind === 'static') return { ...base, kind, text: '' };
-  if (kind === 'image') return { ...base, kind, assetId: '', alt: '', showCaption: true };
-  if (kind === 'button') return { ...base, kind, label: 'Read more', dest: null };
-  return { ...base, kind, listKey: 'doors', style: 'links' };
+  if (kind === 'image') return { ...base, kind, assetId: '', alt: '', showCaption: defaults.imageShowCaption };
+  if (kind === 'button') return { ...base, kind, label: defaults.buttonLabel, dest: null };
+  return { ...base, kind, listKey: 'doors', style: defaults.listStyle };
 }
 
 /** Where a dropped or created region lands. */
@@ -153,10 +162,10 @@ export function placeRegion(doc: PageDocument, region: Region, where: Placement)
   return { ...doc, regions: renumber([...rest, placed]) };
 }
 
-export function addRegion(doc: PageDocument, kind: RegionKind, where: Placement): { doc: PageDocument; id: string } {
+export function addRegion(doc: PageDocument, kind: RegionKind, where: Placement, defaults: RegionDefaults = SHIPPED_REGION_DEFAULTS): { doc: PageDocument; id: string } {
   const id = nextRegionId(kind, doc.regions.map(r => r.id));
   const span = kind === 'button' ? 3 : COLUMNS;
-  const region = newRegion(kind, where.position, id, span);
+  const region = newRegion(kind, where.position, id, span, defaults);
   return { doc: placeRegion(doc, region, { ...where, newRow: where.newRow ?? true }), id };
 }
 
