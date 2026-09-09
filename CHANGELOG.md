@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.79 — 2026-09-09
+
+### Feature — Shared Components: Application Computations, the last Phase 3 entry, a read-only account of what the application works out and when
+
+The third of the three entries the operator found still marked Phase 3. In APEX a computation sets an item's value at a point of the request; Paddock computes its values in the code from inputs the Shared Components hold, so the honest form is a read-only table: the point (Before header, On load, On render, In the designer), what is computed, the entry holding its inputs (a button that opens it), and how often it is re-read. Fourteen rows, each stating what `lib/design/*` does today: the page row and the gate, the code page's live regions, the application definition, the lists, the text messages, appearance, the theme in force, the application settings and the What's New notice, the build options, the search hints, the shortcuts, a designer-made page's live revision, and what a new region starts with. A new loader gets a row here in the same PR.
+
+- **`components/designer/ComputationsView.tsx`** (NEW): `COMPUTATIONS` (the table's data) and the view; catalogue key `appcomps`, `editor: 'computations'`; `Designer.tsx` mounts it and opens the named entry through the same `select` the rail uses.
+- **Tests.** `ComputationsView.test.tsx` (NEW, 1: every input named is a catalogue entry with an editor, the rows render, an input opens its entry); `catalogue.test.ts` (thirteen editors). No route, no migration, nothing on the site changes. `npm test` → 188 files, **1943 passed** (1942 before). `tsc` clean; `eslint` 0 errors and the two known warnings.
+- **Seen in a real browser** (review page, artifact `18c17a70-57d4-49a4-bdda-d0d8f9cfa007`; Playwright on the local development server, signed in as the development-instance administrator): the entry with its fourteen rows; the Component Settings button in the last row opened that entry (`?sc=compsettings`).
+- **Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: `Total Upload 43047.40 KiB / gzip 9966.91 KiB` (43047.31 / 9966.74 at 1.0.78): the view is a browser-only chunk.
+
 ## 1.0.78 — 2026-09-09
 
 ### Feature — Shared Components: Component Settings, the Phase 3 entry, what a new region starts with

@@ -11,12 +11,13 @@ describe('shared components catalogue', () => {
     for (const item of items) expect(Boolean(item.listKey || item.editor) !== Boolean(item.later), item.key).toBe(true);
   });
 
-  it('opens exactly the four navigation lists, each with its copy, and the twelve editors', () => {
+  it('opens exactly the four navigation lists, each with its copy, and the thirteen editors', () => {
     const listed = items.filter(i => i.listKey).map(i => i.listKey);
     expect([...listed].sort()).toEqual([...NAV_LIST_KEYS].sort());
     for (const key of NAV_LIST_KEYS) expect(LIST_COPY[key].title.length).toBeGreaterThan(0);
     expect(items.filter(i => i.editor).map(i => [i.key, i.editor])).toEqual([
       ['appdef', 'appdef'],
+      ['appcomps', 'computations'],
       ['settings', 'settings'],
       ['build', 'build'],
       ['authz', 'authz'],

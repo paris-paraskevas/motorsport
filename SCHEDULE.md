@@ -1782,6 +1782,7 @@ Active: (no [+Nm] prefixes given this session)
 - → done, ~01:45Z on the operator's word ("im confident i only want to keep the designer"): the console retired the reversible way (1.0.76): `/admin` and every section redirect to the designer, the `dev.` root serves it, the admin layout is the gate alone; nothing deleted, the list awaits the morning.
 - → done, on the operator's ~01:50Z word ("items in the shared components marked for phase 3 still not available. merge all prs you create and apply all db changes"): **Lists** (this PR, 1.0.77), lists of the operator's own for the List region, no migration, seen in the browser end to end.
 - → done: **Component Settings** (this PR, 1.0.78), what a new region starts with, three seed rows; the prod apply of 20260909050000 refused by the permission rail, left for the operator's "apply".
+- → done: **Application Computations** (this PR, 1.0.79), read-only, the last of the three Phase 3 entries.
 - → presented, not built: Phase 4's plan with the approved Data screen (artifact d8af4fdf-8e55-4dba-90f9-63c0680f1b69), awaiting "go ahead" for PR 4.1.
 - → skipped: the Right Side Column on code pages (a decision); Ctrl chords; the file deletions (the law).
 - Findings: a cross-request memo feeding a cached page re-caches a stale frame after a publish (fixed with a per-request read); Turbopack refuses a node_modules junction in a worktree; `next dev` under load registers a route late and the catch-all answers instead.
