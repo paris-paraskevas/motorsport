@@ -36,7 +36,7 @@ vi.mock('@/lib/betting/client', () => ({
   }),
 }));
 
-import { loadAssetsById, loadLivePage, loadRevisionPreview } from './live-page';
+import { loadAssetsById, loadLiveFrame, loadLivePage, loadRevisionPreview } from './live-page';
 
 const ID = 'a1b2c3d4-0000-4000-8000-000000000010';
 const ASSET = 'c1b2c3d4-0000-4000-8000-000000000031';
@@ -166,5 +166,41 @@ describe('loadAssetsById', () => {
     expect(map.get(ASSET)?.url).toBe('/media/2026/09/a1b2c3d4-0000-4000-8000-000000000001.jpg');
     tables.asset = { data: null, error: { message: 'boom' } };
     expect((await loadAssetsById([ASSET])).size).toBe(0);
+  });
+});
+
+describe('loadLiveFrame', () => {
+  const frameRevision = {
+    id: 'b1b2c3d4-0000-4000-8000-000000000007',
+    published_at: '2026-09-09T00:10:00+00:00',
+    document: { version: 1, regions: [{ id: 'welcome', kind: 'static', position: 'header', seq: 10, column: 1, span: 12, text: 'Hello' }], actions: [] },
+    page: { id: 'c0de0000-0000-4000-8000-000000000002' },
+  };
+  beforeEach(() => {
+    configured = true;
+    calls.length = 0;
+    tables = { page_revision: { data: [frameRevision], error: null } };
+  });
+
+  it('is null when unconfigured, on an error, and when the code page has nothing published, without a second table read', async () => {
+    configured = false;
+    expect(await loadLiveFrame('/about')).toBeNull();
+    expect(calls).toEqual([]);
+    configured = true;
+    tables = { page_revision: { data: null, error: { message: 'down' } } };
+    expect(await loadLiveFrame('/about')).toBeNull();
+    tables = { page_revision: { data: [], error: null } };
+    expect(await loadLiveFrame('/about')).toBeNull();
+    tables = { page_revision: { data: [{ ...frameRevision, published_at: null }], error: null } };
+    expect(await loadLiveFrame('/about')).toBeNull();
+    expect(calls).toEqual(['page_revision', 'page_revision', 'page_revision']);
+  });
+
+  it('returns the live revision with the usable part of its document, from the one joined read', async () => {
+    const frame = await loadLiveFrame('/about');
+    expect(frame?.revisionId).toBe(frameRevision.id);
+    expect(frame?.publishedAt).toBe('2026-09-09T00:10:00+00:00');
+    expect(frame?.document.regions.map(r => `${r.position}:${r.id}`)).toEqual(['header:welcome']);
+    expect(calls).toEqual(['page_revision']);
   });
 });

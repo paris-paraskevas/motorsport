@@ -23,9 +23,10 @@ import {
 // the Navigation Bar); the page's own positions carry region tiles, the Body on
 // a twelve-column ruler with the tiles at their column and span. A tile's header
 // drags; yellow drop tiles show where it may land. A page the code serves shows
-// its body as the one region the code renders and no drop tiles: regions of the
-// operator's own around it arrive with a later step. Nothing here renders the
-// page; it draws what the document says.
+// its body as the one region the code renders, with no drop tile there or in
+// the Right Side Column; the operator's own regions go around it (Page Header,
+// Breadcrumb Bar, Footer, Phone Bar). Nothing here renders the page; it draws
+// what the document says.
 
 export type Drag = { type: 'gallery'; kind: RegionKind } | { type: 'region'; id: string };
 
@@ -79,7 +80,7 @@ export function PageDesignerLayout({
     e.stopPropagation();
     onContext({ x: e.clientX, y: e.clientY }, sel);
   };
-  const dropping = drag !== null && !readOnly && !code;
+  const dropping = drag !== null && !readOnly;
 
   const dropTile = (label: string, where: Placement, style?: React.CSSProperties) =>
     dropping ? (
@@ -245,7 +246,7 @@ export function PageDesignerLayout({
               <span className="ml-auto font-mono text-9 text-text-faint">Full</span>
             </div>
             <div className="px-2 pb-2 pt-1.5 text-11 text-text-muted">
-              The code renders this region and its content stays the code’s. Regions of your own around it arrive with a later step.
+              The code renders this region and its content stays the code’s. Regions of yours go around it: in the Page Header, the Breadcrumb Bar, the Footer or the Phone Bar.
             </div>
           </div>
         </div>
@@ -322,14 +323,8 @@ export function PageDesignerLayout({
 
         {position({ label: 'Header', locked: true, children: <div className="pt-1.5">{sharedTile('doors')}</div> })}
 
-        {position({
-          label: PD_POSITION.header.label,
-          count: code ? null : count('header'),
-          sel: code ? undefined : { kind: 'position', id: 'header' },
-          children: code ? <p className="m-0 px-1 pt-1.5 text-11 text-text-faint">The code’s own title block.</p> : stack('header'),
-        })}
-        {!code &&
-          position({ label: PD_POSITION.breadcrumb.label, count: count('breadcrumb'), sel: { kind: 'position', id: 'breadcrumb' }, children: stack('breadcrumb') })}
+        {position({ label: PD_POSITION.header.label, count: count('header'), sel: { kind: 'position', id: 'header' }, children: stack('header') })}
+        {position({ label: PD_POSITION.breadcrumb.label, count: count('breadcrumb'), sel: { kind: 'position', id: 'breadcrumb' }, children: stack('breadcrumb') })}
 
         {position({ label: 'Body', count: code ? null : count('body'), sel: code ? undefined : { kind: 'position', id: 'body' }, children: body() })}
 
@@ -337,15 +332,15 @@ export function PageDesignerLayout({
           label: PD_POSITION.right.label,
           count: code ? null : count('right'),
           sel: code ? undefined : { kind: 'position', id: 'right' },
-          children: code ? <p className="m-0 px-1 pt-1.5 text-11 text-text-faint">Empty. Regions of your own arrive with a later step.</p> : stack('right'),
+          children: code ? <p className="m-0 px-1 pt-1.5 text-11 text-text-faint">Empty on a page the code serves; whether regions of yours may sit beside the code’s body is a decision still to be made.</p> : stack('right'),
         })}
 
         {position({ label: 'Inline Dialogs', later: true, children: <p className="m-0 px-1 pt-1 text-11 text-text-faint">Modal regions a page can open. Arrives with a later step.</p> })}
 
-        {!code && position({ label: PD_POSITION.footer.label, count: count('footer'), sel: { kind: 'position', id: 'footer' }, children: stack('footer') })}
+        {position({ label: PD_POSITION.footer.label, count: count('footer'), sel: { kind: 'position', id: 'footer' }, children: stack('footer') })}
         {position({ label: 'Footer', locked: true, children: <div className="pt-1.5">{sharedTile('footer')}</div> })}
 
-        {!code && position({ label: PD_POSITION.phonebar.label, count: count('phonebar'), sel: { kind: 'position', id: 'phonebar' }, children: stack('phonebar') })}
+        {position({ label: PD_POSITION.phonebar.label, count: count('phonebar'), sel: { kind: 'position', id: 'phonebar' }, children: stack('phonebar') })}
         {position({ label: 'Navigation Bar', locked: true, children: <div className="pt-1.5">{sharedTile('bar')}</div> })}
       </div>
     </div>

@@ -55,6 +55,45 @@ async function readLivePage(path: string): Promise<LivePage | null> {
 /** The live row page at a literal path, or null. Memoised per request. */
 export const loadLivePage = cache(readLivePage);
 
+// A code page's frame (the Page Designer plan, PR 3): the newest published
+// revision of a page the code serves, whose regions the site renders around
+// the code's body. One query, joined through the revision's page, memoised per
+// request only: a cross-request memo here would let an isolate with a warm
+// copy regenerate a cached page with the frame just replaced, and that stale
+// render would then sit in the page cache until the next publish (seen on the
+// development server, 2026-09-09). A cached page pays the query only when it
+// is regenerated. Null when the page has nothing published.
+
+export interface LiveFrame {
+  revisionId: string;
+  publishedAt: string;
+  document: PageDocument;
+}
+
+async function readLiveFrame(path: string): Promise<LiveFrame | null> {
+  if (!isBettingConfigured()) return null;
+  try {
+    const rev = await betDb()
+      .from('page_revision')
+      .select('id, published_at, document, page!inner(id)')
+      .eq('page.application_key', PAGE_APPLICATION_KEY)
+      .eq('page.path', path)
+      .eq('page.kind', 'code')
+      .not('published_at', 'is', null)
+      .order('published_at', { ascending: false })
+      .limit(1);
+    if (rev.error) return null;
+    const row = ((rev.data ?? []) as unknown[])[0] as { id?: unknown; published_at?: unknown; document?: unknown } | undefined;
+    if (!row || typeof row.id !== 'string' || row.published_at == null) return null;
+    return { revisionId: row.id, publishedAt: String(row.published_at), document: parsePageDocument(row.document).value };
+  } catch {
+    return null;
+  }
+}
+
+/** The live regions of the code page at a registry path (`/series/[slug]`), or null. Memoised per request. */
+export const loadLiveFrame = cache(readLiveFrame);
+
 export interface RevisionPreview {
   page: PageRow;
   revisionId: string;

@@ -10,6 +10,7 @@ import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import {
   PAGE_SELECTION,
+  PD_POSITION,
   addAction,
   addRegion,
   designerMessages,
@@ -17,6 +18,7 @@ import {
   effectFor,
   messageIndex,
   moveRegion,
+  openPositions,
   patchAction,
   patchRegion,
   placeRegion,
@@ -161,7 +163,11 @@ export function PageDesigner({
   }
 
   const parsed = parsePageDocument(doc);
-  const docDirty = !code && JSON.stringify(doc) !== JSON.stringify(stored);
+  const docDirty = JSON.stringify(doc) !== JSON.stringify(stored);
+  // Where a new region goes when nothing narrower is chosen: the Body, or the
+  // Page Header on a page whose Body the code owns.
+  const home: Position = code ? 'header' : 'body';
+  const open = openPositions(page.kind);
   const attrsDirty = JSON.stringify(attrs) !== JSON.stringify(attrsOf(page));
   const dirty = docDirty || attrsDirty;
   const unpublishedNewest = newest !== null && newest.id !== (live?.id ?? null);
@@ -237,8 +243,8 @@ export function PageDesigner({
 
   const act: PropsContext['act'] = {
     addRegion: (kind, position) => {
-      if (readOnly || code) return;
-      const r = addRegion(doc, kind, { position });
+      if (readOnly) return;
+      const r = addRegion(doc, kind, { position: open.includes(position) ? position : home });
       commit(r.doc, `${kind === 'button' ? 'Button' : kind === 'static' ? 'Static Content' : kind === 'image' ? 'Image' : 'List'} created. Its attributes are in the Property Editor.`);
       select({ kind: 'region', id: r.id });
     },
@@ -284,7 +290,7 @@ export function PageDesigner({
     },
   };
   const createAction = (whenOf?: { region: string }) => {
-    if (readOnly || code) return;
+    if (readOnly) return;
     if (doc.regions.length === 0) {
       toast('Add a region first.', 'bad');
       return;
@@ -296,7 +302,7 @@ export function PageDesigner({
   };
   const onDrop = (d: Drag, where: Placement) => {
     setDrag(null);
-    if (readOnly || code) return;
+    if (readOnly) return;
     if (d.type === 'gallery') {
       const r = addRegion(doc, d.kind, where);
       commit(r.doc, 'Region created. Its attributes are in the Property Editor.');
@@ -393,7 +399,7 @@ export function PageDesigner({
         rev = r;
       }
       if (!(await reload())) return;
-      setStatus({ text: `Page ${number} saved${rev ? ` · draft ${rev.slice(0, 8)}` : ''}. ${code ? 'The site follows within a minute.' : 'Publish makes it live.'}`, cls: 'ok' });
+      setStatus({ text: `Page ${number} saved${rev ? ` · draft ${rev.slice(0, 8)}` : ''}. ${code && !rev ? 'The site follows within a minute.' : 'Publish makes it live.'}`, cls: 'ok' });
       toast('Saved', 'ok');
     } catch {
       setStatus({ text: 'Network error. Try again.', cls: 'bad' });
@@ -402,7 +408,7 @@ export function PageDesigner({
     }
   }
   async function publish() {
-    if (busy || readOnly || !pageId || code || blocked()) return;
+    if (busy || readOnly || !pageId || blocked()) return;
     if (!docDirty && !unpublishedNewest && !attrsDirty) {
       toast('The live revision is already the newest.');
       return;
@@ -430,7 +436,10 @@ export function PageDesigner({
         toast('This route needs a slug; open one of its pages from the site.', 'bad');
         return;
       }
-      if (attrsDirty) await save();
+      // The code's page runs as the site serves it: the regions around it are
+      // the published revision's, so a draft is saved and said so.
+      if (dirty) await save();
+      if (docDirty) toast('Regions show on the live page once published.');
       window.open(page.path, '_blank', 'noopener');
       return;
     }
@@ -478,12 +487,12 @@ export function PageDesigner({
     { head: 'Region' },
     ...(['static', 'image', 'list', 'button'] as RegionKind[]).map(k => ({
       label: k === 'static' ? 'Static Content' : k === 'image' ? 'Image' : k === 'list' ? 'List' : 'Button',
-      sub: code ? 'later on this page' : 'in Body',
-      disabled: readOnly || code,
-      run: () => act.addRegion(k, effective.kind === 'position' ? effective.id : 'body'),
+      sub: effective.kind === 'position' && open.includes(effective.id) ? `in ${PD_POSITION[effective.id].label}` : `in ${PD_POSITION[home].label}`,
+      disabled: readOnly,
+      run: () => act.addRegion(k, effective.kind === 'position' ? effective.id : home),
     })),
     '-',
-    { label: 'Dynamic Action', sub: effective.kind === 'region' ? 'click on this region' : undefined, disabled: readOnly || code, run: () => createAction(effective.kind === 'region' ? { region: effective.id } : undefined) },
+    { label: 'Dynamic Action', sub: effective.kind === 'region' ? 'click on this region' : undefined, disabled: readOnly, run: () => createAction(effective.kind === 'region' ? { region: effective.id } : undefined) },
     '-',
     { label: 'Shared Component…', run: () => onWorkspace('shared') },
   ];
@@ -531,12 +540,12 @@ export function PageDesigner({
         { label: 'Delete', k: 'Del', disabled: readOnly, run: () => act.remove(r.id) },
       );
     } else if (sel.kind === 'position') {
-      entries.push({ head: sel.id }, { label: 'Create Region here', sub: 'Static Content', disabled: readOnly || code, run: () => act.addRegion('static', sel.id) });
+      entries.push({ head: sel.id }, { label: 'Create Region here', sub: 'Static Content', disabled: readOnly || !open.includes(sel.id), run: () => act.addRegion('static', sel.id) });
     } else if (sel.kind === 'page') {
       entries.push(
         { head: `Page ${number}` },
-        { label: 'Create Region', sub: 'Static Content in Body', disabled: readOnly || code, run: () => act.addRegion('static', 'body') },
-        { label: 'Create Dynamic Action', sub: 'on page load', disabled: readOnly || code, run: () => createAction() },
+        { label: 'Create Region', sub: `Static Content in ${PD_POSITION[home].label}`, disabled: readOnly, run: () => act.addRegion('static', home) },
+        { label: 'Create Dynamic Action', sub: 'on page load', disabled: readOnly, run: () => createAction() },
       );
     } else if (sel.kind === 'shared') {
       entries.push({ head: 'Shared component' }, { label: 'Edit in Shared Components', run: () => onWorkspace('shared') });
@@ -673,10 +682,10 @@ export function PageDesigner({
       ? 'Read-only here: edits are made on production.'
       : dirty
         ? `Unsaved changes${newest ? ` · revision ${newest.id.slice(0, 8)}` : ''}`
-        : code
-          ? `Page ${number} · stored ${page.updatedAt ? when(page.updatedAt) : 'no row'}`
-          : newest
-            ? `Revision ${newest.id.slice(0, 8)} · ${newest.publishedAt ? 'live' : 'draft'} from ${when(newest.createdAt)}${live && newest.id !== live.id ? ` · live from ${when(live.publishedAt ?? live.createdAt)}` : ''}`
+        : newest
+          ? `Revision ${newest.id.slice(0, 8)} · ${newest.publishedAt ? 'live' : 'draft'} from ${when(newest.createdAt)}${live && newest.id !== live.id ? ` · live from ${when(live.publishedAt ?? live.createdAt)}` : ''}`
+          : code
+            ? `Page ${number} · stored ${page.updatedAt ? when(page.updatedAt) : 'no row'}`
             : 'No revision yet · saved';
   const selectedName = pe.head.name;
 
@@ -762,8 +771,8 @@ export function PageDesigner({
           <button
             type="button"
             className={TB_PRIMARY}
-            title={code ? 'A page the code serves has no revisions; Save is live within a minute.' : 'Publish the newest revision'}
-            disabled={readOnly || busy !== null || code || (!docDirty && !unpublishedNewest && !attrsDirty)}
+            title={code ? 'Publish the newest revision: its regions show around the code' : 'Publish the newest revision'}
+            disabled={readOnly || busy !== null || (!docDirty && !unpublishedNewest && !attrsDirty)}
             onClick={() => void publish()}
           >
             {busy === 'publish' ? <RefreshCw size={13} className="animate-spin" /> : null}
@@ -891,7 +900,7 @@ export function PageDesigner({
             {cTab === 'search' && <PageSearchTab query={searchQuery} onQuery={setSearchQuery} options={searchOpts} onOptions={setSearchOpts} hits={hits} onPick={h => select(h.sel)} />}
             {cTab === 'help' && <HelpTab helpFor={helpFor?.label ?? null} helpText={helpFor?.text ?? null} selected={selectedName} />}
           </div>
-          <Gallery tab={gTab} onTab={setGTab} disabled={readOnly || code} onAdd={kind => act.addRegion(kind, 'body')} onDragStart={setDrag} />
+          <Gallery tab={gTab} onTab={setGTab} disabled={readOnly} onAdd={kind => act.addRegion(kind, home)} onDragStart={setDrag} />
         </div>
         {splitter('right')}
 

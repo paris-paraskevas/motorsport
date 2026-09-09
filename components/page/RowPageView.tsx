@@ -70,6 +70,35 @@ export function RowPageView(d: RowPageData) {
   );
 }
 
+/** A code page's frame (the Page Designer plan, PR 3): the regions of the
+ *  operator's own around the code's body. Page Header and Breadcrumb Bar
+ *  regions above it, Footer and Phone Bar below, in the site's standard width;
+ *  the Body stays the code's and the Right Side Column waits for its own
+ *  decision. Rendered only when the live revision has such regions. */
+export function CodePageFrame({ d, children }: { d: RowPageData; children?: React.ReactNode }) {
+  const has = (p: Position) => d.document.regions.some(r => r.position === p);
+  const above = has('header') || has('breadcrumb');
+  const below = has('footer') || has('phonebar');
+  return (
+    <>
+      {above && (
+        <div className={`${PAGE_WIDE} pb-0`} data-page-frame="above">
+          <Strip d={d} position="header" />
+          <Strip d={d} position="breadcrumb" className="mt-6" />
+        </div>
+      )}
+      {children}
+      {below && (
+        <div className={`${PAGE_WIDE} pt-0`} data-page-frame="below">
+          <Strip d={d} position="footer" />
+          <Strip d={d} position="phonebar" className="mt-8 lg:hidden" />
+        </div>
+      )}
+      {d.document.actions.length > 0 && <DynamicActions actions={d.document.actions} />}
+    </>
+  );
+}
+
 function Strip({ d, position, className = '' }: { d: RowPageData; position: Position; className?: string }) {
   const rows = rowsAt(d.document, position);
   if (rows.length === 0) return null;
