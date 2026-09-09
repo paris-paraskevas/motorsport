@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.91 — 2026-09-09
+
+### Docs — the midday's records: R4.1 shipped, the Column Span answer, the operator's new direction (components first, learn APEX first)
+
+`docs/HANDOFF.md` gains the LATEST section for midday 2026-09-09: what R4.1 shipped (#970, 1.0.90, prod 12:39Z) and where; the measured answer to "changing column span changes nothing"; the operator's three midday messages verbatim (the APEX study and "a massive plan"; the span report; "decide what components the site will have generally then fix each page to use those components"); the proposed study → concept map → section audit → components vocabulary → page-by-page plan, awaiting the go; R4.2 on hold behind the vocabulary; four landmines (a stored transitional body on a rows-served page drew nothing; the preview needed rows-served pages; stale Playwright sessions 404 the designer; the build's prerender retries are not failures). `SCHEDULE.md` gets the midday outcomes block; `IDEAS.md` the two direction items under the Inbox. Memory: `feedback-paddock-components-first` (new), `project-paddock-designer` (R4.1 state and the direction change).
+
 ## 1.0.90 — 2026-09-09
 
 ### Feature — the components programme, R4.1: the foundation for pages served from rows, Calendar as its proof

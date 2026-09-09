@@ -1804,6 +1804,13 @@ Active: (no [+Nm] prefixes given this session)
 - Findings: the page-frame import graph multiplies into every route's chunk (58 MiB before the renderers' dynamic imports, 42.9 MiB after); the transitional body re-injected on a split page drew Home twice (fixed before merge); long or control-character Bash commands fail in this harness.
 - Won't-touch honoured: pushes only for PR branches; merges under the standing "merge all prs you create"; no prod Supabase write; Home not split on production; no post published; no branch deleted beyond a merged PR's own head.
 
+**Session 46, midday (2026-09-09 ~11:50Z → ~12:50Z, operator present) — outcomes:**
+- → done: **R4.1** the foundation for pages served from rows, Calendar as its proof (#970, 1.0.90, prod 12:39Z): the route file gone, the catch-all serving from the row, families for metadata, the Size quick pick, the transitional body’s size controls disabled with a note, Save and Run Page previewing rows-served pages.
+- → answered: "changing column span changes nothing" — it works on components (canvas 844 → 279 px; served 429 of 1336 px); the transitional body cannot be sized and now says so.
+- → proposed, not started: the APEX study (26.1 App Builder User’s Guide + Labs and Tutorials) → concept map → section audit → the components vocabulary → the page-by-page plan; awaiting the go. The operator’s "decide the components first, then fit each page" recorded as a standing principle (memory feedback-paddock-components-first); R4.2 on hold behind it.
+- Findings: a stored transitional body on a rows-served page rendered nothing (adoptRecipe fixes it in three places); the preview needed rows-served pages; a stale Playwright session 404s the designer.
+- Won’t-touch honoured: pushes only for PR branches; merges under the standing word; no prod Supabase write; Home not split on production; no branch deleted beyond a merged PR’s own head.
+
 Active: (awaiting [+Nm] prefixes)
 
 ---

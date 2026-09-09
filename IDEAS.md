@@ -37,6 +37,10 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 
+**Designer, from session 46 (2026-09-09, midday) — the operator’s direction, awaiting the go**
+- Learn APEX from its own documentation and tutorials "as if you were gonna be me working apex and building apps from scratch", then plan the slow migration of Paddock into the developer’s shape as one massive plan (operator, ~12:10Z). Sources verified 12:30Z: the APEX 26.1 App Builder User’s Guide (G26656-04, August 2026), the 26.1 release notes (G26650-03), apex.oracle.com Labs and Tutorials, Build Your First App, Oracle LiveLabs. Study solo-sequential or in waves of ≤5 read-only agents.
+- Decide the site’s general components first, then fit every page to them (operator, ~12:40Z): supersedes the family-by-family order of the R4 plan; Home’s six page-specific components are the shape to grow out of. Deliverables: concept map → section audit of the 58 routes → the vocabulary → the page-by-page plan, each an artifact for approval.
+
 **Designer, queued after the Appearance step (operator, 2026-09-08 afternoon)**
 _(All three shipped in the night of 2026-09-08. 1.0.62: the search bar for the Shared Components catalogue and the side menu redrawn, one rail per workspace. 1.0.63: the alive search placeholder, Search Hints as rows the operator keeps, each verified against the site's own search when saved, rotated a minute apart after the first paint and still under reduced motion; the search itself now drops a question's function words so one typed as asked finds its page.)_
 
