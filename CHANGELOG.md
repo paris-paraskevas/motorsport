@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.94 — 2026-09-09
+
+### Docs — the evening's records: the skips scrutinised, the Page Designer UX map, the conformance table, the chapter coverage, the decision-scan protocol
+
+`docs/HANDOFF.md` gains the LATEST section for the evening of 2026-09-09: the 161 skipped concepts scrutinised one by one (99 plumbing · 40 have · 22 adapt, `scratchpad/plan/verdicts.json`) with the integrations table (Resend already wired in `lib/email.ts`; TanStack Table proposed); "how you hold me to it" (a checked-in ledger, a slot test, the gates, the agents law, the ritual); the Page Designer click-level UX map (one Sonnet run, 114 actions + 61 structures) and the conformance table against the designer as built (match / partial / missing / deliberate); the chapter coverage of the guide (763 pages, 193 read) with recommendations; the decision-scan protocol (memory `feedback-paddock-decision-scan`) and the context plan; the open words (vocabulary, "ledger go", TanStack Table, chapters, the study into the repo). Then the operator's "read all in a subagent with sonnet": the 549 remaining pages downloaded to text at zero model cost (`study/docs2`, 324k words) and packed into nine sequential Sonnet runs (`study/runs.json`); run 6 started. `SCHEDULE.md` gets the evening outcomes block; `IDEAS.md` the open words and the conformance gaps as Phase 1 material. Memory: `feedback-paddock-decision-scan` (new), `project-paddock-designer` (the state).
+
 ## 1.0.93 — 2026-09-09
 
 ### Docs — the afternoon's records: the APEX study, the Paddock Developer Plan, the agent-cost lesson

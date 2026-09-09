@@ -37,6 +37,11 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 
+**Designer, from session 46 (2026-09-09, evening) — the plan scrutinised, open words**
+- Open: "ledger go" (docs/plan/components-programme.md + the slot test + CLAUDE.md laws for agents/tokens and the decision scan); TanStack Table; the ~45 chapter pages to read per phase; moving the study (notes, audit, ux-map, coverage) into docs/apex-study/.
+- Adapt items now in the plan: Email Templates editor over Resend; Automations page (last/next run, Run now); Table self-service; Debug panel; Tasks list for Members/Moderation; row-highlight rule; Copy Page; page modes; Embed.
+- Conformance gaps for Phase 1 slots: Appearance/Header and Footer/Configuration groups; Before Regions/After Regions/Before Footer/After Footer points; Copy To and Ctrl+drag; Display from Here and Expand/Restore; Gallery Add To; Two/Three Pane and Reset Layout; Property Editor edited marker and multi-select; the Developer Toolbar (Quick Edit, Live Template Options, Theme Roller, Layout Columns, Page Timing, Debug, Options).
+
 **Designer, from session 46 (2026-09-09, afternoon) — the study delivered, decisions open**
 - DONE: the APEX study and the plan (artifact 4d804904-63ad-4ddf-8d37-67dcb2d2fcc8); open for the operator: the vocabulary (25 components), the phase order, the Series tabs shape, Comments only if replies are wanted, the cost PR.
 - Parked from the audit: JSON-LD for driver and team pages; the about page’s prose into content; `/impressum` vs `/imprint` duplicate kept by design; threads without replies (a “discussion” surface with no discussion).
