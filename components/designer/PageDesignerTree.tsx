@@ -125,7 +125,7 @@ export function PageDesignerTree({
     tag: 'shared',
     sel: { kind: 'shared', id: key },
   });
-  const steps = systemSteps(page.kind);
+  const steps = systemSteps(page);
   const stepNodes = (point: (typeof STEP_POINTS)[number]['key']): NodeSpec[] =>
     steps
       .filter(s => s.point === point && matches(s.name, s.note))

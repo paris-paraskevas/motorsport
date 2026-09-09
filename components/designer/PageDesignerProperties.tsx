@@ -26,7 +26,7 @@ import {
 import { SITE_URL } from '@/lib/site';
 import { findComponent, type SettingValue } from '@/lib/design/components';
 import { PAGE_COMMENTS_MAX, PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
-import { PAGE_NAME_MAX, PAGE_TITLE_MAX } from '@/lib/design/page-document';
+import { PAGE_NAME_MAX, PAGE_TITLE_MAX, isLegacyBody } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
@@ -185,7 +185,12 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
           label: 'Page Alias',
           common: true,
           control: <Ro>{page.path}</Ro>,
-          note: page.kind === 'code' ? 'The route file is still in the code; the path stays until the page is fully composed.' : 'A path of your own, served from the published revision.',
+          note:
+            page.kind === 'code' && page.served !== 'rows'
+              ? 'The route file is still in the code; the path stays until the page is fully composed.'
+              : page.kind === 'code'
+                ? 'Served from its row by the site; the path stays until the page leaves the code’s registry.'
+                : 'A path of your own, served from the published revision.',
           help: 'The address. A page keeps its address; a new address is a new page.',
         },
         {
@@ -345,6 +350,8 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
   const index = siblings.findIndex(x => x.id === r.id);
   const p = (label: string, fn: (x: Region) => Region) => patch(ctx, r.id, label, fn);
   const inBody = r.position === 'body';
+  // The transitional body is drawn by the code at the full width: its size cannot change until the page is split.
+  const fullWidthOnly = isLegacyBody(r);
   const asset = r.kind === 'image' ? assets.find(a => a.id === r.assetId) : undefined;
   const colChoices = Array.from({ length: COLUMNS + 1 - r.span }, (_, i) => ({ key: i + 1, label: String(i + 1) }));
   const spanChoices = [...SPAN_CHOICES.filter(s => s <= COLUMNS + 1 - r.column), ...(SPAN_CHOICES.includes(r.span as 12) ? [] : [r.span])]
@@ -596,7 +603,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
           control: (
             <Pills
               label="Region position"
-              items={openPositions(ctx.page.kind).map(x => ({ key: x, label: PD_POSITION[x].label }))}
+              items={openPositions(ctx.page).map(x => ({ key: x, label: PD_POSITION[x].label }))}
               current={r.position}
               disabled={readOnly}
               onPick={pos => p(`Position: ${PD_POSITION[pos].label}.`, x => ({ ...x, position: pos, seq: 1_000_000, column: 1, span: pos === 'body' ? x.span : COLUMNS }))}
@@ -619,10 +626,29 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
                 help: 'The column the region’s left edge starts at, one to twelve.',
               },
               {
+                label: 'Size',
+                common: true,
+                control: (
+                  <Pills
+                    label="Region size"
+                    items={[
+                      { key: 4, label: 'Small' },
+                      { key: 6, label: 'Mid' },
+                      { key: 12, label: 'Large' },
+                    ]}
+                    current={r.span === 4 || r.span === 6 || r.span === 12 ? r.span : null}
+                    disabled={readOnly || fullWidthOnly}
+                    onPick={s => p(`Size: ${s === 4 ? 'small' : s === 6 ? 'mid' : 'large'}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))}
+                  />
+                ),
+                note: fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : 'The boxes on Home, in the words you used for them: small is a third of the row, mid a half, large the whole row.',
+                help: 'A quick pick for the width. Small is a third of the twelve columns, Mid a half, Large the full row; Column Span below sets any width.',
+              },
+              {
                 label: 'Column Span',
                 common: true,
-                control: <Pills label="Region span" items={spanChoices} current={r.span} disabled={readOnly} onPick={s => p(`Column Span ${s}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))} />,
-                note: 'In twelfths, like APEX.',
+                control: <Pills label="Region span" items={spanChoices} current={r.span} disabled={readOnly || fullWidthOnly} onPick={s => p(`Column Span ${s}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))} />,
+                note: fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : 'In twelfths, like APEX.',
                 help: 'Width in twelfths. Full is 12, half is 6, a third is 4. Phones ignore it and stack every region.',
               },
               { label: 'Where it lands', common: true, control: <MiniMap doc={doc} id={r.id} />, note: 'Desktop and laptop. A phone stacks regions in sequence.' },
@@ -971,7 +997,7 @@ export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number)
 
 export function positionGroups(ctx: PropsContext, pos: Position): { head: { kind: string; name: string }; groups: PropGroup[] } {
   const n = ctx.doc.regions.filter(r => r.position === pos).length;
-  const code = !openPositions(ctx.page.kind).includes(pos);
+  const code = !openPositions(ctx.page).includes(pos);
   return {
     head: { kind: 'Position', name: PD_POSITION[pos].label },
     groups: [
@@ -1024,7 +1050,7 @@ export function sharedGroups(ctx: PropsContext, key: 'doors' | 'footer' | 'bar')
 }
 
 export function procGroups(ctx: PropsContext, id: string): { head: { kind: string; name: string }; groups: PropGroup[] } {
-  const step = systemSteps(ctx.page.kind).find(s => s.id === id);
+  const step = systemSteps(ctx.page).find(s => s.id === id);
   if (!step) return { head: { kind: 'System process', name: id }, groups: [] };
   const point = step.point === 'before-header' ? 'Before Header' : step.point === 'after-header' ? 'After Header' : 'After Footer';
   return {

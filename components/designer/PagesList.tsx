@@ -80,7 +80,7 @@ export function PagesList({
   const [filter, setFilter] = useState<PageFilter>(initialFilter);
   const [query, setQuery] = useState('');
 
-  const codeCount = pages.filter(p => p.kind === 'code').length;
+  const codeCount = pages.filter(p => p.kind === 'code' && p.served !== 'rows').length;
   const rowCount = pages.length - codeCount;
   const unseeded = pages.filter(p => p.kind === 'code' && p.updatedAt === null).length;
   const filterLabel = filter === 'all' ? null : filter === 'row' ? 'Your pages' : PAGE_GROUP_LABELS[filter];

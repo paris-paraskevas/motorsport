@@ -36,6 +36,12 @@ vi.mock('@/lib/home-model', () => ({
 }));
 const fetchHomeBlogLead = vi.fn(async (slug?: string | null) => (slug === 'pinned-post' ? { slug: 'pinned-post', title: 'The pinned one', summary: 'Pinned.', heroImage: null, publishedAtIso: '2026-09-01T10:00:00Z', readMinutes: 4, seriesSlug: 'f1' } : null));
 vi.mock('@/lib/blog', () => ({ fetchHomeBlogLead: (slug?: string | null) => fetchHomeBlogLead(slug) }));
+vi.mock('./families/calendar', () => ({
+  loadCalendarModel: async () => ({ items: [], roundByKey: { 'f1:14': 14 }, roundNames: { 'f1:14': 'Spanish Grand Prix (Madrid)' }, serverNow: '2026-09-09T12:00:00.000Z' }),
+}));
+vi.mock('@/components/calendar/CalendarView', () => ({
+  CalendarView: (props: { items: unknown[]; serverNow: string; roundNames?: Record<string, string> }) => <div data-calendar={props.serverNow}>{Object.values(props.roundNames ?? {}).join(', ')}</div>,
+}));
 
 import { canRender, raceWeekendNow, renderComponents } from './component-render';
 
@@ -77,5 +83,17 @@ describe('renderComponents', () => {
     const out = await renderComponents(doc([region('lead', 'home.lead', { pinned: 'gone' })]), { path: '/' });
     expect(html(out.lead)).toContain('Monza, a history');
     expect(await raceWeekendNow()).toBe(true);
+  });
+
+  it('R4.1: the page heading draws the page’s title, its name, or words of its own; the calendar draws its family’s assembly', async () => {
+    const page = { path: '/calendar', name: 'Calendar', title: null };
+    const out = await renderComponents(doc([region('heading', 'page.heading'), region('month', 'calendar.month', {}, { seq: 20 })]), { path: '/calendar', params: {}, page });
+    expect(html(out.heading)).toMatch(/<h1[^>]*>Calendar<\/h1>/);
+    expect(html(out.month)).toContain('data-calendar="2026-09-09T12:00:00.000Z"');
+    expect(html(out.month)).toContain('Spanish Grand Prix (Madrid)');
+    const titled = await renderComponents(doc([region('heading', 'page.heading')]), { path: '/calendar', page: { ...page, title: 'Race calendar 2026' } });
+    expect(html(titled.heading)).toContain('>Race calendar 2026<');
+    const own = await renderComponents(doc([region('heading', 'page.heading', { text: 'Every session' })]), { path: '/calendar', page });
+    expect(html(own.heading)).toContain('>Every session<');
   });
 });

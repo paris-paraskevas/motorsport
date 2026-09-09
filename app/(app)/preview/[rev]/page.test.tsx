@@ -34,6 +34,20 @@ vi.mock('@/lib/design/authz', async () => {
   const d = await vi.importActual<typeof import('@/lib/design/authz-defaults')>('@/lib/design/authz-defaults');
   return { loadAuthzSchemes: async () => d.DEFAULT_AUTHZ_SCHEMES };
 });
+// A page served from rows (R4.1): the components draw as stand-ins, the family answers with fixed structured data.
+vi.mock('@/lib/design/component-render', () => ({
+  raceWeekendNow: async () => false,
+  renderComponents: async (doc: { regions: { id: string; kind: string; component?: string }[] }, where: { path: string; page?: { title: string | null; name: string } }) =>
+    Object.fromEntries(
+      doc.regions
+        .filter(r => r.kind === 'component' && r.component !== 'page.body')
+        .map(r => [r.id, r.component === 'page.heading' ? <h1>{where.page?.title ?? where.page?.name}</h1> : <div data-component={r.component}>{where.path}</div>]),
+    ),
+}));
+vi.mock('@/lib/design/page-families', () => ({
+  familyMetadata: async () => ({ title: 'Calendar' }),
+  familyExtras: async () => <script type="application/ld+json">{'{"@type":"BreadcrumbList"}'}</script>,
+}));
 
 import RevisionPreviewPage, { dynamic, generateMetadata } from './page';
 import type { PageRow } from '@/lib/design/pages';
@@ -94,5 +108,22 @@ describe('/preview/[rev]', () => {
     loadRevisionPreview.mockResolvedValue({ ...preview, publishedAt: '2026-09-08T19:30:00Z', isLive: true });
     const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
     expect(html).toContain('· the live revision ·');
+  });
+
+  it('previews a page served from rows as the site serves it: the components in the code frame, a transitional body adopting the recipe, the family’s structured data, no second heading', async () => {
+    const calendar: PageRow = { ...page, path: '/calendar', name: 'Calendar', kind: 'code', served: 'rows', group: 'site', title: null };
+    const legacy = { id: 'code-body', kind: 'component', component: 'page.body', settings: {}, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null };
+    loadRevisionPreview.mockResolvedValue({ ...preview, page: calendar, document: { version: 1, actions: [], regions: [legacy] } });
+    const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
+    expect(html).toContain('aria-label="Developer toolbar"');
+    expect(html).toContain('data-page-frame="body"');
+    expect(html).toContain('<h1>Calendar</h1>');
+    expect(html).toContain('data-component="calendar.month"');
+    expect(html).toContain('BreadcrumbList');
+    expect(html).not.toContain('data-page-revision');
+    expect((html.match(/<h1/g) ?? []).length).toBe(1);
+    // Nothing published yet: the default composition.
+    loadRevisionPreview.mockResolvedValue({ ...preview, page: calendar, document: { version: 1, actions: [], regions: [] } });
+    expect(renderToStaticMarkup(await RevisionPreviewPage({ params }))).toContain('data-component="calendar.month"');
   });
 });

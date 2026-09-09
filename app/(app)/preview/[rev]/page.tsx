@@ -7,7 +7,9 @@ import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { documentRefs, schemesAsked } from '@/lib/design/page-document';
 import { renderComponents } from '@/lib/design/component-render';
-import { RowPageView } from '@/components/page/RowPageView';
+import { CodePageFrame, RowPageView } from '@/components/page/RowPageView';
+import { familyExtras } from '@/lib/design/page-families';
+import { composedDocument } from '@/lib/design/composed-page';
 import { DeveloperToolbar } from '@/components/page/DeveloperToolbar';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
@@ -39,19 +41,27 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   const preview = await loadRevisionPreview(rev);
   if (!preview) notFound();
 
-  const asked = schemesAsked(preview.page.authz, preview.document);
-  const refs = documentRefs(preview.document);
-  const [shortcuts, assets, nav, schemes, components] = await Promise.all([
+  // A page served from rows (R4.1) previews as the catch-all serves it: the
+  // revision's document read the same way (a transitional body adopting the
+  // recipe, an empty body the default composition), its components in the code
+  // page's frame, with its family's structured data.
+  const composed = preview.page.served === 'rows';
+  const document = composed ? composedDocument(preview.document, preview.page.path) : preview.document;
+  const asked = schemesAsked(preview.page.authz, document);
+  const refs = documentRefs(document);
+  const [shortcuts, assets, nav, schemes, components, extras] = await Promise.all([
     loadShortcuts(),
     loadAssetsById(refs.assets),
     loadNavLists(),
     asked.length > 0 ? loadAuthzSchemes() : Promise.resolve([]),
     // Every component draws in the preview too; the show rules are not applied here.
-    renderComponents(preview.document, { path: preview.page.path }),
+    renderComponents(document, { path: preview.page.path, params: {}, page: preview.page }),
+    composed ? familyExtras(preview.page.path, {}) : Promise.resolve(null),
   ]);
   const messages: Record<string, string | null> = {};
   for (const key of asked) messages[key] = schemes.find(s => s.key === key)?.message ?? null;
   const lists = await loadDocumentLists(refs.lists, nav);
+  const d = { page: preview.page, document, shortcuts, assets, nav, lists, allowed: new Set(asked), messages, components };
 
   return (
     <>
@@ -63,17 +73,14 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
         isLive={preview.isLive}
         problems={preview.problems}
       />
-      <RowPageView
-        page={preview.page}
-        document={preview.document}
-        shortcuts={shortcuts}
-        assets={assets}
-        nav={nav}
-        lists={lists}
-        allowed={new Set(asked)}
-        messages={messages}
-        components={components}
-      />
+      {composed ? (
+        <>
+          {extras}
+          <CodePageFrame d={d} />
+        </>
+      ) : (
+        <RowPageView {...d} />
+      )}
     </>
   );
 }

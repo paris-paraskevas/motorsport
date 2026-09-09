@@ -33,12 +33,19 @@ function routesFromFiles(): { route: string; file: string }[] {
 describe('the page registry', () => {
   const files = routesFromFiles();
 
-  it('names every route the site serves, and nothing that does not exist', () => {
+  it('names every route the site serves, and nothing that does not exist; a page served from rows has no route file', () => {
     const fromFiles = new Set(files.map(f => registryPathOf(f.route)));
-    const fromRegistry = new Set(CODE_PAGES.map(p => p.path));
+    const byFile = CODE_PAGES.filter(p => p.served !== 'rows');
+    const fromRegistry = new Set(byFile.map(p => p.path));
     expect([...fromRegistry].filter(p => !fromFiles.has(p)), 'in the registry but no route file').toEqual([]);
     expect([...fromFiles].filter(p => !fromRegistry.has(p)), 'a route file the registry does not know').toEqual([]);
-    expect(fromRegistry.size).toBe(CODE_PAGES.length);
+    expect(fromRegistry.size).toBe(byFile.length);
+    // The components programme (R4): a page whose route file has left is served
+    // from its row by the catch-all, and its file must indeed be gone.
+    const composed = CODE_PAGES.filter(p => p.served === 'rows').map(p => p.path);
+    expect(composed).toEqual(['/calendar']);
+    for (const p of composed) expect(fromFiles.has(p), `${p} still has a route file`).toBe(false);
+    expect(new Set(CODE_PAGES.map(p => p.path)).size).toBe(CODE_PAGES.length);
   });
 
   it("records each route's rendering as the file declares it", () => {

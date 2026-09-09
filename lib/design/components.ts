@@ -53,6 +53,25 @@ export const COMPONENTS: readonly ComponentSpec[] = [
     settings: [],
     legacy: true,
   },
+  // The page's heading, as the site's mastheads draw it: the row's title or
+  // name, or words of the component's own. Every page split after Home starts
+  // with it (R4.1).
+  {
+    key: 'page.heading',
+    name: 'Page heading',
+    group: 'Page',
+    holds: 'the page’s heading in the site’s masthead style: its title, or words of your own',
+    settings: [{ key: 'text', label: 'Words', kind: 'text', default: '', maxLength: 120, help: 'Empty shows the page’s title, or its name when it has none.' }],
+  },
+  // The calendar (R4.1, the first page whose route file left the code): the
+  // month-by-month timeline of every session across the series.
+  {
+    key: 'calendar.month',
+    name: 'Calendar',
+    group: 'Data',
+    holds: 'every session of every series, month by month, in the reader’s local time; the weekend under way on top',
+    settings: [],
+  },
   // Home's six (R2b), cut along the sections Home shows today; each draws from
   // the same assembly the page used (lib/home-model.ts) and applies its own
   // settings on top. They may sit on any page.
@@ -104,10 +123,77 @@ export const COMPONENTS: readonly ComponentSpec[] = [
 ];
 
 /** How a page not yet split becomes components: the keys that replace its
- *  transitional body, in order. Only pages whose components exist appear here. */
+ *  transitional body, in order. Only pages whose components exist appear here.
+ *  For a page whose route file has left the code, this is also its default
+ *  composition when nothing is published. */
 export const SPLITS: Readonly<Record<string, readonly string[]>> = {
   '/': ['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire'],
+  '/calendar': ['page.heading', 'calendar.month'],
 };
+
+/** Components that share a row as two halves, in the order the recipe names them. */
+const HALVES: ReadonlySet<string> = new Set(['home.changed', 'home.next']);
+
+/** A region of the document model for a component, as the recipes lay them out. */
+export interface RecipeRegion {
+  id: string;
+  kind: 'component';
+  component: string;
+  settings: Record<string, SettingValue>;
+  title: string;
+  position: 'body';
+  seq: number;
+  column: number;
+  span: number;
+  newRow: boolean;
+  authz: string | null;
+  hidden: boolean;
+}
+
+/** A fresh id for a component: the key's last word (`home.wire` → `wire`, then `wire-2`); `code-body` for the transitional one. */
+export function componentId(key: string, taken: readonly string[]): string {
+  const base = key === 'page.body' ? 'code-body' : (key.split('.').pop() ?? 'component').replace(/[^a-z0-9-]/g, '-');
+  if (!taken.includes(base)) return base;
+  let n = 2;
+  while (taken.includes(`${base}-${n}`)) n++;
+  return `${base}-${n}`;
+}
+
+/** The recipe's components as Body regions, in order, renumbered by tens from
+ *  `seqFrom`; the halves share one row. Empty for a path without a recipe. */
+export function recipeRegions(path: string, taken: readonly string[] = [], seqFrom = 10): RecipeRegion[] {
+  const recipe = SPLITS[path];
+  if (!recipe) return [];
+  const out: RecipeRegion[] = [];
+  let seq = seqFrom;
+  for (const key of recipe) {
+    const spec = findComponent(key);
+    if (!spec) continue;
+    const half = HALVES.has(key);
+    const second = half && out.some(r => HALVES.has(r.component));
+    out.push({
+      id: componentId(key, [...taken, ...out.map(r => r.id)]),
+      kind: 'component',
+      component: key,
+      settings: componentDefaults(spec),
+      title: '',
+      position: 'body',
+      seq,
+      column: second ? 7 : 1,
+      span: half ? 6 : 12,
+      newRow: !second,
+      authz: null,
+      hidden: false,
+    });
+    seq += 10;
+  }
+  return out;
+}
+
+/** A page's default composition: the recipe as a document, nothing else. */
+export function defaultDocument(path: string): { version: 1; regions: RecipeRegion[]; actions: never[] } {
+  return { version: 1, regions: recipeRegions(path), actions: [] };
+}
 
 export function findComponent(key: string): ComponentSpec | null {
   return COMPONENTS.find(c => c.key === key) ?? null;

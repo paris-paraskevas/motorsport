@@ -123,6 +123,9 @@ export function PageDesigner({
 }) {
   const { page, live, newest, revisions } = detail;
   const code = page.kind === 'code';
+  // A route file in the code still draws this page's body (the transitional
+  // body belongs there); a page served from rows, made here or split, has none.
+  const routeFile = code && page.served !== 'rows';
   const pageId = page.id ?? '';
   const number = page.id ? page.id.slice(0, 8) : 'no row';
   const uid = useId();
@@ -185,10 +188,10 @@ export function PageDesigner({
   // Where a new region goes when nothing narrower is chosen: the Body, on every
   // page since the components programme opened it (R2a).
   const home: Position = 'body';
-  const open = openPositions(page.kind);
+  const open = openPositions(page);
   // The components this page may still take: the transitional body only on a
-  // page whose body the code draws, and only once.
-  const componentTiles: ComponentTile[] = COMPONENTS.filter(c => !c.legacy || (code && !doc.regions.some(isLegacyBody))).map(c => ({ key: c.key, name: c.name, desc: c.holds }));
+  // page whose route file still draws its body, and only once.
+  const componentTiles: ComponentTile[] = COMPONENTS.filter(c => !c.legacy || (routeFile && !doc.regions.some(isLegacyBody))).map(c => ({ key: c.key, name: c.name, desc: c.holds }));
   const attrsDirty = JSON.stringify(attrs) !== JSON.stringify(attrsOf(page));
   const dirty = docDirty || attrsDirty;
   const unpublishedNewest = newest !== null && newest.id !== (live?.id ?? null);
@@ -474,7 +477,10 @@ export function PageDesigner({
   }
   async function saveAndRun() {
     if (busy || readOnly || blocked()) return;
-    if (code) {
+    // A route file's page runs as the site serves it; a page served from rows
+    // (R4.1) previews its draft like a row page, once its address is literal
+    // (a pattern waits for its family to say which address, R4.2).
+    if (routeFile || page.path.includes('[')) {
       if (page.path.includes('[')) {
         toast('This route needs a slug; open one of its pages from the site.', 'bad');
         return;
@@ -588,7 +594,7 @@ export function PageDesigner({
     '-',
     {
       label: 'Delete Page…',
-      sub: code ? 'the route file is still in the code' : `${revisions.length} revision${revisions.length === 1 ? '' : 's'} go with it`,
+      sub: routeFile ? 'the route file is still in the code' : code ? 'the page is still in the code’s registry' : `${revisions.length} revision${revisions.length === 1 ? '' : 's'} go with it`,
       disabled: readOnly || code,
       run: () => setSheet('delete'),
     },

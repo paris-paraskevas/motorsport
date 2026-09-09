@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPONENTS, COMPONENT_KEY, SPLITS, componentDefaults, findComponent, parseSettings, settingsSummary } from './components';
+import { COMPONENTS, COMPONENT_KEY, SPLITS, componentDefaults, componentId, defaultDocument, findComponent, parseSettings, recipeRegions, settingsSummary } from './components';
 
 // The component catalogue: every key well formed and unique, settings read
 // against their spec with defaults standing in, the summary in words, Home's
@@ -38,8 +38,27 @@ describe('the component catalogue', () => {
     expect(settingsSummary(legacy, {})).toMatch(/exactly as its code writes it today/);
   });
 
-  it('Home’s split recipe names six components the catalogue has', () => {
+  it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
-    for (const key of SPLITS['/']) expect(findComponent(key)).not.toBeNull();
+    expect(SPLITS['/calendar']).toEqual(['page.heading', 'calendar.month']);
+    for (const recipe of Object.values(SPLITS)) for (const key of recipe) expect(findComponent(key)).not.toBeNull();
+  });
+
+  it('lays a recipe out as Body regions: full rows, the two Home halves sharing one, ids from the keys, and a default document from it', () => {
+    const home = recipeRegions('/');
+    expect(home.map(r => `${r.id}:${r.column}/${r.span}${r.newRow ? '' : ' same row'}:${r.seq}`)).toEqual([
+      'lead:1/12:10',
+      'live:1/12:20',
+      'result:1/12:30',
+      'changed:1/6:40',
+      'next:7/6 same row:50',
+      'wire:1/12:60',
+    ]);
+    expect(home.find(r => r.id === 'wire')?.settings).toEqual({ items: 5 });
+    expect(recipeRegions('/', ['wire'], 100).map(r => r.id)[5]).toBe('wire-2');
+    expect(recipeRegions('/nowhere')).toEqual([]);
+    expect(componentId('page.body', [])).toBe('code-body');
+    expect(componentId('home.wire', ['wire', 'wire-2'])).toBe('wire-3');
+    expect(defaultDocument('/calendar').regions.map(r => r.component)).toEqual(['page.heading', 'calendar.month']);
   });
 });

@@ -1,20 +1,26 @@
+import 'server-only';
+import { cache } from 'react';
 import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
-import { CalendarView } from '@/components/calendar/CalendarView';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL, PAGE_WIDE } from '@/lib/site';
+import { SITE_URL } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
-import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
+import type { CalendarEntry } from '@/components/calendar/types';
+import type { PageFamily } from '../page-families';
 
-export const revalidate = 300;
+// The Calendar family (the components programme, R4.1): the first page whose
+// route file left the code. What app/(app)/calendar/page.tsx used to hold, in
+// two parts the catch-all and the Calendar component read: the page's metadata
+// and structured data, and the assembly the component draws from. The
+// assembly is the route's, moved as it was.
 
 const CALENDAR_TITLE = 'Calendar';
 const CALENDAR_DESCRIPTION =
   'Upcoming F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA and more sessions in one timeline — month-by-month, in your local time.';
 
-const BASE_METADATA: Metadata = {
+const METADATA: Metadata = {
   title: CALENDAR_TITLE,
   description: CALENDAR_DESCRIPTION,
   ...withSocialMeta({
@@ -25,13 +31,20 @@ const BASE_METADATA: Metadata = {
     path: '/calendar',
   }),
 };
-export const generateMetadata = pageMetadata('/calendar', BASE_METADATA);
 
-async function CalendarPage() {
+export interface CalendarModel {
+  items: CalendarEntry[];
+  roundByKey: Record<string, number>;
+  roundNames: Record<string, string>;
+  serverNow: string;
+}
+
+/** Every session of every series, the round lookups and the round names, once per request. */
+export const loadCalendarModel = cache(async (): Promise<CalendarModel> => {
   const all = await loadAllSeries();
   const now = new Date();
 
-  const flat = all
+  const items = all
     .flatMap(s =>
       s.sessions.map(session => ({
         session,
@@ -60,25 +73,17 @@ async function CalendarPage() {
     }
   }
 
-  return (
-    <div className={PAGE_WIDE}>
-      <JsonLd
-        data={breadcrumbLd([
-          { name: 'Home', url: SITE_URL },
-          { name: 'Calendar', url: `${SITE_URL}/calendar` },
-        ])}
-      />
-      {/* Compact Paper masthead — the display-caps register is gone, and the
-          saved height is part of round-2 ⑥'s "make the month fit". */}
-      <header className="mb-4">
-        <h1 className="font-serif text-34 font-medium leading-none tracking-[-0.02em] text-text md:text-40">
-          Calendar
-        </h1>
-      </header>
+  return { items, roundByKey, roundNames, serverNow: now.toISOString() };
+});
 
-      <CalendarView items={flat} roundByKey={roundByKey} roundNames={roundNames} serverNow={now.toISOString()} />
-    </div>
-  );
-}
-
-export default withPageGate('/calendar', CalendarPage);
+export const family: PageFamily = {
+  metadata: async () => METADATA,
+  extras: async () => (
+    <JsonLd
+      data={breadcrumbLd([
+        { name: 'Home', url: SITE_URL },
+        { name: 'Calendar', url: `${SITE_URL}/calendar` },
+      ])}
+    />
+  ),
+};

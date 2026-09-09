@@ -2,31 +2,41 @@ import 'server-only';
 import { cache, type ReactNode } from 'react';
 import { isLegacyBody, type ComponentRegion, type PageDocument } from './page-document';
 import type { SettingValue } from './components';
+import type { PageRow } from './pages';
 
 // The server half of the component catalogue (lib/design/components.ts): how
-// each component is drawn. A renderer takes the region (its settings) and the
-// context (which page, whether this is the first component in the Body, so it
-// carries the page's h1) and answers a node or nothing. Every renderer fails
-// soft on its own: a component that throws draws nothing and the page stands.
+// each component is drawn. A renderer takes the region's settings and the
+// context (which page and address, whether this is the first component in
+// the Body, so it carries the page's h1) and answers a node or nothing. Every
+// renderer fails soft on its own: a component that throws draws nothing and
+// the page stands.
 //
 // The Home components read the same assembly the home route uses
 // (loadHomeModel, once per request) and apply their settings on top; the
-// facts a show rule needs come from the same place (raceWeekendNow).
+// Calendar component reads its family's assembly the same way; the facts a
+// show rule needs come from the same place (raceWeekendNow).
 //
 // THE IMPORTS ARE DYNAMIC ON PURPOSE. This file is reached from
-// page-frame.tsx, which every code route imports; a static import of the home
+// page-frame.tsx, which every code route imports; a static import of an
 // assembly (the series loader, the content bundle, the news and blog readers)
 // would pull that whole graph into every route's chunk and it did: the first
-// build measured 58 MiB against 42 MiB before (the Worker's ceiling is 64
-// MiB). Loaded on demand, the graph is one shared chunk, read only when a
-// page actually carries a Home component.
+// build of R2b measured 58 MiB against 42 MiB before (the Worker's ceiling is
+// 64 MiB). Loaded on demand, a graph is one shared chunk, read only when a
+// page actually carries the component.
 
 const home = () => import('@/lib/home-model');
 const pieces = () => import('@/components/HomeLead');
 const blog = () => import('@/lib/blog');
+const calendar = () => import('./families/calendar');
+const calendarView = () => import('@/components/calendar/CalendarView');
 
 export interface RenderContext {
+  /** The registry pattern or literal path of the page. */
   path: string;
+  /** The address's parts for a pattern page (`slug`, `round`); empty for a literal one. */
+  params: Readonly<Record<string, string>>;
+  /** The page itself, for components that draw its name or title. */
+  page: Pick<PageRow, 'path' | 'name' | 'title'>;
   /** This component is the first region showing in the Body: it carries the page's h1. */
   first: boolean;
 }
@@ -37,6 +47,20 @@ const num = (v: SettingValue | undefined, fallback: number): number => (typeof v
 const str = (v: SettingValue | undefined): string => (typeof v === 'string' ? v.trim() : '');
 
 const RENDERERS: Readonly<Record<string, Renderer>> = {
+  'page.heading'(settings, ctx) {
+    const text = str(settings.text) || ctx.page.title || ctx.page.name;
+    // The site's masthead, as the pages the code drew had it (the Calendar's, moved as it was).
+    return (
+      <header>
+        <h1 className="font-serif text-34 font-medium leading-none tracking-[-0.02em] text-text md:text-40">{text}</h1>
+      </header>
+    );
+  },
+  async 'calendar.month'() {
+    const [{ loadCalendarModel }, { CalendarView }] = await Promise.all([calendar(), calendarView()]);
+    const m = await loadCalendarModel();
+    return <CalendarView items={m.items} roundByKey={m.roundByKey} roundNames={m.roundNames} serverNow={m.serverNow} />;
+  },
   async 'home.lead'(settings) {
     const [{ loadHomeModel, loadSeriesMeta }, { HomeLeadStory }, { fetchHomeBlogLead }] = await Promise.all([home(), pieces(), blog()]);
     const model = await loadHomeModel();
@@ -91,22 +115,30 @@ export function canRender(key: string): boolean {
   return key in RENDERERS;
 }
 
+/** What a renderer is told about the page: the pattern or path, the address's parts, the row. */
+export interface RenderPage {
+  path: string;
+  params?: Readonly<Record<string, string>>;
+  page?: Pick<PageRow, 'path' | 'name' | 'title'>;
+}
+
 /**
  * Draw every component region of a document (the transitional body excepted:
  * the frame places the code's body itself), by region id. The first region
  * showing in the Body is told so, for the h1. A renderer that throws yields
  * nothing for its region and nothing else is affected.
  */
-export async function renderComponents(doc: PageDocument, ctx: { path: string }): Promise<Record<string, ReactNode>> {
+export async function renderComponents(doc: PageDocument, where: RenderPage): Promise<Record<string, ReactNode>> {
   const out: Record<string, ReactNode> = {};
   const firstInBody = doc.regions.find(r => r.position === 'body' && !r.hidden)?.id ?? null;
   const regions = doc.regions.filter((r): r is ComponentRegion => r.kind === 'component' && !isLegacyBody(r));
+  const page = where.page ?? { path: where.path, name: '', title: null };
   await Promise.all(
     regions.map(async r => {
       const render = RENDERERS[r.component];
       if (!render) return;
       try {
-        out[r.id] = await render(r.settings, { path: ctx.path, first: r.id === firstInBody });
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody });
       } catch {
         out[r.id] = null;
       }

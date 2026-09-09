@@ -27,6 +27,11 @@ export interface PageRow {
   path: string;
   name: string;
   kind: 'code' | 'row';
+  /** `rows` when the catch-all serves the page from its row: every page made
+   *  in the designer, and a code page whose route file has left (the
+   *  components programme, R4). Absent means a route file in the code serves
+   *  it. Derived from the registry, never stored. */
+  served?: 'rows';
   group: PageGroup | null;
   template: string;
   authz: PageAuthz | string | null;
@@ -47,6 +52,7 @@ function codePageRow(path: string): PageRow | undefined {
     path: c.path,
     name: c.name,
     kind: 'code',
+    ...(c.served === 'rows' ? { served: 'rows' as const } : {}),
     group: c.group,
     template: 'paddock-standard',
     authz: c.authz,
@@ -58,6 +64,12 @@ function codePageRow(path: string): PageRow | undefined {
   };
 }
 
+/** A code page as the registry alone describes it (no row): what the catch-all
+ *  falls back to for a page served from rows whose row cannot be read. */
+export function registryPageRow(path: string): PageRow | null {
+  return codePageRow(path) ?? null;
+}
+
 /** Coerce one row, or null when it cannot be used. */
 export function pageFromRow(item: unknown): PageRow | null {
   if (!item || typeof item !== 'object') return null;
@@ -65,11 +77,13 @@ export function pageFromRow(item: unknown): PageRow | null {
   if (typeof r.path !== 'string' || !PATH.test(r.path)) return null;
   if (r.kind !== 'code' && r.kind !== 'row') return null;
   if (typeof r.name !== 'string' || !r.name.trim()) return null;
+  const registered = r.kind === 'code' ? CODE_PAGES.find(c => c.path === r.path) : undefined;
   return {
     id: typeof r.id === 'string' ? r.id : null,
     path: r.path,
     name: r.name.trim(),
     kind: r.kind,
+    ...(r.kind === 'row' || registered?.served === 'rows' ? { served: 'rows' as const } : {}),
     group: isPageGroup(r.group_key) ? r.group_key : null,
     template: typeof r.template === 'string' && r.template ? r.template : 'paddock-standard',
     authz: typeof r.authz_key === 'string' ? r.authz_key : null,
