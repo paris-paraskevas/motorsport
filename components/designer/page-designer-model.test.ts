@@ -207,7 +207,7 @@ describe('messages', () => {
     const ms = designerMessages(bad, page);
     const texts = ms.map(m => `${m.level}: ${m.text}`);
     expect(texts).toContain('err: region photo-1: the image must name one of your photos');
-    expect(texts).toContain('err: The Body has no region showing. The page would be empty.');
+    expect(texts).toContain('warn: The Body has no region showing. The page runs as its title alone.');
     expect(texts).toContain('warn: Button “Go” goes nowhere and no dynamic action listens to it.');
     expect(texts).toContain('warn: Later is hidden at first and no dynamic action shows it.');
     expect(texts).toContain('warn: Later has no text yet.');
@@ -215,7 +215,7 @@ describe('messages', () => {
     const idx = messageIndex(ms);
     expect(idx['region:photo-1']).toBe('err');
     expect(idx['region:later']).toBe('warn');
-    expect(idx['position:body']).toBe('err');
+    expect(idx['position:body']).toBe('warn');
   });
 });
 

@@ -431,8 +431,11 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
     else if (am) out.push({ level: 'err', text: p, sel: am[2] ? { kind: 'effect', id: am[1], index: Number(am[2]) - 1 } : { kind: 'action', id: am[1] }, group: am[2] ? 'Affected Elements' : 'When' });
     else out.push({ level: 'err', text: p, sel: PAGE_SELECTION });
   }
+  // A warning, not an error: an empty page saves, runs and publishes as its
+  // title alone, as an APEX page does (operator, 2026-09-09: "i should always
+  // be able to run page").
   if (!code && !doc.regions.some(r => r.position === 'body' && !r.hidden)) {
-    out.push({ level: 'err', text: 'The Body has no region showing. The page would be empty.', sel: { kind: 'position', id: 'body' } });
+    out.push({ level: 'warn', text: 'The Body has no region showing. The page runs as its title alone.', sel: { kind: 'position', id: 'body' } });
   }
   const file = servedByFile(page);
   const legacies = doc.regions.filter(isLegacyBody);
