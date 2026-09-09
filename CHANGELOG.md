@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.85 — 2026-09-09
+
+### Feature — W1 of the workspaces plan: the `workspace` table and the application's workspace, number and path (migration only)
+
+The operator's "w1 go" (2026-09-09 ~09:20Z) on the workspaces and applications plan (artifact `a3bfb43e-a167-4634-80f1-fa5618481b64`). This push is the migration alone; no code reads the new columns until the App Builder PR that follows, so merging it changes nothing on the site and the operator applies it when ready ("apply 20260909100000").
+
+- **`supabase/migrations/20260909100000_workspaces.sql`** (NEW): `workspace` (key, name, `clerk_org_id` unique and null until W3 links a Clerk Organization, created_at; RLS on, service_role only), seeded with `paddock`. `application` gains `workspace_key` (default `paddock`, foreign key), `number` (backfilled 100 for Paddock, then not null, unique), `path_prefix` ('' for Paddock; `/a/<alias>` for every other application, enforced by a check, and only Paddock may sit at the root) and a unique `alias`. One transaction; idempotent (every constraint is dropped-if-exists before it is added).
+- Applied to the local database (proof: the workspace row; Paddock's row reads `paddock · 100 · ''`; eight constraints on `application` including `application_number_key`, `application_path_prefix_check`, `application_root_check`, `application_alias_key`, `application_workspace_key_fkey`). Rehearsed on production through the Management API inside `begin … rollback` (the result is in the PR).
+- Verified: no code changed; `tsc` and the suite are those of 1.0.84.
+
 ## 1.0.84 — 2026-09-09
 
 ### Docs — the morning's records: the design brief, the answers, three drafts awaiting a word
