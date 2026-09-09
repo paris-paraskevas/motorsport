@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.75 — 2026-09-09
+
+### Docs — session 46 closed: PR 3 applied and merged on the operator's word
+
+`docs/HANDOFF.md`'s LATEST section and `SCHEDULE.md`'s session-46 outcomes now say what happened after the report: the operator's "apply 20260909040000 and merge #953" at ~00:37Z, the prod rehearsal and apply (00:39:06Z, HTTP 201, proof in the 1.0.74 entry), the merge (00:40:07Z) and prod reading 1.0.74 at 00:45:19Z; the decision list loses its first item and the handoff gains the operator's first look (a Static Content region in About's Page Header, published, seen, removed). No code.
+
 ## 1.0.74 — 2026-09-09
 
 ### Feature — Page Designer PR 3: regions of the operator's own around a code page's body
