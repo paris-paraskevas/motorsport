@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.73 — 2026-09-09
+
+### Docs — the records at the close of session 46: PR 1, PR 2 and Application Definition live, PR 3 open for the operator's "apply"
+
+`docs/HANDOFF.md` gains the LATEST section: the night in one line (#950 1.0.70, #951 1.0.71, #952 1.0.72 live; #953 1.0.74 open, carrying migration `20260909040000`, to be applied on the operator's word before it merges), the decisions waiting for the operator (apply and merge, the Right Side Column on code pages, Ctrl+/ chords, photo tiles for Image regions, the Phase 4 plan, a leftover remote branch), the workarounds taken (a clean worktree for #952's gates, the frame loader made per-request, the development server's late route registration, the Clerk development-instance administrator for Playwright), the evidence (three review pages, the suite 1904 → 1922, the dry-run 42725.57 → 42986.98 KiB) and the landmines learned. `SCHEDULE.md` gains the session-46 outcomes; `IDEAS.md` the three designer decisions parked for the operator. No code.
+
 ## 1.0.72 — 2026-09-09
 
 ### Feature — Shared Components: Application Definition, the Phase 2 editor that was never built, with the shell honouring it
