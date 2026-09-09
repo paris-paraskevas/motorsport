@@ -6,6 +6,7 @@ import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { documentRefs, schemesAsked } from '@/lib/design/page-document';
+import { renderComponents } from '@/lib/design/component-render';
 import { RowPageView } from '@/components/page/RowPageView';
 import { DeveloperToolbar } from '@/components/page/DeveloperToolbar';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
@@ -40,11 +41,13 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
 
   const asked = schemesAsked(preview.page.authz, preview.document);
   const refs = documentRefs(preview.document);
-  const [shortcuts, assets, nav, schemes] = await Promise.all([
+  const [shortcuts, assets, nav, schemes, components] = await Promise.all([
     loadShortcuts(),
     loadAssetsById(refs.assets),
     loadNavLists(),
     asked.length > 0 ? loadAuthzSchemes() : Promise.resolve([]),
+    // Every component draws in the preview too; the show rules are not applied here.
+    renderComponents(preview.document, { path: preview.page.path }),
   ]);
   const messages: Record<string, string | null> = {};
   for (const key of asked) messages[key] = schemes.find(s => s.key === key)?.message ?? null;
@@ -69,6 +72,7 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
         lists={lists}
         allowed={new Set(asked)}
         messages={messages}
+        components={components}
       />
     </>
   );

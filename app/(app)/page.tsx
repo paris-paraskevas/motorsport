@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { loadLiveHomeLayout } from '@/lib/home-layout';
-import { buildHomeModel } from '@/lib/home-model';
+import { loadHomeModel } from '@/lib/home-model';
 import { HomeLead } from '@/components/HomeLead';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_WIDE, SITE_TITLE } from '@/lib/site';
@@ -51,9 +50,12 @@ const BASE_METADATA: Metadata = {
 };
 export const generateMetadata = pageMetadata('/', BASE_METADATA);
 
+// Once per request (lib/home-model.ts loadHomeModel): the same assembly the
+// Home components read when the operator has split this page in the designer.
+// Then the frame (lib/design/page-frame.tsx) draws the published revision's
+// components and leaves this body out; until then this is the page.
 async function Home() {
-  const layout = await loadLiveHomeLayout();
-  const model = await buildHomeModel(layout);
+  const model = await loadHomeModel();
 
   return (
     <div className={PAGE_WIDE}>

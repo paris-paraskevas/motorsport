@@ -7,6 +7,7 @@ import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
 import { applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts } from '@/lib/design/page-document';
+import { raceWeekendNow, renderComponents } from '@/lib/design/component-render';
 import { RowPageView } from '@/components/page/RowPageView';
 import { RefusedPage } from '@/components/page/RefusedPage';
 
@@ -76,15 +77,16 @@ export default async function CatchAll({ params }: { params: Params }) {
       return <RefusedPage title={live.page.title ?? live.page.name} message={message} signInHelps={signInHelps} />;
     }
   }
-  const document = applyShow(live.document, { signedIn, raceWeekend: null });
+  const document = applyShow(live.document, { signedIn, raceWeekend: asks.calendar ? await raceWeekendNow() : null });
 
   const refs = documentRefs(document);
-  const [shortcuts, assets, nav] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists()]);
+  const [shortcuts, assets, nav, components] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, { path: live.page.path })]);
   const lists = await loadDocumentLists(refs.lists, nav);
   return (
     <RowPageView
       page={live.page}
       document={document}
+      components={components}
       shortcuts={shortcuts}
       assets={assets}
       nav={nav}

@@ -78,22 +78,25 @@ export function RowPageView(d: RowPageData) {
   );
 }
 
-/** A page whose body the code still draws (the Page Designer plan, PR 3; the
- *  components programme, R2a): the regions of the operator's own around and
- *  among the code's body. Page Header and Breadcrumb Bar regions above, Footer
- *  and Phone Bar below, in the site's standard width. In the Body, the code's
- *  body is `children`, placed where the transitional component ("Body as the
- *  code draws it") sits; the operator's own body regions render before and
- *  after it in the standard width. A document without that component draws
- *  the code's body first and the body regions after it. The Right Side Column
- *  waits for its own decision. Rendered only when the live revision has
- *  regions. */
+/** A page whose route the code still serves (the Page Designer plan, PR 3; the
+ *  components programme, R2a and R2b): the regions of the operator's own
+ *  around and among the code's body. Page Header and Breadcrumb Bar regions
+ *  above, Footer and Phone Bar below, in the site's standard width. In the
+ *  Body, the code's body is `children`, placed where the transitional
+ *  component ("Body as the code draws it") sits; the operator's own body
+ *  regions render before and after it in the standard width. A document with
+ *  no Body regions at all (a revision from before the Body opened) draws the
+ *  code's body alone. A document with Body regions and no transitional
+ *  component is a page the operator has SPLIT: its components and regions are
+ *  the body, and the code's body is not drawn. The Right Side Column waits for
+ *  its own decision. Rendered only when the live revision has regions. */
 export function CodePageFrame({ d, children }: { d: RowPageData; children?: React.ReactNode }) {
   const has = (p: Position) => d.document.regions.some(r => r.position === p);
   const above = has('header') || has('breadcrumb');
   const below = has('footer') || has('phonebar');
   const bodyRows = rowsAt(d.document, 'body');
   const at = bodyRows.findIndex(row => row.some(isLegacyBody));
+  const split = bodyRows.length > 0 && at < 0;
   const before = at < 0 ? [] : bodyRows.slice(0, at);
   const sameRow = at < 0 ? [] : bodyRows[at].filter(r => !isLegacyBody(r));
   const after = [...(sameRow.length ? [sameRow] : []), ...(at < 0 ? bodyRows : bodyRows.slice(at + 1))];
@@ -110,9 +113,9 @@ export function CodePageFrame({ d, children }: { d: RowPageData; children?: Reac
           <Rows d={d} rows={before} />
         </div>
       )}
-      {children}
+      {!split && children}
       {after.length > 0 && (
-        <div className={`${PAGE_WIDE} pt-0`} data-page-frame="body-after">
+        <div className={`${PAGE_WIDE} ${split ? '' : 'pt-0'}`} data-page-frame={split ? 'body' : 'body-after'}>
           <Rows d={d} rows={after} />
         </div>
       )}

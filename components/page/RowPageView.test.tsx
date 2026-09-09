@@ -191,14 +191,29 @@ describe('components (the components programme, R2a)', () => {
     expect(html).toContain('data-page-frame="body-after"');
     expect(html).not.toContain('id="region-code-body"');
 
-    const none: PageDocument = { version: 1, actions: [], regions: [region('after', { seq: 10 })] };
+    // Body regions without the transitional component: the operator has split
+    // the page, and the code's body is not drawn at all.
+    const split: PageDocument = { version: 1, actions: [], regions: [region('lead', { seq: 10, kind: 'component', component: 'home.lead', settings: {}, text: undefined }), region('after', { seq: 20 })] };
+    const composed = renderToStaticMarkup(
+      <CodePageFrame d={{ ...data, document: split, components: { lead: <h1>THE LEAD</h1> } }}>
+        <main>THE CODE BODY</main>
+      </CodePageFrame>,
+    );
+    expect(composed).not.toContain('THE CODE BODY');
+    expect(composed.indexOf('THE LEAD')).toBeLessThan(composed.indexOf('AFTER'));
+    expect(composed).toContain('data-page-frame="body"');
+    expect(composed).not.toContain('body-after');
+
+    // No Body regions at all (a revision from before the Body opened): the code's body alone.
+    const none: PageDocument = { version: 1, actions: [], regions: [region('kicker', { position: 'header', seq: 10 })] };
     const plain = renderToStaticMarkup(
       <CodePageFrame d={{ ...data, document: none }}>
         <main>THE CODE BODY</main>
       </CodePageFrame>,
     );
-    expect(plain.indexOf('THE CODE BODY')).toBeLessThan(plain.indexOf('AFTER'));
+    expect(plain).toContain('THE CODE BODY');
+    expect(plain).toContain('KICKER');
     expect(plain).not.toContain('body-before');
-    expect(plain).toContain('data-page-frame="body-after"');
+    expect(plain).not.toContain('data-page-frame="body');
   });
 });

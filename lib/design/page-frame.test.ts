@@ -37,6 +37,12 @@ vi.mock('./lists', () => ({
 }));
 const currentUser = vi.fn();
 vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+// The components' server half: what a region draws, and whether a race weekend is on.
+const raceWeekend = vi.fn(async () => false);
+vi.mock('./component-render', () => ({
+  renderComponents: async (doc: { regions: { id: string; kind: string }[] }) => Object.fromEntries(doc.regions.filter(r => r.kind === 'component').map(r => [r.id, `drawn ${r.id}`])),
+  raceWeekendNow: () => raceWeekend(),
+}));
 vi.mock('next/navigation', () => ({
   notFound: () => {
     throw new Error('NEXT_NOT_FOUND');
@@ -233,5 +239,23 @@ describe('withPageGate', () => {
     expect(currentUser).toHaveBeenCalledTimes(1);
     currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
     expect(dataOf(await gated(props)).document.regions.map(r => r.id)).toEqual(['above', 'code-body', 'members']);
+  });
+
+  it('R2b: the components a revision places are drawn for the frame, and a race-weekend rule reads the calendar fact only when a rule asks', async () => {
+    const wire: Region = { id: 'wire', kind: 'component', component: 'home.wire', settings: { items: 5 }, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null };
+    loadLiveFrame.mockResolvedValue(live([wire, welcome({ id: 'quiet', position: 'body', seq: 20, show: 'between-weekends' })]));
+    const gated = withPageGate('/calendar', Page);
+    raceWeekend.mockResolvedValue(true);
+    let d = dataOf(await gated(props));
+    expect(d.components).toEqual({ wire: 'drawn wire' });
+    expect(d.document.regions.map(r => r.id)).toEqual(['wire']);
+    expect(raceWeekend).toHaveBeenCalledTimes(1);
+    raceWeekend.mockResolvedValue(false);
+    d = dataOf(await gated(props));
+    expect(d.document.regions.map(r => r.id)).toEqual(['wire', 'quiet']);
+    raceWeekend.mockClear();
+    loadLiveFrame.mockResolvedValue(live([wire]));
+    await gated(props);
+    expect(raceWeekend).not.toHaveBeenCalled();
   });
 });
