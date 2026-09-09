@@ -682,8 +682,8 @@
   "madring": {
     "name": "Madring",
     "countryCode": "ES",
-    "lat": 40.4653,
-    "lon": -3.6153,
-    "aliases": ["Madring", "IFEMA Madrid"]
+    "lat": 40.46528,
+    "lon": -3.61528,
+    "aliases": ["Madring", "Madrid", "Circuito de Madring", "IFEMA Madrid", "Spanish Grand Prix (Madrid)"]
   }
 }

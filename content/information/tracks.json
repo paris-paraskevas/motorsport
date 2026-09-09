@@ -2064,6 +2064,27 @@
       "article": "## Origins\nThe Korea International Circuit was built near Yeongam in South Jeolla Province, about 320 km south of Seoul and close to the port of Mokpo. Designed by Hermann Tilke, it opened in 2010 under a deal between commercial-rights holder Bernie Ecclestone and the Korea Auto Valley Operation, as the centrepiece of an ambitious plan for a motorsport hub and an adjoining marina city. Construction ran late, and the track was finished only weeks before its first race.\n\n## The circuit\nTilke's design paired a permanent racing section with a semi-street layout meant to thread through the planned coastal development. The 5.615 km lap features 18 turns and, when new, one of the longest straights in Formula 1, feeding a heavy-braking right-hander built for overtaking. The blend of long straights and slow, technical corners was demanding on brakes and traction, but the surrounding city that was supposed to grow up around the circuit never materialised.\n\n## Racing at Yeongam\nThe circuit hosted the Korean Grand Prix for four seasons, from 2010 to 2013. The inaugural race in 2010 was run in treacherous wet conditions and won by Fernando Alonso. Despite that early promise, poor attendance, the remote location and heavy financial losses undermined the event, and Korea fell off the Formula 1 calendar after 2013 without being formally replaced. The venue has since hosted South Korea's Superrace Championship and occasional international touring-car events, but has never regained a place in world-championship motor racing."
     },
     {
+      "slug": "madring",
+      "name": "Madring",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": { "lat": 40.46528, "lng": -3.61528 },
+      "type": "street",
+      "categories": ["f1"],
+      "summary": "Madrid's new hybrid circuit around the IFEMA exhibition centre in Barajas: 5.416 km and 22 corners, mixing public roads with purpose-built sections. It hosts the Spanish Grand Prix from 13 September 2026, the title moving there from Barcelona, which keeps its own Barcelona-Catalunya Grand Prix.",
+      "sources": [
+        "https://www.formula1.com/en/latest/article/what-time-is-the-formula-1-2026-spanish-grand-prix-and-how-can-i-watch-it.3E0BZAmuqa0zBco566ZuiI",
+        "https://en.wikipedia.org/wiki/Madring"
+      ],
+      "lengthKm": 5.416,
+      "turns": 22,
+      "opened": 2026,
+      "confidence": "high",
+      "review": "verified",
+      "featured": true,
+      "article": "## Formula 1 comes to Madrid\nMadring is a new circuit laid out around the IFEMA exhibition centre in the Barajas district of Madrid: 5.416 kilometres and 22 corners, part public road and part purpose-built track, with fast linked corners near Valdebebas and a slower technical section. Its first Formula 1 race is the Spanish Grand Prix on 13 September 2026, the first Grand Prix in the Madrid area since Jarama in 1981.\n\n## Two Spanish rounds in 2026\nThe Spanish Grand Prix title moves to Madrid, while the Circuit de Barcelona-Catalunya keeps a race of its own, the Barcelona-Catalunya Grand Prix, run in June 2026."
+    },
+    {
       "slug": "circuit-de-barcelona-catalunya",
       "name": "Circuit de Barcelona-Catalunya",
       "country": "Spain",
