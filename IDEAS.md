@@ -37,6 +37,11 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 
+**Designer, from session 46 (2026-09-09, night) — the spherical view, awaiting the operator**
+- The full read is complete (plan page 4d804904-63ad-4ddf-8d37-67dcb2d2fcc8, "The spherical view"). Decisions in order: rules v3 (v2 + part A) → the ledger revised per part B → the plan and vocabulary per part C.
+- Candidate new slots: the component definition model (first in Phase 2); Data Sources as a shared component; one Data region with views; Filters as a layer; Map Backgrounds; Calendar events; Search configurations; Field templates; the Conditions vocabulary; Working Copies; New Application wizard with a features checklist; Members/Moderation as Tasks; the Security tab (CSP rollout, audit rollups, access control); Health with an Advisor lint; designer utilities (dashboard, change history, locks, backups, data loading, view-as-JSON); soft delete for pages.
+- Timeline moves: early November 2026 at this week's pace, mid-December at half; shorter without Working Copies or the utilities.
+
 **Designer, from session 46 (2026-09-09, evening) — the plan scrutinised, open words**
 - Open: "ledger go" (docs/plan/components-programme.md + the slot test + CLAUDE.md laws for agents/tokens and the decision scan); TanStack Table; the ~45 chapter pages to read per phase; moving the study (notes, audit, ux-map, coverage) into docs/apex-study/.
 - Adapt items now in the plan: Email Templates editor over Resend; Automations page (last/next run, Run now); Table self-service; Debug panel; Tasks list for Members/Moderation; row-highlight rule; Copy Page; page modes; Embed.

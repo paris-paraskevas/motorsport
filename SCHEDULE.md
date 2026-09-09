@@ -1824,6 +1824,12 @@ Active: (no [+Nm] prefixes given this session)
 - → open for the operator: the vocabulary, "ledger go", TanStack Table, the chapters to read, moving the study into the repo.
 - Won’t-touch honoured: nothing built on the plan; pushes only for PR branches; no prod Supabase write; no new repo file without the word.
 
+**Session 46, night (2026-09-09 ~17:30Z → ~21:30Z, operator present at the start, then the runs alone) — outcomes:**
+- → done: the **full read of the guide** — 549 pages in nine sequential Sonnet runs (757 concepts, 454 relevant, ~2.6M tokens), each folded into the plan page as it landed; the **spherical view** (rules / phases and slots / vocabulary / confirmed) published on `4d804904-63ad-4ddf-8d37-67dcb2d2fcc8`; the rules v2 scrutinised against Anthropic's primary sources (`scratchpad/plan/rules.md`).
+- → held, by the operator's order: no rule, slot or phase changed; the ledger stays a draft; decisions in the order rules → ledger → plan.
+- Findings: Working Copies, the onboarding screen sequence, the Create Application features checklist, Tasks with six roles and Info Requested, REST Data Sources with sample-based discovery, Table and Cards as views of one region, the Conditions catalogue, stable-id exports.
+- Won't-touch honoured: one agent at a time, all Sonnet; pushes only for PR branches; no prod Supabase write; no new repo file without the word.
+
 Active: (awaiting [+Nm] prefixes)
 
 ---
