@@ -46,6 +46,13 @@ export function sameSelection(a: Selection, b: Selection): boolean {
   return (a as { id: string }).id === (b as { id: string }).id;
 }
 
+/** The positions a page of the given kind may carry regions in: every one for
+ *  a page made in the designer; around the code's body for a page the code
+ *  serves (the Right Side Column waits for its own decision). */
+export function openPositions(kind: 'row' | 'code'): readonly Position[] {
+  return kind === 'row' ? POSITIONS : (['header', 'breadcrumb', 'footer', 'phonebar'] as const);
+}
+
 /** The positions as the Page Designer names them, the prototype's words. */
 export const PD_POSITION: Record<Position, { label: string; note: string }> = {
   header: { label: 'Page Header', note: 'above the page title, full width' },
@@ -317,7 +324,7 @@ const ACTION_PROBLEM = /^action ([a-z0-9-]+)(?:, effect (\d+))?:/;
  *  designer's own warnings and notes, in the prototype's manner. */
 export function designerMessages(doc: PageDocument, page: PageRow): DesignerMessage[] {
   const out: DesignerMessage[] = [];
-  if (page.kind === 'code') return out;
+  const code = page.kind === 'code';
   const { problems } = parsePageDocument(doc);
   for (const p of problems) {
     const rm = p.match(REGION_PROBLEM);
@@ -326,10 +333,13 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
     else if (am) out.push({ level: 'err', text: p, sel: am[2] ? { kind: 'effect', id: am[1], index: Number(am[2]) - 1 } : { kind: 'action', id: am[1] }, group: am[2] ? 'Affected Elements' : 'When' });
     else out.push({ level: 'err', text: p, sel: PAGE_SELECTION });
   }
-  if (!doc.regions.some(r => r.position === 'body' && !r.hidden)) {
+  if (!code && !doc.regions.some(r => r.position === 'body' && !r.hidden)) {
     out.push({ level: 'err', text: 'The Body has no region showing. The page would be empty.', sel: { kind: 'position', id: 'body' } });
   }
   for (const r of doc.regions) {
+    if (code && (r.position === 'body' || r.position === 'right')) {
+      out.push({ level: 'err', text: `${regionName(r)} sits in the ${PD_POSITION[r.position].label}, which the code owns on this page. Move it to the Page Header, the Breadcrumb Bar, the Footer or the Phone Bar.`, sel: { kind: 'region', id: r.id }, group: 'Layout' });
+    }
     if (r.kind === 'static' && !r.text.trim()) out.push({ level: 'warn', text: `${regionName(r)} has no text yet.`, sel: { kind: 'region', id: r.id }, group: 'Source' });
     if (r.kind === 'image' && r.assetId && !r.alt.trim()) out.push({ level: 'info', text: `${regionName(r)} has no alternative text; screen readers will skip the photo.`, sel: { kind: 'region', id: r.id }, group: 'Source' });
     if (r.kind === 'button' && !r.dest && !doc.actions.some(a => 'region' in a.when && a.when.region === r.id)) {

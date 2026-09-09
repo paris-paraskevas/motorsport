@@ -137,18 +137,16 @@ export function PageDesignerTree({
   if (tab === 'rend') {
     const components: NodeSpec[] = [
       sharedNode('doors', 'Header · Navigation Menu'),
-      code
-        ? { key: 'pos:header', label: PD_POSITION.header.label, cls: 'pos', tag: 'the code’s' }
-        : positionNode('header'),
-      ...(code ? [] : [positionNode('breadcrumb')]),
+      positionNode('header'),
+      positionNode('breadcrumb'),
       code
         ? { key: 'pos:body', label: 'Body', cls: 'pos', tag: 'the code’s', children: [{ key: 'code-body', label: page.name, icon: <Lock size={10} />, cls: 'locked', tag: 'Full' }] }
         : positionNode('body'),
       code ? { key: 'pos:right', label: PD_POSITION.right.label, cls: 'pos', tag: 'empty' } : positionNode('right'),
       { key: 'pos:dialog', label: 'Inline Dialogs', cls: 'pos', tag: 'later' },
-      ...(code ? [] : [positionNode('footer')]),
+      positionNode('footer'),
       sharedNode('footer', 'Footer · Site footer'),
-      ...(code ? [] : [positionNode('phonebar')]),
+      positionNode('phonebar'),
       sharedNode('bar', 'Navigation Bar · Phone bar'),
     ];
     tree = [
@@ -202,15 +200,13 @@ export function PageDesignerTree({
       .map(ev => ({ key: `ev:${ev}`, label: eventLabel[ev], cls: 'pos', tag: String(byEvent[ev].length), children: byEvent[ev] }));
     foot = (
       <>
-        {!readOnly && !code && (
+        {!readOnly && (
           <button type="button" className="mx-3 my-1.5 border border-edit px-2 py-1 font-mono text-9 uppercase tracking-[0.12em] text-edit hover:bg-edit-dim" onClick={onCreateAction}>
             ＋ Create Dynamic Action
           </button>
         )}
         <p className="m-0 px-3.5 py-3 text-12 leading-relaxed text-text-faint">
-          {code
-            ? 'A page the code serves has no dynamic actions of its own; they arrive with regions of your own.'
-            : 'A dynamic action is When (an event on a region or the page) plus Actions (show, hide, toggle, scroll to, go), each chosen from lists. The running page executes them; nobody writes JavaScript.'}
+          A dynamic action is When (an event on a region or the page) plus Actions (show, hide, toggle, scroll to, go), each chosen from lists. The running page executes them; nobody writes JavaScript.
         </p>
       </>
     );

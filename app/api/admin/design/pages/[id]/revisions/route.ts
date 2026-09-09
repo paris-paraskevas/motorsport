@@ -73,7 +73,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
           { status: 409 },
         );
       }
-      if (/no such row page/i.test(error.message)) return new Response('not found', { status: 404 });
+      // 'no such row page' before migration 20260909040000, 'no such page' after it.
+      if (/no such (row )?page/i.test(error.message)) return new Response('not found', { status: 404 });
       if (error.code === '23503' || /foreign key/i.test(error.message)) {
         return NextResponse.json(
           { error: 'The layout names a list, a photo, a shortcut or a scheme that does not exist.', detail: error.message },
@@ -87,7 +88,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (action === 'publish') {
       // The served page follows at once; a draft changes nothing visitors see.
       const detail = await loadPageDetail(id);
-      if (detail) revalidatePath(detail.page.path);
+      if (detail) {
+        // A code page's regions render around its body on the live page, and a
+        // dynamic route is revalidated as a whole (the Page Designer plan, PR 3).
+        if (detail.page.path.includes('[')) revalidatePath(detail.page.path, 'page');
+        else revalidatePath(detail.page.path);
+      }
     }
     return NextResponse.json({
       ok: true,

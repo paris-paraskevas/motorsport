@@ -25,6 +25,13 @@ vi.mock('@/lib/betting/client', () => ({
   }),
 }));
 vi.mock('./authz', () => ({ loadAuthzSchemes: async () => DEFAULT_AUTHZ_SCHEMES }));
+const loadLiveFrame = vi.fn();
+vi.mock('./live-page', () => ({
+  loadLiveFrame: (path: string) => loadLiveFrame(path),
+  loadAssetsById: async () => new Map(),
+}));
+vi.mock('./shortcuts', () => ({ loadShortcuts: async () => ({ 'times.local': 'All times are local.' }) }));
+vi.mock('./lists', () => ({ loadNavLists: async () => ({ doors: [], bar: [], footerSite: [], footerLegal: [] }) }));
 const currentUser = vi.fn();
 vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
 vi.mock('next/navigation', () => ({
@@ -34,6 +41,8 @@ vi.mock('next/navigation', () => ({
 }));
 
 import { applyFrame, loadPageFrame, pageMetadata, resetPageFrameMemo, withPageGate } from './page-frame';
+import { CodePageFrame, type RowPageData } from '@/components/page/RowPageView';
+import type { Region } from './page-document';
 
 const STAMP = '2026-09-08T16:00:00.505502+00:00';
 const calendar = (over: Record<string, unknown> = {}) => ({
@@ -64,6 +73,8 @@ beforeEach(() => {
   from.mockReset();
   currentUser.mockReset();
   currentUser.mockResolvedValue(null);
+  loadLiveFrame.mockReset();
+  loadLiveFrame.mockResolvedValue(null);
   resetPageFrameMemo();
 });
 afterEach(() => {
@@ -94,7 +105,7 @@ describe('applyFrame', () => {
 
 describe('loadPageFrame', () => {
   it('reads the code rows once a minute and answers by path; nothing without a row or a database', async () => {
-    expect(await loadPageFrame('/calendar')).toEqual({ name: 'Calendar', title: null, indexable: true, authz: 'public' });
+    expect(await loadPageFrame('/calendar')).toMatchObject({ name: 'Calendar', title: null, indexable: true, authz: 'public', row: { path: '/calendar', kind: 'code' } });
     expect(await loadPageFrame('/about')).toBeNull();
     expect(from).toHaveBeenCalledTimes(1);
     configured = false;
@@ -170,5 +181,42 @@ describe('withPageGate', () => {
     const refused = await withPageGate('/calendar', Page)(props);
     expect(typeOf(refused)).toBe(RefusedPage);
     expect(propsOf(refused)).toEqual({ title: 'Calendar', message: 'For approved writers.', signInHelps: false });
+  });
+
+  const welcome = (over: Partial<Region> = {}): Region =>
+    ({ id: 'welcome', kind: 'static', title: 'Welcome', position: 'header', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'Every session, {shortcut:times.local}', ...over }) as Region;
+  const live = (regions: Region[]) => ({ revisionId: 'r1', publishedAt: STAMP, document: { version: 1, regions, actions: [] } });
+  const dataOf = (el: unknown) => (propsOf(el) as { d: RowPageData }).d;
+
+  it("puts the live revision's regions around the code's page; without a live frame, without regions, or when it cannot be read the page is left alone", async () => {
+    loadLiveFrame.mockResolvedValue(live([welcome()]));
+    const gated = withPageGate('/calendar', Page);
+    const framed = await gated(props);
+    expect(typeOf(framed)).toBe(CodePageFrame);
+    expect(propsOf(framed).children).toBe('page f1');
+    const d = dataOf(framed);
+    expect(d.page.path).toBe('/calendar');
+    expect(d.document.regions.map(r => r.id)).toEqual(['welcome']);
+    expect(d.shortcuts['times.local']).toBe('All times are local.');
+    expect([...d.allowed]).toEqual([]);
+    expect(loadLiveFrame).toHaveBeenCalledWith('/calendar');
+    expect(currentUser).not.toHaveBeenCalled();
+
+    loadLiveFrame.mockResolvedValue(live([]));
+    expect(await gated(props)).toBe('page f1');
+    loadLiveFrame.mockRejectedValue(new Error('down'));
+    expect(await gated(props)).toBe('page f1');
+    expect(await withPageGate('/about', Page)(props)).toBe('page f1');
+  });
+
+  it("reads the session only when a region asks for a scheme, and hands the frame the scheme's message for a visitor who fails it", async () => {
+    loadLiveFrame.mockResolvedValue(live([welcome({ authz: 'signed_in' })]));
+    const gated = withPageGate('/calendar', Page);
+    const anonymous = dataOf(await gated(props));
+    expect([...anonymous.allowed]).toEqual([]);
+    expect(anonymous.messages).toEqual({ signed_in: 'Sign in to see this.' });
+    expect(currentUser).toHaveBeenCalledTimes(1);
+    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
+    expect([...dataOf(await gated(props)).allowed]).toEqual(['signed_in']);
   });
 });

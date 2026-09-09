@@ -6,8 +6,8 @@
 // post to the one write path with the right base and the attributes save with
 // them, a stale publish shows the conflict, a shortcut lands at the cursor,
 // Save and Run Page opens the preview, undo and redo walk the working copy,
-// the keyboard set switches panes, and a page the code serves edits its
-// attributes alone.
+// the keyboard set switches panes, and a page the code serves takes regions
+// around its body.
 
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -270,16 +270,27 @@ describe('PageDesigner', () => {
     expect(screen.getByLabelText('Region of effect 1 of action-1')).toBeTruthy();
   });
 
-  it('a page the code serves shows its body as served by the code, keeps the gallery inert and saves its attributes alone', async () => {
+  it('a page the code serves shows its body as served by the code, takes a region in the Page Header, and saves attributes and draft together', async () => {
     const { onSaved } = mount({ page: codePage, live: null, newest: null, revisions: [] });
     expect(screen.getByText('Served by the code')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Gallery: Static Content' }).getAttribute('aria-disabled')).toBe('true');
     expect((screen.getByRole('button', { name: 'Publish' }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.change(screen.getByLabelText('Page title'), { target: { value: 'Race calendar 2026' } });
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Static Content' }));
+    expect(tile('Static Content: text-1')).toBeTruthy();
+    const where = screen.getByRole('group', { name: 'Region position' });
+    expect(within(where).getByRole('button', { name: 'Page Header' }).getAttribute('aria-pressed')).toBe('true');
+    expect(within(where).queryByRole('button', { name: 'Body' })).toBeNull();
+    expect(within(where).queryByRole('button', { name: 'Right Side Column' })).toBeNull();
+    expect((screen.getByRole('button', { name: 'Publish' }) as HTMLButtonElement).disabled).toBe(false);
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSaved).toHaveBeenCalled());
     expect(calls.find(c => c.method === 'PUT')!.url).toBe(`/api/admin/design/pages/${codePage.id}`);
-    expect(calls.some(c => c.method === 'POST')).toBe(false);
+    const posted = calls.find(c => c.method === 'POST')!;
+    expect(posted.url).toBe(`/api/admin/design/pages/${codePage.id}/revisions`);
+    const body = posted.body as { action: string; base: unknown; document: PageDocument };
+    expect(body.action).toBe('draft');
+    expect(body.base).toBeNull();
+    expect(body.document.regions.map(r => r.position)).toEqual(['header']);
   });
 
   it('is read-only on a preview Worker: nothing saves, the tiles still select', () => {

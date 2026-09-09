@@ -5,7 +5,6 @@ import {
   BUTTON_LABEL_MAX,
   COLUMNS,
   IMAGE_ALT_MAX,
-  POSITIONS,
   REGION_KIND_LABELS,
   REGION_TITLE_MAX,
   STATIC_TEXT_MAX,
@@ -35,6 +34,7 @@ import {
   destinationLabel,
   effectFor,
   goOptions,
+  openPositions,
   regionName,
   sharedOf,
   spanName,
@@ -541,7 +541,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
           control: (
             <Pills
               label="Region position"
-              items={POSITIONS.map(x => ({ key: x, label: PD_POSITION[x].label }))}
+              items={openPositions(ctx.page.kind).map(x => ({ key: x, label: PD_POSITION[x].label }))}
               current={r.position}
               disabled={readOnly}
               onPick={pos => p(`Position: ${PD_POSITION[pos].label}.`, x => ({ ...x, position: pos, seq: 1_000_000, column: 1, span: pos === 'body' ? x.span : COLUMNS }))}
@@ -891,7 +891,7 @@ export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number)
 
 export function positionGroups(ctx: PropsContext, pos: Position): { head: { kind: string; name: string }; groups: PropGroup[] } {
   const n = ctx.doc.regions.filter(r => r.position === pos).length;
-  const code = ctx.page.kind === 'code';
+  const code = !openPositions(ctx.page.kind).includes(pos);
   return {
     head: { kind: 'Position', name: PD_POSITION[pos].label },
     groups: [
@@ -908,7 +908,7 @@ export function positionGroups(ctx: PropsContext, pos: Position): { head: { kind
                 Create Region here
               </button>
             ),
-            note: code ? 'Regions of your own around the code arrive with a later step.' : undefined,
+            note: code ? 'The code owns this position on this page; regions of yours go in the Page Header, the Breadcrumb Bar, the Footer or the Phone Bar.' : undefined,
           },
         ],
       },

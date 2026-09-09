@@ -9,6 +9,7 @@ import {
   messageIndex,
   moveRegion,
   nextRegionId,
+  openPositions,
   placeRegion,
   removeRegion,
   renumber,
@@ -96,9 +97,18 @@ describe('placement', () => {
 });
 
 describe('messages', () => {
-  it('says nothing for a sound page, and nothing at all for a code page', () => {
+  it('says nothing for a sound page; asks no Body of a code page but refuses a region in the Body the code owns', () => {
     expect(designerMessages(doc, page)).toEqual([]);
-    expect(designerMessages({ version: 1, regions: [], actions: [] }, { ...page, kind: 'code' })).toEqual([]);
+    const code: PageRow = { ...page, kind: 'code' };
+    expect(designerMessages({ version: 1, regions: [], actions: [] }, code)).toEqual([]);
+    expect(designerMessages({ version: 1, regions: [region({ id: 'welcome', title: 'Welcome', position: 'header' })], actions: [] }, code)).toEqual([]);
+    const inBody = designerMessages({ version: 1, regions: [region({ id: 'intro', title: 'Intro' })], actions: [] }, code);
+    expect(inBody.map(m => `${m.level}: ${m.text}`)).toEqual([
+      'err: Intro sits in the Body, which the code owns on this page. Move it to the Page Header, the Breadcrumb Bar, the Footer or the Phone Bar.',
+    ]);
+    expect(inBody[0].sel).toEqual({ kind: 'region', id: 'intro' });
+    expect(openPositions('code')).toEqual(['header', 'breadcrumb', 'footer', 'phonebar']);
+    expect(openPositions('row')).toHaveLength(6);
   });
 
   it("names the parser's problems by component, the empty body, and what leads nowhere", () => {
