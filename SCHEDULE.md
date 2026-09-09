@@ -1818,6 +1818,12 @@ Active: (no [+Nm] prefixes given this session)
 - Findings: subagents inherit Fable unless `model` is set (memory feedback-paddock-agent-model-cost); `const top` breaks an inline browser script; no replies exist anywhere on the site; `/about` prose lives in JSX.
 - Won’t-touch honoured: no build started on the plan; pushes only for PR branches; no prod Supabase write.
 
+**Session 46, evening (2026-09-09 ~15:50Z → ~17:30Z, operator present) — outcomes:**
+- → done: the 161 skips scrutinised (99 plumbing · 40 have · 22 adapt) with the integrations table (Resend already wired; TanStack Table proposed); "how you hold me to it" (ledger, test, gates, agents law, ritual); the Page Designer **UX map** (one Sonnet run, 114 actions + 61 structures) and the **conformance table** against the built designer; the chapter coverage table (763 pages, 193 read, ~45 recommended); all on the plan page `4d804904-63ad-4ddf-8d37-67dcb2d2fcc8`.
+- → recorded as rules: the decision-scan protocol (memory feedback-paddock-decision-scan) and the agents/tokens rule (feedback-paddock-agent-model-cost); both proposed as CLAUDE.md laws with the ledger, awaiting "ledger go".
+- → open for the operator: the vocabulary, "ledger go", TanStack Table, the chapters to read, moving the study into the repo.
+- Won’t-touch honoured: nothing built on the plan; pushes only for PR branches; no prod Supabase write; no new repo file without the word.
+
 Active: (awaiting [+Nm] prefixes)
 
 ---
