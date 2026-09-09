@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.90 — 2026-09-09
+
+Internal only: the calendar page is the first page drawn entirely from pieces the people who run the site arrange in the design tool, its heading's words and the size of each part theirs to set; nothing changes for readers. In the tool, the size controls now say when a part cannot be resized, and "Save and Run Page" previews such a page before it goes live.
+
 ## 1.0.89 — 2026-09-09
 
 Internal only: the late morning's working notes recorded. Nothing changes for readers.

@@ -125,6 +125,11 @@ describe('loadRevisionPreview', () => {
     tables.page_revision = { data: [stored], error: null };
     tables.page = { data: [{ ...page, kind: 'code' }], error: null };
     expect(await loadRevisionPreview(revision.id)).toBeNull();
+    // A code page served from rows (R4.1) has a preview: its revision is what the site serves.
+    tables.page = { data: [{ ...page, path: '/calendar', name: 'Calendar', kind: 'code' }], error: null };
+    const composed = await loadRevisionPreview(revision.id);
+    expect(composed?.page.served).toBe('rows');
+    expect(composed?.page.path).toBe('/calendar');
   });
 
   it('returns the revision with its page, whether it is the live one, and the usable part of the document with its problems', async () => {

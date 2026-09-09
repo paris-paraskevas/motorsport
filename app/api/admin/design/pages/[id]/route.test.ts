@@ -92,7 +92,7 @@ describe('DELETE /api/admin/design/pages/[id]', () => {
   it('refuses a page the code serves and says why, and is 404 for an unknown page or a row already gone', async () => {
     const refused = await del(CODE);
     expect(refused.status).toBe(400);
-    expect(((await refused.json()) as { error: string }).error).toMatch(/route file for this page is still in the code/);
+    expect(((await refused.json()) as { error: string }).error).toMatch(/still in the code, as a route file or a registry entry/);
     expect(chain).not.toHaveBeenCalled();
     expect((await del('00000000-0000-4000-8000-000000000000')).status).toBe(404);
     deleteResult = { error: null, count: 0 };

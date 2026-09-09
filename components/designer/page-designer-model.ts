@@ -17,7 +17,8 @@ import {
   type Trigger,
   type TriggerEvent,
 } from '@/lib/design/page-document';
-import { SPLITS, componentDefaults, findComponent, settingsSummary } from '@/lib/design/components';
+import { SPLITS, componentDefaults, componentId, findComponent, recipeRegions, settingsSummary } from '@/lib/design/components';
+import { adoptRecipe } from '@/lib/design/composed-page';
 import { DESTINATIONS, resolveDestination } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -56,19 +57,37 @@ export function sameSelection(a: Selection, b: Selection): boolean {
  *  whose body the code still draws (that column waits for its own decision).
  *  Since the components programme (R2a) the Body is open on every page: the
  *  code's body is a component among the operator's regions. */
-export function openPositions(kind: 'row' | 'code'): readonly Position[] {
-  return kind === 'row' ? POSITIONS : (['header', 'breadcrumb', 'body', 'footer', 'phonebar'] as const);
+/** Whether a route file in the code still serves the page (the Right Side
+ *  Column waits there; the transitional body belongs there). */
+export function servedByFile(page: Pick<PageRow, 'kind' | 'served'>): boolean {
+  return page.kind === 'code' && page.served !== 'rows';
 }
 
-/** A page whose body the code still draws opens with the transitional
- *  component in its Body when the stored document has NO Body regions at all
- *  (the code's body is then implicit, as the frame renders it), so the operator
- *  sees it, moves it and puts regions around it; saving writes it explicitly.
- *  A page made in the designer, a document that already names it, and a page
- *  the operator has SPLIT (Body regions without it) are returned as they are:
- *  putting it back on a split page would draw the code's body again. */
-export function withImplicitBody(doc: PageDocument, page: Pick<PageRow, 'kind'>): PageDocument {
-  if (page.kind !== 'code' || doc.regions.some(r => r.position === 'body')) return doc;
+export function openPositions(page: Pick<PageRow, 'kind' | 'served'>): readonly Position[] {
+  return servedByFile(page) ? (['header', 'breadcrumb', 'body', 'footer', 'phonebar'] as const) : POSITIONS;
+}
+
+/** What a page opens with when its stored document has NO Body regions at all.
+ *  A page whose route file still serves it: the transitional component (the
+ *  code's body is then implicit, as the frame renders it), so the operator sees
+ *  it, moves it and puts regions around it; saving writes it explicitly. A page
+ *  served from rows whose route file has left: its default composition, the
+ *  same components the site renders when nothing is published (R4.1). A page
+ *  made in the designer, a document with Body regions already (named or SPLIT)
+ *  is returned as it is: putting the transitional body back on a split page
+ *  would draw the code's body again. */
+export function withImplicitBody(doc: PageDocument, page: Pick<PageRow, 'kind' | 'served' | 'path'>): PageDocument {
+  if (page.kind !== 'code') return doc;
+  // A page served from rows: a transitional body left from before its route
+  // file went adopts the recipe in its place, as the catch-all serves it.
+  if (page.served === 'rows' && doc.regions.some(r => r.kind === 'component' && r.component === LEGACY_BODY)) {
+    return { ...doc, regions: renumber(adoptRecipe(doc, page.path).regions) };
+  }
+  if (doc.regions.some(r => r.position === 'body')) return doc;
+  if (page.served === 'rows') {
+    const recipe = recipeRegions(page.path, doc.regions.map(r => r.id));
+    return recipe.length ? { ...doc, regions: renumber([...doc.regions, ...recipe]) } : doc;
+  }
   const id = nextComponentId(LEGACY_BODY, doc.regions.map(r => r.id));
   const body: ComponentRegion = { id, kind: 'component', component: LEGACY_BODY, settings: {}, title: '', position: 'body', seq: 5, column: 1, span: COLUMNS, newRow: true, authz: null, hidden: false };
   return { ...doc, regions: renumber([...doc.regions, body]) };
@@ -127,11 +146,7 @@ export function nextRegionId(kind: RegionKind, taken: readonly string[]): string
 /** A fresh id for a component: `code-body` for the transitional one, else the
  *  key's last word (`home.wire` → `wire`, then `wire-2`). */
 export function nextComponentId(key: string, taken: readonly string[]): string {
-  const base = key === LEGACY_BODY ? 'code-body' : (key.split('.').pop() ?? 'component').replace(/[^a-z0-9-]/g, '-');
-  if (!taken.includes(base)) return base;
-  let n = 2;
-  while (taken.includes(`${base}-${n}`)) n++;
-  return `${base}-${n}`;
+  return componentId(key, taken);
 }
 
 /** A fresh action id: action-1, action-2. */
@@ -181,36 +196,14 @@ export function splitRecipe(path: string): readonly string[] | null {
  * without a recipe or without the transitional body.
  */
 export function splitBody(doc: PageDocument, path: string): PageDocument | null {
-  const recipe = splitRecipe(path);
   const legacy = doc.regions.find(isLegacyBody);
-  if (!recipe || !legacy) return null;
-  const taken = doc.regions.filter(r => r.id !== legacy.id).map(r => r.id);
-  const halves = new Set(['home.changed', 'home.next']);
-  const added: ComponentRegion[] = [];
-  recipe.forEach((key, i) => {
-    const spec = findComponent(key);
-    if (!spec) return;
-    const id = nextComponentId(key, [...taken, ...added.map(a => a.id)]);
-    const half = halves.has(key);
-    const second = half && added.some(a => halves.has(a.component));
-    added.push({
-      id,
-      kind: 'component',
-      component: key,
-      settings: componentDefaults(spec),
-      title: '',
-      position: legacy.position,
-      // Fractions after the legacy seq keep the recipe together where the body sat; renumber tidies them.
-      seq: legacy.seq + (i + 1) / (recipe.length + 1),
-      column: second ? 7 : 1,
-      span: half ? 6 : COLUMNS,
-      newRow: !second,
-      authz: legacy.authz,
-      hidden: false,
-    });
-  });
-  if (added.length === 0) return null;
-  return { ...doc, regions: renumber([...doc.regions.filter(r => r.id !== legacy.id), ...added]) };
+  if (!legacy) return null;
+  const rest = doc.regions.filter(r => r.id !== legacy.id);
+  // The recipe's regions take the body's seq plus fractions, so they sit where
+  // it sat among the other regions; renumber tidies them into tens.
+  const recipe = recipeRegions(path, rest.map(r => r.id)).map((r, i, all) => ({ ...r, position: legacy.position, seq: legacy.seq + (i + 1) / (all.length + 1), authz: legacy.authz }) as ComponentRegion);
+  if (recipe.length === 0) return null;
+  return { ...doc, regions: renumber([...rest, ...recipe]) };
 }
 
 /** Where a dropped or created region lands. */
@@ -441,15 +434,16 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
   if (!code && !doc.regions.some(r => r.position === 'body' && !r.hidden)) {
     out.push({ level: 'err', text: 'The Body has no region showing. The page would be empty.', sel: { kind: 'position', id: 'body' } });
   }
+  const file = servedByFile(page);
   const legacies = doc.regions.filter(isLegacyBody);
-  if (code && legacies.length > 1) {
+  if (file && legacies.length > 1) {
     out.push({ level: 'err', text: 'The body as the code draws it is placed twice; a page has one.', sel: { kind: 'region', id: legacies[1].id }, group: 'Source' });
   }
   for (const r of doc.regions) {
-    if (code && r.position === 'right') {
+    if (file && r.position === 'right') {
       out.push({ level: 'err', text: `${regionName(r)} sits in the ${PD_POSITION.right.label}, which waits for its own decision on a page whose body the code still draws. Move it to the Body or another position.`, sel: { kind: 'region', id: r.id }, group: 'Layout' });
     }
-    if (!code && isLegacyBody(r)) {
+    if (!file && isLegacyBody(r)) {
       out.push({ level: 'err', text: `${regionName(r)}: this page has no body drawn by the code. Remove the component.`, sel: { kind: 'region', id: r.id }, group: 'Source' });
     }
     if (r.kind === 'static' && !r.text.trim()) out.push({ level: 'warn', text: `${regionName(r)} has no text yet.`, sel: { kind: 'region', id: r.id }, group: 'Source' });
@@ -548,8 +542,8 @@ export interface SystemStep {
 
 /** What the site does at each point when it serves the page. Read-only: a
  *  change is a deploy. */
-export function systemSteps(kind: 'code' | 'row'): SystemStep[] {
-  if (kind === 'row') {
+export function systemSteps(page: Pick<PageRow, 'kind' | 'served'>): SystemStep[] {
+  if (!servedByFile(page)) {
     return [
       { id: 'resolve', point: 'before-header', name: 'Resolve the revision', note: 'The newest published revision of this page, by its path; the 404 when none is live.' },
       { id: 'session', point: 'before-header', name: 'Read the session when a scheme asks', note: 'Only a page or region asking for a scheme reads the visitor; a public page stays a cached render.' },

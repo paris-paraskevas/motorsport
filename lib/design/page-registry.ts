@@ -45,6 +45,11 @@ export interface CodePage {
   /** The scheme the page enforces today, in the code; enforcement from rows is step 4. */
   authz: PageAuthz;
   note?: string;
+  /** `rows` once the page's route file has left the code (the components
+   *  programme, R4): the catch-all serves it from its row, the published
+   *  revision's components or the page's default composition. Absent means a
+   *  route file still serves it. */
+  served?: 'rows';
 }
 
 const P = (path: string, name: string, group: PageGroup, rendering: PageRendering, indexable: boolean, authz: PageAuthz = 'public', note?: string): CodePage => ({
@@ -56,12 +61,17 @@ const P = (path: string, name: string, group: PageGroup, rendering: PageRenderin
   authz,
   ...(note ? { note } : {}),
 });
+/** A page whose route file has left the code: served from its row by the catch-all. */
+const R = (path: string, name: string, group: PageGroup, rendering: PageRendering, indexable: boolean, authz: PageAuthz = 'public', note?: string): CodePage => ({
+  ...P(path, name, group, rendering, indexable, authz, note),
+  served: 'rows',
+});
 
 /** Every route the site serves today, in the App Builder's order. */
 export const CODE_PAGES: readonly CodePage[] = [
   P('/', 'Home', 'home', 'cached', true),
 
-  P('/calendar', 'Calendar', 'calendar', 'cached', true),
+  R('/calendar', 'Calendar', 'calendar', 'cached', true),
   P('/archive', 'Season archive', 'calendar', 'cached', true),
   P('/archive/[season]/[slug]', 'Archived season', 'calendar', 'cached', false),
   P('/archive/[season]/[slug]/weekend/[round]', 'Archived weekend', 'calendar', 'cached', false),

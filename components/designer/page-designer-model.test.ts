@@ -124,8 +124,26 @@ describe('messages', () => {
     expect(designerMessages({ version: 1, regions: [legacy('code-body')], actions: [] }, page).map(m => m.text)).toEqual([
       'Body as the code draws it: this page has no body drawn by the code. Remove the component.',
     ]);
-    expect(openPositions('code')).toEqual(['header', 'breadcrumb', 'body', 'footer', 'phonebar']);
-    expect(openPositions('row')).toHaveLength(6);
+    expect(openPositions({ kind: 'code' })).toEqual(['header', 'breadcrumb', 'body', 'footer', 'phonebar']);
+    expect(openPositions({ kind: 'row' })).toHaveLength(6);
+    // A code page served from rows (its route file gone) is a page like any other.
+    expect(openPositions({ kind: 'code', served: 'rows' })).toHaveLength(6);
+    const composed: PageRow = { ...page, path: '/calendar', name: 'Calendar', kind: 'code', served: 'rows' };
+    expect(designerMessages({ version: 1, regions: [legacy('code-body')], actions: [] }, composed).map(m => m.text)).toEqual([
+      'Body as the code draws it: this page has no body drawn by the code. Remove the component.',
+    ]);
+    expect(designerMessages({ version: 1, regions: [region({ id: 'aside', position: 'right' })], actions: [] }, composed)).toEqual([]);
+  });
+
+  it('a page served from rows opens with its default composition when nothing is stored, never the transitional body', () => {
+    const composed: PageRow = { ...page, path: '/calendar', name: 'Calendar', kind: 'code', served: 'rows' };
+    const opened = withImplicitBody({ version: 1, regions: [], actions: [] }, composed);
+    expect(opened.regions.map(r => `${r.position}:${r.id}`)).toEqual(['body:heading', 'body:month']);
+    const stored: PageDocument = { version: 1, regions: [region({ id: 'own' })], actions: [] };
+    expect(withImplicitBody(stored, composed)).toBe(stored);
+    // A transitional body stored before the route file went (an R2 revision) opens as the recipe in its place.
+    const withLegacy: PageDocument = { version: 1, regions: [legacy('code-body'), region({ id: 'own', seq: 20 })], actions: [] };
+    expect(withImplicitBody(withLegacy, composed).regions.map(r => `${r.id}:${r.seq}`)).toEqual(['heading:10', 'month:20', 'own:30']);
   });
 
   it('a code page with no Body regions opens with the transitional body in its Body; a row page, a document that names it, and a split page are left alone', () => {
@@ -155,7 +173,7 @@ describe('messages', () => {
 
   it('splits Home: the transitional body gives way to its six components where it sat, What it changed and What’s next as two halves of one row; no recipe or no body, nothing', () => {
     expect(splitRecipe('/')).toEqual(['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
-    expect(splitRecipe('/calendar')).toBeNull();
+    expect(splitRecipe('/nowhere')).toBeNull();
     const home: PageRow = { ...page, path: '/', name: 'Home', kind: 'code' };
     const fresh = withImplicitBody({ version: 1, regions: [region({ id: 'welcome', position: 'header' })], actions: [] }, home);
     const opened: PageDocument = { ...fresh, regions: renumber([...fresh.regions, region({ id: 'outro', title: 'Outro', seq: 90 })]) };
@@ -173,7 +191,7 @@ describe('messages', () => {
     expect(split.regions.filter(r => r.kind === 'component').every(r => r.kind === 'component' && r.component !== 'page.body')).toBe(true);
     expect(split.regions.find(r => r.id === 'wire')).toMatchObject({ settings: { items: 5 } });
     expect(splitBody(split, home.path)).toBeNull();
-    expect(splitBody(opened, '/calendar')).toBeNull();
+    expect(splitBody(opened, '/nowhere')).toBeNull();
   });
 
   it("names the parser's problems by component, the empty body, and what leads nowhere", () => {

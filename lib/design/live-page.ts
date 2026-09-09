@@ -94,6 +94,48 @@ async function readLiveFrame(path: string): Promise<LiveFrame | null> {
 /** The live regions of the code page at a registry path (`/series/[slug]`), or null. Memoised per request. */
 export const loadLiveFrame = cache(readLiveFrame);
 
+// A page served from rows after its route file left the code (the components
+// programme, R4.1): its row at the registry pattern, and its newest published
+// revision when it has one. The revision is optional here, unlike a row page's:
+// a composed page without a revision renders its default composition, so a
+// missing revision is not a 404. Null only when the row cannot be read.
+
+export interface LiveComposed {
+  page: PageRow;
+  revision: { id: string; publishedAt: string; document: PageDocument } | null;
+}
+
+async function readLiveComposed(pattern: string): Promise<LiveComposed | null> {
+  if (!isBettingConfigured()) return null;
+  try {
+    const pageRes = await betDb()
+      .from('page')
+      .select(PAGE_COLUMNS)
+      .eq('application_key', PAGE_APPLICATION_KEY)
+      .eq('path', pattern)
+      .eq('kind', 'code');
+    if (pageRes.error) return null;
+    const page = pageFromRow(((pageRes.data ?? []) as unknown[])[0]);
+    if (!page || !page.id) return null;
+    const rev = await betDb()
+      .from('page_revision')
+      .select('id, published_at, document')
+      .eq('page_id', page.id)
+      .not('published_at', 'is', null)
+      .order('published_at', { ascending: false })
+      .limit(1);
+    if (rev.error) return { page, revision: null };
+    const row = ((rev.data ?? []) as unknown[])[0] as { id?: unknown; published_at?: unknown; document?: unknown } | undefined;
+    if (!row || typeof row.id !== 'string' || row.published_at == null) return { page, revision: null };
+    return { page, revision: { id: row.id, publishedAt: String(row.published_at), document: parsePageDocument(row.document).value } };
+  } catch {
+    return null;
+  }
+}
+
+/** The row of a page served from rows, with its live revision when it has one. Memoised per request. */
+export const loadLiveComposed = cache(readLiveComposed);
+
 export interface RevisionPreview {
   page: PageRow;
   revisionId: string;
@@ -119,15 +161,12 @@ export const loadRevisionPreview = cache(async function readRevisionPreview(revi
       | { id?: unknown; page_id?: unknown; created_at?: unknown; published_at?: unknown; document?: unknown }
       | undefined;
     if (!row || typeof row.page_id !== 'string' || row.created_at == null) return null;
-    const pageRes = await betDb()
-      .from('page')
-      .select(PAGE_COLUMNS)
-      .eq('application_key', PAGE_APPLICATION_KEY)
-      .eq('id', row.page_id)
-      .eq('kind', 'row');
+    const pageRes = await betDb().from('page').select(PAGE_COLUMNS).eq('application_key', PAGE_APPLICATION_KEY).eq('id', row.page_id);
     if (pageRes.error) return null;
     const page = pageFromRow(((pageRes.data ?? []) as unknown[])[0]);
-    if (!page || !page.id || page.kind !== 'row') return null;
+    // A row page, or a code page served from rows (R4.1): both render from a
+    // revision. A route file's page has no preview; the site serves it.
+    if (!page || !page.id || (page.kind !== 'row' && page.served !== 'rows')) return null;
     const live = await betDb()
       .from('page_revision')
       .select('id')

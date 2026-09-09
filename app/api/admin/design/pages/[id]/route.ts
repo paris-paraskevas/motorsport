@@ -130,7 +130,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const detail = await loadPageDetail(id);
   if (!detail) return new Response('not found', { status: 404 });
   if (detail.page.kind !== 'row') {
-    return NextResponse.json({ error: 'The route file for this page is still in the code; it can be deleted once the page is fully composed.' }, { status: 400 });
+    return NextResponse.json({ error: 'The page is still in the code, as a route file or a registry entry; it can be deleted once its family has left the code.' }, { status: 400 });
   }
   try {
     const { error, count } = await betDb()

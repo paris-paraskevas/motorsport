@@ -73,7 +73,8 @@ export function PageDesignerLayout({
   /** Edit on a shared tile: the entry opens in Shared Components. */
   onEditShared: (sc: string) => void;
 }) {
-  const code = page.kind === 'code';
+  // A route file in the code still draws the body: the Right Side Column waits there.
+  const code = page.kind === 'code' && page.served !== 'rows';
   const number = page.id ? page.id.slice(0, 8) : 'no row';
   const isSel = (s: Selection) => sameSelection(selection, s);
   const ctx = (sel: Selection) => (e: MouseEvent) => {
