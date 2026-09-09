@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.76 — 2026-09-09
+
+### Chore — the admin console retired; the designer is the admin area
+
+The operator, looking at the console on `dev.paddock-tracker.com` (2026-09-09 ~01:45Z): "im confident i only want to keep the designer … try your best to finish up". Done the reversible way tonight, with the deletions left for the morning's approval (the law on deleting files):
+
+- **`next.config.ts`**: `/admin` and the six sections (`content`, `audience`, `traffic`, `system`, `site`, plus the 0.334.71 predecessors `users`, `submissions`, `behaviour`, `home`) redirect to `/admin/designer`, **temporary (307)** so a browser cache does not fight a reversal while the section pages still exist in the tree; the four permanent legacy redirects were folded into these.
+- **`middleware.ts`**: the `dev.` root rewrites to `/admin/designer` (was `/admin`, the console's overview), otherwise unchanged (sign-in for anonymous visitors, 403 for non-admins, 404 for anything that is not an admin route or an API).
+- **`app/(admin)/admin/layout.tsx`**: the gate only (`requireAdmin`, noindex); the amber rail (`AdminNav`), the Account escape hatch and the mode toggle are gone, since the designer draws its own top bar, workspaces and mode switch over the full viewport.
+- **`components/designer/Designer.tsx`**: the top-left arrow leaves for the site (`SITE_URL`, absolute: on `dev.` a relative `/` is the designer again) instead of "Back to the console".
+- **Not deleted yet, unreachable now** (nothing outside them imports them, checked by a script over every import in `app/`, `components/`, `lib/`, `scripts/`): `app/(admin)/admin/{page,content/page,audience/page,traffic/page,system/page,site/page}.tsx`; `components/admin/{AdminNav,AdminUI,AuthorRequestActions,DonorToggle,HeatmapOverlay,HomeComposer,ModerationActions}.tsx` (`ConsoleMode.tsx` stays: the designer and the root layout use it); the API routes only they called, `app/api/admin/{author-requests,submissions,users,page-layout}/**` with `page-layout`'s test. `lib/analytics/{ga4,gsc,bing,cloudflare}.ts` are now imported by nothing but those pages and **stay**: Phase 4's Data tab reads them.
+- **Screens that went with the console, with no designer equivalent yet**, for the operator to place: approving or declining an author application and the supporter flag (Audience), moderating contributor submissions (Content), the home composer (Site; the lead and the counts already live in the designer's Application Settings), and the health figures of Overview, Traffic and System (Phase 4's Data tab; meanwhile `npm run health`, `health:standings`, `health:results`). The emails' CTAs in `lib/author-requests.ts` and `lib/feeder.ts` still carry the old paths and now land on the designer.
+
+**Tests.** No test covered the console's pages or components; the designer's tests are unchanged. `npm test` → 185 files, **1922 passed**. `tsc` clean; `eslint` 0 errors and the two known warnings. **Seen in a real browser** (Playwright, signed in as the development-instance administrator on the local server): `/admin`, `/admin/traffic` and `/admin/site` each landed on `/admin/designer` with the App Builder open; the top-left arrow links to `https://paddock-tracker.com/`; from outside, the five old paths answer 307 to `/admin/designer` and the `dev.` root sends an anonymous visitor to sign in.
+
+**Size.** `wrangler deploy --dry-run` on a fresh `cf:build`: `Total Upload 42984.92 KiB / gzip 9957.78 KiB` (42986.98 / 9957.20 at 1.0.74): the rail and its icons left the layout.
+
 ## 1.0.75 — 2026-09-09
 
 ### Docs — session 46 closed: PR 3 applied and merged on the operator's word

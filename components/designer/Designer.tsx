@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { ConsoleModeToggle } from '@/components/admin/ConsoleMode';
+import { SITE_URL } from '@/lib/site';
 import type { EditableList, NavListKey } from '@/lib/design/lists';
 import type { EditableText } from '@/lib/design/text';
 import type { ChromeText } from '@/lib/design/text-defaults';
@@ -552,10 +553,13 @@ export function Designer({
   return (
     <div className="fixed inset-0 z-40 grid grid-rows-[40px_30px_minmax(0,1fr)] bg-bg text-12-5 text-text">
       <header className="flex items-center gap-1 border-b border-border-strong bg-surface pl-2 pr-3">
+        {/* The designer is the whole admin area (the console was retired on
+            2026-09-09), so the arrow leaves for the site. Absolute, because on
+            the admin-only dev. subdomain a relative "/" is the designer again. */}
         <Link
-          href="/admin"
-          title="Back to the console"
-          aria-label="Back to the console"
+          href={`${SITE_URL}/`}
+          title="Back to the site"
+          aria-label="Back to the site"
           className="grid h-[30px] w-[30px] place-items-center border border-transparent text-text-muted hover:border-border-strong hover:bg-surface-elevated hover:text-text"
         >
           <ArrowLeft size={14} />
