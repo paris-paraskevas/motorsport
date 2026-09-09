@@ -121,16 +121,18 @@ const nextConfig: NextConfig = {
       // Permanent, because /app was in the sitemap, is the PWA's old start_url,
       // and is bookmarked — every one of those has to keep working.
       { source: "/app", destination: "/", permanent: true },
-      // Console tabs, renamed in 0.334.71 when the rail became the six sections.
-      // These are admin-only and noindex, so this is not about search — it is
-      // about the links ALREADY SENT: the author-application and contributor-
-      // submission emails carry absolute /admin/users and /admin/submissions
-      // URLs into somebody's inbox, and those must not start 404ing. Bookmarks
-      // too. Permanent, because the old paths are never coming back.
-      { source: "/admin/users", destination: "/admin/audience", permanent: true },
-      { source: "/admin/submissions", destination: "/admin/content", permanent: true },
-      { source: "/admin/behaviour", destination: "/admin/traffic", permanent: true },
-      { source: "/admin/home", destination: "/admin/site", permanent: true },
+      // The console is retired (operator, 2026-09-09 ~01:45Z, looking at it on
+      // dev.paddock-tracker.com: "im confident i only want to keep the
+      // designer"). The designer at /admin/designer is the admin area; the old
+      // sections and their 0.334.71 predecessors all land there, so the links
+      // ALREADY SENT (the author-application and contributor-submission emails
+      // carry absolute /admin/... URLs) and every bookmark still open something.
+      // Temporary (307), not permanent: the section pages still exist in the
+      // tree until the operator approves their deletion, and a 308 would sit in
+      // browser caches if a section had to come back.
+      { source: "/admin", destination: "/admin/designer", permanent: false },
+      { source: "/admin/:section(content|audience|traffic|system|site|users|submissions|behaviour|home)", destination: "/admin/designer", permanent: false },
+      { source: "/admin/:section(content|audience|traffic|system|site|users|submissions|behaviour|home)/:path*", destination: "/admin/designer", permanent: false },
     ];
   },
   async headers() {

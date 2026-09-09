@@ -61,7 +61,8 @@ export default clerkMiddleware(async (auth, req) => {
   }
   // dev.paddock-tracker.com is the admin/dev surface — auth-locked. Anonymous
   // visitors are sent to sign in; signed-in non-admins get 403; the root serves
-  // the admin dashboard. Admin = Clerk `publicMetadata.role === 'admin'`, which
+  // the designer (the console it used to serve was retired on 2026-09-09; the
+  // designer is the admin area). Admin = Clerk `publicMetadata.role === 'admin'`, which
   // must be surfaced in the SESSION TOKEN to be readable in middleware — add it
   // in Clerk → Sessions → Customize session token: {"metadata":"{{user.public_metadata}}"}.
   // Until that claim exists the role reads `undefined` and we fall back to
@@ -82,7 +83,7 @@ export default clerkMiddleware(async (auth, req) => {
     }
     if (url.pathname === '/') {
       const dest = url.clone();
-      dest.pathname = '/admin';
+      dest.pathname = '/admin/designer';
       return NextResponse.rewrite(dest);
     }
     // dev.* is the ADMIN surface only: anything that is not an /admin route, an
