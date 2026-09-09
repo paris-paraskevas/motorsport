@@ -495,12 +495,13 @@ export function PageDesigner({
       window.open(`${SITE_URL}${page.path}`, '_blank', 'noopener');
       return;
     }
-    if (!docDirty) {
+    if (!docDirty && newest) {
       if (attrsDirty) await save();
-      if (newest) window.open(`${SITE_URL}/preview/${newest.id}`, '_blank', 'noopener');
-      else toast('Nothing to run yet: add a region and save.', 'bad');
+      window.open(`${SITE_URL}/preview/${newest.id}`, '_blank', 'noopener');
       return;
     }
+    // A change, or no revision yet: save a draft (an empty page runs as its
+    // title alone) and run it. Run is never refused (operator, 2026-09-09).
     setBusy('run');
     try {
       if (attrsDirty && !(await putAttrs())) return;

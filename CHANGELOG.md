@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.92 — 2026-09-09
+
+### Fix — the designer: Run is never refused; an empty page saves, runs and publishes as its title alone
+
+Operator, 2026-09-09: "the nothing to run yet save first is stupid, i should always be able to run page". Two changes, one cause: the designer treated a Body with no visible region as an ERROR, which blocked Save, and Save and Run Page refused a page with no revision with the toast "Nothing to run yet: add a region and save."
+
+- **`components/designer/page-designer-model.ts`** `designerMessages`: the empty-Body message is now a WARNING, "The Body has no region showing. The page runs as its title alone." An APEX page runs empty; so does ours (the row page view draws the title and the frame).
+- **`components/designer/PageDesigner.tsx`** `saveAndRun`: a clean document with a revision opens that revision's preview as before; a change, or NO revision yet, saves a draft and opens its preview. The toast is gone.
+- Tests: `page-designer-model.test.ts` expects the warning and `messageIndex` marks the Body position `warn`.
+- Verified: `tsc` 0 · vitest designer suite 11 files / 64 tests.
+
 ## 1.0.91 — 2026-09-09
 
 ### Docs — the midday's records: R4.1 shipped, the Column Span answer, the operator's new direction (components first, learn APEX first)
