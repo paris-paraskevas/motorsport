@@ -15,6 +15,26 @@ export type DataTier = 'now' | 'cred' | 'own';
 /** What a card shows: figures, a connect note, our own records, or the reader's failure. */
 export type DataState = 'live' | 'connect' | 'own' | 'error';
 
+/** A reader's verdict on its own figures: `warn` and `bad` colour the card before the words do. */
+export type DataTone = 'ok' | 'warn' | 'bad';
+/** The colour band a card wears: the state first, then the reader's tone. */
+export type DataBand = DataTone | 'off' | 'own';
+
+export const BAND_LABEL: Record<DataBand, string> = {
+  ok: 'Fine',
+  warn: 'Attention',
+  bad: 'Problem',
+  off: 'Not connected',
+  own: 'Our records',
+};
+
+export function bandOf(state: DataState, tone?: DataTone): DataBand {
+  if (state === 'connect') return 'off';
+  if (state === 'error') return 'bad';
+  if (tone === 'warn' || tone === 'bad') return tone;
+  return state === 'own' ? 'own' : 'ok';
+}
+
 export interface DataService {
   key: string;
   name: string;
