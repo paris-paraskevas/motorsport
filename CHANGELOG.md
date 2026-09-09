@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.95 — 2026-09-09
+
+### Docs — the night's records: the whole APEX guide read, the spherical view published, nothing changed yet
+
+`docs/HANDOFF.md` gains the LATEST section for the night of 2026-09-09: the full read of the App Builder User's Guide (the 549 remaining pages in nine sequential Sonnet runs, 757 concepts, 454 relevant, about 2.6 million tokens; the whole study about 5 million), the "spherical view" on the plan artifact `4d804904-63ad-4ddf-8d37-67dcb2d2fcc8` (A: what changes the rules; B: what changes the phases and slots, with the timeline moving to early November at this week's pace; C: what changes the vocabulary; D: what is confirmed), the order the operator set (rules → ledger → plan, each on the word), the evidence files, and the landmines learned. `SCHEDULE.md` gets the night outcomes block; `IDEAS.md` the candidate slots. Memory: `project-paddock-designer` (every run's findings and the state), `reference-claude-code-best-practices` (the primary sources the rules derive from).
+
 ## 1.0.94 — 2026-09-09
 
 ### Docs — the evening's records: the skips scrutinised, the Page Designer UX map, the conformance table, the chapter coverage, the decision-scan protocol
