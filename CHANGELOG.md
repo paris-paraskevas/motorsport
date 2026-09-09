@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.82 — 2026-09-09
+
+### Chore — the console's files are gone; the designer keeps its light/dark switch
+
+1.0.76 (#956) routed every console URL to the designer but left the console's files in place for the operator to delete. The operator deleted them by hand on 2026-09-09 (~07:40Z, "i removed the files"); this push commits that removal and repairs the two things it broke.
+
+- **Moved, unchanged: `components/admin/ConsoleMode.tsx` → `components/designer/ConsoleMode.tsx`.** The designer still needs both exports: `ConsoleModeToggle` is the toolbar's light/dark switch (`components/designer/Designer.tsx`) and `ConsoleModeScript` sets the mode class before hydration (`app/(admin)/layout.tsx`). Both imports point at the new path; `components/admin/` no longer exists.
+- **Removed: `app/(admin)/admin/audience/page.tsx`.** It was left behind by the manual deletion and imported four modules that no longer exist (`AdminUI`, `AuthorRequestActions`, `DonorToggle`, `ModerationActions`), so the tree did not compile. Its URL has redirected to the designer since 1.0.76 (`next.config.ts`).
+- **Removed by the operator:** the console pages (`app/(admin)/admin/page.tsx`, `content`, `site`, `system`, `traffic`), the console's API routes (`app/api/admin/author-requests/[id]`, `page-layout` and its test, `submissions/[id]`, `users/[id]`) and the console components (`AdminNav`, `AdminUI`, `AuthorRequestActions`, `DonorToggle`, `HeatmapOverlay`, `HomeComposer`, `ModerationActions`).
+- **What no longer has a screen** (recorded, not rebuilt; candidates for the Data workspace): approving author requests, the donor flag, thread and feedback moderation, the home-page composer (`lib/home-layout.ts` still reads the row the retired `POST /api/admin/page-layout` wrote), the `?hm=1` heatmap overlay (its `middleware.ts` clause is now inert). The author-request notification in `lib/author-requests.ts` still links `/admin/audience`, which lands on the designer through the redirect.
+- Landmine 9 again: the deleted routes stayed in `.next/types/validator.ts` and failed `tsc` until `.next/types` was cleared.
+- Verified: `tsc` 0 errors · `lint` 0 errors (2 known warnings) · vitest 191 files / 1948 tests · `cf:build` + `wrangler deploy --dry-run` Total Upload 42458.63 KiB (was 43156 KiB on 1.0.81).
+
 ## 1.0.81 — 2026-09-09
 
 ### Feature — Phase 4, PR 4.1: the Data workspace comes alive, one card per outside service over the readers the code already has

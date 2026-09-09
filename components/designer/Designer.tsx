@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { ConsoleModeToggle } from '@/components/admin/ConsoleMode';
+import { ConsoleModeToggle } from '@/components/designer/ConsoleMode';
 import { SITE_URL } from '@/lib/site';
 import type { EditableList, ListSummary, NavListKey } from '@/lib/design/lists';
 import type { EditableText } from '@/lib/design/text';
