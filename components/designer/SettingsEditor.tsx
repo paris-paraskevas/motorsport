@@ -53,6 +53,11 @@ function describe(key: SettingKey, value: SettingValue, series: SeriesOption[]):
       const entry = WHATS_NEW.find(e => e.id === value);
       return entry ? `${entry.version} · ${entry.title}` : String(value);
     }
+    case 'boolean':
+      return value === true ? 'yes' : 'no';
+    case 'choice':
+    case 'text':
+      return String(value);
   }
 }
 
@@ -60,14 +65,23 @@ export function SettingsEditor({
   settings,
   series,
   readOnly,
+  keys,
+  title = 'Application Settings',
+  intro = 'Named values the site reads when it renders a page. Each row says what it changes; a value outside its rule is refused, and the site keeps the shipped value for anything it cannot read.',
   onSaved,
 }: {
+  /** Every setting as stored; `keys` narrows what this instance shows and saves. */
   settings: EditableSetting[];
   /** The championships the two series controls offer, from the server. */
   series: SeriesOption[];
   readOnly: boolean;
+  /** The keys this entry shows (Application Settings and Component Settings share the table and the routes). */
+  keys?: readonly SettingKey[];
+  title?: string;
+  intro?: string;
   onSaved: (settings: EditableSetting[]) => void;
 }) {
+  const shown = keys ? settings.filter(s => keys.includes(s.key)) : settings;
   const sorted = useMemo(() => [...series].sort((a, b) => a.name.localeCompare(b.name)), [series]);
   const [draft, setDraft] = useState<Record<string, SettingValue>>(() =>
     Object.fromEntries(settings.map(s => [s.key, s.value])),
@@ -89,14 +103,14 @@ export function SettingsEditor({
 
   const valueOf = (s: EditableSetting): SettingValue => draft[s.key] ?? s.value;
   const changed = useMemo(
-    () => settings.filter(s => !same(draft[s.key] ?? s.value, s.value) && s.updatedAt !== null),
-    [settings, draft],
+    () => shown.filter(s => !same(draft[s.key] ?? s.value, s.value) && s.updatedAt !== null),
+    [shown, draft],
   );
   // A number field can hold nothing, or a value outside its bounds, while a
   // person types; Save waits until every value passes the key's rule.
   const invalid = useMemo(
-    () => settings.filter(s => parseSettingValue(s.key, draft[s.key] ?? s.value) === undefined),
-    [settings, draft],
+    () => shown.filter(s => parseSettingValue(s.key, draft[s.key] ?? s.value) === undefined),
+    [shown, draft],
   );
 
   async function save(overrides: Partial<Record<SettingKey, string>> = {}) {
@@ -153,11 +167,8 @@ export function SettingsEditor({
 
   return (
     <div>
-      <h2 className="m-0 mb-1 text-20 font-bold text-text">Application Settings</h2>
-      <p className="m-0 mb-4 max-w-[70ch] text-13 text-text-muted">
-        Named values the site reads when it renders a page. Each row says what it changes; a value outside its rule is
-        refused, and the site keeps the shipped value for anything it cannot read.
-      </p>
+      <h2 className="m-0 mb-1 text-20 font-bold text-text">{title}</h2>
+      <p className="m-0 mb-4 max-w-[70ch] text-13 text-text-muted">{intro}</p>
 
       <div className="border border-border-strong bg-surface">
         <table className="w-full border-collapse text-12">
@@ -169,7 +180,7 @@ export function SettingsEditor({
             </tr>
           </thead>
           <tbody>
-            {settings.map(s => {
+            {shown.map(s => {
               const spec = SETTING_SPECS[s.key];
               const value = valueOf(s);
               const isChanged = !same(value, s.value);
@@ -279,6 +290,43 @@ function Control({
 }) {
   const spec = SETTING_SPECS[setting.key];
   switch (spec.control.kind) {
+    case 'boolean':
+      return (
+        <select
+          value={value === true ? 'true' : 'false'}
+          disabled={disabled}
+          aria-label={spec.label}
+          className={`${FIELD} w-full`}
+          onChange={e => onChange(e.target.value === 'true')}
+        >
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      );
+    case 'choice': {
+      const options = spec.control.options;
+      return (
+        <select value={String(value)} disabled={disabled} aria-label={spec.label} className={`${FIELD} w-full`} onChange={e => onChange(e.target.value)}>
+          {options.map(o => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      );
+    }
+    case 'text':
+      return (
+        <input
+          type="text"
+          value={String(value)}
+          maxLength={spec.control.max}
+          disabled={disabled}
+          aria-label={spec.label}
+          className={`${FIELD} w-full`}
+          onChange={e => onChange(e.target.value)}
+        />
+      );
     case 'series': {
       const current = String(value);
       const known = series.some(s => s.slug === current);

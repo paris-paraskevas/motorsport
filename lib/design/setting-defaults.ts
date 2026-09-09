@@ -12,8 +12,22 @@ export const SETTING_KEYS = [
   'home.wire_count',
   'home.blog_suggested_count',
   'announcement.active_id',
+  'region.image.show_caption',
+  'region.list.style',
+  'region.button.label',
 ] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
+
+/** Component Settings (APEX: Component Settings, the defaults of a component
+ *  type): what a region of each kind starts with when it is placed on a page.
+ *  The Page Designer reads them when it creates a region; a region carries its
+ *  own values from then on, so changing a default changes no page. */
+export const COMPONENT_SETTING_KEYS = ['region.image.show_caption', 'region.list.style', 'region.button.label'] as const satisfies readonly SettingKey[];
+export type ComponentSettingKey = (typeof COMPONENT_SETTING_KEYS)[number];
+/** The rest: what the site reads when it renders (the Application Settings entry). */
+export const APPLICATION_SETTING_KEYS = SETTING_KEYS.filter(
+  (k): k is Exclude<SettingKey, ComponentSettingKey> => !(COMPONENT_SETTING_KEYS as readonly string[]).includes(k),
+);
 
 /** What the `setting.type` column may hold. The editor draws from `control`. */
 export type SettingType = 'text' | 'number' | 'boolean' | 'json';
@@ -25,6 +39,9 @@ export interface SettingValues {
   'home.wire_count': number;
   'home.blog_suggested_count': number;
   'announcement.active_id': string;
+  'region.image.show_caption': boolean;
+  'region.list.style': 'links' | 'cards';
+  'region.button.label': string;
 }
 export type SettingValue = SettingValues[SettingKey];
 
@@ -32,7 +49,10 @@ export type SettingControl =
   | { kind: 'series' }
   | { kind: 'series-set'; max: number }
   | { kind: 'integer'; min: number; max: number }
-  | { kind: 'announcement' };
+  | { kind: 'announcement' }
+  | { kind: 'boolean' }
+  | { kind: 'choice'; options: readonly string[] }
+  | { kind: 'text'; max: number };
 
 export interface SettingSpec<K extends SettingKey = SettingKey> {
   type: SettingType;
@@ -85,6 +105,27 @@ export const SETTING_SPECS: { [K in SettingKey]: SettingSpec<K> } = {
       "Which What's New notice readers see; empty hides it. The notice names the running version, so arm one only when that version is live.",
     control: { kind: 'announcement' },
     shipped: WHATS_NEW.find(e => e.active)?.id ?? '',
+  },
+  'region.image.show_caption': {
+    type: 'boolean',
+    label: 'New Image regions: caption',
+    description: 'Whether a photo placed on a page starts with its caption, credit and licence shown. Each region can still be changed on its page.',
+    control: { kind: 'boolean' },
+    shipped: true,
+  },
+  'region.list.style': {
+    type: 'text',
+    label: 'New List regions: style',
+    description: 'How a list placed on a page starts: as plain links, or as cards. Each region can still be changed on its page.',
+    control: { kind: 'choice', options: ['links', 'cards'] },
+    shipped: 'links',
+  },
+  'region.button.label': {
+    type: 'text',
+    label: 'New Button regions: label',
+    description: 'The words a button placed on a page starts with, up to 40 characters. Each region can still be changed on its page.',
+    control: { kind: 'text', max: 40 },
+    shipped: 'Read more',
   },
 };
 
@@ -147,6 +188,22 @@ export function parseSettingValue<K extends SettingKey>(
       const v = raw.trim();
       return v === '' || ANNOUNCEMENT_IDS.includes(v) ? (v as unknown as SettingValues[K]) : undefined;
     }
+    case 'boolean': {
+      if (typeof raw === 'boolean') return raw as unknown as SettingValues[K];
+      if (raw === 'true') return true as unknown as SettingValues[K];
+      if (raw === 'false') return false as unknown as SettingValues[K];
+      return undefined;
+    }
+    case 'choice': {
+      if (typeof raw !== 'string') return undefined;
+      const v = raw.trim();
+      return control.options.includes(v) ? (v as unknown as SettingValues[K]) : undefined;
+    }
+    case 'text': {
+      if (typeof raw !== 'string') return undefined;
+      const v = raw.trim();
+      return v && v.length <= control.max ? (v as unknown as SettingValues[K]) : undefined;
+    }
   }
 }
 
@@ -167,5 +224,11 @@ export function settingValueRule(key: SettingKey): string {
       return `must be a whole number from ${control.min} to ${control.max}`;
     case 'announcement':
       return 'must be one of the known notices, or empty for none';
+    case 'boolean':
+      return 'must be yes or no';
+    case 'choice':
+      return `must be one of: ${control.options.join(', ')}`;
+    case 'text':
+      return `must be some words, at most ${control.max} characters`;
   }
 }

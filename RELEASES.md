@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.78 — 2026-09-09
+
+**What a new building block starts with.** The people who run the site can now set what a photo, a list or a button starts as when it is placed on a page they build: caption shown or not, links or cards, the button's words. Existing pages keep what they have. Nothing changes for readers.
+
 ## 1.0.77 — 2026-09-09
 
 **Lists of your own.** The people who run the site can now make a list of links, give it a name, and show it on any page they build, alongside the header, footer and phone-bar lists that were already theirs to edit. A list a page still shows cannot be deleted by accident. Nothing changes for readers until a list is placed on a page.

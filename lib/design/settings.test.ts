@@ -96,6 +96,9 @@ describe('settingsFromRows — the shipped value is the fallback', () => {
       'home.wire_count': 5,
       'home.blog_suggested_count': 3,
       'announcement.active_id': 'v1.0',
+      'region.image.show_caption': true,
+      'region.list.style': 'links',
+      'region.button.label': 'Read more',
     });
   });
 });
@@ -149,6 +152,9 @@ describe('loadSettingsForEditing', () => {
       'home.wire_count',
       'home.blog_suggested_count',
       'announcement.active_id',
+      'region.image.show_caption',
+      'region.list.style',
+      'region.button.label',
     ]);
     expect(rows!.find(r => r.key === 'home.major_series')).toEqual({
       key: 'home.major_series',
@@ -190,5 +196,29 @@ describe('the announcement setting reaches currentWhatsNew', () => {
     expect(currentWhatsNew('')).toBeNull();
     expect(currentWhatsNew('v1.0')?.id).toBe('v1.0');
     expect(currentWhatsNew('v9.9')).toBeNull();
+  });
+});
+
+describe('Component Settings — the three region defaults', () => {
+  it('parses yes/no, a choice and a short text from the column and from the editor alike, refusing the rest', () => {
+    expect(parseSettingValue('region.image.show_caption', 'true')).toBe(true);
+    expect(parseSettingValue('region.image.show_caption', false)).toBe(false);
+    expect(parseSettingValue('region.image.show_caption', 'yes')).toBeUndefined();
+    expect(parseSettingValue('region.list.style', 'cards')).toBe('cards');
+    expect(parseSettingValue('region.list.style', ' links ')).toBe('links');
+    expect(parseSettingValue('region.list.style', 'tiles')).toBeUndefined();
+    expect(parseSettingValue('region.button.label', ' Read on ')).toBe('Read on');
+    expect(parseSettingValue('region.button.label', '   ')).toBeUndefined();
+    expect(parseSettingValue('region.button.label', 'x'.repeat(41))).toBeUndefined();
+    expect(serialiseSettingValue('region.image.show_caption', false)).toBe('false');
+    expect(DEFAULT_SETTINGS['region.image.show_caption']).toBe(true);
+    expect(DEFAULT_SETTINGS['region.list.style']).toBe('links');
+    expect(DEFAULT_SETTINGS['region.button.label']).toBe('Read more');
+  });
+
+  it('separates the component keys from the application keys, together the whole set', async () => {
+    const { APPLICATION_SETTING_KEYS, COMPONENT_SETTING_KEYS, SETTING_KEYS } = await import('./setting-defaults');
+    expect([...COMPONENT_SETTING_KEYS]).toEqual(['region.image.show_caption', 'region.list.style', 'region.button.label']);
+    expect([...APPLICATION_SETTING_KEYS, ...COMPONENT_SETTING_KEYS].sort()).toEqual([...SETTING_KEYS].sort());
   });
 });

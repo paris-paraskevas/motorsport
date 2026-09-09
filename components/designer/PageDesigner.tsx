@@ -11,6 +11,7 @@ import type { EditableShortcut } from '@/lib/design/shortcuts';
 import {
   PAGE_SELECTION,
   PD_POSITION,
+  SHIPPED_REGION_DEFAULTS,
   addAction,
   addRegion,
   designerMessages,
@@ -29,6 +30,7 @@ import {
   searchPage,
   type DesignerMessage,
   type Placement,
+  type RegionDefaults,
   type Selection,
   type SharedKey,
 } from './page-designer-model';
@@ -82,6 +84,7 @@ export function PageDesigner({
   schemes,
   shortcuts,
   themeDefault = 'Paper',
+  regionDefaults = SHIPPED_REGION_DEFAULTS,
   onSaved,
   onOpenPage,
   onBack,
@@ -89,6 +92,8 @@ export function PageDesigner({
   onCreated,
 }: {
   detail: PageDetail;
+  /** What a new region starts with (Component Settings). */
+  regionDefaults?: RegionDefaults;
   /** Every page of the application, for the finder and the page stepper. */
   pages: PageRow[];
   readOnly: boolean;
@@ -244,7 +249,7 @@ export function PageDesigner({
   const act: PropsContext['act'] = {
     addRegion: (kind, position) => {
       if (readOnly) return;
-      const r = addRegion(doc, kind, { position: open.includes(position) ? position : home });
+      const r = addRegion(doc, kind, { position: open.includes(position) ? position : home }, regionDefaults);
       commit(r.doc, `${kind === 'button' ? 'Button' : kind === 'static' ? 'Static Content' : kind === 'image' ? 'Image' : 'List'} created. Its attributes are in the Property Editor.`);
       select({ kind: 'region', id: r.id });
     },
@@ -304,7 +309,7 @@ export function PageDesigner({
     setDrag(null);
     if (readOnly) return;
     if (d.type === 'gallery') {
-      const r = addRegion(doc, d.kind, where);
+      const r = addRegion(doc, d.kind, where, regionDefaults);
       commit(r.doc, 'Region created. Its attributes are in the Property Editor.');
       select({ kind: 'region', id: r.id });
       return;
@@ -526,7 +531,7 @@ export function PageDesigner({
       entries.push(
         { head: regionName(r) },
         { label: 'Create Region below', sub: 'Static Content', disabled: readOnly, run: () => {
-          const a = addRegion(doc, 'static', { position: r.position, after: r.id, newRow: true });
+          const a = addRegion(doc, 'static', { position: r.position, after: r.id, newRow: true }, regionDefaults);
           commit(a.doc, 'Static Content created. Its attributes are in the Property Editor.');
           select({ kind: 'region', id: a.id });
         } },
