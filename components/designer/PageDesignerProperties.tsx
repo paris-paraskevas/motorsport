@@ -21,6 +21,7 @@ import {
   type RegionKind,
   type TriggerEvent,
 } from '@/lib/design/page-document';
+import { SITE_URL } from '@/lib/site';
 import { PAGE_COMMENTS_MAX, PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
 import { PAGE_NAME_MAX, PAGE_TITLE_MAX } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
@@ -316,7 +317,7 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
           control: (
             <div className="flex flex-wrap gap-1">
               {!page.path.includes('[') && (
-                <a href={page.path} target="_blank" rel="noopener noreferrer" className={PBTN}>
+                <a href={`${SITE_URL}${page.path}`} target="_blank" rel="noopener noreferrer" className={PBTN}>
                   Open the page
                 </a>
               )}
