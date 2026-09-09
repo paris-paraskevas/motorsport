@@ -107,3 +107,47 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     );
   }
 }
+
+// DELETE /api/admin/design/pages/<id> → removes a page made in the designer.
+//     Its revisions go with it (`page_revision.page_id … on delete cascade`, and
+//     the refs with the revisions), so a list or a scheme a revision named is
+//     free again. A page the code serves is refused (400): the code owns its
+//     route, and a route cannot be deleted from here, only hidden once the
+//     body work lands. The served path is revalidated so readers stop seeing
+//     the page at once. Admin-only (404), production-only (403).
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isProductionWorker()) {
+    return NextResponse.json(
+      { error: 'Design edits are made on production; this copy of the site is read-only.' },
+      { status: 403 },
+    );
+  }
+  if (!isBettingConfigured()) {
+    return NextResponse.json({ error: 'database not configured' }, { status: 503 });
+  }
+  const { id } = await params;
+  const detail = await loadPageDetail(id);
+  if (!detail) return new Response('not found', { status: 404 });
+  if (detail.page.kind !== 'row') {
+    return NextResponse.json({ error: 'The code serves this page; it cannot be deleted from here, only hidden.' }, { status: 400 });
+  }
+  try {
+    const { error, count } = await betDb()
+      .from('page')
+      .delete({ count: 'exact' })
+      .eq('application_key', PAGE_APPLICATION_KEY)
+      .eq('id', id)
+      .eq('kind', 'row');
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (!count) return new Response('not found', { status: 404 });
+    resetPageFrameMemo();
+    revalidatePath(detail.page.path);
+    return NextResponse.json({ ok: true, id, path: detail.page.path });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'unknown' },
+      { status: 500 },
+    );
+  }
+}

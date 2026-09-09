@@ -41,6 +41,7 @@ import { PropertyPane } from './PropertyPane';
 import { attrsOf, attrsProblem, groupsFor, type AttrsDraft, type PropsContext } from './PageDesignerProperties';
 import { Menu, Sheet, Toasts, anchorOf, useToasts, type MenuAt, type MenuEntry } from './DesignerMenu';
 import { CreatePageDialog } from './CreatePageDialog';
+import { SITE_URL } from '@/lib/site';
 
 // The Page Designer (Paddock Designer v2.4, docs/prototypes/paddock-designer-
 // v2.4, the `#pd` screen): the toolbar, then three panes. Left, four tabs:
@@ -66,8 +67,8 @@ const IB =
   'grid h-[30px] w-[30px] shrink-0 place-items-center border border-transparent text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:bg-surface-elevated hover:text-text disabled:cursor-default disabled:opacity-35 disabled:hover:border-transparent disabled:hover:bg-transparent aria-pressed:border-edit aria-pressed:text-edit';
 const GRP = 'flex h-[30px] items-center gap-1 border-r border-border pr-2 mr-0.5 last:border-r-0';
 
-type Busy = 'save' | 'publish' | 'run' | null;
-type SheetKind = 'finder' | 'export' | 'history' | 'shortcuts' | null;
+type Busy = 'save' | 'publish' | 'run' | 'delete' | null;
+type SheetKind = 'finder' | 'export' | 'history' | 'shortcuts' | 'delete' | null;
 
 function when(iso: string): string {
   const d = new Date(iso);
@@ -90,6 +91,7 @@ export function PageDesigner({
   onBack,
   onWorkspace,
   onCreated,
+  onDeleted,
 }: {
   detail: PageDetail;
   /** What a new region starts with (Component Settings). */
@@ -112,6 +114,8 @@ export function PageDesigner({
   /** Shared Components, optionally straight to one catalogue entry. */
   onWorkspace: (ws: 'shared', sc?: string) => void;
   onCreated: (page: PageRow) => void;
+  /** The page was deleted through the route; the shell drops it and leaves the designer. */
+  onDeleted: (id: string) => void;
 }) {
   const { page, live, newest, revisions } = detail;
   const code = page.kind === 'code';
@@ -141,6 +145,8 @@ export function PageDesigner({
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [creating, setCreating] = useState(false);
   const [busy, setBusy] = useState<Busy>(null);
+  const [finderQuery, setFinderQuery] = useState('');
+  const [finderRecent, setFinderRecent] = useState(false);
   const [status, setStatus] = useState<{ text: string; cls?: 'ok' | 'bad' } | null>(null);
   const [conflict, setConflict] = useState<PageDetail | null>(null);
   const [focusGroup, setFocusGroup] = useState<{ title: string; n: number } | null>(null);
@@ -445,12 +451,15 @@ export function PageDesigner({
       // the published revision's, so a draft is saved and said so.
       if (dirty) await save();
       if (docDirty) toast('Regions show on the live page once published.');
-      window.open(page.path, '_blank', 'noopener');
+      // Absolute, always: on the admin-only dev. host a relative path is the
+      // designer again, not the site (operator, 2026-09-09: "saving and running
+      // a page throws me into not found errors").
+      window.open(`${SITE_URL}${page.path}`, '_blank', 'noopener');
       return;
     }
     if (!docDirty) {
       if (attrsDirty) await save();
-      if (newest) window.open(`/preview/${newest.id}`, '_blank', 'noopener');
+      if (newest) window.open(`${SITE_URL}/preview/${newest.id}`, '_blank', 'noopener');
       else toast('Nothing to run yet: add a region and save.', 'bad');
       return;
     }
@@ -461,7 +470,7 @@ export function PageDesigner({
       if (r === false) return;
       if (!(await reload())) return;
       setStatus({ text: `Draft ${r ? r.slice(0, 8) : ''} saved and running.`, cls: 'ok' });
-      if (r) window.open(`/preview/${r}`, '_blank', 'noopener');
+      if (r) window.open(`${SITE_URL}/preview/${r}`, '_blank', 'noopener');
     } catch {
       setStatus({ text: 'Network error. Try again.', cls: 'bad' });
     } finally {
@@ -471,6 +480,31 @@ export function PageDesigner({
 
   // ------------------------------------------------------------ toolbar
   const openable = pages.filter(p => p.id);
+  // The finder's search reads number, name, path and group; Recently edited
+  // keeps the ten pages with the newest stamp (APEX's third tab).
+  const finderWords = finderQuery.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const finderPages = (finderRecent ? [...openable].filter(p => p.updatedAt).sort((a, b) => (a.updatedAt! < b.updatedAt! ? 1 : a.updatedAt! > b.updatedAt! ? -1 : 0)).slice(0, 10) : openable).filter(p =>
+    finderWords.every(w => `${p.id!.slice(0, 8)} ${p.name} ${p.path} ${p.group ?? ''}`.toLowerCase().includes(w)),
+  );
+
+  /** Delete Page: a page made here goes with its revisions; the row's route says no to a code page. */
+  async function deletePage() {
+    setBusy('delete');
+    try {
+      const res = await fetch(`/api/admin/design/pages/${pageId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        toast(body.error ?? `The page could not be deleted (HTTP ${res.status}).`, 'bad');
+        return;
+      }
+      setSheet(null);
+      onDeleted(pageId);
+    } catch {
+      toast('Network error. Try again.', 'bad');
+    } finally {
+      setBusy(null);
+    }
+  }
   const at = openable.findIndex(p => p.id === page.id);
   const step = (dir: -1 | 1) => {
     if (openable.length === 0) return;
@@ -519,6 +553,13 @@ export function PageDesigner({
     { label: 'Export Page (JSON)', run: () => setSheet('export') },
     { label: 'History', sub: `${revisions.length} revision${revisions.length === 1 ? '' : 's'}`, run: () => setSheet('history') },
     { label: 'Keyboard Shortcuts', k: 'Alt+Shift+F1', run: () => setSheet('shortcuts') },
+    '-',
+    {
+      label: 'Delete Page…',
+      sub: code ? 'the code serves this page' : `${revisions.length} revision${revisions.length === 1 ? '' : 's'} go with it`,
+      disabled: readOnly || code,
+      run: () => setSheet('delete'),
+    },
   ];
   const contextMenu = (atPos: MenuAt, sel: Selection) => {
     const entries: MenuEntry[] = [];
@@ -945,8 +986,39 @@ export function PageDesigner({
       )}
       {sheet === 'finder' && (
         <Sheet title="Page Finder" sub="Every page in application 100." onClose={() => setSheet(null)}>
+          <div className="flex items-center gap-2 border-b border-border-strong bg-surface px-[18px] py-2.5">
+            <input
+              type="search"
+              autoFocus
+              value={finderQuery}
+              placeholder="Search by number, name or path"
+              aria-label="Search pages"
+              className="h-[32px] w-full max-w-[420px] border border-border-strong bg-bg px-2.5 text-13 text-text focus:border-edit focus:outline-none"
+              onChange={e => setFinderQuery(e.target.value)}
+            />
+            <span className="flex-1" />
+            <div className="flex border border-border-strong" role="group" aria-label="Which pages">
+              {(
+                [
+                  [false, 'All pages'],
+                  [true, 'Recently edited'],
+                ] as [boolean, string][]
+              ).map(([recent, label]) => (
+                <button
+                  key={label}
+                  type="button"
+                  aria-pressed={finderRecent === recent}
+                  className={`h-[30px] px-3 text-12 ${finderRecent === recent ? 'bg-edit-dim font-semibold text-text' : 'text-text-muted hover:text-text'}`}
+                  onClick={() => setFinderRecent(recent)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
           <div>
-            {openable.map(p => (
+            {finderPages.length === 0 && <p className="m-0 px-[18px] py-4 text-13 text-text-faint">No page matches.</p>}
+            {finderPages.map(p => (
               <button
                 key={p.id}
                 type="button"
@@ -963,6 +1035,19 @@ export function PageDesigner({
               </button>
             ))}
           </div>
+        </Sheet>
+      )}
+      {sheet === 'delete' && (
+        <Sheet
+          title="Delete Page"
+          sub={`${page.name} · ${page.path}`}
+          onClose={() => setSheet(null)}
+          buttons={[{ label: 'Cancel' }, { label: 'Delete this page', danger: true, disabled: busy !== null, run: () => void deletePage() }]}
+        >
+          <p className="m-0 px-[18px] py-3 text-13 text-text">
+            The page and its {revisions.length} revision{revisions.length === 1 ? '' : 's'} are removed, and readers find nothing at {page.path} from then on.
+            The header, the footer and the phone bar are shared and stay. This cannot be undone.
+          </p>
         </Sheet>
       )}
       {sheet === 'export' && (

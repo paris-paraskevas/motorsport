@@ -708,6 +708,10 @@ export function Designer({
                 setPages(s => (s.state === 'ready' ? { state: 'ready', pages: [...s.pages, page] } : s));
                 if (page.id) openPageDetail(page.id);
               }}
+              onDeleted={id => {
+                setPages(s => (s.state === 'ready' ? { state: 'ready', pages: s.pages.filter(p => p.id !== id) } : s));
+                openPageDetail(null);
+              }}
             />
           )}
         </div>

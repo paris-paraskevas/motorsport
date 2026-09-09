@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.86 — 2026-09-09
+
+### Fix — the Page Designer's quick fixes from the operator's walkthrough: the finder searches, a page can be deleted, Run opens the site (R1 of the roadmap)
+
+The operator began going through the Page Designer at ~09:30Z (memory `feedback-paddock-page-designer-walkthrough`; the roadmap is artifact `84259cc8-ed82-48fb-9341-ec9f9e0c80e8`). Three one-control items, one PR; review page `68b3180f-8507-45e6-b940-83977455fc4b`.
+
+- **Page Finder search** (`components/designer/PageDesigner.tsx`): a search box over number, name, path and group (every word must match), and two toggles, All pages · Recently edited (the ten newest `updated_at` stamps, APEX's third tab). "No page matches." when nothing does.
+- **Delete Page** (`Utilities ▾ → Delete Page…`): a confirmation sheet naming the page, its path and how many revisions go with it; the button posts `DELETE /api/admin/design/pages/<id>` (NEW in `app/api/admin/design/pages/[id]/route.ts`: admin-only 404, production-only 403, a page the code serves refused with 400 "The code serves this page; it cannot be deleted from here, only hidden", an unknown id 404; the row goes with its revisions and their refs through the existing cascades, the frame memo is cleared and the path revalidated so readers stop seeing the page at once). The shell drops the page from the list and leaves the designer (`onDeleted`, `Designer.tsx`). On a code page the menu entry is disabled and says why.
+- **Run links are absolute**: Save and Run Page, the draft preview (`/preview/<rev>`) and the Property Editor's "Open the page" (`PageDesignerProperties.tsx`) open `SITE_URL` + path. On the admin-only `dev.` host a relative path is the designer again, which is what the operator hit ("saving and running a page throws me into not found errors").
+- Tests: `PageDesigner.test.tsx` (the finder's search and Recently edited; Delete Page asks, deletes through the route and hands the id back; a code page's entry is disabled; the run expectations carry the site URL) and `app/api/admin/design/pages/[id]/route.test.ts` (NEW: 404/403, the delete chain within the application with `kind = 'row'`, the frame memo and the revalidation, the 400 for a code page, the 404s).
+- Seen in the browser (local server, development sign-in): "Open the page" → `https://paddock-tracker.com/e2e-…`; the finder narrowed to four pages on "/series/" and put the page just created first under Recently edited; the page was deleted through the sheet and was gone from the list; on Calendar the entry read "Delete Page… the code serves this page", disabled.
+- Verified: `tsc` 0 · `lint` 0 errors (2 known warnings) · vitest 191 files / 1951 tests · `cf:build` ok · `wrangler deploy --dry-run` Total Upload 42485.93 KiB.
+
 ## 1.0.85 — 2026-09-09
 
 ### Feature — W1 of the workspaces plan: the `workspace` table and the application's workspace, number and path (migration only)

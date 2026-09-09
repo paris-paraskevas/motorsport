@@ -12,6 +12,7 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PageDesigner } from './PageDesigner';
+import { SITE_URL } from '@/lib/site';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import type { PageDocument, Region } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
@@ -74,11 +75,13 @@ let calls: Call[] = [];
 const json = (status: number, body: unknown) => ({ ok: status < 400, status, json: async () => body });
 
 /** Answers every route the designer calls; `over` replaces one method's answer. */
-function serve(over: Partial<Record<'PUT' | 'POST' | 'GET', () => unknown>> = {}) {
+type Method = 'PUT' | 'POST' | 'GET' | 'DELETE';
+function serve(over: Partial<Record<Method, () => unknown>> = {}) {
   fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
-    const method = init?.method ?? 'GET';
+    const method = (init?.method ?? 'GET') as Method;
     calls.push({ url, method, body: init?.body ? JSON.parse(String(init.body)) : null });
-    if (over[method as 'PUT' | 'POST' | 'GET']) return over[method as 'PUT' | 'POST' | 'GET']!();
+    if (over[method]) return over[method]!();
+    if (method === 'DELETE') return json(200, { ok: true, id: page.id, path: page.path });
     if (method === 'PUT') return json(200, { ok: true, page: { ...page, updatedAt: '2026-09-08T19:00:00+00:00' } });
     if (method === 'POST') return json(200, { revision: { id: R3 } });
     return json(200, { ...detail, newest: { ...detail.newest!, id: R3 }, revisions: [{ id: R3, createdAt: '2026-09-08T19:00:00Z', publishedAt: null, author: 'user_admin', base: R2 }, ...detail.revisions] });
@@ -89,8 +92,10 @@ function mount(d: PageDetail = detail, readOnly = false) {
   const onSaved = vi.fn();
   const onOpenPage = vi.fn();
   const onBack = vi.fn();
+  const onDeleted = vi.fn();
   render(
     <PageDesigner
+      onDeleted={onDeleted}
       detail={d}
       pages={pages}
       readOnly={readOnly}
@@ -105,7 +110,7 @@ function mount(d: PageDetail = detail, readOnly = false) {
       onCreated={vi.fn()}
     />,
   );
-  return { onSaved, onOpenPage, onBack };
+  return { onSaved, onOpenPage, onBack, onDeleted };
 }
 const tile = (name: string) => screen.getByRole('button', { name });
 const status = () => screen.getByRole('status').textContent ?? '';
@@ -224,11 +229,12 @@ describe('PageDesigner', () => {
   it('Save and Run Page opens the newest revision when nothing changed, and saves a draft first when something did', async () => {
     mount();
     fireEvent.click(screen.getByRole('button', { name: 'Save and Run Page' }));
-    expect(openMock).toHaveBeenCalledWith(`/preview/${R2}`, '_blank', 'noopener');
+    // Absolute: on the admin-only dev. host a relative path would be the designer again.
+    expect(openMock).toHaveBeenCalledWith(`${SITE_URL}/preview/${R2}`, '_blank', 'noopener');
     fireEvent.click(tile('List: Elsewhere'));
     fireEvent.click(within(screen.getByRole('group', { name: 'Region list style' })).getByRole('button', { name: 'Cards' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save and Run Page' }));
-    await waitFor(() => expect(openMock).toHaveBeenCalledWith(`/preview/${R3}`, '_blank', 'noopener'));
+    await waitFor(() => expect(openMock).toHaveBeenCalledWith(`${SITE_URL}/preview/${R3}`, '_blank', 'noopener'));
     expect(calls.find(c => c.method === 'POST')!.body).toMatchObject({ action: 'draft', base: R2 });
   });
 
@@ -310,5 +316,42 @@ describe('PageDesigner', () => {
     expect(onOpenPage).toHaveBeenCalledTimes(2);
     fireEvent.click(screen.getByRole('button', { name: 'Back to all pages' }));
     expect(onBack).toHaveBeenCalled();
+  });
+
+  it('the finder searches by number, name and path, and Recently edited keeps the stamped pages', () => {
+    mount();
+    fireEvent.click(screen.getByRole('button', { name: 'Page Finder' }));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Monza, a history')).toBeTruthy();
+    fireEvent.change(within(dialog).getByLabelText('Search pages'), { target: { value: '/cal' } });
+    expect(within(dialog).getByText('Calendar')).toBeTruthy();
+    expect(within(dialog).queryByText('Monza, a history')).toBeNull();
+    fireEvent.change(within(dialog).getByLabelText('Search pages'), { target: { value: 'c0de0002' } });
+    expect(within(dialog).getByText('Calendar')).toBeTruthy();
+    fireEvent.change(within(dialog).getByLabelText('Search pages'), { target: { value: 'nothing like this' } });
+    expect(within(dialog).getByText('No page matches.')).toBeTruthy();
+    fireEvent.change(within(dialog).getByLabelText('Search pages'), { target: { value: '' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Recently edited' }));
+    expect(within(dialog).getByRole('button', { name: 'Recently edited' }).getAttribute('aria-pressed')).toBe('true');
+    expect(within(dialog).getByText('Monza, a history')).toBeTruthy();
+    expect(within(dialog).getByText('Calendar')).toBeTruthy();
+  });
+
+  it('Delete Page asks first, deletes through the route and hands the id back; a page the code serves cannot be deleted', async () => {
+    const { onDeleted } = mount();
+    fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Delete Page/ }));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Delete Page')).toBeTruthy();
+    expect(within(dialog).getByText(/2 revisions are removed/)).toBeTruthy();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Delete this page' }));
+    await waitFor(() => expect(calls.some(c => c.method === 'DELETE' && c.url === `/api/admin/design/pages/${page.id}`)).toBe(true));
+    await waitFor(() => expect(onDeleted).toHaveBeenCalledWith(page.id));
+    cleanup();
+    mount({ ...detail, page: codePage });
+    fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
+    const entry = screen.getByRole('menuitem', { name: /Delete Page/ }) as HTMLButtonElement;
+    expect(entry.disabled).toBe(true);
+    expect(entry.textContent).toMatch(/the code serves this page/);
   });
 });
