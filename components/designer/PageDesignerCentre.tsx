@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Image as ImageIcon, List, MousePointerClick, Pilcrow } from 'lucide-react';
+import { Boxes, Image as ImageIcon, List, MousePointerClick, Pilcrow } from 'lucide-react';
 import { REGION_KIND_LABELS, type PageDocument, type RegionKind } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -13,6 +13,7 @@ import {
   regionName,
   regionSummary,
   sameSelection,
+  showText,
   spanName,
   triggerText,
   type DesignerMessage,
@@ -26,11 +27,19 @@ import type { Drag } from './PageDesignerLayout';
 // (what holds Save and what the designer noticed, a row selects and opens the
 // group), Page Search (every attribute value on the page), Help (the focused
 // property's help, else how the designer works), and beneath them the Gallery
-// with Regions, Items (later) and Buttons: drag a tile onto a yellow position,
-// or double-click to add it to the Body.
+// with Regions, Items (later), Buttons and Components (the pieces the code
+// draws, R2a): drag a tile onto a yellow position, or double-click to add it
+// to the Body.
 
 export type CentreTab = 'layout' | 'cv' | 'msgs' | 'search' | 'help';
-export type GalleryTab = 'regions' | 'items' | 'buttons';
+export type GalleryTab = 'regions' | 'items' | 'buttons' | 'components';
+
+/** A component the gallery offers this page: the catalogue entry, in words. */
+export interface ComponentTile {
+  key: string;
+  name: string;
+  desc: string;
+}
 
 export const CENTRE_TABS: { key: CentreTab; label: string; k?: string }[] = [
   { key: 'layout', label: 'Layout', k: 'Alt+5' },
@@ -89,14 +98,14 @@ function Report({ title, cols, rows, selection, onSelect }: { title: string; col
 }
 
 export function ComponentView({
-  page,
   doc,
   selection,
   assets,
   lists,
   onSelect,
 }: {
-  page: PageRow;
+  /** Kept for the caller; the view reads the document alone since the Body became the same on every page. */
+  page?: PageRow;
   doc: PageDocument;
   selection: Selection;
   assets: EditableAsset[];
@@ -104,21 +113,19 @@ export function ComponentView({
   onSelect: (s: Selection) => void;
 }) {
   const AUTHZ: Record<string, string> = { public: 'Public', signed_in: 'Signed in', contributor: 'Contributor', administrator: 'Administrator' };
-  const regions =
-    page.kind === 'code'
-      ? [{ sel: { kind: 'page' } as Selection, cells: ['10', page.name, 'Served by the code', 'Body', 'Full', AUTHZ[page.authz ?? 'public'] ?? page.authz, 'no'] }]
-      : doc.regions.map(r => ({
-          sel: { kind: 'region', id: r.id } as Selection,
-          cells: [
-            String(r.seq),
-            regionName(r),
-            REGION_KIND_LABELS[r.kind].label,
-            PD_POSITION[r.position].label,
-            r.position === 'body' ? `col ${r.column} · ${spanName(r.span)}${r.newRow ? ' · new row' : ''}` : 'stacked',
-            r.authz ? (AUTHZ[r.authz] ?? r.authz) : 'Public',
-            r.hidden ? 'hidden at first' : 'no',
-          ],
-        }));
+  const regions = doc.regions.map(r => ({
+    sel: { kind: 'region', id: r.id } as Selection,
+    cells: [
+      String(r.seq),
+      regionName(r),
+      REGION_KIND_LABELS[r.kind].label,
+      PD_POSITION[r.position].label,
+      r.position === 'body' ? `col ${r.column} · ${spanName(r.span)}${r.newRow ? ' · new row' : ''}` : 'stacked',
+      r.authz ? (AUTHZ[r.authz] ?? r.authz) : 'Public',
+      showText(r) || 'Always',
+      r.hidden ? 'hidden at first' : 'no',
+    ],
+  }));
   const buttons = doc.regions
     .filter(r => r.kind === 'button')
     .map(r => ({
@@ -131,10 +138,10 @@ export function ComponentView({
   }));
   return (
     <div className="grid gap-4 px-4 pb-6 pt-3.5">
-      <Report title="Regions" cols={['Seq', 'Name', 'Type', 'Position', 'Grid', 'Authorization', 'Hidden']} rows={regions} selection={selection} onSelect={onSelect} />
+      <Report title="Regions" cols={['Seq', 'Name', 'Type', 'Position', 'Grid', 'Authorization', 'Shows', 'Hidden']} rows={regions} selection={selection} onSelect={onSelect} />
       <Report title="Buttons" cols={['Seq', 'Label', 'Position', 'Target']} rows={buttons} selection={selection} onSelect={onSelect} />
       <Report title="Dynamic Actions" cols={['Seq', 'Name', 'When', 'Actions']} rows={actions} selection={selection} onSelect={onSelect} />
-      {page.kind !== 'code' && doc.regions.length > 0 && (
+      {doc.regions.length > 0 && (
         <p className="m-0 text-11 text-text-faint">Source: {doc.regions.map(r => `${regionName(r)}: ${regionSummary(r, assets, lists)}`).join(' · ').slice(0, 400)}</p>
       )}
     </div>
@@ -246,7 +253,7 @@ export function PageSearchTab({
 
 const HOW: [string, string][] = [
   ['Layout', 'The page as a schematic of template positions. Regions are tiles on a twelve-column ruler; their width is Column Span, their order is Sequence. Drag a tile’s header to move it; yellow tiles show where it may land.'],
-  ['Gallery', 'Regions, Items and Buttons. Drag a tile onto a yellow drop position, or double-click to add it to the Body. Items arrive with a later step.'],
+  ['Gallery', 'Regions, Items, Buttons and Components. Drag a tile onto a yellow drop position, or double-click to add it to the Body. A component is a piece the code draws, with its settings and its rule; a page whose body the code still draws carries it as one component until it is split. Items arrive with a later step.'],
   ['Rendering tree', 'Everything the page renders, in order: Pre-Rendering steps, Components by position, Post-Rendering. Right-click a node for its actions.'],
   ['Property Editor', 'Grouped attributes of the selection. Filter narrows them; Show Common hides the rarely used ones. Click a label for its help.'],
   ['Dynamic Actions', 'Behaviour without code: When (an event on a region or the page) then Actions (show, hide, toggle, scroll to, go), each chosen from lists. The running page executes them.'],
@@ -294,27 +301,40 @@ export function Gallery({
   tab,
   onTab,
   disabled,
+  components,
   onAdd,
+  onAddComponent,
   onDragStart,
 }: {
   tab: GalleryTab;
   onTab: (t: GalleryTab) => void;
-  /** A page the code serves, or read-only: tiles are shown and inert. */
+  /** Read-only: tiles are shown and inert. */
   disabled: boolean;
+  /** The components this page may take, from the catalogue. */
+  components: ComponentTile[];
   onAdd: (kind: RegionKind) => void;
+  onAddComponent: (key: string) => void;
   onDragStart: (drag: Drag) => void;
 }) {
-  const tiles = tab === 'regions' ? GALLERY_REGIONS : tab === 'buttons' ? GALLERY_BUTTONS : [];
-  const hint =
+  type Tile = { id: string; icon: ReactNode; name: string; desc: string; drag: Drag; add: () => void };
+  const tiles: Tile[] =
     tab === 'regions'
-      ? 'Drag onto a yellow position, or double-click to add to the Body'
+      ? GALLERY_REGIONS.map(t => ({ id: t.kind, icon: t.icon, name: t.name, desc: t.desc, drag: { type: 'gallery', kind: t.kind }, add: () => onAdd(t.kind) }))
       : tab === 'buttons'
-        ? 'Drag onto a yellow position, or double-click to add to the Body'
-        : 'Items arrive with a later step: selects, toggles, a month picker, a search field';
+        ? GALLERY_BUTTONS.map(t => ({ id: t.kind, icon: t.icon, name: t.name, desc: t.desc, drag: { type: 'gallery', kind: t.kind }, add: () => onAdd(t.kind) }))
+        : tab === 'components'
+          ? components.map(c => ({ id: c.key, icon: <Boxes size={14} />, name: c.name, desc: c.desc, drag: { type: 'component', key: c.key }, add: () => onAddComponent(c.key) }))
+          : [];
+  const hint =
+    tab === 'items'
+      ? 'Items arrive with a later step: selects, toggles, a month picker, a search field'
+      : tab === 'components'
+        ? 'Pieces the code draws, with settings and a rule. Drag onto a yellow position, or double-click to add to the Body'
+        : 'Drag onto a yellow position, or double-click to add to the Body';
   return (
     <div className="min-w-0 border-t border-border-strong bg-surface" aria-label="Gallery">
       <div className="flex items-center border-b border-border">
-        {(['regions', 'items', 'buttons'] as GalleryTab[]).map(t => (
+        {(['regions', 'items', 'buttons', 'components'] as GalleryTab[]).map(t => (
           <button
             key={t}
             type="button"
@@ -322,7 +342,7 @@ export function Gallery({
             className={`h-7 border-r border-border px-3 font-mono text-9 uppercase tracking-[0.12em] ${tab === t ? 'text-text shadow-[inset_0_-2px_0_var(--amber,#e0a52d)]' : 'text-text-faint hover:text-text'}`}
             onClick={() => onTab(t)}
           >
-            {t === 'regions' ? 'Regions' : t === 'items' ? 'Items' : 'Buttons'}
+            {t === 'regions' ? 'Regions' : t === 'items' ? 'Items' : t === 'buttons' ? 'Buttons' : 'Components'}
             {t === 'items' && <span className="ml-1.5 normal-case tracking-normal">later</span>}
           </button>
         ))}
@@ -331,24 +351,24 @@ export function Gallery({
       <div className="flex gap-2 overflow-x-auto px-3 pb-2.5 pt-2">
         {tiles.map(t => (
           <div
-            key={t.kind}
+            key={t.id}
             role="button"
             tabIndex={disabled ? -1 : 0}
             aria-disabled={disabled}
             aria-label={`Gallery: ${t.name}`}
-            title={disabled ? 'Regions arrive on this page with a later step' : 'Drag onto the layout · double-click to add'}
+            title={disabled ? 'Read-only here' : 'Drag onto the layout · double-click to add'}
             draggable={!disabled}
             className={`grid w-[112px] shrink-0 gap-1 border border-border-strong bg-bg px-2 py-1.5 ${disabled ? 'opacity-50' : 'cursor-grab hover:border-edit'}`}
             onDragStart={e => {
               if (disabled) return e.preventDefault();
-              e.dataTransfer.setData('text/plain', t.kind);
-              onDragStart({ type: 'gallery', kind: t.kind });
+              e.dataTransfer.setData('text/plain', t.id);
+              onDragStart(t.drag);
             }}
-            onDoubleClick={() => !disabled && onAdd(t.kind)}
+            onDoubleClick={() => !disabled && t.add()}
             onKeyDown={e => {
               if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
                 e.preventDefault();
-                onAdd(t.kind);
+                t.add();
               }
             }}
           >
@@ -357,7 +377,7 @@ export function Gallery({
             <span className="text-10 leading-snug text-text-faint">{t.desc}</span>
           </div>
         ))}
-        {tiles.length === 0 && <p className="m-0 py-2 text-11 text-text-faint">Nothing to drag yet.</p>}
+        {tiles.length === 0 && <p className="m-0 py-2 text-11 text-text-faint">{tab === 'components' ? 'Every component this page can take is already on it.' : 'Nothing to drag yet.'}</p>}
       </div>
     </div>
   );

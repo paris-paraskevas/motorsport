@@ -6,7 +6,7 @@ import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
-import { documentRefs, schemesAsked, substituteShortcuts } from '@/lib/design/page-document';
+import { applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts } from '@/lib/design/page-document';
 import { RowPageView } from '@/components/page/RowPageView';
 import { RefusedPage } from '@/components/page/RefusedPage';
 
@@ -57,11 +57,16 @@ export default async function CatchAll({ params }: { params: Params }) {
   if (!live) notFound();
 
   const asked = schemesAsked(live.page.authz, live.document);
+  // A show rule that needs the session reads it like a scheme does (R2a); a
+  // race weekend is a fact the calendar brings with R2b, unknown here.
+  const asks = showAsks(live.document);
   let allowed = new Set<string>();
+  let signedIn: boolean | null = null;
   const messages: Record<string, string | null> = {};
-  if (asked.length > 0) {
-    const [visitor, schemes] = await Promise.all([currentVisitor(), loadAuthzSchemes()]);
-    allowed = allowedKeys(asked, schemes, visitor);
+  if (asked.length > 0 || asks.visitor) {
+    const [visitor, schemes] = await Promise.all([currentVisitor(), asked.length > 0 ? loadAuthzSchemes() : Promise.resolve([])]);
+    signedIn = visitor.signedIn;
+    allowed = asked.length > 0 ? allowedKeys(asked, schemes, visitor) : allowed;
     for (const key of asked) messages[key] = schemes.find(s => s.key === key)?.message ?? null;
     const pageScheme = live.page.authz && live.page.authz !== 'public' ? live.page.authz : null;
     if (pageScheme && !allowed.has(pageScheme)) {
@@ -71,14 +76,15 @@ export default async function CatchAll({ params }: { params: Params }) {
       return <RefusedPage title={live.page.title ?? live.page.name} message={message} signInHelps={signInHelps} />;
     }
   }
+  const document = applyShow(live.document, { signedIn, raceWeekend: null });
 
-  const refs = documentRefs(live.document);
+  const refs = documentRefs(document);
   const [shortcuts, assets, nav] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists()]);
   const lists = await loadDocumentLists(refs.lists, nav);
   return (
     <RowPageView
       page={live.page}
-      document={live.document}
+      document={document}
       shortcuts={shortcuts}
       assets={assets}
       nav={nav}

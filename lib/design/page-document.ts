@@ -17,6 +17,7 @@
 // version this code does not know is refused whole, never guessed at.
 
 import { resolveDestination } from './destinations';
+import { findComponent, parseSettings, type SettingValue } from './components';
 
 export const PAGE_DOCUMENT_VERSION = 1 as const;
 
@@ -35,7 +36,7 @@ export const POSITION_LABELS: Record<Position, { label: string; holds: string }>
 
 export const COLUMNS = 12;
 
-export const REGION_KINDS = ['static', 'image', 'list', 'button'] as const;
+export const REGION_KINDS = ['static', 'image', 'list', 'button', 'component'] as const;
 export type RegionKind = (typeof REGION_KINDS)[number];
 
 export const REGION_KIND_LABELS: Record<RegionKind, { label: string; holds: string }> = {
@@ -43,7 +44,64 @@ export const REGION_KIND_LABELS: Record<RegionKind, { label: string; holds: stri
   image: { label: 'Image', holds: 'one of your photos, with its caption and credit' },
   list: { label: 'List', holds: 'one of the navigation lists, as links' },
   button: { label: 'Button', holds: 'a labelled button: goes to a destination, fires a dynamic action, or both' },
+  component: { label: 'Component', holds: 'a piece the code draws, with its settings and its rule' },
 };
+
+// When a region shows (APEX: Server-side Condition, the operator's "rules on
+// what to show on home and in what order", 2026-09-09). Phones and desktop are
+// decided by the stylesheet at render; the rest by facts the server has when
+// it serves the page. Absent means always.
+export const SHOW_RULES = ['always', 'race-weekend', 'between-weekends', 'signed-in', 'signed-out', 'phones', 'desktop'] as const;
+export type ShowRule = (typeof SHOW_RULES)[number];
+export const SHOW_RULE_LABELS: Record<ShowRule, string> = {
+  always: 'Always',
+  'race-weekend': 'During a race weekend',
+  'between-weekends': 'Between race weekends',
+  'signed-in': 'Signed in',
+  'signed-out': 'Signed out',
+  phones: 'Phones only',
+  desktop: 'Desktop and laptop only',
+};
+
+export interface ShowContext {
+  /** Whether the visitor is signed in; null when the server has not read the session. */
+  signedIn: boolean | null;
+  /** Whether a race weekend is under way; null when the server has not looked. */
+  raceWeekend: boolean | null;
+}
+
+/** Whether a region with this rule renders for this visit. A fact the server
+ *  does not have shows the region rather than hiding it; phones and desktop
+ *  always pass here because the stylesheet decides them. */
+export function passesShow(rule: ShowRule | undefined, ctx: ShowContext): boolean {
+  switch (rule) {
+    case 'signed-in':
+      return ctx.signedIn !== false;
+    case 'signed-out':
+      return ctx.signedIn !== true;
+    case 'race-weekend':
+      return ctx.raceWeekend !== false;
+    case 'between-weekends':
+      return ctx.raceWeekend !== true;
+    default:
+      return true;
+  }
+}
+
+/** Which facts a document's rules need: the session, the calendar. */
+export function showAsks(doc: PageDocument): { visitor: boolean; calendar: boolean } {
+  const rules = doc.regions.map(r => r.show);
+  return {
+    visitor: rules.some(s => s === 'signed-in' || s === 'signed-out'),
+    calendar: rules.some(s => s === 'race-weekend' || s === 'between-weekends'),
+  };
+}
+
+/** The document with the regions whose rule fails this visit left out. */
+export function applyShow(doc: PageDocument, ctx: ShowContext): PageDocument {
+  const regions = doc.regions.filter(r => passesShow(r.show, ctx));
+  return regions.length === doc.regions.length ? doc : { ...doc, regions };
+}
 
 export interface RegionBase {
   /** Stable within the page, lower-case; the designer generates it. */
@@ -63,6 +121,8 @@ export interface RegionBase {
   /** Rendered hidden until a dynamic action shows it (step 5), so a
    *  "read more" never flashes; false when absent. */
   hidden: boolean;
+  /** When the region shows; absent means always. */
+  show?: ShowRule;
 }
 export interface StaticRegion extends RegionBase {
   kind: 'static';
@@ -86,7 +146,20 @@ export interface ButtonRegion extends RegionBase {
    *  button only fires dynamic actions. */
   dest: string | null;
 }
-export type Region = StaticRegion | ImageRegion | ListRegion | ButtonRegion;
+export interface ComponentRegion extends RegionBase {
+  kind: 'component';
+  /** A key of the component catalogue (lib/design/components.ts). */
+  component: string;
+  /** Every setting of the component, at its value or its default. */
+  settings: Record<string, SettingValue>;
+}
+export type Region = StaticRegion | ImageRegion | ListRegion | ButtonRegion | ComponentRegion;
+
+/** The transitional component's key: a page's body as the code draws it. */
+export const LEGACY_BODY = 'page.body';
+export function isLegacyBody(r: Region): r is ComponentRegion {
+  return r.kind === 'component' && r.component === LEGACY_BODY;
+}
 
 // Dynamic actions (APEX: Dynamic Actions, Phase 3 step 5): behaviour without
 // code. When something happens (a click on a region, the page loading, a timer,
@@ -159,7 +232,10 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
   if (!REGION_ID.test(id)) problems.push(`${who}: the id must be lower-case letters, digits and dashes`);
   else if (seen.has(id)) problems.push(`${who}: the id is used twice`);
   const kind = typeof r.kind === 'string' && (REGION_KINDS as readonly string[]).includes(r.kind) ? (r.kind as RegionKind) : null;
-  if (!kind) problems.push(`${who}: the kind must be static, image or list`);
+  if (!kind) problems.push(`${who}: the kind must be static, image, list, button or component`);
+  const show: ShowRule | undefined | null =
+    r.show === undefined || r.show === null || r.show === 'always' ? undefined : typeof r.show === 'string' && (SHOW_RULES as readonly string[]).includes(r.show) ? (r.show as ShowRule) : null;
+  if (show === null) problems.push(`${who}: the show rule must be one of ${SHOW_RULES.join(', ')}`);
   const position = typeof r.position === 'string' && (POSITIONS as readonly string[]).includes(r.position) ? (r.position as Position) : null;
   if (!position) problems.push(`${who}: the position must be one of the six`);
   const title = typeof r.title === 'string' ? r.title.trim() : '';
@@ -180,8 +256,17 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
 
   let region: Region | null = null;
   if (kind && position && seq !== null && column !== null && span !== null && problems.length === 0) {
-    const base: RegionBase = { id, kind, title, position, seq, column, span, newRow, authz, hidden };
-    if (kind === 'static') {
+    const base: RegionBase = { id, kind, title, position, seq, column, span, newRow, authz, hidden, ...(show ? { show } : {}) };
+    if (kind === 'component') {
+      const key = typeof r.component === 'string' ? r.component : '';
+      const spec = key ? findComponent(key) : null;
+      if (!spec) problems.push(`${who}: names a component the code does not have (${key || 'none'})`);
+      else {
+        const parsed = parseSettings(spec, r.settings);
+        if (parsed.problems.length) problems.push(...parsed.problems.map(p => `${who}: ${p}`));
+        else region = { ...base, kind, component: spec.key, settings: parsed.settings };
+      }
+    } else if (kind === 'static') {
       const text = typeof r.text === 'string' ? r.text : '';
       if (text.length > STATIC_TEXT_MAX) problems.push(`${who}: the text is at most ${STATIC_TEXT_MAX} characters`);
       else region = { ...base, kind, text };

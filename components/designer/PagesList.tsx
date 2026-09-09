@@ -104,9 +104,9 @@ export function PagesList({
         {filterLabel && <span className="ml-2 font-mono text-11 font-normal uppercase tracking-[0.14em] text-text-faint">· {filterLabel}</span>}
       </h2>
       <p className="m-0 mb-3 max-w-[76ch] text-13 text-text-muted">
-        Every page the site serves, in one list. A page the code serves opens to its attributes and its body stays the
-        code’s; a page made here opens to its revisions and its layout. The header, the footer and the phone bar are
-        shared components, edited under Shared Components, never here.
+        Every page the site serves, in one list; each opens in the Page Designer. A page whose body the code still draws
+        carries that body as one component you put regions around, until the page is split. The header, the footer and
+        the phone bar are shared components, edited under Shared Components, never here.
         {unseeded > 0 ? ` ${unseeded} code page${unseeded === 1 ? ' has' : 's have'} no row yet on this database.` : ''}
       </p>
       <div className="mb-3 flex items-center gap-2">
@@ -224,7 +224,7 @@ export function PagesList({
                               onOpen(p.id!);
                             }}
                           >
-                            {p.kind} · open
+                            open
                           </button>
                         ) : (
                           <span className="font-mono text-9 uppercase tracking-[0.12em] text-text-faint">{p.kind}</span>
@@ -247,7 +247,7 @@ export function PagesList({
               <dd className="m-0 text-text">Paddock</dd>
               <dt className="text-text-muted">Pages</dt>
               <dd className="m-0 text-text tnum">{pages.length}</dd>
-              <dt className="text-text-muted">Served by the code</dt>
+              <dt className="text-text-muted">Body still drawn by the code</dt>
               <dd className="m-0 text-text tnum">{codeCount}</dd>
               <dt className="text-text-muted">Made here</dt>
               <dd className="m-0 text-text tnum">{rowCount}</dd>

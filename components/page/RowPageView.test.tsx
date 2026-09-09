@@ -15,7 +15,7 @@ vi.mock('next/image', () => ({
     React.createElement('img', { src, alt, width, height, className }),
 }));
 
-import { RowPageView, type RowPageData } from './RowPageView';
+import { CodePageFrame, RowPageView, type RowPageData } from './RowPageView';
 import { DEFAULT_NAV } from '@/lib/design/lists';
 import type { PageDocument } from '@/lib/design/page-document';
 
@@ -154,5 +154,51 @@ describe('RowPageView with lists of the operator’s own', () => {
     expect(html).not.toContain('aria-label="Ghost"');
     expect(html).toContain('>Only door</a>');
     expect(html).not.toContain('>Calendar</a>');
+  });
+});
+
+describe('components (the components programme, R2a)', () => {
+  const region = (id: string, over: Record<string, unknown> = {}) =>
+    ({ id, kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: id.toUpperCase(), ...over }) as PageDocument['regions'][number];
+  const component = (id: string, seq: number) => region(id, { kind: 'component', component: 'page.body', settings: {}, seq, text: undefined });
+
+  it('renders a component region from what the server drew, nothing when it drew nothing, and the phones and desktop rules as classes', () => {
+    const own: PageDocument = {
+      version: 1,
+      actions: [],
+      regions: [component('drawn', 10), region('phone', { seq: 20, show: 'phones' }), region('wide', { seq: 30, show: 'desktop' }), component('blank', 40)],
+    };
+    const html = renderToStaticMarkup(<RowPageView {...data} document={own} components={{ drawn: <p>DRAWN BY THE SERVER</p> }} />);
+    expect(html).toContain('DRAWN BY THE SERVER');
+    expect(html).toContain('id="region-blank"');
+    expect(html).toMatch(/id="region-phone"[^>]*class="[^"]*lg:hidden/);
+    expect(html).toMatch(/id="region-wide"[^>]*class="[^"]*max-lg:hidden/);
+    expect(html).not.toMatch(/id="region-drawn"[^>]*class="[^"]*hidden/);
+  });
+
+  it('CodePageFrame puts the code’s body where the transitional component sits, the operator’s body regions before and after it in the standard width, and first when no component names it', () => {
+    const around: PageDocument = { version: 1, actions: [], regions: [region('above', { seq: 10 }), component('code-body', 20), region('below', { seq: 30 })] };
+    const html = renderToStaticMarkup(
+      <CodePageFrame d={{ ...data, document: around }}>
+        <main>THE CODE BODY</main>
+      </CodePageFrame>,
+    );
+    const at = (s: string) => html.indexOf(s);
+    expect(at('ABOVE')).toBeGreaterThan(-1);
+    expect(at('ABOVE')).toBeLessThan(at('THE CODE BODY'));
+    expect(at('THE CODE BODY')).toBeLessThan(at('BELOW'));
+    expect(html).toContain('data-page-frame="body-before"');
+    expect(html).toContain('data-page-frame="body-after"');
+    expect(html).not.toContain('id="region-code-body"');
+
+    const none: PageDocument = { version: 1, actions: [], regions: [region('after', { seq: 10 })] };
+    const plain = renderToStaticMarkup(
+      <CodePageFrame d={{ ...data, document: none }}>
+        <main>THE CODE BODY</main>
+      </CodePageFrame>,
+    );
+    expect(plain.indexOf('THE CODE BODY')).toBeLessThan(plain.indexOf('AFTER'));
+    expect(plain).not.toContain('body-before');
+    expect(plain).toContain('data-page-frame="body-after"');
   });
 });

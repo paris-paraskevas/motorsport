@@ -12,7 +12,7 @@ import { allowedKeys, currentVisitor, type Visitor } from './authz-evaluate';
 import { loadAssetsById, loadLiveFrame } from './live-page';
 import { loadDocumentLists, loadNavLists } from './lists';
 import { loadShortcuts } from './shortcuts';
-import { documentRefs, schemesAsked } from './page-document';
+import { applyShow, documentRefs, schemesAsked, showAsks } from './page-document';
 import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, pageFromRow, type PageRow } from './pages';
 
 // The frame around a page the code serves (the Page Designer plan, PR 1): the
@@ -142,17 +142,21 @@ async function framed(
   }
   if (!live || live.document.regions.length === 0) return body;
   try {
-    const document = live.document;
-    const refs = documentRefs(document);
+    const stored = live.document;
+    const refs = documentRefs(stored);
     // The page's own scheme was met at the gate; only the regions' matter here.
-    const asked = schemesAsked(null, document);
+    // The session is read when a region asks for a scheme or a show rule needs
+    // it; a race weekend is a fact the calendar brings with R2b, unknown here.
+    const asked = schemesAsked(null, stored);
+    const asks = showAsks(stored);
     const [shortcuts, assets, nav, rules, who] = await Promise.all([
       loadShortcuts(),
       loadAssetsById(refs.assets),
       loadNavLists(),
       asked.length > 0 ? (schemes ?? loadAuthzSchemes()) : Promise.resolve([] as readonly AuthzScheme[]),
-      asked.length > 0 ? (visitor ?? currentVisitor()) : Promise.resolve(null),
+      asked.length > 0 || asks.visitor ? (visitor ?? currentVisitor()) : Promise.resolve(null),
     ]);
+    const document = applyShow(stored, { signedIn: who ? who.signedIn : null, raceWeekend: null });
     const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
     const messages: Record<string, string | null> = {};
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
