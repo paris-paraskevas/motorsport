@@ -1773,6 +1773,16 @@ Active: (no [+Nm] prefixes given this session)
 - Item 4: PR 3 and after, regions of the operator's own around the code's body; the migration widening `design_save_page_revision` rehearsed with a rollback and applied only on "apply <id>".
 - Won't touch: Phase 4 (waits until the three PRs are live); the document format, the functions and the routes from the night; the site's pages' own content; no migration in PR 1 or PR 2; prod Supabase writes only when the operator names them; one write path per table, revisions not overwrites; no AI in the design path; no ⌘, no command palette, visible controls; `eslint-disable` is never the fix; pushes only for PR branches, merges only on the operator's word; browser-verify before "shipped"; the release header and the branch deletions stay the operator's.
 
+**Session 46 outcomes (20:05Z → ~00:30Z, the operator present until ~23:00Z, then the overnight mandate: "finish as many tasks and phases as possible, while staying close and true to apex and the approved plan"):**
+- → done: #948 merged (1.0.68); the approved prototype committed as the reference (#949, 1.0.69: the HTML parts and the screenshots; the loose JS parts left out on the operator's pick, the lint would not parse them).
+- → done: **PR 1**, attributes on code pages (#950, 1.0.70): one server-only wrapper (`pageMetadata`, `withPageGate`) over all 58 code routes with the coverage test, the PUT widened, Indexed and Comments in the editor; mock first, "go ahead" given.
+- → done: **PR 2**, the Page Designer rebuilt to the v2.4 prototype one for one over the real document (#951, 1.0.71): toolbar, the four left tabs, Layout with the twelve-column Body and drop tiles, Component View, Messages, Page Search, Help, the Gallery, the Property Editor with Filter, Pin Filter and Go to Group, undo and redo, the Alt keyboard set; audited against APEX 24.2's documentation (Show Messages, Match Case and Regular Expression added; Ctrl+/ chords left for the operator). Superseded files removed as agreed. Seen in a real browser through Playwright with a Clerk development-instance administrator (27 photographs).
+- → done: the Shared Components audit: **Application Definition**, the Phase 2 editor never built, now live with the shell reading it (#952, 1.0.72, prod at 00:02:42Z).
+- → partial: **PR 3**, regions around the code's body (#953, 1.0.74): built, gated, seen in the browser on the local database with the migration applied; **open, not merged**, awaiting "apply 20260909040000".
+- → skipped: Phase 4 (waits, as the brief said); the Right Side Column on code pages (a decision); Ctrl chords.
+- Findings: a cross-request memo feeding a cached page re-caches a stale frame after a publish (fixed with a per-request read); Turbopack refuses a node_modules junction in a worktree; `next dev` under load registers a route late and the catch-all answers instead.
+- Won't-touch honoured: pushes only for PR branches; merges on the operator's word and, after 23:00Z, under the overnight mandate for gated PRs; no prod Supabase write (the migration waits for "apply"); no post published; no branch or file deleted (the two file removals in PR 2 were approved by the operator); the designer follows the verified prototype, deviations asked first.
+
 Active: (awaiting [+Nm] prefixes)
 
 ---

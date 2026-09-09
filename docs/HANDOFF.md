@@ -6,7 +6,37 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-09-08 late evening (LATEST, session 45 close — **THE NEXT SESSION'S JOB: execute the Page Designer plan**, three PRs in order, a mock before each; **session 46 opened 2026-09-08 20:05Z and committed the prototype, item 2**) — `main` = **1.0.69** once this merges, prod verified through 1.0.68 (20:16Z), zero open PRs, suite **1880**
+## ⚡ Next session pickup — 2026-09-09 early morning (LATEST, session 46 — the operator asleep from ~00:30Z; **PR 1, PR 2 and Application Definition are live; PR 3 is open and waits for "apply 20260909040000"**)
+
+### 🔴 Start here
+
+0. **The night in one line.** The Page Designer plan's PR 1 (#950, 1.0.70) and PR 2 (#951, 1.0.71) are live; the Shared Components audit found Application Definition never built, and it is live (#952, 1.0.72, `/changelog` read 1.0.72 at 00:02:42Z); these records are 1.0.73; **PR 3 (#953, 1.0.74, branch `feat/designer-code-page-regions`) is open and NOT merged**, because it carries migration `supabase/migrations/20260909040000_code_page_revisions.sql`. The order is yours, as the brief said: say **"apply 20260909040000"** and the migration is applied to prod (rehearsed on the local Supabase: `supabase migration up --local`, then the function called for the About page inside a rolled-back transaction, then the browser run below); then "merge" and PR 3 ships. Until then a code page's Publish on prod answers `Not saved (HTTP 404)` (the function's refusal), and nothing readers see changes.
+1. **What PR 3 does** (review page, artifact `12aa2bd2-d34c-47fa-a2ae-87582f181a86`; CHANGELOG 1.0.74 has the file-level detail): a page the code serves takes regions in its Page Header, Breadcrumb Bar, Footer and Phone Bar, placed in the same Page Designer and published with the same Publish; the site renders them around the code's body (`CodePageFrame`, through `withPageGate`'s new `framed()`); the Body stays the code's; the Right Side Column waits for your decision (item 2). Seen in a real browser on the local server: a Static Content region in the About page's Page Header, published, shown above the page's own title at 90 px with the title at 212 px; removed and published again, the page back at once.
+2. **Decisions waiting for you** (one at a time, each with something to look at):
+   - **Apply, then merge PR 3** ("apply 20260909040000" → "merge").
+   - **Right Side Column on a code page**: allowed (the code's body narrows to eight of twelve columns, a risk on data-heavy pages) or never? Recommendation: never for now; the Layout tile already says the decision is pending. A mock of both on request.
+   - **Ctrl+/ pane chords** (APEX 22.1+, Ctrl+/ then a letter): not built, per your "no Ctrl set"; the Alt set is complete. Say the word and it is one PR.
+   - **Image regions**: the Property Editor's photo is a select, as the prototype had it; photo tiles with thumbnails would read better. A mock on request.
+   - **Phase 4, the Data workspace**: the plan from the night of 2026-09-08 (item 3h below) still awaits your approval; nothing built.
+   - **Branch `feat/designer-application-definition`** is still on the remote (gh could not delete it from the worktree it merged from); `git push origin --delete feat/designer-application-definition` on your word.
+3. **Workarounds taken tonight** (the mandate's second question), none of them in the product:
+   - The gates for #952 ran in a **clean worktree** (`../Motorsport-pr4a`, its own `npm ci`, 3 min) because the main tree already carried PR 3's half-written files; a `node_modules` junction was refused by Turbopack ("Symlink node_modules is invalid, it points out of the filesystem root").
+   - The code-page frame's loader was first a 60 s per-isolate memo like the other design loaders and is now a **per-request read**: the browser run showed the restore of `/about` keep the removed region, because the regenerating process held a warm copy and re-cached it (CHANGELOG 1.0.74).
+   - The development server answered the first `POST …/revisions` of the run with the catch-all's HTML 404 until the route file was touched (on-demand compile under CPU pressure; the same class as the 2026-09-08 note).
+   - The Playwright administrator is a **Clerk development-instance** user (`sk_test_`), signed in with a sign-in token through `__clerk_ticket`; its credentials live only in the session scratchpad (`e2e-admin.json`), never in the repo.
+4. **Evidence** (the mandate's fourth question): review pages `6f98fc45-a327-422b-9506-4784bbf7d8c2` (PR 2, 27 photographs beside the prototype), `b58bd016-4517-4943-8a78-7ef92eff56c6` (Application Definition), `12aa2bd2-d34c-47fa-a2ae-87582f181a86` (PR 3). Every merge carried `tsc`, `lint` (0 errors, the two known warnings), the full suite (1904 → 1918 → 1922), `cf:build` and the dry-run (Total Upload 42725.57 → 42755.98 → 42986.98 KiB, gzip 9957.20 KiB at the end). Prod reads 1.0.72; the local run wrote only to the local database.
+5. **Won't touch until you say:** prod Supabase (the migration), Phase 4, the Right Side Column on code pages, Ctrl chords, any branch deletion.
+
+### Landmines learned tonight
+- Turbopack refuses a `node_modules` junction or symlink that resolves outside the project root; a second worktree needs its own `npm ci`. Its `.next` is its own, so a build there never clobbers the main tree's `next dev`.
+- A **cross-request memo in a loader that feeds a cached page is unsafe on publish**: the process that regenerates the page may hold the stale copy and re-cache it until the next publish. Per-request `cache()` for anything a publish changes. The 60 s memos that remain (`loadPageFrame`, the application definition, the lists, the shortcuts) carry the same hazard in principle for one regeneration after a save; accepted on 2026-09-08 and left as is.
+- Two PRs' files in one working tree: commit the already-merged one as a duplicate, then `git rebase --autostash origin/main`; git drops the duplicate ("skipped previously applied commit") and the other PR's files come back on top of main, nothing lost.
+- `next dev` under CPU pressure (a concurrent `next build`) can register a route late and hand its requests to `[...catchall]` (an HTML 404 where a route's own answer is `text/plain`); `touch` the route file.
+- `gh pr merge --delete-branch` run from a secondary worktree merges, then fails to check out `main` ("already used by worktree") and leaves the remote branch in place.
+
+---
+
+## Next session pickup — 2026-09-08 late evening (session 45 close — **THE NEXT SESSION'S JOB: execute the Page Designer plan**, three PRs in order, a mock before each; **session 46 opened 2026-09-08 20:05Z and committed the prototype, item 2**) — `main` = **1.0.69** once this merges, prod verified through 1.0.68 (20:16Z), zero open PRs, suite **1880**
 
 ### 🔴 Start here
 

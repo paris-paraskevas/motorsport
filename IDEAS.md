@@ -40,6 +40,11 @@ Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items v
 **Designer, queued after the Appearance step (operator, 2026-09-08 afternoon)**
 _(All three shipped in the night of 2026-09-08. 1.0.62: the search bar for the Shared Components catalogue and the side menu redrawn, one rail per workspace. 1.0.63: the alive search placeholder, Search Hints as rows the operator keeps, each verified against the site's own search when saved, rotated a minute apart after the first paint and still under reduced motion; the search itself now drops a question's function words so one typed as asked finds its page.)_
 
+**Designer, from session 46 (2026-09-09, night) — decisions for the operator, each with a mock on request**
+- Photo tiles with thumbnails for an Image region's photo, in place of the prototype's select (the select stays until asked).
+- The Right Side Column on a page the code serves: allowed beside the code's body, or never (recommended: never for now).
+- Ctrl+/ pane chords from APEX 22.1+ (the Alt set is built; "no Ctrl set" stands until the operator says otherwise).
+
 **Bugs and defects**
 
 _(Removed 2026-09-04: blog editor autosave. **Already built** — `components/studio/useDraftBackup.ts`, wired into BOTH writing surfaces with a "Unsaved draft found / Restore it / Discard" banner. localStorage only, deliberately: a debounced PATCH would keep rewriting a row that may be sitting in the review queue. Claude asserted twice that this did not exist, having searched `components/blog/` and `app/(app)/studio/` but not `components/studio/`; the operator was right both times.)_
