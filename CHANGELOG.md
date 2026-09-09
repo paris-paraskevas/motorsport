@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.93 — 2026-09-09
+
+### Docs — the afternoon's records: the APEX study, the Paddock Developer Plan, the agent-cost lesson
+
+`docs/HANDOFF.md` gains the LATEST section for the afternoon of 2026-09-09: how the study was done the cheap way (the 26.1 App Builder User's Guide's 192 pages to plain text at zero model cost, five Sonnet runs one at a time → 455 concepts; a route → components → loaders map at zero cost, two Sonnet audit runs → 58 routes / 299 sections), the plan artifact `4d804904-63ad-4ddf-8d37-67dcb2d2fcc8` (concept map, the vocabulary of 25 general components with audit counts, the four phases, the timeline mid-October 2026 at this week's pace or late November at half, the skip list, the catalogue), the decisions open for the operator (vocabulary, phase order, Series tabs shape, Comments, the cost PR), the Cloudflare bill answer, and four landmines (subagents inherit Fable unless `model` is set; docs to disk first; `const top` in an inline browser script; the audit's oddities). `SCHEDULE.md` gets the afternoon outcomes block; `IDEAS.md` the delivered item and the parked audit findings. Memory: `feedback-paddock-agent-model-cost` (new), `feedback-paddock-components-first` and `project-paddock-designer` (the state).
+
 ## 1.0.92 — 2026-09-09
 
 ### Fix — the designer: Run is never refused; an empty page saves, runs and publishes as its title alone
