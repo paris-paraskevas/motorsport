@@ -14,7 +14,7 @@ Tests: `page-document.test.ts` (a version 1 document reads as version 2 without 
 
 Browser run on the local server (`PADDOCK_ENV=production` set for the dev process so the designer accepts edits; the database is the local one): on `/history/monza` the Standfirst region got Header Text with a `{shortcut:times.local}` token, Footer Text and the Weather build option; Save and Run showed the header above the heading with the shortcut substituted and the footer below the body; Shared Components → Build Options → Weather → Exclude → Save: the region and its texts left the preview, the other regions stayed; Publish, then the live page served without the Standfirst region; Weather back to Include: the live page served it with both texts. Two findings outside the slot, noted and not done: the Save and Run preview renders a row page through the composed-page frame (`loadRevisionPreview` marks every row page `served: 'rows'` since R4.1), so the preview shows no page title where the live page does; and with `PADDOCK_ENV=production` on a local server, Save and Run opens the preview on the production host (`SITE_URL`), where the local revision does not exist.
 
-
+## 1.0.100 — 2026-09-10
 
 ### Docs — Phase 1 enters the ledger
 

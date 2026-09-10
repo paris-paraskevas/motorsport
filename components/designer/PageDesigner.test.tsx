@@ -178,6 +178,12 @@ describe('PageDesigner', () => {
     fireEvent.click(within(pills).getByRole('button', { name: 'None' }));
     expect(status()).toMatch(/Build Option cleared/);
     expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(false);
+    // A group the person opened stays open across selections: another region, then back.
+    fireEvent.click(tile('List: Elsewhere'));
+    expect((within(pe).getByLabelText('Region header text') as HTMLInputElement).value).toBe('');
+    fireEvent.click(tile('Static Content: A century of speed'));
+    expect((within(pe).getByLabelText('Region header text') as HTMLInputElement).value).toBe('Above · {shortcut:times.local}');
+    expect((within(pe).getByLabelText('Region footer text') as HTMLInputElement).value).toBe('Below');
   });
 
   it('holds Save when the parser refuses the document, and Messages says why', () => {
