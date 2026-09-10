@@ -23,6 +23,8 @@ export interface PropRow {
   help?: string;
   /** A note in the negative colour. */
   bad?: boolean;
+  /** Differs from the saved document or the saved attributes: drawn with the marker until Save (APEX: the edited-attribute marker). */
+  changed?: boolean;
 }
 
 export interface PropGroup {
@@ -84,8 +86,8 @@ export function Ro({ children, dim = false }: { children: ReactNode; dim?: boole
   return <div className={`pt-1 text-12 ${dim ? 'text-text-faint' : 'text-text'}`}>{children}</div>;
 }
 
-/** Yes / No as pills. */
-export function YesNo({ label, value, onPick, disabled, onFocus }: { label: string; value: boolean; onPick: (v: boolean) => void; disabled?: boolean; onFocus?: () => void }) {
+/** Yes / No as pills; null presses neither (several regions that differ). */
+export function YesNo({ label, value, onPick, disabled, onFocus }: { label: string; value: boolean | null; onPick: (v: boolean) => void; disabled?: boolean; onFocus?: () => void }) {
   return (
     <Pills
       label={label}
@@ -104,6 +106,7 @@ export function YesNo({ label, value, onPick, disabled, onFocus }: { label: stri
 export function PropertyPane({
   head,
   groups,
+  attributes,
   footer,
   focusGroup,
   filterRef,
@@ -113,6 +116,8 @@ export function PropertyPane({
   /** "Page" and its name, "Static Content" and the region's name. */
   head: { kind: string; name: string };
   groups: PropGroup[];
+  /** The Attributes tab's groups (APEX: a region whose type has attributes of its own shows Region and Attributes, UX map line 133); absent, the pane has no tabs. */
+  attributes?: PropGroup[];
   /** A row at the foot of the pane: Save, a status. */
   footer?: ReactNode;
   /** A group to open and scroll to; a new `n` repeats it. */
@@ -125,26 +130,32 @@ export function PropertyPane({
 }) {
   const [query, setQuery] = useState('');
   const [pinned, setPinned] = useState(false);
+  // Region or Attributes (APEX's two tabs for a region with attributes of its own); the head changing returns to Region.
+  const [tab, setTab] = useState<'region' | 'attributes'>('region');
   const [seenHead, setSeenHead] = useState(`${head.kind}·${head.name}`);
   if (`${head.kind}·${head.name}` !== seenHead) {
     // Another component selected: the filter clears unless pinned (APEX's Pin Filter), adjusted during render.
     setSeenHead(`${head.kind}·${head.name}`);
     if (!pinned && query) setQuery('');
+    if (tab !== 'region') setTab('region');
   }
+  // Every group, for the help and the folding memory; the shown tab's groups for the rows and Go to Group.
+  const all = attributes ? [...groups, ...attributes] : groups;
+  const shown = tab === 'attributes' && attributes ? attributes : groups;
   const [commonOnly, setCommonOnly] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [helpFor, setHelpForState] = useState<string | null>(null);
   const setHelpFor = (label: string | null) => {
     setHelpForState(label);
-    onHelpFor?.(label, label ? (groups.flatMap(g => g.props).find(p => p.label === label)?.help ?? null) : null);
+    onHelpFor?.(label, label ? (all.flatMap(g => g.props).find(p => p.label === label)?.help ?? null) : null);
   };
   const [groupsOpen, setGroupsOpen] = useState(false);
-  const [closed, setClosed] = useState<Set<string>>(() => new Set(groups.filter(g => g.closed || g.later).map(g => g.title)));
+  const [closed, setClosed] = useState<Set<string>>(() => new Set(all.filter(g => g.closed || g.later).map(g => g.title)));
   // A group seen for the first time (another kind of component selected) starts
   // closed when it asks to; a group the person has toggled keeps their choice.
   // Adjusted during render, like the filter above.
-  const [seenGroups, setSeenGroups] = useState<Set<string>>(() => new Set(groups.map(g => g.title)));
-  const unseen = groups.filter(g => !seenGroups.has(g.title));
+  const [seenGroups, setSeenGroups] = useState<Set<string>>(() => new Set(all.map(g => g.title)));
+  const unseen = all.filter(g => !seenGroups.has(g.title));
   if (unseen.length > 0) {
     setSeenGroups(prev => new Set([...prev, ...unseen.map(g => g.title)]));
     const toClose = unseen.filter(g => g.closed || g.later).map(g => g.title);
@@ -152,8 +163,9 @@ export function PropertyPane({
   }
   const [seenFocus, setSeenFocus] = useState<number>(focusGroup?.n ?? 0);
   if (focusGroup && focusGroup.n !== seenFocus) {
-    // Messages and Page Search ask for a group: open it, adjusted during render.
+    // Messages and Page Search ask for a group: open it, on the tab that holds it, adjusted during render.
     setSeenFocus(focusGroup.n);
+    setTab(attributes?.some(g => g.title === focusGroup.title) ? 'attributes' : 'region');
     setClosed(s => {
       const next = new Set(s);
       next.delete(focusGroup.title);
@@ -166,10 +178,10 @@ export function PropertyPane({
   }, [focusGroup]);
 
   const q = query.trim().toLowerCase();
-  const visible = groups
+  const visible = shown
     .map(g => ({ ...g, props: g.props.filter(p => (!commonOnly || p.common) && (!q || p.label.toLowerCase().includes(q))) }))
     .filter(g => g.props.length > 0 || (g.later && !q));
-  const helpText = helpFor ? groups.flatMap(g => g.props).find(p => p.label === helpFor)?.help : undefined;
+  const helpText = helpFor ? all.flatMap(g => g.props).find(p => p.label === helpFor)?.help : undefined;
   const toggle = (title: string) =>
     setClosed(s => {
       const next = new Set(s);
@@ -222,7 +234,7 @@ export function PropertyPane({
       </div>
       {groupsOpen && (
         <ul role="menu" aria-label="Groups" className="absolute right-2 top-9 z-10 m-0 grid min-w-40 list-none gap-0 border border-border-strong bg-surface-elevated p-1 shadow-lg">
-          {groups.map(g => (
+          {shown.map(g => (
             <li key={g.title} role="none">
               <button type="button" role="menuitem" className="block w-full px-2 py-1 text-left text-12 text-text hover:bg-edit-dim" onClick={() => goTo(g.title)}>
                 {g.title}
@@ -236,6 +248,23 @@ export function PropertyPane({
         <span className="whitespace-nowrap font-mono text-9 uppercase tracking-[0.14em] text-text-faint">{head.kind}</span>
         <span className="min-w-0 truncate font-semibold text-text">{head.name}</span>
       </div>
+      {attributes && (
+        // APEX: a region whose type has attributes of its own shows two tabs, Region and Attributes (UX map line 133).
+        <div role="tablist" aria-label="Property Editor tabs" className="flex border-b border-border bg-surface-elevated px-1">
+          {(['region', 'attributes'] as const).map(t => (
+            <button
+              key={t}
+              type="button"
+              role="tab"
+              aria-selected={tab === t}
+              className={`h-8 px-3 text-12 ${tab === t ? 'font-semibold text-text shadow-[inset_0_-2px_0_var(--amber,#e0a52d)]' : 'text-text-faint hover:text-text'}`}
+              onClick={() => setTab(t)}
+            >
+              {t === 'region' ? 'Region' : 'Attributes'}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="min-h-0 flex-1 overflow-auto">
         {visible.map(g => {
           const isClosed = closed.has(g.title);
@@ -256,7 +285,9 @@ export function PropertyPane({
               {!isClosed && (
                 <div className="grid gap-2.5 px-3 pb-3 pt-2">
                   {g.props.map(p => (
-                    <div key={p.label} className="grid grid-cols-[112px_minmax(0,1fr)] items-start gap-2" onFocus={() => setHelpFor(p.label)}>
+                    <div key={p.label} className="relative grid grid-cols-[112px_minmax(0,1fr)] items-start gap-2" data-changed={p.changed ? 'true' : undefined} onFocus={() => setHelpFor(p.label)}>
+                      {/* APEX: the edited-attribute marker, shown until Save. Its own element, so the label's name stays the label. */}
+                      {p.changed && <span role="img" aria-label="Changed since the last save" title="Changed since the last save" className="absolute -left-2 top-[9px] h-1.5 w-1.5 rounded-full bg-edit" />}
                       {p.htmlFor ? (
                         <label htmlFor={p.htmlFor} className={`pt-1 text-12 leading-tight ${helpFor === p.label ? 'text-edit' : 'text-text-muted'} hover:text-edit`} onClick={() => setHelpFor(p.label)}>
                           {p.label}

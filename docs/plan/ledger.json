@@ -173,8 +173,10 @@
    "scope": "Edited-attribute marker until Save; multi-select edits common attributes; Region / Attributes tab split for components with settings.",
    "fixedBy": "the UX map's Property Editor structures",
    "acceptance": "Select two regions, change Position: both move; a changed attribute shows the marker until Save; browser run.",
-   "status": "planned",
-   "scopeHash": "ab9b3ca0b633"
+   "status": "started",
+   "scopeHash": "ab9b3ca0b633",
+   "defaults": "several regions selected by Ctrl, Cmd or Shift+click on Layout tiles and tree nodes, regions only, the head reading \"N selected\"; the common attributes are Layout (Position, Start New Row, Column, Size, Column Span), Rules (Show), Security (Authorization Scheme) and Configuration (Build Option), a mixed value drawn as no pill pressed with the note Mixed, a pick setting every selected region; a right-click on the set and Del delete it whole; the marker a dot before the row's label with the tip \"Changed since the last save\", computed against the saved document (a region the saved document lacks marks every row) and against the page's saved attributes, on region, page, dynamic action and TRUE action rows alike; the Attributes tab only for a component region whose catalogue entry has settings, holding them as one group Settings; the Source group keeps the component's name; Messages and Page Search open the tab that holds their group",
+   "needsWord": ""
   },
   {
    "id": "P1.7",

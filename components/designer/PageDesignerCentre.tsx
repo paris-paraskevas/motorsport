@@ -12,7 +12,7 @@ import {
   effectText,
   regionName,
   regionSummary,
-  sameSelection,
+  selectionCovers,
   showText,
   spanName,
   triggerText,
@@ -81,7 +81,7 @@ function Report({ title, cols, rows, selection, onSelect }: { title: string; col
             {rows.map((r, i) => (
               <tr
                 key={i}
-                className={`cursor-pointer border-t border-border ${sameSelection(selection, r.sel) ? 'bg-edit-dim' : 'hover:bg-surface-elevated'}`}
+                className={`cursor-pointer border-t border-border ${selectionCovers(selection, r.sel) ? 'bg-edit-dim' : 'hover:bg-surface-elevated'}`}
                 onClick={() => onSelect(r.sel)}
               >
                 {r.cells.map((c, j) => (

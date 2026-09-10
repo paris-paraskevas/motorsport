@@ -93,10 +93,10 @@ function mount(d: PageDetail = detail, readOnly = false) {
   const onOpenPage = vi.fn();
   const onBack = vi.fn();
   const onDeleted = vi.fn();
-  render(
+  const el = (dd: PageDetail) => (
     <PageDesigner
       onDeleted={onDeleted}
-      detail={d}
+      detail={dd}
       pages={pages}
       readOnly={readOnly}
       lists={lists}
@@ -108,9 +108,12 @@ function mount(d: PageDetail = detail, readOnly = false) {
       onBack={onBack}
       onWorkspace={vi.fn()}
       onCreated={vi.fn()}
-    />,
+    />
   );
-  return { onSaved, onOpenPage, onBack, onDeleted };
+  const utils = render(el(d));
+  /** The shell hands the reloaded detail back after a save: the designer re-renders on it. */
+  const rerender = (dd: PageDetail) => utils.rerender(el(dd));
+  return { onSaved, onOpenPage, onBack, onDeleted, rerender };
 }
 const tile = (name: string) => screen.getByRole('button', { name });
 const status = () => screen.getByRole('status').textContent ?? '';
@@ -270,6 +273,65 @@ describe('PageDesigner', () => {
     expect(within(within(pe).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Footer' }).getAttribute('aria-pressed')).toBe('true');
   });
 
+  it('Ctrl+click selects two regions; the Property Editor shows their common attributes, and Position moves both (P1.6)', () => {
+    mount();
+    fireEvent.click(tile('Static Content: A century of speed'));
+    fireEvent.click(tile('List: Elsewhere'), { ctrlKey: true });
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(pe).getByText('2 selected')).toBeTruthy();
+    expect(within(pe).queryByLabelText('Region title')).toBeNull();
+    expect(tile('Static Content: A century of speed').getAttribute('aria-pressed')).toBe('true');
+    expect(tile('List: Elsewhere').getAttribute('aria-pressed')).toBe('true');
+    // Body and Right Side Column differ: no pill pressed, the note says so.
+    const where = within(pe).getByRole('group', { name: 'Region position' });
+    expect(within(where).queryAllByRole('button', { pressed: true })).toHaveLength(0);
+    expect(within(pe).getByText(/^Mixed/)).toBeTruthy();
+    fireEvent.click(within(where).getByRole('button', { name: 'Footer' }));
+    expect(status()).toMatch(/Position: Footer/);
+    expect(within(where).getByRole('button', { name: 'Footer' }).getAttribute('aria-pressed')).toBe('true');
+    // Each alone: both sit in the Footer.
+    fireEvent.click(tile('Static Content: A century of speed'));
+    expect(within(within(pe).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Footer' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(tile('List: Elsewhere'));
+    expect(within(within(pe).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Footer' }).getAttribute('aria-pressed')).toBe('true');
+    // Ctrl+click on a member takes it out again; Delete removes a whole set.
+    fireEvent.click(tile('Static Content: A century of speed'), { ctrlKey: true });
+    expect(within(pe).getByText('2 selected')).toBeTruthy();
+    fireEvent.click(tile('List: Elsewhere'), { ctrlKey: true });
+    expect(within(pe).getByText('A century of speed')).toBeTruthy();
+    fireEvent.click(tile('List: Elsewhere'), { ctrlKey: true });
+    fireEvent.keyDown(document, { key: 'Delete' });
+    expect(screen.queryByRole('button', { name: 'List: Elsewhere' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Static Content: A century of speed' })).toBeNull();
+    expect(status()).toMatch(/2 regions deleted/);
+  });
+
+  it('a changed attribute carries the marker until Save; the reloaded detail clears it (P1.6)', async () => {
+    const savedPage = { ...page, title: 'Monza, a history of speed', updatedAt: '2026-09-08T19:00:00+00:00' };
+    serve({ GET: () => json(200, { ...detail, page: savedPage, newest: { ...detail.newest!, id: R3, document: (calls.find(c => c.method === 'POST')!.body as { document: PageDocument }).document } }) });
+    const { onSaved, rerender } = mount();
+    const pe = screen.getByLabelText('Property Editor');
+    const markers = () => within(pe).queryAllByRole('img', { name: 'Changed since the last save' });
+    expect(markers()).toHaveLength(0);
+    fireEvent.change(screen.getByLabelText('Page title'), { target: { value: 'Monza, a history of speed' } });
+    expect(screen.getByLabelText('Page title').closest('[data-changed]')).not.toBeNull();
+    expect(markers()).toHaveLength(1);
+    fireEvent.click(tile('Static Content: A century of speed'));
+    expect(markers()).toHaveLength(0);
+    fireEvent.change(screen.getByLabelText('Region title'), { target: { value: 'Winners by decade' } });
+    expect(screen.getByLabelText('Region title').closest('[data-changed]')).not.toBeNull();
+    expect(screen.getByLabelText('Region text').closest('[data-changed]')).toBeNull();
+    expect(markers()).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    rerender(onSaved.mock.calls[0][0] as PageDetail);
+    expect((screen.getByLabelText('Region title') as HTMLInputElement).value).toBe('Winners by decade');
+    expect(markers()).toHaveLength(0);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect((screen.getByLabelText('Page title') as HTMLInputElement).value).toBe('Monza, a history of speed');
+    expect(markers()).toHaveLength(0);
+  });
+
   it('holds Save when the parser refuses the document, and Messages says why', () => {
     mount();
     fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Image' }));
@@ -425,9 +487,15 @@ describe('PageDesigner', () => {
     expect(screen.queryByRole('button', { name: 'Component: Body as the code draws it' })).toBeNull();
     for (const name of ['Lead story', 'This weekend', 'Latest result', 'What it changed', 'What’s next', 'The wire']) expect(tile(`Component: ${name}`)).toBeTruthy();
     expect(status()).toMatch(/Split into components/);
-    // The wire's settings render as controls from its spec.
+    // The wire's settings render as controls from its spec, under the Attributes tab (APEX: Region · Attributes, P1.6); a region without settings has no tabs.
     fireEvent.click(tile('Component: The wire'));
-    expect((within(screen.getByLabelText('Property Editor')).getByLabelText('Items') as HTMLInputElement).value).toBe('5');
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(pe).queryByLabelText('Items')).toBeNull();
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    expect((within(pe).getByLabelText('Items') as HTMLInputElement).value).toBe('5');
+    fireEvent.click(tile('Component: This weekend'));
+    expect(within(pe).queryByRole('tablist', { name: 'Property Editor tabs' })).toBeNull();
+    fireEvent.click(tile('Component: The wire'));
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSaved).toHaveBeenCalled());
     const posted = calls.find(c => c.method === 'POST')!;

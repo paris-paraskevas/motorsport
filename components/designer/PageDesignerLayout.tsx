@@ -10,7 +10,7 @@ import {
   PD_SHARED,
   regionName,
   regionSummary,
-  sameSelection,
+  selectionCovers,
   showText,
   spanName,
   type Placement,
@@ -67,7 +67,8 @@ export function PageDesignerLayout({
   showCols: boolean;
   drag: Drag | null;
   readOnly: boolean;
-  onSelect: (sel: Selection, opts?: { rename?: boolean }) => void;
+  /** `toggle`: Ctrl, Cmd or Shift held, so a region joins or leaves the selection (APEX: several components selected). */
+  onSelect: (sel: Selection, opts?: { rename?: boolean; toggle?: boolean }) => void;
   onContext: (at: { x: number; y: number }, sel: Selection) => void;
   onDragStart: (drag: Drag) => void;
   onDrop: (drag: Drag, where: Placement) => void;
@@ -79,7 +80,8 @@ export function PageDesignerLayout({
   // A route file in the code still draws the body: the Right Side Column waits there.
   const code = page.kind === 'code' && page.served !== 'rows';
   const number = page.id ? page.id.slice(0, 8) : 'no row';
-  const isSel = (s: Selection) => sameSelection(selection, s);
+  // A tile inside a set of regions (Ctrl+click) is selected too.
+  const isSel = (s: Selection) => selectionCovers(selection, s);
   const ctx = (sel: Selection) => (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -124,7 +126,7 @@ export function PageDesignerLayout({
         style={style}
         onClick={e => {
           e.stopPropagation();
-          onSelect(sel);
+          onSelect(sel, { toggle: e.ctrlKey || e.metaKey || e.shiftKey });
         }}
         onDoubleClick={e => {
           e.stopPropagation();
@@ -133,7 +135,7 @@ export function PageDesignerLayout({
         onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            onSelect(sel);
+            onSelect(sel, { toggle: e.ctrlKey || e.metaKey || e.shiftKey });
           }
         }}
         onContextMenu={ctx(sel)}
