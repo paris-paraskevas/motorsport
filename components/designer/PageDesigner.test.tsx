@@ -280,6 +280,10 @@ describe('PageDesigner', () => {
     const pe = screen.getByLabelText('Property Editor');
     expect(within(pe).getByText('2 selected')).toBeTruthy();
     expect(within(pe).queryByLabelText('Region title')).toBeNull();
+    // The common groups alone: Layout, Rules, Security, Configuration; no Identification or Source.
+    for (const g of ['Layout', 'Rules', 'Security', 'Configuration']) expect(within(pe).getByRole('button', { name: g })).toBeTruthy();
+    expect(within(pe).queryByRole('button', { name: 'Identification' })).toBeNull();
+    expect(within(pe).queryByRole('button', { name: 'Source' })).toBeNull();
     expect(tile('Static Content: A century of speed').getAttribute('aria-pressed')).toBe('true');
     expect(tile('List: Elsewhere').getAttribute('aria-pressed')).toBe('true');
     // Body and Right Side Column differ: no pill pressed, the note says so.

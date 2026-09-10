@@ -71,7 +71,7 @@ export function toggleRegion(current: Selection, id: string): Selection {
   if (current.kind === 'region') return current.id === id ? PAGE_SELECTION : { kind: 'regions', ids: [current.id, id] };
   if (current.kind === 'regions') {
     const ids = current.ids.includes(id) ? current.ids.filter(x => x !== id) : [...current.ids, id];
-    return ids.length === 0 ? PAGE_SELECTION : ids.length === 1 ? { kind: 'region', id: ids[0] } : { kind: 'regions', ids };
+    return ids.length === 1 ? { kind: 'region', id: ids[0] } : { kind: 'regions', ids };
   }
   return { kind: 'region', id };
 }

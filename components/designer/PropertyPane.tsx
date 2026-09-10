@@ -286,8 +286,8 @@ export function PropertyPane({
                 <div className="grid gap-2.5 px-3 pb-3 pt-2">
                   {g.props.map(p => (
                     <div key={p.label} className="relative grid grid-cols-[112px_minmax(0,1fr)] items-start gap-2" data-changed={p.changed ? 'true' : undefined} onFocus={() => setHelpFor(p.label)}>
-                      {/* APEX: the edited-attribute marker, shown until Save. Its own element, so the label's name stays the label. */}
-                      {p.changed && <span role="img" aria-label="Changed since the last save" title="Changed since the last save" className="absolute -left-2 top-[9px] h-1.5 w-1.5 rounded-full bg-edit" />}
+                      {/* APEX: a green marker to the left of an edited attribute's name, until the page is saved (UX map line 142). Its own element, so the label's name stays the label. */}
+                      {p.changed && <span role="img" aria-label="Changed since the last save" title="Changed since the last save" className="absolute -left-2 top-[9px] h-1.5 w-1.5 rounded-full bg-positive" />}
                       {p.htmlFor ? (
                         <label htmlFor={p.htmlFor} className={`pt-1 text-12 leading-tight ${helpFor === p.label ? 'text-edit' : 'text-text-muted'} hover:text-edit`} onClick={() => setHelpFor(p.label)}>
                           {p.label}
