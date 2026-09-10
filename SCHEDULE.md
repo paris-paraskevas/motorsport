@@ -1849,6 +1849,12 @@ Order fixed by the operator's opening brief; each item is asked as one question 
 4. **"Phase 1 go"** (the rest of the day): the decision-free slots one PR each in the order P1.3 (Header and Footer text, Configuration) → P1.5 (Layout, Gallery and Utilities conformance) → P1.6 (Property Editor conformance) → P1.9 (Debug panel). Each: decision scan · plan mode · built directly · gates + dry-run Total Upload · browser run on the local server · review page · fresh-context Sonnet reviewer · merge on the word · prod check · ledger evidence. Realistic today: P1.3 and P1.5; P1.6 and P1.9 are stretch and roll to tomorrow unmarked.
 5. **Close** (~20 min): Inbox triage, `docs/HANDOFF.md`, this day marked, the ledger's evidence; one records PR.
 
+Outcomes so far (10:45Z, written at 87% context; P1.6 and P1.9 still to come today):
+- → done: 1 Table/Cards (one region with a View setting); 2 rules v3 ("go with the latest version"); 3 the docs PR #980 (1.0.99) with two reviewer passes; 4 the six hooks wired one at a time with the operator watching, all seen live except session-start and pre-compact (dry run); 5 Phase 1 approved and in the ledger (#981, 1.0.100); 6 "Phase 1 go"; 7 P1.3 (#982, 1.0.101, prod 09:39Z); 8 P1.5 (#983, 1.0.102, prod 10:41Z).
+- → in progress: 9 P1.6 and 10 P1.9 (the operator wants Phase 1 finished today); 11 the close (this block and the handoff prompt written early, in case of a compaction).
+- Findings: push-guard denies a heredoc that quotes a push to main; the release-notes script overwrote a CHANGELOG heading twice (insert above the anchor); react-hooks/set-state-in-effect is a lint error (useSyncExternalStore instead); the preview of a row page shows no title; Save and Run opens the prod host from a local production-flagged server; a flyout near the viewport edge must flip.
+- Won't-touch honoured: pushes only for PR branches; merges only on the word; no prod Supabase write; no agent on Fable; the old scratchpad copied into the repo only with the word (the ledger, the rules, the prune, the hooks).
+
 Won't touch this session: merging #978 as it stands; any Phase 2–4 slot; P1.1, P1.4, P1.8 (they carry questions) and P1.2, P1.7, P1.10–P1.12 (not in today's batch); TanStack Table; the cost PR; Home's split on production; the console's file deletions; the third draft's branch; any prod Supabase write without "apply <id>"; any push to `main`; copying anything from the previous session's scratchpad into the repo without the word; any agent on Fable.
 
 Active: (awaiting [+Nm] prefixes)

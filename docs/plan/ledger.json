@@ -160,10 +160,11 @@
    "scope": "Layout menu Display from Here / Display from Page; Expand and Restore; Gallery right-click Add To with the positions list; Utilities › Show ▸ (Tooltips, Layout View) and Layout ▸ (Two Pane, Three Pane, Reset Layout); pane state per user.",
    "fixedBy": "the UX map",
    "acceptance": "Each control present where documented; Two Pane hides the left pane; Reset Layout restores; browser run.",
-   "status": "started",
+   "status": "done",
    "scopeHash": "19f38675f5b9",
    "defaults": "submenus as flyouts in the designer menu; Two Pane Mode hides the left pane; Expand hides both side panes until Restore; Display from Here shows the selected region alone until Display from Page; Add To lists the positions the page opens; Tooltips governs the title tips; Layout View removes the Layout tab; pane widths, mode, Tooltips and Layout View remembered in localStorage per browser; Reset Layout clears widths and mode; Text Messages Picker absent, marked ours",
-   "needsWord": ""
+   "needsWord": "",
+   "evidence": "#983 · 1.0.102 · merged 10:37Z, prod 10:41Z 2026-09-10 · vitest 1995 (PageDesigner.test.tsx: Two Pane Mode hides the left pane, Reset Layout returns to three panes, Display from Here leaves one tile, Add To puts a region in the Footer) · browser run on the local server: every control where the map puts it, the mode kept across a reload"
   },
   {
    "id": "P1.6",

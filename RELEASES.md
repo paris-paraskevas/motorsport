@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.103 — 2026-09-10
+
+Internal only: the day's working notes recorded. Nothing changes for readers.
+
 ## 1.0.102 — 2026-09-10
 
 In the design tool: the Utilities menu gains Show and Layout submenus (tooltips on or off, the Layout tab on or off, two or three panes, a layout reset), the Layout tab can grow to fill the screen or focus on one region, a right-click on a Gallery tile adds it to a chosen position, and the pane layout is remembered between visits. Nothing changes for readers.

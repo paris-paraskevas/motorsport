@@ -6,7 +6,42 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-09-10 morning (LATEST, after the first night run under the decision-scan rule — **two merges the operator allowed are live (#976 the study into the repo, #977 the Madrid venue fix); every other item is a draft held for the operator: rules v3, the ledger v2 as JSON, the CLAUDE.md prune, the hook scripts on draft PR #978, the Table/Cards side-by-side; no Phase 1–4 slot was attempted**)
+## ⚡ Next session pickup — 2026-09-10 midday (LATEST, session 47 — **rules v3 adopted and the hooks live (#980, 1.0.99); Phase 1 in the ledger (#981, 1.0.100); P1.3 (#982, 1.0.101) and P1.5 (#983, 1.0.102) shipped and on prod; P1.6 and P1.9 are the decision-free slots left in Phase 1; the operator wants Phase 1 finished today and this handoff written at 87% context**)
+
+### 🔴 Start here — a handoff prompt for the next session (copy it whole)
+
+```
+Session 48 start (2026-09-10 afternoon). Read in order before any tool call beyond reading: CLAUDE.md (pruned, adopted 1.0.99) · docs/plan/rules.md (v3) · docs/plan/ledger.json (P1.3, P1.5 done with evidence; P1.6 and P1.9 are the decision-free slots left; P1.1, P1.4, P1.8 carry a question; P1.2, P1.7, P1.10–P1.12 need their scan) · docs/HANDOFF.md LATEST (session 47) · memory feedback-paddock-decision-scan and feedback-paddock-agent-model-cost.
+State: main and prod at 1.0.102 (1.0.103 once the session-47 records PR merges). The six hooks are live from .claude/settings.json. Progress board: artifact 02e2516b-a170-4a3d-b220-8df19454b06f (the account Claude Code is signed into); the plan page 4d804904-63ad-4ddf-8d37-67dcb2d2fcc8 belongs to the other account.
+Rules: every subagent on Sonnet or Haiku, one at a time, writing to files; no agent builds; the decision scan (Fixed by · Defaults I take · Needs your word) before a slot, a question in one or two sentences with a default, then stop; plan mode before code; tests first; gates after the last edit (tsc 0 · lint 0 errors · full vitest · node .claude/hooks/test.mjs); a browser run with screenshots into a review-page artifact; a fresh-context Sonnet reviewer before merge (budget about 200k tokens); merge only on the operator's word; prod check; ledger evidence (status and evidence only; a slot changes only by a dated changes line with the word); the trio on every push: the CHANGELOG entry is INSERTED ABOVE the previous "## x.y.z" heading (a script that returned the new entry without appending the anchor overwrote a heading twice today), RELEASES prose without paths, package.json bump.
+Browser run recipe: PADDOCK_ENV=production npm run dev (the designer is read-only otherwise; edits then go to the LOCAL Supabase at 127.0.0.1); mint a sign-in token, POST https://api.clerk.com/v1/sign_in_tokens with the dev CLERK_SECRET_KEY from .env.local and user_id user_3J40T0N8dWLFMqgMb06DjsgIj3c (e2e-admin), and open http://localhost:3000/sign-in?__clerk_ticket=<token> in the Playwright MCP browser (file: URLs are blocked; a scratch http server on 127.0.0.1 can serve a redirect page); then /admin/designer?page=250f3a59-43e6-46b5-b1ef-d1dc7b899fef (Monza, a history, the local row page). Save and Run opens the preview on the PROD host when PADDOCK_ENV is production: navigate to http://localhost:3000/preview/<revision> by hand. Playwright screenshots land only under .playwright-mcp (git-ignored). Stop the dev server by its PID (netstat :3000) before a build.
+Agenda, each slot one PR: 1) P1.6 Property Editor conformance (edited-attribute marker until Save; multi-select edits common attributes; Region / Attributes tab split for components with settings; acceptance: select two regions, change Position, both move; a changed attribute shows the marker until Save; browser run). 2) P1.9 Debug panel (Debug menu Off / Info / App Trace / Full Trace; per-request step timing; which source each component read and from which loader run; which show, condition and authorization rules fired; which dynamic actions fired; a correlation id; export a trace; server and client helpers feed one panel; acceptance: the panel lists every component of Home with a source and a time; the loader's phase codes appear; test on the collector). 3) Close: HANDOFF, SCHEDULE, IDEAS triage, ledger evidence, one records PR.
+Landmines from session 47: push-guard reads a command's whole text, so a heredoc quoting a push to main is denied; phrase notes around it. A menu entry's accessible name includes its sub and shortcut, so tests match by prefix, and checkable entries are menuitemcheckbox. A flyout near the viewport edge must flip (DesignerMenu.tsx does). react-hooks/set-state-in-effect is a lint ERROR here: browser-only state goes through useSyncExternalStore (LocalTime.tsx, PageDesigner.tsx's layout memory). Heredocs carrying backslash escapes were mangled by the shell tool: write scripts with the Write tool or avoid escapes. The Edit tool needs the file Read first. The preview of a row page renders through the composed frame and shows no page title (pre-existing: loadRevisionPreview marks row pages served 'rows'). The P1.3 explorer agent cost 306k tokens and each reviewer about 190k; a trivial agent costs about 48k just loading its context.
+```
+
+### What shipped today, with evidence
+1. **#980 (1.0.99)** rules v3 adopted (`docs/plan/rules.md`), the ledger in the repo (`docs/plan/ledger.json`, its render script, `lib/design/plan-ledger.test.ts`), `CLAUDE.md` pruned 83 → 54 lines, `.claude/settings.json` with the Sonnet force and six hooks wired one at a time with the operator watching (push-guard, agent-model-guard, night-guard, stop-gates, session-start, pre-compact), the HANDOFF correction (the settings file had never been on main; #978 was opened 06:17Z). Two reviewer passes (eleven gaps: six fixed, five accepted; then zero). Merged 07:43Z, prod 07:47Z.
+2. **#981 (1.0.100)** Phase 1's twelve slots into the ledger on "Go on phase 1, approved". Merged 08:01Z, prod 08:06Z.
+3. **#982 (1.0.101)** P1.3 Header Text, Footer Text, Configuration › Build Option; the document at version 2 read leniently; `applyBuildOptions` at the three render sites; the Property Editor groups closed until opened. Reviewer: two gaps fixed (a CHANGELOG heading, a pane test). Merged 09:35Z, prod 09:39Z. Review page `db149e5b-7bd2-4f64-84f5-785f2e70cd00`.
+4. **#983 (1.0.102)** P1.5 the Layout tab, the Gallery and the Utilities menu: submenus as flyouts, Show ▸ and Layout ▸, Two/Three Pane, Reset Layout, Expand/Restore, Display from Here/Page, Add To, the layout remembered per browser through `useSyncExternalStore`. Reviewer: two gaps fixed (Reset Layout's scope, the Layout ▾ highlight). Merged 10:37Z, prod 10:41Z. Review page `b6ac76b2-1ed9-4d51-8567-b5a68be53457`.
+5. **Decisions recorded** (the ledger's changes list): Table/Cards → one data region with a View setting, table the default for standings ("your understanding is correct. view setting is better."); rules v3 → "go with the latest version"; Phase 1 approved. A default the operator let stand: push-guard keeps matching the whole command text.
+
+### Questions for the operator (asked at their turn, not now)
+- P2, P3, P4 into the ledger, one question each; P4.0 confirmed before backups and Working Copies.
+- P1.1 the five looks (screens first), P1.4 the nesting depth, P1.8 the Theme Roller tokens.
+
+### Noted, not done (in the Inbox)
+- The Save and Run preview of a row page shows no page title (it renders through the composed frame).
+- With `PADDOCK_ENV=production` on a local dev server, Save and Run opens the preview on the production host.
+- The Property Editor's own header tips ignore the Tooltips toggle; the pane memory is per browser, not per Clerk user.
+- `page_revision.schema_version` stays the literal 1 in the SQL function; no `build_option` ref in the refs projection.
+
+### Won't touch until you say
+Any Phase 2–4 slot; P1.1, P1.4, P1.8; the cost PR; Home's split on production; the console's file deletions; any prod Supabase write; any push to `main`; agents on Fable.
+
+---
+
+## ⚡ Next session pickup — 2026-09-10 morning (after the first night run under the decision-scan rule — **two merges the operator allowed are live (#976 the study into the repo, #977 the Madrid venue fix); every other item is a draft held for the operator: rules v3, the ledger v2 as JSON, the CLAUDE.md prune, the hook scripts on draft PR #978, the Table/Cards side-by-side; no Phase 1–4 slot was attempted**)
 
 ### 🔴 Start here — the morning report
 

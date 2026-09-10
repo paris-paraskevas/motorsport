@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.103 — 2026-09-10
+
+### Docs — session 47 at midday: the records so far and a handoff prompt for P1.6 and P1.9
+
+`docs/HANDOFF.md` gains the LATEST section for session 47 at 87% context: a handoff prompt the next session can be started with (reading order, state, the rules in force, the browser-run recipe with the sign-in token and the local production flag, the agenda P1.6 → P1.9 → close, the landmines learned today), what shipped with evidence (#980 rules v3 and the live hooks, #981 Phase 1 into the ledger, #982 P1.3, #983 P1.5, the decisions recorded), the questions left for the operator's turn, and what was noted and not done. `SCHEDULE.md` gets the day's outcomes so far; `IDEAS.md` the four inbox items (the preview's missing title, Save and Run's production host from a local server, the Tooltips toggle for the Property Editor's own tips and a per-user pane memory, a push-guard that matches only at a command position). `docs/plan/ledger.json`: P1.5 done with its evidence; the Markdown re-rendered.
+
 ## 1.0.102 — 2026-09-10
 
 ### Designer — P1.5: the Layout tab, the Gallery and the Utilities menu as the APEX click-level map draws them

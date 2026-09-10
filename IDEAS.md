@@ -35,6 +35,11 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 ## Inbox — merged and deduped 2026-08-28 (session 41)
 
+- (2026-09-10, session 47) The Save and Run preview renders a row page through the composed-page frame, so it shows no page title where the live page does; `loadRevisionPreview` marks every row page `served: 'rows'` since R4.1.
+- (2026-09-10, session 47) With `PADDOCK_ENV=production` on a local dev server, Save and Run opens the preview on the production host (`SITE_URL`); a local base for the preview link when the host is localhost.
+- (2026-09-10, session 47) Thread the Tooltips toggle through the Property Editor's header controls; key the remembered pane layout by Clerk user once the designer knows the user.
+- (2026-09-10, session 47) A push-guard that matches a push only at a command position, so a heredoc quoting the words is not denied (the operator let the strict form stand for now).
+
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 
 **Designer, from the night run of 2026-09-10 — held for the operator**
