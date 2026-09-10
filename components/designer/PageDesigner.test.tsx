@@ -436,15 +436,33 @@ describe('PageDesigner', () => {
     expect(openMock).toHaveBeenCalledWith(expect.stringMatching(/\/calendar$/), 'paddock-run');
   });
 
-  it('a Layout tile drags from any part of it onto a yellow target (R5)', () => {
+  it('a Layout tile drags from any part of it onto a yellow target; the drop tiles appear one task after dragstart, never inside it (R5, R5b)', async () => {
     mount();
     const dataTransfer = { setData: vi.fn(), effectAllowed: 'move' };
     fireEvent.dragStart(tile('List: Elsewhere'), { dataTransfer });
     expect(dataTransfer.setData).toHaveBeenCalledWith('text/plain', 'more');
-    fireEvent.drop(screen.getByRole('button', { name: 'Drop here: Region · Footer' }), { dataTransfer });
+    // Chromium aborts a drag whose source's DOM changes during dragstart: nothing is drawn inside the handler.
+    expect(screen.queryByRole('button', { name: 'Drop here: Region · Footer' })).toBeNull();
+    const target = await screen.findByRole('button', { name: 'Drop here: Region · Footer' });
+    fireEvent.drop(target, { dataTransfer });
     expect(status()).toMatch(/Elsewhere moved/);
     fireEvent.click(tile('List: Elsewhere'));
     expect(within(within(screen.getByLabelText('Property Editor')).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Footer' }).getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('a drag that ends before its task begins is never set: no drop tile lingers after an aborted dragstart (R5b)', async () => {
+    mount();
+    const dataTransfer = { setData: vi.fn(), effectAllowed: 'move' };
+    fireEvent.dragStart(tile('List: Elsewhere'), { dataTransfer });
+    // Chromium aborting the drag fires dragend at once; the deferred start must then stay unset.
+    fireEvent.dragEnd(document);
+    await new Promise(r => setTimeout(r, 20));
+    expect(screen.queryByRole('button', { name: /^Drop here/ })).toBeNull();
+    // A drag that lives: the tiles come, and a drop ends them.
+    fireEvent.dragStart(tile('List: Elsewhere'), { dataTransfer });
+    await screen.findByRole('button', { name: 'Drop here: Region · Footer' });
+    fireEvent.dragEnd(document);
+    expect(screen.queryByRole('button', { name: /^Drop here/ })).toBeNull();
   });
 
   it('the Column, Size and Column Span pills offer only the free columns of the row; an overlap holds Save with the reason (R5)', () => {
