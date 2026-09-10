@@ -52,6 +52,7 @@ export function PageDesignerLayout({
   onDragStart,
   onDrop,
   onEditShared,
+  root = null,
 }: {
   page: PageRow;
   doc: PageDocument;
@@ -72,6 +73,8 @@ export function PageDesignerLayout({
   onDrop: (drag: Drag, where: Placement) => void;
   /** Edit on a shared tile: the entry opens in Shared Components. */
   onEditShared: (sc: string) => void;
+  /** Display from Here (APEX: the Layout tab's menu): the id of the one region the tab shows; null shows the page. */
+  root?: string | null;
 }) {
   // A route file in the code still draws the body: the Right Side Column waits there.
   const code = page.kind === 'code' && page.served !== 'rows';
@@ -290,6 +293,26 @@ export function PageDesignerLayout({
 
   const count = (pos: Position) => doc.regions.filter(r => r.position === pos).length;
   const pageSel: Selection = { kind: 'page' };
+
+  // Display from Here: the selected region alone, in its position, at the full
+  // width; Display from Page returns to the page. A region has no children of
+  // its own until the tree creates (P1.4), so the isolated view is one tile.
+  const rootRegion = root ? doc.regions.find(r => r.id === root) : undefined;
+  if (rootRegion) {
+    return (
+      <div className="min-w-0 px-4 pb-6 pt-3.5">
+        <div className="min-w-0 border border-border-strong bg-surface">
+          <div className="flex items-center justify-between gap-2.5 border-b border-border bg-surface-elevated px-3 py-2 text-12 text-text-muted" data-layout-root={rootRegion.id}>
+            <span>
+              Displaying from · <b className="font-semibold text-text">{regionName(rootRegion)}</b>
+            </span>
+            <span className="font-mono text-11">{PD_POSITION[rootRegion.position].label} · Display from Page returns to the page</span>
+          </div>
+          {position({ label: PD_POSITION[rootRegion.position].label, count: 1, sel: { kind: 'position', id: rootRegion.position }, children: <div className="grid gap-1.5 pt-1.5">{tile(rootRegion)}</div> })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-w-0 px-4 pb-6 pt-3.5" onClick={e => e.target === e.currentTarget && onSelect(pageSel)}>

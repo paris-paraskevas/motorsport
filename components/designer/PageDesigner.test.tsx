@@ -127,6 +127,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  window.localStorage.clear();
 });
 
 describe('PageDesigner', () => {
@@ -184,6 +185,84 @@ describe('PageDesigner', () => {
     fireEvent.click(tile('Static Content: A century of speed'));
     expect((within(pe).getByLabelText('Region header text') as HTMLInputElement).value).toBe('Above · {shortcut:times.local}');
     expect((within(pe).getByLabelText('Region footer text') as HTMLInputElement).value).toBe('Below');
+  });
+
+  // Walks the Utilities menu: a submenu row, then its item (a checkable one is a menuitemcheckbox).
+  // An entry's accessible name starts with its label; a sub or a shortcut may follow it.
+  const startsWith = (label: string) => (name: string) => name === label || name.startsWith(label);
+  const menuEntry = (label: string) => screen.queryByRole('menuitem', { name: startsWith(label) }) ?? screen.getByRole('menuitemcheckbox', { name: startsWith(label) });
+  const utilities = (...path: string[]) => {
+    fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
+    for (const name of path) fireEvent.click(menuEntry(name));
+  };
+  const LAYOUT_KEY = 'paddock-developer.page-designer';
+
+  it('Utilities › Layout: Two Pane Mode hides the left pane, Three Pane Mode brings it back, the mode is remembered, Reset Layout returns to three panes (P1.5)', () => {
+    window.localStorage.setItem(LAYOUT_KEY, JSON.stringify({ paneMode: 'two', lw: '300px' }));
+    mount();
+    expect(screen.queryByRole('tablist', { name: 'Left pane' })).toBeNull();
+    utilities('Layout', 'Three Pane Mode');
+    expect(screen.getByRole('tablist', { name: 'Left pane' })).toBeTruthy();
+    utilities('Layout', 'Two Pane Mode');
+    expect(screen.queryByRole('tablist', { name: 'Left pane' })).toBeNull();
+    expect(JSON.parse(window.localStorage.getItem(LAYOUT_KEY) ?? '{}').paneMode).toBe('two');
+    // The submenu opens from the keyboard too: ArrowRight in, ArrowLeft out.
+    fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
+    fireEvent.keyDown(screen.getByRole('menuitem', { name: 'Layout' }), { key: 'ArrowRight' });
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Two Pane Mode' }).getAttribute('aria-checked')).toBe('true');
+    fireEvent.keyDown(screen.getByRole('menuitemcheckbox', { name: 'Two Pane Mode' }), { key: 'ArrowLeft' });
+    expect(screen.queryByRole('menuitemcheckbox', { name: 'Two Pane Mode' })).toBeNull();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    utilities('Layout', 'Reset Layout');
+    expect(screen.getByRole('tablist', { name: 'Left pane' })).toBeTruthy();
+    expect(JSON.parse(window.localStorage.getItem(LAYOUT_KEY) ?? '{}').paneMode ?? 'three').toBe('three');
+    expect(JSON.parse(window.localStorage.getItem(LAYOUT_KEY) ?? '{}').lw).toBeUndefined();
+    window.localStorage.clear();
+  });
+
+  it('Utilities › Show: Tooltips off drops the hover tips; Layout View off removes the Layout tab and lands on Component View, on again returns to it (P1.5)', () => {
+    mount();
+    expect(screen.getByRole('button', { name: 'Save' }).getAttribute('title')).toBe('Save (Alt+F7)');
+    utilities('Show', 'Tooltips');
+    expect(screen.getByRole('button', { name: 'Save' }).getAttribute('title')).toBeNull();
+    expect(screen.getByRole('tab', { name: 'Layout' }).getAttribute('aria-selected')).toBe('true');
+    utilities('Show', 'Layout View');
+    expect(screen.queryByRole('tab', { name: 'Layout' })).toBeNull();
+    expect(screen.getByRole('tab', { name: 'Component View' }).getAttribute('aria-selected')).toBe('true');
+    utilities('Show', 'Layout View');
+    expect(screen.getByRole('tab', { name: 'Layout' }).getAttribute('aria-selected')).toBe('true');
+    window.localStorage.clear();
+  });
+
+  it('the Layout tab: Display from Here shows the selected region alone and Display from Page returns; Expand hides both side panes and Restore brings them back (P1.5)', () => {
+    mount();
+    fireEvent.click(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('button', { name: 'Layout ▾' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Display from Here/ }));
+    expect(tile('Static Content: A century of speed')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'List: Elsewhere' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Layout ▾' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Display from Page' }));
+    expect(tile('List: Elsewhere')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Expand the Layout tab' }));
+    expect(screen.queryByRole('tablist', { name: 'Left pane' })).toBeNull();
+    expect(screen.queryByLabelText('Property Editor')).toBeNull();
+    expect(tile('List: Elsewhere')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Restore the panes' }));
+    expect(screen.getByRole('tablist', { name: 'Left pane' })).toBeTruthy();
+    expect(screen.getByLabelText('Property Editor')).toBeTruthy();
+  });
+
+  it('the Gallery: right-click a tile, Add To, a position: the region lands there (P1.5)', () => {
+    mount();
+    fireEvent.contextMenu(screen.getByRole('button', { name: 'Gallery: Static Content' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Add To' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Footer' }));
+    expect(tile('Static Content: text-1')).toBeTruthy();
+    expect(status()).toMatch(/Static Content created/);
+    expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(false);
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(within(pe).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Footer' }).getAttribute('aria-pressed')).toBe('true');
   });
 
   it('holds Save when the parser refuses the document, and Messages says why', () => {

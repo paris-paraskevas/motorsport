@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { Boxes, Image as ImageIcon, List, MousePointerClick, Pilcrow } from 'lucide-react';
-import { REGION_KIND_LABELS, type PageDocument, type RegionKind } from '@/lib/design/page-document';
+import { REGION_KIND_LABELS, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import {
@@ -21,6 +21,7 @@ import {
   type Selection,
 } from './page-designer-model';
 import type { Drag } from './PageDesignerLayout';
+import type { MenuAt } from './DesignerMenu';
 
 // The centre pane's other tabs and the gallery (Paddock Designer v2.4):
 // Component View (every component as report rows, a row selects), Messages
@@ -304,7 +305,11 @@ export function Gallery({
   components,
   onAdd,
   onAddComponent,
+  onAddTo,
+  onAddComponentTo,
   onDragStart,
+  onContext,
+  tooltips = true,
 }: {
   tab: GalleryTab;
   onTab: (t: GalleryTab) => void;
@@ -314,23 +319,30 @@ export function Gallery({
   components: ComponentTile[];
   onAdd: (kind: RegionKind) => void;
   onAddComponent: (key: string) => void;
+  /** Add To a named position (APEX: the Gallery's context menu, the UX map lines 17 and 53). */
+  onAddTo: (kind: RegionKind, position: Position) => void;
+  onAddComponentTo: (key: string, position: Position) => void;
   onDragStart: (drag: Drag) => void;
+  /** A right-click on a tile: the designer opens the menu with Add To and the positions. */
+  onContext: (at: MenuAt, tile: { name: string; addTo: (position: Position) => void }) => void;
+  /** Utilities › Show › Tooltips: off removes the tiles' hover tips. */
+  tooltips?: boolean;
 }) {
-  type Tile = { id: string; icon: ReactNode; name: string; desc: string; drag: Drag; add: () => void };
+  type Tile = { id: string; icon: ReactNode; name: string; desc: string; drag: Drag; add: () => void; addTo: (position: Position) => void };
   const tiles: Tile[] =
     tab === 'regions'
-      ? GALLERY_REGIONS.map(t => ({ id: t.kind, icon: t.icon, name: t.name, desc: t.desc, drag: { type: 'gallery', kind: t.kind }, add: () => onAdd(t.kind) }))
+      ? GALLERY_REGIONS.map(t => ({ id: t.kind, icon: t.icon, name: t.name, desc: t.desc, drag: { type: 'gallery', kind: t.kind }, add: () => onAdd(t.kind), addTo: (pos: Position) => onAddTo(t.kind, pos) }))
       : tab === 'buttons'
-        ? GALLERY_BUTTONS.map(t => ({ id: t.kind, icon: t.icon, name: t.name, desc: t.desc, drag: { type: 'gallery', kind: t.kind }, add: () => onAdd(t.kind) }))
+        ? GALLERY_BUTTONS.map(t => ({ id: t.kind, icon: t.icon, name: t.name, desc: t.desc, drag: { type: 'gallery', kind: t.kind }, add: () => onAdd(t.kind), addTo: (pos: Position) => onAddTo(t.kind, pos) }))
         : tab === 'components'
-          ? components.map(c => ({ id: c.key, icon: <Boxes size={14} />, name: c.name, desc: c.desc, drag: { type: 'component', key: c.key }, add: () => onAddComponent(c.key) }))
+          ? components.map(c => ({ id: c.key, icon: <Boxes size={14} />, name: c.name, desc: c.desc, drag: { type: 'component', key: c.key }, add: () => onAddComponent(c.key), addTo: (pos: Position) => onAddComponentTo(c.key, pos) }))
           : [];
   const hint =
     tab === 'items'
       ? 'Items arrive with a later step: selects, toggles, a month picker, a search field'
       : tab === 'components'
         ? 'Pieces the code draws, with settings and a rule. Drag onto a yellow position, or double-click to add to the Body'
-        : 'Drag onto a yellow position, or double-click to add to the Body';
+        : 'Drag onto a yellow position, double-click to add to the Body, or right-click for Add To';
   return (
     <div className="min-w-0 border-t border-border-strong bg-surface" aria-label="Gallery">
       <div className="flex items-center border-b border-border">
@@ -356,7 +368,7 @@ export function Gallery({
             tabIndex={disabled ? -1 : 0}
             aria-disabled={disabled}
             aria-label={`Gallery: ${t.name}`}
-            title={disabled ? 'Read-only here' : 'Drag onto the layout · double-click to add'}
+            title={disabled ? 'Read-only here' : tooltips ? 'Drag onto the layout · double-click to add · right-click for Add To' : undefined}
             draggable={!disabled}
             className={`grid w-[112px] shrink-0 gap-1 border border-border-strong bg-bg px-2 py-1.5 ${disabled ? 'opacity-50' : 'cursor-grab hover:border-edit'}`}
             onDragStart={e => {
@@ -365,6 +377,11 @@ export function Gallery({
               onDragStart(t.drag);
             }}
             onDoubleClick={() => !disabled && t.add()}
+            onContextMenu={e => {
+              if (disabled) return;
+              e.preventDefault();
+              onContext({ x: e.clientX, y: e.clientY }, { name: t.name, addTo: t.addTo });
+            }}
             onKeyDown={e => {
               if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
                 e.preventDefault();
