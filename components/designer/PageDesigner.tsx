@@ -74,6 +74,8 @@ const IB =
 const GRP = 'flex h-[30px] items-center gap-1 border-r border-border pr-2 mr-0.5 last:border-r-0';
 
 type Busy = 'save' | 'publish' | 'run' | 'delete' | null;
+/** The one browser tab Save and Run opens and reuses (the operator, 2026-09-10: the same working tab every time). */
+const RUN_TAB = 'paddock-run';
 type SheetKind = 'finder' | 'export' | 'history' | 'shortcuts' | 'delete' | null;
 
 function when(iso: string): string {
@@ -575,41 +577,41 @@ export function PageDesigner({
       setBusy(null);
     }
   }
+  /** The page's address on the site. Absolute, always: on the admin-only dev.
+   *  host a relative path is the designer again, not the site (operator,
+   *  2026-09-09: "saving and running a page throws me into not found errors").
+   *  A local server runs its own page, not production's. */
+  const runUrl = () => {
+    const local = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+    return `${local ? window.location.origin : SITE_URL}${page.path}`;
+  };
+  /** APEX: Save and Run Page saves and runs the page. Ours publishes first (the
+   *  operator, 2026-09-10: "publish should be in save and run"), so the working
+   *  tab shows what readers get from now on; Save alone keeps a draft. The tab
+   *  is one named browsing context, reused on every run (APEX: the runtime tab;
+   *  the operator, 2026-09-10), which is why there is no `noopener`: a named
+   *  target is reused only by an opener that keeps the name. Run is never
+   *  refused: an empty page publishes as its title alone (operator, 2026-09-09). */
   async function saveAndRun() {
     if (busy || readOnly || blocked()) return;
-    // A route file's page runs as the site serves it; a page served from rows
-    // (R4.1) previews its draft like a row page, once its address is literal
-    // (a pattern waits for its family to say which address, R4.2).
-    if (routeFile || page.path.includes('[')) {
-      if (page.path.includes('[')) {
-        toast('This route needs a slug; open one of its pages from the site.', 'bad');
-        return;
-      }
-      // The code's page runs as the site serves it: the regions around it are
-      // the published revision's, so a draft is saved and said so.
-      if (dirty) await save();
-      if (docDirty) toast('Regions show on the live page once published.');
-      // Absolute, always: on the admin-only dev. host a relative path is the
-      // designer again, not the site (operator, 2026-09-09: "saving and running
-      // a page throws me into not found errors").
-      window.open(`${SITE_URL}${page.path}`, '_blank', 'noopener');
+    if (page.path.includes('[')) {
+      toast('This route needs a slug; open one of its pages from the site.', 'bad');
       return;
     }
-    if (!docDirty && newest) {
-      if (attrsDirty) await save();
-      window.open(`${SITE_URL}/preview/${newest.id}`, '_blank', 'noopener');
+    if (!dirty && !unpublishedNewest && newest) {
+      window.open(runUrl(), RUN_TAB)?.focus();
       return;
     }
-    // A change, or no revision yet: save a draft (an empty page runs as its
-    // title alone) and run it. Run is never refused (operator, 2026-09-09).
     setBusy('run');
     try {
       if (attrsDirty && !(await putAttrs())) return;
-      const r = await postRevision('draft');
-      if (r === false) return;
+      if (docDirty || unpublishedNewest || !newest) {
+        const r = await postRevision('publish');
+        if (r === false) return;
+      }
       if (!(await reload())) return;
-      setStatus({ text: `Draft ${r ? r.slice(0, 8) : ''} saved and running.`, cls: 'ok' });
-      if (r) window.open(`${SITE_URL}/preview/${r}`, '_blank', 'noopener');
+      setStatus({ text: `Published · ${when(new Date().toISOString())}. Running.`, cls: 'ok' });
+      window.open(runUrl(), RUN_TAB)?.focus();
     } catch {
       setStatus({ text: 'Network error. Try again.', cls: 'bad' });
     } finally {

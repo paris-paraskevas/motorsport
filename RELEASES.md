@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.105 — 2026-09-10
+
+In the design tool: Save and Run now publishes the page and opens it in one working tab that every run reuses; the running page carries the developer's toolbar at its foot for administrators; a region tile drags from any part of it; and two regions can no longer sit over each other on one row: the layout offers only free columns, a stored overlap is reported and held, and a page draws such a region on a row of its own. Nothing changes for readers.
+
 ## 1.0.104 — 2026-09-10
 
 In the design tool, the Property Editor now marks every attribute changed since the last save, lets several regions be selected together with Ctrl+click so their shared attributes are edited in one go, and shows a component's own settings under an Attributes tab beside the Region tab. Nothing changes for readers.

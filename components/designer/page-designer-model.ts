@@ -5,6 +5,7 @@ import {
   REGION_KIND_LABELS,
   SHOW_RULE_LABELS,
   isLegacyBody,
+  overlappingRegions,
   parsePageDocument,
   type ComponentRegion,
   type DynamicAction,
@@ -481,6 +482,16 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
     if (r.hidden && !doc.actions.some(a => a.do.some(e => e.action !== 'go' && e.region === r.id))) {
       out.push({ level: 'warn', text: `${regionName(r)} is hidden at first and no dynamic action shows it.`, sel: { kind: 'region', id: r.id }, group: 'Advanced' });
     }
+  }
+  // Two regions declared on one row cannot share a column (R5, the operator's
+  // walkthrough of 2026-09-10): the page wraps the later one; the document says
+  // so, and holds Save, until it is fixed.
+  for (const o of overlappingRegions(doc)) {
+    const a = doc.regions.find(r => r.id === o.a);
+    const b = doc.regions.find(r => r.id === o.b);
+    if (!a || !b) continue;
+    const where = o.from === o.to ? `column ${o.from}` : `columns ${o.from} to ${o.to}`;
+    out.push({ level: 'err', text: `${regionName(b)} overlaps ${regionName(a)} on one row (${where}). Move it, or start a new row.`, sel: { kind: 'region', id: b.id }, group: 'Layout' });
   }
   for (const a of doc.actions) {
     if (!a.name.trim()) out.push({ level: 'info', text: `Dynamic action ${a.id} has no name.`, sel: { kind: 'action', id: a.id }, group: 'Identification' });

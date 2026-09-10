@@ -7,6 +7,7 @@ import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
 import { WhatsNewModal } from '@/components/whats-new/WhatsNewModal';
 import { SupportPrompt } from '@/components/SupportPrompt';
+import { DeveloperToolbar } from '@/components/page/DeveloperToolbar';
 
 import { HeatmapTracker } from '@/components/HeatmapTracker';
 import { ThemeScript } from '@/components/theme/ThemeScript';
@@ -192,6 +193,11 @@ export default async function RootLayout({
               keeps accumulating as the reader moves between pages, and the
               component stands down while the consent modal is up. */}
           <SupportPrompt />
+          {/* The runtime Developer Toolbar (APEX's bar at the foot of a running
+              page; R5, 2026-09-10): a client component that draws nothing until
+              Clerk says the visitor is an administrator, so every public page
+              is the same cached render as before. */}
+          <DeveloperToolbar />
           {/* AssistantWidget unmounted 2026-08-21 (operator: "until fixed we
               can remove agent/assistant"). Its own source already described
               itself as a non-functional "not available yet" chat button. The

@@ -5,14 +5,13 @@
 // Editor, the parser holds Save with the reasons in Messages, Save and Publish
 // post to the one write path with the right base and the attributes save with
 // them, a stale publish shows the conflict, a shortcut lands at the cursor,
-// Save and Run Page opens the preview, undo and redo walk the working copy,
+// Save and Run Page publishes and opens the working tab, undo and redo walk the working copy,
 // the keyboard set switches panes, and a page the code serves takes regions
 // around its body.
 
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PageDesigner } from './PageDesigner';
-import { SITE_URL } from '@/lib/site';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import type { PageDocument, Region } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
@@ -403,16 +402,70 @@ describe('PageDesigner', () => {
     expect((screen.getByLabelText('Region text') as HTMLTextAreaElement).value).toBe('Opened in 1922.{shortcut:times.local}');
   });
 
-  it('Save and Run Page opens the newest revision when nothing changed, and saves a draft first when something did', async () => {
-    mount();
+  it('Save and Run Page publishes what is unpublished and opens the live page in the one working tab (R5)', async () => {
+    const { onSaved } = mount();
+    // The newest revision is a draft: Run publishes it on the live one, then opens the page.
     fireEvent.click(screen.getByRole('button', { name: 'Save and Run Page' }));
-    // Absolute: on the admin-only dev. host a relative path would be the designer again.
-    expect(openMock).toHaveBeenCalledWith(`${SITE_URL}/preview/${R2}`, '_blank', 'noopener');
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    expect(calls.find(c => c.method === 'POST')!.body).toMatchObject({ action: 'publish', base: R1 });
+    expect(openMock).toHaveBeenCalledWith(expect.stringMatching(/\/history\/monza$/), 'paddock-run');
+    expect(status()).toMatch(/Published/);
+    // A change after: published again, into the same tab.
+    calls = [];
     fireEvent.click(tile('List: Elsewhere'));
     fireEvent.click(within(screen.getByRole('group', { name: 'Region list style' })).getByRole('button', { name: 'Cards' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save and Run Page' }));
-    await waitFor(() => expect(openMock).toHaveBeenCalledWith(`${SITE_URL}/preview/${R3}`, '_blank', 'noopener'));
-    expect(calls.find(c => c.method === 'POST')!.body).toMatchObject({ action: 'draft', base: R2 });
+    await waitFor(() => expect(openMock).toHaveBeenCalledTimes(2));
+    expect(calls.find(c => c.method === 'POST')!.body).toMatchObject({ action: 'publish' });
+    expect(openMock.mock.calls[1][1]).toBe('paddock-run');
+    // Nothing unpublished and nothing changed: the page opens, nothing is posted.
+    cleanup();
+    calls = [];
+    openMock.mockReset();
+    mount({ ...detail, newest: { ...detail.newest!, id: R1, publishedAt: '2026-09-08T17:10:00Z' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save and Run Page' }));
+    expect(calls.some(c => c.method === 'POST')).toBe(false);
+    expect(openMock).toHaveBeenCalledWith(expect.stringMatching(/\/history\/monza$/), 'paddock-run');
+  });
+
+  it('a Layout tile drags from any part of it onto a yellow target (R5)', () => {
+    mount();
+    const dataTransfer = { setData: vi.fn(), effectAllowed: 'move' };
+    fireEvent.dragStart(tile('List: Elsewhere'), { dataTransfer });
+    expect(dataTransfer.setData).toHaveBeenCalledWith('text/plain', 'more');
+    fireEvent.drop(screen.getByRole('button', { name: 'Drop here: Region · Footer' }), { dataTransfer });
+    expect(status()).toMatch(/Elsewhere moved/);
+    fireEvent.click(tile('List: Elsewhere'));
+    expect(within(within(screen.getByLabelText('Property Editor')).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Footer' }).getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('the Column, Size and Column Span pills offer only the free columns of the row; an overlap holds Save with the reason (R5)', () => {
+    const twoUp: PageDocument = {
+      ...doc,
+      regions: [
+        { ...doc.regions[0], id: 'left', title: 'Left', span: 6 },
+        { ...doc.regions[0], id: 'right', title: 'Right', seq: 20, column: 7, span: 6, newRow: false },
+      ],
+    };
+    mount({ ...detail, newest: { ...detail.newest!, document: twoUp } });
+    fireEvent.click(tile('Static Content: Right'));
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(within(pe).getByRole('group', { name: 'Region column' })).getAllByRole('button').map(b => b.textContent)).toEqual(['7']);
+    const size = within(pe).getByRole('group', { name: 'Region size' });
+    expect((within(size).getByRole('button', { name: 'Large' }) as HTMLButtonElement).disabled).toBe(true);
+    expect((within(size).getByRole('button', { name: 'Mid' }) as HTMLButtonElement).disabled).toBe(false);
+    expect(within(within(pe).getByRole('group', { name: 'Region span' })).getAllByRole('button').map(b => b.textContent)).toEqual(['Half · 6', 'Third · 4', 'Quarter · 3']);
+    fireEvent.click(tile('Static Content: Left'));
+    expect(within(within(pe).getByRole('group', { name: 'Region column' })).getAllByRole('button').map(b => b.textContent)).toEqual(['1']);
+    // A stored overlap: the error names both regions and holds Save.
+    cleanup();
+    mount({ ...detail, newest: { ...detail.newest!, document: { ...twoUp, regions: [twoUp.regions[0], { ...twoUp.regions[1], column: 1 }] } } });
+    fireEvent.click(tile('Static Content: Right'));
+    fireEvent.change(screen.getByLabelText('Region title'), { target: { value: 'Right, renamed' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    expect(status()).toMatch(/Not saved: 1 error/);
+    expect(screen.getByText('Right, renamed overlaps Left on one row (columns 1 to 6). Move it, or start a new row.')).toBeTruthy();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('undoes and redoes the working copy, and the keyboard set switches the panes', () => {

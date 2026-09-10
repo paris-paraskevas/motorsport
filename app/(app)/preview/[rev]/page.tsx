@@ -11,7 +11,6 @@ import { renderComponents } from '@/lib/design/component-render';
 import { CodePageFrame, RowPageView } from '@/components/page/RowPageView';
 import { familyExtras } from '@/lib/design/page-families';
 import { composedDocument } from '@/lib/design/composed-page';
-import { DeveloperToolbar } from '@/components/page/DeveloperToolbar';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Save and Run (APEX: Save and Run Page), Phase 3 step 6. The designer's "Save
@@ -66,16 +65,9 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   const lists = await loadDocumentLists(refs.lists, nav);
   const d = { page: preview.page, document, shortcuts, assets, nav, lists, allowed: new Set(asked), messages, components };
 
+  // The Developer Toolbar is the app layout's, drawn for the administrator on every running page (R5).
   return (
     <>
-      <DeveloperToolbar
-        page={preview.page}
-        revisionId={preview.revisionId}
-        createdAt={preview.createdAt}
-        publishedAt={preview.publishedAt}
-        isLive={preview.isLive}
-        problems={preview.problems}
-      />
       {composed ? (
         <>
           {extras}
