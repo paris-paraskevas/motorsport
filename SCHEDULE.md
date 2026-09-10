@@ -1830,6 +1830,13 @@ Active: (no [+Nm] prefixes given this session)
 - Findings: Working Copies, the onboarding screen sequence, the Create Application features checklist, Tasks with six roles and Info Requested, REST Data Sources with sample-based discovery, Table and Cards as views of one region, the Conditions catalogue, stable-id exports.
 - Won't-touch honoured: one agent at a time, all Sonnet; pushes only for PR branches; no prod Supabase write; no new repo file without the word.
 
+**Session 46, night run (2026-09-10 ~20:30Z → ~23:30Z, operator asleep from ~20:45Z) — outcomes:**
+- → done and live: #976 (1.0.96) the APEX study into `docs/apex-study/`; #977 (1.0.97) the Madrid venue fix (prod 22:13Z: Madring, not Barcelona). Each behind the gates and a fresh-context Sonnet reviewer.
+- → drafted and held: rules v3; ledger v2 as JSON (78 slots, 17 questions) with a generator; the Table/Cards side-by-side (b93cd890-6f55-4770-9518-a1bda6a497b7); the CLAUDE.md prune; six hook scripts + tests (20/20) on draft PR #978 with the repo-local Sonnet force; the plan page (4d804904-63ad-4ddf-8d37-67dcb2d2fcc8) republished with the morning report.
+- → not attempted, by design: any Phase 1–4 slot; wiring the hooks; applying the prune.
+- Findings: the duplicate-JSON-key trap; the `=======` false positive in a conflict resolver; `.claude/` un-ignore needs `.claude/*`; a low-memory kill of a background git command.
+- Won't-touch honoured: only the two merges the operator allowed; one agent at a time, all Sonnet; no prod Supabase write; no route file, migration or dependency touched.
+
 Active: (awaiting [+Nm] prefixes)
 
 ---
