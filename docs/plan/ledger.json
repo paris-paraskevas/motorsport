@@ -1,5 +1,5 @@
 {
- "title": "The components programme — the ledger (v2 draft, 2026-09-10, awaiting the operator's word)",
+ "title": "The components programme — the ledger",
  "preamble": "This JSON is the single record of the plan; the Markdown beside it is generated from it. Every PR of the programme carries its slot id in its title. A slot is done only when its evidence is written here: the PR number, the prod time and the acceptance test's result line. The agent may change only `status` and `evidence`; a slot is added or its scope changed only through a dated line in `changes` carrying the operator's word, and `scopeHash` (the first 12 hex characters of the SHA-256 of `scope`, rewritten by `node docs/plan/render-ledger.mjs --rehash`) makes such a change a deliberate diff. `pages` lists the routes a done slot serves from rows. The test `lib/design/plan-ledger.test.ts` fails the build when a page is served from rows without a done slot that lists it, when a slot's `scopeHash` does not match its scope, and when the record is malformed. Plan page: artifact 4d804904-63ad-4ddf-8d37-67dcb2d2fcc8.",
  "rules": [
   "Decision scan before a slot starts: Fixed by · Defaults I take · Needs your word; a non-empty third line stops the slot until the operator answers in one or two sentences with a default. Overnight = decision-free slots only.",

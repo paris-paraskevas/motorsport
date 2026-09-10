@@ -10,16 +10,18 @@ const tool = input.tool_name;
 const t = input.tool_input ?? {};
 if (tool === 'Bash') {
   const cmd = String(t.command ?? '');
-  if (/\bgit\s+rm\b.*app[\\/]\(app\)[\\/].*page\.tsx/.test(cmd) || /\brm\b.*app[\\/]\(app\)[\\/].*page\.tsx/.test(cmd)) deny('Rule 2: no route file leaves the code overnight.');
+  // Any route group: app/(app), app/(marketing), app/(admin).
+  if (/\b(git\s+)?rm\b[^|;&]*app[\\/]\([a-z]+\)[\\/][^|;&]*page\.tsx/.test(cmd)) deny('Rule 2: no route file leaves the code overnight.');
   if (/\bnpm\s+(install|i|add)\b|\bpnpm\s+add\b|\byarn\s+add\b/.test(cmd)) deny('Rule 2: no dependency is added overnight.');
-  if (/supabase[\\/]migrations[\\/]/.test(cmd) && /\b(cat\s*>|tee|cp|mv|touch)\b/.test(cmd)) deny('Rule 2: no migration is written overnight.');
-  if (/api\.supabase\.com\/v1\/projects\/[a-z]+\/database\/query/.test(cmd) && !/begin[\s\S]*rollback/i.test(cmd)) deny('Rule 2: no prod Supabase write overnight; a rehearsal inside begin…rollback is allowed.');
+  // Every way the shell writes a file: a redirect, a heredoc, tee, cp, mv, touch, sed -i, a script's writeFile. Reading stays allowed.
+  if (/supabase[\\/]migrations[\\/]/.test(cmd) && /(>|<<|\btee\b|\bcp\b|\bmv\b|\btouch\b|\bsed\s+-i\b|writeFile)/.test(cmd)) deny('Rule 2: no migration is written overnight.');
+  if (/api\.supabase\.com\/v1\/projects\/[a-z0-9]+\/database\/query/.test(cmd) && !/begin[\s\S]*rollback/i.test(cmd)) deny('Rule 2: no prod Supabase write overnight; a rehearsal inside begin…rollback is allowed.');
   allow();
 }
 if (tool === 'Write' || tool === 'Edit') {
   const p = String(t.file_path ?? '').replace(/\\/g, '/');
   if (/\/supabase\/migrations\//.test(p)) deny('Rule 2: no migration is written overnight.');
-  if (/\/app\/\(app\)\/.*\/page\.tsx$/.test(p) && tool === 'Write') deny('Rule 2: no route file is created or replaced overnight.');
+  if (/\/app\/\([a-z]+\)\/.*\/page\.tsx$/.test(p) && tool === 'Write') deny('Rule 2: no route file is created or replaced overnight.');
   allow();
 }
 allow();
