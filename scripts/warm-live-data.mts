@@ -25,7 +25,7 @@
 //   npx tsx --env-file=.env.production.local scripts/warm-live-data.mts
 import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
-import { readSnapshot } from '../lib/source-snapshot';
+import { readSnapshot, runnerName } from '../lib/source-snapshot';
 import { writeStandingRun, pruneStandingRuns } from '../lib/standing-rows';
 import { betDb } from '../lib/betting/client';
 import { loadSeries } from '../lib/series';
@@ -81,7 +81,7 @@ for (const r of standings) console.error(`  ${r.label.padEnd(14)} ${r.status.pad
 // an unmapped payload shape or a missing table is a SKIP line, never a failed
 // run — the snapshot proof below stays the gate for this job.
 console.error('=== standings rows (source_run + standing) ===');
-const runner = process.env.GITHUB_RUN_ID ? `warm-live-data#${process.env.GITHUB_RUN_ID}` : 'local';
+const runner = runnerName();
 let rowsOk = 0;
 const rowsSlugs: string[] = [];
 for (const r of standings) {

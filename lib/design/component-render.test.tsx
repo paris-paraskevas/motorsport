@@ -60,6 +60,20 @@ describe('renderComponents', () => {
     expect(canRender('home.nothing')).toBe(false);
   });
 
+  it('tells the Debug trace how each component went: its id, its key, its time, and whether it drew (P1.9)', async () => {
+    const seen: [string, string, boolean][] = [];
+    await renderComponents(doc([region('result', 'home.result'), region('odd', 'home.nothing', {}, { seq: 20 }), region('code', 'page.body', {}, { seq: 30 })]), { path: '/' }, {
+      onRendered: (id, component, ms, ok) => {
+        expect(typeof ms).toBe('number');
+        seen.push([id, component, ok]);
+      },
+    });
+    expect(seen.sort()).toEqual([
+      ['odd', 'home.nothing', false],
+      ['result', 'home.result', true],
+    ]);
+  });
+
   it('applies the settings: rows on the table, items on the wire (reading more when the page holds fewer), a pinned post and further reading on the lead', async () => {
     const out = await renderComponents(
       doc([region('changed', 'home.changed', { rows: 3 }), region('wire', 'home.wire', { items: 8 }, { seq: 20 }), region('few', 'home.wire', { items: 3 }, { seq: 30 }), region('lead', 'home.lead', { pinned: 'pinned-post', suggested: 1 }, { seq: 40 }), region('next', 'home.next', {}, { seq: 50 }), region('live', 'home.live', {}, { seq: 60 })]),
