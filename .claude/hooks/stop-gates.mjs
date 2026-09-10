@@ -1,11 +1,12 @@
 // Stop: when source files changed since the last gate run, run tsc and the
 // tests touched by the change before the turn may end; block with the failing
-// line otherwise. A marker file records the last checked tree hash so the gates
+// line otherwise. A marker file records the last checked change set so the gates
 // run once per change set, not on every turn. Rule 6 of the executive rules.
 // Claude Code gives up blocking after 8 consecutive blocks by design.
 import { readInput, blockStop } from './lib.mjs';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 
 const input = readInput();
 const cwd = input.cwd ?? process.cwd();
@@ -17,8 +18,9 @@ try {
   changed = run('git status --porcelain').split(/\r?\n/).filter(Boolean).map(l => l.slice(3)).filter(f => /\.(ts|tsx|mts|json)$/.test(f) && !/^docs\//.test(f));
 } catch { process.exit(0); } // not a git tree: nothing to gate
 if (changed.length === 0) process.exit(0);
-let tree = '';
-try { tree = run('git write-tree 2>NUL || git write-tree').trim(); } catch { tree = String(Date.now()); }
+// The change set's fingerprint: the changed files' names and contents. (`git
+// write-tree` would hash the index, which unstaged edits never touch.)
+const tree = crypto.createHash('sha256').update(changed.map(f => { try { return f + ' ' + fs.readFileSync(`${cwd}/${f}`, 'utf8'); } catch { return f + ' (deleted)'; } }).join(' ')).digest('hex');
 try { if (fs.readFileSync(marker, 'utf8').trim() === tree) process.exit(0); } catch { /* no marker yet */ }
 
 const failures = [];

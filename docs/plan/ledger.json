@@ -1,0 +1,100 @@
+{
+ "title": "The components programme — the ledger (v2 draft, 2026-09-10, awaiting the operator's word)",
+ "preamble": "This JSON is the single record of the plan; the Markdown beside it is generated from it. Every PR of the programme carries its slot id in its title. A slot is done only when its evidence is written here: the PR number, the prod time and the acceptance test's result line. The agent may change only `status` and `evidence`; a slot is added or its scope changed only through a dated line in `changes` carrying the operator's word, and `scopeHash` (the first 12 hex characters of the SHA-256 of `scope`, rewritten by `node docs/plan/render-ledger.mjs --rehash`) makes such a change a deliberate diff. `pages` lists the routes a done slot serves from rows. The test `lib/design/plan-ledger.test.ts` fails the build when a page is served from rows without a done slot that lists it, when a slot's `scopeHash` does not match its scope, and when the record is malformed. Plan page: artifact 4d804904-63ad-4ddf-8d37-67dcb2d2fcc8.",
+ "rules": [
+  "Decision scan before a slot starts: Fixed by · Defaults I take · Needs your word; a non-empty third line stops the slot until the operator answers in one or two sentences with a default. Overnight = decision-free slots only.",
+  "Gates on every PR: tsc 0 · lint 0 errors · full vitest · cf:build and the dry-run Total Upload quoted (alarm at 80% of 64 MiB) · a browser run on the local server · a review page · a component test from a saved document · parity output for every deleted route file · a fresh-context Sonnet reviewer before merge.",
+  "No page-specific component; a section that fits none is a question. Sources from the catalogue, never a query. Every component carries a Condition, an authorization scheme, a build option, template options with a preset, and Utilization with History.",
+  "Every shared object shows where it is used and its history and cannot be deleted while referenced. Text is escaped by default. Exports key files by stable id. Any apply is atomic, validated, staged, refused while locked.",
+  "Agents: Sonnet or Haiku, one at a time, writing incrementally; building is done directly; fan-outs announced before and accounted after; none above 60% usage.",
+  "Session ritual: read the rules, the ledger and the git log; name the next slot; start the dev server; smoke-test; one slot at a time; end by writing evidence and the handoff."
+ ],
+ "changes": [
+  {
+   "date": "2026-09-09",
+   "change": "Ledger v1 drafted from the plan page (63 slots); nothing built.",
+   "word": "pending"
+  },
+  {
+   "date": "2026-09-10",
+   "change": "Operator, ~22:45Z, on the Table/Cards side-by-side: \"i prefer the table instead of the cards\". Read as: the standings' default presentation is the table, not cards; Cards stay available as a view for drivers, teams, posts and rounds. The architecture question (one data region with views, or two tiles) stays open with the recommendation for one region; P2.2's default View is set to table.",
+   "word": "the operator, 2026-09-10 ~06:40Z: \"your understanding is correct. view setting is better.\" Decided: one data region with a View setting; table is the default view for standings; Cards stay a view for drivers, teams, posts and rounds."
+  },
+  {
+   "date": "2026-09-10",
+   "change": "v2 per the spherical view: P2.0 component definition model first; P2.1 Data Sources as a shared component; Table, Cards, Media list and Timeline merged into P2.2 the data region with views (subject to the morning's side-by-side); Filters as a layer; Conditions vocabulary; Map Backgrounds; Calendar events; Search configurations; Field templates; P1.11 and P1.12 added; Phase 4 reshaped with P4.0 atomic apply before backups and Working Copies, the New Application wizard, Tasks, the Security tab, Health and the utilities. Timeline: early November at pace, mid-December at half.",
+   "word": "pending"
+  },
+  {
+   "date": "2026-09-10",
+   "change": "Ledger adopted into the repo as docs/plan/ledger.json with the docs PR of \"rules go\", seeded with the five done R-slots (phase P0). Two fields added for the test: `pages` (the routes a done slot serves from rows; R4.1 lists /calendar) and `scopeHash`. The Phase 1–4 slots of the v2 draft land phase by phase as the operator approves them, each as a dated line here.",
+   "word": "the operator, 2026-09-10 ~07:00Z: \"i have no other rules edits, go with the latest version of them\" (rules go); the phases still to be approved one by one"
+  }
+ ],
+ "phases": {
+  "P0": {
+   "title": "Done before the ledger",
+   "note": "For the record; these are the R-slots the plan-ledger test accepts as done."
+  }
+ },
+ "slots": [
+  {
+   "id": "R1",
+   "phase": "P0",
+   "title": "Quick fixes",
+   "scope": "Page Finder search, Delete Page, absolute Run links.",
+   "fixedBy": "operator walkthrough",
+   "acceptance": "shipped",
+   "status": "done",
+   "evidence": "#966 · 1.0.86 · 2026-09-09",
+   "scopeHash": "0fd233ac40f5"
+  },
+  {
+   "id": "R2a",
+   "phase": "P0",
+   "title": "Components exist",
+   "scope": "Catalogue, region kind component, show rules, gallery, Rules group.",
+   "fixedBy": "R2 draft",
+   "acceptance": "shipped",
+   "status": "done",
+   "evidence": "#967 · 1.0.87 · 2026-09-09",
+   "scopeHash": "b54d0bbf95d2"
+  },
+  {
+   "id": "R2b",
+   "phase": "P0",
+   "title": "Home's six components",
+   "scope": "Home split from the designer; the page renders from its revision.",
+   "fixedBy": "R2 draft",
+   "acceptance": "shipped",
+   "status": "done",
+   "evidence": "#968 · 1.0.88 · 2026-09-09",
+   "scopeHash": "6c21bc8f03bc"
+  },
+  {
+   "id": "R4.1",
+   "phase": "P0",
+   "title": "Calendar served from rows",
+   "scope": "Route file gone; catch-all renders compositions; families; Size quick pick.",
+   "fixedBy": "R4 plan",
+   "acceptance": "shipped",
+   "status": "done",
+   "evidence": "#970 · 1.0.90 · prod 12:39Z 2026-09-09",
+   "pages": [
+    "/calendar"
+   ],
+   "scopeHash": "bf4898f2cc2e"
+  },
+  {
+   "id": "R-run",
+   "phase": "P0",
+   "title": "Run never refused",
+   "scope": "Empty Body is a warning; Save and Run saves a draft when no revision exists.",
+   "fixedBy": "operator",
+   "acceptance": "shipped",
+   "status": "done",
+   "evidence": "#972 · 1.0.92 · prod 13:10Z 2026-09-09",
+   "scopeHash": "3872216e9f35"
+  }
+ ]
+}
