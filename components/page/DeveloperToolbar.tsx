@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { Bug, FilePen, House, Info, PaintRoller, Settings, SquareMousePointer, SquarePen, Timer, type LucideIcon } from 'lucide-react';
 import { LEVEL_NAMES, keyOfLevel, levelFromKey, levelFromParam, type DebugLevel, type DebugReport, type OnLevel } from '@/lib/design/debug';
+import { noteNavigation } from '@/lib/design/debug-client';
 
 // The runtime Developer Toolbar (APEX: the Developer Toolbar at the foot of a
 // running page, UX map line 108; the operator's screenshots of 2026-09-10; R5).
@@ -136,6 +137,10 @@ export function DeveloperToolbar() {
       live = false;
     };
   }, [admin]);
+  // A new address in the same tab: the browser log starts over with the page.
+  useEffect(() => {
+    noteNavigation(pathname);
+  }, [pathname]);
   // The trace: with debug on, the admin route runs this page's pipeline for the
   // visitor at the level (APEX: debug mode turns on for the requests that
   // follow); Refresh runs it again. The cached page readers get is untouched.

@@ -127,7 +127,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'home.lead': ['db:post', 'content:series'],
   'home.live': ['content:series'],
   'home.result': ['kv:paddock:home:podium:v2:'],
-  'home.changed': ['snapshot:standings:'],
+  // Every series through withSourceSnapshot under standings:<slug>; F1 through its own last-good wrapper under f1:<name>.
+  'home.changed': ['snapshot:standings:', 'snapshot:f1:'],
   'home.next': ['content:series'],
   'home.wire': ['snapshot:news:aggregate:'],
 };

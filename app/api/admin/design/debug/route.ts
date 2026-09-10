@@ -20,7 +20,9 @@ export async function GET(req: Request) {
   if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
   const url = new URL(req.url);
   const levelParam = url.searchParams.get('level');
-  const level = levelFromKey(levelParam) || levelFromParam(levelParam) || 4;
+  // Absent: Info, as APEX starts. Named but unknown: refused, never a silent Info.
+  const level = levelParam === null || levelParam === '' ? 4 : levelFromKey(levelParam) || levelFromParam(levelParam);
+  if (level === 0) return NextResponse.json({ error: 'level must be info, app, full, or YES, LEVEL4, LEVEL6, LEVEL9' }, { status: 400 });
   const path = url.searchParams.get('path');
   const rev = url.searchParams.get('rev');
   const cid = newCid(req.headers.get('cf-ray'));

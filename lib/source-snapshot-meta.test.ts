@@ -30,7 +30,7 @@ vi.mock('@/lib/betting/client', () => ({
   }),
 }));
 
-import { readSnapshotMeta, runnerName, withSourceSnapshot, writeSnapshot } from './source-snapshot';
+import { readSnapshotMeta, runnerName, withSourceSnapshot, writeSnapshot, writeSnapshotMeta } from './source-snapshot';
 
 const field = (call: number, key: string) => JSON.parse((hset.mock.calls[call] as unknown as [string, Record<string, string>])[1][key]) as { run: string; at: string; F?: number; W?: number };
 
@@ -65,9 +65,10 @@ describe("the loader's phases per source (P1.9)", () => {
     expect(Date.parse(meta.at)).not.toBeNaN();
   });
 
-  it('the reader path records nothing; a direct write records W alone; without KV nothing is written', async () => {
+  it('the reader path records nothing, whichever caller asks (the Worker never writes); a direct write records W alone; without KV nothing is written', async () => {
     process.env.DATA_SOURCE = 'db';
     await withSourceSnapshot('standings:f2', async () => ({ rows: [1] }), v => v == null);
+    await writeSnapshotMeta('paddock:home:podium:v2:f1:2026', { F: 300, W: 20 });
     expect(hset).not.toHaveBeenCalled();
     delete process.env.DATA_SOURCE;
     await writeSnapshot('news:aggregate:3', { items: [] });

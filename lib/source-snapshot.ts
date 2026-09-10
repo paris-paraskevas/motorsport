@@ -81,7 +81,8 @@ function isKvConfigured(): boolean {
 }
 
 export async function writeSnapshotMeta(key: string, phases: { F?: number; W?: number }): Promise<void> {
-  if (!isKvConfigured()) return;
+  // The loader's path only: the Worker (DATA_SOURCE=db) reads and never writes, whichever caller reaches this.
+  if (isDbReadOnly() || !isKvConfigured()) return;
   try {
     const meta: SnapshotMeta = { run: runnerName(), at: new Date().toISOString(), ...phases };
     await kv.hset(META_KEY, { [key]: JSON.stringify(meta) });
