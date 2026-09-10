@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Lock, Maximize2, Minimize2, Play, Plus, Puzzle, Redo2, RefreshCw, Search, TriangleAlert, Undo2, Wrench, Zap } from 'lucide-react';
 import { EMPTY_DOCUMENT, SHORTCUT_TOKEN, isLegacyBody, parsePageDocument, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
 import { COMPONENTS } from '@/lib/design/components';
@@ -80,6 +80,72 @@ function when(iso: string): string {
   return Number.isNaN(d.getTime()) ? iso : d.toISOString().replace('T', ' ').slice(0, 16) + 'Z';
 }
 
+/** What the designer remembers about its panes, per browser profile (APEX
+ *  remembers the pane layout per user): the mode, the two Show toggles, the
+ *  splitter widths. Read through useSyncExternalStore, so the server and the
+ *  hydration render see the defaults and the client switches right after,
+ *  without a state write inside an effect (the repo's pattern, LocalTime.tsx). */
+interface LayoutMemory {
+  paneMode?: 'three' | 'two';
+  tooltips?: boolean;
+  layoutView?: boolean;
+  lw?: string;
+  rw?: string;
+}
+const LAYOUT_KEY = 'paddock-developer.page-designer';
+const EMPTY_MEMORY: LayoutMemory = {};
+const layoutListeners = new Set<() => void>();
+let memoryCache: { raw: string | null; value: LayoutMemory } = { raw: null, value: EMPTY_MEMORY };
+function parseLayoutMemory(raw: string | null): LayoutMemory {
+  if (!raw) return EMPTY_MEMORY;
+  try {
+    const m = JSON.parse(raw) as Record<string, unknown>;
+    const px = (v: unknown) => (typeof v === 'string' && /^[0-9]{2,4}px$/.test(v) ? v : undefined);
+    const out: LayoutMemory = {};
+    if (m.paneMode === 'two' || m.paneMode === 'three') out.paneMode = m.paneMode;
+    if (typeof m.tooltips === 'boolean') out.tooltips = m.tooltips;
+    if (typeof m.layoutView === 'boolean') out.layoutView = m.layoutView;
+    if (px(m.lw)) out.lw = px(m.lw);
+    if (px(m.rw)) out.rw = px(m.rw);
+    return out;
+  } catch {
+    return EMPTY_MEMORY;
+  }
+}
+/** The snapshot: the same object while the stored string is the same. */
+function readLayoutMemory(): LayoutMemory {
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(LAYOUT_KEY);
+  } catch {
+    raw = null;
+  }
+  if (raw !== memoryCache.raw) memoryCache = { raw, value: parseLayoutMemory(raw) };
+  return memoryCache.value;
+}
+function writeLayoutMemory(patch: LayoutMemory): void {
+  const next: Record<string, unknown> = { ...readLayoutMemory(), ...patch };
+  for (const k of Object.keys(next)) if (next[k] === undefined) delete next[k];
+  try {
+    if (Object.keys(next).length > 0) window.localStorage.setItem(LAYOUT_KEY, JSON.stringify(next));
+    else window.localStorage.removeItem(LAYOUT_KEY);
+  } catch {
+    /* no storage: the layout lives for the page's life */
+  }
+  layoutListeners.forEach(l => l());
+}
+function subscribeLayout(listener: () => void): () => void {
+  layoutListeners.add(listener);
+  window.addEventListener('storage', listener);
+  return () => {
+    layoutListeners.delete(listener);
+    window.removeEventListener('storage', listener);
+  };
+}
+function useLayoutMemory(): LayoutMemory {
+  return useSyncExternalStore(subscribeLayout, readLayoutMemory, () => EMPTY_MEMORY);
+}
+
 export function PageDesigner({
   detail,
   pages,
@@ -154,6 +220,20 @@ export function PageDesigner({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [hideEmpty, setHideEmpty] = useState(false);
   const [showCols, setShowCols] = useState(false);
+  // The pane layout (APEX: Utilities › Layout and Utilities › Show; the UX map
+  // lines 14–16 and 26), remembered per browser profile under LAYOUT_KEY.
+  const memory = useLayoutMemory();
+  const paneMode = memory.paneMode ?? 'three';
+  const tooltips = memory.tooltips ?? true;
+  const layoutView = memory.layoutView ?? true;
+  const setPaneMode = (mode: 'three' | 'two') => writeLayoutMemory({ paneMode: mode });
+  const setTooltips = (on: boolean) => writeLayoutMemory({ tooltips: on });
+  const setLayoutView = (on: boolean) => writeLayoutMemory({ layoutView: on });
+  // Expand is a moment, not a preference: the centre alone until Restore.
+  const [expandedLayout, setExpandedLayout] = useState(false);
+  // Display from Here (the Layout tab's menu, UX map lines 47–48): the region the tab shows alone.
+  const [layoutRoot, setLayoutRoot] = useState<string | null>(null);
+  const rootLive = layoutRoot !== null && doc.regions.some(r => r.id === layoutRoot) ? layoutRoot : null;
   const [drag, setDrag] = useState<Drag | null>(null);
   const [menu, setMenu] = useState<{ at: MenuAt; entries: MenuEntry[] } | null>(null);
   const [sheet, setSheet] = useState<SheetKind>(null);
@@ -589,6 +669,33 @@ export function PageDesigner({
     },
     { label: 'Show Layout Columns', checked: showCols, run: () => setShowCols(v => !v) },
     { label: 'Hide Empty Positions', checked: hideEmpty, run: () => setHideEmpty(v => !v) },
+    // APEX: Utilities › Show (UX map line 26). Text Messages Picker is absent: ours, no messages picker exists yet.
+    {
+      label: 'Show',
+      items: [
+        { label: 'Tooltips', checked: tooltips, run: () => setTooltips(!tooltips) },
+        {
+          label: 'Layout View',
+          checked: layoutView,
+          run: () => {
+            const next = !layoutView;
+            setLayoutView(next);
+            if (next) setCTab('layout');
+            else if (cTab === 'layout') setCTab('cv');
+          },
+        },
+      ],
+    },
+    // APEX: Utilities › Layout (UX map lines 14–16). Two Pane Mode hides the left pane.
+    {
+      label: 'Layout',
+      items: [
+        { label: 'Two Pane Mode', checked: paneMode === 'two', run: () => setPaneMode('two') },
+        { label: 'Three Pane Mode', checked: paneMode === 'three', run: () => setPaneMode('three') },
+        '-',
+        { label: 'Reset Layout', k: 'Alt+F11', run: resetLayout },
+      ],
+    },
     '-',
     { label: 'Expand All', run: () => expandAll(true) },
     { label: 'Collapse All', run: () => expandAll(false) },
@@ -660,11 +767,42 @@ export function PageDesigner({
       if (a && a.do.length > 1) act.removeEffect(effective.id, effective.index);
     }
   };
-  const restorePanes = () => {
+  // Reset Layout (APEX: Utilities › Layout › Reset Layout, UX map line 14): the
+  // pane widths, the pane mode and the expanded centre return to the defaults,
+  // and the remembered layout is forgotten. Alt+F11 is ours.
+  const resetLayout = () => {
     panesRef.current?.style.removeProperty('--lw');
     panesRef.current?.style.removeProperty('--rw');
-    toast('Panes restored');
+    setExpandedLayout(false);
+    // The widths and the mode only (UX map line 14): Tooltips and Layout View are Show's, not Layout's.
+    writeLayoutMemory({ paneMode: undefined, lw: undefined, rw: undefined });
+    toast('Layout reset');
   };
+  // The remembered splitter widths land on the grid once it exists; a release
+  // of a splitter writes them back (the splitters call rememberWidths).
+  const rememberWidths = () => {
+    const style = panesRef.current?.style;
+    writeLayoutMemory({ lw: style?.getPropertyValue('--lw') || undefined, rw: style?.getPropertyValue('--rw') || undefined });
+  };
+  useEffect(() => {
+    const m = readLayoutMemory();
+    if (m.lw) panesRef.current?.style.setProperty('--lw', m.lw);
+    if (m.rw) panesRef.current?.style.setProperty('--rw', m.rw);
+  }, []);
+  /** A hover tip, unless Utilities › Show › Tooltips is off. */
+  const tip = (text: string | undefined) => (tooltips ? text : undefined);
+  // The Layout tab's menu (APEX, UX map lines 47–48).
+  const layoutMenu = (): MenuEntry[] => [
+    {
+      label: 'Display from Here',
+      sub: effective.kind === 'region' ? regionName(doc.regions.find(r => r.id === effective.id) ?? doc.regions[0]) : 'select a region',
+      disabled: effective.kind !== 'region',
+      run: () => {
+        if (effective.kind === 'region') setLayoutRoot(effective.id);
+      },
+    },
+    { label: 'Display from Page', disabled: rootLive === null, run: () => setLayoutRoot(null) },
+  ];
 
   // ----------------------------------------------------------- keyboard
   // One listener for the designer's life, reading the latest handler through a
@@ -678,12 +816,15 @@ export function PageDesigner({
     if (e.altKey && e.key === 'F1') return void (e.preventDefault(), setCTab('help'));
     if (e.altKey && e.key === 'F7') return void (e.preventDefault(), save());
     if (e.altKey && e.key === 'F8') return void (e.preventDefault(), saveAndRun());
-    if (e.altKey && e.key === 'F11') return void (e.preventDefault(), restorePanes());
+    if (e.altKey && e.key === 'F11') return void (e.preventDefault(), resetLayout());
     if (e.altKey && e.shiftKey && (e.key === 'PageUp' || e.key === 'PageDown')) return void (e.preventDefault(), step(e.key === 'PageUp' ? -1 : 1));
     if (e.altKey && !e.shiftKey && /^[1-6]$/.test(e.key)) {
       e.preventDefault();
       const n = Number(e.key);
-      if (n <= 4) setLeftTab(LEFT_TABS[n - 1].key);
+      if (n <= 4) {
+        setLeftTab(LEFT_TABS[n - 1].key);
+        setPaneMode('three');
+      }
       else if (n === 5) setCTab('layout');
       else filterRef.current?.focus();
       return;
@@ -713,7 +854,7 @@ export function PageDesigner({
         role="separator"
         aria-orientation="vertical"
         aria-label={side === 'left' ? 'Resize the left pane' : 'Resize the right pane'}
-        title="Drag to resize · Alt+F11 restores"
+        title={tip('Drag to resize · Alt+F11 resets the layout')}
         className="z-[3] cursor-col-resize bg-border-strong hover:bg-edit"
         onPointerDown={e => {
           const panes = panesRef.current;
@@ -729,6 +870,7 @@ export function PageDesigner({
         }}
         onPointerUp={() => {
           start = null;
+          rememberWidths();
         }}
         onPointerCancel={() => {
           start = null;
@@ -784,7 +926,7 @@ export function PageDesigner({
       {/* ---------------------------------------------------------- toolbar */}
       <div className="flex min-w-0 items-center gap-1.5 overflow-hidden border-b border-border-strong bg-surface px-2.5">
         <div className={GRP}>
-          <button type="button" className={IB} title="Application home" aria-label="Back to all pages" onClick={onBack}>
+          <button type="button" className={IB} title={tip('Application home')} aria-label="Back to all pages" onClick={onBack}>
             <ArrowLeft size={14} />
           </button>
           <div className="flex h-[30px] items-center border border-border-strong">
@@ -792,28 +934,28 @@ export function PageDesigner({
               type="text"
               value={numInput}
               aria-label="Page number"
-              title="Page number · type and press Enter"
+              title={tip('Page number · type and press Enter')}
               className="h-[28px] w-[84px] border-r border-border-strong bg-bg px-2 text-center font-mono text-12 text-text focus:outline-none focus:shadow-[inset_0_0_0_1px_var(--edit)]"
               onChange={e => setNumInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && openByNumber()}
             />
-            <span className="max-w-[220px] truncate px-2.5 text-12 font-semibold text-text" title={page.path}>
+            <span className="max-w-[220px] truncate px-2.5 text-12 font-semibold text-text" title={tip(page.path)}>
               {page.name}
             </span>
-            <button type="button" className="grid h-[28px] w-7 place-items-center border-l border-border-strong text-text-muted hover:bg-surface-elevated hover:text-text" title="Page Finder" aria-label="Page Finder" onClick={() => setSheet('finder')}>
+            <button type="button" className="grid h-[28px] w-7 place-items-center border-l border-border-strong text-text-muted hover:bg-surface-elevated hover:text-text" title={tip('Page Finder')} aria-label="Page Finder" onClick={() => setSheet('finder')}>
               <Search size={12} />
             </button>
-            <button type="button" className="grid h-[28px] w-7 place-items-center border-l border-border-strong text-text-muted hover:bg-surface-elevated hover:text-text" title="Previous page (Alt+Shift+PgUp)" aria-label="Previous page" onClick={() => step(-1)}>
+            <button type="button" className="grid h-[28px] w-7 place-items-center border-l border-border-strong text-text-muted hover:bg-surface-elevated hover:text-text" title={tip('Previous page (Alt+Shift+PgUp)')} aria-label="Previous page" onClick={() => step(-1)}>
               <ChevronLeft size={12} />
             </button>
-            <button type="button" className="grid h-[28px] w-7 place-items-center border-l border-border-strong text-text-muted hover:bg-surface-elevated hover:text-text" title="Next page (Alt+Shift+PgDn)" aria-label="Next page" onClick={() => step(1)}>
+            <button type="button" className="grid h-[28px] w-7 place-items-center border-l border-border-strong text-text-muted hover:bg-surface-elevated hover:text-text" title={tip('Next page (Alt+Shift+PgDn)')} aria-label="Next page" onClick={() => step(1)}>
               <ChevronRight size={12} />
             </button>
           </div>
           <button
             type="button"
             className={`${IB} relative`}
-            title={messages.length ? `Show Messages · ${messages.length}` : 'Show Messages · none'}
+            title={tip(messages.length ? `Show Messages · ${messages.length}` : 'Show Messages · none')}
             aria-label="Show Messages"
             onClick={() => setCTab('msgs')}
           >
@@ -824,7 +966,7 @@ export function PageDesigner({
             type="button"
             className={IB}
             aria-pressed="true"
-            title={`Page lock · the revision you loaded is checked on every save${newest ? `: ${newest.id.slice(0, 8)}` : ''}`}
+            title={tip(`Page lock · the revision you loaded is checked on every save${newest ? `: ${newest.id.slice(0, 8)}` : ''}`)}
             aria-label="Page lock"
             onClick={() => toast('Every save checks the revision you loaded; a newer one refuses your save and offers Reload.')}
           >
@@ -832,10 +974,10 @@ export function PageDesigner({
           </button>
         </div>
         <div className={GRP}>
-          <button type="button" className={IB} title="Undo (Ctrl+Z)" aria-label="Undo" disabled={past.length === 0} onClick={undo}>
+          <button type="button" className={IB} title={tip('Undo (Ctrl+Z)')} aria-label="Undo" disabled={past.length === 0} onClick={undo}>
             <Undo2 size={14} />
           </button>
-          <button type="button" className={IB} title="Redo (Ctrl+Y)" aria-label="Redo" disabled={future.length === 0} onClick={redo}>
+          <button type="button" className={IB} title={tip('Redo (Ctrl+Y)')} aria-label="Redo" disabled={future.length === 0} onClick={redo}>
             <Redo2 size={14} />
           </button>
         </div>
@@ -846,7 +988,7 @@ export function PageDesigner({
           <button ref={utilBtn} type="button" className={TB} aria-haspopup="menu" onClick={() => setMenu({ at: anchorOf(utilBtn.current), entries: utilitiesMenu() })}>
             <Wrench size={13} /> Utilities <span className="text-10 text-text-faint">▾</span>
           </button>
-          <button type="button" className={TB} title="Shared Components" onClick={() => onWorkspace('shared')}>
+          <button type="button" className={TB} title={tip('Shared Components')} onClick={() => onWorkspace('shared')}>
             <Puzzle size={13} /> Shared Components
           </button>
         </div>
@@ -854,21 +996,21 @@ export function PageDesigner({
           {statusText}
         </span>
         <div className={GRP}>
-          <button type="button" className={TB_PRIMARY} title="Save (Alt+F7)" disabled={readOnly || busy !== null || !dirty} onClick={() => void save()}>
+          <button type="button" className={TB_PRIMARY} title={tip('Save (Alt+F7)')} disabled={readOnly || busy !== null || !dirty} onClick={() => void save()}>
             {busy === 'save' ? <RefreshCw size={13} className="animate-spin" /> : null}
             Save
           </button>
           <button
             type="button"
             className={TB_PRIMARY}
-            title="Publish the newest revision"
+            title={tip('Publish the newest revision')}
             disabled={readOnly || busy !== null || (!docDirty && !unpublishedNewest && !attrsDirty)}
             onClick={() => void publish()}
           >
             {busy === 'publish' ? <RefreshCw size={13} className="animate-spin" /> : null}
             Publish
           </button>
-          <button type="button" className={TB_RUN} title="Save and Run Page (Alt+F8)" disabled={readOnly || busy !== null} onClick={() => void saveAndRun()}>
+          <button type="button" className={TB_RUN} title={tip('Save and Run Page (Alt+F8)')} disabled={readOnly || busy !== null} onClick={() => void saveAndRun()}>
             {busy === 'run' ? <RefreshCw size={13} className="animate-spin" /> : <Play size={13} />}
             Save and Run Page
           </button>
@@ -876,7 +1018,14 @@ export function PageDesigner({
       </div>
 
       {/* ------------------------------------------------------------ panes */}
-      <div ref={panesRef} className="grid min-h-0 min-w-0" style={{ gridTemplateColumns: 'var(--lw, 282px) 5px minmax(0, 1fr) 5px var(--rw, 372px)' }}>
+      <div
+        ref={panesRef}
+        className="grid min-h-0 min-w-0"
+        data-panes={expandedLayout ? 'expanded' : paneMode}
+        style={{ gridTemplateColumns: expandedLayout ? 'minmax(0, 1fr)' : paneMode === 'two' ? 'minmax(0, 1fr) 5px var(--rw, 372px)' : 'var(--lw, 282px) 5px minmax(0, 1fr) 5px var(--rw, 372px)' }}
+      >
+        {paneMode === 'three' && !expandedLayout && (
+          <>
         <div className="flex min-h-0 min-w-0 flex-col bg-surface">
           <div className="flex border-b border-border bg-surface-elevated" role="tablist" aria-label="Left pane">
             {LEFT_TABS.map((t, i) => {
@@ -889,7 +1038,7 @@ export function PageDesigner({
                   role="tab"
                   aria-selected={leftTab === t.key}
                   aria-label={t.label}
-                  title={`${t.label} (${t.k})`}
+                  title={tip(`${t.label} (${t.k})`)}
                   className={`relative h-[34px] flex-1 border-r border-border last:border-r-0 ${leftTab === t.key ? 'bg-surface text-text shadow-[inset_0_-2px_0_var(--amber,#e0a52d)]' : 'text-text-faint hover:text-text'}`}
                   onClick={() => setLeftTab(t.key)}
                 >
@@ -908,10 +1057,10 @@ export function PageDesigner({
               className="h-7 min-w-0 flex-1 border border-border-strong bg-bg px-2 text-12 text-text focus:border-edit focus:outline-none"
               onChange={e => setTreeQuery(e.target.value)}
             />
-            <button type="button" className="grid h-7 w-7 place-items-center border border-transparent text-text-muted hover:border-border-strong hover:text-text" title="Expand all" aria-label="Expand all" onClick={() => expandAll(true)}>
+            <button type="button" className="grid h-7 w-7 place-items-center border border-transparent text-text-muted hover:border-border-strong hover:text-text" title={tip('Expand all')} aria-label="Expand all" onClick={() => expandAll(true)}>
               <Maximize2 size={12} />
             </button>
-            <button type="button" className="grid h-7 w-7 place-items-center border border-transparent text-text-muted hover:border-border-strong hover:text-text" title="Collapse all" aria-label="Collapse all" onClick={() => expandAll(false)}>
+            <button type="button" className="grid h-7 w-7 place-items-center border border-transparent text-text-muted hover:border-border-strong hover:text-text" title={tip('Collapse all')} aria-label="Collapse all" onClick={() => expandAll(false)}>
               <Minimize2 size={12} />
             </button>
           </div>
@@ -938,16 +1087,18 @@ export function PageDesigner({
           </div>
         </div>
         {splitter('left')}
+          </>
+        )}
 
         <div className="grid min-h-0 min-w-0 grid-rows-[34px_minmax(0,1fr)_auto] bg-bg">
           <div className="flex overflow-x-auto border-b border-border bg-surface-elevated" role="tablist" aria-label="Centre pane">
-            {CENTRE_TABS.map(t => (
+            {(layoutView ? CENTRE_TABS : CENTRE_TABS.filter(t => t.key !== 'layout')).map(t => (
               <button
                 key={t.key}
                 type="button"
                 role="tab"
                 aria-selected={cTab === t.key}
-                title={t.k}
+                title={tip(t.k)}
                 className={`h-[34px] whitespace-nowrap border-r border-border px-3 font-mono text-9 uppercase tracking-[0.12em] ${cTab === t.key ? 'bg-bg text-text shadow-[inset_0_-2px_0_var(--amber,#e0a52d)]' : 'text-text-faint hover:text-text'}`}
                 onClick={() => setCTab(t.key)}
               >
@@ -962,6 +1113,29 @@ export function PageDesigner({
             <span className="flex-1" />
             <button type="button" className={`px-3 font-mono text-9 uppercase tracking-[0.1em] ${hideEmpty ? 'text-edit' : 'text-text-faint hover:text-text'}`} aria-pressed={hideEmpty} onClick={() => setHideEmpty(v => !v)}>
               Hide empty positions
+            </button>
+            {cTab === 'layout' && (
+              // APEX: the Layout tab's menu, right side of the tab (UX map line 48).
+              <button
+                type="button"
+                className={`px-3 font-mono text-9 uppercase tracking-[0.1em] ${rootLive !== null ? 'text-edit' : 'text-text-faint hover:text-text'}`}
+                aria-haspopup="menu"
+                title={tip('Display from Here · Display from Page')}
+                onClick={e => setMenu({ at: anchorOf(e.currentTarget), entries: layoutMenu() })}
+              >
+                Layout ▾
+              </button>
+            )}
+            {/* APEX: Expand grows the Layout tab to fill the designer; Restore returns (UX map line 46). */}
+            <button
+              type="button"
+              className={`px-3 font-mono text-9 uppercase tracking-[0.1em] ${expandedLayout ? 'text-edit' : 'text-text-faint hover:text-text'}`}
+              aria-pressed={expandedLayout}
+              aria-label={expandedLayout ? 'Restore the panes' : 'Expand the Layout tab'}
+              title={tip(expandedLayout ? 'Restore the panes' : 'Expand the Layout tab')}
+              onClick={() => setExpandedLayout(v => !v)}
+            >
+              {expandedLayout ? 'Restore' : 'Expand'}
             </button>
           </div>
           <div className="min-h-0 min-w-0 overflow-auto" onDragOver={e => drag && e.preventDefault()}>
@@ -983,6 +1157,7 @@ export function PageDesigner({
                 onDragStart={setDrag}
                 onDrop={onDrop}
                 onEditShared={sc => onWorkspace('shared', sc)}
+                root={rootLive}
               />
             )}
             {cTab === 'cv' && <ComponentView page={page} doc={doc} selection={effective} assets={assets} lists={lists} onSelect={sel => select(sel)} />}
@@ -990,8 +1165,28 @@ export function PageDesigner({
             {cTab === 'search' && <PageSearchTab query={searchQuery} onQuery={setSearchQuery} options={searchOpts} onOptions={setSearchOpts} hits={hits} onPick={h => select(h.sel)} />}
             {cTab === 'help' && <HelpTab helpFor={helpFor?.label ?? null} helpText={helpFor?.text ?? null} selected={selectedName} />}
           </div>
-          <Gallery tab={gTab} onTab={setGTab} disabled={readOnly} components={componentTiles} onAdd={kind => act.addRegion(kind, home)} onAddComponent={key => act.addComponent(key, home)} onDragStart={setDrag} />
+          <Gallery
+            tab={gTab}
+            onTab={setGTab}
+            disabled={readOnly}
+            components={componentTiles}
+            tooltips={tooltips}
+            onAdd={kind => act.addRegion(kind, home)}
+            onAddComponent={key => act.addComponent(key, home)}
+            onAddTo={(kind, pos) => act.addRegion(kind, pos)}
+            onAddComponentTo={(key, pos) => act.addComponent(key, pos)}
+            onDragStart={setDrag}
+            onContext={(at, t) =>
+              // APEX: the Gallery's context menu, Add To, then the location (UX map lines 17 and 53).
+              setMenu({
+                at,
+                entries: [{ head: t.name }, { label: 'Add To', items: openPositions(page).map(pos => ({ label: PD_POSITION[pos].label, disabled: readOnly, run: () => t.addTo(pos) })) }],
+              })
+            }
+          />
         </div>
+        {!expandedLayout && (
+          <>
         {splitter('right')}
 
         <PropertyPane
@@ -1001,6 +1196,8 @@ export function PageDesigner({
           filterRef={filterRef}
           onHelpFor={(label, text) => setHelpFor(label ? { label, text } : null)}
         />
+          </>
+        )}
       </div>
 
       {menu && <Menu at={menu.at} entries={menu.entries} onClose={() => setMenu(null)} />}
@@ -1160,7 +1357,7 @@ function ShortcutsList() {
     ['Help for the focused property', ['Alt+F1']],
     ['Keyboard shortcuts', ['Alt+Shift+F1']],
     ['Previous · next page', ['Alt+Shift+PgUp', 'Alt+Shift+PgDn']],
-    ['Restore pane sizes', ['Alt+F11']],
+    ['Reset Layout', ['Alt+F11']],
     ['Context menu for the selection', ['Shift+F10']],
     ['Delete the selected component', ['Del']],
     ['Select the page', ['Esc']],

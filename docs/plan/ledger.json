@@ -135,10 +135,11 @@
    "scope": "Header Text and Footer Text on every region (shortcuts substitute); Configuration › Build Option honoured by the renderer; document version 2 with a lenient parser.",
    "fixedBy": "APEX region groups",
    "acceptance": "An Excluded region does not render; text renders above and below when Included; old documents still parse; test.",
-   "status": "started",
+   "status": "done",
    "scopeHash": "eeb2fe209e9a",
    "defaults": "document fields headerText, footerText, buildOption; texts plain, one line, at most 300 characters, escaped, {shortcut:key} substituted; the option one of the four existing keys; exclusion on served pages, framed code pages and the Save and Run preview alike; a version 1 document reads as version 2 with the three absent; Property Editor groups Header and Footer (closed) and Configuration (closed) as the v2.4 prototype draws them",
-   "needsWord": ""
+   "needsWord": "",
+   "evidence": "#982 · 1.0.101 · merged 09:35Z, prod 09:39Z 2026-09-10 · vitest 1991 (RowPageView.test.tsx: header before the body before the footer, shortcuts substituted; page-document.test.ts: a version 1 document reads as version 2) · browser run on the local server: Weather excluded removed the region from the preview and the served page, included brought it back"
   },
   {
    "id": "P1.4",
@@ -159,8 +160,10 @@
    "scope": "Layout menu Display from Here / Display from Page; Expand and Restore; Gallery right-click Add To with the positions list; Utilities › Show ▸ (Tooltips, Layout View) and Layout ▸ (Two Pane, Three Pane, Reset Layout); pane state per user.",
    "fixedBy": "the UX map",
    "acceptance": "Each control present where documented; Two Pane hides the left pane; Reset Layout restores; browser run.",
-   "status": "planned",
-   "scopeHash": "19f38675f5b9"
+   "status": "started",
+   "scopeHash": "19f38675f5b9",
+   "defaults": "submenus as flyouts in the designer menu; Two Pane Mode hides the left pane; Expand hides both side panes until Restore; Display from Here shows the selected region alone until Display from Page; Add To lists the positions the page opens; Tooltips governs the title tips; Layout View removes the Layout tab; pane widths, mode, Tooltips and Layout View remembered in localStorage per browser; Reset Layout clears widths and mode; Text Messages Picker absent, marked ours",
+   "needsWord": ""
   },
   {
    "id": "P1.6",
