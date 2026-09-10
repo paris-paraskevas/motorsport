@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.98 — 2026-09-10
+
+### Docs — the night run's morning report: two merges live, every other item a held draft
+
+`docs/HANDOFF.md` gains the LATEST section for the morning of 2026-09-10: the operator's five bedtime answers and how the night followed them; the two merges with their evidence (#976 the study into the repo, #977 the Madrid venue fix, prod verified 22:13Z); the drafts held for the operator (rules v3, the ledger v2 as JSON with 78 slots and a generator, the CLAUDE.md prune, the Table/Cards side-by-side, the six hook scripts with 20 passing checks on draft PR #978 with the repo-local Sonnet force); the questions for the morning (the reading of "i prefer the table instead of the cards", rules v3, the ledger phase by phase); what was not attempted by design; and the landmines learned (the duplicate JSON key, the `=======` false positive, `.claude/*` for un-ignoring, the low-memory kill). `SCHEDULE.md` gets the night outcomes block; `IDEAS.md` the held items and three parked ideas. Memory: `project-paddock-designer` (the night's state).
+
 ## 1.0.97 — 2026-09-10
 
 ### Content — the Spanish Grand Prix (Madrid) resolves to Madring, not Barcelona-Catalunya

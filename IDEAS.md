@@ -37,6 +37,10 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 
+**Designer, from the night run of 2026-09-10 — held for the operator**
+- Rules v3 (edit or "rules go"); ledger v2 phase by phase (P4.0 atomic apply added; P2.2 one data region with views, default table, pending the side-by-side b93cd890-6f55-4770-9518-a1bda6a497b7); wire the hooks with the operator watching (#978); apply the CLAUDE.md prune after a diff-read.
+- Parked from the night: a JSON-duplicate-key lint for content files (would have caught the Madrid double key); a Madring layout SVG when f1db publishes one; the archive test for "Spanish Grand Prix" → Barcelona is only a probe today, worth a real test in lib/circuits.
+
 **Designer, from session 46 (2026-09-09, night) — the spherical view, awaiting the operator**
 - The full read is complete (plan page 4d804904-63ad-4ddf-8d37-67dcb2d2fcc8, "The spherical view"). Decisions in order: rules v3 (v2 + part A) → the ledger revised per part B → the plan and vocabulary per part C.
 - Candidate new slots: the component definition model (first in Phase 2); Data Sources as a shared component; one Data region with views; Filters as a layer; Map Backgrounds; Calendar events; Search configurations; Field templates; the Conditions vocabulary; Working Copies; New Application wizard with a features checklist; Members/Moderation as Tasks; the Security tab (CSP rollout, audit rollups, access control); Health with an Advisor lint; designer utilities (dashboard, change history, locks, backups, data loading, view-as-JSON); soft delete for pages.
