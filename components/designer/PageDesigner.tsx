@@ -238,6 +238,23 @@ export function PageDesigner({
   const [layoutRoot, setLayoutRoot] = useState<string | null>(null);
   const rootLive = layoutRoot !== null && doc.regions.some(r => r.id === layoutRoot) ? layoutRoot : null;
   const [drag, setDrag] = useState<Drag | null>(null);
+  // A drag begins one task after its dragstart (R5b). Chromium aborts a native
+  // drag whose source's DOM changes while dragstart is still being handled
+  // (Chromium bug 168544; the react-dnd thread on it): setting the drag here
+  // at once drew the yellow drop tiles inside that handler, and every drag
+  // ended before it began. The token keeps a drag that ended first (or that
+  // dropped) from being set afterwards.
+  const dragToken = useRef(0);
+  const beginDrag = (d: Drag) => {
+    const token = ++dragToken.current;
+    window.setTimeout(() => {
+      if (dragToken.current === token) setDrag(d);
+    }, 0);
+  };
+  const endDrag = () => {
+    dragToken.current++;
+    setDrag(null);
+  };
   const [menu, setMenu] = useState<{ at: MenuAt; entries: MenuEntry[] } | null>(null);
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [creating, setCreating] = useState(false);
@@ -326,7 +343,11 @@ export function PageDesigner({
     }
   }, [renameTick, uid]);
   useEffect(() => {
-    const end = () => setDrag(null);
+    // The same as endDrag, on the ref and the setter alone, so the listener lives once.
+    const end = () => {
+      dragToken.current++;
+      setDrag(null);
+    };
     document.addEventListener('dragend', end);
     return () => document.removeEventListener('dragend', end);
   }, []);
@@ -442,7 +463,7 @@ export function PageDesigner({
     select({ kind: 'action', id: r.id });
   };
   const onDrop = (d: Drag, where: Placement) => {
-    setDrag(null);
+    endDrag();
     if (readOnly) return;
     if (d.type === 'gallery') {
       const r = addRegion(doc, d.kind, where, regionDefaults);
@@ -1104,7 +1125,7 @@ export function PageDesigner({
               onToggle={toggleExpanded}
               onSelect={(sel, opts) => select(sel, { toggle: opts?.toggle })}
               onContext={contextMenu}
-              onDragStart={setDrag}
+              onDragStart={beginDrag}
               onTab={setLeftTab}
               onCreateAction={() => createAction()}
               onOpenShared={sc => onWorkspace('shared', sc)}
@@ -1180,7 +1201,7 @@ export function PageDesigner({
                 readOnly={readOnly}
                 onSelect={(sel, opts) => select(sel, { rename: opts?.rename, group: opts?.rename ? 'Identification' : undefined, toggle: opts?.toggle })}
                 onContext={contextMenu}
-                onDragStart={setDrag}
+                onDragStart={beginDrag}
                 onDrop={onDrop}
                 onEditShared={sc => onWorkspace('shared', sc)}
                 root={rootLive}
@@ -1201,7 +1222,7 @@ export function PageDesigner({
             onAddComponent={key => act.addComponent(key, home)}
             onAddTo={(kind, pos) => act.addRegion(kind, pos)}
             onAddComponentTo={(key, pos) => act.addComponent(key, pos)}
-            onDragStart={setDrag}
+            onDragStart={beginDrag}
             onContext={(at, t) =>
               // APEX: the Gallery's context menu, Add To, then the location (UX map lines 17 and 53).
               setMenu({

@@ -436,12 +436,15 @@ describe('PageDesigner', () => {
     expect(openMock).toHaveBeenCalledWith(expect.stringMatching(/\/calendar$/), 'paddock-run');
   });
 
-  it('a Layout tile drags from any part of it onto a yellow target (R5)', () => {
+  it('a Layout tile drags from any part of it onto a yellow target; the drop tiles appear one task after dragstart, never inside it (R5, R5b)', async () => {
     mount();
     const dataTransfer = { setData: vi.fn(), effectAllowed: 'move' };
     fireEvent.dragStart(tile('List: Elsewhere'), { dataTransfer });
     expect(dataTransfer.setData).toHaveBeenCalledWith('text/plain', 'more');
-    fireEvent.drop(screen.getByRole('button', { name: 'Drop here: Region · Footer' }), { dataTransfer });
+    // Chromium aborts a drag whose source's DOM changes during dragstart: nothing is drawn inside the handler.
+    expect(screen.queryByRole('button', { name: 'Drop here: Region · Footer' })).toBeNull();
+    const target = await screen.findByRole('button', { name: 'Drop here: Region · Footer' });
+    fireEvent.drop(target, { dataTransfer });
     expect(status()).toMatch(/Elsewhere moved/);
     fireEvent.click(tile('List: Elsewhere'));
     expect(within(within(screen.getByLabelText('Property Editor')).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Footer' }).getAttribute('aria-pressed')).toBe('true');

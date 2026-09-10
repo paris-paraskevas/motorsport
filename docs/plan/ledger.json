@@ -54,6 +54,11 @@
    "date": "2026-09-10",
    "change": "Slot R5 \"Quick fixes from the walkthrough of 2026-09-10\" added to Phase 1 before P1.9, because Debug lands on the toolbar R5 builds. P1.9's plan approved with its defaults: a trace produced on demand by an admin API that re-runs the page's pipeline (cached pages untouched), phase codes as the Processing tab's step names, the loader's F and W phases kept in KV (no schema change), one loader dispatch after the merge, the new files named in the plan.",
    "word": "the operator approved the P1.9 plan, whose decision scan names R5 first, ~12:25Z"
+  },
+  {
+   "date": "2026-09-10",
+   "change": "The operator, ~13:45Z: \"i dont think r5 did what i wanted. i wanted to be able to move components around by drag and drop on middle pane, this is not possible at the moment, the rest of r5's statements did work however.\" Read as: R5's drag did not work in the browser. The cause, found by the research the operator asked for instead of a guess: Chromium aborts a native drag whose source's DOM changes while dragstart is still being handled (Chromium bug 168544; react-dnd issue 1085), and the designer set its drag state, and so drew the yellow drop tiles, inside that handler; every drag ended before it began, on every drag source (Layout tiles, tree nodes, gallery tiles), since the drop tiles were introduced. R5's browser evidence for the drag was synthetic drag events, which cannot show it. Built in R5b: the drag begins one task after dragstart; proven with the browser's own drag.",
+   "word": "the operator, 2026-09-10 ~13:45Z, verbatim above, and ~13:50Z: \"do you want to research how to build this. instead of trusting your gut once again?\""
   }
  ],
  "phases": {
@@ -231,7 +236,19 @@
    "acceptance": "Save and Run publishes and the working tab shows the change with the toolbar at the bottom; a second run reuses the tab; a tile dragged by its body lands; a taken column is not offered, a document with an overlap holds Save with the reason, the page wraps; browser run; tests.",
    "status": "done",
    "scopeHash": "e4a671502c57",
-   "evidence": "#986 · 1.0.105 · merged 13:02Z, prod 13:07Z 2026-09-10 · vitest 2008 (PageDesigner.test.tsx: Save and Run publishes on the live revision and opens paddock-run, a drag from the tile lands, the pills offer the free columns, a stored overlap holds Save; DeveloperToolbar.test.tsx: nothing for a reader, the nine entries with the three links; page-document.test.ts: the wrap, the row mates, the overlap pairs; RowPageView.test.tsx: the wrapped row) · browser run on the local server: the bar on the live Monza page, a drag from a tile's body moved Aside to the Footer, The story beside Aside offered column 1 alone, Save and Run published and the second run reused the tab · reviewer: no gaps left, four points taken (the role check inline, the Column Span rule, the preview note, a page with no revision runs as it is) · review page 1a077e0d-b605-4309-b062-bdd2c8b87738"
+   "evidence": "#986 · 1.0.105 · merged 13:02Z, prod 13:07Z 2026-09-10 · vitest 2008 (PageDesigner.test.tsx: Save and Run publishes on the live revision and opens paddock-run, a drag from the tile lands, the pills offer the free columns, a stored overlap holds Save; DeveloperToolbar.test.tsx: nothing for a reader, the nine entries with the three links; page-document.test.ts: the wrap, the row mates, the overlap pairs; RowPageView.test.tsx: the wrapped row) · browser run on the local server: the bar on the live Monza page, a drag from a tile's body moved Aside to the Footer, The story beside Aside offered column 1 alone, Save and Run published and the second run reused the tab · reviewer: no gaps left, four points taken (the role check inline, the Column Span rule, the preview note, a page with no revision runs as it is) · review page 1a077e0d-b605-4309-b062-bdd2c8b87738 · correction ~14:00Z: the drag's browser evidence was synthetic events; the browser's own drag was dead (Chromium bug 168544), fixed in R5b"
+  },
+  {
+   "id": "R5b",
+   "phase": "P1",
+   "title": "The drag begins in the browser",
+   "scope": "The designer's drag (Layout tiles, tree nodes, gallery tiles) sets its state one task after dragstart, so Chromium keeps the drag; nothing is drawn inside the dragstart handler.",
+   "fixedBy": "the operator's report of ~13:45Z; Chromium bug 168544 and the react-dnd thread on it (issue 1085); the UX map's Layout drag (lines 44–45: dark yellow drop boxes at the valid positions)",
+   "defaults": "a zero-delay timeout after dragstart carrying the drag into the next task, with a token so a drag that ended first is not set afterwards; the yellow drop tiles and their positions as they were; the three drag sources share the one entry in the designer",
+   "needsWord": "",
+   "acceptance": "a real mouse drag in Chromium moves a tile onto a yellow target and Ctrl+Z restores it; a test that nothing is drawn inside dragstart and that the target appears a task later",
+   "status": "started",
+   "scopeHash": "59219d6b52be"
   },
   {
    "id": "P1.9",
