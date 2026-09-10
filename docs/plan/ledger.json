@@ -29,12 +29,21 @@
    "date": "2026-09-10",
    "change": "Ledger adopted into the repo as docs/plan/ledger.json with the docs PR of \"rules go\", seeded with the five done R-slots (phase P0). Two fields added for the test: `pages` (the routes a done slot serves from rows; R4.1 lists /calendar) and `scopeHash`. The Phase 1–4 slots of the v2 draft land phase by phase as the operator approves them, each as a dated line here.",
    "word": "the operator, 2026-09-10 ~07:00Z: \"i have no other rules edits, go with the latest version of them\" (rules go); the phases still to be approved one by one"
+  },
+  {
+   "date": "2026-09-10",
+   "change": "Phase 1 enters the ledger: P1.1 to P1.12 as drafted in v2 (twelve slots, status planned). Three keep their question for their turn: P1.1 the five looks shown side by side, P1.4 the nesting depth, P1.8 the Theme Roller tokens. Evidence for the adoption line above: PR #980 squash-merged 07:43Z as 1.0.99, prod serving it at 07:47Z.",
+   "word": "the operator, 2026-09-10 ~07:50Z: \"Go on phase 1, approved. Ask me each question when the time comes.\""
   }
  ],
  "phases": {
   "P0": {
    "title": "Done before the ledger",
    "note": "For the record; these are the R-slots the plan-ledger test accepts as done."
+  },
+  "P1": {
+   "title": "Phase 1 — The shell grows to APEX's shape",
+   "note": "Every component inherits these; nothing changes for readers until a region is given a look. Acceptance tests quote the click-level map."
   }
  },
  "slots": [
@@ -95,6 +104,132 @@
    "status": "done",
    "evidence": "#972 · 1.0.92 · prod 13:10Z 2026-09-09",
    "scopeHash": "3872216e9f35"
+  },
+  {
+   "id": "P1.1",
+   "phase": "P1",
+   "title": "Region looks",
+   "scope": "Appearance › Template on every region: plain · boxed · band · aside · hero; the renderer draws the look; defaults in Component Settings.",
+   "fixedBy": "APEX Appearance › Template",
+   "defaults": "the five names",
+   "needsWord": "the five looks shown side by side before the names are final",
+   "acceptance": "Pick band on a Static Content region, Save and Run: preview and served page carry it; a test renders a saved document with each look.",
+   "status": "planned",
+   "scopeHash": "456d1f955cae"
+  },
+  {
+   "id": "P1.2",
+   "phase": "P1",
+   "title": "Template options",
+   "scope": "Groups with presets: Spacing, Heading style, Rule, Emphasis, Width; #DEFAULT# behaviour; Global options.",
+   "fixedBy": "APEX Template Options, Presets, Default",
+   "defaults": "the five groups",
+   "acceptance": "Change a preset on a look: every region on the default follows, a diverged region keeps its own; test.",
+   "status": "planned",
+   "scopeHash": "bffeedd269be"
+  },
+  {
+   "id": "P1.3",
+   "phase": "P1",
+   "title": "Header and Footer text, Configuration",
+   "scope": "Header Text and Footer Text on every region (shortcuts substitute); Configuration › Build Option honoured by the renderer; document version 2 with a lenient parser.",
+   "fixedBy": "APEX region groups",
+   "acceptance": "An Excluded region does not render; text renders above and below when Included; old documents still parse; test.",
+   "status": "planned",
+   "scopeHash": "eeb2fe209e9a"
+  },
+  {
+   "id": "P1.4",
+   "phase": "P1",
+   "title": "Rendering points and tree creates",
+   "scope": "Points Before Regions, After Regions, Before Footer, After Footer; right-click Create Region, Create Sub Region, Create Page Item (placeholder), Create Button, Duplicate, Delete, Copy To; Ctrl+drag duplicates.",
+   "fixedBy": "the UX map's Rendering structures",
+   "defaults": "Sub Region = one level of nesting",
+   "needsWord": "nesting depth (one level proposed)",
+   "acceptance": "Menu items in the documented order; Ctrl+drag makes a copy beneath; browser run.",
+   "status": "planned",
+   "scopeHash": "5435a437fb61"
+  },
+  {
+   "id": "P1.5",
+   "phase": "P1",
+   "title": "Layout tab, Gallery and Utilities conformance",
+   "scope": "Layout menu Display from Here / Display from Page; Expand and Restore; Gallery right-click Add To with the positions list; Utilities › Show ▸ (Tooltips, Layout View) and Layout ▸ (Two Pane, Three Pane, Reset Layout); pane state per user.",
+   "fixedBy": "the UX map",
+   "acceptance": "Each control present where documented; Two Pane hides the left pane; Reset Layout restores; browser run.",
+   "status": "planned",
+   "scopeHash": "19f38675f5b9"
+  },
+  {
+   "id": "P1.6",
+   "phase": "P1",
+   "title": "Property Editor conformance",
+   "scope": "Edited-attribute marker until Save; multi-select edits common attributes; Region / Attributes tab split for components with settings.",
+   "fixedBy": "the UX map's Property Editor structures",
+   "acceptance": "Select two regions, change Position: both move; a changed attribute shows the marker until Save; browser run.",
+   "status": "planned",
+   "scopeHash": "ab9b3ca0b633"
+  },
+  {
+   "id": "P1.7",
+   "phase": "P1",
+   "title": "Developer Toolbar: Quick Edit and Info",
+   "scope": "Quick Edit Mode (click a region → the designer opens with it selected, Esc exits); Live Template Options (wrench on hover); Info › Show Layout Columns, Show Page Timing; Options › Auto Hide, Icons Only, Position; a selection parameter on the designer URL.",
+   "fixedBy": "the UX map's Developer Toolbar structures",
+   "acceptance": "From Save and Run, Quick Edit lands on the region; the wrench changes a template option live; browser run.",
+   "status": "planned",
+   "scopeHash": "094979cc618e"
+  },
+  {
+   "id": "P1.8",
+   "phase": "P1",
+   "title": "Theme Roller from the toolbar",
+   "scope": "Customize › Theme Roller edits the custom theme's tokens live over the running page; Save as new theme; Reset; Edit Logo opens the wordmark setting.",
+   "fixedBy": "APEX Theme Roller; tokens-first decision",
+   "needsWord": "which tokens the live editor exposes (the nine of the contrast gate proposed)",
+   "acceptance": "Change the accent live; Save as new theme; pick it as default; the site follows; browser run.",
+   "status": "planned",
+   "scopeHash": "7869f4ad21f4"
+  },
+  {
+   "id": "P1.9",
+   "phase": "P1",
+   "title": "Debug panel",
+   "scope": "Debug menu Off / Info / App Trace / Full Trace; a per-request step-timing graph; which source each component read and from which loader run; which show, condition and authorization rules fired; which dynamic actions fired; a correlation id; export a trace; server and client helpers feed one panel.",
+   "fixedBy": "APEX Debug, adapted (runs 13–14)",
+   "acceptance": "The panel lists every component of Home with a source and a time; the loader's phase codes appear; test on the collector.",
+   "status": "planned",
+   "scopeHash": "ebc713d6aa5a"
+  },
+  {
+   "id": "P1.10",
+   "phase": "P1",
+   "title": "Create menu conformance",
+   "scope": "Create › Page Group (opens the groups sheet), Developer Comment (opens the page's Comments attribute), Breadcrumb Region (disabled until P2.17).",
+   "fixedBy": "the UX map's Create menu",
+   "acceptance": "Items present in the documented order; browser run.",
+   "status": "planned",
+   "scopeHash": "3b2d94535f2d"
+  },
+  {
+   "id": "P1.11",
+   "phase": "P1",
+   "title": "Gallery hygiene, text picker, Comment Out",
+   "scope": "Superseded component types hidden by default in the gallery (Show Legacy); a picker icon on text fields inserts a shared value with live preview; the region's disable toggle named and behaving as Comment Out / Uncomment.",
+   "fixedBy": "runs 6 and 13",
+   "acceptance": "The transitional body is hidden from the gallery on rows-served pages; the picker inserts a shortcut; Comment Out excludes at runtime; browser run.",
+   "status": "planned",
+   "scopeHash": "c28796d054da"
+  },
+  {
+   "id": "P1.12",
+   "phase": "P1",
+   "title": "Delete Page cascade and soft delete",
+   "scope": "Deleting a page removes it from every menu, breadcrumb and list entry that names it; soft delete → reinstate → purge with a recovery window.",
+   "fixedBy": "runs 6–7",
+   "acceptance": "A deleted page leaves no dangling entry; Reinstate restores it; test.",
+   "status": "planned",
+   "scopeHash": "85eb378ea11d"
   }
  ]
 }
