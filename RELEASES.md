@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.107 — 2026-09-10
+
+In the design tool, dragging a region on the Layout tab works again in the browser: the drag no longer ends the moment it begins, so a region can be moved to any of the yellow targets. Nothing changes for readers.
+
 ## 1.0.106 — 2026-09-10
 
 For the people who build the site: the developer's toolbar gains Debug. Turned on at Info, App Trace or Full Trace, it shows how the page you are looking at was put together, step by step with timings, which rules hid or excluded a region for you, which sources each component read and when the loader last fetched them, and what the page did once it arrived in your browser; the trace can be saved as a file. Nothing changes for readers.
