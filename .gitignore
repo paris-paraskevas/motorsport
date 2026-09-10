@@ -49,7 +49,7 @@ yarn-error.log*
 next-env.d.ts
 
 # Claude Code local (settings + worktrees etc.)
-.claude/
+.claude/*
 
 # OS / editors
 .DS_Store
@@ -95,3 +95,7 @@ Thumbs.db
 
 # Agent skills bundle (clerk/skills) — local tooling, not product code
 .agents/
+
+# The harness: hooks and settings.json are versioned; settings.local.json stays local.
+!.claude/hooks/
+!.claude/settings.json
