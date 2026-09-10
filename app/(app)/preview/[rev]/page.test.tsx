@@ -91,23 +91,23 @@ describe('/preview/[rev]', () => {
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
   });
 
-  it('is the 404 for a revision that does not exist, and shows an administrator the draft with the toolbar and every region', async () => {
+  it('is the 404 for a revision that does not exist, and shows an administrator the draft with every region; the toolbar is the app layout’s, not the page’s (R5)', async () => {
     loadRevisionPreview.mockResolvedValueOnce(null);
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
     const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
-    expect(html).toContain('aria-label="Developer toolbar"');
+    expect(html).not.toContain('aria-label="Developer toolbar"');
+    expect(html).toContain('data-preview-note=""');
     expect(html).toContain('revision b1b2c3d4 · a draft · saved 2026-09-08 19:20Z');
-    expect(html).toContain('href="/admin/designer?ws=builder&amp;page=a1b2c3d4-0000-4000-8000-000000000010"');
-    expect(html).toContain('href="/history/monza"');
     expect(html).toContain('Opened in 1922. All times are local.');
     expect(html).toContain('For members');
     expect(html).not.toContain('Sign in to see this.');
   });
 
-  it('says when the revision is the live one', async () => {
-    loadRevisionPreview.mockResolvedValue({ ...preview, publishedAt: '2026-09-08T19:30:00Z', isLive: true });
+  it('says in its note when the revision is the live one, and counts the stored document’s problems', async () => {
+    loadRevisionPreview.mockResolvedValue({ ...preview, publishedAt: '2026-09-08T19:30:00Z', isLive: true, problems: ['region x: odd'] });
     const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
     expect(html).toContain('· the live revision ·');
+    expect(html).toContain('1 problem in the stored document');
   });
 
   it('previews a page served from rows as the site serves it: the components in the code frame, a transitional body adopting the recipe, the family’s structured data, no second heading', async () => {
@@ -115,7 +115,7 @@ describe('/preview/[rev]', () => {
     const legacy = { id: 'code-body', kind: 'component', component: 'page.body', settings: {}, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null };
     loadRevisionPreview.mockResolvedValue({ ...preview, page: calendar, document: { version: 1, actions: [], regions: [legacy] } });
     const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
-    expect(html).toContain('aria-label="Developer toolbar"');
+    expect(html).not.toContain('aria-label="Developer toolbar"');
     expect(html).toContain('data-page-frame="body"');
     expect(html).toContain('<h1>Calendar</h1>');
     expect(html).toContain('data-component="calendar.month"');

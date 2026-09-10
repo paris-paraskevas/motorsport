@@ -122,8 +122,16 @@ export function PageDesignerLayout({
         aria-pressed={selected}
         aria-label={`${REGION_KIND_LABELS[r.kind].label}: ${regionName(r)}`}
         data-sel={`region:${r.id}`}
-        className={`flex min-w-0 flex-col border bg-bg text-left ${selected ? 'border-edit shadow-[0_0_0_1px_var(--edit)]' : 'border-border-strong hover:border-text-faint'} ${r.hidden ? 'border-dashed' : ''}`}
+        // The whole tile drags, not only its title strip (the operator, 2026-09-10; R5).
+        draggable={!readOnly}
+        className={`flex min-w-0 flex-col border bg-bg text-left ${readOnly ? '' : 'cursor-grab'} select-none ${selected ? 'border-edit shadow-[0_0_0_1px_var(--edit)]' : 'border-border-strong hover:border-text-faint'} ${r.hidden ? 'border-dashed' : ''}`}
         style={style}
+        onDragStart={e => {
+          e.stopPropagation();
+          e.dataTransfer.setData('text/plain', r.id);
+          e.dataTransfer.effectAllowed = 'move';
+          onDragStart({ type: 'region', id: r.id });
+        }}
         onClick={e => {
           e.stopPropagation();
           onSelect(sel, { toggle: e.ctrlKey || e.metaKey || e.shiftKey });
@@ -140,16 +148,7 @@ export function PageDesignerLayout({
         }}
         onContextMenu={ctx(sel)}
       >
-        <div
-          draggable={!readOnly}
-          className={`flex min-w-0 cursor-grab items-center gap-1.5 border-b border-border px-2 py-1.5 ${selected ? 'bg-edit-dim' : 'bg-surface-elevated'}`}
-          onDragStart={e => {
-            e.stopPropagation();
-            e.dataTransfer.setData('text/plain', r.id);
-            e.dataTransfer.effectAllowed = 'move';
-            onDragStart({ type: 'region', id: r.id });
-          }}
-        >
+        <div className={`flex min-w-0 items-center gap-1.5 border-b border-border px-2 py-1.5 ${selected ? 'bg-edit-dim' : 'bg-surface-elevated'}`}>
           <Icon size={11} className="shrink-0 text-text-faint" />
           <span className="min-w-0 truncate text-12 font-semibold text-text">{regionName(r)}</span>
           <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">{REGION_KIND_LABELS[r.kind].label}</span>

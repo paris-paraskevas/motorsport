@@ -14,6 +14,7 @@ import {
   TIMER_MAX_SECONDS,
   TIMER_MIN_SECONDS,
   ACTION_NAME_MAX,
+  rowMates,
   rowsAt,
   type DynamicAction,
   type Effect,
@@ -793,8 +794,6 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
   const inBody = targets.every(t => t.position === 'body');
   // The transitional body is drawn by the code at the full width: its size cannot change until the page is split.
   const fullWidthOnly = targets.some(isLegacyBody);
-  const maxSpan = Math.max(...targets.map(t => t.span));
-  const maxColumn = Math.max(...targets.map(t => t.column));
   const position = common(t => t.position);
   const newRow = common(t => t.newRow);
   const column = common(t => t.column);
@@ -802,8 +801,19 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
   const show = common(t => t.show ?? 'always');
   const authz = common(t => t.authz ?? 'public');
   const buildOption = common(t => t.buildOption ?? '');
-  const colChoices = Array.from({ length: COLUMNS + 1 - maxSpan }, (_, i) => ({ key: i + 1, label: String(i + 1) }));
-  const spanChoices = [...SPAN_CHOICES.filter(s => s <= COLUMNS + 1 - maxColumn), ...(span === null || SPAN_CHOICES.includes(span as 12) ? [] : [span])]
+  // The columns the row's other regions hold (R5, the operator's walkthrough of
+  // 2026-09-10): a pick never lands on a neighbour, and stays inside the twelve.
+  // For several targets, what fits every one of them on its own row.
+  const fits = (t: Region, col: number, width: number) => {
+    const held = new Set(rowMates(doc, t).flatMap(m => Array.from({ length: m.span }, (_, i) => m.column + i)));
+    return col >= 1 && col + width <= COLUMNS + 1 && Array.from({ length: width }, (_, i) => col + i).every(c => !held.has(c));
+  };
+  const colChoices = Array.from({ length: COLUMNS }, (_, i) => i + 1)
+    .filter(c => targets.every(t => fits(t, c, t.span)))
+    .map(c => ({ key: c, label: String(c) }));
+  // A Size or Column Span pick moves the column left when the width would not fit the twelve; the check follows the pick.
+  const widthFits = (s: number) => targets.every(t => fits(t, Math.min(t.column, COLUMNS + 1 - s), s));
+  const spanChoices = [...SPAN_CHOICES.filter(widthFits), ...(span === null || SPAN_CHOICES.includes(span as 12) ? [] : [span])]
     .sort((a, b) => b - a)
     .map(s => ({ key: s, label: `${spanName(s)} · ${s}` }));
   const MIXED = 'Mixed · the selected regions differ; a pick sets every one of them.';
@@ -855,9 +865,9 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
                   <Pills
                     label="Region size"
                     items={[
-                      { key: 4, label: 'Small' },
-                      { key: 6, label: 'Mid' },
-                      { key: 12, label: 'Large' },
+                      { key: 4, label: 'Small', disabled: !widthFits(4) },
+                      { key: 6, label: 'Mid', disabled: !widthFits(6) },
+                      { key: 12, label: 'Large', disabled: !widthFits(12) },
                     ]}
                     current={span === 4 || span === 6 || span === 12 ? span : null}
                     disabled={readOnly || fullWidthOnly}

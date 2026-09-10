@@ -492,15 +492,63 @@ export function refRows(refs: DocumentRefs): { kind: 'list' | 'asset' | 'shortcu
   ];
 }
 
-/** The regions of one position in sequence, split into rows where a region
- *  starts a new row; what the schematic draws. */
+/** Whether two regions' column spans share a column. */
+const shareColumns = (a: Region, b: Region): boolean => a.column < b.column + b.span && b.column < a.column + a.span;
+
+/** The regions of one position in sequence, split into rows: a region starts a
+ *  row when it says so, and also when the columns it names are already held on
+ *  the current row (R5): the page wraps rather than draws one region over
+ *  another. What the schematic and the served page draw. */
 export function rowsAt(doc: PageDocument, position: Position): Region[][] {
+  const rows: Region[][] = [];
+  for (const r of doc.regions.filter(x => x.position === position)) {
+    const row = rows[rows.length - 1];
+    if (!row || r.newRow || row.some(x => shareColumns(x, r))) rows.push([r]);
+    else row.push(r);
+  }
+  return rows;
+}
+
+/** The rows as the document declares them, by Start New Row alone. */
+function declaredRowsAt(doc: PageDocument, position: Position): Region[][] {
   const rows: Region[][] = [];
   for (const r of doc.regions.filter(x => x.position === position)) {
     if (rows.length === 0 || r.newRow) rows.push([r]);
     else rows[rows.length - 1].push(r);
   }
   return rows;
+}
+
+/** The other regions of a region's declared row: the columns its Column and Span may not cross. */
+export function rowMates(doc: PageDocument, r: Region): Region[] {
+  return declaredRowsAt(doc, r.position).find(row => row.some(x => x.id === r.id))?.filter(x => x.id !== r.id) ?? [];
+}
+
+export interface Overlap {
+  position: Position;
+  /** The earlier region's id, then the later one's. */
+  a: string;
+  b: string;
+  /** The columns they share, inclusive. */
+  from: number;
+  to: number;
+}
+
+/** Every pair of regions declared on one row that share a column, the earlier first. */
+export function overlappingRegions(doc: PageDocument): Overlap[] {
+  const out: Overlap[] = [];
+  for (const position of POSITIONS) {
+    for (const row of declaredRowsAt(doc, position)) {
+      for (let i = 0; i < row.length; i++) {
+        for (let j = i + 1; j < row.length; j++) {
+          const a = row[i];
+          const b = row[j];
+          if (shareColumns(a, b)) out.push({ position, a: a.id, b: b.id, from: Math.max(a.column, b.column), to: Math.min(a.column + a.span, b.column + b.span) - 1 });
+        }
+      }
+    }
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- row page paths

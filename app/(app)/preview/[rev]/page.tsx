@@ -11,7 +11,6 @@ import { renderComponents } from '@/lib/design/component-render';
 import { CodePageFrame, RowPageView } from '@/components/page/RowPageView';
 import { familyExtras } from '@/lib/design/page-families';
 import { composedDocument } from '@/lib/design/composed-page';
-import { DeveloperToolbar } from '@/components/page/DeveloperToolbar';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // Save and Run (APEX: Save and Run Page), Phase 3 step 6. The designer's "Save
@@ -25,6 +24,11 @@ import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ rev: string }>;
+
+function when(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toISOString().replace('T', ' ').slice(0, 16) + 'Z';
+}
 
 async function baseMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { rev } = await params;
@@ -66,16 +70,20 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   const lists = await loadDocumentLists(refs.lists, nav);
   const d = { page: preview.page, document, shortcuts, assets, nav, lists, allowed: new Set(asked), messages, components };
 
+  // The Developer Toolbar is the app layout's, drawn for the administrator on
+  // every running page (R5); what it cannot know from the address, which
+  // revision this is and in what state, stays as a line at the top.
+  const state = preview.isLive ? 'the live revision' : preview.publishedAt ? 'published, superseded' : 'a draft';
   return (
     <>
-      <DeveloperToolbar
-        page={preview.page}
-        revisionId={preview.revisionId}
-        createdAt={preview.createdAt}
-        publishedAt={preview.publishedAt}
-        isLive={preview.isLive}
-        problems={preview.problems}
-      />
+      <p data-preview-note="" className="sticky top-0 z-30 m-0 flex flex-wrap gap-x-4 border-b border-text bg-text px-4 py-2 font-mono text-10 uppercase tracking-[0.14em] text-bg">
+        <span className="font-semibold">Preview</span>
+        <span>{preview.page.name}</span>
+        <span>
+          revision {preview.revisionId.slice(0, 8)} · {state} · saved {when(preview.createdAt)}
+        </span>
+        {preview.problems.length > 0 && <span className="text-brand">{preview.problems.length} problem{preview.problems.length === 1 ? '' : 's'} in the stored document</span>}
+      </p>
       {composed ? (
         <>
           {extras}

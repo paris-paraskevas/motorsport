@@ -222,6 +222,19 @@ describe('messages', () => {
     expect(idx['region:later']).toBe('warn');
     expect(idx['position:body']).toBe('warn');
   });
+
+  it('two regions on one row sharing a column are an error that names both and opens Layout (R5)', () => {
+    const overlapping: PageDocument = {
+      version: 1,
+      regions: [region({ id: 'left', title: 'Left', span: 6 }), region({ id: 'right', title: 'Right', seq: 20, column: 1, span: 6, newRow: false })],
+      actions: [],
+    };
+    const ms = designerMessages(overlapping, page);
+    expect(ms.map(m => `${m.level}: ${m.text}`)).toEqual(['err: Right overlaps Left on one row (columns 1 to 6). Move it, or start a new row.']);
+    expect(ms[0]).toMatchObject({ sel: { kind: 'region', id: 'right' }, group: 'Layout' });
+    const beside: PageDocument = { ...overlapping, regions: [overlapping.regions[0], { ...overlapping.regions[1], column: 7 }] };
+    expect(designerMessages(beside, page)).toEqual([]);
+  });
 });
 
 describe('page search', () => {

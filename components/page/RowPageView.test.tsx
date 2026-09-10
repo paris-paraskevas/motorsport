@@ -123,6 +123,24 @@ describe('RowPageView', () => {
     expect(withButtons).toContain('>Read more</button>');
   });
 
+  it('draws a region whose columns another region of its row already holds on a row of its own, never over its neighbour (R5)', () => {
+    const wrapped = renderToStaticMarkup(
+      <RowPageView
+        {...data}
+        document={{
+          version: 2,
+          actions: [],
+          regions: [
+            { id: 'x', kind: 'static', title: 'X', position: 'body', seq: 10, column: 1, span: 6, newRow: true, hidden: false, authz: null, text: 'Left.' },
+            { id: 'y', kind: 'static', title: 'Y', position: 'body', seq: 20, column: 1, span: 6, newRow: false, hidden: false, authz: null, text: 'Also left.' },
+          ],
+        }}
+      />,
+    );
+    expect((wrapped.match(/class="grid grid-cols-12 gap-6"/g) ?? []).length).toBe(2);
+    expect(wrapped.indexOf('data-region="x"')).toBeLessThan(wrapped.indexOf('data-region="y"'));
+  });
+
   it('draws Header Text above a region’s body and Footer Text below it, shortcuts substituted, and neither for a region the visitor is refused (P1.3)', () => {
     const texts = renderToStaticMarkup(
       <RowPageView

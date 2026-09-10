@@ -11,6 +11,8 @@ import {
   patternMatches,
   refRows,
   rowPagePathProblem,
+  overlappingRegions,
+  rowMates,
   rowsAt,
   schemesAsked,
   substituteShortcuts,
@@ -145,6 +147,24 @@ describe('parsePageDocument', () => {
     };
     expect(rowsAt(doc, 'body').map(row => row.map(r => r.id))).toEqual([['a', 'b'], ['c']]);
     expect(rowsAt(doc, 'footer')).toEqual([]);
+  });
+
+  it('wraps a region whose columns another region of its row already holds, names the row mates and the overlap (R5)', () => {
+    const doc: PageDocument = {
+      version: 1,
+      actions: [],
+      regions: [
+        { ...DOC.regions[0], id: 'a', seq: 10, column: 1, span: 6, newRow: true },
+        { ...DOC.regions[0], id: 'b', seq: 20, column: 1, span: 6, newRow: false },
+        { ...DOC.regions[0], id: 'c', seq: 30, column: 7, span: 6, newRow: false },
+      ],
+    };
+    // Drawn: b cannot sit on a's columns, so it starts a row of its own and c joins it.
+    expect(rowsAt(doc, 'body').map(row => row.map(r => r.id))).toEqual([['a'], ['b', 'c']]);
+    // Declared: the three share one row, so the designer's checks see a and c beside b.
+    expect(rowMates(doc, doc.regions[1]).map(r => r.id)).toEqual(['a', 'c']);
+    expect(overlappingRegions(doc)).toEqual([{ position: 'body', a: 'a', b: 'b', from: 1, to: 6 }]);
+    expect(overlappingRegions(DOC)).toEqual([]);
   });
 });
 
