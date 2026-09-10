@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.108 — 2026-09-10
+
+Internal only: the day's working notes recorded. Nothing changes for readers.
+
 ## 1.0.107 — 2026-09-10
 
 In the design tool, dragging a region on the Layout tab works again in the browser: the drag no longer ends the moment it begins, so a region can be moved to any of the yellow targets. Nothing changes for readers.

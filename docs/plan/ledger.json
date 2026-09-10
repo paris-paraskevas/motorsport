@@ -247,8 +247,9 @@
    "defaults": "a zero-delay timeout after dragstart carrying the drag into the next task, with a token so a drag that ended first is not set afterwards; the yellow drop tiles and their positions as they were; the three drag sources share the one entry in the designer",
    "needsWord": "",
    "acceptance": "a real mouse drag in Chromium moves a tile onto a yellow target and Ctrl+Z restores it; a test that nothing is drawn inside dragstart and that the target appears a task later",
-   "status": "started",
-   "scopeHash": "59219d6b52be"
+   "status": "done",
+   "scopeHash": "59219d6b52be",
+   "evidence": "#988 · 1.0.107 · merged 14:22Z, prod 14:28Z 2026-09-10 · vitest 2009 (PageDesigner.test.tsx: nothing is drawn inside dragstart and the target appears a task later; an aborted dragstart never sets the drag, a dragend clears the tiles) · the browser's own drag on the local server: the move after mouse down returned at once, ten yellow targets, the drop on Body · first row moved Aside, Ctrl+Z restored it · reviewer: no blocking finding, the test gap taken · review page f3c9ba18-209d-4eeb-ae13-5d47f4d5866e"
   },
   {
    "id": "P1.9",
@@ -257,10 +258,11 @@
    "scope": "Debug menu Off / Info / App Trace / Full Trace; a per-request step-timing graph; which source each component read and from which loader run; which show, condition and authorization rules fired; which dynamic actions fired; a correlation id; export a trace; server and client helpers feed one panel.",
    "fixedBy": "APEX Debug, adapted (runs 13–14)",
    "acceptance": "The panel lists every component of Home with a source and a time; the loader's phase codes appear; test on the collector.",
-   "status": "started",
+   "status": "done",
    "scopeHash": "ebc713d6aa5a",
    "defaults": "the level names as APEX writes them (Info the default when enabled, App Trace, Full Trace; levels 4, 6, 9), kept in sessionStorage as APEX keeps them for the tab's life, ?debug=YES|LEVEL4|LEVEL6|LEVEL9 on a page's address setting it for that visit, read in the browser so no cached page changes; a trace produced on demand by an admin-only API that re-runs the page's pipeline with a collector (the cached HTML readers get is never touched; a revision preview traced the same way by its id); the correlation id the request's cf-ray when present, else eight random hex characters, shown in the panel and prefixed to every line the Worker logs while debug is on; phase codes the Processing tab's step names (resolve · session · authz · show · build · refs · render · bind · action), a region's own entries as show:<id>, authz:<id>, build:<id>, render:<id>, action:<id>; the loader's codes F (fetch and parse) and W (write) per snapshot key, kept by the snapshot writer in KV (snapshot-meta:<key>: run, at, phases; no schema change); each renderer declares what it reads (READS) and the panel joins those keys to the loader's run and phases; Info lists the steps with times, the components with a source and a time, the actions fired; App Trace adds each region's rule verdicts, each source's run and phases, the refs' counts; Full Trace adds the refs' keys, each component's settings, the client's timings; the panel a drawer over the working tab (APEX opens a report page; ours stays on the page) with the bar graph, the rows, Refresh and Export as JSON; on a preview every region draws, so the trace says which rules would hide a region for the visitor tracing; one loader dispatch after the merge so the phases exist",
-   "needsWord": ""
+   "needsWord": "",
+   "evidence": "#987 · 1.0.106 · merged 14:09Z, prod 14:15Z 2026-09-10 · vitest 2024 (debug-trace.test.ts: a page with Home's six components at App Trace lists every component with a source and a time and the loader run behind it, the rules that fired, Info without the verdicts, a revision by its id; debug.test.ts: the levels, the collector, the id; source-snapshot-meta.test.ts: F and W under the run, nothing on the Worker; route.test.ts: 404, 400, the level, the cf-ray id; DebugPanel.test.tsx; DeveloperToolbar.test.tsx: the menu as APEX lists it, the level kept and traced, View Debug, No Debug, the address) · browser run on the local server: Monza at App Trace with the steps' bars and the browser's bind line, the calendar page at Full Trace listing render:month · Calendar · 1018 ms · content:series with its settings, Refresh under a new id, 42 correlated lines in the server log · dry run Total Upload 43153.64 KiB · the loader dispatched after the merge (run 34487264214, success): 38 keys with phases in the production KV hash under that run's name · reviewer: one risk, one gap, two nits, all taken · review page f067c81c-4bfd-433c-989c-b618b1d0f8f0"
   },
   {
    "id": "P1.10",
