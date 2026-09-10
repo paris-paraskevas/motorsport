@@ -1859,6 +1859,25 @@ Won't touch this session: merging #978 as it stands; any Phase 2–4 slot; P1.1,
 
 Active: (awaiting [+Nm] prefixes)
 
+### Wed 2026-09-10 — session 48 (afternoon; the operator present) — P1.6 and P1.9, then the close
+
+Order fixed by the session-47 handoff prompt. Every subagent on Sonnet or Haiku, one at a time, writing to files as it goes; no agent builds; the gates and a fresh-context reviewer before any merge; merge only on the word.
+
+1. **P1.6 Property Editor conformance** (~2h 30m): the plan written at the end of session 47 (`~/.claude/plans/idempotent-waddling-nebula.md`) presented for the word → tests first → built directly → gates (tsc 0 · lint 0 errors · full vitest · the hooks' test) → browser run on the local server → review page → fresh-context Sonnet reviewer → merge on the word → prod check → ledger evidence. Trio 1.0.104.
+2. **P1.9 Debug panel** (~3h): decision scan → plan mode → the same sequence. Trio 1.0.105.
+3. **Close** (~20 min): Inbox triage, `docs/HANDOFF.md`, this day marked, the ledger's evidence; one records PR.
+
+Won't touch this session: any Phase 2–4 slot; P1.1, P1.4, P1.8 (they carry questions) and P1.2, P1.7, P1.10–P1.12 (not in today's batch); the session-47 Inbox items (the preview's missing title, the preview link on the prod host, Tooltips on the pane header, the pane memory per user, the push-guard's match) unless asked; TanStack Table; the cost PR; Home's split on production; the console's file deletions; any prod Supabase write without "apply <id>"; any push to `main`; any agent on Fable; any fan-out.
+
+Outcome (four slots shipped, all four merged on the word; the day ran ~09:30Z–15:00Z):
+- **P1.6 done** — #985, 1.0.104, prod 11:55Z. Multi-select of regions with the common groups, the "changed since the last save" marker until Save, the Attributes tab for a component's settings. Reviewer: three nits, all taken.
+- **R5 added and done** — #986, 1.0.105, prod 13:07Z. The operator's three asks of 12:10Z (Save and Run publishes and opens one named working tab; the Developer Toolbar as APEX's overlay on live pages for the administrator; a tile drags from any part) plus the overlap defect (the Column pills offer free columns only; an overlap is a Messages error that holds Save; the served page wraps). Reviewer: an admin import that pulled the service-role client into the client bundle, the Column Span pills, the preview note; all taken.
+- **P1.9 done** — #987, 1.0.106, prod 14:15Z. The Debug menu on the toolbar (Enable Debug ▸ Info · App Trace · Full Trace, No Debug, View Debug), the trace API, the panel with the step bars, the loader's F/W phases in KV under the run's name (proven by run 34487264214: 38 keys). Reviewer: a prod meta write from the Worker, the browser log per page, a bad level → 400; all taken.
+- **R5b added and done** — #988, 1.0.107, merged 14:22Z. The operator's check found R5's drag did not move regions; on the word "research, not gut" the cause was found in Chromium (a DOM change inside `dragstart` aborts the drag) and the fix proven with the browser's own drag. Reviewer: no blocking finding, the test gap taken.
+- Close: the ledger's evidence, the Inbox, the handoff and the session-49 prompt in the records PR (1.0.108).
+
+Active: ~5h 30m (the operator present throughout; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

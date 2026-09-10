@@ -35,10 +35,17 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 ## Inbox — merged and deduped 2026-08-28 (session 41)
 
-- (2026-09-10, session 47) The Save and Run preview renders a row page through the composed-page frame, so it shows no page title where the live page does; `loadRevisionPreview` marks every row page `served: 'rows'` since R4.1.
-- (2026-09-10, session 47) With `PADDOCK_ENV=production` on a local dev server, Save and Run opens the preview on the production host (`SITE_URL`); a local base for the preview link when the host is localhost.
+- (2026-09-10, session 47) The preview route (`/preview/<revision>`, no longer opened by Save and Run since R5) renders a row page through the composed-page frame, so it shows no page title where the live page does; `loadRevisionPreview` marks every row page `served: 'rows'` since R4.1.
 - (2026-09-10, session 47) Thread the Tooltips toggle through the Property Editor's header controls; key the remembered pane layout by Clerk user once the designer knows the user.
 - (2026-09-10, session 47) A push-guard that matches a push only at a command position, so a heredoc quoting the words is not denied (the operator let the strict form stand for now).
+- (2026-09-10, session 48) Dropping a tile onto another tile with a before/after gesture; today the drop targets are the yellow tiles between rows and columns only.
+- (2026-09-10, session 48) The Developer Toolbar fetches the pages list on every page load for an administrator; cache it for the tab.
+- (2026-09-10, session 48) The trace's session step costs about 220 ms (Clerk's session read); worth a look wherever a live render asks for the session.
+- (2026-09-10, session 48) A pre-existing hydration warning on page load in the local browser run (seen before this session's code); find its source.
+- (2026-09-10, session 48) A local `cf:build` prerender writes snapshots and their meta to the prod KV and Supabase under the runner name `local` (`DATA_SOURCE` is unset locally); decide whether the local build should run with `DATA_SOURCE=db`.
+- (2026-09-10, session 48) The merged branches of the day (and earlier ones) remain on origin, since `gh pr merge` ran without `--delete-branch`; a deletion pass needs the word.
+- (2026-09-10, session 48) Playwright's `browser_run_code_unsafe` echoes the final URL, which carries the spent Clerk sign-in ticket, into the transcript; a scratch redirect page or a sign-in that posts the ticket would keep it out.
+- (2026-09-10, session 48) Home's six components appear in a Debug trace only once Home is served from rows; the acceptance's Home list lives in the debug-trace test until then.
 
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 

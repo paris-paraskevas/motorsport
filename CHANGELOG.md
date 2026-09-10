@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.108 — 2026-09-10
+
+### Records — session 48 closed: the ledger's evidence for P1.9 and R5b, the handoff for session 49, the Inbox
+
+Docs only, no code. `docs/plan/ledger.json`: P1.9 and R5b done with their evidence (the PRs, the versions, the merge and prod times, the tests named, the browser runs, the loader run 34487264214 with its 38 keys of phases in the production KV hash, the reviewers' verdicts, the review pages); `docs/plan/components-programme.md` regenerated from it. `docs/HANDOFF.md`: the session-48 LATEST section with a handoff prompt for session 49 (state 1.0.108; P1.2 the one decision-free slot left in Phase 1; the scans for P1.7 and P1.10–P1.12; the three questions P1.1, P1.4, P1.8; the browser recipe updated for the publishing Save and Run, the toolbar on live pages, `?debug=` and the browser's own drag; the landmines learned, among them Chromium's abort of a drag whose `dragstart` changes the DOM, the Clerk ticket echoed by Playwright's URL, a local `cf:build` writing meta to the prod KV). `SCHEDULE.md`: the day's block with its outcome (four slots, four merges on the word, about 5h 30m). `IDEAS.md`: the Inbox gains eight session-48 items, loses the one R5 shipped (the preview link on the prod host) and re-words the preview-title item, since Save and Run no longer opens the preview.
+
 ## 1.0.107 — 2026-09-10
 
 ### Designer — R5b: the drag begins in the browser
