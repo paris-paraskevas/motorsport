@@ -7,7 +7,8 @@ import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
-import { applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts, type PageDocument } from '@/lib/design/page-document';
+import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts, type PageDocument } from '@/lib/design/page-document';
+import { loadBuildOptions } from '@/lib/design/build-options';
 import { raceWeekendNow, renderComponents } from '@/lib/design/component-render';
 import { composedDocument, matchComposedPage } from '@/lib/design/composed-page';
 import { familyExtras, familyMetadata } from '@/lib/design/page-families';
@@ -123,7 +124,8 @@ export default async function CatchAll({ params }: { params: Params }) {
       return <RefusedPage title={r.page.title ?? r.page.name} message={message} signInHelps={signInHelps} />;
     }
   }
-  const document = applyShow(r.document, { signedIn, raceWeekend: asks.calendar ? await raceWeekendNow() : null });
+  // A region whose Build Option is Excluded leaves the page here, before its component is drawn (P1.3).
+  const document = applyBuildOptions(applyShow(r.document, { signedIn, raceWeekend: asks.calendar ? await raceWeekendNow() : null }), await loadBuildOptions());
 
   const refs = documentRefs(document);
   const where = r.kind === 'composed' ? { path: r.pattern, params: r.params, page: r.page } : { path, params: {}, page: r.page };

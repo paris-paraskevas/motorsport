@@ -12,7 +12,8 @@ import { allowedKeys, currentVisitor, type Visitor } from './authz-evaluate';
 import { loadAssetsById, loadLiveFrame } from './live-page';
 import { loadDocumentLists, loadNavLists } from './lists';
 import { loadShortcuts } from './shortcuts';
-import { applyShow, documentRefs, schemesAsked, showAsks } from './page-document';
+import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks } from './page-document';
+import { loadBuildOptions } from './build-options';
 import { raceWeekendNow, renderComponents } from './component-render';
 import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, pageFromRow, type PageRow } from './pages';
 
@@ -150,15 +151,16 @@ async function framed(
     // it; the race-weekend fact is read when a rule asks for it.
     const asked = schemesAsked(null, stored);
     const asks = showAsks(stored);
-    const [shortcuts, assets, nav, rules, who, raceWeekend] = await Promise.all([
+    const [shortcuts, assets, nav, rules, who, raceWeekend, buildOptions] = await Promise.all([
       loadShortcuts(),
       loadAssetsById(refs.assets),
       loadNavLists(),
       asked.length > 0 ? (schemes ?? loadAuthzSchemes()) : Promise.resolve([] as readonly AuthzScheme[]),
       asked.length > 0 || asks.visitor ? (visitor ?? currentVisitor()) : Promise.resolve(null),
       asks.calendar ? raceWeekendNow() : Promise.resolve<boolean | null>(null),
+      loadBuildOptions(),
     ]);
-    const document = applyShow(stored, { signedIn: who ? who.signedIn : null, raceWeekend });
+    const document = applyBuildOptions(applyShow(stored, { signedIn: who ? who.signedIn : null, raceWeekend }), buildOptions);
     const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
     const messages: Record<string, string | null> = {};
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;

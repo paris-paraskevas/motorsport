@@ -8,6 +8,7 @@ import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableAuthzScheme } from '@/lib/design/authz';
+import type { EditableBuildOption } from '@/lib/design/build-options';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import {
   PAGE_SELECTION,
@@ -87,6 +88,7 @@ export function PageDesigner({
   listCounts,
   assets,
   schemes,
+  buildOptions,
   shortcuts,
   themeDefault = 'Paper',
   regionDefaults = SHIPPED_REGION_DEFAULTS,
@@ -109,6 +111,8 @@ export function PageDesigner({
   listCounts: Record<string, number>;
   assets: EditableAsset[];
   schemes?: EditableAuthzScheme[];
+  /** The Build Options with their statuses, for the Configuration group; absent shows plain labels. */
+  buildOptions?: EditableBuildOption[];
   shortcuts: EditableShortcut[];
   themeDefault?: string;
   /** The detail as stored after a save, a publish or a reload. */
@@ -742,6 +746,7 @@ export function PageDesigner({
     assets,
     lists,
     shortcuts,
+    buildOptions: Object.fromEntries((buildOptions ?? []).map(b => [b.key, b.status])),
     shared,
     attrs,
     setAttrs: fn => setAttrs(d => fn(d)),

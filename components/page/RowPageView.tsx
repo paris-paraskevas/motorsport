@@ -165,11 +165,34 @@ function Rows({ d, rows, className = '' }: { d: RowPageData; rows: Region[][]; c
   );
 }
 
+/** A region as served: refused whole when the visitor fails its scheme; else
+ *  its Header Text, its body and its Footer Text (APEX: Region Header and
+ *  Footer), the texts plain, shortcuts substituted, escaped like any text. */
 function RegionBlock({ d, region }: { d: RowPageData; region: Region }) {
   if (region.authz && region.authz !== 'public' && !d.allowed.has(region.authz)) {
     const message = d.messages[region.authz];
     return message ? <p className="border border-border px-3 py-2 text-13 text-text-faint">{message}</p> : null;
   }
+  const header = region.headerText === undefined ? '' : substituteShortcuts(region.headerText, d.shortcuts).trim();
+  const footer = region.footerText === undefined ? '' : substituteShortcuts(region.footerText, d.shortcuts).trim();
+  return (
+    <>
+      {header !== '' && (
+        <p data-region-header="" className={`${PROSE} mb-3`}>
+          {header}
+        </p>
+      )}
+      <RegionBody d={d} region={region} />
+      {footer !== '' && (
+        <p data-region-footer="" className="mt-3 text-13 text-text-faint">
+          {footer}
+        </p>
+      )}
+    </>
+  );
+}
+
+function RegionBody({ d, region }: { d: RowPageData; region: Region }) {
   if (region.kind === 'component') return <>{d.components?.[region.id] ?? null}</>;
   const title = region.title.trim();
   if (region.kind === 'static') {

@@ -140,6 +140,16 @@ export function PropertyPane({
   };
   const [groupsOpen, setGroupsOpen] = useState(false);
   const [closed, setClosed] = useState<Set<string>>(() => new Set(groups.filter(g => g.closed || g.later).map(g => g.title)));
+  // A group seen for the first time (another kind of component selected) starts
+  // closed when it asks to; a group the person has toggled keeps their choice.
+  // Adjusted during render, like the filter above.
+  const [seenGroups, setSeenGroups] = useState<Set<string>>(() => new Set(groups.map(g => g.title)));
+  const unseen = groups.filter(g => !seenGroups.has(g.title));
+  if (unseen.length > 0) {
+    setSeenGroups(prev => new Set([...prev, ...unseen.map(g => g.title)]));
+    const toClose = unseen.filter(g => g.closed || g.later).map(g => g.title);
+    if (toClose.length > 0) setClosed(prev => new Set([...prev, ...toClose]));
+  }
   const [seenFocus, setSeenFocus] = useState<number>(focusGroup?.n ?? 0);
   if (focusGroup && focusGroup.n !== seenFocus) {
     // Messages and Page Search ask for a group: open it, adjusted during render.

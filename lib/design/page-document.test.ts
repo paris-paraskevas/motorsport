@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   EMPTY_DOCUMENT,
+  applyBuildOptions,
   applyShow,
   documentRefs,
   isLegacyBody,
@@ -36,11 +37,13 @@ describe('parsePageDocument', () => {
     expect(value.regions[1]).toMatchObject({ kind: 'image', showCaption: true });
   });
 
-  it('refuses what is not a document, an unknown version, and a regions field that is not a list', () => {
+  it('refuses what is not a document, an unknown version, and a regions field that is not a list; reads version 1 and 2 and writes 2', () => {
     expect(parsePageDocument(null)).toEqual({ value: EMPTY_DOCUMENT, problems: ['the document must be an object'] });
-    expect(parsePageDocument({ version: 2, regions: [] })).toEqual({ value: EMPTY_DOCUMENT, problems: ['unknown document version 2'] });
+    expect(parsePageDocument({ version: 3, regions: [] })).toEqual({ value: EMPTY_DOCUMENT, problems: ['unknown document version 3'] });
     expect(parsePageDocument({ version: 1, regions: 'x' })).toEqual({ value: EMPTY_DOCUMENT, problems: ['regions must be a list'] });
     expect(parsePageDocument({ version: 1, regions: [] })).toEqual({ value: EMPTY_DOCUMENT, problems: [] });
+    expect(parsePageDocument({ version: 2, regions: [] })).toEqual({ value: EMPTY_DOCUMENT, problems: [] });
+    expect(EMPTY_DOCUMENT.version).toBe(2);
   });
 
   it('drops an unusable region and names each problem, keeping the rest', () => {
@@ -201,6 +204,46 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(applyShow(parsed, { signedIn: true, raceWeekend: false }).regions.map(r => r.id)).toEqual(['a', 'b']);
     expect(applyShow(parsed, { signedIn: false, raceWeekend: null }).regions.map(r => r.id)).toEqual(['a', 'c', 'd']);
     expect(applyShow(DOC, { signedIn: false, raceWeekend: false })).toBe(DOC);
+  });
+});
+
+describe('Header Text, Footer Text and the Build Option (the components programme, P1.3)', () => {
+  const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'body', ...over });
+  const doc = (regions: unknown[], version: unknown = 2) => ({ version, regions, actions: [] });
+
+  it('reads a version 1 document as version 2 with the three attributes absent, and a version 2 document with them', () => {
+    const old = parsePageDocument(doc([region({})], 1));
+    expect(old.problems).toEqual([]);
+    expect(old.value.version).toBe(2);
+    expect(old.value.regions[0]).not.toHaveProperty('headerText');
+    expect(old.value.regions[0]).not.toHaveProperty('footerText');
+    expect(old.value.regions[0]).not.toHaveProperty('buildOption');
+    const full = parsePageDocument(doc([region({ headerText: ' Above ', footerText: 'Below {shortcut:times.local}', buildOption: 'weather' })]));
+    expect(full.problems).toEqual([]);
+    expect(full.value.regions[0]).toMatchObject({ headerText: 'Above', footerText: 'Below {shortcut:times.local}', buildOption: 'weather' });
+  });
+
+  it('leaves an empty text or option out, and refuses a text over the limit or an option the site does not have', () => {
+    const empty = parsePageDocument(doc([region({ headerText: '  ', footerText: '', buildOption: '' })]));
+    expect(empty.problems).toEqual([]);
+    expect(empty.value.regions[0]).not.toHaveProperty('headerText');
+    expect(empty.value.regions[0]).not.toHaveProperty('footerText');
+    expect(empty.value.regions[0]).not.toHaveProperty('buildOption');
+    const long = parsePageDocument(doc([region({ headerText: 'x'.repeat(301) }), region({ id: 'f', footerText: 'y'.repeat(301) })]));
+    expect(long.value.regions).toEqual([]);
+    expect(long.problems).toEqual(['region r: the header text is at most 300 characters', 'region f: the footer text is at most 300 characters']);
+    const unknown = parsePageDocument(doc([region({ buildOption: 'holograms' })]));
+    expect(unknown.value.regions).toEqual([]);
+    expect(unknown.problems).toEqual(['region r: the build option must be one of ghost_lap_3d, weather, social, studio']);
+  });
+
+  it('applyBuildOptions drops the regions whose option is Excluded and keeps the rest, the document untouched when nothing changes', () => {
+    const parsed = parsePageDocument(
+      doc([region({ id: 'a' }), region({ id: 'b', buildOption: 'weather' }), region({ id: 'c', buildOption: 'social' }), region({ id: 'd', buildOption: 'studio' })]),
+    ).value;
+    expect(applyBuildOptions(parsed, { weather: 'exclude', social: 'include' }).regions.map(r => r.id)).toEqual(['a', 'c', 'd']);
+    expect(applyBuildOptions(parsed, { weather: 'include', social: 'include', studio: 'include', ghost_lap_3d: 'exclude' })).toBe(parsed);
+    expect(applyBuildOptions(parsed, {})).toBe(parsed);
   });
 });
 

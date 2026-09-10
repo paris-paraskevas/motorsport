@@ -6,6 +6,7 @@ import {
   COLUMNS,
   IMAGE_ALT_MAX,
   REGION_KIND_LABELS,
+  REGION_TEXT_MAX,
   REGION_TITLE_MAX,
   SHOW_RULES,
   SHOW_RULE_LABELS,
@@ -30,6 +31,7 @@ import { PAGE_NAME_MAX, PAGE_TITLE_MAX, isLegacyBody } from '@/lib/design/page-d
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
+import { BUILD_OPTION_DEFAULTS, BUILD_OPTION_KEYS, type BuildOptionKey, type BuildOptionStatus } from '@/lib/design/build-option-defaults';
 import { FIELD, PBTN, Pills, Ro, TEXTAREA, YesNo, type PropGroup } from './PropertyPane';
 import {
   PD_POSITION,
@@ -51,7 +53,8 @@ import {
 // The Property Editor's groups for whatever is selected (Paddock Designer v2.4,
 // renderPE): the page (Identification, Appearance, Navigation Menu, Head, Page
 // CSS, Security, Advanced), a region (Identification, Source, Layout,
-// Appearance, Server-side Condition, Security, Configuration, Advanced), a
+// Appearance, Header and Footer, Server-side Condition, Security,
+// Configuration, Advanced), a
 // dynamic action, one of its effects, a position, a shared component's tile, a
 // system step. Groups the document has no data for yet are shown folded and
 // labelled later (the operator's call, 2026-09-08); the labels are the
@@ -95,6 +98,8 @@ export interface PropsContext {
   assets: EditableAsset[];
   lists: { key: string; label: string }[];
   shortcuts: EditableShortcut[];
+  /** The Build Options' statuses by key, for the Configuration group's labels; a key missing here reads as Include. */
+  buildOptions: Readonly<Partial<Record<BuildOptionKey, BuildOptionStatus>>>;
   /** The shared lists' entry counts, for the Navigation Menu group. */
   shared: Record<'doors' | 'footer' | 'bar', string>;
   attrs: AttrsDraft;
@@ -127,6 +132,12 @@ const LATER = (title: string): PropGroup => ({ title, props: [], later: true });
 
 function patch(ctx: PropsContext, id: string, label: string, fn: (r: Region) => Region) {
   ctx.commit({ ...ctx.doc, regions: ctx.doc.regions.map(r => (r.id === id ? fn(r) : r)) }, label);
+}
+/** Header Text or Footer Text as typed; an empty field leaves the attribute out, as the parser does. */
+function textAttr(r: Region, key: 'headerText' | 'footerText', value: string): Region {
+  const next: Region = { ...r };
+  delete next[key];
+  return value === '' ? next : { ...next, [key]: value };
 }
 
 function patchAction(ctx: PropsContext, id: string, label: string, fn: (a: DynamicAction) => DynamicAction) {
@@ -344,7 +355,7 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
 }
 
 export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: string; name: string }; groups: PropGroup[] } {
-  const { doc, readOnly, schemes, assets, lists, shortcuts, act, fieldId } = ctx;
+  const { doc, readOnly, schemes, assets, lists, shortcuts, buildOptions, act, fieldId } = ctx;
   const K = REGION_KIND_LABELS[r.kind];
   const siblings = doc.regions.filter(x => x.position === r.position);
   const index = siblings.findIndex(x => x.id === r.id);
@@ -658,6 +669,48 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
     },
     LATER('Appearance'),
     {
+      title: 'Header and Footer',
+      closed: true,
+      props: [
+        {
+          label: 'Header Text',
+          htmlFor: fieldId('rheader'),
+          control: (
+            <input
+              id={fieldId('rheader')}
+              type="text"
+              value={r.headerText ?? ''}
+              maxLength={REGION_TEXT_MAX}
+              disabled={readOnly}
+              aria-label="Region header text"
+              className={FIELD}
+              onChange={e => p('Header Text updated.', x => textAttr(x, 'headerText', e.target.value))}
+            />
+          ),
+          note: 'Shown above the region’s content.',
+          help: 'A line of plain text drawn above the region’s body (APEX: Header Text). {shortcut:key} inserts a shortcut; nothing else is substituted and no markup is read.',
+        },
+        {
+          label: 'Footer Text',
+          htmlFor: fieldId('rfooter'),
+          control: (
+            <input
+              id={fieldId('rfooter')}
+              type="text"
+              value={r.footerText ?? ''}
+              maxLength={REGION_TEXT_MAX}
+              disabled={readOnly}
+              aria-label="Region footer text"
+              className={FIELD}
+              onChange={e => p('Footer Text updated.', x => textAttr(x, 'footerText', e.target.value))}
+            />
+          ),
+          note: 'e.g. Times are local to you.',
+          help: 'A line of plain text drawn below the region’s body (APEX: Footer Text). {shortcut:key} inserts a shortcut.',
+        },
+      ],
+    },
+    {
       title: 'Rules',
       props: [
         {
@@ -694,7 +747,35 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
         },
       ],
     },
-    LATER('Configuration'),
+    {
+      title: 'Configuration',
+      closed: true,
+      props: [
+        {
+          label: 'Build Option',
+          control: (
+            <Pills
+              label="Region build option"
+              items={[
+                { key: '', label: 'None' },
+                ...BUILD_OPTION_KEYS.map(k => ({ key: k, label: `${BUILD_OPTION_DEFAULTS[k].label}${buildOptions[k] === 'exclude' ? ' (excluded)' : ''}` })),
+              ]}
+              current={r.buildOption ?? ''}
+              disabled={readOnly}
+              onPick={k =>
+                p(k === '' ? 'Build Option cleared.' : `Build Option: ${BUILD_OPTION_DEFAULTS[k as BuildOptionKey].label}.`, x => {
+                  const next: Region = { ...x };
+                  delete next.buildOption;
+                  return k === '' ? next : { ...next, buildOption: k as BuildOptionKey };
+                })
+              }
+            />
+          ),
+          note: 'Excluded options render nothing, on every page.',
+          help: 'The feature switch this region belongs to (APEX: Configuration › Build Option). Set the switch to Exclude under Shared Components → Build Options and every region tied to it leaves the running site, without being deleted.',
+        },
+      ],
+    },
     {
       title: 'Advanced',
       props: [

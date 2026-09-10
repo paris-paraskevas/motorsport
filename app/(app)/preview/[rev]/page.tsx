@@ -5,7 +5,8 @@ import { loadAssetsById, loadRevisionPreview } from '@/lib/design/live-page';
 import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
-import { documentRefs, schemesAsked } from '@/lib/design/page-document';
+import { applyBuildOptions, documentRefs, schemesAsked } from '@/lib/design/page-document';
+import { loadBuildOptions } from '@/lib/design/build-options';
 import { renderComponents } from '@/lib/design/component-render';
 import { CodePageFrame, RowPageView } from '@/components/page/RowPageView';
 import { familyExtras } from '@/lib/design/page-families';
@@ -46,7 +47,9 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   // recipe, an empty body the default composition), its components in the code
   // page's frame, with its family's structured data.
   const composed = preview.page.served === 'rows';
-  const document = composed ? composedDocument(preview.document, preview.page.path) : preview.document;
+  const stored = composed ? composedDocument(preview.document, preview.page.path) : preview.document;
+  // An Excluded region leaves the preview as it leaves the running site (APEX: Build Option, P1.3); the show rules are not applied here.
+  const document = applyBuildOptions(stored, await loadBuildOptions());
   const asked = schemesAsked(preview.page.authz, document);
   const refs = documentRefs(document);
   const [shortcuts, assets, nav, schemes, components, extras] = await Promise.all([
