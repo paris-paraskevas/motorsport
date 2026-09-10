@@ -811,10 +811,9 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
   const colChoices = Array.from({ length: COLUMNS }, (_, i) => i + 1)
     .filter(c => targets.every(t => fits(t, c, t.span)))
     .map(c => ({ key: c, label: String(c) }));
-  const spanFits = (s: number) => targets.every(t => fits(t, t.column, s));
-  // A Size pick moves the column left when the width would not fit the twelve; the check follows the pick.
-  const sizeFits = (s: number) => targets.every(t => fits(t, Math.min(t.column, COLUMNS + 1 - s), s));
-  const spanChoices = [...SPAN_CHOICES.filter(spanFits), ...(span === null || SPAN_CHOICES.includes(span as 12) ? [] : [span])]
+  // A Size or Column Span pick moves the column left when the width would not fit the twelve; the check follows the pick.
+  const widthFits = (s: number) => targets.every(t => fits(t, Math.min(t.column, COLUMNS + 1 - s), s));
+  const spanChoices = [...SPAN_CHOICES.filter(widthFits), ...(span === null || SPAN_CHOICES.includes(span as 12) ? [] : [span])]
     .sort((a, b) => b - a)
     .map(s => ({ key: s, label: `${spanName(s)} · ${s}` }));
   const MIXED = 'Mixed · the selected regions differ; a pick sets every one of them.';
@@ -866,9 +865,9 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
                   <Pills
                     label="Region size"
                     items={[
-                      { key: 4, label: 'Small', disabled: !sizeFits(4) },
-                      { key: 6, label: 'Mid', disabled: !sizeFits(6) },
-                      { key: 12, label: 'Large', disabled: !sizeFits(12) },
+                      { key: 4, label: 'Small', disabled: !widthFits(4) },
+                      { key: 6, label: 'Mid', disabled: !widthFits(6) },
+                      { key: 12, label: 'Large', disabled: !widthFits(12) },
                     ]}
                     current={span === 4 || span === 6 || span === 12 ? span : null}
                     disabled={readOnly || fullWidthOnly}

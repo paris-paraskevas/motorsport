@@ -11,7 +11,8 @@ let user: { publicMetadata?: { role?: string } } | null = { publicMetadata: { ro
 let pathname = '/history/monza';
 vi.mock('@clerk/nextjs', () => ({ useUser: () => ({ isLoaded: true, user }) }));
 vi.mock('next/navigation', () => ({ usePathname: () => pathname }));
-import { DeveloperToolbar } from './DeveloperToolbar';
+import { DeveloperToolbar, matchesPattern } from './DeveloperToolbar';
+import { patternMatches } from '@/lib/design/page-document';
 
 const pages = [
   { id: 'a1b2c3d4-0000-4000-8000-000000000010', path: '/history/monza', name: 'Monza, a history', kind: 'row' },
@@ -58,6 +59,20 @@ describe('DeveloperToolbar', () => {
       expect(b.title).toContain(slot);
     }
     expect((screen.getByRole('button', { name: 'Session' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('matches patterns exactly as lib/design/page-document does (the copy kept out of the public chunk)', () => {
+    const cases: [string, string][] = [
+      ['/series/[slug]', '/series/f1'],
+      ['/series/[slug]', '/series/f1/standings'],
+      ['/series/[slug]/[tab]', '/series/f1/standings'],
+      ['/history/monza', '/history/monza'],
+      ['/history/monza', '/history/spa'],
+      ['/docs/[...rest]', '/docs/a/b/c'],
+      ['/docs/[...rest]', '/docs'],
+      ['/[a]/[b]', '/x'],
+    ];
+    for (const [pattern, path] of cases) expect(matchesPattern(pattern, path)).toBe(patternMatches(pattern, path));
   });
 
   it('names a pattern page by its pattern, and disables Page where no page of the application is served', async () => {

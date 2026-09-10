@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { Bug, FilePen, House, Info, PaintRoller, Settings, SquareMousePointer, SquarePen, Timer, type LucideIcon } from 'lucide-react';
-import { isAdmin } from '@/lib/threads';
 
 // The runtime Developer Toolbar (APEX: the Developer Toolbar at the foot of a
 // running page, UX map line 108; the operator's screenshots of 2026-09-10; R5).
@@ -22,8 +21,9 @@ interface PageLite {
 
 /** A registry pattern (`/series/[slug]`) against a literal path: the rule of
  *  lib/design/page-document's patternMatches, kept here so that module (the
- *  parser and the catalogue) stays out of every page's public chunk. */
-function matches(pattern: string, path: string): boolean {
+ *  parser and the catalogue) stays out of every page's public chunk; the test
+ *  pins the two together. */
+export function matchesPattern(pattern: string, path: string): boolean {
   if (pattern === path) return true;
   const ps = pattern.split('/').filter(Boolean);
   const xs = path.split('/').filter(Boolean);
@@ -62,7 +62,8 @@ function Entry({ icon: Icon, label, href, title, iconOnly = false }: { icon: Luc
 export function DeveloperToolbar() {
   const { isLoaded, user } = useUser();
   const pathname = usePathname() ?? '';
-  const admin = isLoaded && isAdmin(user);
+  // Clerk's publicMetadata.role, the source lib/threads.ts isAdmin() reads, checked inline as AppShell does: that module reaches the service-role database client and stays out of the public chunk.
+  const admin = isLoaded && user?.publicMetadata?.role === 'admin';
   const [pages, setPages] = useState<PageLite[] | null>(null);
   // The pages of the application, once, for an administrator only: which page this address is.
   useEffect(() => {
@@ -83,7 +84,7 @@ export function DeveloperToolbar() {
   if (!admin) return null;
 
   const preview = pathname.match(/^\/preview\/([0-9a-f]{8})[0-9a-f-]*$/);
-  const page = pages?.find(p => p.path === pathname) ?? pages?.find(p => p.path.includes('[') && matches(p.path, pathname));
+  const page = pages?.find(p => p.path === pathname) ?? pages?.find(p => p.path.includes('[') && matchesPattern(p.path, pathname));
   return (
     <div
       role="region"

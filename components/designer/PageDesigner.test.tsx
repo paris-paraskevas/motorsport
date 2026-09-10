@@ -426,6 +426,14 @@ describe('PageDesigner', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save and Run Page' }));
     expect(calls.some(c => c.method === 'POST')).toBe(false);
     expect(openMock).toHaveBeenCalledWith(expect.stringMatching(/\/history\/monza$/), 'paddock-run');
+    // A page the code serves with no revision yet and nothing changed: it runs as it is, nothing is published.
+    cleanup();
+    calls = [];
+    openMock.mockReset();
+    mount({ page: codePage, live: null, newest: null, revisions: [] });
+    fireEvent.click(screen.getByRole('button', { name: 'Save and Run Page' }));
+    expect(calls.some(c => c.method === 'POST')).toBe(false);
+    expect(openMock).toHaveBeenCalledWith(expect.stringMatching(/\/calendar$/), 'paddock-run');
   });
 
   it('a Layout tile drags from any part of it onto a yellow target (R5)', () => {

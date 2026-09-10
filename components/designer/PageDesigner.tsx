@@ -598,7 +598,8 @@ export function PageDesigner({
       toast('This route needs a slug; open one of its pages from the site.', 'bad');
       return;
     }
-    if (!dirty && !unpublishedNewest && newest) {
+    // Nothing changed and nothing unpublished (a page with no revision yet included): the page runs as it is.
+    if (!dirty && !unpublishedNewest) {
       window.open(runUrl(), RUN_TAB)?.focus();
       return;
     }

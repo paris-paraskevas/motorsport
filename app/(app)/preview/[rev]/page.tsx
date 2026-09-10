@@ -25,6 +25,11 @@ export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ rev: string }>;
 
+function when(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toISOString().replace('T', ' ').slice(0, 16) + 'Z';
+}
+
 async function baseMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { rev } = await params;
   const preview = await loadRevisionPreview(rev);
@@ -65,9 +70,20 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   const lists = await loadDocumentLists(refs.lists, nav);
   const d = { page: preview.page, document, shortcuts, assets, nav, lists, allowed: new Set(asked), messages, components };
 
-  // The Developer Toolbar is the app layout's, drawn for the administrator on every running page (R5).
+  // The Developer Toolbar is the app layout's, drawn for the administrator on
+  // every running page (R5); what it cannot know from the address, which
+  // revision this is and in what state, stays as a line at the top.
+  const state = preview.isLive ? 'the live revision' : preview.publishedAt ? 'published, superseded' : 'a draft';
   return (
     <>
+      <p data-preview-note="" className="sticky top-0 z-30 m-0 flex flex-wrap gap-x-4 border-b border-text bg-text px-4 py-2 font-mono text-10 uppercase tracking-[0.14em] text-bg">
+        <span className="font-semibold">Preview</span>
+        <span>{preview.page.name}</span>
+        <span>
+          revision {preview.revisionId.slice(0, 8)} · {state} · saved {when(preview.createdAt)}
+        </span>
+        {preview.problems.length > 0 && <span className="text-brand">{preview.problems.length} problem{preview.problems.length === 1 ? '' : 's'} in the stored document</span>}
+      </p>
       {composed ? (
         <>
           {extras}

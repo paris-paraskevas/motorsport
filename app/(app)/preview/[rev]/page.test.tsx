@@ -96,16 +96,18 @@ describe('/preview/[rev]', () => {
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
     const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
     expect(html).not.toContain('aria-label="Developer toolbar"');
+    expect(html).toContain('data-preview-note=""');
+    expect(html).toContain('revision b1b2c3d4 · a draft · saved 2026-09-08 19:20Z');
     expect(html).toContain('Opened in 1922. All times are local.');
     expect(html).toContain('For members');
     expect(html).not.toContain('Sign in to see this.');
   });
 
-  it('renders the live revision the same way: the page itself, its state the toolbar’s to tell (R5)', async () => {
-    loadRevisionPreview.mockResolvedValue({ ...preview, publishedAt: '2026-09-08T19:30:00Z', isLive: true });
+  it('says in its note when the revision is the live one, and counts the stored document’s problems', async () => {
+    loadRevisionPreview.mockResolvedValue({ ...preview, publishedAt: '2026-09-08T19:30:00Z', isLive: true, problems: ['region x: odd'] });
     const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
-    expect(html).toContain('Opened in 1922. All times are local.');
-    expect(html).not.toContain('the live revision');
+    expect(html).toContain('· the live revision ·');
+    expect(html).toContain('1 problem in the stored document');
   });
 
   it('previews a page served from rows as the site serves it: the components in the code frame, a transitional body adopting the recipe, the family’s structured data, no second heading', async () => {
