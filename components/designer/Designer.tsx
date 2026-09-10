@@ -692,6 +692,7 @@ export function Designer({
               regionDefaults={regionDefaults}
               assets={assets.state === 'ready' ? assets.assets : []}
               schemes={schemes}
+              buildOptions={build.state === 'ready' ? build.options : undefined}
               shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
               themeDefault={themeDefault}
               onSaved={next => {

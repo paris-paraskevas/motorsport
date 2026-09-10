@@ -15,11 +15,21 @@
 // same parser returns the usable document (unusable regions dropped) and the
 // list of what was wrong, and the route refuses when the list is not empty. A
 // version this code does not know is refused whole, never guessed at.
+//
+// VERSION 2 (the components programme, P1.3): every region may carry Header
+// Text and Footer Text (plain text, shortcuts substituted, drawn above and
+// below its body) and a Build Option (one of the feature switches; an Excluded
+// option leaves the region out of the running site). A version 1 document reads
+// as version 2 with the three absent; the parser always writes version 2.
 
 import { resolveDestination } from './destinations';
 import { findComponent, parseSettings, type SettingValue } from './components';
+import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
 
-export const PAGE_DOCUMENT_VERSION = 1 as const;
+/** The version the parser writes; it reads every version in PAGE_DOCUMENT_VERSIONS. */
+export const PAGE_DOCUMENT_VERSION = 2 as const;
+export const PAGE_DOCUMENT_VERSIONS = [1, 2] as const;
+export type PageDocumentVersion = (typeof PAGE_DOCUMENT_VERSIONS)[number];
 
 export const POSITIONS = ['header', 'breadcrumb', 'body', 'right', 'footer', 'phonebar'] as const;
 export type Position = (typeof POSITIONS)[number];
@@ -103,6 +113,14 @@ export function applyShow(doc: PageDocument, ctx: ShowContext): PageDocument {
   return regions.length === doc.regions.length ? doc : { ...doc, regions };
 }
 
+/** The document with the regions whose Build Option is Excluded left out
+ *  (APEX: Configuration › Build Option). A region with no option, or one the
+ *  statuses do not name, stays: Include is the fallback, as in the loader. */
+export function applyBuildOptions(doc: PageDocument, options: Readonly<Partial<BuildOptions>>): PageDocument {
+  const regions = doc.regions.filter(r => r.buildOption === undefined || options[r.buildOption] !== 'exclude');
+  return regions.length === doc.regions.length ? doc : { ...doc, regions };
+}
+
 export interface RegionBase {
   /** Stable within the page, lower-case; the designer generates it. */
   id: string;
@@ -123,6 +141,14 @@ export interface RegionBase {
   hidden: boolean;
   /** When the region shows; absent means always. */
   show?: ShowRule;
+  /** Header Text (APEX: Region Header and Footer): plain text drawn above the
+   *  region's body, shortcuts substituted; absent means none. */
+  headerText?: string;
+  /** Footer Text: plain text drawn below the region's body, shortcuts substituted; absent means none. */
+  footerText?: string;
+  /** Configuration › Build Option (APEX): the feature switch this region belongs
+   *  to; an Excluded option leaves the region out of the running site. Absent means none. */
+  buildOption?: BuildOptionKey;
 }
 export interface StaticRegion extends RegionBase {
   kind: 'static';
@@ -200,7 +226,7 @@ export interface DynamicAction {
 }
 
 export interface PageDocument {
-  version: typeof PAGE_DOCUMENT_VERSION;
+  version: PageDocumentVersion;
   regions: Region[];
   actions: DynamicAction[];
 }
@@ -209,6 +235,8 @@ export const EMPTY_DOCUMENT: PageDocument = { version: PAGE_DOCUMENT_VERSION, re
 
 export const REGION_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
 export const REGION_TITLE_MAX = 120;
+/** Header Text and Footer Text: a line each, not an essay. */
+export const REGION_TEXT_MAX = 300;
 export const STATIC_TEXT_MAX = 20_000;
 export const IMAGE_ALT_MAX = 200;
 export const BUTTON_LABEL_MAX = 60;
@@ -254,9 +282,19 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
     else problems.push(`${who}: the authorization scheme must be a key`);
   }
 
+  const headerText = typeof r.headerText === 'string' ? r.headerText.trim() : '';
+  if (headerText.length > REGION_TEXT_MAX) problems.push(`${who}: the header text is at most ${REGION_TEXT_MAX} characters`);
+  const footerText = typeof r.footerText === 'string' ? r.footerText.trim() : '';
+  if (footerText.length > REGION_TEXT_MAX) problems.push(`${who}: the footer text is at most ${REGION_TEXT_MAX} characters`);
+  let buildOption: BuildOptionKey | undefined;
+  if (r.buildOption !== undefined && r.buildOption !== null && r.buildOption !== '') {
+    if (typeof r.buildOption === 'string' && isBuildOptionKey(r.buildOption)) buildOption = r.buildOption;
+    else problems.push(`${who}: the build option must be one of ${BUILD_OPTION_KEYS.join(', ')}`);
+  }
+
   let region: Region | null = null;
   if (kind && position && seq !== null && column !== null && span !== null && problems.length === 0) {
-    const base: RegionBase = { id, kind, title, position, seq, column, span, newRow, authz, hidden, ...(show ? { show } : {}) };
+    const base: RegionBase = { id, kind, title, position, seq, column, span, newRow, authz, hidden, ...(show ? { show } : {}), ...(headerText ? { headerText } : {}), ...(footerText ? { footerText } : {}), ...(buildOption ? { buildOption } : {}) };
     if (kind === 'component') {
       const key = typeof r.component === 'string' ? r.component : '';
       const spec = key ? findComponent(key) : null;
@@ -365,7 +403,7 @@ function parseAction(raw: unknown, index: number, regionIds: Set<string>, seen: 
 export function parsePageDocument(raw: unknown): { value: PageDocument; problems: string[] } {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { value: EMPTY_DOCUMENT, problems: ['the document must be an object'] };
   const d = raw as Record<string, unknown>;
-  if (d.version !== PAGE_DOCUMENT_VERSION) return { value: EMPTY_DOCUMENT, problems: [`unknown document version ${String(d.version)}`] };
+  if (!(PAGE_DOCUMENT_VERSIONS as readonly unknown[]).includes(d.version)) return { value: EMPTY_DOCUMENT, problems: [`unknown document version ${String(d.version)}`] };
   if (!Array.isArray(d.regions)) return { value: EMPTY_DOCUMENT, problems: ['regions must be a list'] };
   const problems: string[] = [];
   const regions: Region[] = [];

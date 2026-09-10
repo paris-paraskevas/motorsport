@@ -123,6 +123,35 @@ describe('RowPageView', () => {
     expect(withButtons).toContain('>Read more</button>');
   });
 
+  it('draws Header Text above a region’s body and Footer Text below it, shortcuts substituted, and neither for a region the visitor is refused (P1.3)', () => {
+    const texts = renderToStaticMarkup(
+      <RowPageView
+        {...data}
+        document={{
+          version: 2,
+          actions: [],
+          regions: [
+            { id: 'intro', kind: 'static', title: 'Intro', position: 'body', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: null, text: 'The body.', headerText: 'Above · {shortcut:times.local}', footerText: 'Below · {shortcut:missing} end' },
+            { id: 'plain', kind: 'static', title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'No texts.' },
+            { id: 'members', kind: 'static', title: 'Members', position: 'body', seq: 30, column: 1, span: 12, newRow: true, hidden: false, authz: 'signed_in', text: 'Secret', headerText: 'Members only', footerText: 'Ask us' },
+          ],
+        }}
+      />,
+    );
+    const at = (s: string) => texts.indexOf(s);
+    expect(texts).toContain('data-region-header=""');
+    expect(texts).toContain('data-region-footer=""');
+    expect(at('Above · All times are local.')).toBeGreaterThan(-1);
+    expect(at('Above · All times are local.')).toBeLessThan(at('>Intro</h2>'));
+    expect(at('>Intro</h2>')).toBeLessThan(at('The body.'));
+    expect(at('The body.')).toBeLessThan(at('Below ·  end'));
+    expect(texts).not.toContain('{shortcut:');
+    expect((texts.match(/data-region-header=""/g) ?? []).length).toBe(1);
+    expect(texts).not.toContain('Members only');
+    expect(texts).not.toContain('Ask us');
+    expect(texts).toContain('Sign in to see this.');
+  });
+
   it('spans the body over twelve columns when nothing sits in the right column', () => {
     const noRight = renderToStaticMarkup(<RowPageView {...data} document={{ ...document, regions: document.regions.filter(r => r.position !== 'right') }} />);
     expect(noRight).toContain('lg:col-span-12');

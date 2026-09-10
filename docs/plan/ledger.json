@@ -135,8 +135,10 @@
    "scope": "Header Text and Footer Text on every region (shortcuts substitute); Configuration › Build Option honoured by the renderer; document version 2 with a lenient parser.",
    "fixedBy": "APEX region groups",
    "acceptance": "An Excluded region does not render; text renders above and below when Included; old documents still parse; test.",
-   "status": "planned",
-   "scopeHash": "eeb2fe209e9a"
+   "status": "started",
+   "scopeHash": "eeb2fe209e9a",
+   "defaults": "document fields headerText, footerText, buildOption; texts plain, one line, at most 300 characters, escaped, {shortcut:key} substituted; the option one of the four existing keys; exclusion on served pages, framed code pages and the Save and Run preview alike; a version 1 document reads as version 2 with the three absent; Property Editor groups Header and Footer (closed) and Configuration (closed) as the v2.4 prototype draws them",
+   "needsWord": ""
   },
   {
    "id": "P1.4",

@@ -159,6 +159,27 @@ describe('PageDesigner', () => {
     expect(status()).toMatch(/Column Span 6/);
   });
 
+  it('gives a region Header Text, Footer Text and a Build Option in their own groups, closed until opened (P1.3)', () => {
+    mount();
+    fireEvent.click(tile('Static Content: A century of speed'));
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(pe).queryByLabelText('Region header text')).toBeNull();
+    fireEvent.click(within(pe).getByRole('button', { name: 'Header and Footer' }));
+    fireEvent.change(within(pe).getByLabelText('Region header text'), { target: { value: 'Above · {shortcut:times.local}' } });
+    expect(status()).toMatch(/Header Text updated/);
+    fireEvent.change(within(pe).getByLabelText('Region footer text'), { target: { value: 'Below' } });
+    expect(status()).toMatch(/Footer Text updated/);
+    fireEvent.click(within(pe).getByRole('button', { name: 'Configuration' }));
+    const pills = within(pe).getByRole('group', { name: 'Region build option' });
+    expect(within(pills).getByRole('button', { name: 'None' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(within(pills).getByRole('button', { name: 'Weather' }));
+    expect(within(pills).getByRole('button', { name: 'Weather' }).getAttribute('aria-pressed')).toBe('true');
+    expect(status()).toMatch(/Build Option: Weather/);
+    fireEvent.click(within(pills).getByRole('button', { name: 'None' }));
+    expect(status()).toMatch(/Build Option cleared/);
+    expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
   it('holds Save when the parser refuses the document, and Messages says why', () => {
     mount();
     fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Image' }));
