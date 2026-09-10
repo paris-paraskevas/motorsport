@@ -11,7 +11,7 @@ import {
   actionName,
   effectText,
   regionName,
-  sameSelection,
+  selectionCovers,
   spanName,
   systemSteps,
   triggerText,
@@ -82,7 +82,8 @@ export function PageDesignerTree({
   /** What this page borrows, for the Page Shared Components tab. */
   usage: { theme: string; schemes: string[]; shortcuts: string[]; assets: string[]; lists: string[] };
   onToggle: (key: string) => void;
-  onSelect: (sel: Selection) => void;
+  /** `toggle`: Ctrl, Cmd or Shift held, so a region joins or leaves the selection (APEX: several components selected). */
+  onSelect: (sel: Selection, opts?: { toggle?: boolean }) => void;
   onContext: (at: { x: number; y: number }, sel: Selection) => void;
   onDragStart: (drag: Drag) => void;
   onTab: (tab: LeftTab) => void;
@@ -93,7 +94,8 @@ export function PageDesignerTree({
 }) {
   const q = query.trim().toLowerCase();
   const matches = (...parts: (string | undefined)[]) => !q || parts.filter(Boolean).join(' ').toLowerCase().includes(q);
-  const isSel = (s?: Selection) => (s ? sameSelection(selection, s) : false);
+  // A region node inside a set of regions (Ctrl+click) is selected too.
+  const isSel = (s?: Selection) => (s ? selectionCovers(selection, s) : false);
   const code = page.kind === 'code';
   const number = page.id ? page.id.slice(0, 8) : 'no row';
 
@@ -290,9 +292,9 @@ export function PageDesignerTree({
             selected ? 'border-edit bg-edit-dim text-text' : 'border-transparent text-text-muted hover:bg-surface-elevated hover:text-text'
           } ${n.cls === 'grp' ? 'font-semibold text-text' : ''} ${n.cls === 'pos' ? 'font-mono text-9 uppercase tracking-[0.14em] text-text-faint' : ''} ${n.cls === 'locked' ? 'text-text-faint' : ''} ${n.sel || n.onClick ? 'cursor-pointer' : 'cursor-default'}`}
           style={{ paddingLeft: 6 + depth * 14 }}
-          onClick={() => {
+          onClick={e => {
             if (n.onClick) n.onClick();
-            else if (n.sel) onSelect(n.sel);
+            else if (n.sel) onSelect(n.sel, { toggle: e.ctrlKey || e.metaKey || e.shiftKey });
             else if (hasKids) onToggle(n.key);
           }}
           onDoubleClick={() => hasKids && onToggle(n.key)}
@@ -300,7 +302,7 @@ export function PageDesignerTree({
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               if (n.onClick) n.onClick();
-              else if (n.sel) onSelect(n.sel);
+              else if (n.sel) onSelect(n.sel, { toggle: e.ctrlKey || e.metaKey || e.shiftKey });
               else if (hasKids) onToggle(n.key);
             }
           }}

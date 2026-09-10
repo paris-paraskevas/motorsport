@@ -42,6 +42,7 @@ import {
   goOptions,
   openPositions,
   regionName,
+  renumber,
   sharedOf,
   spanName,
   splitRecipe,
@@ -93,6 +94,8 @@ export function attrsProblem(d: AttrsDraft): string | null {
 export interface PropsContext {
   page: PageRow;
   doc: PageDocument;
+  /** The document as saved (the newest revision, or what the page opens with): the edited-attribute marker compares against it. */
+  stored: PageDocument;
   readOnly: boolean;
   schemes: { key: string; label: string; type: string }[];
   assets: EditableAsset[];
@@ -103,6 +106,8 @@ export interface PropsContext {
   /** The shared lists' entry counts, for the Navigation Menu group. */
   shared: Record<'doors' | 'footer' | 'bar', string>;
   attrs: AttrsDraft;
+  /** The attributes as saved, for the page rows' marker. */
+  attrsStored: AttrsDraft;
   setAttrs: (fn: (d: AttrsDraft) => AttrsDraft) => void;
   /** A document change, committed to the history with a status line. */
   commit: (next: PageDocument, label: string) => void;
@@ -130,8 +135,44 @@ export interface PropsContext {
 const AUTHZ_HELP = 'Who may see the component. Schemes are defined once under Shared Components → Security.';
 const LATER = (title: string): PropGroup => ({ title, props: [], later: true });
 
+/** What the pane draws for a selection: the head, the groups, and for a
+ *  component whose catalogue entry has settings the Attributes tab's groups
+ *  (APEX: Region · Attributes, UX map line 133). */
+export interface PaneGroups {
+  head: { kind: string; name: string };
+  groups: PropGroup[];
+  attributes?: PropGroup[];
+}
+
+type Patch = (label: string, fn: (x: Region) => Region) => void;
+type Changed = (pick: (r: Region) => unknown) => boolean;
+
 function patch(ctx: PropsContext, id: string, label: string, fn: (r: Region) => Region) {
   ctx.commit({ ...ctx.doc, regions: ctx.doc.regions.map(r => (r.id === id ? fn(r) : r)) }, label);
+}
+/** One change to several regions at once (APEX: an edit with several components
+ *  selected updates every one, UX map line 54); renumbered, so two regions moved
+ *  to one position keep a definite order. */
+function patchMany(ctx: PropsContext, ids: readonly string[], label: string, fn: (r: Region) => Region) {
+  ctx.commit({ ...ctx.doc, regions: renumber(ctx.doc.regions.map(r => (ids.includes(r.id) ? fn(r) : r))) }, label);
+}
+/** The value the targets share, or null when they differ (drawn as no pill
+ *  pressed, with the note Mixed). The picks return no null of their own. */
+function commonOf(targets: readonly Region[]) {
+  return <T,>(pick: (r: Region) => T): T | null => {
+    const first = pick(targets[0]);
+    return targets.every(t => JSON.stringify(pick(t)) === JSON.stringify(first)) ? first : null;
+  };
+}
+/** Whether a field differs from the saved document on any target: the
+ *  edited-attribute marker, shown until Save. A region the saved document lacks
+ *  marks every row. */
+function changedOf(ctx: PropsContext, targets: readonly Region[]): Changed {
+  return pick =>
+    targets.some(t => {
+      const saved = ctx.stored.regions.find(x => x.id === t.id);
+      return !saved || JSON.stringify(pick(saved) ?? null) !== JSON.stringify(pick(t) ?? null);
+    });
 }
 /** Header Text or Footer Text as typed; an empty field leaves the attribute out, as the parser does. */
 function textAttr(r: Region, key: 'headerText' | 'footerText', value: string): Region {
@@ -163,12 +204,14 @@ function MiniMap({ doc, id }: { doc: PageDocument; id: string }) {
   );
 }
 
-export function pageGroups(ctx: PropsContext): { head: { kind: string; name: string }; groups: PropGroup[] } {
+export function pageGroups(ctx: PropsContext): PaneGroups {
   const { page, attrs, setAttrs, readOnly, schemes, fieldId } = ctx;
   const number = page.id ? page.id.slice(0, 8) : 'no row';
   const chosen = schemes.find(o => o.key === attrs.authz);
   const requiresAuth = Boolean(chosen && chosen.type !== 'public');
   const set = (fn: (d: AttrsDraft) => AttrsDraft) => setAttrs(fn);
+  /** The marker: an attribute differing from the saved row. */
+  const cha = (k: keyof AttrsDraft) => attrs[k] !== ctx.attrsStored[k];
   const groups: PropGroup[] = [
     {
       title: 'Identification',
@@ -177,6 +220,7 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
         {
           label: 'Name',
           common: true,
+          changed: cha('name'),
           htmlFor: fieldId('name'),
           control: (
             <input
@@ -207,6 +251,7 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
         {
           label: 'Page Group',
           common: true,
+          changed: cha('group'),
           control: (
             <Pills label="Page group" items={PAGE_GROUPS.map(g => ({ key: g, label: PAGE_GROUP_LABELS[g] }))} current={attrs.group} disabled={readOnly} onPick={g => set(d => ({ ...d, group: g }))} />
           ),
@@ -215,6 +260,7 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
         {
           label: 'Title',
           common: true,
+          changed: cha('title'),
           htmlFor: fieldId('title'),
           control: (
             <input
@@ -288,6 +334,7 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
         {
           label: 'Authorization Scheme',
           common: true,
+          changed: cha('authz'),
           control: <Pills label="Page authorization" items={schemes.map(o => ({ key: o.key, label: o.label }))} current={attrs.authz} disabled={readOnly} onPick={key => set(d => ({ ...d, authz: key }))} />,
           help: AUTHZ_HELP,
         },
@@ -314,12 +361,14 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
         {
           label: 'Indexed',
           common: true,
+          changed: cha('indexable'),
           control: <YesNo label="Search engines may index this page" value={attrs.indexable} disabled={readOnly} onPick={v => set(d => ({ ...d, indexable: v }))} />,
           note: 'Off adds noindex, follow. On leaves the rule the page carries itself.',
           help: 'Off tells search engines noindex, follow. On leaves the rule the page carries itself.',
         },
         {
           label: 'Comments',
+          changed: cha('comments'),
           htmlFor: fieldId('comments'),
           control: (
             <textarea
@@ -354,26 +403,25 @@ export function pageGroups(ctx: PropsContext): { head: { kind: string; name: str
   return { head: { kind: 'Page', name: `${number}: ${attrs.name.trim() || page.name}` }, groups };
 }
 
-export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: string; name: string }; groups: PropGroup[] } {
-  const { doc, readOnly, schemes, assets, lists, shortcuts, buildOptions, act, fieldId } = ctx;
+export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
+  const { doc, readOnly, assets, lists, shortcuts, act, fieldId } = ctx;
   const K = REGION_KIND_LABELS[r.kind];
   const siblings = doc.regions.filter(x => x.position === r.position);
   const index = siblings.findIndex(x => x.id === r.id);
-  const p = (label: string, fn: (x: Region) => Region) => patch(ctx, r.id, label, fn);
-  const inBody = r.position === 'body';
-  // The transitional body is drawn by the code at the full width: its size cannot change until the page is split.
-  const fullWidthOnly = isLegacyBody(r);
+  const p: Patch = (label, fn) => patch(ctx, r.id, label, fn);
+  const ch = changedOf(ctx, [r]);
+  /** A field by name, for the marker's compare; a field another kind lacks reads undefined. */
+  const f = (key: string) => (x: Region) => (x as unknown as Record<string, unknown>)[key];
+  const cg = commonGroups(ctx, [r], p, ch);
   const asset = r.kind === 'image' ? assets.find(a => a.id === r.assetId) : undefined;
-  const colChoices = Array.from({ length: COLUMNS + 1 - r.span }, (_, i) => ({ key: i + 1, label: String(i + 1) }));
-  const spanChoices = [...SPAN_CHOICES.filter(s => s <= COLUMNS + 1 - r.column), ...(SPAN_CHOICES.includes(r.span as 12) ? [] : [r.span])]
-    .sort((a, b) => b - a)
-    .map(s => ({ key: s, label: `${spanName(s)} · ${s}` }));
 
   const source: PropGroup['props'] = [];
+  const attributeRows: PropGroup['props'] = [];
   if (r.kind === 'static') {
     source.push({
       label: 'Text',
       common: true,
+      changed: ch(f('text')),
       htmlFor: fieldId('text'),
       control: (
         <textarea
@@ -410,6 +458,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
     source.push({
       label: 'Photo',
       common: true,
+      changed: ch(f('assetId')),
       htmlFor: fieldId('photo'),
       control: (
         <select
@@ -440,6 +489,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
     source.push({
       label: 'Alternative text',
       common: true,
+      changed: ch(f('alt')),
       htmlFor: fieldId('alt'),
       control: (
         <input
@@ -458,6 +508,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
     source.push({
       label: 'Caption and credit',
       common: true,
+      changed: ch(f('showCaption')),
       control: <YesNo label="Show the caption and credit" value={r.showCaption} disabled={readOnly} onPick={v => p(v ? 'Caption shown.' : 'Caption hidden.', x => (x.kind === 'image' ? { ...x, showCaption: v } : x))} />,
     });
   }
@@ -465,12 +516,14 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
     source.push({
       label: 'List',
       common: true,
+      changed: ch(f('listKey')),
       control: <Pills label="Region list" items={lists.map(l => ({ key: l.key, label: l.label }))} current={r.listKey} disabled={readOnly} onPick={k => p('List changed.', x => (x.kind === 'list' ? { ...x, listKey: k } : x))} />,
       help: 'One of the navigation lists, edited under Shared Components.',
     });
     source.push({
       label: 'Style',
       common: true,
+      changed: ch(f('style')),
       control: (
         <Pills
           label="Region list style"
@@ -489,6 +542,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
     source.push({
       label: 'Label',
       common: true,
+      changed: ch(f('label')),
       htmlFor: fieldId('label'),
       control: (
         <input
@@ -507,6 +561,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
     source.push({
       label: 'Target',
       common: true,
+      changed: ch(f('dest')),
       htmlFor: fieldId('dest'),
       control: (
         <select
@@ -534,15 +589,18 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
     source.push({
       label: 'Component',
       common: true,
+      changed: ch(f('component')),
       control: <Ro>{spec ? `${spec.name} · ${spec.holds}` : `Unknown component ${r.component}`}</Ro>,
       help: 'A piece the code draws. Its kind is deployed code; its settings and its rule are yours, here.',
     });
+    // APEX: the type-specific settings are the Attributes tab (UX map line 133); the Source group keeps the component itself.
     for (const s of spec?.settings ?? []) {
       const value = r.settings[s.key] ?? s.default;
       const set = (v: SettingValue) => p(`${s.label} set.`, x => (x.kind === 'component' ? { ...x, settings: { ...x.settings, [s.key]: v } } : x));
-      source.push({
+      attributeRows.push({
         label: s.label,
         common: true,
+        changed: ch(x => (x.kind === 'component' ? x.settings[s.key] : undefined)),
         control:
           s.kind === 'boolean' ? (
             <YesNo label={s.label} value={Boolean(value)} disabled={readOnly} onPick={set} />
@@ -583,6 +641,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
         {
           label: 'Name',
           common: true,
+          changed: ch(f('title')),
           htmlFor: fieldId('rname'),
           control: (
             <input
@@ -600,73 +659,11 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
           help: 'The region’s title, shown as its heading on the page. Also what the tree, Messages and Page Search call it.',
         },
         { label: 'Type', common: true, control: <Ro dim>{K.label} · {K.holds}</Ro>, help: 'The kind of component. Kinds are deployed code; a new kind needs a deploy, everything else about a region does not.' },
-        { label: 'Sequence', control: <Ro dim>{r.seq}</Ro>, note: 'Order in the tree; Move Up and Move Down change it.', help: 'Order among siblings. Regions render in sequence; the grid rules then decide where each lands.' },
+        { label: 'Sequence', changed: ch(f('seq')), control: <Ro dim>{r.seq}</Ro>, note: 'Order in the tree; Move Up and Move Down change it.', help: 'Order among siblings. Regions render in sequence; the grid rules then decide where each lands.' },
       ],
     },
     { title: 'Source', props: source },
-    {
-      title: 'Layout',
-      props: [
-        { label: 'Parent Region', control: <Ro dim>None · page level</Ro> },
-        {
-          label: 'Position',
-          common: true,
-          control: (
-            <Pills
-              label="Region position"
-              items={openPositions(ctx.page).map(x => ({ key: x, label: PD_POSITION[x].label }))}
-              current={r.position}
-              disabled={readOnly}
-              onPick={pos => p(`Position: ${PD_POSITION[pos].label}.`, x => ({ ...x, position: pos, seq: 1_000_000, column: 1, span: pos === 'body' ? x.span : COLUMNS }))}
-            />
-          ),
-          help: 'The template position. The Header, Footer and Navigation Bar are shared components, so nothing is placed there from a page.',
-        },
-        ...(inBody
-          ? [
-              {
-                label: 'Start New Row',
-                common: true,
-                control: <YesNo label="Start a new row" value={r.newRow} disabled={readOnly} onPick={v => p(v ? 'Starts a new row.' : 'Flows on from the previous region.', x => ({ ...x, newRow: v }))} />,
-                help: 'Yes puts the region at the start of the next grid row. No lets it flow on after the previous region if columns remain.',
-              },
-              {
-                label: 'Column',
-                common: true,
-                control: <Pills label="Region column" items={colChoices} current={r.column} disabled={readOnly} onPick={c => p(`Column ${c}.`, x => ({ ...x, column: c, span: Math.min(x.span, COLUMNS + 1 - c) }))} />,
-                help: 'The column the region’s left edge starts at, one to twelve.',
-              },
-              {
-                label: 'Size',
-                common: true,
-                control: (
-                  <Pills
-                    label="Region size"
-                    items={[
-                      { key: 4, label: 'Small' },
-                      { key: 6, label: 'Mid' },
-                      { key: 12, label: 'Large' },
-                    ]}
-                    current={r.span === 4 || r.span === 6 || r.span === 12 ? r.span : null}
-                    disabled={readOnly || fullWidthOnly}
-                    onPick={s => p(`Size: ${s === 4 ? 'small' : s === 6 ? 'mid' : 'large'}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))}
-                  />
-                ),
-                note: fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : 'The boxes on Home, in the words you used for them: small is a third of the row, mid a half, large the whole row.',
-                help: 'A quick pick for the width. Small is a third of the twelve columns, Mid a half, Large the full row; Column Span below sets any width.',
-              },
-              {
-                label: 'Column Span',
-                common: true,
-                control: <Pills label="Region span" items={spanChoices} current={r.span} disabled={readOnly || fullWidthOnly} onPick={s => p(`Column Span ${s}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))} />,
-                note: fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : 'In twelfths, like APEX.',
-                help: 'Width in twelfths. Full is 12, half is 6, a third is 4. Phones ignore it and stack every region.',
-              },
-              { label: 'Where it lands', common: true, control: <MiniMap doc={doc} id={r.id} />, note: 'Desktop and laptop. A phone stacks regions in sequence.' },
-            ]
-          : []),
-      ],
-    },
+    cg.layout,
     LATER('Appearance'),
     {
       title: 'Header and Footer',
@@ -674,6 +671,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
       props: [
         {
           label: 'Header Text',
+          changed: ch(f('headerText')),
           htmlFor: fieldId('rheader'),
           control: (
             <input
@@ -692,6 +690,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
         },
         {
           label: 'Footer Text',
+          changed: ch(f('footerText')),
           htmlFor: fieldId('rfooter'),
           control: (
             <input
@@ -710,77 +709,15 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
         },
       ],
     },
-    {
-      title: 'Rules',
-      props: [
-        {
-          label: 'Show',
-          common: true,
-          control: (
-            <Pills
-              label="Region show rule"
-              items={SHOW_RULES.map(k => ({ key: k, label: SHOW_RULE_LABELS[k] }))}
-              current={r.show ?? 'always'}
-              disabled={readOnly}
-              onPick={k =>
-                p(`Shows: ${SHOW_RULE_LABELS[k]}.`, x => {
-                  const next: Region = { ...x };
-                  delete next.show;
-                  return k === 'always' ? next : { ...next, show: k };
-                })
-              }
-            />
-          ),
-          note: 'Phones and desktop are decided by the stylesheet; the rest by what the server knows when it serves the page.',
-          help: 'When the region shows (APEX: Server-side Condition). Always; during a race weekend or between them; to signed-in or signed-out visitors; on phones or on desktop and laptop only. A fact the server does not have shows the region rather than hiding it.',
-        },
-      ],
-    },
-    {
-      title: 'Security',
-      props: [
-        {
-          label: 'Authorization Scheme',
-          common: true,
-          control: <Pills label="Region authorization" items={schemes.map(s => ({ key: s.key, label: s.label }))} current={r.authz ?? 'public'} disabled={readOnly} onPick={k => p(`Authorization: ${k}.`, x => ({ ...x, authz: k === 'public' ? null : k }))} />,
-          help: AUTHZ_HELP,
-        },
-      ],
-    },
-    {
-      title: 'Configuration',
-      closed: true,
-      props: [
-        {
-          label: 'Build Option',
-          control: (
-            <Pills
-              label="Region build option"
-              items={[
-                { key: '', label: 'None' },
-                ...BUILD_OPTION_KEYS.map(k => ({ key: k, label: `${BUILD_OPTION_DEFAULTS[k].label}${buildOptions[k] === 'exclude' ? ' (excluded)' : ''}` })),
-              ]}
-              current={r.buildOption ?? ''}
-              disabled={readOnly}
-              onPick={k =>
-                p(k === '' ? 'Build Option cleared.' : `Build Option: ${BUILD_OPTION_DEFAULTS[k as BuildOptionKey].label}.`, x => {
-                  const next: Region = { ...x };
-                  delete next.buildOption;
-                  return k === '' ? next : { ...next, buildOption: k as BuildOptionKey };
-                })
-              }
-            />
-          ),
-          note: 'Excluded options render nothing, on every page.',
-          help: 'The feature switch this region belongs to (APEX: Configuration › Build Option). Set the switch to Exclude under Shared Components → Build Options and every region tied to it leaves the running site, without being deleted.',
-        },
-      ],
-    },
+    cg.rules,
+    cg.security,
+    cg.configuration,
     {
       title: 'Advanced',
       props: [
         {
           label: 'Static ID',
+          changed: ch(f('id')),
           htmlFor: fieldId('rid'),
           control: (
             <input
@@ -814,6 +751,7 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
         {
           label: 'Hidden at first',
           common: true,
+          changed: ch(f('hidden')),
           control: <YesNo label="Hidden until an action shows it" value={r.hidden} disabled={readOnly} onPick={v => p(v ? 'Hidden until an action shows it.' : 'Shown at first.', x => ({ ...x, hidden: v }))} />,
           note: 'Rendered hidden, so a “read more” never flashes; a dynamic action shows it.',
           help: 'Rendered hidden until a dynamic action shows it.',
@@ -841,12 +779,195 @@ export function regionGroups(ctx: PropsContext, r: Region): { head: { kind: stri
       ],
     },
   ];
-  return { head: { kind: K.label, name: regionName(r) }, groups };
+  return { head: { kind: K.label, name: regionName(r) }, groups, attributes: attributeRows.length ? [{ title: 'Settings', props: attributeRows }] : undefined };
 }
 
-export function actionGroups(ctx: PropsContext, a: DynamicAction): { head: { kind: string; name: string }; groups: PropGroup[] } {
+/** Layout, Rules, Security and Configuration for one region or for several: the
+ *  attributes every region has (APEX: with several components selected only
+ *  their common attributes show, UX map line 39). A value the targets share is
+ *  drawn; one they differ on presses no pill and reads Mixed. */
+function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, ch: Changed): { layout: PropGroup; rules: PropGroup; security: PropGroup; configuration: PropGroup } {
+  const { doc, readOnly, schemes, buildOptions } = ctx;
+  const common = commonOf(targets);
+  const one = targets.length === 1 ? targets[0] : null;
+  const inBody = targets.every(t => t.position === 'body');
+  // The transitional body is drawn by the code at the full width: its size cannot change until the page is split.
+  const fullWidthOnly = targets.some(isLegacyBody);
+  const maxSpan = Math.max(...targets.map(t => t.span));
+  const maxColumn = Math.max(...targets.map(t => t.column));
+  const position = common(t => t.position);
+  const newRow = common(t => t.newRow);
+  const column = common(t => t.column);
+  const span = common(t => t.span);
+  const show = common(t => t.show ?? 'always');
+  const authz = common(t => t.authz ?? 'public');
+  const buildOption = common(t => t.buildOption ?? '');
+  const colChoices = Array.from({ length: COLUMNS + 1 - maxSpan }, (_, i) => ({ key: i + 1, label: String(i + 1) }));
+  const spanChoices = [...SPAN_CHOICES.filter(s => s <= COLUMNS + 1 - maxColumn), ...(span === null || SPAN_CHOICES.includes(span as 12) ? [] : [span])]
+    .sort((a, b) => b - a)
+    .map(s => ({ key: s, label: `${spanName(s)} · ${s}` }));
+  const MIXED = 'Mixed · the selected regions differ; a pick sets every one of them.';
+  const noteOr = (value: unknown, note?: string) => (value === null ? MIXED : note);
+  return {
+    layout: {
+      title: 'Layout',
+      props: [
+        { label: 'Parent Region', control: <Ro dim>None · page level</Ro> },
+        {
+          label: 'Position',
+          common: true,
+          changed: ch(t => t.position),
+          control: (
+            <Pills
+              label="Region position"
+              items={openPositions(ctx.page).map(x => ({ key: x, label: PD_POSITION[x].label }))}
+              current={position}
+              disabled={readOnly}
+              onPick={pos => p(`Position: ${PD_POSITION[pos].label}.`, x => ({ ...x, position: pos, seq: 1_000_000, column: 1, span: pos === 'body' ? x.span : COLUMNS }))}
+            />
+          ),
+          note: noteOr(position),
+          help: 'The template position. The Header, Footer and Navigation Bar are shared components, so nothing is placed there from a page.',
+        },
+        ...(inBody
+          ? [
+              {
+                label: 'Start New Row',
+                common: true,
+                changed: ch(t => t.newRow),
+                control: <YesNo label="Start a new row" value={newRow} disabled={readOnly} onPick={v => p(v ? 'Starts a new row.' : 'Flows on from the previous region.', x => ({ ...x, newRow: v }))} />,
+                note: noteOr(newRow),
+                help: 'Yes puts the region at the start of the next grid row. No lets it flow on after the previous region if columns remain.',
+              },
+              {
+                label: 'Column',
+                common: true,
+                changed: ch(t => t.column),
+                control: <Pills label="Region column" items={colChoices} current={column} disabled={readOnly} onPick={c => p(`Column ${c}.`, x => ({ ...x, column: c, span: Math.min(x.span, COLUMNS + 1 - c) }))} />,
+                note: noteOr(column),
+                help: 'The column the region’s left edge starts at, one to twelve.',
+              },
+              {
+                label: 'Size',
+                common: true,
+                changed: ch(t => t.span),
+                control: (
+                  <Pills
+                    label="Region size"
+                    items={[
+                      { key: 4, label: 'Small' },
+                      { key: 6, label: 'Mid' },
+                      { key: 12, label: 'Large' },
+                    ]}
+                    current={span === 4 || span === 6 || span === 12 ? span : null}
+                    disabled={readOnly || fullWidthOnly}
+                    onPick={s => p(`Size: ${s === 4 ? 'small' : s === 6 ? 'mid' : 'large'}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))}
+                  />
+                ),
+                note: noteOr(span, fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : 'The boxes on Home, in the words you used for them: small is a third of the row, mid a half, large the whole row.'),
+                help: 'A quick pick for the width. Small is a third of the twelve columns, Mid a half, Large the full row; Column Span below sets any width.',
+              },
+              {
+                label: 'Column Span',
+                common: true,
+                changed: ch(t => t.span),
+                control: <Pills label="Region span" items={spanChoices} current={span} disabled={readOnly || fullWidthOnly} onPick={s => p(`Column Span ${s}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))} />,
+                note: noteOr(span, fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : 'In twelfths, like APEX.'),
+                help: 'Width in twelfths. Full is 12, half is 6, a third is 4. Phones ignore it and stack every region.',
+              },
+              ...(one ? [{ label: 'Where it lands', common: true, control: <MiniMap doc={doc} id={one.id} />, note: 'Desktop and laptop. A phone stacks regions in sequence.' }] : []),
+            ]
+          : []),
+      ],
+    },
+    rules: {
+      title: 'Rules',
+      props: [
+        {
+          label: 'Show',
+          common: true,
+          changed: ch(t => t.show ?? 'always'),
+          control: (
+            <Pills
+              label="Region show rule"
+              items={SHOW_RULES.map(k => ({ key: k, label: SHOW_RULE_LABELS[k] }))}
+              current={show}
+              disabled={readOnly}
+              onPick={k =>
+                p(`Shows: ${SHOW_RULE_LABELS[k]}.`, x => {
+                  const next: Region = { ...x };
+                  delete next.show;
+                  return k === 'always' ? next : { ...next, show: k };
+                })
+              }
+            />
+          ),
+          note: noteOr(show, 'Phones and desktop are decided by the stylesheet; the rest by what the server knows when it serves the page.'),
+          help: 'When the region shows (APEX: Server-side Condition). Always; during a race weekend or between them; to signed-in or signed-out visitors; on phones or on desktop and laptop only. A fact the server does not have shows the region rather than hiding it.',
+        },
+      ],
+    },
+    security: {
+      title: 'Security',
+      props: [
+        {
+          label: 'Authorization Scheme',
+          common: true,
+          changed: ch(t => t.authz ?? 'public'),
+          control: <Pills label="Region authorization" items={schemes.map(s => ({ key: s.key, label: s.label }))} current={authz} disabled={readOnly} onPick={k => p(`Authorization: ${k}.`, x => ({ ...x, authz: k === 'public' ? null : k }))} />,
+          note: noteOr(authz),
+          help: AUTHZ_HELP,
+        },
+      ],
+    },
+    configuration: {
+      title: 'Configuration',
+      closed: true,
+      props: [
+        {
+          label: 'Build Option',
+          changed: ch(t => t.buildOption ?? ''),
+          control: (
+            <Pills
+              label="Region build option"
+              items={[
+                { key: '', label: 'None' },
+                ...BUILD_OPTION_KEYS.map(k => ({ key: k, label: `${BUILD_OPTION_DEFAULTS[k].label}${buildOptions[k] === 'exclude' ? ' (excluded)' : ''}` })),
+              ]}
+              current={buildOption}
+              disabled={readOnly}
+              onPick={k =>
+                p(k === '' ? 'Build Option cleared.' : `Build Option: ${BUILD_OPTION_DEFAULTS[k as BuildOptionKey].label}.`, x => {
+                  const next: Region = { ...x };
+                  delete next.buildOption;
+                  return k === '' ? next : { ...next, buildOption: k as BuildOptionKey };
+                })
+              }
+            />
+          ),
+          note: noteOr(buildOption, 'Excluded options render nothing, on every page.'),
+          help: 'The feature switch this region belongs to (APEX: Configuration › Build Option). Set the switch to Exclude under Shared Components → Build Options and every region tied to it leaves the running site, without being deleted.',
+        },
+      ],
+    },
+  };
+}
+
+/** Several regions selected (APEX, UX map lines 39 and 54): only the attributes
+ *  they share, an edit updating every one of them. */
+export function regionsGroups(ctx: PropsContext, regions: readonly Region[]): PaneGroups {
+  const ids = regions.map(r => r.id);
+  const p: Patch = (label, fn) => patchMany(ctx, ids, label, fn);
+  const cg = commonGroups(ctx, regions, p, changedOf(ctx, regions));
+  return { head: { kind: 'Regions', name: `${regions.length} selected` }, groups: [cg.layout, cg.rules, cg.security, cg.configuration] };
+}
+
+export function actionGroups(ctx: PropsContext, a: DynamicAction): PaneGroups {
   const { doc, readOnly, act, select, fieldId } = ctx;
   const pa = (label: string, fn: (x: DynamicAction) => DynamicAction) => patchAction(ctx, a.id, label, fn);
+  const saved = ctx.stored.actions.find(x => x.id === a.id);
+  /** The marker: a field differing from the saved action; an action the saved document lacks marks every row. */
+  const ch = (pick: (x: DynamicAction) => unknown) => !saved || JSON.stringify(pick(saved) ?? null) !== JSON.stringify(pick(a) ?? null);
   const regionOptions = doc.regions.map(r => ({ key: r.id, label: `${regionName(r)} (${r.id})` }));
   const events: { key: TriggerEvent; label: string }[] = [
     { key: 'click', label: 'Click' },
@@ -858,6 +979,7 @@ export function actionGroups(ctx: PropsContext, a: DynamicAction): { head: { kin
     {
       label: 'Event',
       common: true,
+      changed: ch(x => x.when.event),
       control: <Pills label={`When of ${a.id}`} items={events} current={a.when.event} disabled={readOnly} onPick={ev => pa(`Event: ${events.find(e => e.key === ev)!.label}.`, x => ({ ...x, when: triggerFor(ev, doc.regions, x.when) }))} />,
       help: 'What fires the dynamic action: a click on a region, the page loading, a timer, a region scrolling into view.',
     },
@@ -866,6 +988,7 @@ export function actionGroups(ctx: PropsContext, a: DynamicAction): { head: { kin
     when.push({
       label: 'Region',
       common: true,
+      changed: ch(x => ('region' in x.when ? x.when.region : undefined)),
       htmlFor: fieldId('when-region'),
       control: (
         <select
@@ -890,6 +1013,7 @@ export function actionGroups(ctx: PropsContext, a: DynamicAction): { head: { kin
     when.push({
       label: 'Every (seconds)',
       common: true,
+      changed: ch(x => (x.when.event === 'timer' ? x.when.seconds : undefined)),
       htmlFor: fieldId('when-seconds'),
       control: (
         <input
@@ -914,6 +1038,7 @@ export function actionGroups(ctx: PropsContext, a: DynamicAction): { head: { kin
         {
           label: 'Name',
           common: true,
+          changed: ch(x => x.name),
           htmlFor: fieldId('aname'),
           control: (
             <input
@@ -939,6 +1064,7 @@ export function actionGroups(ctx: PropsContext, a: DynamicAction): { head: { kin
         {
           label: 'Actions',
           common: true,
+          changed: ch(x => x.do),
           control: (
             <div className="flex flex-wrap gap-1">
               {a.do.map((e, i) => (
@@ -979,10 +1105,13 @@ function effectLabel(e: Effect): string {
   return e.action === 'go' ? 'Navigate to Page' : e.action === 'show' ? 'Show' : e.action === 'hide' ? 'Hide' : e.action === 'toggle' ? 'Toggle visibility' : 'Scroll To';
 }
 
-export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number): { head: { kind: string; name: string }; groups: PropGroup[] } {
+export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number): PaneGroups {
   const { doc, readOnly, act, select, fieldId } = ctx;
   const e = a.do[index];
   const pe = (label: string, fn: (x: Effect) => Effect) => patchAction(ctx, a.id, label, x => ({ ...x, do: x.do.map((d, j) => (j === index ? fn(d) : d)) }));
+  const savedEffect = ctx.stored.actions.find(x => x.id === a.id)?.do[index];
+  /** The marker: a field differing from the saved effect; one the saved document lacks marks every row. */
+  const ch = (pick: (x: Effect) => unknown) => savedEffect === undefined || JSON.stringify(pick(savedEffect) ?? null) !== JSON.stringify(pick(e) ?? null);
   const kinds: { key: EffectAction; label: string }[] = [
     { key: 'show', label: 'Show' },
     { key: 'hide', label: 'Hide' },
@@ -998,6 +1127,7 @@ export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number)
         {
           label: 'Action',
           common: true,
+          changed: ch(x => x.action),
           control: <Pills label={`Effect ${index + 1} of ${a.id}`} items={kinds} current={e.action} disabled={readOnly} onPick={k => pe(`Action: ${kinds.find(x => x.key === k)!.label}.`, d => effectFor(k, doc.regions, d))} />,
           help: 'What happens, from the catalogue. Every action has typed settings; none takes code.',
         },
@@ -1010,6 +1140,7 @@ export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number)
             {
               label: 'Destination',
               common: true,
+              changed: ch(x => (x.action === 'go' ? x.dest : undefined)),
               htmlFor: fieldId('dest'),
               control: (
                 <select id={fieldId('dest')} value={e.dest} disabled={readOnly} aria-label={`Destination of effect ${index + 1} of ${a.id}`} className={FIELD} onChange={ev => pe('Destination set.', () => ({ action: 'go', dest: ev.target.value }))}>
@@ -1031,6 +1162,7 @@ export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number)
             {
               label: 'Region',
               common: true,
+              changed: ch(x => (x.action === 'go' ? undefined : x.region)),
               htmlFor: fieldId('target'),
               control: (
                 <select
@@ -1076,7 +1208,7 @@ export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number)
   return { head: { kind: 'TRUE Action', name: `${effectLabel(e)} · ${actionName(a)}` }, groups };
 }
 
-export function positionGroups(ctx: PropsContext, pos: Position): { head: { kind: string; name: string }; groups: PropGroup[] } {
+export function positionGroups(ctx: PropsContext, pos: Position): PaneGroups {
   const n = ctx.doc.regions.filter(r => r.position === pos).length;
   const code = !openPositions(ctx.page).includes(pos);
   return {
@@ -1103,7 +1235,7 @@ export function positionGroups(ctx: PropsContext, pos: Position): { head: { kind
   };
 }
 
-export function sharedGroups(ctx: PropsContext, key: 'doors' | 'footer' | 'bar'): { head: { kind: string; name: string }; groups: PropGroup[] } {
+export function sharedGroups(ctx: PropsContext, key: 'doors' | 'footer' | 'bar'): PaneGroups {
   const s = sharedOf(key);
   return {
     head: { kind: 'Shared Component', name: s.label },
@@ -1130,7 +1262,7 @@ export function sharedGroups(ctx: PropsContext, key: 'doors' | 'footer' | 'bar')
   };
 }
 
-export function procGroups(ctx: PropsContext, id: string): { head: { kind: string; name: string }; groups: PropGroup[] } {
+export function procGroups(ctx: PropsContext, id: string): PaneGroups {
   const step = systemSteps(ctx.page).find(s => s.id === id);
   if (!step) return { head: { kind: 'System process', name: id }, groups: [] };
   const point = step.point === 'before-header' ? 'Before Header' : step.point === 'after-header' ? 'After Header' : 'After Footer';
@@ -1160,13 +1292,17 @@ export function procGroups(ctx: PropsContext, id: string): { head: { kind: strin
 }
 
 /** The pane's head and groups for a selection. */
-export function groupsFor(ctx: PropsContext, sel: Selection): { head: { kind: string; name: string }; groups: PropGroup[] } {
+export function groupsFor(ctx: PropsContext, sel: Selection): PaneGroups {
   switch (sel.kind) {
     case 'page':
       return pageGroups(ctx);
     case 'region': {
       const r = ctx.doc.regions.find(x => x.id === sel.id);
       return r ? regionGroups(ctx, r) : pageGroups(ctx);
+    }
+    case 'regions': {
+      const regions = sel.ids.map(id => ctx.doc.regions.find(x => x.id === id)).filter((r): r is Region => r !== undefined);
+      return regions.length > 1 ? regionsGroups(ctx, regions) : regions.length === 1 ? regionGroups(ctx, regions[0]) : pageGroups(ctx);
     }
     case 'action': {
       const a = ctx.doc.actions.find(x => x.id === sel.id);

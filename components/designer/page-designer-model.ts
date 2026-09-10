@@ -31,10 +31,10 @@ import type { EditableAsset } from '@/lib/design/assets';
 
 export type SharedKey = 'doors' | 'footer' | 'bar';
 
-/** What the panes have selected: the page, a position, a shared component's
- *  tile, a region, a dynamic action, one effect of an action, or a read-only
- *  system step. */
-export type Selection =
+/** One component: the page, a position, a shared component's tile, a region,
+ *  a dynamic action, one effect of an action, or a read-only system step. What
+ *  a message or a search hit points at. */
+export type SingleSelection =
   | { kind: 'page' }
   | { kind: 'position'; id: Position }
   | { kind: 'shared'; id: SharedKey }
@@ -43,13 +43,37 @@ export type Selection =
   | { kind: 'effect'; id: string; index: number }
   | { kind: 'proc'; id: string };
 
-export const PAGE_SELECTION: Selection = { kind: 'page' };
+/** What the panes have selected: one component, or several regions at once
+ *  (Ctrl+click; APEX shows their common attributes and an edit updates every
+ *  one, UX map lines 39 and 54). A set holds two or more ids. */
+export type Selection = SingleSelection | { kind: 'regions'; ids: string[] };
+
+export const PAGE_SELECTION: SingleSelection = { kind: 'page' };
 
 export function sameSelection(a: Selection, b: Selection): boolean {
   if (a.kind !== b.kind) return false;
   if (a.kind === 'page') return true;
+  if (a.kind === 'regions' && b.kind === 'regions') return a.ids.length === b.ids.length && a.ids.every(id => b.ids.includes(id));
   if (a.kind === 'effect' && b.kind === 'effect') return a.id === b.id && a.index === b.index;
   return (a as { id: string }).id === (b as { id: string }).id;
+}
+
+/** Whether the selection includes a component: itself, or a region inside a
+ *  set of regions. The tiles, the tree and the Component View highlight by this. */
+export function selectionCovers(selection: Selection, sel: Selection): boolean {
+  return sameSelection(selection, sel) || (selection.kind === 'regions' && sel.kind === 'region' && selection.ids.includes(sel.id));
+}
+
+/** Ctrl, Cmd or Shift+click on a region: it joins the selection or leaves it.
+ *  A set left with one region is that region; the only selected region clicked
+ *  again leaves the page selected; from anything but regions it is a plain select. */
+export function toggleRegion(current: Selection, id: string): Selection {
+  if (current.kind === 'region') return current.id === id ? PAGE_SELECTION : { kind: 'regions', ids: [current.id, id] };
+  if (current.kind === 'regions') {
+    const ids = current.ids.includes(id) ? current.ids.filter(x => x !== id) : [...current.ids, id];
+    return ids.length === 1 ? { kind: 'region', id: ids[0] } : { kind: 'regions', ids };
+  }
+  return { kind: 'region', id };
 }
 
 /** The positions a page of the given kind may carry regions in: every one for
@@ -410,7 +434,7 @@ export interface DesignerMessage {
   level: 'err' | 'warn' | 'info';
   text: string;
   /** What a click selects; null for the page. */
-  sel: Selection;
+  sel: SingleSelection;
   /** The property group to open. */
   group?: string;
 }
@@ -479,7 +503,7 @@ export function messageIndex(messages: readonly DesignerMessage[]): Record<strin
 // ---------------------------------------------------------------- page search
 
 export interface SearchHit {
-  sel: Selection;
+  sel: SingleSelection;
   what: string;
   where: string;
   value: string;
@@ -505,7 +529,7 @@ export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { 
     test = s => s.toLowerCase().includes(lower);
   }
   const hits: SearchHit[] = [];
-  const scan = (sel: Selection, what: string, fields: Record<string, string | number | boolean | null | undefined>) => {
+  const scan = (sel: SingleSelection, what: string, fields: Record<string, string | number | boolean | null | undefined>) => {
     for (const [k, v] of Object.entries(fields)) {
       if (v === null || v === undefined || v === '') continue;
       const s = String(v);

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Pills, PropertyPane, Ro, type PropGroup } from './PropertyPane';
 
@@ -83,5 +83,44 @@ describe('PropertyPane', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Signed in' }));
     expect(onPick).toHaveBeenCalledWith('signed_in');
     expect(screen.getByRole('button', { name: 'Public' }).getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('marks a changed row, and splits Region and Attributes when attributes are given (P1.6)', () => {
+    const region: PropGroup[] = [
+      {
+        title: 'Identification',
+        props: [
+          { label: 'Name', changed: true, htmlFor: 'f-rname', control: <input id="f-rname" aria-label="Name field" /> },
+          { label: 'Type', control: <Ro>Component</Ro> },
+        ],
+      },
+    ];
+    const attributes: PropGroup[] = [{ title: 'Settings', props: [{ label: 'Items', htmlFor: 'f-items', control: <input id="f-items" aria-label="Items field" /> }] }];
+    const wire = (extra: { focusGroup?: { title: string; n: number } } = {}) => <PropertyPane head={{ kind: 'Component', name: 'The wire' }} groups={region} attributes={attributes} {...extra} />;
+    const { rerender } = render(wire());
+    // The marker sits on the changed row alone, and the label's own name is untouched.
+    expect(screen.getAllByRole('img', { name: 'Changed since the last save' })).toHaveLength(1);
+    expect(screen.getByLabelText('Name field').closest('[data-changed]')).not.toBeNull();
+    expect(screen.getByText('Component', { selector: 'div' }).closest('[data-changed]')).toBeNull();
+    expect(screen.getByText('Name', { selector: 'label' })).toBeTruthy();
+    // Region shows first; Attributes holds the settings; the filter works within the shown tab.
+    const tabs = screen.getByRole('tablist', { name: 'Property Editor tabs' });
+    expect(within(tabs).getByRole('tab', { name: 'Region' }).getAttribute('aria-selected')).toBe('true');
+    expect(screen.queryByLabelText('Items field')).toBeNull();
+    fireEvent.click(within(tabs).getByRole('tab', { name: 'Attributes' }));
+    expect(screen.getByLabelText('Items field')).toBeTruthy();
+    expect(screen.queryByLabelText('Name field')).toBeNull();
+    fireEvent.change(screen.getByLabelText('Filter properties'), { target: { value: 'name' } });
+    expect(screen.getByText('No property matches.')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Filter properties'), { target: { value: '' } });
+    // Another component selected: a plain region has no tabs; the component again opens on Region.
+    rerender(<PropertyPane head={{ kind: 'Static Content', name: 'Intro' }} groups={region} />);
+    expect(screen.queryByRole('tablist', { name: 'Property Editor tabs' })).toBeNull();
+    expect(screen.getByLabelText('Name field')).toBeTruthy();
+    rerender(wire());
+    expect(within(screen.getByRole('tablist', { name: 'Property Editor tabs' })).getByRole('tab', { name: 'Region' }).getAttribute('aria-selected')).toBe('true');
+    // Messages and Page Search asking for a group under Attributes open that tab.
+    rerender(wire({ focusGroup: { title: 'Settings', n: 1 } }));
+    expect(screen.getByLabelText('Items field')).toBeTruthy();
   });
 });

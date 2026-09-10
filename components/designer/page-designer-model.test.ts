@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { PageDocument, Region } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import {
+  PAGE_SELECTION,
   SHIPPED_REGION_DEFAULTS,
   addAction,
   addComponent,
@@ -18,11 +19,15 @@ import {
   regionSummary,
   removeRegion,
   renumber,
+  sameSelection,
   searchPage,
+  selectionCovers,
   spanName,
   splitBody,
   splitRecipe,
+  toggleRegion,
   withImplicitBody,
+  type Selection,
 } from './page-designer-model';
 
 // The Page Designer's model: where a region lands, what a removal takes with
@@ -225,6 +230,27 @@ describe('page search', () => {
     expect(hits.map(h => `${h.what} · ${h.where}`)).toEqual(expect.arrayContaining(['Region · Aside · name', 'Action · Unfold · effect']));
     expect(searchPage('monza', doc, page)[0]).toMatchObject({ sel: { kind: 'page' }, where: 'name' });
     expect(searchPage('', doc, page)).toEqual([]);
+  });
+});
+
+describe('selection', () => {
+  it('a set of regions is one selection: equal by its members, covering each of them, toggled by Ctrl+click (P1.6)', () => {
+    const two: Selection = { kind: 'regions', ids: ['intro', 'aside'] };
+    expect(sameSelection(two, { kind: 'regions', ids: ['aside', 'intro'] })).toBe(true);
+    expect(sameSelection(two, { kind: 'regions', ids: ['intro'] })).toBe(false);
+    expect(sameSelection(two, { kind: 'region', id: 'intro' })).toBe(false);
+    expect(selectionCovers(two, { kind: 'region', id: 'aside' })).toBe(true);
+    expect(selectionCovers(two, { kind: 'region', id: 'other' })).toBe(false);
+    expect(selectionCovers(two, { kind: 'position', id: 'body' })).toBe(false);
+    expect(selectionCovers({ kind: 'region', id: 'intro' }, { kind: 'region', id: 'intro' })).toBe(true);
+    // Ctrl+click: a second region joins the first; a member clicked again leaves; one left is that region alone;
+    // the only selected region clicked again leaves the page selected; from anything else it is a plain select.
+    expect(toggleRegion({ kind: 'region', id: 'intro' }, 'aside')).toEqual(two);
+    expect(toggleRegion(two, 'aside')).toEqual({ kind: 'region', id: 'intro' });
+    expect(toggleRegion(two, 'third')).toEqual({ kind: 'regions', ids: ['intro', 'aside', 'third'] });
+    expect(toggleRegion({ kind: 'region', id: 'intro' }, 'intro')).toEqual(PAGE_SELECTION);
+    expect(toggleRegion(PAGE_SELECTION, 'intro')).toEqual({ kind: 'region', id: 'intro' });
+    expect(toggleRegion({ kind: 'position', id: 'body' }, 'intro')).toEqual({ kind: 'region', id: 'intro' });
   });
 });
 

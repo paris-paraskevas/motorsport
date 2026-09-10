@@ -33,6 +33,7 @@ import {
   removeRegion,
   sameSelection,
   searchPage,
+  toggleRegion,
   type DesignerMessage,
   type Placement,
   type RegionDefaults,
@@ -299,13 +300,21 @@ export function PageDesigner({
     footer: `${(listCounts['footer-site'] ?? 0) + (listCounts['footer-legal'] ?? 0)} links`,
     bar: `${listCounts.bar ?? 0} cells`,
   };
-  // A selection whose component went away falls back to the page.
-  const effective: Selection =
-    (selection.kind === 'region' && !doc.regions.some(r => r.id === selection.id)) ||
-    (selection.kind === 'action' && !doc.actions.some(a => a.id === selection.id)) ||
-    (selection.kind === 'effect' && !doc.actions.find(a => a.id === selection.id)?.do[selection.index])
+  // A selection whose component went away falls back to the page; a set of
+  // regions keeps the ones still on the page, and one left is that region.
+  const effective: Selection = ((): Selection => {
+    if (selection.kind === 'regions') {
+      const ids = selection.ids.filter(id => doc.regions.some(r => r.id === id));
+      if (ids.length === 0) return PAGE_SELECTION;
+      if (ids.length === 1) return { kind: 'region', id: ids[0] };
+      return ids.length === selection.ids.length ? selection : { kind: 'regions', ids };
+    }
+    return (selection.kind === 'region' && !doc.regions.some(r => r.id === selection.id)) ||
+      (selection.kind === 'action' && !doc.actions.some(a => a.id === selection.id)) ||
+      (selection.kind === 'effect' && !doc.actions.find(a => a.id === selection.id)?.do[selection.index])
       ? PAGE_SELECTION
       : selection;
+  })();
 
   useEffect(() => {
     if (renameTick > 0) {
@@ -320,8 +329,9 @@ export function PageDesigner({
     return () => document.removeEventListener('dragend', end);
   }, []);
 
-  const select = (sel: Selection, opts?: { group?: string; rename?: boolean; tab?: CentreTab }) => {
-    setSelection(sel);
+  const select = (sel: Selection, opts?: { group?: string; rename?: boolean; tab?: CentreTab; toggle?: boolean }) => {
+    // Ctrl, Cmd or Shift with the click adds a region to the selection or takes it out (APEX: several components selected, UX map lines 39 and 54).
+    setSelection(opts?.toggle && sel.kind === 'region' ? toggleRegion(effective, sel.id) : sel);
     if (opts?.group) setFocusGroup(f => ({ title: opts.group!, n: (f?.n ?? 0) + 1 }));
     if (opts?.rename) setRenameTick(t => t + 1);
     if (opts?.tab) setCTab(opts.tab);
@@ -411,6 +421,12 @@ export function PageDesigner({
         });
       }
     },
+  };
+  /** Several regions at once (a Ctrl+click set): one commit, the page selected after. */
+  const removeRegions = (ids: readonly string[]) => {
+    if (readOnly) return;
+    commit(ids.reduce((d, id) => removeRegion(d, id), doc), `${ids.length} regions deleted.`);
+    setSelection(PAGE_SELECTION);
   };
   const createAction = (whenOf?: { region: string }) => {
     if (readOnly) return;
@@ -711,7 +727,9 @@ export function PageDesigner({
       run: () => setSheet('delete'),
     },
   ];
-  const contextMenu = (atPos: MenuAt, sel: Selection) => {
+  const contextMenu = (atPos: MenuAt, picked: Selection) => {
+    // A right-click on a region inside a set of regions acts on the whole set.
+    const sel: Selection = picked.kind === 'region' && effective.kind === 'regions' && effective.ids.includes(picked.id) ? effective : picked;
     const entries: MenuEntry[] = [];
     const tail: MenuEntry[] = ['-', { label: 'Expand All', run: () => expandAll(true) }, { label: 'Collapse All', run: () => expandAll(false) }, { label: 'Help', k: 'Alt+F1', run: () => setCTab('help') }];
     if (sel.kind === 'region') {
@@ -753,6 +771,8 @@ export function PageDesigner({
       const a = doc.actions.find(x => x.id === sel.id);
       if (!a) return;
       entries.push({ head: 'Action' }, { label: 'Back to the dynamic action', run: () => select({ kind: 'action', id: a.id }) }, '-', { label: 'Delete', k: 'Del', disabled: readOnly || a.do.length <= 1, run: () => act.removeEffect(a.id, sel.index) });
+    } else if (sel.kind === 'regions') {
+      entries.push({ head: `${sel.ids.length} regions` }, { label: 'Delete', k: 'Del', disabled: readOnly, run: () => removeRegions(sel.ids) });
     } else {
       entries.push({ head: 'System process' }, { label: 'System process · read-only', disabled: true, run: () => {} });
     }
@@ -761,6 +781,7 @@ export function PageDesigner({
   const deleteSelection = () => {
     if (readOnly) return;
     if (effective.kind === 'region') act.remove(effective.id);
+    else if (effective.kind === 'regions') removeRegions(effective.ids);
     else if (effective.kind === 'action') act.removeAction(effective.id);
     else if (effective.kind === 'effect') {
       const a = doc.actions.find(x => x.id === effective.id);
@@ -883,6 +904,7 @@ export function PageDesigner({
   const ctx: PropsContext = {
     page,
     doc,
+    stored,
     readOnly,
     schemes: schemeList,
     assets,
@@ -891,6 +913,7 @@ export function PageDesigner({
     buildOptions: Object.fromEntries((buildOptions ?? []).map(b => [b.key, b.status])),
     shared,
     attrs,
+    attrsStored: attrsOf(page),
     setAttrs: fn => setAttrs(d => fn(d)),
     commit,
     select: sel => select(sel),
@@ -1076,7 +1099,7 @@ export function PageDesigner({
               shared={shared}
               usage={usage}
               onToggle={toggleExpanded}
-              onSelect={sel => select(sel)}
+              onSelect={(sel, opts) => select(sel, { toggle: opts?.toggle })}
               onContext={contextMenu}
               onDragStart={setDrag}
               onTab={setLeftTab}
@@ -1152,7 +1175,7 @@ export function PageDesigner({
                 showCols={showCols}
                 drag={drag}
                 readOnly={readOnly}
-                onSelect={(sel, opts) => select(sel, { rename: opts?.rename, group: opts?.rename ? 'Identification' : undefined })}
+                onSelect={(sel, opts) => select(sel, { rename: opts?.rename, group: opts?.rename ? 'Identification' : undefined, toggle: opts?.toggle })}
                 onContext={contextMenu}
                 onDragStart={setDrag}
                 onDrop={onDrop}
@@ -1192,6 +1215,7 @@ export function PageDesigner({
         <PropertyPane
           head={pe.head}
           groups={pe.groups}
+          attributes={pe.attributes}
           focusGroup={focusGroup}
           filterRef={filterRef}
           onHelpFor={(label, text) => setHelpFor(label ? { label, text } : null)}
