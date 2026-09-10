@@ -134,14 +134,6 @@ function writeLayoutMemory(patch: LayoutMemory): void {
   }
   layoutListeners.forEach(l => l());
 }
-function forgetLayoutMemory(): void {
-  try {
-    window.localStorage.removeItem(LAYOUT_KEY);
-  } catch {
-    /* nothing stored */
-  }
-  layoutListeners.forEach(l => l());
-}
 function subscribeLayout(listener: () => void): () => void {
   layoutListeners.add(listener);
   window.addEventListener('storage', listener);
@@ -241,6 +233,7 @@ export function PageDesigner({
   const [expandedLayout, setExpandedLayout] = useState(false);
   // Display from Here (the Layout tab's menu, UX map lines 47–48): the region the tab shows alone.
   const [layoutRoot, setLayoutRoot] = useState<string | null>(null);
+  const rootLive = layoutRoot !== null && doc.regions.some(r => r.id === layoutRoot) ? layoutRoot : null;
   const [drag, setDrag] = useState<Drag | null>(null);
   const [menu, setMenu] = useState<{ at: MenuAt; entries: MenuEntry[] } | null>(null);
   const [sheet, setSheet] = useState<SheetKind>(null);
@@ -781,7 +774,8 @@ export function PageDesigner({
     panesRef.current?.style.removeProperty('--lw');
     panesRef.current?.style.removeProperty('--rw');
     setExpandedLayout(false);
-    forgetLayoutMemory();
+    // The widths and the mode only (UX map line 14): Tooltips and Layout View are Show's, not Layout's.
+    writeLayoutMemory({ paneMode: undefined, lw: undefined, rw: undefined });
     toast('Layout reset');
   };
   // The remembered splitter widths land on the grid once it exists; a release
@@ -807,7 +801,7 @@ export function PageDesigner({
         if (effective.kind === 'region') setLayoutRoot(effective.id);
       },
     },
-    { label: 'Display from Page', disabled: layoutRoot === null, run: () => setLayoutRoot(null) },
+    { label: 'Display from Page', disabled: rootLive === null, run: () => setLayoutRoot(null) },
   ];
 
   // ----------------------------------------------------------- keyboard
@@ -1124,7 +1118,7 @@ export function PageDesigner({
               // APEX: the Layout tab's menu, right side of the tab (UX map line 48).
               <button
                 type="button"
-                className={`px-3 font-mono text-9 uppercase tracking-[0.1em] ${layoutRoot ? 'text-edit' : 'text-text-faint hover:text-text'}`}
+                className={`px-3 font-mono text-9 uppercase tracking-[0.1em] ${rootLive !== null ? 'text-edit' : 'text-text-faint hover:text-text'}`}
                 aria-haspopup="menu"
                 title={tip('Display from Here · Display from Page')}
                 onClick={e => setMenu({ at: anchorOf(e.currentTarget), entries: layoutMenu() })}
@@ -1163,7 +1157,7 @@ export function PageDesigner({
                 onDragStart={setDrag}
                 onDrop={onDrop}
                 onEditShared={sc => onWorkspace('shared', sc)}
-                root={layoutRoot !== null && doc.regions.some(r => r.id === layoutRoot) ? layoutRoot : null}
+                root={rootLive}
               />
             )}
             {cTab === 'cv' && <ComponentView page={page} doc={doc} selection={effective} assets={assets} lists={lists} onSelect={sel => select(sel)} />}

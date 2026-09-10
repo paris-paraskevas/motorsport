@@ -231,6 +231,11 @@ describe('PageDesigner', () => {
     expect(screen.getByRole('tab', { name: 'Component View' }).getAttribute('aria-selected')).toBe('true');
     utilities('Show', 'Layout View');
     expect(screen.getByRole('tab', { name: 'Layout' }).getAttribute('aria-selected')).toBe('true');
+    // Reset Layout is Layout's: the Show toggles survive it.
+    utilities('Layout', 'Two Pane Mode');
+    utilities('Layout', 'Reset Layout');
+    expect(JSON.parse(window.localStorage.getItem(LAYOUT_KEY) ?? '{}')).toEqual({ tooltips: false, layoutView: true });
+    expect(screen.getByRole('button', { name: 'Save' }).getAttribute('title')).toBeNull();
     window.localStorage.clear();
   });
 
