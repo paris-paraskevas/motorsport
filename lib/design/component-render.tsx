@@ -115,6 +115,29 @@ export function canRender(key: string): boolean {
   return key in RENDERERS;
 }
 
+/** What each component reads, as the Debug panel names it (P1.9): `content:`
+ *  the bundle deployed with the site, `db:` a table read live, `snapshot:<prefix>`
+ *  and `kv:<prefix>` the loader's tiers, whose run and phases the panel joins by
+ *  prefix (lib/source-snapshot's meta). Declared beside the renderers, since the
+ *  six Home components share one per-request assembly and a read cannot be
+ *  attributed to one of them at run time. */
+export const READS: Readonly<Record<string, readonly string[]>> = {
+  'page.heading': [],
+  'calendar.month': ['content:series'],
+  'home.lead': ['db:post', 'content:series'],
+  'home.live': ['content:series'],
+  'home.result': ['kv:paddock:home:podium:v2:'],
+  // Every series through withSourceSnapshot under standings:<slug>; F1 through its own last-good wrapper under f1:<name>.
+  'home.changed': ['snapshot:standings:', 'snapshot:f1:'],
+  'home.next': ['content:series'],
+  'home.wire': ['snapshot:news:aggregate:'],
+};
+
+/** What the Debug trace asks of a render (P1.9): each component's timing and outcome. */
+export interface RenderHooks {
+  onRendered?: (id: string, component: string, ms: number, ok: boolean) => void;
+}
+
 /** What a renderer is told about the page: the pattern or path, the address's parts, the row. */
 export interface RenderPage {
   path: string;
@@ -128,7 +151,7 @@ export interface RenderPage {
  * showing in the Body is told so, for the h1. A renderer that throws yields
  * nothing for its region and nothing else is affected.
  */
-export async function renderComponents(doc: PageDocument, where: RenderPage): Promise<Record<string, ReactNode>> {
+export async function renderComponents(doc: PageDocument, where: RenderPage, hooks?: RenderHooks): Promise<Record<string, ReactNode>> {
   const out: Record<string, ReactNode> = {};
   const firstInBody = doc.regions.find(r => r.position === 'body' && !r.hidden)?.id ?? null;
   const regions = doc.regions.filter((r): r is ComponentRegion => r.kind === 'component' && !isLegacyBody(r));
@@ -136,11 +159,17 @@ export async function renderComponents(doc: PageDocument, where: RenderPage): Pr
   await Promise.all(
     regions.map(async r => {
       const render = RENDERERS[r.component];
-      if (!render) return;
+      if (!render) {
+        hooks?.onRendered?.(r.id, r.component, 0, false);
+        return;
+      }
+      const t = performance.now();
       try {
         out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody });
+        hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;
+        hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, false);
       }
     }),
   );

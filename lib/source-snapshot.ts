@@ -1,4 +1,5 @@
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
+import { kv } from '@/lib/kv';
 import { logSourceError } from '@/lib/fetch-upstream';
 import type { RaceResult } from '@/lib/types';
 
@@ -57,6 +58,64 @@ function defaultIsEmpty(v: unknown): boolean {
   return v == null || (Array.isArray(v) && v.length === 0);
 }
 
+/** The loader's name for its run: the GitHub Actions run, or a local shell. */
+export function runnerName(): string {
+  return process.env.GITHUB_RUN_ID ? `warm-live-data#${process.env.GITHUB_RUN_ID}` : 'local';
+}
+
+// The loader's phases per source (P1.9; Appendix D's per-phase codes): F is the
+// fetch with its parse, W the write, in milliseconds, with the run that did it
+// and when. One KV hash, one field per key, written on the loader's path only
+// and read by the Debug panel through the trace. No schema change; fail-soft.
+const META_KEY = 'snapshot-meta:last';
+
+export interface SnapshotMeta {
+  run: string;
+  at: string;
+  F?: number;
+  W?: number;
+}
+
+function isKvConfigured(): boolean {
+  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+}
+
+export async function writeSnapshotMeta(key: string, phases: { F?: number; W?: number }): Promise<void> {
+  // The loader's path only: the Worker (DATA_SOURCE=db) reads and never writes, whichever caller reaches this.
+  if (isDbReadOnly() || !isKvConfigured()) return;
+  try {
+    const meta: SnapshotMeta = { run: runnerName(), at: new Date().toISOString(), ...phases };
+    await kv.hset(META_KEY, { [key]: JSON.stringify(meta) });
+  } catch (err) {
+    logSourceError(`snapshot-meta:write:${key}`, err);
+  }
+}
+
+/** Every key's last phases, by key; empty when KV is not there or fails. */
+export async function readSnapshotMeta(): Promise<Record<string, SnapshotMeta>> {
+  if (!isKvConfigured()) return {};
+  try {
+    const all = await kv.hgetall<Record<string, unknown>>(META_KEY);
+    const out: Record<string, SnapshotMeta> = {};
+    for (const [key, raw] of Object.entries(all ?? {})) {
+      // The client may hand a field back parsed already; a field that is neither is skipped.
+      let m: unknown = raw;
+      if (typeof raw === 'string') {
+        try {
+          m = JSON.parse(raw);
+        } catch {
+          continue;
+        }
+      }
+      if (m && typeof m === 'object' && typeof (m as SnapshotMeta).run === 'string' && typeof (m as SnapshotMeta).at === 'string') out[key] = m as SnapshotMeta;
+    }
+    return out;
+  } catch (err) {
+    logSourceError('snapshot-meta:read', err);
+    return {};
+  }
+}
+
 /**
  * Read the last-good payload stored under `key`, or null on miss / error /
  * unconfigured. Exported so callers that already own a hotter cache tier (e.g.
@@ -88,9 +147,10 @@ export async function readSnapshot<T>(key: string): Promise<T | null> {
  * a Supabase outage is logged, never thrown. Exported alongside `readSnapshot`
  * for the layered-backstop use described above.
  */
-export async function writeSnapshot<T>(key: string, payload: T): Promise<void> {
+export async function writeSnapshot<T>(key: string, payload: T, phases: { F?: number } = {}): Promise<void> {
   if (!isBettingConfigured()) return;
   try {
+    const t = Date.now();
     await betDb()
       .from('source_snapshot')
       .upsert(
@@ -104,6 +164,7 @@ export async function writeSnapshot<T>(key: string, payload: T): Promise<void> {
         },
         { onConflict: 'source_key' },
       );
+    await writeSnapshotMeta(key, { ...phases, W: Date.now() - t });
   } catch (err) {
     // Non-fatal: the caller already has fresh data in hand. Log so a persistent
     // last-good write failure surfaces instead of degrading the fallback silently.
@@ -137,6 +198,7 @@ export async function withSourceSnapshot<T>(
     }
   }
   let fresh: T;
+  const started = Date.now();
   try {
     fresh = await fetcher();
   } catch {
@@ -146,8 +208,8 @@ export async function withSourceSnapshot<T>(
     // Awaited (not fire-and-forget): a floating write isn't guaranteed to flush
     // before a server render / serverless invocation ends. writeSnapshot is
     // fail-soft, so awaiting it never throws; the latency lands only on a
-    // cache-miss render, not on cached serves.
-    await writeSnapshot(key, fresh);
+    // cache-miss render, not on cached serves. F is the fetch with its parse.
+    await writeSnapshot(key, fresh, { F: Date.now() - started });
     return fresh;
   }
   const lastGood = await readSnapshot<T>(key);

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import type { DynamicAction, Effect } from '@/lib/design/page-document';
 import { resolveDestination } from '@/lib/design/destinations';
+import { record } from '@/lib/design/debug-client';
 
 // The dynamic-action interpreter (APEX: Dynamic Actions, Phase 3 step 5): the
 // declarative actions of a served row page, executed in the browser. Mounted by
@@ -47,7 +48,12 @@ export function applyEffect(effect: Effect, root: ParentNode = document): void {
 /** Bind every action's trigger; returns the function that unbinds them all. */
 export function bindActions(actions: readonly DynamicAction[], root: ParentNode = document): () => void {
   const cleanups: (() => void)[] = [];
-  const run = (a: DynamicAction) => a.do.forEach(e => applyEffect(e, root));
+  // Each firing goes to the Debug panel's browser log (P1.9; APEX: which dynamic actions fired).
+  const run = (a: DynamicAction) => {
+    record(`action:${a.id}`, `${a.name || a.id} on ${a.when.event}: ${a.do.map(e => (e.action === 'go' ? `go ${e.dest}` : `${e.action} ${e.region}`)).join(', ')}`);
+    a.do.forEach(e => applyEffect(e, root));
+  };
+  record('bind', `${actions.length} dynamic action${actions.length === 1 ? '' : 's'} bound`);
   for (const a of actions) {
     const when = a.when;
     if (when.event === 'load') {

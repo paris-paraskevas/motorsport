@@ -229,8 +229,9 @@
    "defaults": "the working tab is the browsing context named paddock-run, opened without noopener so the browser reuses it; the toolbar is a client component mounted once in the app layout, drawn only for an administrator (Clerk's user metadata) after hydration, so the HTML readers get is unchanged; it reads the pages list once to name the current page; its look uses the site's tokens (a dark floating bar at the bottom centre, mono labels, lucide icons); Home opens the App Builder home, App the Application Definition, Page the designer on this page; Session is disabled with no slot (Clerk holds the session); Debug, Quick Edit, Customize, Info and Options are disabled until P1.9, P1.7, P1.8, P1.7 and P1.7; on the preview route the bar names the revision; the overlap check pairs regions of one row by their column spans; the served page and the Layout tab wrap the later region to a new row; the Messages error names both regions and opens Layout",
    "needsWord": "",
    "acceptance": "Save and Run publishes and the working tab shows the change with the toolbar at the bottom; a second run reuses the tab; a tile dragged by its body lands; a taken column is not offered, a document with an overlap holds Save with the reason, the page wraps; browser run; tests.",
-   "status": "started",
-   "scopeHash": "e4a671502c57"
+   "status": "done",
+   "scopeHash": "e4a671502c57",
+   "evidence": "#986 · 1.0.105 · merged 13:02Z, prod 13:07Z 2026-09-10 · vitest 2008 (PageDesigner.test.tsx: Save and Run publishes on the live revision and opens paddock-run, a drag from the tile lands, the pills offer the free columns, a stored overlap holds Save; DeveloperToolbar.test.tsx: nothing for a reader, the nine entries with the three links; page-document.test.ts: the wrap, the row mates, the overlap pairs; RowPageView.test.tsx: the wrapped row) · browser run on the local server: the bar on the live Monza page, a drag from a tile's body moved Aside to the Footer, The story beside Aside offered column 1 alone, Save and Run published and the second run reused the tab · reviewer: no gaps left, four points taken (the role check inline, the Column Span rule, the preview note, a page with no revision runs as it is) · review page 1a077e0d-b605-4309-b062-bdd2c8b87738"
   },
   {
    "id": "P1.9",
@@ -239,8 +240,10 @@
    "scope": "Debug menu Off / Info / App Trace / Full Trace; a per-request step-timing graph; which source each component read and from which loader run; which show, condition and authorization rules fired; which dynamic actions fired; a correlation id; export a trace; server and client helpers feed one panel.",
    "fixedBy": "APEX Debug, adapted (runs 13–14)",
    "acceptance": "The panel lists every component of Home with a source and a time; the loader's phase codes appear; test on the collector.",
-   "status": "planned",
-   "scopeHash": "ebc713d6aa5a"
+   "status": "started",
+   "scopeHash": "ebc713d6aa5a",
+   "defaults": "the level names as APEX writes them (Info the default when enabled, App Trace, Full Trace; levels 4, 6, 9), kept in sessionStorage as APEX keeps them for the tab's life, ?debug=YES|LEVEL4|LEVEL6|LEVEL9 on a page's address setting it for that visit, read in the browser so no cached page changes; a trace produced on demand by an admin-only API that re-runs the page's pipeline with a collector (the cached HTML readers get is never touched; a revision preview traced the same way by its id); the correlation id the request's cf-ray when present, else eight random hex characters, shown in the panel and prefixed to every line the Worker logs while debug is on; phase codes the Processing tab's step names (resolve · session · authz · show · build · refs · render · bind · action), a region's own entries as show:<id>, authz:<id>, build:<id>, render:<id>, action:<id>; the loader's codes F (fetch and parse) and W (write) per snapshot key, kept by the snapshot writer in KV (snapshot-meta:<key>: run, at, phases; no schema change); each renderer declares what it reads (READS) and the panel joins those keys to the loader's run and phases; Info lists the steps with times, the components with a source and a time, the actions fired; App Trace adds each region's rule verdicts, each source's run and phases, the refs' counts; Full Trace adds the refs' keys, each component's settings, the client's timings; the panel a drawer over the working tab (APEX opens a report page; ours stays on the page) with the bar graph, the rows, Refresh and Export as JSON; on a preview every region draws, so the trace says which rules would hide a region for the visitor tracing; one loader dispatch after the merge so the phases exist",
+   "needsWord": ""
   },
   {
    "id": "P1.10",

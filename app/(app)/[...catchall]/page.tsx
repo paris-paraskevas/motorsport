@@ -2,18 +2,17 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
 import { SITE_URL } from '@/lib/site';
-import { loadAssetsById, loadLiveComposed, loadLivePage } from '@/lib/design/live-page';
+import { loadAssetsById } from '@/lib/design/live-page';
 import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
-import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts, type PageDocument } from '@/lib/design/page-document';
+import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts } from '@/lib/design/page-document';
 import { loadBuildOptions } from '@/lib/design/build-options';
 import { raceWeekendNow, renderComponents } from '@/lib/design/component-render';
-import { composedDocument, matchComposedPage } from '@/lib/design/composed-page';
+import { resolvePage } from '@/lib/design/resolve-page';
 import { familyExtras, familyMetadata } from '@/lib/design/page-families';
 import { applyFrame } from '@/lib/design/page-frame';
-import { registryPageRow, type PageRow } from '@/lib/design/pages';
 import { CodePageFrame, RowPageView } from '@/components/page/RowPageView';
 import { RefusedPage } from '@/components/page/RefusedPage';
 
@@ -49,31 +48,13 @@ function pathOf(parts: string[]): string {
   return `/${parts.join('/')}`;
 }
 
-/** What an address resolves to. */
-type Resolved =
-  | { kind: 'row'; page: PageRow; document: PageDocument }
-  | { kind: 'composed'; page: PageRow; pattern: string; params: Record<string, string>; document: PageDocument }
-  | null;
-
-/** A row page with a live revision wins; then a page served from rows, whose
- *  row may be missing (the registry stands in) and whose revision may be
- *  missing (the default composition stands in); else nothing. Every read is
- *  memoised per request, so the metadata and the page share them. */
-async function resolve(path: string): Promise<Resolved> {
-  const live = await loadLivePage(path);
-  if (live) return { kind: 'row', page: live.page, document: live.document };
-  const hit = matchComposedPage(path);
-  if (!hit) return null;
-  const composed = await loadLiveComposed(hit.page.path);
-  const page = composed?.page ?? registryPageRow(hit.page.path);
-  if (!page) return null;
-  return { kind: 'composed', page, pattern: hit.page.path, params: hit.params, document: composedDocument(composed?.revision?.document ?? null, hit.page.path) };
-}
+// The resolver lives in lib/design/resolve-page.ts since P1.9, so the Debug
+// trace runs the same one this route runs.
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { catchall } = await params;
   const path = pathOf(catchall);
-  const r = await resolve(path);
+  const r = await resolvePage(path);
   if (!r) return {};
   if (r.kind === 'composed') {
     // The family's own metadata with the row's title and index rule over it, as the route file had it through pageMetadata.
@@ -99,7 +80,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 export default async function CatchAll({ params }: { params: Params }) {
   const { catchall } = await params;
   const path = pathOf(catchall);
-  const r = await resolve(path);
+  const r = await resolvePage(path);
   if (!r) notFound();
   // A page the row says renders per visit opts this request out of the cache.
   if (r.page.rendering === 'dynamic') await connection();

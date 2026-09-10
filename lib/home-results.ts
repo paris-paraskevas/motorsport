@@ -1,5 +1,6 @@
 import type { RaceResult } from '@/lib/types';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
+import { writeSnapshotMeta } from '@/lib/source-snapshot';
 import { loadResultsOverrides } from '@/lib/series-content';
 import { applyResultsOverrides } from '@/lib/results/overrides';
 import { fetchF1SeasonResults } from '@/lib/results/f1';
@@ -160,6 +161,7 @@ export async function fetchLatestPodium(
   }
   try {
     let result: LatestRace | null;
+    const started = Date.now();
     if (slug === 'wec') {
       // WEC uses a per-class rounds shape (not RaceResult[]) and the canonical
       // Results tab applies no overrides to it, so none are applied here either.
@@ -174,8 +176,11 @@ export async function fetchLatestPodium(
       const races = applyResultsOverrides(await FLAT_SOURCES[slug](), overrides);
       result = latestRaceFromFlat(races, Date.now());
     }
+    const fetched = Date.now() - started;
     if (result) await writeResultsCache(key, result);
     else await writeResultsCache(key, NO_PODIUM_SENTINEL, NO_PODIUM_TTL_SECONDS);
+    // The loader's phases for the Debug panel (P1.9): the fetch with its parse, then the write.
+    await writeSnapshotMeta(key, { F: fetched, W: Date.now() - started - fetched });
     return result;
   } catch {
     await writeResultsCache(key, NO_PODIUM_SENTINEL, NO_PODIUM_TTL_SECONDS);
