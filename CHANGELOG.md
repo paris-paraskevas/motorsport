@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.100 — 2026-09-10
+
+### Docs — Phase 1 enters the ledger
+
+The operator's word on 2026-09-10 (~07:50Z): "Go on phase 1, approved. Ask me each question when the time comes." `docs/plan/ledger.json` gains the twelve Phase 1 slots of the v2 draft, P1.1 to P1.12 (the shell grows to APEX's shape: region looks, template options, Header and Footer text with Configuration, rendering points and tree creates, the Layout tab and Gallery conformance, the Property Editor, the Developer Toolbar's Quick Edit and Info, Theme Roller from the toolbar, the Debug panel, the Create menu, Gallery hygiene, Delete Page cascade), each with its `scopeHash`, all `planned`; three keep a question for their turn (P1.1 the five looks shown side by side before the names are final, P1.4 the nesting depth, P1.8 which tokens the Theme Roller exposes). The dated changes line carries the word and the evidence for the adoption line above it: PR #980 squash-merged 07:43Z as 1.0.99. `docs/plan/components-programme.md` re-rendered (17 slots · 5 done · 3 carry a question). The Phase 2 to 4 slots stay in the draft until each phase is approved.
+
 ## 1.0.99 — 2026-09-10
 
 ### Docs — the executive rules v3 adopted, the plan ledger with its test, CLAUDE.md pruned, the first live hooks
