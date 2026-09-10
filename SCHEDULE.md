@@ -1839,6 +1839,20 @@ Active: (no [+Nm] prefixes given this session)
 
 Active: (awaiting [+Nm] prefixes)
 
+### Wed 2026-09-10 — session 47 (rules v3, the ledger, the first decision-free slots; operator present from ~09:20Z)
+
+Order fixed by the operator's opening brief; each item is asked as one question with a default, then acted on. Every subagent on Sonnet or Haiku, one at a time, writing to files as it goes; no agent builds; the gates and a fresh-context reviewer before any merge.
+
+1. **Table/Cards** (~15 min): confirm the reading of "i prefer the table instead of the cards" (standings default to the table view; Cards stay a view for drivers, teams, posts, rounds) and decide one data region with views (recommended) or two tiles → a dated line in the ledger's changes list with the word.
+2. **Rules v3** (~1h 30m): the operator's edits, or "rules go" → one docs PR: the CLAUDE.md prune (operator diff-reads it), `.claude/settings.json` (Sonnet force), `docs/plan/rules.md` v3, `docs/plan/ledger.json` + `render-ledger.mjs` + the generated `components-programme.md`, `lib/design/plan-ledger.test.ts` seeded with the five done R-slots; the hooks wired one at a time with the operator watching the first run of each. Draft PR #978 [HOLD] is the seed: rebased and grown into this PR, or closed in its favour (asked in the slot). The same PR carries the HANDOFF correction (operator, 09:45 local): `.claude/settings.json` and the hooks are NOT in the working tree on main (tracked on the branch only; the Sonnet force is live in this process only because the file was hot-loaded mid-session), and #978 was committed and opened at 06:17Z, not ~23:15Z.
+3. **Ledger v2** (~45 min): phase by phase, P1 → P4; P4.0 "atomic, validated, staged apply" confirmed before backups and Working Copies; P1.1's five looks and P1.8's tokens are asked with screens when their slots come up, not today.
+4. **"Phase 1 go"** (the rest of the day): the decision-free slots one PR each in the order P1.3 (Header and Footer text, Configuration) → P1.5 (Layout, Gallery and Utilities conformance) → P1.6 (Property Editor conformance) → P1.9 (Debug panel). Each: decision scan · plan mode · built directly · gates + dry-run Total Upload · browser run on the local server · review page · fresh-context Sonnet reviewer · merge on the word · prod check · ledger evidence. Realistic today: P1.3 and P1.5; P1.6 and P1.9 are stretch and roll to tomorrow unmarked.
+5. **Close** (~20 min): Inbox triage, `docs/HANDOFF.md`, this day marked, the ledger's evidence; one records PR.
+
+Won't touch this session: merging #978 as it stands; any Phase 2–4 slot; P1.1, P1.4, P1.8 (they carry questions) and P1.2, P1.7, P1.10–P1.12 (not in today's batch); TanStack Table; the cost PR; Home's split on production; the console's file deletions; the third draft's branch; any prod Supabase write without "apply <id>"; any push to `main`; copying anything from the previous session's scratchpad into the repo without the word; any agent on Fable.
+
+Active: (awaiting [+Nm] prefixes)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
