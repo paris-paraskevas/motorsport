@@ -128,6 +128,16 @@ describe('Designer keeps the selection in the URL', () => {
     expect(within(preview).queryByRole('link', { name: 'Imola' })).toBeNull();
   });
 
+  it('a stored entry to a page that is neither live nor deleted reads "not in the catalogue" and stays out of the preview (the reviewer’s gap)', () => {
+    const GONE = 'a1b2c3d4-0000-4000-8000-000000000099';
+    const withGone = { ...lists, doors: { ...lists.doors!, entries: [...DEFAULT_NAV.doors, { label: 'Gone', dest: `page:${GONE}` }] } };
+    render(<Designer readOnly={false} who="Test · Administrator · production" initialPages={pagesFromCode()} initialDeleted={[]} {...loaded} initialLists={withGone} />);
+    fireEvent.click(screen.getAllByRole('button', { name: /^Navigation Menu/ })[0]);
+    expect(screen.getByText('not in the catalogue')).toBeTruthy();
+    expect(screen.queryByText('deleted page')).toBeNull();
+    expect(within(screen.getByRole('navigation', { name: 'Doors' })).queryByRole('link', { name: 'Gone' })).toBeNull();
+  });
+
   it('lists the deleted pages behind a Deleted button, and opens a deleted page read-only with its banner (P1.12)', () => {
     window.history.replaceState(null, '', '/admin/designer?ws=builder');
     const gone: PageRow = {

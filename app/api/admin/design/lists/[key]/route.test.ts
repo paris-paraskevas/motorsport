@@ -132,6 +132,14 @@ describe('/api/admin/design/lists/[key]', () => {
     expect(((await res.json()) as { error: string }).error).toMatch(/not a destination in the catalogue/);
   });
 
+  it('PUT ignores an href the browser carries on an entry: the row keeps the key alone (the reviewer’s gap)', async () => {
+    const res = await put('doors', { entries: [{ label: 'Monza', dest: `page:${MONZA}`, href: '/somewhere/else' }], updatedAt: STAMP });
+    expect(res.status).toBe(200);
+    const sent = (rpc.mock.calls[0] as [string, { p_entries: Record<string, unknown>[] }])[1].p_entries[0];
+    expect(sent).toEqual({ label: 'Monza', dest_key: `page:${MONZA}`, icon: null, authz_key: null });
+    expect(sent).not.toHaveProperty('href');
+  });
+
   it('PUT rejects an authorization that is not a scheme row, and accepts one that is', async () => {
     let res = await put('doors', { entries: [{ label: 'Learn', dest: 'learn', authz: 'vip' }], updatedAt: STAMP });
     expect(res.status).toBe(400);
