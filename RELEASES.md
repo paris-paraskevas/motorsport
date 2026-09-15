@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.114 — 2026-09-15
+
+Internal only: the day's working records. Nothing changes for readers.
+
 ## 1.0.113 — 2026-09-15
 
 In the design tool, three things the reference tool has. The components gallery lists only the pieces a page can take, with a Show Legacy switch that reveals the superseded one, greyed, with the reason it cannot be placed. A small picker beside every text field lists the shared house-style lines with a preview of the text as the page will show it, and inserts one where the cursor is. And any part of a page can be commented out and back: it stays on the page with all its settings, struck through in the tool, and is left out when the page runs. Nothing changes for readers.
