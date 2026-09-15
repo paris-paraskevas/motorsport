@@ -58,6 +58,11 @@ function updatedOn(stamp: string | null): string {
   return m ? `${m[1]} ${m[2]}Z` : stamp;
 }
 
+/** The pages of the operator's own: every page but the code pages the code still serves. */
+function rowCountOf(pages: PageRow[]): number {
+  return pages.length - pages.filter(p => p.kind === 'code' && p.served !== 'rows').length;
+}
+
 /** The Page Groups sheet (APEX: Page Groups, "a purely organizational grouping
  *  of pages"; the prototype's sheet): every group with its page count and a
  *  show button that filters the pages list. Shared by the list's Page Groups
@@ -75,8 +80,7 @@ export function PageGroupsSheet({
   onShow: (filter: PageFilter) => void;
   onClose: () => void;
 }) {
-  const codeCount = pages.filter(p => p.kind === 'code' && p.served !== 'rows').length;
-  const rowCount = pages.length - codeCount;
+  const rowCount = rowCountOf(pages);
   return (
     <Sheet title="Page Groups" sub="How the pages list is organised. A group is a label; pages keep their paths." onClose={onClose}>
       <table className="w-full border-collapse text-12">
@@ -131,8 +135,8 @@ export function PagesList({
   const [filter, setFilter] = useState<PageFilter>(initialFilter);
   const [query, setQuery] = useState('');
 
-  const codeCount = pages.filter(p => p.kind === 'code' && p.served !== 'rows').length;
-  const rowCount = pages.length - codeCount;
+  const rowCount = rowCountOf(pages);
+  const codeCount = pages.length - rowCount;
   const unseeded = pages.filter(p => p.kind === 'code' && p.updatedAt === null).length;
   const filterLabel = filter === 'all' ? null : filter === 'row' ? 'Your pages' : PAGE_GROUP_LABELS[filter];
   const q = query.trim().toLowerCase();

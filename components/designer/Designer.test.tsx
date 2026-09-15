@@ -142,7 +142,7 @@ describe('Designer keeps the selection in the URL', () => {
         readOnly={false}
         who="Test · Administrator · production"
         initialWorkspace="builder"
-        initialPages={[...pagesFromCode(), page]}
+        initialPages={[...pagesFromCode(), page, { ...page, id: 'a1b2c3d4-0000-4000-8000-000000000011', path: '/history/imola', name: 'Imola', group: 'calendar' }]}
         initialPageId={page.id}
         initialDetail={detail}
         initialRegion="intro"
@@ -176,13 +176,15 @@ describe('Designer keeps the selection in the URL', () => {
       // The heading's suffix is an inline span, so the accessible name may carry no space before the dot.
       expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock\s*· Calendar$/ })).toBeTruthy();
       expect(screen.getByRole('button', { name: /^Page Groups\s*· Calendar$/ })).toBeTruthy();
-      // Monza is editorial: filtered out of the Calendar list (the code pages of the fixture carry no row, so they have no Open button to assert).
+      // Monza is editorial: filtered out of the Calendar list; Imola (calendar) is listed.
       expect(screen.queryByRole('button', { name: 'Open Monza, a history' })).toBeNull();
       expect(window.location.search).toBe('?ws=builder');
-      // The list's own Page Groups button shows every page again.
-      fireEvent.click(screen.getByRole('button', { name: /^Page Groups/ }));
-      fireEvent.click(within(within(screen.getByRole('dialog', { name: 'Page Groups' })).getByText('All pages').closest('tr')!).getByRole('button', { name: 'show' }));
+      // The filter holds for that one return: a page opened from the filtered list and left through the plain back arrow shows every page again (the reviewer's gap).
+      fireEvent.click(screen.getByRole('button', { name: 'Open Imola' }));
+      await waitFor(() => expect(screen.getByLabelText('Page Designer')).toBeTruthy());
+      fireEvent.click(screen.getByRole('button', { name: 'Back to all pages' }));
       expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock$/ })).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Open Monza, a history' })).toBeTruthy();
     } finally {
       vi.unstubAllGlobals();
     }

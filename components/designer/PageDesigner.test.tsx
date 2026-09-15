@@ -273,12 +273,22 @@ describe('PageDesigner', () => {
     }
     fireEvent.click(menuEntry('Shared Component…'));
     expect(onWorkspace).toHaveBeenCalledWith('shared');
-    // Page Group…: the sheet the pages list has, the page's group (Editorial) marked; show on another returns to the list filtered by it.
+    // Page Group…: the sheet the pages list has, the page's group (Editorial) marked; Close leaves everything as it was.
     create();
     fireEvent.click(menuEntry('Page Group…'));
-    const sheet = screen.getByRole('dialog', { name: 'Page Groups' });
-    const row = (label: string) => within(sheet).getByText(label).closest('tr')!;
+    const sheet = () => screen.getByRole('dialog', { name: 'Page Groups' });
+    const row = (label: string) => within(sheet()).getByText(label).closest('tr')!;
     expect(within(row('Editorial')).getByRole('button', { name: 'showing' })).toBeTruthy();
+    fireEvent.click(within(sheet()).getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog', { name: 'Page Groups' })).toBeNull();
+    expect(onBack).not.toHaveBeenCalled();
+    // The sheet marks the group the Property Editor's draft shows, saved or not: Page Group set to Series, unsaved, then the sheet.
+    fireEvent.click(within(within(screen.getByLabelText('Property Editor')).getByRole('group', { name: 'Page group' })).getByRole('button', { name: 'Series' }));
+    create();
+    fireEvent.click(menuEntry('Page Group…'));
+    expect(within(row('Series')).getByRole('button', { name: 'showing' })).toBeTruthy();
+    expect(within(row('Editorial')).getByRole('button', { name: 'show' })).toBeTruthy();
+    // show on another group returns to the list filtered by it.
     fireEvent.click(within(row('Calendar')).getByRole('button', { name: 'show' }));
     expect(onBack).toHaveBeenCalledWith('calendar');
     expect(screen.queryByRole('dialog', { name: 'Page Groups' })).toBeNull();

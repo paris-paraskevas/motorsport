@@ -723,7 +723,8 @@ export function Designer({
               }}
               onOpenPage={id => openPageDetail(id)}
               onBack={filter => {
-                if (filter) setPagesFilter(filter);
+                // One return at a time: the plain back arrow shows every page again (the reviewer's gap).
+                setPagesFilter(filter ?? 'all');
                 openPageDetail(null);
               }}
               onWorkspace={(ws, sc) => {
