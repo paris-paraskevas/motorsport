@@ -526,6 +526,23 @@ describe('PageDesigner', () => {
     expect((screen.getByLabelText('Region header text') as HTMLInputElement).value).toBe('{shortcut:times.local}');
   });
 
+  it('the picker is keyed by the region: a popover open for one region closes when the keyboard selects another, so a pick never lands in the wrong region (the reviewer’s find)', () => {
+    mount();
+    fireEvent.click(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('button', { name: 'Header and Footer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Insert a shortcut into Header Text' }));
+    expect(screen.getByRole('dialog', { name: 'Shortcuts for Header Text' })).toBeTruthy();
+    // Enter on another region's tree row selects it without a mousedown, so the popover's outside-click guard never fires.
+    const row = within(screen.getByRole('tree', { name: 'Rendering' })).getByText('Elsewhere').closest('[role="treeitem"]')!;
+    fireEvent.keyDown(row, { key: 'Enter' });
+    expect((within(screen.getByLabelText('Property Editor')).getByLabelText('Region title') as HTMLInputElement).value).toBe('Elsewhere');
+    expect(screen.queryByRole('dialog', { name: 'Shortcuts for Header Text' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Insert a shortcut into Header Text' }));
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Shortcuts for Header Text' })).getByRole('option', { name: /times\.local/ }));
+    expect((screen.getByLabelText('Region header text') as HTMLInputElement).value).toBe('{shortcut:times.local}');
+    expect((screen.getByLabelText('Region title') as HTMLInputElement).value).toBe('Elsewhere');
+  });
+
   it('Comment Out from the region’s menu strikes it through in the tree, tags its tile, sets Configuration › Commented Out to Yes and saves commentedOut; Uncomment clears it (P1.11)', async () => {
     const { onSaved } = mount();
     fireEvent.contextMenu(tile('Static Content: A century of speed'));

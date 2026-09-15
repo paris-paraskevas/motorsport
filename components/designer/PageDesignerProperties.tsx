@@ -458,7 +458,8 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
             className={`${TEXTAREA} font-sans text-12`}
             onChange={e => p('Text updated.', x => (x.kind === 'static' ? { ...x, text: e.target.value } : x))}
           />
-          <TextPicker field="Text" fieldId={fieldId('text')} shortcuts={shortcuts} value={r.text} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'text', fieldId('text'), token, at)} />
+          {/* Keyed by the region, as the Template Options button is: the pane's rows keep their identity across a selection change, so a popover open for one region would otherwise survive into the next and splice at a stale cursor (the reviewer's find). */}
+          <TextPicker key={r.id} field="Text" fieldId={fieldId('text')} shortcuts={shortcuts} value={r.text} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'text', fieldId('text'), token, at)} />
         </div>
       ),
       note: `${r.text.length.toLocaleString()} / ${STATIC_TEXT_MAX.toLocaleString()} · the picker inserts a shortcut at the cursor`,
@@ -735,7 +736,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
                 className={FIELD}
                 onChange={e => p('Header Text updated.', x => textAttr(x, 'headerText', e.target.value))}
               />
-              <TextPicker field="Header Text" fieldId={fieldId('rheader')} shortcuts={shortcuts} value={r.headerText ?? ''} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'headerText', fieldId('rheader'), token, at)} />
+              <TextPicker key={r.id} field="Header Text" fieldId={fieldId('rheader')} shortcuts={shortcuts} value={r.headerText ?? ''} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'headerText', fieldId('rheader'), token, at)} />
             </div>
           ),
           note: 'Shown above the region’s content.',
@@ -757,7 +758,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
                 className={FIELD}
                 onChange={e => p('Footer Text updated.', x => textAttr(x, 'footerText', e.target.value))}
               />
-              <TextPicker field="Footer Text" fieldId={fieldId('rfooter')} shortcuts={shortcuts} value={r.footerText ?? ''} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'footerText', fieldId('rfooter'), token, at)} />
+              <TextPicker key={r.id} field="Footer Text" fieldId={fieldId('rfooter')} shortcuts={shortcuts} value={r.footerText ?? ''} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'footerText', fieldId('rfooter'), token, at)} />
             </div>
           ),
           note: 'e.g. Times are local to you.',
