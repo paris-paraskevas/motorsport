@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { PageTiming, readTimings, type Timings } from './PageTiming';
+import { PageTiming, readTimings, timingTable, type Timings } from './PageTiming';
 
 // The Page Performance Timing dialog (P1.7; APEX: Info › Show Page Timing, a
 // dialog whose Copy button copies the timing data as a table and whose Clear
@@ -59,5 +59,33 @@ describe('PageTiming (P1.7)', () => {
 
   it('readTimings answers empty where the browser has no timing API (jsdom), never throwing', () => {
     expect(readTimings()).toEqual({ navigation: [], resources: [], total: 0 });
+  });
+
+  it('readTimings shapes the browser’s entries: the navigation steps to one decimal, Load blank until it ends, the slowest eight resources with their path, kind and size', () => {
+    const nav = { redirectStart: 0, redirectEnd: 0, domainLookupStart: 5, domainLookupEnd: 17.44, connectStart: 17.44, connectEnd: 47.4, requestStart: 48, responseStart: 258.66, responseEnd: 273.6, domInteractive: 480.04, domContentLoadedEventEnd: 495, loadEventEnd: 0 };
+    const resource = (name: string, duration: number, initiatorType: string, transferSize: number) => ({ name, duration, initiatorType, transferSize });
+    const resources = Array.from({ length: 10 }, (_, i) => resource(`http://localhost:3000/_next/static/chunks/c${i}.js`, 10 * (i + 1), 'script', 2048 * (i + 1)));
+    resources.push(resource('https://api.example.com/v1/client', 500, 'fetch', 0));
+    vi.stubGlobal('performance', { getEntriesByType: (type: string) => (type === 'navigation' ? [nav] : type === 'resource' ? resources : []), clearResourceTimings: vi.fn() });
+    try {
+      const t = readTimings();
+      expect(t.navigation).toEqual([
+        { label: 'Redirect', ms: 0 },
+        { label: 'DNS', ms: 12.4 },
+        { label: 'Connect', ms: 30 },
+        { label: 'Request to first byte', ms: 210.7 },
+        { label: 'Response', ms: 14.9 },
+        { label: 'DOM interactive', ms: 480 },
+        { label: 'DOM content loaded', ms: 495 },
+        { label: 'Load', ms: null },
+      ]);
+      expect(t.total).toBe(11);
+      expect(t.resources).toHaveLength(8);
+      expect(t.resources[0]).toEqual({ label: 'api.example.com/v1/client', ms: 500, detail: 'fetch' });
+      expect(t.resources[1]).toEqual({ label: '/_next/static/chunks/c9.js', ms: 100, detail: 'script · 20 KB' });
+      expect(timingTable(t).split('\n')).toEqual(expect.arrayContaining(['Step\tms', 'Load\t', 'Resource\tms\tkind', 'api.example.com/v1/client\t500\tfetch']));
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

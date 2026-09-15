@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
@@ -207,6 +207,8 @@ export function DeveloperToolbar() {
   const [columns, setColumns] = useState(false);
   const [timing, setTiming] = useState(false);
   const [options, setOptions] = useState<ToolbarOptions>(readOptions);
+  // One identity, so Quick Edit's listeners are not re-registered on every render of the bar.
+  const exitQuickEdit = useCallback(() => setMode(null), []);
   // A pick applies and closes the menu, as every menu here does.
   const setOption = (patch: Partial<ToolbarOptions>) => {
     const next = { ...options, ...patch };
@@ -412,7 +414,7 @@ export function DeveloperToolbar() {
           </div>
         </div>
       )}
-      {mode && page?.id && <QuickEdit mode={mode} pageId={page.id} designerTab={DESIGNER_TAB} onExit={() => setMode(null)} />}
+      {mode && page?.id && <QuickEdit mode={mode} pageId={page.id} designerTab={DESIGNER_TAB} onExit={exitQuickEdit} />}
       {timing && <PageTiming onClose={() => setTiming(false)} />}
     </div>
   );

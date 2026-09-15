@@ -130,11 +130,24 @@ describe('DeveloperToolbar', () => {
     expect([...menu.querySelectorAll('button')].map(b => b.textContent)).toEqual(['Auto Hide', 'Show Icons Only', 'Top', 'Left', 'Bottom', 'Right']);
     expect(within(menu).getByRole('menuitemradio', { name: 'Bottom' }).getAttribute('aria-checked')).toBe('true');
     fireEvent.click(within(menu).getByRole('menuitemcheckbox', { name: 'Show Icons Only' }));
+    // A pick applies and closes the menu.
+    expect(screen.queryByRole('menu')).toBeNull();
     expect(screen.getByRole('link', { name: 'Home' }).querySelector('span')?.className).toContain('sr-only');
-    fireEvent.click(screen.getByRole('button', { name: 'Options' }));
-    fireEvent.click(within(screen.getByRole('menu', { name: 'Developer Toolbar Options' })).getByRole('menuitemradio', { name: 'Top' }));
-    expect(bar().getAttribute('data-position')).toBe('top');
-    expect(bar().className).toContain('top-3');
+    // The four positions: the bar's edge and its stacking, the menus anchored to it.
+    for (const [name, at, stack] of [
+      ['Left', 'left-3', 'flex-col'],
+      ['Right', 'right-3', 'flex-col'],
+      ['Top', 'top-3', 'flex-row'],
+    ] as const) {
+      fireEvent.click(screen.getByRole('button', { name: 'Options' }));
+      fireEvent.click(within(screen.getByRole('menu', { name: 'Developer Toolbar Options' })).getByRole('menuitemradio', { name }));
+      expect(bar().getAttribute('data-position')).toBe(name.toLowerCase());
+      expect(bar().className).toContain(at);
+      expect(bar().className).toContain(stack);
+      fireEvent.click(screen.getByRole('button', { name: 'Options' }));
+      expect(screen.getByRole('menu', { name: 'Developer Toolbar Options' }).className).toContain(`${at.split('-')[0]}-16`);
+      fireEvent.click(screen.getByRole('button', { name: 'Options' }));
+    }
     fireEvent.click(screen.getByRole('button', { name: 'Options' }));
     fireEvent.click(within(screen.getByRole('menu', { name: 'Developer Toolbar Options' })).getByRole('menuitemcheckbox', { name: 'Auto Hide' }));
     expect(bar().getAttribute('data-autohide')).toBe('true');

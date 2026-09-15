@@ -93,6 +93,24 @@ describe('QuickEdit (P1.7)', () => {
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onExit).toHaveBeenCalledTimes(2);
     expect(fetchMock).not.toHaveBeenCalled();
+    // The outline follows the region on scroll and resize: the rectangle is read again.
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ top: 110, left: 20, width: 300, height: 40, right: 320, bottom: 150, x: 20, y: 110, toJSON: () => ({}) } as DOMRect);
+    fireEvent(window, new Event('resize'));
+    expect(screen.getByRole('button', { name: 'Open intro in the designer' }).style.top).toBe('110px');
+  });
+
+  it('the wrench names a page that was never published, rather than a newer draft', async () => {
+    serve(detail({ live: null, newest: { ...detail().newest, publishedAt: null } }));
+    render(
+      <>
+        {page()}
+        <QuickEdit mode="live" pageId={PAGE} designerTab="paddock-designer" onExit={vi.fn()} />
+      </>,
+    );
+    fireEvent.mouseOver(intro());
+    const wrench = await screen.findByRole('button', { name: 'Edit the template options of intro' });
+    await waitFor(() => expect(wrench.title).toMatch(/never been published/));
+    expect((wrench as HTMLButtonElement).disabled).toBe(true);
   });
 
   it('Edit Live Template Options: the wrench opens the Template Options dialog with the region’s stored list, OK publishes the running document with the new list on the live base and reloads; Escape closes the dialog alone', async () => {

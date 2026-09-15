@@ -5,7 +5,7 @@
 // should stay on the example page"). These cases pin that round trip: a click
 // writes the URL, the crumb clears it, and the page's `?sc=` opens the entry.
 
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type React from 'react';
 
@@ -103,7 +103,7 @@ describe('Designer keeps the selection in the URL', () => {
     expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
   });
 
-  it('opens a page the server handed over in the Page Designer, and the back arrow returns to all pages', () => {
+  it('opens a page the server handed over in the Page Designer, and the back arrow returns to all pages', async () => {
     window.history.replaceState(null, '', '/admin/designer?ws=builder&page=a1b2c3d4-0000-4000-8000-000000000010');
     const page: PageRow = {
       id: 'a1b2c3d4-0000-4000-8000-000000000010',
@@ -160,6 +160,18 @@ describe('Designer keeps the selection in the URL', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Back to all pages' }));
     expect(window.location.search).toBe('?ws=builder');
     expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
+    // The address's region was spent with the page it came with: the same page reopened starts on the page (the reviewer's gap).
+    const fetchMock = vi.fn(async () => ({ ok: true, status: 200, json: async () => detail }));
+    vi.stubGlobal('fetch', fetchMock);
+    try {
+      fireEvent.click(screen.getByRole('button', { name: 'Open Monza, a history' }));
+      await waitFor(() => expect(screen.getByLabelText('Page Designer')).toBeTruthy());
+      expect(within(screen.getByLabelText('Property Editor')).getByText('a1b2c3d4: Monza, a history')).toBeTruthy();
+      expect(within(screen.getByLabelText('Property Editor')).queryByLabelText('Region title')).toBeNull();
+      fireEvent.click(screen.getByRole('button', { name: 'Back to all pages' }));
+    } finally {
+      vi.unstubAllGlobals();
+    }
     expect(screen.getByRole('button', { name: 'Open Monza, a history' })).toBeTruthy();
   });
 

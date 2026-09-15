@@ -398,6 +398,8 @@ export function Designer({
   const [workspace, setWorkspace] = useState<Workspace>(initialWorkspace);
   const [catalogueQuery, setCatalogueQuery] = useState('');
   const [openPage, setOpenPage] = useState<string | null>(initialPageId);
+  /** The region the address named (P1.7), for the page it was opened with alone. */
+  const [regionOnce, setRegionOnce] = useState<string | null>(initialRegion);
   const [detail, setDetail] = useState<LoadedDetail>(() =>
     initialDetail ? { state: 'ready', detail: initialDetail } : { state: 'loading' },
   );
@@ -529,6 +531,8 @@ export function Designer({
   // opened with it and leaves the address with any page change.
   const openPageDetail = (id: string | null) => {
     setOpenPage(id);
+    // The address's region is spent with the page it came with: a page opened later starts on the page (the reviewer's gap).
+    setRegionOnce(null);
     if (id) {
       setDetail({ state: 'loading' });
       void fetchDetail(id).then(loaded => setDetail(loaded));
@@ -708,7 +712,7 @@ export function Designer({
               schemes={schemes}
               buildOptions={build.state === 'ready' ? build.options : undefined}
               templates={appearance.state === 'ready' ? appearance.loaded.appearance.templates : undefined}
-              initialRegion={openPage === initialPageId ? initialRegion : null}
+              initialRegion={openPage === initialPageId ? regionOnce : null}
               shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
               themeDefault={themeDefault}
               onSaved={next => {

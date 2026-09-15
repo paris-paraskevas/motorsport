@@ -138,7 +138,9 @@ export function QuickEdit({
           ? 'The running page could not be read'
           : !detail.newest
             ? 'The page has no revision yet'
-            : detail.newest.id !== detail.live?.id
+            : !detail.live
+              ? 'The page has never been published; publish it from the designer first'
+              : detail.newest.id !== detail.live.id
               ? 'A draft newer than the running page exists; finish it in the designer'
               : detail.newest.problems.length > 0
                 ? 'The running revision has problems; open the designer'
