@@ -14,12 +14,34 @@ export type Destination =
 /** One entry of a navigation list, as the shell renders it. */
 export interface NavEntry {
   label: string;
-  /** A key of DESTINATIONS. */
+  /** A key of DESTINATIONS, or a page key (`page:<id>`, P1.12 B1). */
   dest: string;
   /** Icon name for the phone bar; see the map in components/BottomBar.tsx. */
   icon?: string;
   /** Authorization scheme key; unset means everyone. Enforced from Phase 3. */
   authz?: string;
+  /** A page entry's address, resolved by the loader against the live row pages
+   *  (P1.12 B1), so the shell's browser components need no map. Never stored;
+   *  the write path keeps the key alone. */
+  href?: string;
+}
+
+// Row pages as destinations (P1.12 B1): a page made in the designer is named by
+// its id, `page:<uuid>`, never by its path (a page keeps its identity across a
+// rename of its address). The key resolves against the live row pages the
+// loader hands over; a deleted page resolves to nothing, so its entries leave
+// the shell while it is deleted and come back with Reinstate.
+export const PAGE_DEST = /^page:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
+/** The live row pages by id: what a `page:` key resolves against. */
+export type PageDestinations = Readonly<Record<string, { path: string; name: string }>>;
+
+export function pageDest(id: string): string {
+  return `page:${id}`;
+}
+
+/** The page id inside a page key, or null for any other key. */
+export function pageIdOf(key: string): string | null {
+  return PAGE_DEST.exec(key)?.[1] ?? null;
 }
 
 /** The four lists the shell renders, resolved to entries. */
@@ -79,8 +101,22 @@ export const DESTINATIONS: Record<string, Destination> = {
   'action:cookies': { kind: 'action', action: 'cookies', label: 'Manage cookies' },
 };
 
-export function resolveDestination(key: string): Destination | null {
-  return Object.prototype.hasOwnProperty.call(DESTINATIONS, key) ? DESTINATIONS[key] : null;
+/** The catalogue's entry for a key; with the live row pages given, a page key's
+ *  route (its path, its name) too. Null for anything else. */
+export function resolveDestination(key: string, pages?: PageDestinations): Destination | null {
+  if (Object.prototype.hasOwnProperty.call(DESTINATIONS, key)) return DESTINATIONS[key];
+  const id = pageIdOf(key);
+  if (id && pages && Object.prototype.hasOwnProperty.call(pages, id)) return { kind: 'route', href: pages[id].path, label: pages[id].name };
+  return null;
+}
+
+/** An entry's destination as the shell draws it: the catalogue, else the href
+ *  the loader carried on a page entry (the browser has no map), else nothing. */
+export function resolveEntry(entry: NavEntry, pages?: PageDestinations): Destination | null {
+  const dest = resolveDestination(entry.dest, pages);
+  if (dest) return dest;
+  if (entry.href && pageIdOf(entry.dest)) return { kind: 'route', href: entry.href, label: entry.label };
+  return null;
 }
 
 /** The active-state rule the doors and the bar share: home matches itself only,

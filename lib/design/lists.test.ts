@@ -5,19 +5,28 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 let configured = true;
 let entryRows: { data: unknown; error: { message: string } | null } = { data: [], error: null };
 let listRow: { data: unknown; error: { message: string } | null } = { data: null, error: null };
+// The row pages a page: destination may name (P1.12 B1); `.is('deleted_at', null)` keeps the live ones.
+let pageRows: { data: { id: string; path: string; name: string; deleted_at?: string | null }[]; error: { message: string } | null } = { data: [], error: null };
 vi.mock('@/lib/betting/client', () => ({
   isBettingConfigured: () => configured,
   betDb: () => ({
     from: (table: string) => {
-      const result = table === 'list' ? listRow : entryRows;
+      let liveOnly = false;
       const q = {
         select: () => q,
         eq: () => q,
         in: () => q,
         order: () => q,
-        maybeSingle: async () => result,
-        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
-          Promise.resolve(result).then(resolve, reject),
+        is: (col: string, v: unknown) => {
+          if (col === 'deleted_at' && v === null) liveOnly = true;
+          return q;
+        },
+        maybeSingle: async () => (table === 'list' ? listRow : entryRows),
+        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) => {
+          const result =
+            table === 'list' ? listRow : table === 'page' ? { ...pageRows, data: liveOnly ? pageRows.data.filter(r => r.deleted_at == null) : pageRows.data } : entryRows;
+          return Promise.resolve(result).then(resolve, reject);
+        },
       };
       return q;
     },
@@ -33,6 +42,57 @@ import {
   parseEntries,
   resetNavListsMemo,
 } from './lists';
+import { pageDest } from './destinations';
+
+const MONZA = 'a1b2c3d4-0000-4000-8000-000000000010';
+const IMOLA = 'a1b2c3d4-0000-4000-8000-000000000021';
+const monzaRow = { id: MONZA, path: '/history/monza', name: 'Monza, a history', deleted_at: null };
+const imolaRow = { id: IMOLA, path: '/history/imola', name: 'Imola', deleted_at: '2026-09-13T10:00:00+00:00' };
+
+describe('page destinations in the lists (P1.12 B1)', () => {
+  beforeEach(() => {
+    configured = true;
+    resetNavListsMemo();
+    pageRows = { data: [monzaRow, imolaRow], error: null };
+    listRow = { data: null, error: null };
+    entryRows = { data: [], error: null };
+  });
+
+  it('parseEntries resolves a page key against the map it is given, carrying the page’s path as the entry’s href, and drops one the map lacks', () => {
+    const pages = { [MONZA]: { path: '/history/monza', name: 'Monza, a history' } };
+    expect(parseEntries([{ label: 'Monza', dest_key: pageDest(MONZA) }, { label: 'Gone', dest_key: pageDest(IMOLA) }, { label: 'Learn', dest_key: 'learn' }], 'menu', pages)).toEqual([
+      { label: 'Monza', dest: pageDest(MONZA), href: '/history/monza' },
+      { label: 'Learn', dest: 'learn' },
+    ]);
+    expect(parseEntries([{ label: 'Monza', dest_key: pageDest(MONZA) }], 'menu')).toBeNull();
+  });
+
+  it('the shell’s lists resolve page entries against the LIVE row pages: a deleted page’s entry is left out while it is deleted', async () => {
+    entryRows = {
+      data: [
+        { list_key: 'footer-site', seq: 10, label: 'Monza', dest_key: pageDest(MONZA) },
+        { list_key: 'footer-site', seq: 20, label: 'Imola', dest_key: pageDest(IMOLA) },
+        { list_key: 'footer-site', seq: 30, label: 'About', dest_key: 'about' },
+      ],
+      error: null,
+    };
+    const nav = await loadNavLists();
+    expect(nav.footerSite).toEqual([
+      { label: 'Monza', dest: pageDest(MONZA), href: '/history/monza' },
+      { label: 'About', dest: 'about' },
+    ]);
+  });
+
+  it('the editor’s read keeps a deleted page’s entry, with its href, so the editor can show its state and offer Remove', async () => {
+    listRow = { data: { key: 'footer-site', role: 'footer', label: 'Footer: Site', updated_at: '2026-09-08T06:34:16.728382+00:00' }, error: null };
+    entryRows = { data: [{ seq: 10, label: 'Imola', dest_key: pageDest(IMOLA) }, { seq: 20, label: 'About', dest_key: 'about' }], error: null };
+    const list = await loadListForEditing('footer-site');
+    expect(list?.entries).toEqual([
+      { label: 'Imola', dest: pageDest(IMOLA), href: '/history/imola' },
+      { label: 'About', dest: 'about' },
+    ]);
+  });
+});
 
 describe('parseEntries — fail-soft matrix', () => {
   it('maps rows, keeping icon and authz when present', () => {

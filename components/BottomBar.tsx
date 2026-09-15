@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth, useUser } from '@clerk/nextjs';
-import { isActivePath, resolveDestination, type NavEntry } from '@/lib/design/destinations';
+import { isActivePath, resolveEntry, type NavEntry } from '@/lib/design/destinations';
 import type { AuthzScheme } from '@/lib/design/authz-defaults';
 import { useVisibleEntries } from './useVisitor';
 
@@ -69,7 +69,7 @@ export function BottomBar({
 
   const cells: { entry: NavEntry; href: string }[] = [];
   for (const entry of visible) {
-    const dest = resolveDestination(entry.dest);
+    const dest = resolveEntry(entry);
     if (dest && dest.kind === 'route') cells.push({ entry, href: dest.href });
   }
 

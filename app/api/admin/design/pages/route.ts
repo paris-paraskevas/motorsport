@@ -8,6 +8,7 @@ import { CODE_PAGES, PAGE_APPLICATION_KEY, isPageGroup, loadDeletedPages, loadPa
 import { PAGE_NAME_MAX, daysLeft, documentRefs, refRows, rowPagePathProblem } from '@/lib/design/page-document';
 import { pageTemplate } from '@/lib/design/page-templates';
 import { resetPageFrameMemo } from '@/lib/design/page-frame';
+import { resetNavListsMemo } from '@/lib/design/lists';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -150,7 +151,11 @@ export async function DELETE(req: Request) {
         revalidatePath(p.path);
       }
     }
-    if (purged.length > 0) resetPageFrameMemo();
+    if (purged.length > 0) {
+      resetPageFrameMemo();
+      resetNavListsMemo();
+      revalidatePath('/', 'layout');
+    }
     return NextResponse.json({ ok: true, purged, held });
   } catch (err) {
     return NextResponse.json(

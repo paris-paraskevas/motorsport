@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { PAGE_WIDE } from '@/lib/site';
-import { resolveDestination, type NavEntry, type NavLists } from '@/lib/design/destinations';
+import { resolveDestination, resolveEntry, type NavEntry, type NavLists } from '@/lib/design/destinations';
 import { isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
 import { SHIPPED_PRESETS, resolveTemplateOptions, templateOptionClasses, type TemplateOptionClasses, type TemplatePresets } from '@/lib/design/template-options';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -312,7 +312,7 @@ function RegionBody({ d, region, parts }: { d: RowPageData; region: Region; part
 const LINK = 'block py-1 font-serif text-16 text-text underline underline-offset-2 transition-colors duration-(--duration-fast) hover:text-brand';
 
 function ListLink({ entry }: { entry: NavEntry }) {
-  const dest = resolveDestination(entry.dest);
+  const dest = resolveEntry(entry);
   if (!dest || dest.kind === 'action') return null;
   if (dest.kind === 'external') {
     return (
@@ -332,7 +332,7 @@ const CARD =
   'block border border-border bg-surface p-4 transition-colors duration-(--duration-fast) hover:border-text-muted';
 
 function ListCard({ entry }: { entry: NavEntry }) {
-  const dest = resolveDestination(entry.dest);
+  const dest = resolveEntry(entry);
   if (!dest || dest.kind === 'action') return null;
   const body = (
     <>

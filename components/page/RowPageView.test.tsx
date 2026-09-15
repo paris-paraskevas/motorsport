@@ -98,6 +98,23 @@ describe('RowPageView', () => {
     expect(html).not.toContain('Contact');
   });
 
+  it('renders a list entry to a row page through the href the loader carried, and skips a page entry the loader could not resolve (P1.12 B1)', () => {
+    const PAGE = 'a1b2c3d4-0000-4000-8000-000000000010';
+    const withPages = renderToStaticMarkup(
+      <RowPageView
+        {...data}
+        nav={{
+          ...DEFAULT_NAV,
+          footerSite: [...DEFAULT_NAV.footerSite, { label: 'Monza', dest: `page:${PAGE}`, href: '/history/monza' }, { label: 'Gone', dest: 'page:a1b2c3d4-0000-4000-8000-000000000099' }],
+          footerLegal: [...DEFAULT_NAV.footerLegal, { label: 'Monza again', dest: `page:${PAGE}`, href: '/history/monza' }],
+        }}
+      />,
+    );
+    expect(withPages).toContain('href="/history/monza"');
+    expect(withPages).toContain('Monza again');
+    expect(withPages).not.toContain('Gone');
+  });
+
   it('wraps each region for the dynamic actions, renders a hidden region hidden, a Button as a link or a plain button, and mounts the interpreter only with actions', () => {
     expect(html).toContain('id="region-intro" data-region="intro"');
     expect(html).not.toContain('data-dynamic-actions');

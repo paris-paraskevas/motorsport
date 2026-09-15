@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE } from '@/lib/site';
-import { resolveDestination, type NavEntry } from '@/lib/design/destinations';
+import { resolveEntry, type NavEntry } from '@/lib/design/destinations';
 import type { AuthzScheme } from '@/lib/design/authz-defaults';
 import type { ChromeText } from '@/lib/design/text-defaults';
 import { useVisibleEntries } from '@/components/useVisitor';
@@ -45,7 +45,7 @@ function ColumnHeading({ children }: { children: React.ReactNode }) {
 // new tab, and the two actions place components that carry their own text and
 // behaviour (the entry's label is the designer's name for them, not the button's).
 function FooterEntry({ entry }: { entry: NavEntry }) {
-  const dest = resolveDestination(entry.dest);
+  const dest = resolveEntry(entry);
   if (!dest) return null;
   const heat = HEATMAP_ID[entry.dest] ?? `footer:${entry.dest}`;
   if (dest.kind === 'route') {

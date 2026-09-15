@@ -15,6 +15,9 @@ let entryRows: { data: unknown; error: { message: string } | null } = { data: []
 // A delete answers with the rows it removed, or the store's refusal.
 let deleteResult: { data: unknown; error: { message: string; code?: string } | null } = { data: [], error: null };
 let deleting = false;
+// The live row pages a page: destination may name (P1.12 B1).
+const MONZA = 'a1b2c3d4-0000-4000-8000-000000000010';
+const pageRows = { data: [{ id: MONZA, path: '/history/monza', name: 'Monza, a history' }], error: null };
 const schemeRows = {
   data: [
     { key: 'public', label: 'Public', type: 'public', value: null, message: null },
@@ -27,11 +30,12 @@ vi.mock('@/lib/betting/client', () => ({
   betDb: () => ({
     rpc: (fn: string, args: unknown) => rpc(fn, args),
     from: (table: string) => {
-      const result = table === 'list' ? listRow : table === 'authz_scheme' ? schemeRows : entryRows;
+      const result = table === 'list' ? listRow : table === 'authz_scheme' ? schemeRows : table === 'page' ? pageRows : entryRows;
       const q = {
         select: () => q,
         eq: () => q,
         in: () => q,
+        is: () => q,
         order: () => q,
         delete: () => {
           deleting = true;
@@ -117,6 +121,15 @@ describe('/api/admin/design/lists/[key]', () => {
     expect(res.status).toBe(400);
     expect(((await res.json()) as { error: string }).error).toMatch(/3 to 5/);
     expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('PUT accepts an entry naming a live row page by its key and refuses one naming a page that is not live (P1.12 B1)', async () => {
+    let res = await put('doors', { entries: [{ label: 'Monza', dest: `page:${MONZA}` }], updatedAt: STAMP });
+    expect(res.status).toBe(200);
+    expect((rpc.mock.calls[0] as [string, { p_entries: { dest_key: string }[] }])[1].p_entries[0].dest_key).toBe(`page:${MONZA}`);
+    res = await put('doors', { entries: [{ label: 'Gone', dest: 'page:a1b2c3d4-0000-4000-8000-000000000099' }], updatedAt: STAMP });
+    expect(res.status).toBe(400);
+    expect(((await res.json()) as { error: string }).error).toMatch(/not a destination in the catalogue/);
   });
 
   it('PUT rejects an authorization that is not a scheme row, and accepts one that is', async () => {
