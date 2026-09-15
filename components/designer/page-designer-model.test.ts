@@ -140,6 +140,20 @@ describe('messages', () => {
     expect(designerMessages({ version: 1, regions: [region({ id: 'aside', position: 'right' })], actions: [] }, composed)).toEqual([]);
   });
 
+  it('a commented-out region (P1.11): the Body warning counts it as not showing, Messages notes it under Configuration, Page Search finds it', () => {
+    const only: PageDocument = { version: 2, regions: [region({ id: 'intro', title: 'Intro', commentedOut: true })], actions: [] };
+    expect(designerMessages(only, page).map(m => `${m.level}: ${m.text}`)).toEqual([
+      'warn: The Body has no region showing. The page runs as its title alone.',
+      'info: Intro is commented out and leaves the page when it runs.',
+    ]);
+    const both: PageDocument = { version: 2, regions: [region({ id: 'intro', title: 'Intro', commentedOut: true }), region({ id: 'more', title: 'More', seq: 20 })], actions: [] };
+    const ms = designerMessages(both, page);
+    expect(ms.map(m => m.level)).toEqual(['info']);
+    expect(ms[0]).toMatchObject({ sel: { kind: 'region', id: 'intro' }, group: 'Configuration' });
+    expect(messageIndex(ms)).toEqual({});
+    expect(searchPage('commented', both, page).map(h => `${h.what} · ${h.where} · ${h.value}`)).toEqual(['Region · Intro · commented · commented out']);
+  });
+
   it('a page served from rows opens with its default composition when nothing is stored, never the transitional body', () => {
     const composed: PageRow = { ...page, path: '/calendar', name: 'Calendar', kind: 'code', served: 'rows' };
     const opened = withImplicitBody({ version: 1, regions: [], actions: [] }, composed);

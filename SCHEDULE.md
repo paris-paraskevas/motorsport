@@ -1884,11 +1884,13 @@ Order fixed by the session-48 handoff prompt and the operator's words of the mor
 
 1. **The agent-model guard** (~40 min, unplanned): every subagent launch was denied because the Agent tool no longer carries a `model` field; the hook now reads the settings' force. The hook file itself was copied into place by the operator (the auto-mode classifier refuses Claude an edit of a hook governing its own tool use). PR #990, 1.0.109, merged 07:58Z, prod 08:03Z; the reviewer's own transcript proved Sonnet.
 2. **P1.2 Template options** (~2h 40m): plan mode (a Sonnet reader on the APEX pages, a Sonnet plan critic with eight findings, five taken) → the word → tests first → built → gates → the browser run on the local server (Docker and the local Supabase had to be started first) → review page → reviewer (PASS; two gaps taken, one answered) → merged on the word. PR #991, 1.0.110, merged 08:14Z.
-3. **Next**: the decision scans for P1.7, P1.10, P1.11, P1.12, one at a time, each question in a sentence with a default; the records PR; the handoff.
+3. **P1.7 Developer Toolbar: Quick Edit and Info** (~1h 30m): the scan with the operator's three asks recorded verbatim → plan mode (a Sonnet plan critic, five findings taken) → the word → tests first → built → gates → the browser run (the support prompt and the pointer; the one-tab click proven with two tabs before and after) → review page → reviewer (PASS; five gaps and one nit taken) → merged on the word. PR #992, 1.0.111, merged 09:57Z, prod 10:01Z.
+4. **P1.10 Create menu conformance** (~55 min): the scan (one item: the scope's P2.17 read as the Breadcrumb component's slot) → the word → plan mode (a Sonnet plan critic, two findings taken) → tests first → built (the back arrow's event caught by the existing tests) → gates → the browser run (a stale `.next/dev` after the build 404'd the sign-in routes until cleared) → reviewer (PASS; three gaps and one nit taken) → merged on the word. PR #993, 1.0.112, merged 10:50Z, prod 10:54Z.
+5. **P1.11** scanned with the operator's two answers (yes to the TextPicker file; the pill row replaced); planned next, at 92% context with the handoff written first.
 
 Won't touch this session: any Phase 2–4 slot; P1.1, P1.4, P1.8 (they carry questions) until asked; the Size / Column Span question the operator raised (recorded, not acted on); the merged branches on origin; any prod Supabase write without "apply <id>"; any push to `main`; any agent on Fable; any fan-out.
 
-Active: (awaiting [+Nm] prefixes; the wall clock of the prompts runs from ~06:50Z)
+Active: ~4h 10m to the P1.11 scan (the operator present throughout; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts from ~06:50Z)
 
 ---
 

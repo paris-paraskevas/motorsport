@@ -286,10 +286,11 @@
    "scope": "Create › Page Group (opens the groups sheet), Developer Comment (opens the page's Comments attribute), Breadcrumb Region (disabled until P2.17).",
    "fixedBy": "the UX map's Create menu",
    "acceptance": "Items present in the documented order; browser run.",
-   "status": "started",
+   "status": "done",
    "scopeHash": "3b2d94535f2d",
    "defaults": "APEX's seven Create entries in APEX's order at the top of the menu: Page… (the Create Page dialog, as now); Copy Page disabled, arrives with Phase 4; Breadcrumb Region disabled until the Breadcrumb component's slot exists; Shared Component… (as now); Page Group… opens the Page Groups sheet the pages list has, moved out of the list so both can show it, with the open page's group marked and Show returning to the pages list filtered by that group; Developer Comment selects the page, opens the Advanced group and focuses the Comments field; Issue disabled, no counterpart (APEX's Team Development is not planned); below a separator ours stay as they are and are marked ours in a comment (the Region kinds and Dynamic Action, which APEX creates from the tree and the gallery); no new files (the sheet becomes an export of the pages list's module); a test asserts the order and each entry's behaviour; the browser run shows the menu and the two dialogs; the sheet marks the group the Property Editor’s draft shows (Identification › Page Group), saved or not; the page’s Advanced group is open by default and the pane opens a focused group during the render, so Developer Comment focuses the Comments field on the next frame",
-   "needsWord": ""
+   "needsWord": "",
+   "evidence": "#993 · 1.0.112 · merged 10:50Z, prod 10:54Z 2026-09-15 · vitest 206 files, 2058 tests (PageDesigner.test.tsx: the twelve Create entries in order, the three disabled with their reason, Shared Component…, Page Group… with the page’s group marked and show calling back with the group, Developer Comment focusing the Comments field, Page… opening the dialog; Designer.test.tsx: show on Calendar landing on the list filtered, the list’s button showing all again) · browser run on the local server: Create ▾ listed the twelve entries in order with Copy Page, Breadcrumb Region and Issue greyed and their reasons; Page Group… opened the Page Groups sheet with Editorial marked showing (59 pages in all); show on Calendar returned to the pages list filtered by it (four pages, Monza out); from a region's selection Developer Comment selected the page and focused the Comments field; Shared Component… opened the workspace; landmines: a stale .next/dev after the build 404'd the auth routes until cleared, and the dev log prints the sign-in ticket · dry run Total Upload 43209.78 KiB / gzip 10007.56 KiB (65.9% of the ceiling) · reviewer: PASS, no blocking finding (134k tokens); three gaps and one nit taken (the group filter for one return; the draft's group marked, tested unsaved; the sheet's Close tested; one count helper); the plan critic 110k (two findings taken) · review page ee396125-1149-4cff-bd3d-f615f8bbb563"
   },
   {
    "id": "P1.11",
@@ -298,8 +299,10 @@
    "scope": "Superseded component types hidden by default in the gallery (Show Legacy); a picker icon on text fields inserts a shared value with live preview; the region's disable toggle named and behaving as Comment Out / Uncomment.",
    "fixedBy": "runs 6 and 13",
    "acceptance": "The transitional body is hidden from the gallery on rows-served pages; the picker inserts a shortcut; Comment Out excludes at runtime; browser run.",
-   "status": "planned",
-   "scopeHash": "c28796d054da"
+   "status": "started",
+   "scopeHash": "c28796d054da",
+   "defaults": "a Show Legacy checkbox in the Gallery's header row, shown on the Components tab, off by default (APEX: the Gallery shows only supported components unless the legacy toggle is on); on, the legacy tile is listed and, where the page cannot take it (served from rows, or its body already placed), inert with the reason in its tip; the picker: an icon at the right of every field that takes shortcuts (Static Content's Text, Header Text, Footer Text) opening a small popover with the shortcuts by key and their current text, a filter, and a live preview line of the field as the page will render it; picking inserts {shortcut:key} at the cursor; the Shortcuts pill row under Text is replaced by the picker (the operator, 2026-09-15: \"replace it\"), so the pane has one way, APEX's; Comment Out: a commentedOut flag on the region (document version 2 kept), Comment Out / Uncomment in the region's context menu (APEX's names), the tree label struck through with the tag commented out, the Layout tile greyed, a Commented Out row beside Build Option in the Configuration group; at runtime the filter that drops an Excluded build option drops a commented-out region too, so the three render sites and the Debug trace take it in one place; one new file, components/designer/TextPicker.tsx with its test (the operator, 2026-09-15: \"yes\")",
+   "needsWord": ""
   },
   {
    "id": "P1.12",

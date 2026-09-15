@@ -124,7 +124,7 @@ export function PageDesignerLayout({
         data-sel={`region:${r.id}`}
         // The whole tile drags, not only its title strip (the operator, 2026-09-10; R5).
         draggable={!readOnly}
-        className={`flex min-w-0 flex-col border bg-bg text-left ${readOnly ? '' : 'cursor-grab'} select-none ${selected ? 'border-edit shadow-[0_0_0_1px_var(--edit)]' : 'border-border-strong hover:border-text-faint'} ${r.hidden ? 'border-dashed' : ''}`}
+        className={`flex min-w-0 flex-col border bg-bg text-left ${readOnly ? '' : 'cursor-grab'} select-none ${selected ? 'border-edit shadow-[0_0_0_1px_var(--edit)]' : 'border-border-strong hover:border-text-faint'} ${r.hidden ? 'border-dashed' : ''} ${r.commentedOut ? 'opacity-50' : ''}`}
         style={style}
         onDragStart={e => {
           e.stopPropagation();
@@ -151,7 +151,8 @@ export function PageDesignerLayout({
         <div className={`flex min-w-0 items-center gap-1.5 border-b border-border px-2 py-1.5 ${selected ? 'bg-edit-dim' : 'bg-surface-elevated'}`}>
           <Icon size={11} className="shrink-0 text-text-faint" />
           <span className="min-w-0 truncate text-12 font-semibold text-text">{regionName(r)}</span>
-          <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">{REGION_KIND_LABELS[r.kind].label}</span>
+          {/* Commented out (P1.11) takes the kind label's place: the strip keeps its width, so a narrow tile's name is not truncated away; the icon still says the kind. */}
+          <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">{r.commentedOut ? 'commented out' : REGION_KIND_LABELS[r.kind].label}</span>
           {r.authz && r.authz !== 'public' && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">{AUTHZ_LABEL[r.authz] ?? r.authz}</span>}
           {r.hidden && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">hidden at first</span>}
           {showText(r) && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-[color:var(--amber,#e0a52d)]">{showText(r)}</span>}

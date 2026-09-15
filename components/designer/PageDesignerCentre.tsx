@@ -40,6 +40,10 @@ export interface ComponentTile {
   key: string;
   name: string;
   desc: string;
+  /** A superseded component (the transitional body): listed under Show Legacy, tagged (P1.11). */
+  legacy?: true;
+  /** Why this page cannot take the tile; set, the tile is drawn with the reason and does nothing. */
+  inert?: string;
 }
 
 export const CENTRE_TABS: { key: CentreTab; label: string; k?: string }[] = [
@@ -309,14 +313,19 @@ export function Gallery({
   onAddComponentTo,
   onDragStart,
   onContext,
+  showLegacy,
+  onShowLegacy,
   tooltips = true,
 }: {
   tab: GalleryTab;
   onTab: (t: GalleryTab) => void;
   /** Read-only: tiles are shown and inert. */
   disabled: boolean;
-  /** The components this page may take, from the catalogue. */
+  /** The components this page may take, from the catalogue; with Show Legacy on, the legacy ones too, inert where the page cannot take them. */
   components: ComponentTile[];
+  /** Show Legacy (P1.11; APEX: the Gallery's legacy toggle), on the Components tab. */
+  showLegacy: boolean;
+  onShowLegacy: (on: boolean) => void;
   onAdd: (kind: RegionKind) => void;
   onAddComponent: (key: string) => void;
   /** Add To a named position (APEX: the Gallery's context menu, the UX map lines 17 and 53). */
@@ -328,20 +337,30 @@ export function Gallery({
   /** Utilities › Show › Tooltips: off removes the tiles' hover tips. */
   tooltips?: boolean;
 }) {
-  type Tile = { id: string; icon: ReactNode; name: string; desc: string; drag: Drag; add: () => void; addTo: (position: Position) => void };
+  type Tile = { id: string; icon: ReactNode; name: string; desc: string; drag: Drag; add: () => void; addTo: (position: Position) => void; legacy?: true; inert?: string };
   const tiles: Tile[] =
     tab === 'regions'
       ? GALLERY_REGIONS.map(t => ({ id: t.kind, icon: t.icon, name: t.name, desc: t.desc, drag: { type: 'gallery', kind: t.kind }, add: () => onAdd(t.kind), addTo: (pos: Position) => onAddTo(t.kind, pos) }))
       : tab === 'buttons'
         ? GALLERY_BUTTONS.map(t => ({ id: t.kind, icon: t.icon, name: t.name, desc: t.desc, drag: { type: 'gallery', kind: t.kind }, add: () => onAdd(t.kind), addTo: (pos: Position) => onAddTo(t.kind, pos) }))
         : tab === 'components'
-          ? components.map(c => ({ id: c.key, icon: <Boxes size={14} />, name: c.name, desc: c.desc, drag: { type: 'component', key: c.key }, add: () => onAddComponent(c.key), addTo: (pos: Position) => onAddComponentTo(c.key, pos) }))
+          ? components.map(c => ({
+              id: c.key,
+              icon: <Boxes size={14} />,
+              name: c.name,
+              desc: c.desc,
+              drag: { type: 'component', key: c.key },
+              add: () => onAddComponent(c.key),
+              addTo: (pos: Position) => onAddComponentTo(c.key, pos),
+              legacy: c.legacy,
+              inert: c.inert,
+            }))
           : [];
   const hint =
     tab === 'items'
       ? 'Items arrive with a later step: selects, toggles, a month picker, a search field'
       : tab === 'components'
-        ? 'Pieces the code draws, with settings and a rule. Drag onto a yellow position, or double-click to add to the Body'
+        ? 'Pieces the code draws, with settings and a rule'
         : 'Drag onto a yellow position, double-click to add to the Body, or right-click for Add To';
   return (
     <div className="min-w-0 border-t border-border-strong bg-surface" aria-label="Gallery">
@@ -358,42 +377,58 @@ export function Gallery({
             {t === 'items' && <span className="ml-1.5 normal-case tracking-normal">later</span>}
           </button>
         ))}
-        <span className="ml-auto pr-3 font-mono text-9 tracking-[0.06em] text-text-faint">{hint}</span>
+        <span className="ml-auto flex items-center gap-3 pr-3 font-mono text-9 tracking-[0.06em] text-text-faint">
+          {/* APEX: the Gallery lists the supported components; the legacy ones show under a toggle (P1.11). */}
+          {tab === 'components' && (
+            <label className="flex items-center gap-1.5 uppercase tracking-[0.12em] hover:text-text">
+              <input type="checkbox" checked={showLegacy} onChange={e => onShowLegacy(e.target.checked)} />
+              Show Legacy
+            </label>
+          )}
+          <span>{hint}</span>
+        </span>
       </div>
       <div className="flex gap-2 overflow-x-auto px-3 pb-2.5 pt-2">
-        {tiles.map(t => (
-          <div
-            key={t.id}
-            role="button"
-            tabIndex={disabled ? -1 : 0}
-            aria-disabled={disabled}
-            aria-label={`Gallery: ${t.name}`}
-            title={disabled ? 'Read-only here' : tooltips ? 'Drag onto the layout · double-click to add · right-click for Add To' : undefined}
-            draggable={!disabled}
-            className={`grid w-[112px] shrink-0 gap-1 border border-border-strong bg-bg px-2 py-1.5 ${disabled ? 'opacity-50' : 'cursor-grab hover:border-edit'}`}
-            onDragStart={e => {
-              if (disabled) return e.preventDefault();
-              e.dataTransfer.setData('text/plain', t.id);
-              onDragStart(t.drag);
-            }}
-            onDoubleClick={() => !disabled && t.add()}
-            onContextMenu={e => {
-              if (disabled) return;
-              e.preventDefault();
-              onContext({ x: e.clientX, y: e.clientY }, { name: t.name, addTo: t.addTo });
-            }}
-            onKeyDown={e => {
-              if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+        {tiles.map(t => {
+          // Read-only, or a tile this page cannot take (P1.11): drawn, and every handler off.
+          const off = disabled || t.inert !== undefined;
+          return (
+            <div
+              key={t.id}
+              role="button"
+              tabIndex={off ? -1 : 0}
+              aria-disabled={off}
+              aria-label={`Gallery: ${t.name}`}
+              title={disabled ? 'Read-only here' : t.inert ? t.inert : tooltips ? 'Drag onto the layout · double-click to add · right-click for Add To' : undefined}
+              draggable={!off}
+              className={`grid w-[112px] shrink-0 gap-1 border border-border-strong bg-bg px-2 py-1.5 ${off ? 'opacity-50' : 'cursor-grab hover:border-edit'}`}
+              onDragStart={e => {
+                if (off) return e.preventDefault();
+                e.dataTransfer.setData('text/plain', t.id);
+                onDragStart(t.drag);
+              }}
+              onDoubleClick={() => !off && t.add()}
+              onContextMenu={e => {
+                if (off) return;
                 e.preventDefault();
-                t.add();
-              }
-            }}
-          >
-            <span className="text-text-muted">{t.icon}</span>
-            <span className="text-11 font-semibold leading-tight text-text">{t.name}</span>
-            <span className="text-10 leading-snug text-text-faint">{t.desc}</span>
-          </div>
-        ))}
+                onContext({ x: e.clientX, y: e.clientY }, { name: t.name, addTo: t.addTo });
+              }}
+              onKeyDown={e => {
+                if (!off && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault();
+                  t.add();
+                }
+              }}
+            >
+              <span className="flex items-center justify-between text-text-muted">
+                {t.icon}
+                {t.legacy && <span className="font-mono text-8 uppercase tracking-[0.12em] text-text-faint">legacy</span>}
+              </span>
+              <span className="text-11 font-semibold leading-tight text-text">{t.name}</span>
+              <span className="text-10 leading-snug text-text-faint">{t.inert ?? t.desc}</span>
+            </div>
+          );
+        })}
         {tiles.length === 0 && <p className="m-0 py-2 text-11 text-text-faint">{tab === 'components' ? 'Every component this page can take is already on it.' : 'Nothing to drag yet.'}</p>}
       </div>
     </div>
