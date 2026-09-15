@@ -8,8 +8,9 @@ import path from 'node:path';
 
 const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hooks-'));
-const run = (script, input) => {
-  const r = spawnSync(process.execPath, [path.join(here, script)], { input: JSON.stringify(input), encoding: 'utf8' });
+/** Runs a hook with the input on stdin; `env` overrides (or blanks, with '') variables of the test's own environment. */
+const run = (script, input, env = {}) => {
+  const r = spawnSync(process.execPath, [path.join(here, script)], { input: JSON.stringify(input), encoding: 'utf8', env: { ...process.env, ...env } });
   let decision = null;
   try { decision = JSON.parse(r.stdout.trim().split(/\r?\n/).pop() || 'null')?.hookSpecificOutput ?? null; } catch { /* no json */ }
   return { code: r.status, decision, stderr: r.stderr.trim(), stdout: r.stdout.trim() };
@@ -17,16 +18,27 @@ const run = (script, input) => {
 let pass = 0, fail = 0;
 const expect = (name, got, want) => { const ok = JSON.stringify(got) === JSON.stringify(want); ok ? pass++ : fail++; console.log(`${ok ? 'ok  ' : 'FAIL'} ${name}${ok ? '' : `\n     got ${JSON.stringify(got)} want ${JSON.stringify(want)}`}`); };
 
-// agent-model-guard
-let r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x' } });
-expect('agent without model → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
-r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x', model: 'opus' } });
-expect('agent on opus → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
-r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x', model: 'sonnet' } });
+// agent-model-guard. The Agent tool names no model itself since 2026-09-15, so
+// the force in the session's environment decides; the tests set or blank it.
+const noForce = { CLAUDE_CODE_SUBAGENT_MODEL: '', CLAUDE_CODE_SUBAGENT_MODEL_FORCE: '' };
+const forceOn = model => ({ CLAUDE_CODE_SUBAGENT_MODEL: model, CLAUDE_CODE_SUBAGENT_MODEL_FORCE: '1' });
+let r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x' } }, noForce);
+expect('agent without model, no force → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x', subagent_type: 'general-purpose' } }, forceOn('sonnet'));
+expect('agent without model, force on sonnet → allow', [r.code, r.decision], [0, null]);
+r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x' } }, forceOn('haiku'));
+expect('agent without model, force on haiku → allow', [r.code, r.decision], [0, null]);
+r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x' } }, { CLAUDE_CODE_SUBAGENT_MODEL: 'sonnet', CLAUDE_CODE_SUBAGENT_MODEL_FORCE: '' });
+expect('agent without model, sonnet named but not forced → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x' } }, forceOn('fable'));
+expect('agent without model, force on fable → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x', model: 'opus' } }, forceOn('sonnet'));
+expect('agent on opus → deny, force or not', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x', model: 'sonnet' } }, noForce);
 expect('agent on sonnet → allow', [r.code, r.decision], [0, null]);
-r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x', subagent_type: 'fork' } });
+r = run('agent-model-guard.mjs', { tool_name: 'Agent', tool_input: { prompt: 'x', subagent_type: 'fork' } }, noForce);
 expect('fork → allow', r.code, 0);
-r = run('agent-model-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'ls' } });
+r = run('agent-model-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'ls' } }, noForce);
 expect('other tool → allow', r.code, 0);
 
 // push-guard
