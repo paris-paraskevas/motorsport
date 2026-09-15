@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.117 — 2026-09-15
+
+### Records — session 49 closed a second time: P1.12's evidence for PR A and PR B1, the session-50 handoff, the day in SCHEDULE, three Inbox items
+
+Records only, no code. `docs/plan/ledger.json`: P1.12 stays `started` with the evidence of its first two PRs (PR A #996, 1.0.115, the migration applied 15:55Z, merged 15:55Z, prod 16:01Z; PR B1 #997, 1.0.116, merged 17:13Z, prod 17:19Z; the tests, the browser runs, the reviewers, the review pages) and PR B2 named as what follows; `docs/plan/components-programme.md` re-rendered. `docs/HANDOFF.md` LATEST (session 49): the heading, the session-50 prompt (P1.12 started with two PRs on prod and PR B2 the next build, its plan approved and its tests already written to the scratchpad; the migration applied on prod and locally; the three review pages; the home lead unpinned and the rule; the agenda with PR B2 first; the landmines of the P1.12 runs: the dev child surviving the harness's stop, the dynamic API routes answering HTML 404 from a stale cache, the memos under next dev, the long-heredoc failure, CRLF files, `URL` in the browser tool), the numbered account of the afternoon (the unpin, PR A, PR B1), the decisions recorded with the operator's words. `SCHEDULE.md`: the afternoon's four lines (the unpin, PR A, PR B1, the second close) and the active time. `IDEAS.md` Inbox: the heatmap id of a page entry, the editor's fallback text for an entry to a purged page, a dev-only switch for the memos. The progress board regenerated with the afternoon's entries.
+
 ## 1.0.116 — 2026-09-15
 
 ### Designer — P1.12 PR B1: a page made in the designer as a destination of the shell's lists; its entries hidden while it is deleted and gone with it when it is removed
