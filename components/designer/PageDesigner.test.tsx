@@ -92,6 +92,7 @@ function mount(d: PageDetail = detail, readOnly = false, initialRegion: string |
   const onOpenPage = vi.fn();
   const onBack = vi.fn();
   const onDeleted = vi.fn();
+  const onWorkspace = vi.fn();
   const el = (dd: PageDetail) => (
     <PageDesigner
       onDeleted={onDeleted}
@@ -106,14 +107,14 @@ function mount(d: PageDetail = detail, readOnly = false, initialRegion: string |
       onSaved={onSaved}
       onOpenPage={onOpenPage}
       onBack={onBack}
-      onWorkspace={vi.fn()}
+      onWorkspace={onWorkspace}
       onCreated={vi.fn()}
     />
   );
   const utils = render(el(d));
   /** The shell hands the reloaded detail back after a save: the designer re-renders on it. */
   const rerender = (dd: PageDetail) => utils.rerender(el(dd));
-  return { onSaved, onOpenPage, onBack, onDeleted, rerender };
+  return { onSaved, onOpenPage, onBack, onDeleted, onWorkspace, rerender };
 }
 const tile = (name: string) => screen.getByRole('button', { name });
 const status = () => screen.getByRole('status').textContent ?? '';
@@ -252,6 +253,59 @@ describe('PageDesigner', () => {
     fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
     for (const name of path) fireEvent.click(menuEntry(name));
   };
+  it('Create ▾ as APEX lists it (P1.10): the seven entries in order, three disabled with their reason, then ours; Page Group… opens the groups sheet on the page’s group and show returns to the list filtered; Developer Comment opens Advanced and focuses Comments; Page… opens the Create page dialog', async () => {
+    const { onBack, onWorkspace } = mount();
+    const create = () => fireEvent.click(screen.getByRole('button', { name: 'Create ▾' }));
+    create();
+    const items = within(screen.getByRole('menu')).getAllByRole('menuitem');
+    const names = items.map(b => b.textContent ?? '');
+    const order = ['Page…', 'Copy Page', 'Breadcrumb Region', 'Shared Component…', 'Page Group…', 'Developer Comment', 'Issue', 'Static Content', 'Image', 'List', 'Button', 'Dynamic Action'];
+    expect(items.length).toBe(order.length);
+    order.forEach((label, i) => expect(names[i].startsWith(label), `${i}: ${names[i]}`).toBe(true));
+    for (const [label, reason] of [
+      ['Copy Page', /Phase 4/],
+      ['Breadcrumb Region', /Breadcrumb component/],
+      ['Issue', /no counterpart/],
+    ] as const) {
+      const b = menuEntry(label) as HTMLButtonElement;
+      expect(b.disabled).toBe(true);
+      expect(b.textContent).toMatch(reason);
+    }
+    fireEvent.click(menuEntry('Shared Component…'));
+    expect(onWorkspace).toHaveBeenCalledWith('shared');
+    // Page Group…: the sheet the pages list has, the page's group (Editorial) marked; Close leaves everything as it was.
+    create();
+    fireEvent.click(menuEntry('Page Group…'));
+    const sheet = () => screen.getByRole('dialog', { name: 'Page Groups' });
+    const row = (label: string) => within(sheet()).getByText(label).closest('tr')!;
+    expect(within(row('Editorial')).getByRole('button', { name: 'showing' })).toBeTruthy();
+    fireEvent.click(within(sheet()).getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog', { name: 'Page Groups' })).toBeNull();
+    expect(onBack).not.toHaveBeenCalled();
+    // The sheet marks the group the Property Editor's draft shows, saved or not: Page Group set to Series, unsaved, then the sheet.
+    fireEvent.click(within(within(screen.getByLabelText('Property Editor')).getByRole('group', { name: 'Page group' })).getByRole('button', { name: 'Series' }));
+    create();
+    fireEvent.click(menuEntry('Page Group…'));
+    expect(within(row('Series')).getByRole('button', { name: 'showing' })).toBeTruthy();
+    expect(within(row('Editorial')).getByRole('button', { name: 'show' })).toBeTruthy();
+    // show on another group returns to the list filtered by it.
+    fireEvent.click(within(row('Calendar')).getByRole('button', { name: 'show' }));
+    expect(onBack).toHaveBeenCalledWith('calendar');
+    expect(screen.queryByRole('dialog', { name: 'Page Groups' })).toBeNull();
+    // Developer Comment: from a region's selection, the page is selected, Advanced open and the Comments field focused.
+    fireEvent.click(tile('Static Content: A century of speed'));
+    create();
+    fireEvent.click(menuEntry('Developer Comment'));
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(pe).getByText('a1b2c3d4: Monza, a history')).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(pe.querySelector('textarea')));
+    expect((document.activeElement as HTMLTextAreaElement).id).toMatch(/-comments$/);
+    // Page…: the Create page dialog, as before.
+    create();
+    fireEvent.click(menuEntry('Page…'));
+    expect(within(screen.getByRole('dialog')).getByText('Article')).toBeTruthy();
+  });
+
   const LAYOUT_KEY = 'paddock-developer.page-designer';
 
   it('Utilities › Layout: Two Pane Mode hides the left pane, Three Pane Mode brings it back, the mode is remembered, Reset Layout returns to three panes (P1.5)', () => {

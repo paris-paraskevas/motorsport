@@ -58,6 +58,61 @@ function updatedOn(stamp: string | null): string {
   return m ? `${m[1]} ${m[2]}Z` : stamp;
 }
 
+/** The pages of the operator's own: every page but the code pages the code still serves. */
+function rowCountOf(pages: PageRow[]): number {
+  return pages.length - pages.filter(p => p.kind === 'code' && p.served !== 'rows').length;
+}
+
+/** The Page Groups sheet (APEX: Page Groups, "a purely organizational grouping
+ *  of pages"; the prototype's sheet): every group with its page count and a
+ *  show button that filters the pages list. Shared by the list's Page Groups
+ *  button and the Page Designer's Create › Page Group… (P1.10), which returns
+ *  to the list filtered by the group shown. */
+export function PageGroupsSheet({
+  pages,
+  current,
+  onShow,
+  onClose,
+}: {
+  pages: PageRow[];
+  /** The filter (or the page's group) marked as showing. */
+  current: PageFilter;
+  onShow: (filter: PageFilter) => void;
+  onClose: () => void;
+}) {
+  const rowCount = rowCountOf(pages);
+  return (
+    <Sheet title="Page Groups" sub="How the pages list is organised. A group is a label; pages keep their paths." onClose={onClose}>
+      <table className="w-full border-collapse text-12">
+        <thead>
+          <tr className="text-left text-text-faint">
+            <th className="px-[18px] py-2 font-mono text-9 font-medium uppercase tracking-[0.14em]">Group</th>
+            <th className="px-2.5 py-2 text-right font-mono text-9 font-medium uppercase tracking-[0.14em]">Pages</th>
+            <th className="px-2.5 py-2" />
+          </tr>
+        </thead>
+        <tbody>
+          {(['all', 'row', ...PAGE_GROUPS] as PageFilter[]).map(f => {
+            const n = f === 'all' ? pages.length : f === 'row' ? rowCount : pages.filter(p => p.group === f).length;
+            const label = f === 'all' ? 'All pages' : f === 'row' ? 'Your pages · made here' : PAGE_GROUP_LABELS[f];
+            return (
+              <tr key={f} className={`border-t border-border ${current === f ? 'bg-surface-elevated' : ''}`}>
+                <td className="px-[18px] py-2 text-text">{label}</td>
+                <td className="px-2.5 py-2 text-right font-mono tabular-nums text-text-muted">{n}</td>
+                <td className="px-2.5 py-2 text-right">
+                  <button type="button" className={PBTN} aria-pressed={current === f} onClick={() => onShow(f)}>
+                    {current === f ? 'showing' : 'show'}
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </Sheet>
+  );
+}
+
 export function PagesList({
   pages,
   initialFilter = 'all',
@@ -80,8 +135,8 @@ export function PagesList({
   const [filter, setFilter] = useState<PageFilter>(initialFilter);
   const [query, setQuery] = useState('');
 
-  const codeCount = pages.filter(p => p.kind === 'code' && p.served !== 'rows').length;
-  const rowCount = pages.length - codeCount;
+  const rowCount = rowCountOf(pages);
+  const codeCount = pages.length - rowCount;
   const unseeded = pages.filter(p => p.kind === 'code' && p.updatedAt === null).length;
   const filterLabel = filter === 'all' ? null : filter === 'row' ? 'Your pages' : PAGE_GROUP_LABELS[filter];
   const q = query.trim().toLowerCase();
@@ -130,42 +185,15 @@ export function PagesList({
         )}
       </div>
       {groupsOpen && (
-        <Sheet title="Page Groups" sub="How the pages list is organised. A group is a label; pages keep their paths." onClose={() => setGroupsOpen(false)}>
-          <table className="w-full border-collapse text-12">
-            <thead>
-              <tr className="text-left text-text-faint">
-                <th className="px-[18px] py-2 font-mono text-9 font-medium uppercase tracking-[0.14em]">Group</th>
-                <th className="px-2.5 py-2 text-right font-mono text-9 font-medium uppercase tracking-[0.14em]">Pages</th>
-                <th className="px-2.5 py-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {(['all', 'row', ...PAGE_GROUPS] as PageFilter[]).map(f => {
-                const n = f === 'all' ? pages.length : f === 'row' ? rowCount : pages.filter(p => p.group === f).length;
-                const label = f === 'all' ? 'All pages' : f === 'row' ? 'Your pages · made here' : PAGE_GROUP_LABELS[f];
-                return (
-                  <tr key={f} className={`border-t border-border ${filter === f ? 'bg-surface-elevated' : ''}`}>
-                    <td className="px-[18px] py-2 text-text">{label}</td>
-                    <td className="px-2.5 py-2 text-right font-mono tabular-nums text-text-muted">{n}</td>
-                    <td className="px-2.5 py-2 text-right">
-                      <button
-                        type="button"
-                        className={PBTN}
-                        aria-pressed={filter === f}
-                        onClick={() => {
-                          setFilter(f);
-                          setGroupsOpen(false);
-                        }}
-                      >
-                        {filter === f ? 'showing' : 'show'}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </Sheet>
+        <PageGroupsSheet
+          pages={pages}
+          current={filter}
+          onShow={f => {
+            setFilter(f);
+            setGroupsOpen(false);
+          }}
+          onClose={() => setGroupsOpen(false)}
+        />
       )}
 
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">

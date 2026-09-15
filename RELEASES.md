@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.112 — 2026-09-15
+
+In the design tool, the Create menu now lists the same entries as the reference tool, in its order: Page, Copy Page, Breadcrumb Region, Shared Component, Page Group, Developer Comment, Issue. Page Group opens the sheet of page groups and can return to the pages list showing one group; Developer Comment opens the page's own notes field. The entries not built yet say so. Nothing changes for readers.
+
 ## 1.0.111 — 2026-09-15
 
 For the people who build the site: the developer's toolbar at the foot of a page gains Quick Edit, Info and Options. Quick Edit outlines the part of the page under the pointer and a click opens it in the design tool, or shows a wrench that changes its template options right there; Info draws the page's twelve columns over it and shows how long the page took to arrive; Options hide the bar until needed, shrink it to icons, or move it to any edge. Every link from the bar into the design tool opens the one tab kept for it, and the bar stays off phones. Nothing changes for readers.
