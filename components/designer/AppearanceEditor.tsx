@@ -22,6 +22,7 @@ import {
   type NumericKey,
 } from '@/lib/design/appearance-defaults';
 import type { EditableAppearance } from '@/lib/design/appearance';
+import { clonePresets } from '@/lib/design/template-options';
 
 // Appearance (APEX: User Interface Attributes): the four faces by role, the root
 // size, the leading, the density, the corners and the motion of the whole site,
@@ -39,7 +40,8 @@ const PBTN =
 const FIELD =
   'border border-border-strong bg-bg px-2 py-1 text-12-5 leading-snug text-text focus:border-edit focus:outline-none disabled:opacity-60';
 
-const clone = (a: Appearance): Appearance => ({ ...a, faces: { ...a.faces } });
+// The templates' presets ride the same document (P1.2; edited on the Templates screen), copied along and kept by Reset.
+const clone = (a: Appearance): Appearance => ({ ...a, faces: { ...a.faces }, templates: clonePresets(a.templates) });
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
 export function AppearanceEditor({
@@ -243,7 +245,7 @@ export function AppearanceEditor({
           </button>
         )}
         {!isShippedAppearance(parsed.value) && !busy && !disabled && (
-          <button type="button" className={PBTN} onClick={() => setDraft(clone(SHIPPED_APPEARANCE))}>
+          <button type="button" className={PBTN} onClick={() => setDraft(d => ({ ...clone(SHIPPED_APPEARANCE), templates: d.templates }))}>
             Back to the shipped values
           </button>
         )}

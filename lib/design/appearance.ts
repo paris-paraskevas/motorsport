@@ -20,6 +20,7 @@ export {
   roundTo,
 } from './appearance-defaults';
 export type { Appearance, Face, FaceRole, Motion, NumericKey, ParsedAppearance } from './appearance-defaults';
+export type { TemplatePresets } from './template-options';
 
 // Appearance (APEX: User Interface Attributes), read from the application row's
 // `ui` document. Phase 2 step 8 of the designer plan; the column comes from

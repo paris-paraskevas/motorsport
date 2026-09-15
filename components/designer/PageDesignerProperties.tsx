@@ -33,7 +33,9 @@ import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import { BUILD_OPTION_DEFAULTS, BUILD_OPTION_KEYS, type BuildOptionKey, type BuildOptionStatus } from '@/lib/design/build-option-defaults';
+import { REGION_TEMPLATES, type TemplatePresets } from '@/lib/design/template-options';
 import { FIELD, PBTN, Pills, Ro, TEXTAREA, YesNo, type PropGroup } from './PropertyPane';
+import { TemplateOptionsButton } from './TemplateOptionsDialog';
 import {
   PD_POSITION,
   SPAN_CHOICES,
@@ -104,6 +106,8 @@ export interface PropsContext {
   shortcuts: EditableShortcut[];
   /** The Build Options' statuses by key, for the Configuration group's labels; a key missing here reads as Include. */
   buildOptions: Readonly<Partial<Record<BuildOptionKey, BuildOptionStatus>>>;
+  /** The region templates' Template Option presets (P1.2), for naming what Default draws; absent reads as shipped. */
+  templates?: TemplatePresets;
   /** The shared lists' entry counts, for the Navigation Menu group. */
   shared: Record<'doors' | 'footer' | 'bar', string>;
   attrs: AttrsDraft;
@@ -665,7 +669,44 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
     },
     { title: 'Source', props: source },
     cg.layout,
-    LATER('Appearance'),
+    {
+      // APEX: Appearance › Template, Template Options (P1.2). The template is
+      // read-only until P1.1 brings the five looks; the options are the button
+      // and the dialog of TemplateOptionsDialog.tsx.
+      title: 'Appearance',
+      props: [
+        {
+          label: 'Template',
+          common: true,
+          control: <Ro dim>{`${REGION_TEMPLATES[0].label} · ${REGION_TEMPLATES[0].description}`}</Ro>,
+          help: 'The region template (APEX: Appearance › Template). One today, Standard; the five looks arrive with a later step.',
+        },
+        {
+          label: 'Template Options',
+          common: true,
+          changed: ch(f('templateOptions')),
+          htmlFor: fieldId('rtopts'),
+          control: (
+            <TemplateOptionsButton
+              id={fieldId('rtopts')}
+              value={r.templateOptions}
+              presets={ctx.templates}
+              disabled={readOnly}
+              onChange={next =>
+                p('Template Options set.', x => {
+                  const y: Region = { ...x };
+                  if (next) y.templateOptions = next;
+                  else delete y.templateOptions;
+                  return y;
+                })
+              }
+            />
+          ),
+          note: r.kind === 'component' ? 'A component draws its own heading; Heading style has nothing to draw for it.' : undefined,
+          help: 'The template’s options for this region (APEX: Template Options). Use Template Defaults follows the presets set under Shared Components › Templates; a group you set here keeps its own choice.',
+        },
+      ],
+    },
     {
       title: 'Header and Footer',
       closed: true,

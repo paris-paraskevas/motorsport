@@ -21,10 +21,17 @@
 // below its body) and a Build Option (one of the feature switches; an Excluded
 // option leaves the region out of the running site). A version 1 document reads
 // as version 2 with the three absent; the parser always writes version 2.
+//
+// P1.2 adds Template Options to every region, still version 2: `templateOptions`
+// is APEX's token list (`#DEFAULT#` for Use Template Defaults, then option
+// identifiers, one per group at most; lib/design/template-options.ts), and an
+// absent list means Use Template Defaults alone, so every stored region reads
+// as it did.
 
 import { resolveDestination } from './destinations';
 import { findComponent, parseSettings, type SettingValue } from './components';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
+import { parseTemplateOptions } from './template-options';
 
 /** The version the parser writes; it reads every version in PAGE_DOCUMENT_VERSIONS. */
 export const PAGE_DOCUMENT_VERSION = 2 as const;
@@ -149,6 +156,10 @@ export interface RegionBase {
   /** Configuration › Build Option (APEX): the feature switch this region belongs
    *  to; an Excluded option leaves the region out of the running site. Absent means none. */
   buildOption?: BuildOptionKey;
+  /** Appearance › Template Options (APEX): `#DEFAULT#` (Use Template Defaults)
+   *  and option identifiers, one per group at most, canonical order; absent
+   *  means Use Template Defaults alone. Resolved against the template's presets at render. */
+  templateOptions?: string[];
 }
 export interface StaticRegion extends RegionBase {
   kind: 'static';
@@ -291,10 +302,29 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
     if (typeof r.buildOption === 'string' && isBuildOptionKey(r.buildOption)) buildOption = r.buildOption;
     else problems.push(`${who}: the build option must be one of ${BUILD_OPTION_KEYS.join(', ')}`);
   }
+  const options = parseTemplateOptions(r.templateOptions);
+  problems.push(...options.problems.map(p => `${who}: ${p}`));
+  const templateOptions = options.value;
 
   let region: Region | null = null;
   if (kind && position && seq !== null && column !== null && span !== null && problems.length === 0) {
-    const base: RegionBase = { id, kind, title, position, seq, column, span, newRow, authz, hidden, ...(show ? { show } : {}), ...(headerText ? { headerText } : {}), ...(footerText ? { footerText } : {}), ...(buildOption ? { buildOption } : {}) };
+    const base: RegionBase = {
+      id,
+      kind,
+      title,
+      position,
+      seq,
+      column,
+      span,
+      newRow,
+      authz,
+      hidden,
+      ...(show ? { show } : {}),
+      ...(headerText ? { headerText } : {}),
+      ...(footerText ? { footerText } : {}),
+      ...(buildOption ? { buildOption } : {}),
+      ...(templateOptions ? { templateOptions } : {}),
+    };
     if (kind === 'component') {
       const key = typeof r.component === 'string' ? r.component : '';
       const spec = key ? findComponent(key) : null;

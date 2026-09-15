@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { PAGE_WIDE } from '@/lib/site';
 import { resolveDestination, type NavEntry, type NavLists } from '@/lib/design/destinations';
 import { isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
+import { SHIPPED_PRESETS, resolveTemplateOptions, templateOptionClasses, type TemplateOptionClasses, type TemplatePresets } from '@/lib/design/template-options';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
 import { DynamicActions } from './DynamicActions';
@@ -37,6 +38,9 @@ export interface RowPageData {
    *  component with nothing here (the transitional body on a page made in the
    *  designer, a component the server did not draw) shows nothing. */
   components?: Readonly<Record<string, React.ReactNode>>;
+  /** The region templates' Template Option presets (APEX: Template Options, P1.2),
+   *  what a region on Use Template Defaults draws; absent reads as shipped. */
+  templates?: TemplatePresets;
 }
 
 const LIST_FIELD: Record<string, keyof NavLists> = {
@@ -46,7 +50,8 @@ const LIST_FIELD: Record<string, keyof NavLists> = {
   'footer-legal': 'footerLegal',
 };
 
-const H2 = 'mb-3 border-b border-text pb-1 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted';
+/** Header Text and a caption's lead keep the site's prose; a region's own body
+ *  text takes its classes from its Template Options (template-options.ts). */
 const PROSE = 'font-serif text-16 leading-relaxed text-text-muted';
 
 export function RowPageView(d: RowPageData) {
@@ -141,24 +146,31 @@ function showClass(r: Region): string {
 
 function Rows({ d, rows, className = '' }: { d: RowPageData; rows: Region[][]; className?: string }) {
   if (rows.length === 0) return null;
+  const presets = d.templates ?? SHIPPED_PRESETS;
   return (
     <div className={`grid gap-6 ${className}`}>
       {rows.map((row, i) => (
         <div key={i} className="grid grid-cols-12 gap-6">
-          {row.map(r => (
-            // `data-region` is what a dynamic action finds; `hidden` is the
-            // region's starting state, so a "read more" never flashes.
-            <div
-              key={r.id}
-              id={`region-${r.id}`}
-              data-region={r.id}
-              hidden={r.hidden || undefined}
-              className={`col-span-12 min-w-0 lg:[grid-column:var(--gc)] ${showClass(r)}`}
-              style={{ ['--gc' as string]: `${r.column} / span ${r.span}` }}
-            >
-              <RegionBlock d={d} region={r} />
-            </div>
-          ))}
+          {row.map(r => {
+            // The region's Template Options resolved against its template's
+            // presets (APEX: #DEFAULT# and the picks; P1.2): the wrapper's
+            // classes here, the heading's and the body's in RegionBody.
+            const parts = templateOptionClasses(resolveTemplateOptions(r.templateOptions, presets));
+            return (
+              // `data-region` is what a dynamic action finds; `hidden` is the
+              // region's starting state, so a "read more" never flashes.
+              <div
+                key={r.id}
+                id={`region-${r.id}`}
+                data-region={r.id}
+                hidden={r.hidden || undefined}
+                className={`col-span-12 min-w-0 lg:[grid-column:var(--gc)] ${showClass(r)} ${parts.wrapper}`.trim()}
+                style={{ ['--gc' as string]: `${r.column} / span ${r.span}` }}
+              >
+                <RegionBlock d={d} region={r} parts={parts} />
+              </div>
+            );
+          })}
         </div>
       ))}
     </div>
@@ -168,7 +180,7 @@ function Rows({ d, rows, className = '' }: { d: RowPageData; rows: Region[][]; c
 /** A region as served: refused whole when the visitor fails its scheme; else
  *  its Header Text, its body and its Footer Text (APEX: Region Header and
  *  Footer), the texts plain, shortcuts substituted, escaped like any text. */
-function RegionBlock({ d, region }: { d: RowPageData; region: Region }) {
+function RegionBlock({ d, region, parts }: { d: RowPageData; region: Region; parts: TemplateOptionClasses }) {
   if (region.authz && region.authz !== 'public' && !d.allowed.has(region.authz)) {
     const message = d.messages[region.authz];
     return message ? <p className="border border-border px-3 py-2 text-13 text-text-faint">{message}</p> : null;
@@ -182,7 +194,7 @@ function RegionBlock({ d, region }: { d: RowPageData; region: Region }) {
           {header}
         </p>
       )}
-      <RegionBody d={d} region={region} />
+      <RegionBody d={d} region={region} parts={parts} />
       {footer !== '' && (
         <p data-region-footer="" className="mt-3 text-13 text-text-faint">
           {footer}
@@ -192,7 +204,9 @@ function RegionBlock({ d, region }: { d: RowPageData; region: Region }) {
   );
 }
 
-function RegionBody({ d, region }: { d: RowPageData; region: Region }) {
+/** The region's body by kind. A component draws its own body and heading, so
+ *  only the wrapper's options reach it (they are applied in Rows). */
+function RegionBody({ d, region, parts }: { d: RowPageData; region: Region; parts: TemplateOptionClasses }) {
   if (region.kind === 'component') return <>{d.components?.[region.id] ?? null}</>;
   const title = region.title.trim();
   if (region.kind === 'static') {
@@ -203,10 +217,10 @@ function RegionBody({ d, region }: { d: RowPageData; region: Region }) {
       .filter(Boolean);
     return (
       <section>
-        {title && <h2 className={H2}>{title}</h2>}
-        <div className="space-y-3">
+        {title && <h2 className={parts.heading}>{title}</h2>}
+        <div className={parts.paragraphs}>
           {paragraphs.map((p, i) => (
-            <p key={i} className={PROSE}>
+            <p key={i} className={parts.body}>
               {p.split('\n').map((line, j, all) => (
                 <span key={j}>
                   {line}
@@ -225,7 +239,7 @@ function RegionBody({ d, region }: { d: RowPageData; region: Region }) {
     const credit = [asset.credit, asset.licence].filter(Boolean).join(' · ');
     return (
       <figure>
-        {title && <h2 className={H2}>{title}</h2>}
+        {title && <h2 className={parts.heading}>{title}</h2>}
         <Image
           src={asset.url}
           alt={region.alt}
@@ -250,7 +264,7 @@ function RegionBody({ d, region }: { d: RowPageData; region: Region }) {
       'inline-flex min-h-11 items-center bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted';
     return (
       <div>
-        {title && <h2 className={H2}>{title}</h2>}
+        {title && <h2 className={parts.heading}>{title}</h2>}
         {dest && dest.kind === 'external' ? (
           <a href={dest.href} target="_blank" rel="noopener noreferrer" className={cls}>
             {region.label}
@@ -275,7 +289,7 @@ function RegionBody({ d, region }: { d: RowPageData; region: Region }) {
   if (entries.length === 0) return null;
   return (
     <nav aria-label={title || region.id}>
-      {title && <h2 className={H2}>{title}</h2>}
+      {title && <h2 className={parts.heading}>{title}</h2>}
       {region.style === 'cards' ? (
         <div className="grid gap-3 sm:grid-cols-2">
           {entries.map((e, i) => (

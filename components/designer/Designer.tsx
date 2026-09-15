@@ -33,6 +33,7 @@ import { SettingsEditor, type SeriesOption } from './SettingsEditor';
 import { AuthzEditor } from './AuthzEditor';
 import { ThemesEditor } from './ThemesEditor';
 import { AppearanceEditor } from './AppearanceEditor';
+import { TemplatesEditor } from './TemplatesEditor';
 import { ShortcutsEditor } from './ShortcutsEditor';
 import { AssetsEditor } from './AssetsEditor';
 import { SearchHintsEditor } from './SearchHintsEditor';
@@ -693,6 +694,7 @@ export function Designer({
               assets={assets.state === 'ready' ? assets.assets : []}
               schemes={schemes}
               buildOptions={build.state === 'ready' ? build.options : undefined}
+              templates={appearance.state === 'ready' ? appearance.loaded.appearance.templates : undefined}
               shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
               themeDefault={themeDefault}
               onSaved={next => {
@@ -982,6 +984,21 @@ export function Designer({
             if (appearance.state === 'error') return <p className="text-12 text-negative">{appearance.message}</p>;
             return (
               <AppearanceEditor
+                loaded={appearance.loaded}
+                readOnly={readOnly}
+                onSaved={next => setAppearance({ state: 'ready', loaded: next })}
+              />
+            );
+          })()}
+
+          {/* Templates (P1.2) ride the Appearance document: the same state, the same stamp. */}
+          {item?.editor === 'templates' && (() => {
+            if (appearance.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Templates…</p>;
+            }
+            if (appearance.state === 'error') return <p className="text-12 text-negative">{appearance.message}</p>;
+            return (
+              <TemplatesEditor
                 loaded={appearance.loaded}
                 readOnly={readOnly}
                 onSaved={next => setAppearance({ state: 'ready', loaded: next })}

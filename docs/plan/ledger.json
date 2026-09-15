@@ -148,10 +148,11 @@
    "title": "Template options",
    "scope": "Groups with presets: Spacing, Heading style, Rule, Emphasis, Width; #DEFAULT# behaviour; Global options.",
    "fixedBy": "APEX Template Options, Presets, Default",
-   "defaults": "the five groups",
+   "defaults": "the five groups; the acceptance is the rule: a region on Use Template Defaults follows the template's presets live (#DEFAULT# resolves to the presets at render), a picked group keeps its pick, the rest follow; one region template today, keyed standard (the Universal Theme's name for its default region template; P1.1 may rename it); the groups are global template option groups with Null Text Default and these options, the first of each what the site draws today: Spacing Standard · Compact · Roomy; Heading style Label · Headline · Hidden; Rule None · Above · Below · Above and below; Emphasis Normal · Muted · Accent; Width Full · Reading · Narrow; no ungrouped option yet; a region's templateOptions is APEX's token list (#DEFAULT# and identifiers, one per group), absent meaning Use Template Defaults, the document version staying 2; presets live in the Appearance document (ui column) under templates, no migration, the existing PUT; the Templates shared component goes live with the preset per group and a sample region; the Property Editor's Appearance group shows Template (read-only Standard) and the Template Options button opening the dialog (Use Template Defaults, a Common section with a select per group, OK, Cancel); one region at a time this slot; the three render sites (catch-all, preview, framed) pass the presets; a saved preset reaches pages through the Appearance route's memo reset and layout revalidation (prod: the tag cache, within seconds)",
    "acceptance": "Change a preset on a look: every region on the default follows, a diverged region keeps its own; test.",
-   "status": "planned",
-   "scopeHash": "bffeedd269be"
+   "status": "started",
+   "scopeHash": "bffeedd269be",
+   "needsWord": ""
   },
   {
    "id": "P1.3",

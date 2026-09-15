@@ -10,6 +10,15 @@
 // component kind. Numbers pass a legibility gate the way colours pass the
 // contrast gate. Nothing here can carry CSS: a document is keys and numbers,
 // and the style block is generated from them.
+//
+// P1.2: the document also carries the region templates' Template Option
+// presets (`templates`, APEX: the Preset of each group at the template level;
+// lib/design/template-options.ts). They emit no CSS: the served page resolves
+// each region's options against them at render, so a changed preset reaches
+// every region on Use Template Defaults through this one document's memo reset
+// and revalidation, the same path a changed face takes.
+
+import { SHIPPED_PRESETS, clonePresets, parseTemplatePresets, type TemplatePresets } from './template-options';
 
 export const FACE_ROLES = ['sans', 'serif', 'mono', 'condensed'] as const;
 export type FaceRole = (typeof FACE_ROLES)[number];
@@ -89,6 +98,8 @@ export interface Appearance {
   /** The radius of cards and controls in px; the site's square corners stay square. */
   radius: number;
   motion: Motion;
+  /** The region templates' Template Option presets (APEX: the Preset per group, set per template). */
+  templates: TemplatePresets;
 }
 
 /** What the code ships, and the fallback for every failure. */
@@ -99,6 +110,7 @@ export const SHIPPED_APPEARANCE: Appearance = {
   density: 0.25,
   radius: 8,
   motion: 'normal',
+  templates: SHIPPED_PRESETS,
 };
 
 export type NumericKey = 'baseSize' | 'leading' | 'density' | 'radius';
@@ -140,7 +152,7 @@ export interface ParsedAppearance {
  */
 export function parseAppearance(raw: unknown): ParsedAppearance {
   const problems: string[] = [];
-  const value: Appearance = { ...SHIPPED_APPEARANCE, faces: { ...SHIPPED_APPEARANCE.faces } };
+  const value: Appearance = { ...SHIPPED_APPEARANCE, faces: { ...SHIPPED_APPEARANCE.faces }, templates: clonePresets(SHIPPED_PRESETS) };
   if (raw === undefined || raw === null) return { value, problems };
   if (typeof raw !== 'object' || Array.isArray(raw)) return { value, problems: ['the document must be an object'] };
   const r = raw as Record<string, unknown>;
@@ -175,6 +187,12 @@ export function parseAppearance(raw: unknown): ParsedAppearance {
     else problems.push('Motion must be calm, normal or none');
   }
 
+  if (r.templates !== undefined) {
+    const templates = parseTemplatePresets(r.templates);
+    problems.push(...templates.problems);
+    value.templates = templates.value;
+  }
+
   return { value, problems };
 }
 
@@ -187,6 +205,8 @@ export function appearanceWarnings(a: Appearance): string[] {
   return out;
 }
 
+/** Whether the appearance emits no style block: the faces and the numbers as
+ *  shipped. The template presets are not asked: they emit no CSS. */
 export function isShippedAppearance(a: Appearance): boolean {
   return (
     FACE_ROLES.every(role => a.faces[role] === SHIPPED_APPEARANCE.faces[role]) &&
