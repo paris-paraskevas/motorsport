@@ -160,9 +160,10 @@ export function PagesList({
 }) {
   const [creating, setCreating] = useState(false);
   const [groupsOpen, setGroupsOpen] = useState(false);
-  const [filterChosen, setFilter] = useState<PageFilter>(initialFilter);
-  // Deleted empties itself (the last page reinstated or removed): the list shows every page again.
-  const filter: PageFilter = filterChosen === 'deleted' && deleted.length === 0 ? 'all' : filterChosen;
+  const [filter, setFilter] = useState<PageFilter>(initialFilter);
+  // Deleted empties itself (the last page reinstated or removed): the list shows
+  // every page again, the state adjusted during the render.
+  if (filter === 'deleted' && deleted.length === 0) setFilter('all');
   const [query, setQuery] = useState('');
   /** Delete permanently asks first: the page the sheet is about. */
   const [purging, setPurging] = useState<PageRow | null>(null);

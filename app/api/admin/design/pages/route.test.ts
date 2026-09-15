@@ -230,4 +230,16 @@ describe('/api/admin/design/pages', () => {
     delete process.env.PADDOCK_ENV;
     expect((await del('?expired=1')).status).toBe(403);
   });
+
+  it('DELETE ?expired=1 stops on a failure the function did not name and reports what it had removed so far (the reviewer’s gap)', async () => {
+    const OTHER = 'a1b2c3d4-0000-4000-8000-000000000023';
+    deleted = { data: [deletedExpired, { ...deletedExpired, id: OTHER, path: '/history/aintree', name: 'Aintree' }], error: null };
+    purgeAnswers = { [OTHER]: { data: null, error: { message: 'connection reset' } } };
+    const res = await del('?expired=1');
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: 'connection reset', purged: [EXPIRED], held: [] });
+    expect(rpc.mock.calls.map(c => (c[1] as { p_page_id: string }).p_page_id)).toEqual([EXPIRED, OTHER]);
+    expect(revalidatePath).toHaveBeenCalledWith('/history/zolder');
+    expect(revalidatePath).not.toHaveBeenCalledWith('/history/aintree');
+  });
 });

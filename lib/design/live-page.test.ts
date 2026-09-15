@@ -121,6 +121,10 @@ describe('loadLivePage', () => {
     tables.page_revision = { data: [{ ...revision, page_id: ID, created_at: '2026-09-08T17:10:00+00:00' }], error: null };
     await loadRevisionPreview(revision.id);
     expect(isCalls).toEqual([['page', 'deleted_at', null]]);
+    // The frame joins through the page; its filter names the embedded column.
+    isCalls.length = 0;
+    await loadLiveFrame('/about');
+    expect(isCalls).toEqual([['page_revision', 'page.deleted_at', null]]);
   });
 });
 

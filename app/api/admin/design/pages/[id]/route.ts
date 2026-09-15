@@ -193,6 +193,10 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
             { status: 409 },
           );
         }
+        // The function's own rule, should the page have been reinstated meanwhile.
+        if (/page live/i.test(error.message)) {
+          return NextResponse.json({ error: 'This page is live. Delete it first; it can be removed for good once it is in Deleted.' }, { status: 409 });
+        }
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
       if (data !== true) return new Response('not found', { status: 404 });

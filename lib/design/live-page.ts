@@ -81,6 +81,8 @@ async function readLiveFrame(path: string): Promise<LiveFrame | null> {
       .eq('page.application_key', PAGE_APPLICATION_KEY)
       .eq('page.path', path)
       .eq('page.kind', 'code')
+      // No route deletes a code page today; the filter keeps the readers of one mind (P1.12).
+      .is('page.deleted_at', null)
       .not('published_at', 'is', null)
       .order('published_at', { ascending: false })
       .limit(1);

@@ -47,7 +47,7 @@ begin
     raise exception 'page deleted' using errcode = 'P0003', hint = 'Reinstate the page before saving it.';
   end if;
   if not exists (
-    select 1 from page where page.application_key = p_application and page.id = p_page_id and page.kind in ('row', 'code') and page.deleted_at is null
+    select 1 from page where page.application_key = p_application and page.id = p_page_id and page.kind in ('row', 'code')
   ) then
     raise exception 'no such page' using errcode = 'P0002';
   end if;
@@ -90,18 +90,25 @@ grant execute on function design_save_page_revision(text, uuid, uuid, jsonb, jso
 
 -- design_purge_page(): THE write path for removing a page for good. False when
 -- the page is not there (already gone: a no-op, so a repeated click is safe).
--- Raises 'referenced: <names>' while a live page names the page (the names
--- joined by ' · ', since a page's name may hold a comma). Then the page's list
--- entries go, then the page; its revisions and their refs cascade.
+-- Raises 'page live' (P0004) for a page not in Deleted: the recovery window is
+-- the function's rule, not only the route's. Raises 'referenced: <names>' while
+-- a live page names the page (the names joined by ' · ', since a page's name
+-- may hold a comma). Then the page's list entries go, then the page; its
+-- revisions and their refs cascade.
 create or replace function design_purge_page(p_application text, p_page_id uuid) returns boolean
 language plpgsql as $$
 declare
+  v_deleted timestamptz;
   v_names text;
 begin
-  if not exists (
-    select 1 from page where page.application_key = p_application and page.id = p_page_id and page.kind = 'row'
-  ) then
+  select page.deleted_at into v_deleted
+    from page where page.application_key = p_application and page.id = p_page_id and page.kind = 'row';
+  if not found then
     return false;
+  end if;
+  if v_deleted is null then
+    raise exception 'page live' using errcode = 'P0004',
+      hint = 'Delete the page first; it can be removed for good once it is in Deleted.';
   end if;
 
   -- The LIVE revision of every other page: the newest published one, of a page that is itself live.
@@ -121,11 +128,12 @@ begin
       hint = 'A live page names this page as a destination; change that page first.';
   end if;
 
-  -- APEX's rule: the page's list entries go with it. Inert until an entry may
-  -- name a page (P1.12's PR B1 brings the page:<id> destinations).
-  delete from list_entry using list
-   where list.application_key = p_application
-     and list.key = list_entry.list_key
+  -- APEX's rule: the page's list entries go with it, within this application
+  -- alone (a list key is unique per application, so the entry's own
+  -- application_key is the filter). Inert until an entry may name a page
+  -- (P1.12's PR B1 brings the page:<id> destinations).
+  delete from list_entry
+   where list_entry.application_key = p_application
      and list_entry.dest_key = 'page:' || p_page_id::text;
 
   delete from page where page.application_key = p_application and page.id = p_page_id;

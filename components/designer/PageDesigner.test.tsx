@@ -875,4 +875,21 @@ describe('PageDesigner', () => {
     expect(onReinstated.mock.calls[0][0]).toMatchObject({ id: page.id });
     expect(onReinstated.mock.calls[0][0]).not.toHaveProperty('deletedAt');
   });
+
+  it('Delete permanently… from Utilities asks first, purges through the route and hands the id back; read-only offers neither it nor Reinstate (the reviewer’s gap)', async () => {
+    const gone: PageRow = { ...page, deletedAt: '2026-09-13T10:00:00.000+00:00', deletedBy: 'user_admin' };
+    const { onPurged } = mount({ ...detail, page: gone });
+    fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Delete permanently/ }));
+    const dialog = screen.getByRole('dialog', { name: 'Delete permanently' });
+    expect(within(dialog).getByText(/removed for good with its 2 revisions/)).toBeTruthy();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Delete permanently' }));
+    await waitFor(() => expect(onPurged).toHaveBeenCalledWith(page.id));
+    expect(calls.find(c => c.method === 'DELETE')!.url).toBe(`/api/admin/design/pages/${page.id}?purge=1`);
+    cleanup();
+    mount({ ...detail, page: gone }, true);
+    fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
+    expect((screen.getByRole('menuitem', { name: /^Reinstate/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('menuitem', { name: /Delete permanently/ }) as HTMLButtonElement).disabled).toBe(true);
+  });
 });

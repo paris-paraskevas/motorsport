@@ -184,6 +184,11 @@ describe('DELETE /api/admin/design/pages/[id]', () => {
     const live = await del(ROW, '?purge=1');
     expect(live.status).toBe(409);
     expect(((await live.json()) as { error: string }).error).toMatch(/Delete it first/);
+    // The function's own rule (P0004), should the page have been reinstated between the read and the call.
+    rpcResult = { data: null, error: { message: 'page live', code: 'P0004' } };
+    const raced = await del(GONE, '?purge=1');
+    expect(raced.status).toBe(409);
+    expect(((await raced.json()) as { error: string }).error).toMatch(/live.*Delete it first/);
   });
 });
 
