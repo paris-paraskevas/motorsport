@@ -20,6 +20,7 @@ vi.mock('@/lib/betting/client', () => ({
       Object.assign(q, {
         select: () => q,
         eq: () => q,
+        is: () => q,
         then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) => Promise.resolve(rows).then(resolve, reject),
       });
       return q;

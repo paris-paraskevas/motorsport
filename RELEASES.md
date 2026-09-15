@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.115 — 2026-09-15
+
+In the design tool, deleting a page no longer removes it outright. The page moves to Deleted, disappears from the site at once and keeps its address, and can be brought back as it was for thirty days. After that it can be removed for good, one deliberate click, and the tool refuses while another live page still points at it. Nothing changes for readers.
+
 ## 1.0.114 — 2026-09-15
 
 Internal only: the day's working records. Nothing changes for readers.

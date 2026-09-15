@@ -80,8 +80,10 @@ function serve(over: Partial<Record<Method, () => unknown>> = {}) {
     const method = (init?.method ?? 'GET') as Method;
     calls.push({ url, method, body: init?.body ? JSON.parse(String(init.body)) : null });
     if (over[method]) return over[method]!();
-    if (method === 'DELETE') return json(200, { ok: true, id: page.id, path: page.path });
+    if (method === 'DELETE') return json(200, { ok: true, id: page.id, path: page.path, page: { ...page, deletedAt: '2026-09-13T10:00:00.000+00:00', deletedBy: 'user_admin' } });
     if (method === 'PUT') return json(200, { ok: true, page: { ...page, updatedAt: '2026-09-08T19:00:00+00:00' } });
+    // POST on the page itself is Reinstate (P1.12); POST on /revisions saves.
+    if (method === 'POST' && /\/pages\/[^/]+$/.test(url)) return json(200, { ok: true, page });
     if (method === 'POST') return json(200, { revision: { id: R3 } });
     return json(200, { ...detail, newest: { ...detail.newest!, id: R3 }, revisions: [{ id: R3, createdAt: '2026-09-08T19:00:00Z', publishedAt: null, author: 'user_admin', base: R2 }, ...detail.revisions] });
   });
@@ -92,10 +94,14 @@ function mount(d: PageDetail = detail, readOnly = false, initialRegion: string |
   const onOpenPage = vi.fn();
   const onBack = vi.fn();
   const onDeleted = vi.fn();
+  const onReinstated = vi.fn();
+  const onPurged = vi.fn();
   const onWorkspace = vi.fn();
   const el = (dd: PageDetail) => (
     <PageDesigner
       onDeleted={onDeleted}
+      onReinstated={onReinstated}
+      onPurged={onPurged}
       initialRegion={initialRegion}
       detail={dd}
       pages={pages}
@@ -114,7 +120,7 @@ function mount(d: PageDetail = detail, readOnly = false, initialRegion: string |
   const utils = render(el(d));
   /** The shell hands the reloaded detail back after a save: the designer re-renders on it. */
   const rerender = (dd: PageDetail) => utils.rerender(el(dd));
-  return { onSaved, onOpenPage, onBack, onDeleted, onWorkspace, rerender };
+  return { onSaved, onOpenPage, onBack, onDeleted, onReinstated, onPurged, onWorkspace, rerender };
 }
 const tile = (name: string) => screen.getByRole('button', { name });
 const status = () => screen.getByRole('status').textContent ?? '';
@@ -830,21 +836,43 @@ describe('PageDesigner', () => {
     expect(within(dialog).getByText('Calendar')).toBeTruthy();
   });
 
-  it('Delete Page asks first, deletes through the route and hands the id back; a page the code serves cannot be deleted', async () => {
+  it('Delete Page asks first, moves the page to Deleted through the route and hands the row back (P1.12); a page the code serves cannot be deleted', async () => {
     const { onDeleted } = mount();
     fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
     fireEvent.click(screen.getByRole('menuitem', { name: /Delete Page/ }));
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByText('Delete Page')).toBeTruthy();
-    expect(within(dialog).getByText(/2 revisions are removed/)).toBeTruthy();
+    expect(within(dialog).getByText(/moves to Deleted/)).toBeTruthy();
+    expect(within(dialog).getByText(/Reinstate it from the pages list within 30 days/)).toBeTruthy();
+    expect(within(dialog).getByText(/with its 2 revisions/)).toBeTruthy();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Delete this page' }));
     await waitFor(() => expect(calls.some(c => c.method === 'DELETE' && c.url === `/api/admin/design/pages/${page.id}`)).toBe(true));
-    await waitFor(() => expect(onDeleted).toHaveBeenCalledWith(page.id));
+    await waitFor(() => expect(onDeleted).toHaveBeenCalledTimes(1));
+    expect(onDeleted.mock.calls[0][0]).toMatchObject({ id: page.id, deletedAt: '2026-09-13T10:00:00.000+00:00', deletedBy: 'user_admin' });
     cleanup();
     mount({ ...detail, page: codePage });
     fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
     const entry = screen.getByRole('menuitem', { name: /Delete Page/ }) as HTMLButtonElement;
     expect(entry.disabled).toBe(true);
     expect(entry.textContent).toMatch(/the route file is still in the code/);
+  });
+
+  it('a deleted page opens read-only with its banner; Utilities offers Reinstate and Delete permanently in Delete Page’s place; Reinstate posts the action and hands the page back (P1.12)', async () => {
+    const gone: PageRow = { ...page, deletedAt: '2026-09-13T10:00:00.000+00:00', deletedBy: 'user_admin' };
+    const { onReinstated } = mount({ ...detail, page: gone });
+    expect(screen.getByRole('note', { name: 'Deleted page' }).textContent).toMatch(/Deleted on 2026-09-13 by user_admin · .* · read-only until reinstated/);
+    expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('button', { name: 'Save and Run Page' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole('status').textContent).toMatch(/Deleted/);
+    fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
+    expect(screen.queryByRole('menuitem', { name: /Delete Page/ })).toBeNull();
+    expect(screen.getByRole('menuitem', { name: /Delete permanently/ })).toBeTruthy();
+    const reinstate = screen.getByRole('menuitem', { name: /^Reinstate/ }) as HTMLButtonElement;
+    expect(reinstate.disabled).toBe(false);
+    fireEvent.click(reinstate);
+    await waitFor(() => expect(onReinstated).toHaveBeenCalledTimes(1));
+    expect(calls.find(c => c.method === 'POST')).toMatchObject({ url: `/api/admin/design/pages/${page.id}`, body: { action: 'reinstate' } });
+    expect(onReinstated.mock.calls[0][0]).toMatchObject({ id: page.id });
+    expect(onReinstated.mock.calls[0][0]).not.toHaveProperty('deletedAt');
   });
 });

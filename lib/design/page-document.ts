@@ -623,13 +623,40 @@ export function patternMatches(pattern: string, path: string): boolean {
 }
 
 /** Why a row page path is refused, in plain words; null when it is fine.
- *  `codePaths` are the registry's patterns, `rowPaths` the row pages that exist. */
-export function rowPagePathProblem(path: string, codePaths: readonly string[], rowPaths: readonly string[] = []): string | null {
+ *  `codePaths` are the registry's patterns, `rowPaths` the row pages that exist,
+ *  `deletedPaths` the deleted pages' (P1.12: an address stays its page's until
+ *  the page is removed for good). */
+export function rowPagePathProblem(path: string, codePaths: readonly string[], rowPaths: readonly string[] = [], deletedPaths: readonly string[] = []): string | null {
   if (!path.trim()) return 'needs a path';
   if (!ROW_PAGE_PATH.test(path)) return 'a path is lower-case letters, digits and dashes in segments, like /history/monza, at most six deep';
   if (RESERVED_PREFIXES.some(p => path === p || path.startsWith(`${p}/`))) return 'that part of the site is reserved';
   const hit = codePaths.find(p => patternMatches(p, path));
   if (hit) return `the code already serves ${hit}`;
+  if (deletedPaths.includes(path)) return 'a deleted page holds this address: reinstate it or delete it permanently';
   if (rowPaths.includes(path)) return 'a page with this path exists already';
   return null;
+}
+
+// ------------------------------------------------------------------ soft delete
+
+// Delete Page (P1.12; APEX removes the page with its list entries; the recovery
+// window is ours): a deleted page stays RECOVERY_DAYS for Reinstate, then may be
+// removed for good. The arithmetic is UTC milliseconds, so no calendar quirk
+// moves the window.
+export const RECOVERY_DAYS = 30;
+const DAY_MS = 86_400_000;
+
+/** A stored stamp as milliseconds: PostgREST's ISO form, or Postgres's own ('2026-09-13 10:00:00.5+00'). */
+function stampMs(stamp: string): number {
+  return Date.parse(stamp.replace(' ', 'T').replace(/([+-]\d\d)$/, '$1:00'));
+}
+
+/** When a deleted page may be removed for good, as an ISO stamp. */
+export function purgeDueAt(deletedAt: string): string {
+  return new Date(stampMs(deletedAt) + RECOVERY_DAYS * DAY_MS).toISOString();
+}
+
+/** Whole days left in the recovery window, rounded up, never below zero. */
+export function daysLeft(deletedAt: string, now: number = Date.now()): number {
+  return Math.max(0, Math.ceil((stampMs(deletedAt) + RECOVERY_DAYS * DAY_MS - now) / DAY_MS));
 }

@@ -40,9 +40,14 @@ export interface PageRow {
   indexable: boolean;
   comments: string | null;
   updatedAt: string | null;
+  /** Deleted (P1.12): when, and by whom; absent on a live page. A deleted page
+   *  stays RECOVERY_DAYS for Reinstate, then may be removed for good; every
+   *  reader that serves visitors skips it. */
+  deletedAt?: string | null;
+  deletedBy?: string | null;
 }
 
-const PATH = /^\/(?:[a-z0-9-]+|\[[a-z]+\])(?:\/(?:[a-z0-9-]+|\[[a-z]+\]))*$|^\/$/;
+const PATH =/^\/(?:[a-z0-9-]+|\[[a-z]+\])(?:\/(?:[a-z0-9-]+|\[[a-z]+\]))*$|^\/$/;
 
 function codePageRow(path: string): PageRow | undefined {
   const c = CODE_PAGES.find(p => p.path === path);
@@ -92,6 +97,7 @@ export function pageFromRow(item: unknown): PageRow | null {
     indexable: r.indexable === true,
     comments: typeof r.comments === 'string' && r.comments ? r.comments : null,
     updatedAt: r.updated_at != null ? String(r.updated_at) : null,
+    ...(r.deleted_at != null ? { deletedAt: String(r.deleted_at), deletedBy: typeof r.deleted_by === 'string' ? r.deleted_by : null } : {}),
   };
 }
 
@@ -118,15 +124,34 @@ export function pagesFromRows(rows: unknown): PageRow[] {
   return out;
 }
 
-export const PAGE_COLUMNS = 'id, path, name, kind, group_key, template, authz_key, title, rendering, indexable, comments, updated_at';
+export const PAGE_COLUMNS = 'id, path, name, kind, group_key, template, authz_key, title, rendering, indexable, comments, updated_at, deleted_at, deleted_by';
 
-/** The registry for the App Builder. Null on any failure. */
+/** The registry for the App Builder: the live pages (a deleted page is listed
+ *  by loadDeletedPages alone, P1.12). Null on any failure. */
 export async function loadPagesForEditing(): Promise<PageRow[] | null> {
   if (!isBettingConfigured()) return null;
   try {
-    const { data, error } = await betDb().from('page').select(PAGE_COLUMNS).eq('application_key', APPLICATION_KEY);
+    const { data, error } = await betDb().from('page').select(PAGE_COLUMNS).eq('application_key', APPLICATION_KEY).is('deleted_at', null);
     if (error) return null;
     return pagesFromRows(data ?? []);
+  } catch {
+    return null;
+  }
+}
+
+/** The deleted pages (P1.12), the newest deletion first, for the pages list's
+ *  Deleted view; only pages made in the designer can be here. Null on any failure. */
+export async function loadDeletedPages(): Promise<PageRow[] | null> {
+  if (!isBettingConfigured()) return null;
+  try {
+    const { data, error } = await betDb()
+      .from('page')
+      .select(PAGE_COLUMNS)
+      .eq('application_key', APPLICATION_KEY)
+      .not('deleted_at', 'is', null)
+      .order('deleted_at', { ascending: false });
+    if (error) return null;
+    return ((data ?? []) as unknown[]).map(pageFromRow).filter((p): p is PageRow => p !== null);
   } catch {
     return null;
   }

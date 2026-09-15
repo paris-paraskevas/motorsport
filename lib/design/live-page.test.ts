@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 let configured = true;
 let tables: Record<string, { data: unknown; error: { message: string } | null }> = {};
 const calls: string[] = [];
+/** Every `.is(col, value)` step, by table: the readers' skip of deleted rows (P1.12). */
+const isCalls: [string, string, unknown][] = [];
 // The fake answers a table's reads with its rows; `.not(col, 'is', null)` is
 // honoured (the live-revision read filters published ones), the other filters
 // are not.
@@ -20,6 +22,10 @@ vi.mock('@/lib/betting/client', () => ({
         order: chain,
         limit: chain,
         in: chain,
+        is: (col: string, value: unknown) => {
+          isCalls.push([table, col, value]);
+          return q;
+        },
         not: (col: string) => {
           notNull = col;
           return q;
@@ -36,7 +42,7 @@ vi.mock('@/lib/betting/client', () => ({
   }),
 }));
 
-import { loadAssetsById, loadLiveFrame, loadLivePage, loadRevisionPreview } from './live-page';
+import { loadAssetsById, loadLiveComposed, loadLiveFrame, loadLivePage, loadRevisionPreview } from './live-page';
 
 const ID = 'a1b2c3d4-0000-4000-8000-000000000010';
 const ASSET = 'c1b2c3d4-0000-4000-8000-000000000031';
@@ -102,6 +108,19 @@ describe('loadLivePage', () => {
     expect(live?.revisionId).toBe(revision.id);
     expect(live?.publishedAt).toBe(revision.published_at);
     expect(live?.document.regions.map(r => r.id)).toEqual(['intro']);
+  });
+
+  it('skips a deleted page (P1.12): every reader of the page table asks for deleted_at null', async () => {
+    isCalls.length = 0;
+    await loadLivePage('/history/monza');
+    expect(isCalls).toEqual([['page', 'deleted_at', null]]);
+    isCalls.length = 0;
+    await loadLiveComposed('/calendar');
+    expect(isCalls).toEqual([['page', 'deleted_at', null]]);
+    isCalls.length = 0;
+    tables.page_revision = { data: [{ ...revision, page_id: ID, created_at: '2026-09-08T17:10:00+00:00' }], error: null };
+    await loadRevisionPreview(revision.id);
+    expect(isCalls).toEqual([['page', 'deleted_at', null]]);
   });
 });
 

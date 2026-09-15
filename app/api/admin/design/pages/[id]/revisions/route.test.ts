@@ -129,6 +129,14 @@ describe('/api/admin/design/pages/[id]/revisions', () => {
     expect(json.current.page.path).toBe('/history/monza');
   });
 
+  it('answers 409 with the reason when the function says the page is deleted (P1.12: reinstate it first)', async () => {
+    rpc.mockResolvedValue({ data: null, error: { message: 'page deleted', code: 'P0003' } });
+    const res = await call(ID, { document: DOC, action: 'draft' });
+    expect(res.status).toBe(409);
+    expect(((await res.json()) as { error: string }).error).toMatch(/deleted.*reinstate/i);
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+
   it('answers 404 for a page that is not a row page, and 400 when the layout names a row that does not exist', async () => {
     rpc.mockResolvedValue({ data: null, error: { message: 'no such row page', code: 'P0002' } });
     expect((await call(ID, { document: DOC, action: 'draft' })).status).toBe(404);
