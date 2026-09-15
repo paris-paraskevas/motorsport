@@ -7,6 +7,7 @@ import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { applyBuildOptions, documentRefs, schemesAsked } from '@/lib/design/page-document';
 import { loadBuildOptions } from '@/lib/design/build-options';
+import { loadAppearance } from '@/lib/design/appearance';
 import { renderComponents } from '@/lib/design/component-render';
 import { CodePageFrame, RowPageView } from '@/components/page/RowPageView';
 import { familyExtras } from '@/lib/design/page-families';
@@ -56,7 +57,7 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   const document = applyBuildOptions(stored, await loadBuildOptions());
   const asked = schemesAsked(preview.page.authz, document);
   const refs = documentRefs(document);
-  const [shortcuts, assets, nav, schemes, components, extras] = await Promise.all([
+  const [shortcuts, assets, nav, schemes, components, extras, appearance] = await Promise.all([
     loadShortcuts(),
     loadAssetsById(refs.assets),
     loadNavLists(),
@@ -64,11 +65,13 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
     // Every component draws in the preview too; the show rules are not applied here.
     renderComponents(document, { path: preview.page.path, params: {}, page: preview.page }),
     composed ? familyExtras(preview.page.path, {}) : Promise.resolve(null),
+    // The templates' presets (P1.2), as the catch-all reads them.
+    loadAppearance(),
   ]);
   const messages: Record<string, string | null> = {};
   for (const key of asked) messages[key] = schemes.find(s => s.key === key)?.message ?? null;
   const lists = await loadDocumentLists(refs.lists, nav);
-  const d = { page: preview.page, document, shortcuts, assets, nav, lists, allowed: new Set(asked), messages, components };
+  const d = { page: preview.page, document, shortcuts, assets, nav, lists, allowed: new Set(asked), messages, components, templates: appearance.templates };
 
   // The Developer Toolbar is the app layout's, drawn for the administrator on
   // every running page (R5); what it cannot know from the address, which

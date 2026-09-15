@@ -16,7 +16,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef' | 'lists' | 'compsettings' | 'computations';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'templates' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef' | 'lists' | 'compsettings' | 'computations';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -77,7 +77,7 @@ export const CATALOGUE: CatalogueGroup[] = [
       { key: 'appearance', label: 'Appearance', editor: 'appearance' },
       { key: 'pwa', label: 'Progressive Web App', later: 'Phase 6' },
       { key: 'themes', label: 'Themes', editor: 'themes' },
-      { key: 'templates', label: 'Templates', later: 'read-only, later' },
+      { key: 'templates', label: 'Templates', editor: 'templates' },
       { key: 'email', label: 'Email Templates', later: 'Phase 6' },
       { key: 'maps', label: 'Map Backgrounds', later: 'Phase 6' },
     ],

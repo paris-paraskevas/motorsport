@@ -9,6 +9,7 @@ import type { PageDetail } from '@/lib/design/page-revisions';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableBuildOption } from '@/lib/design/build-options';
+import type { TemplatePresets } from '@/lib/design/template-options';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import {
   PAGE_SELECTION,
@@ -158,6 +159,7 @@ export function PageDesigner({
   assets,
   schemes,
   buildOptions,
+  templates,
   shortcuts,
   themeDefault = 'Paper',
   regionDefaults = SHIPPED_REGION_DEFAULTS,
@@ -182,6 +184,8 @@ export function PageDesigner({
   schemes?: EditableAuthzScheme[];
   /** The Build Options with their statuses, for the Configuration group; absent shows plain labels. */
   buildOptions?: EditableBuildOption[];
+  /** The region templates' Template Option presets (P1.2), for the Appearance group; absent reads as shipped. */
+  templates?: TemplatePresets;
   shortcuts: EditableShortcut[];
   themeDefault?: string;
   /** The detail as stored after a save, a publish or a reload. */
@@ -935,6 +939,7 @@ export function PageDesigner({
     lists,
     shortcuts,
     buildOptions: Object.fromEntries((buildOptions ?? []).map(b => [b.key, b.status])),
+    templates,
     shared,
     attrs,
     attrsStored: attrsOf(page),

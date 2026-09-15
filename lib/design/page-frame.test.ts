@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Metadata } from 'next';
 import { DEFAULT_AUTHZ_SCHEMES } from './authz-defaults';
+import { SHIPPED_APPEARANCE } from './appearance-defaults';
+import { SHIPPED_PRESETS } from './template-options';
 import { RefusedPage } from '@/components/page/RefusedPage';
 
 // The frame around a code page: the row's title and index rule over the code's
@@ -31,6 +33,9 @@ vi.mock('./live-page', () => ({
   loadAssetsById: async () => new Map(),
 }));
 vi.mock('./shortcuts', () => ({ loadShortcuts: async () => ({ 'times.local': 'All times are local.' }) }));
+// The appearance (the templates' presets ride it, P1.2): what the frame hands the page.
+const loadAppearance = vi.fn(async () => SHIPPED_APPEARANCE);
+vi.mock('./appearance', () => ({ loadAppearance: () => loadAppearance() }));
 vi.mock('./lists', () => ({
   loadNavLists: async () => ({ doors: [], bar: [], footerSite: [], footerLegal: [] }),
   loadDocumentLists: async (keys: string[]) => Object.fromEntries(keys.map(k => [k, []])),
@@ -257,5 +262,14 @@ describe('withPageGate', () => {
     loadLiveFrame.mockResolvedValue(live([wire]));
     await gated(props);
     expect(raceWeekend).not.toHaveBeenCalled();
+  });
+
+  it('P1.2: the templates’ presets ride the frame’s data from the appearance, the shipped ones when nothing is stored', async () => {
+    loadLiveFrame.mockResolvedValue(live([welcome({ id: 'above', position: 'header', seq: 10 })]));
+    const gated = withPageGate('/calendar', Page);
+    expect(dataOf(await gated(props)).templates).toEqual(SHIPPED_PRESETS);
+    const roomy = { standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } };
+    loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: roomy });
+    expect(dataOf(await gated(props)).templates).toEqual(roomy);
   });
 });

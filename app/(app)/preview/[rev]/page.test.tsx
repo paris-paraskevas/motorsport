@@ -23,6 +23,9 @@ vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
 const loadRevisionPreview = vi.fn();
 vi.mock('@/lib/design/live-page', () => ({ loadRevisionPreview: (id: string) => loadRevisionPreview(id), loadAssetsById: async () => new Map() }));
 vi.mock('@/lib/design/shortcuts', () => ({ loadShortcuts: async () => ({ 'times.local': 'All times are local.' }) }));
+// The appearance carries the templates' presets (P1.2); the preview resolves every region against them as the catch-all does.
+const loadAppearance = vi.fn(async () => SHIPPED_APPEARANCE);
+vi.mock('@/lib/design/appearance', () => ({ loadAppearance: () => loadAppearance() }));
 vi.mock('@/lib/design/lists', async () => {
   const actual = await vi.importActual<typeof import('@/lib/design/lists')>('@/lib/design/lists');
   return {
@@ -51,6 +54,8 @@ vi.mock('@/lib/design/page-families', () => ({
 
 import RevisionPreviewPage, { dynamic, generateMetadata } from './page';
 import type { PageRow } from '@/lib/design/pages';
+import { SHIPPED_APPEARANCE } from '@/lib/design/appearance-defaults';
+import { SHIPPED_PRESETS } from '@/lib/design/template-options';
 
 const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
 const REV = 'b1b2c3d4-0000-4000-8000-000000000002';
@@ -101,6 +106,15 @@ describe('/preview/[rev]', () => {
     expect(html).toContain('Opened in 1922. All times are local.');
     expect(html).toContain('For members');
     expect(html).not.toContain('Sign in to see this.');
+  });
+
+  it('P1.2: draws a region on Use Template Defaults with the stored presets, the shipped ones when nothing is stored', async () => {
+    const shipped = renderToStaticMarkup(await RevisionPreviewPage({ params }));
+    expect(shipped).not.toMatch(/id="region-intro"[^>]*class="[^"]*py-4/);
+    loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: { standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } } });
+    const roomy = renderToStaticMarkup(await RevisionPreviewPage({ params }));
+    expect(roomy).toMatch(/id="region-intro"[^>]*class="[^"]*py-4/);
+    expect(roomy).toContain('class="space-y-6"');
   });
 
   it('says in its note when the revision is the live one, and counts the stored document’s problems', async () => {

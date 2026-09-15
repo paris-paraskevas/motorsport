@@ -204,6 +204,74 @@ describe('RowPageView with lists of the operator’s own', () => {
   });
 });
 
+describe('Template Options (the components programme, P1.2)', () => {
+  const region = (id: string, over: Record<string, unknown> = {}) =>
+    ({ id, kind: 'static', title: id.toUpperCase(), position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'One.\n\nTwo.', ...over }) as PageDocument['regions'][number];
+  /** The wrapper's class attribute of a region, and the markup of the region alone. */
+  const wrapperOf = (html: string, id: string) => new RegExp(`id="region-${id}"[^>]*class="([^"]*)"`).exec(html)?.[1] ?? '';
+  const markupOf = (html: string, id: string) => {
+    const at = html.indexOf(`id="region-${id}"`);
+    const next = html.indexOf('id="region-', at + 1);
+    return html.slice(at, next < 0 ? undefined : next);
+  };
+  const ROOMY = { standard: { spacing: 'SPACING_ROOMY', heading: 'HEADING_LABEL', rule: 'RULE_NONE', emphasis: 'EMPHASIS_NORMAL', width: 'WIDTH_FULL' } };
+
+  it('the acceptance: a changed preset reaches every region on Use Template Defaults, and a region that picked its own keeps it', () => {
+    const own: PageDocument = { version: 2, actions: [], regions: [region('follows', { seq: 10 }), region('own', { seq: 20, templateOptions: ['#DEFAULT#', 'SPACING_COMPACT'] })] };
+    const shipped = renderToStaticMarkup(<RowPageView {...data} document={own} />);
+    expect(markupOf(shipped, 'follows')).toContain('class="space-y-3"');
+    expect(markupOf(shipped, 'own')).toContain('class="space-y-1.5"');
+    expect(wrapperOf(shipped, 'follows')).not.toContain('py-4');
+    const roomy = renderToStaticMarkup(<RowPageView {...data} document={own} templates={ROOMY} />);
+    expect(markupOf(roomy, 'follows')).toContain('class="space-y-6"');
+    expect(wrapperOf(roomy, 'follows')).toContain('py-4');
+    expect(markupOf(roomy, 'own')).toContain('class="space-y-1.5"');
+    expect(wrapperOf(roomy, 'own')).not.toContain('py-4');
+  });
+
+  it('draws the region as before when nothing is stored, and each option on its own part: the headline, the hidden title, the rule, the measure, the muted text', () => {
+    const own: PageDocument = {
+      version: 2,
+      actions: [],
+      regions: [
+        region('plain', { seq: 10 }),
+        region('headline', { seq: 20, templateOptions: ['#DEFAULT#', 'HEADING_HEADLINE'] }),
+        region('quiet', { seq: 30, templateOptions: ['HEADING_HIDDEN', 'EMPHASIS_MUTED'] }),
+        region('ruled', { seq: 40, templateOptions: ['#DEFAULT#', 'RULE_ABOVE', 'WIDTH_READING'] }),
+        region('links', { seq: 50, kind: 'list', listKey: 'footer-site', style: 'links', text: undefined, templateOptions: ['#DEFAULT#', 'HEADING_HIDDEN'] }),
+      ],
+    };
+    const html = renderToStaticMarkup(<RowPageView {...data} document={own} />);
+    // The hidden heading on another kind: a List keeps its title for assistive technology too.
+    expect(markupOf(html, 'links')).toMatch(/<h2 class="sr-only">LINKS<\/h2>/);
+    expect(markupOf(html, 'plain')).toMatch(/<h2 class="(?=[^"]*font-mono)(?=[^"]*border-b)[^"]*">PLAIN<\/h2>/);
+    expect(markupOf(html, 'plain')).toMatch(/<p class="font-serif text-16 leading-relaxed text-text-muted">/);
+    expect(markupOf(html, 'headline')).toMatch(/<h2 class="[^"]*font-serif[^"]*">HEADLINE<\/h2>/);
+    expect(markupOf(html, 'headline')).not.toMatch(/<h2 class="[^"]*border-b/);
+    expect(markupOf(html, 'quiet')).toMatch(/<h2 class="[^"]*sr-only[^"]*">QUIET<\/h2>/);
+    expect(markupOf(html, 'quiet')).toMatch(/<p class="[^"]*text-text-faint">/);
+    expect(wrapperOf(html, 'ruled')).toContain('border-t');
+    expect(wrapperOf(html, 'ruled')).toContain('max-w-[65ch]');
+    expect(wrapperOf(html, 'plain')).not.toContain('border-t');
+  });
+
+  it('a component region takes the wrapper’s options only, and a refused region draws its message without them', () => {
+    const own: PageDocument = {
+      version: 2,
+      actions: [],
+      regions: [
+        region('drawn', { seq: 10, kind: 'component', component: 'page.body', settings: {}, text: undefined, templateOptions: ['#DEFAULT#', 'RULE_BELOW', 'HEADING_HEADLINE'] }),
+        region('locked', { seq: 20, authz: 'signed_in', templateOptions: ['#DEFAULT#', 'RULE_ABOVE'] }),
+      ],
+    };
+    const html = renderToStaticMarkup(<RowPageView {...data} document={own} components={{ drawn: <p>DRAWN</p> }} />);
+    expect(wrapperOf(html, 'drawn')).toContain('border-b');
+    expect(markupOf(html, 'drawn')).not.toContain('<h2');
+    expect(markupOf(html, 'locked')).toContain('Sign in to see this.');
+    expect(markupOf(html, 'locked')).not.toContain('<h2');
+  });
+});
+
 describe('components (the components programme, R2a)', () => {
   const region = (id: string, over: Record<string, unknown> = {}) =>
     ({ id, kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: id.toUpperCase(), ...over }) as PageDocument['regions'][number];

@@ -267,6 +267,30 @@ describe('Header Text, Footer Text and the Build Option (the components programm
   });
 });
 
+describe('Template Options on a region (the components programme, P1.2)', () => {
+  const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'body', ...over });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+
+  it('reads an absent list, or one that only says defaults, as absent; keeps a list canonical; keeps an empty list, which turns the defaults off', () => {
+    expect(parsePageDocument(doc([region({})])).value.regions[0]).not.toHaveProperty('templateOptions');
+    expect(parsePageDocument(doc([region({ templateOptions: ['#DEFAULT#'] })])).value.regions[0]).not.toHaveProperty('templateOptions');
+    const picked = parsePageDocument(doc([region({ templateOptions: ['WIDTH_READING', 'SPACING_COMPACT', '#DEFAULT#'] })]));
+    expect(picked.problems).toEqual([]);
+    expect(picked.value.regions[0]).toMatchObject({ templateOptions: ['#DEFAULT#', 'SPACING_COMPACT', 'WIDTH_READING'] });
+    expect(parsePageDocument(doc([region({ templateOptions: [] })])).value.regions[0]).toMatchObject({ templateOptions: [] });
+  });
+
+  it('refuses an identifier the code does not have and two options of one group, naming the region', () => {
+    const unknown = parsePageDocument(doc([region({ templateOptions: ['#DEFAULT#', 'SPACING_HUGE'] })]));
+    expect(unknown.value.regions).toEqual([]);
+    expect(unknown.problems).toEqual(['region r: names a template option the code does not have (SPACING_HUGE)']);
+    const twice = parsePageDocument(doc([region({ templateOptions: ['RULE_ABOVE', 'RULE_BELOW'] })]));
+    expect(twice.value.regions).toEqual([]);
+    expect(twice.problems).toEqual(['region r: picks two options of Rule (RULE_ABOVE, RULE_BELOW)']);
+    expect(parsePageDocument(doc([region({ templateOptions: 'RULE_ABOVE' })])).problems).toEqual(['region r: the template options must be a list']);
+  });
+});
+
 describe('row page paths', () => {
   const code = ['/', '/about', '/series/[slug]', '/series/[slug]/[tab]', '/archive/[season]/[slug]/weekend/[round]', '/sign-in'];
 

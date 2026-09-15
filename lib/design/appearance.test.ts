@@ -34,6 +34,7 @@ import {
   resetAppearanceMemo,
   type Appearance,
 } from './appearance';
+import { SHIPPED_PRESETS } from './template-options';
 
 const STAMP = '2026-09-08T15:30:00.505502+00:00';
 const AIRY: Appearance = {
@@ -43,6 +44,7 @@ const AIRY: Appearance = {
   density: 0.3,
   radius: 0,
   motion: 'calm',
+  templates: SHIPPED_PRESETS,
 };
 
 describe('parseAppearance', () => {
@@ -50,6 +52,24 @@ describe('parseAppearance', () => {
     for (const raw of [undefined, null, {}]) {
       expect(parseAppearance(raw)).toEqual({ value: SHIPPED_APPEARANCE, problems: [] });
     }
+  });
+
+  it('reads the template presets with the rest (P1.2): a known preset kept, an unusable one the shipped value with its problem named, and the style block untouched by them', () => {
+    const roomy = parseAppearance({ templates: { standard: { spacing: 'SPACING_ROOMY' } } });
+    expect(roomy.problems).toEqual([]);
+    expect(roomy.value.templates.standard).toEqual({ ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' });
+    expect(roomy.value.faces).toEqual(SHIPPED_APPEARANCE.faces);
+    const bad = parseAppearance({ templates: { standard: { heading: 'HEADING_BIG' } } });
+    expect(bad.value.templates).toEqual(SHIPPED_PRESETS);
+    expect(bad.problems).toEqual(['Templates › Standard › Heading style: "HEADING_BIG" is not one of its options']);
+    const unknown = parseAppearance({ templates: { hero: { spacing: 'SPACING_ROOMY' } } });
+    expect(unknown.value.templates).toEqual(SHIPPED_PRESETS);
+    expect(unknown.problems).toEqual(['Templates: names a template the code does not have (hero)']);
+    expect(isShippedAppearance(roomy.value)).toBe(true);
+    expect(appearanceCss(roomy.value)).toBe('');
+    // The parsed presets are a copy: a later edit of the value cannot reach the shipped constant.
+    roomy.value.templates.standard.width = 'WIDTH_NARROW';
+    expect(SHIPPED_PRESETS.standard.width).toBe('WIDTH_FULL');
   });
 
   it('keeps every usable key, falls back on the rest, and names each problem', () => {

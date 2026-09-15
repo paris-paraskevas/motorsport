@@ -43,6 +43,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { GET, PUT } from './route';
 import { SHIPPED_APPEARANCE } from '@/lib/design/appearance-defaults';
+import { SHIPPED_PRESETS } from '@/lib/design/template-options';
 
 const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
 const STAMP = '2026-09-08T15:30:00.505502+00:00';
@@ -53,6 +54,8 @@ const AIRY = {
   density: 0.3,
   radius: 0,
   motion: 'calm',
+  // The templates' presets ride the document since P1.2; the parser fills them in.
+  templates: SHIPPED_PRESETS,
 };
 
 const put = (body: unknown) =>

@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.110 — 2026-09-15
+
+In the design tool, every region gains Template Options: its spacing, the style of its heading, a rule above or below it, its emphasis and its width, each chosen from a short list or left to the template's preset. The presets are set once under Shared Components › Templates, and every region that follows them changes together while a region with its own choice keeps it. Nothing changes for readers until a preset or a region is changed.
+
 ## 1.0.109 — 2026-09-15
 
 Internal only: a check in the development tooling adjusted. Nothing changes for readers.

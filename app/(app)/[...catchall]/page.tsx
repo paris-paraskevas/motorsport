@@ -9,6 +9,7 @@ import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
 import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts } from '@/lib/design/page-document';
 import { loadBuildOptions } from '@/lib/design/build-options';
+import { loadAppearance } from '@/lib/design/appearance';
 import { raceWeekendNow, renderComponents } from '@/lib/design/component-render';
 import { resolvePage } from '@/lib/design/resolve-page';
 import { familyExtras, familyMetadata } from '@/lib/design/page-families';
@@ -110,9 +111,10 @@ export default async function CatchAll({ params }: { params: Params }) {
 
   const refs = documentRefs(document);
   const where = r.kind === 'composed' ? { path: r.pattern, params: r.params, page: r.page } : { path, params: {}, page: r.page };
-  const [shortcuts, assets, nav, components] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, where)]);
+  // The templates' presets (P1.2) ride the appearance the layout already read (memoised).
+  const [shortcuts, assets, nav, components, appearance] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, where), loadAppearance()]);
   const lists = await loadDocumentLists(refs.lists, nav);
-  const d = { page: r.page, document, shortcuts, assets, nav, lists, allowed, messages, components };
+  const d = { page: r.page, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates };
   if (r.kind === 'row') return <RowPageView {...d} />;
   const extras = await familyExtras(r.pattern, r.params);
   return (

@@ -189,6 +189,52 @@ describe('PageDesigner', () => {
     expect((within(pe).getByLabelText('Region footer text') as HTMLInputElement).value).toBe('Below');
   });
 
+  it('gives a region its Appearance group (P1.2): the template read-only, Template Options as a button that lists the selection and opens the dialog; Cancel drops, OK commits and Save posts the list', async () => {
+    const { onSaved } = mount();
+    fireEvent.click(tile('Static Content: A century of speed'));
+    const pe = screen.getByLabelText('Property Editor');
+    // The pane keeps a group's fold by title across selections, and the page's Appearance group starts folded.
+    fireEvent.click(within(pe).getByRole('button', { name: 'Appearance' }));
+    expect(within(pe).getByText(/^Standard · /)).toBeTruthy();
+    // The row's label names the button (a button is labelable); its text is the selection, as APEX writes it.
+    const button = () => within(pe).getByRole('button', { name: 'Template Options' });
+    expect(button().textContent).toBe('Use Template Defaults');
+    // The dialog names what Default draws while the defaults are on; Cancel changes nothing.
+    fireEvent.click(button());
+    const dialog = screen.getByRole('dialog', { name: 'Template Options' });
+    const spacing = within(dialog).getByLabelText('Spacing') as HTMLSelectElement;
+    expect(spacing.options[0].textContent).toBe('Default (Standard)');
+    expect(within(dialog).getByLabelText('Heading style')).toBeTruthy();
+    expect(within(dialog).getByLabelText('Width')).toBeTruthy();
+    fireEvent.change(spacing, { target: { value: 'SPACING_ROOMY' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(button().textContent).toBe('Use Template Defaults');
+    expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
+    // Escape drops the edit the same way, and does not deselect the region behind the dialog.
+    fireEvent.click(button());
+    fireEvent.change(within(screen.getByRole('dialog', { name: 'Template Options' })).getByLabelText('Rule'), { target: { value: 'RULE_BELOW' } });
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(button().textContent).toBe('Use Template Defaults');
+    expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
+    // Defaults off, Roomy picked, OK: the button reads the pick, the row carries the marker, Save posts the list.
+    fireEvent.click(button());
+    const again = screen.getByRole('dialog', { name: 'Template Options' });
+    fireEvent.click(within(again).getByRole('checkbox', { name: 'Use Template Defaults' }));
+    expect((within(again).getByLabelText('Spacing') as HTMLSelectElement).options[0].textContent).toBe('Default');
+    fireEvent.change(within(again).getByLabelText('Spacing'), { target: { value: 'SPACING_ROOMY' } });
+    fireEvent.click(within(again).getByRole('button', { name: 'OK' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(status()).toMatch(/Template Options set/);
+    expect(button().textContent).toBe('Roomy');
+    expect(within(pe).getAllByRole('img', { name: 'Changed since the last save' }).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const post = calls.find(c => c.method === 'POST')!;
+    expect((post.body as { document: PageDocument }).document.regions.find((r: Region) => r.id === 'intro')).toMatchObject({ templateOptions: ['SPACING_ROOMY'] });
+  });
+
   // Walks the Utilities menu: a submenu row, then its item (a checkable one is a menuitemcheckbox).
   // An entry's accessible name starts with its label; a sub or a shortcut may follow it.
   const startsWith = (label: string) => (name: string) => name === label || name.startsWith(label);

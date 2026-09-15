@@ -11,7 +11,7 @@ describe('shared components catalogue', () => {
     for (const item of items) expect(Boolean(item.listKey || item.editor) !== Boolean(item.later), item.key).toBe(true);
   });
 
-  it('opens exactly the four navigation lists, each with its copy, and the thirteen editors', () => {
+  it('opens exactly the four navigation lists, each with its copy, and the fourteen editors', () => {
     const listed = items.filter(i => i.listKey).map(i => i.listKey);
     expect([...listed].sort()).toEqual([...NAV_LIST_KEYS].sort());
     for (const key of NAV_LIST_KEYS) expect(LIST_COPY[key].title.length).toBeGreaterThan(0);
@@ -27,6 +27,7 @@ describe('shared components catalogue', () => {
       ['searchhints', 'searchhints'],
       ['appearance', 'appearance'],
       ['themes', 'themes'],
+      ['templates', 'templates'],
       ['assets', 'assets'],
       ['textmsgs', 'text'],
     ]);
