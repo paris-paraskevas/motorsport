@@ -64,6 +64,11 @@
    "date": "2026-09-15",
    "change": "The operator, ~08:30Z, on the P1.7 scan: \"quick edit should be hideable, also if i tap to edit a page from the help bar, then it should take me to the one tab i have for developing the app, ntot open another, same as when i save and run from dev side it opens same tab each time. also the bar shouldnt show on mobile for me. other than that, you can go.\" Read as three fixed points for P1.7 (Developer Toolbar: Quick Edit and Info): (1) Quick Edit Mode is a toggle that can be turned off from the menu as well as by Escape or a click outside, and its outlines and wrenches leave the page with it; (2) every link from the toolbar into the designer (Home, App 100, Page <id>, and a Quick Edit click on a region) opens ONE named developer tab, reused every time, the way Save and Run reuses the one running tab; (3) the toolbar is not drawn on phones (below the site's large breakpoint, 1024 px). The scan's two defaults stood: the two new files; Show Landmarks and Show Headings left out of this slot.",
    "word": "the operator, 2026-09-15 ~08:30Z, verbatim above"
+  },
+  {
+   "date": "2026-09-15",
+   "change": "P1.10's scope says \"disabled until P2.17\", but in the draft programme (docs/apex-study/components-programme.md) P2.17 is Circuit and the Breadcrumb component is P2.19. Read, on the operator's word, as \"Breadcrumb Region disabled until the Breadcrumb component's slot exists\" (P2.19 in the draft; the number is the draft's and may move when Phase 2 enters the ledger). The scope text itself is left as written; this line is the correction.",
+   "word": "the operator, 2026-09-15 ~10:10Z: \"that reading; then plan mode\""
   }
  ],
  "phases": {
@@ -282,7 +287,9 @@
    "fixedBy": "the UX map's Create menu",
    "acceptance": "Items present in the documented order; browser run.",
    "status": "planned",
-   "scopeHash": "3b2d94535f2d"
+   "scopeHash": "3b2d94535f2d",
+   "defaults": "APEX's seven Create entries in APEX's order at the top of the menu: Page… (the Create Page dialog, as now); Copy Page disabled, arrives with Phase 4; Breadcrumb Region disabled until the Breadcrumb component's slot exists; Shared Component… (as now); Page Group… opens the Page Groups sheet the pages list has, moved out of the list so both can show it, with the open page's group marked and Show returning to the pages list filtered by that group; Developer Comment selects the page, opens the Advanced group and focuses the Comments field; Issue disabled, no counterpart (APEX's Team Development is not planned); below a separator ours stay as they are and are marked ours in a comment (the Region kinds and Dynamic Action, which APEX creates from the tree and the gallery); no new files (the sheet becomes an export of the pages list's module); a test asserts the order and each entry's behaviour; the browser run shows the menu and the two dialogs",
+   "needsWord": ""
   },
   {
    "id": "P1.11",
