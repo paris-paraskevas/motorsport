@@ -1878,6 +1878,18 @@ Outcome (four slots shipped, all four merged on the word; the day ran ~09:30Z–
 
 Active: ~5h 30m (the operator present throughout; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
+### Tue 2026-09-15 — session 49 (morning; the operator present) — the hook fix, P1.2, then the scans
+
+Order fixed by the session-48 handoff prompt and the operator's words of the morning ("P1.2 go"; "fix, then work"; "open the P1.2 plan"; "you can merge 990 and 991. then continue"). Every subagent on Sonnet, one at a time, writing to files; no agent builds; the gates and a fresh-context reviewer before any merge; merge only on the word.
+
+1. **The agent-model guard** (~40 min, unplanned): every subagent launch was denied because the Agent tool no longer carries a `model` field; the hook now reads the settings' force. The hook file itself was copied into place by the operator (the auto-mode classifier refuses Claude an edit of a hook governing its own tool use). PR #990, 1.0.109, merged 07:58Z, prod 08:03Z; the reviewer's own transcript proved Sonnet.
+2. **P1.2 Template options** (~2h 40m): plan mode (a Sonnet reader on the APEX pages, a Sonnet plan critic with eight findings, five taken) → the word → tests first → built → gates → the browser run on the local server (Docker and the local Supabase had to be started first) → review page → reviewer (PASS; two gaps taken, one answered) → merged on the word. PR #991, 1.0.110, merged 08:14Z.
+3. **Next**: the decision scans for P1.7, P1.10, P1.11, P1.12, one at a time, each question in a sentence with a default; the records PR; the handoff.
+
+Won't touch this session: any Phase 2–4 slot; P1.1, P1.4, P1.8 (they carry questions) until asked; the Size / Column Span question the operator raised (recorded, not acted on); the merged branches on origin; any prod Supabase write without "apply <id>"; any push to `main`; any agent on Fable; any fan-out.
+
+Active: (awaiting [+Nm] prefixes; the wall clock of the prompts runs from ~06:50Z)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

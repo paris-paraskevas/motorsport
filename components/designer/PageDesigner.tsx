@@ -163,6 +163,7 @@ export function PageDesigner({
   shortcuts,
   themeDefault = 'Paper',
   regionDefaults = SHIPPED_REGION_DEFAULTS,
+  initialRegion = null,
   onSaved,
   onOpenPage,
   onBack,
@@ -188,6 +189,8 @@ export function PageDesigner({
   templates?: TemplatePresets;
   shortcuts: EditableShortcut[];
   themeDefault?: string;
+  /** A region to open on, from `?region=` on the address (P1.7: Quick Edit lands on the region); the page when absent or unknown. */
+  initialRegion?: string | null;
   /** The detail as stored after a save, a publish or a reload. */
   onSaved: (detail: PageDetail) => void;
   onOpenPage: (id: string) => void;
@@ -217,7 +220,9 @@ export function PageDesigner({
   const [seenNewest, setSeenNewest] = useState<string | null>(newest?.id ?? null);
   const [attrs, setAttrs] = useState<AttrsDraft>(() => attrsOf(page));
   const [seenStamp, setSeenStamp] = useState<string>(`${page.id}:${page.updatedAt}`);
-  const [selection, setSelection] = useState<Selection>(PAGE_SELECTION);
+  const [selection, setSelection] = useState<Selection>(() =>
+    initialRegion && stored.regions.some(r => r.id === initialRegion) ? { kind: 'region', id: initialRegion } : PAGE_SELECTION,
+  );
   const [leftTab, setLeftTab] = useState<LeftTab>('rend');
   const [cTab, setCTab] = useState<CentreTab>('layout');
   const [gTab, setGTab] = useState<GalleryTab>('regions');

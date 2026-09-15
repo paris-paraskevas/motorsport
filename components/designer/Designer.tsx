@@ -40,6 +40,7 @@ import { SearchHintsEditor } from './SearchHintsEditor';
 import { ApplicationDefinitionEditor } from './ApplicationDefinitionEditor';
 import { ComputationsView } from './ComputationsView';
 import { DataWorkspace } from './DataWorkspace';
+import { DESIGNER_TAB } from '@/components/page/DeveloperToolbar';
 
 // Paddock Developer: the designer's shell in the prototype's shape (2026-09-07,
 // v2.4): the workspace header, the crumbs bar, and for Shared Components a
@@ -314,6 +315,7 @@ export function Designer({
   initialWorkspace = 'shared',
   initialPageId = null,
   initialDetail = null,
+  initialRegion = null,
   series = [],
 }: {
   readOnly: boolean;
@@ -328,6 +330,8 @@ export function Designer({
   initialPageId?: string | null;
   /** That page's detail when the server already loaded it; fetched when absent. */
   initialDetail?: PageDetail | null;
+  /** A region of that page to open on, from `?region=` (P1.7: Quick Edit lands on the region). */
+  initialRegion?: string | null;
   /** Lists the server already loaded, so opening needs no round trip; any list
    *  missing here is fetched. */
   initialLists?: Partial<Record<NavListKey, EditableList>>;
@@ -394,6 +398,8 @@ export function Designer({
   const [workspace, setWorkspace] = useState<Workspace>(initialWorkspace);
   const [catalogueQuery, setCatalogueQuery] = useState('');
   const [openPage, setOpenPage] = useState<string | null>(initialPageId);
+  /** The region the address named (P1.7), for the page it was opened with alone. */
+  const [regionOnce, setRegionOnce] = useState<string | null>(initialRegion);
   const [detail, setDetail] = useState<LoadedDetail>(() =>
     initialDetail ? { state: 'ready', detail: initialDetail } : { state: 'loading' },
   );
@@ -520,9 +526,13 @@ export function Designer({
     }
     window.history.replaceState(null, '', url);
   };
-  // An open page lives in the URL too (`?page=<id>`), fetched when opened.
+  // An open page lives in the URL too (`?page=<id>`), fetched when opened. A
+  // region named on the address (`?region=`, P1.7) belongs to the page that was
+  // opened with it and leaves the address with any page change.
   const openPageDetail = (id: string | null) => {
     setOpenPage(id);
+    // The address's region is spent with the page it came with: a page opened later starts on the page (the reviewer's gap).
+    setRegionOnce(null);
     if (id) {
       setDetail({ state: 'loading' });
       void fetchDetail(id).then(loaded => setDetail(loaded));
@@ -531,8 +541,15 @@ export function Designer({
     const url = new URL(window.location.href);
     if (id) url.searchParams.set('page', id);
     else url.searchParams.delete('page');
+    url.searchParams.delete('region');
     window.history.replaceState(null, '', url);
   };
+  // This tab is the ONE developer tab (P1.7; the operator, 2026-09-15): named so
+  // that the toolbar's links from a running page find it, the way Save and Run's
+  // running tab is found by its name.
+  useEffect(() => {
+    window.name = DESIGNER_TAB;
+  }, []);
 
   const item: CatalogueItem | undefined = selected
     ? CATALOGUE.flatMap(g => g.items).find(i => i.key === selected)
@@ -695,6 +712,7 @@ export function Designer({
               schemes={schemes}
               buildOptions={build.state === 'ready' ? build.options : undefined}
               templates={appearance.state === 'ready' ? appearance.loaded.appearance.templates : undefined}
+              initialRegion={openPage === initialPageId ? regionOnce : null}
               shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
               themeDefault={themeDefault}
               onSaved={next => {
