@@ -299,7 +299,9 @@
    "fixedBy": "runs 6 and 13",
    "acceptance": "The transitional body is hidden from the gallery on rows-served pages; the picker inserts a shortcut; Comment Out excludes at runtime; browser run.",
    "status": "planned",
-   "scopeHash": "c28796d054da"
+   "scopeHash": "c28796d054da",
+   "defaults": "a Show Legacy checkbox in the Gallery's Regions tab, off by default (APEX: the Gallery shows only supported components unless the legacy toggle is on); on, the legacy tile is listed and, where the page cannot take it (served from rows, or its body already placed), inert with the reason in its tip; the picker: an icon at the right of every field that takes shortcuts (Static Content's Text, Header Text, Footer Text) opening a small popover with the shortcuts by key and their current text, a filter, and a live preview line of the field as the page will render it; picking inserts {shortcut:key} at the cursor; the Shortcuts pill row under Text is replaced by the picker (the operator, 2026-09-15: \"replace it\"), so the pane has one way, APEX's; Comment Out: a commentedOut flag on the region (document version 2 kept), Comment Out / Uncomment in the region's context menu (APEX's names), the tree label struck through with the tag commented out, the Layout tile greyed, a Commented Out row beside Build Option in the Configuration group; at runtime the filter that drops an Excluded build option drops a commented-out region too, so the three render sites and the Debug trace take it in one place; one new file, components/designer/TextPicker.tsx with its test (the operator, 2026-09-15: \"yes\")",
+   "needsWord": ""
   },
   {
    "id": "P1.12",
