@@ -44,6 +44,14 @@ describe('TemplatesEditor (the components programme, P1.2)', () => {
     expect(sample()).toContain('font-serif');
     expect(save().disabled).toBe(false);
     expect(screen.getByRole('status').textContent).toBe('Unsaved changes.');
+    // Back to the shipped presets puts every group back; Discard changes puts the loaded document back.
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the shipped presets' }));
+    expect(pressed('Heading style')).toBe('Label');
+    expect(save().disabled).toBe(true);
+    fireEvent.click(within(pills('Heading style')).getByRole('button', { name: 'Headline' }));
+    fireEvent.click(screen.getByRole('button', { name: /Discard changes/ }));
+    expect(pressed('Heading style')).toBe('Label');
+    fireEvent.click(within(pills('Heading style')).getByRole('button', { name: 'Headline' }));
     fireEvent.click(save());
     await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];

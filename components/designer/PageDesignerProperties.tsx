@@ -687,7 +687,9 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           changed: ch(f('templateOptions')),
           htmlFor: fieldId('rtopts'),
           control: (
+            // Keyed by the region, so a dialog open for one region can never write its picks onto another (the reviewer's gap).
             <TemplateOptionsButton
+              key={r.id}
               id={fieldId('rtopts')}
               value={r.templateOptions}
               presets={ctx.templates}

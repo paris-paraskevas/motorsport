@@ -42,6 +42,9 @@ vi.mock('@/lib/design/page-families', () => ({
   familyExtras: async () => <script type="application/ld+json">{'{"@type":"BreadcrumbList"}'}</script>,
 }));
 vi.mock('@/lib/design/shortcuts', () => ({ loadShortcuts: async () => ({ 'times.local': 'All times are local.' }) }));
+// The appearance carries the templates' presets (P1.2); the page resolves every region against them.
+const loadAppearance = vi.fn(async () => SHIPPED_APPEARANCE);
+vi.mock('@/lib/design/appearance', () => ({ loadAppearance: () => loadAppearance() }));
 vi.mock('@/lib/design/lists', async () => {
   const actual = await vi.importActual<typeof import('@/lib/design/lists')>('@/lib/design/lists');
   const field: Record<string, keyof typeof actual.DEFAULT_NAV> = { doors: 'doors', bar: 'bar', 'footer-site': 'footerSite', 'footer-legal': 'footerLegal' };
@@ -62,6 +65,8 @@ vi.mock('@/lib/design/authz-evaluate', async () => {
 
 import CatchAll, { generateMetadata, revalidate } from './page';
 import type { PageRow } from '@/lib/design/pages';
+import { SHIPPED_APPEARANCE } from '@/lib/design/appearance-defaults';
+import { SHIPPED_PRESETS } from '@/lib/design/template-options';
 
 const ANON = { signedIn: false, role: null, author: false, emails: [] };
 const page: PageRow = { id: 'p', path: '/history/monza', name: 'Monza, a history', kind: 'row', group: 'editorial', template: 'paddock-standard', authz: 'public', title: null, rendering: 'cached', indexable: false, comments: null, updatedAt: 'x' };
@@ -106,6 +111,16 @@ describe('the catch-all serving row pages', () => {
     expect(meta.description).toBe('Opened in 1922. All times are local.');
     expect(meta.robots).toEqual({ index: false, follow: true });
     expect(meta.alternates).toEqual({ canonical: 'https://paddock-tracker.com/history/monza' });
+  });
+
+  it('P1.2: a region on Use Template Defaults is drawn with the stored presets, the shipped ones when nothing is stored', async () => {
+    loadLivePage.mockResolvedValue(live());
+    const shipped = renderToStaticMarkup(await CatchAll({ params }));
+    expect(shipped).not.toMatch(/id="region-intro"[^>]*class="[^"]*py-4/);
+    loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: { standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } } });
+    const roomy = renderToStaticMarkup(await CatchAll({ params }));
+    expect(roomy).toMatch(/id="region-intro"[^>]*class="[^"]*py-4/);
+    expect(roomy).toContain('class="space-y-6"');
   });
 
   it('indexes a public page once indexable, never a gated one', async () => {

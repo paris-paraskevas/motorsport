@@ -238,9 +238,12 @@ describe('Template Options (the components programme, P1.2)', () => {
         region('headline', { seq: 20, templateOptions: ['#DEFAULT#', 'HEADING_HEADLINE'] }),
         region('quiet', { seq: 30, templateOptions: ['HEADING_HIDDEN', 'EMPHASIS_MUTED'] }),
         region('ruled', { seq: 40, templateOptions: ['#DEFAULT#', 'RULE_ABOVE', 'WIDTH_READING'] }),
+        region('links', { seq: 50, kind: 'list', listKey: 'footer-site', style: 'links', text: undefined, templateOptions: ['#DEFAULT#', 'HEADING_HIDDEN'] }),
       ],
     };
     const html = renderToStaticMarkup(<RowPageView {...data} document={own} />);
+    // The hidden heading on another kind: a List keeps its title for assistive technology too.
+    expect(markupOf(html, 'links')).toMatch(/<h2 class="sr-only">LINKS<\/h2>/);
     expect(markupOf(html, 'plain')).toMatch(/<h2 class="(?=[^"]*font-mono)(?=[^"]*border-b)[^"]*">PLAIN<\/h2>/);
     expect(markupOf(html, 'plain')).toMatch(/<p class="font-serif text-16 leading-relaxed text-text-muted">/);
     expect(markupOf(html, 'headline')).toMatch(/<h2 class="[^"]*font-serif[^"]*">HEADLINE<\/h2>/);

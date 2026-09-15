@@ -211,6 +211,13 @@ describe('PageDesigner', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(button().textContent).toBe('Use Template Defaults');
     expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
+    // Escape drops the edit the same way, and does not deselect the region behind the dialog.
+    fireEvent.click(button());
+    fireEvent.change(within(screen.getByRole('dialog', { name: 'Template Options' })).getByLabelText('Rule'), { target: { value: 'RULE_BELOW' } });
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(button().textContent).toBe('Use Template Defaults');
+    expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
     // Defaults off, Roomy picked, OK: the button reads the pick, the row carries the marker, Save posts the list.
     fireEvent.click(button());
     const again = screen.getByRole('dialog', { name: 'Template Options' });
