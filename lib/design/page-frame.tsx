@@ -60,7 +60,8 @@ async function loadFrames(): Promise<Map<string, PageFrame> | null> {
       .from('page')
       .select(PAGE_COLUMNS)
       .eq('application_key', PAGE_APPLICATION_KEY)
-      .eq('kind', 'code');
+      .eq('kind', 'code')
+      .is('deleted_at', null);
     if (error || !Array.isArray(data)) return null;
     const value = new Map<string, PageFrame>();
     for (const item of data) {

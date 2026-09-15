@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Lock, Maximize2, Minimize2, Play, Plus, Puzzle, Redo2, RefreshCw, Search, TriangleAlert, Undo2, Wrench, Zap } from 'lucide-react';
-import { EMPTY_DOCUMENT, SHORTCUT_TOKEN, isLegacyBody, parsePageDocument, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
+import { EMPTY_DOCUMENT, RECOVERY_DAYS, SHORTCUT_TOKEN, daysLeft, isLegacyBody, parsePageDocument, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
 import { COMPONENTS } from '@/lib/design/components';
 import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
@@ -75,10 +75,10 @@ const IB =
   'grid h-[30px] w-[30px] shrink-0 place-items-center border border-transparent text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:bg-surface-elevated hover:text-text disabled:cursor-default disabled:opacity-35 disabled:hover:border-transparent disabled:hover:bg-transparent aria-pressed:border-edit aria-pressed:text-edit';
 const GRP = 'flex h-[30px] items-center gap-1 border-r border-border pr-2 mr-0.5 last:border-r-0';
 
-type Busy = 'save' | 'publish' | 'run' | 'delete' | null;
+type Busy = 'save' | 'publish' | 'run' | 'delete' | 'reinstate' | 'purge' | null;
 /** The one browser tab Save and Run opens and reuses (the operator, 2026-09-10: the same working tab every time). */
 const RUN_TAB = 'paddock-run';
-type SheetKind = 'finder' | 'export' | 'history' | 'shortcuts' | 'delete' | null;
+type SheetKind = 'finder' | 'export' | 'history' | 'shortcuts' | 'delete' | 'purge' | null;
 
 function when(iso: string): string {
   const d = new Date(iso);
@@ -154,7 +154,7 @@ function useLayoutMemory(): LayoutMemory {
 export function PageDesigner({
   detail,
   pages,
-  readOnly,
+  readOnly: readOnlyProp,
   lists,
   listCounts,
   assets,
@@ -171,6 +171,8 @@ export function PageDesigner({
   onWorkspace,
   onCreated,
   onDeleted,
+  onReinstated,
+  onPurged,
 }: {
   detail: PageDetail;
   /** What a new region starts with (Component Settings). */
@@ -200,8 +202,12 @@ export function PageDesigner({
   /** Shared Components, optionally straight to one catalogue entry. */
   onWorkspace: (ws: 'shared', sc?: string) => void;
   onCreated: (page: PageRow) => void;
-  /** The page was deleted through the route; the shell drops it and leaves the designer. */
-  onDeleted: (id: string) => void;
+  /** The page was moved to Deleted through the route (P1.12): the row as stored now; the shell lists it under Deleted and leaves the designer. */
+  onDeleted: (page: PageRow) => void;
+  /** A deleted page reinstated through the route: the row as stored now; the designer stays on it, editable again. */
+  onReinstated: (page: PageRow) => void;
+  /** A deleted page removed for good through the route; the shell drops it and leaves the designer. */
+  onPurged: (id: string) => void;
 }) {
   const { page, live, newest, revisions } = detail;
   const code = page.kind === 'code';
@@ -209,6 +215,11 @@ export function PageDesigner({
   // body belongs there); a page served from rows, made here or split, has none.
   const routeFile = code && page.served !== 'rows';
   const pageId = page.id ?? '';
+  // A deleted page (P1.12) opens read-only: nothing on it changes until it is
+  // reinstated. The production gate keeps its own name (readOnlyProp) for the
+  // two actions a deleted page still takes, Reinstate and Delete permanently.
+  const deletedAt = page.deletedAt ?? null;
+  const readOnly = readOnlyProp || deletedAt !== null;
   const number = page.id ? page.id.slice(0, 8) : 'no row';
   const uid = useId();
   // A page whose body the code still draws opens with that body as one
@@ -659,18 +670,58 @@ export function PageDesigner({
     finderWords.every(w => `${p.id!.slice(0, 8)} ${p.name} ${p.path} ${p.group ?? ''}`.toLowerCase().includes(w)),
   );
 
-  /** Delete Page: a page made here goes with its revisions; the row's route says no to a code page. */
+  /** Delete Page (P1.12): a page made here moves to Deleted with its revisions, reinstatable for RECOVERY_DAYS; the row's route says no to a code page. */
   async function deletePage() {
     setBusy('delete');
     try {
       const res = await fetch(`/api/admin/design/pages/${pageId}`, { method: 'DELETE' });
+      const body = (await res.json().catch(() => ({}))) as { error?: string; page?: PageRow };
       if (!res.ok) {
-        const body = (await res.json().catch(() => ({}))) as { error?: string };
         toast(body.error ?? `The page could not be deleted (HTTP ${res.status}).`, 'bad');
         return;
       }
       setSheet(null);
-      onDeleted(pageId);
+      onDeleted(body.page ?? { ...page, deletedAt: new Date().toISOString(), deletedBy: null });
+    } catch {
+      toast('Network error. Try again.', 'bad');
+    } finally {
+      setBusy(null);
+    }
+  }
+  /** Reinstate (P1.12): the one write a deleted page takes; the page comes back as it was. */
+  async function reinstatePage() {
+    setBusy('reinstate');
+    try {
+      const res = await fetch(`/api/admin/design/pages/${pageId}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'reinstate' }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { error?: string; page?: PageRow };
+      if (!res.ok || !body.page) {
+        toast(body.error ?? `The page could not be reinstated (HTTP ${res.status}).`, 'bad');
+        return;
+      }
+      setStatus({ text: 'Reinstated. The page is live at its address again.', cls: 'ok' });
+      onReinstated(body.page);
+    } catch {
+      toast('Network error. Try again.', 'bad');
+    } finally {
+      setBusy(null);
+    }
+  }
+  /** Delete permanently (P1.12): removed for good through the route, refused while a live page names it. */
+  async function purgePage() {
+    setBusy('purge');
+    try {
+      const res = await fetch(`/api/admin/design/pages/${pageId}?purge=1`, { method: 'DELETE' });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        toast(body.error ?? `The page could not be removed (HTTP ${res.status}).`, 'bad');
+        return;
+      }
+      setSheet(null);
+      onPurged(pageId);
     } catch {
       toast('Network error. Try again.', 'bad');
     } finally {
@@ -773,12 +824,20 @@ export function PageDesigner({
     { label: 'History', sub: `${revisions.length} revision${revisions.length === 1 ? '' : 's'}`, run: () => setSheet('history') },
     { label: 'Keyboard Shortcuts', k: 'Alt+Shift+F1', run: () => setSheet('shortcuts') },
     '-',
-    {
-      label: 'Delete Page…',
-      sub: routeFile ? 'the route file is still in the code' : code ? 'the page is still in the code’s registry' : `${revisions.length} revision${revisions.length === 1 ? '' : 's'} go with it`,
-      disabled: readOnly || code,
-      run: () => setSheet('delete'),
-    },
+    // A deleted page (P1.12) offers the two actions it still takes in Delete Page's place.
+    ...(deletedAt !== null
+      ? ([
+          { label: 'Reinstate', sub: 'brings the page back as it was', disabled: readOnlyProp || busy !== null, run: () => void reinstatePage() },
+          { label: 'Delete permanently…', sub: 'removes it for good, now', disabled: readOnlyProp || busy !== null, run: () => setSheet('purge') },
+        ] as MenuEntry[])
+      : ([
+          {
+            label: 'Delete Page…',
+            sub: routeFile ? 'the route file is still in the code' : code ? 'the page is still in the code’s registry' : `${revisions.length} revision${revisions.length === 1 ? '' : 's'} go with it`,
+            disabled: readOnly || code,
+            run: () => setSheet('delete'),
+          },
+        ] as MenuEntry[])),
   ];
   const contextMenu = (atPos: MenuAt, picked: Selection) => {
     // A right-click on a region inside a set of regions acts on the whole set.
@@ -1002,6 +1061,8 @@ export function PageDesigner({
   const hits = searchPage(searchQuery, doc, page, searchOpts);
   const statusText = status
     ? status.text
+    : deletedAt !== null
+      ? `Deleted ${when(deletedAt)} · read-only until reinstated`
     : readOnly
       ? 'Read-only here: edits are made on production.'
       : dirty
@@ -1014,7 +1075,7 @@ export function PageDesigner({
   const selectedName = pe.head.name;
 
   return (
-    <div className="grid h-full min-h-0 grid-rows-[44px_minmax(0,1fr)] text-12-5 text-text" aria-label="Page Designer">
+    <div className={`grid h-full min-h-0 ${deletedAt !== null ? 'grid-rows-[44px_auto_minmax(0,1fr)]' : 'grid-rows-[44px_minmax(0,1fr)]'} text-12-5 text-text`} aria-label="Page Designer">
       {/* ---------------------------------------------------------- toolbar */}
       <div className="flex min-w-0 items-center gap-1.5 overflow-hidden border-b border-border-strong bg-surface px-2.5">
         <div className={GRP}>
@@ -1109,6 +1170,17 @@ export function PageDesigner({
           </button>
         </div>
       </div>
+
+      {/* A deleted page's banner (P1.12): what happened, the window, the way back. */}
+      {deletedAt !== null && (
+        <div role="note" aria-label="Deleted page" className="flex min-w-0 items-center gap-2 border-b border-border-strong bg-edit-dim px-3 py-1.5 text-12 text-text">
+          <TriangleAlert size={13} className="shrink-0 text-[color:var(--amber,#e0a52d)]" />
+          <span className="min-w-0 truncate">
+            Deleted on {when(deletedAt).slice(0, 10)} by {page.deletedBy ?? 'an administrator'} ·{' '}
+            {daysLeft(deletedAt) === 0 ? 'past its recovery window, can be removed for good' : `${daysLeft(deletedAt)} of ${RECOVERY_DAYS} days left`} · read-only until reinstated (Utilities › Reinstate)
+          </span>
+        </div>
+      )}
 
       {/* ------------------------------------------------------------ panes */}
       <div
@@ -1394,8 +1466,21 @@ export function PageDesigner({
           buttons={[{ label: 'Cancel' }, { label: 'Delete this page', danger: true, disabled: busy !== null, run: () => void deletePage() }]}
         >
           <p className="m-0 px-[18px] py-3 text-13 text-text">
-            The page and its {revisions.length} revision{revisions.length === 1 ? '' : 's'} are removed, and readers find nothing at {page.path} from then on.
-            The header, the footer and the phone bar are shared and stay. This cannot be undone.
+            The page moves to Deleted: readers find nothing at {page.path} from then on, and its address stays reserved. Reinstate it from the pages list within {RECOVERY_DAYS} days;
+            after that it can be removed for good, with its {revisions.length} revision{revisions.length === 1 ? '' : 's'}. The header, the footer and the phone bar are shared and stay.
+          </p>
+        </Sheet>
+      )}
+      {sheet === 'purge' && (
+        <Sheet
+          title="Delete permanently"
+          sub={`${page.name} · ${page.path}`}
+          onClose={() => setSheet(null)}
+          buttons={[{ label: 'Cancel' }, { label: 'Delete permanently', danger: true, disabled: busy !== null, run: () => void purgePage() }]}
+        >
+          <p className="m-0 px-[18px] py-3 text-13 text-text">
+            The page is removed for good with its {revisions.length} revision{revisions.length === 1 ? '' : 's'}, and {page.path} is free for a new page. A menu entry naming it goes with it.
+            Refused while a live page names it. This cannot be undone.
           </p>
         </Sheet>
       )}

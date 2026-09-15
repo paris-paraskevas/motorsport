@@ -103,6 +103,38 @@ describe('Designer keeps the selection in the URL', () => {
     expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
   });
 
+  it('lists the deleted pages behind a Deleted button, and opens a deleted page read-only with its banner (P1.12)', () => {
+    window.history.replaceState(null, '', '/admin/designer?ws=builder');
+    const gone: PageRow = {
+      id: 'a1b2c3d4-0000-4000-8000-000000000021',
+      path: '/history/imola',
+      name: 'Imola',
+      kind: 'row',
+      served: 'rows',
+      group: 'editorial',
+      template: 'paddock-standard',
+      authz: 'public',
+      title: null,
+      rendering: 'cached',
+      indexable: false,
+      comments: null,
+      updatedAt: STAMP,
+      deletedAt: '2026-09-13T10:00:00.000+00:00',
+      deletedBy: 'user_admin',
+    };
+    render(<Designer readOnly={false} who="Test · Administrator · production" initialWorkspace="builder" initialPages={pagesFromCode()} initialDeleted={[gone]} {...loaded} />);
+    expect(screen.queryByText('Imola')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /^Deleted · 1/ }));
+    expect(screen.getByText('Imola')).toBeTruthy();
+    cleanup();
+    const detail: PageDetail = { page: gone, live: null, newest: null, revisions: [] };
+    render(
+      <Designer readOnly={false} who="Test · Administrator · production" initialWorkspace="builder" initialPages={pagesFromCode()} initialDeleted={[gone]} initialPageId={gone.id} initialDetail={detail} {...loaded} />,
+    );
+    expect(screen.getByRole('note', { name: 'Deleted page' }).textContent).toMatch(/Deleted on 2026-09-13/);
+    expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
   it('opens a page the server handed over in the Page Designer, and the back arrow returns to all pages', async () => {
     window.history.replaceState(null, '', '/admin/designer?ws=builder&page=a1b2c3d4-0000-4000-8000-000000000010');
     const page: PageRow = {

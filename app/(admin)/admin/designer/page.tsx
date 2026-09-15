@@ -13,7 +13,7 @@ import { loadShortcutsForEditing } from '@/lib/design/shortcuts';
 import { loadSearchHintsForEditing } from '@/lib/design/search-hints';
 import { loadApplicationForEditing } from '@/lib/design/application';
 import { getMediaBucket, loadAssetsForEditing } from '@/lib/design/assets';
-import { loadPagesForEditing } from '@/lib/design/pages';
+import { loadDeletedPages, loadPagesForEditing } from '@/lib/design/pages';
 import { loadPageDetail } from '@/lib/design/page-revisions';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { DesignerLoader } from '@/components/designer/DesignerLoader';
@@ -44,6 +44,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     initialShortcuts,
     initialAssets,
     initialPages,
+    initialDeleted,
     initialSearchHints,
     initialApplication,
     seriesMeta,
@@ -61,6 +62,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     loadShortcutsForEditing(),
     loadAssetsForEditing(),
     loadPagesForEditing(),
+    loadDeletedPages(),
     loadSearchHintsForEditing(),
     loadApplicationForEditing(),
     loadAllSeriesMeta(),
@@ -93,6 +95,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialAssets={initialAssets}
       mediaConfigured={getMediaBucket() !== null}
       initialPages={initialPages}
+      initialDeleted={initialDeleted}
       initialWorkspace={params.ws === 'builder' || initialDetail ? 'builder' : params.ws === 'data' ? 'data' : 'shared'}
       initialPageId={initialDetail ? initialDetail.page.id : null}
       initialDetail={initialDetail}

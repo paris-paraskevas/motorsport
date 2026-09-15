@@ -11,6 +11,9 @@ import {
   patternMatches,
   refRows,
   rowPagePathProblem,
+  RECOVERY_DAYS,
+  daysLeft,
+  purgeDueAt,
   overlappingRegions,
   rowMates,
   rowsAt,
@@ -346,5 +349,18 @@ describe('row page paths', () => {
     expect(rowPagePathProblem('/history/monza', code, ['/history/monza'])).toBe('a page with this path exists already');
     expect(rowPagePathProblem('/history/monza', code)).toBeNull();
     expect(rowPagePathProblem('/a/b/c/d/e/f/g', code)).toMatch(/six deep/);
+    // A deleted page holds its address until it is purged (P1.12).
+    expect(rowPagePathProblem('/history/monza', code, [], ['/history/monza'])).toBe('a deleted page holds this address: reinstate it or delete it permanently');
+    expect(rowPagePathProblem('/history/imola', code, ['/history/spa'], ['/history/monza'])).toBeNull();
+  });
+
+  it('the recovery window (P1.12): thirty days from the deletion, the days left rounded up and never below zero', () => {
+    expect(RECOVERY_DAYS).toBe(30);
+    expect(purgeDueAt('2026-09-13T10:00:00.000Z')).toBe('2026-10-13T10:00:00.000Z');
+    expect(daysLeft('2026-09-13T10:00:00.000Z', Date.parse('2026-09-15T10:00:00.000Z'))).toBe(28);
+    expect(daysLeft('2026-09-13T10:00:00.000Z', Date.parse('2026-09-15T09:00:00.000Z'))).toBe(29);
+    expect(daysLeft('2026-08-01T10:00:00.000Z', Date.parse('2026-09-15T10:00:00.000Z'))).toBe(0);
+    // Postgres's own stamp form reads too; the half second past the hour rounds the window up.
+    expect(daysLeft('2026-09-13 10:00:00.5+00', Date.parse('2026-09-15T10:00:00.000Z'))).toBe(29);
   });
 });

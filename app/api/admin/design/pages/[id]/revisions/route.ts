@@ -73,6 +73,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
           { status: 409 },
         );
       }
+      // A deleted page takes no save (P1.12, migration 20260915130000): Reinstate first.
+      if (/page deleted/i.test(error.message)) return NextResponse.json({ error: 'This page is deleted: reinstate it first.' }, { status: 409 });
       // 'no such row page' before migration 20260909040000, 'no such page' after it.
       if (/no such (row )?page/i.test(error.message)) return new Response('not found', { status: 404 });
       if (error.code === '23503' || /foreign key/i.test(error.message)) {

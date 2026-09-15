@@ -312,8 +312,10 @@
    "scope": "Deleting a page removes it from every menu, breadcrumb and list entry that names it; soft delete → reinstate → purge with a recovery window.",
    "fixedBy": "runs 6–7",
    "acceptance": "A deleted page leaves no dangling entry; Reinstate restores it; test.",
-   "status": "planned",
-   "scopeHash": "85eb378ea11d"
+   "status": "started",
+   "scopeHash": "85eb378ea11d",
+   "defaults": "one slot, three PRs in order: A soft delete, reinstate, purge (a migration adding deleted_at and deleted_by to page, design_save_page_revision refusing a deleted page, design_purge_page as the one write path for a purge, refused while any page's LIVE revision names the page and deleting the page's list entries with it; every reader of page skips deleted rows; DELETE soft-deletes and returns the row, DELETE ?purge=1 purges, POST {action: reinstate} reinstates, PUT and a revision save refuse a deleted page; a Deleted view in the pages list with the days left, Reinstate, Delete permanently and an explicit Remove n expired pages button (nothing is removed for good without a click; the scan's 'when the list next opens' tightened on the plan critic's finding); a deleted page opens read-only with a banner and Reinstate; a deleted page's address stays reserved until the purge, the create route and the dialog saying so; a 30-day window), B1 row pages as destinations in the lists (page:<id> keys, NavEntry.href carried by the loader, the shell's lists hiding a deleted page's entry while deleted, the Lists editor's picker and three states, the lists route accepting a live page), B2 buttons and go effects to pages with Named by (RowPageData.pages at the three render sites, the pickers, a publish naming a deleted page refused, drafts permissive); the migration applied only on 'apply 20260915130000' with the operator present, before any deploy of the branch; two new files with the plan's approval: the migration and components/designer/PagesList.test.tsx; code pages stay undeletable until their family leaves the code; nothing readers see changes until a page is deleted or named",
+   "needsWord": ""
   }
  ]
 }

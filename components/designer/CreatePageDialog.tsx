@@ -76,11 +76,14 @@ export function TemplateThumb({ document, className }: { document: PageDocument;
 // opening starts fresh at step 1 with no leftover fields.
 export function CreatePageDialog({
   pages,
+  deleted = [],
   onClose,
   onCreated,
 }: {
   /** Every page listed, so the path check knows the stored row pages. */
   pages: PageRow[];
+  /** The deleted pages (P1.12): their addresses stay theirs until they are removed for good. */
+  deleted?: PageRow[];
   onClose: () => void;
   onCreated: (page: PageRow) => void;
 }) {
@@ -107,7 +110,7 @@ export function CreatePageDialog({
 
   const template = pageTemplate(key) ?? PAGE_TEMPLATES[0];
   const rowPaths = pages.filter(p => p.kind === 'row').map(p => p.path);
-  const pathProblem = path ? rowPagePathProblem(path, CODE_PAGES.map(p => p.path), rowPaths) : 'needs a path';
+  const pathProblem = path ? rowPagePathProblem(path, CODE_PAGES.map(p => p.path), rowPaths, deleted.map(p => p.path)) : 'needs a path';
   const nameProblem = !name.trim() ? 'needs a name' : name.length > PAGE_NAME_MAX ? `a name is at most ${PAGE_NAME_MAX} characters` : null;
 
   const choose = (t: PageTemplate) => {

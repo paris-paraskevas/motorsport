@@ -261,14 +261,15 @@ async function fetchApplication(): Promise<LoadedApplication> {
 type LoadedPages =
   | { state: 'loading' }
   | { state: 'error'; message: string }
-  | { state: 'ready'; pages: PageRow[] };
+  /** The live pages, and the deleted ones apart (P1.12: the pages list's Deleted view). */
+  | { state: 'ready'; pages: PageRow[]; deleted: PageRow[] };
 
 async function fetchPages(): Promise<LoadedPages> {
   try {
     const res = await fetch('/api/admin/design/pages', { cache: 'no-store' });
     if (!res.ok) return { state: 'error', message: `The pages could not be loaded (HTTP ${res.status}).` };
-    const d = (await res.json()) as { pages: PageRow[] };
-    return { state: 'ready', pages: d.pages };
+    const d = (await res.json()) as { pages: PageRow[]; deleted?: PageRow[] };
+    return { state: 'ready', pages: d.pages, deleted: d.deleted ?? [] };
   } catch {
     return { state: 'error', message: 'The pages could not be loaded: network error.' };
   }
@@ -312,6 +313,7 @@ export function Designer({
   initialSearchHints,
   initialApplication,
   initialPages,
+  initialDeleted = null,
   initialWorkspace = 'shared',
   initialPageId = null,
   initialDetail = null,
@@ -324,6 +326,8 @@ export function Designer({
   initialSelected?: string | null;
   /** The pages the server already loaded; fetched when absent. */
   initialPages?: PageRow[] | null;
+  /** The deleted pages the server already loaded (P1.12); none when absent. */
+  initialDeleted?: PageRow[] | null;
   /** The workspace to open on, from `?ws=` on the page. */
   initialWorkspace?: Workspace;
   /** A page to open in the App Builder, from `?page=` on the page. */
@@ -387,7 +391,7 @@ export function Designer({
     initialAssets ? { state: 'ready', assets: initialAssets, mediaConfigured } : { state: 'loading' },
   );
   const [pages, setPages] = useState<LoadedPages>(() =>
-    initialPages ? { state: 'ready', pages: initialPages } : { state: 'loading' },
+    initialPages ? { state: 'ready', pages: initialPages, deleted: initialDeleted ?? [] } : { state: 'loading' },
   );
   const [searchHints, setSearchHints] = useState<LoadedSearchHints>(() =>
     initialSearchHints ? { state: 'ready', hints: initialSearchHints } : { state: 'loading' },
@@ -719,7 +723,7 @@ export function Designer({
               themeDefault={themeDefault}
               onSaved={next => {
                 setDetail({ state: 'ready', detail: next });
-                setPages(s => (s.state === 'ready' ? { state: 'ready', pages: s.pages.map(p => (p.id && p.id === next.page.id ? next.page : p)) } : s));
+                setPages(s => (s.state === 'ready' ? { ...s, pages: s.pages.map(p => (p.id && p.id === next.page.id ? next.page : p)) } : s));
               }}
               onOpenPage={id => openPageDetail(id)}
               onBack={filter => {
@@ -732,11 +736,20 @@ export function Designer({
                 selectWorkspace(ws);
               }}
               onCreated={page => {
-                setPages(s => (s.state === 'ready' ? { state: 'ready', pages: [...s.pages, page] } : s));
+                setPages(s => (s.state === 'ready' ? { ...s, pages: [...s.pages, page] } : s));
                 if (page.id) openPageDetail(page.id);
               }}
-              onDeleted={id => {
-                setPages(s => (s.state === 'ready' ? { state: 'ready', pages: s.pages.filter(p => p.id !== id) } : s));
+              // Delete Page moves the row to Deleted (P1.12) and returns to the list; Reinstate brings it back in place; a purge drops it.
+              onDeleted={page => {
+                setPages(s => (s.state === 'ready' ? { ...s, pages: s.pages.filter(p => p.id !== page.id), deleted: [page, ...s.deleted.filter(p => p.id !== page.id)] } : s));
+                openPageDetail(null);
+              }}
+              onReinstated={page => {
+                setPages(s => (s.state === 'ready' ? { ...s, pages: [...s.pages.filter(p => p.id !== page.id), page], deleted: s.deleted.filter(p => p.id !== page.id) } : s));
+                setDetail(d => (d.state === 'ready' ? { state: 'ready', detail: { ...d.detail, page } } : d));
+              }}
+              onPurged={id => {
+                setPages(s => (s.state === 'ready' ? { ...s, deleted: s.deleted.filter(p => p.id !== id) } : s));
                 openPageDetail(null);
               }}
             />
@@ -765,13 +778,16 @@ export function Designer({
           {pages.state === 'ready' && (
             <PagesList
               pages={pages.pages}
+              deleted={pages.deleted}
               initialFilter={pagesFilter}
               readOnly={readOnly}
               onOpen={id => openPageDetail(id)}
               onCreated={page => {
-                setPages(s => (s.state === 'ready' ? { state: 'ready', pages: [...s.pages, page] } : s));
+                setPages(s => (s.state === 'ready' ? { ...s, pages: [...s.pages, page] } : s));
                 if (page.id) openPageDetail(page.id);
               }}
+              onReinstated={page => setPages(s => (s.state === 'ready' ? { ...s, pages: [...s.pages.filter(p => p.id !== page.id), page], deleted: s.deleted.filter(p => p.id !== page.id) } : s))}
+              onPurged={ids => setPages(s => (s.state === 'ready' ? { ...s, deleted: s.deleted.filter(p => !p.id || !ids.includes(p.id)) } : s))}
               onOpenShared={sc => {
                 select(sc);
                 selectWorkspace('shared');

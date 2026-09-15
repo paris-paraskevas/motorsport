@@ -32,7 +32,9 @@ async function readLivePage(path: string): Promise<LivePage | null> {
       .select(PAGE_COLUMNS)
       .eq('application_key', PAGE_APPLICATION_KEY)
       .eq('path', path)
-      .eq('kind', 'row');
+      .eq('kind', 'row')
+      // A deleted page is not served (P1.12): its address answers 404 until it is reinstated.
+      .is('deleted_at', null);
     if (pageRes.error) return null;
     const page = pageFromRow(((pageRes.data ?? []) as unknown[])[0]);
     if (!page || !page.id || page.kind !== 'row') return null;
@@ -79,6 +81,8 @@ async function readLiveFrame(path: string): Promise<LiveFrame | null> {
       .eq('page.application_key', PAGE_APPLICATION_KEY)
       .eq('page.path', path)
       .eq('page.kind', 'code')
+      // No route deletes a code page today; the filter keeps the readers of one mind (P1.12).
+      .is('page.deleted_at', null)
       .not('published_at', 'is', null)
       .order('published_at', { ascending: false })
       .limit(1);
@@ -113,7 +117,8 @@ async function readLiveComposed(pattern: string): Promise<LiveComposed | null> {
       .select(PAGE_COLUMNS)
       .eq('application_key', PAGE_APPLICATION_KEY)
       .eq('path', pattern)
-      .eq('kind', 'code');
+      .eq('kind', 'code')
+      .is('deleted_at', null);
     if (pageRes.error) return null;
     const page = pageFromRow(((pageRes.data ?? []) as unknown[])[0]);
     if (!page || !page.id) return null;
@@ -161,7 +166,8 @@ export const loadRevisionPreview = cache(async function readRevisionPreview(revi
       | { id?: unknown; page_id?: unknown; created_at?: unknown; published_at?: unknown; document?: unknown }
       | undefined;
     if (!row || typeof row.page_id !== 'string' || row.created_at == null) return null;
-    const pageRes = await betDb().from('page').select(PAGE_COLUMNS).eq('application_key', PAGE_APPLICATION_KEY).eq('id', row.page_id);
+    // A deleted page has no preview either (P1.12); Reinstate brings both back.
+    const pageRes = await betDb().from('page').select(PAGE_COLUMNS).eq('application_key', PAGE_APPLICATION_KEY).eq('id', row.page_id).is('deleted_at', null);
     if (pageRes.error) return null;
     const page = pageFromRow(((pageRes.data ?? []) as unknown[])[0]);
     // A row page, or a code page served from rows (R4.1): both render from a
