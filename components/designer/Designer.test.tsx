@@ -168,7 +168,21 @@ describe('Designer keeps the selection in the URL', () => {
       await waitFor(() => expect(screen.getByLabelText('Page Designer')).toBeTruthy());
       expect(within(screen.getByLabelText('Property Editor')).getByText('a1b2c3d4: Monza, a history')).toBeTruthy();
       expect(within(screen.getByLabelText('Property Editor')).queryByLabelText('Region title')).toBeNull();
-      fireEvent.click(screen.getByRole('button', { name: 'Back to all pages' }));
+      // P1.10: Create ▾ › Page Group… › show on a group returns to the pages list filtered by it.
+      fireEvent.click(screen.getByRole('button', { name: 'Create ▾' }));
+      fireEvent.click(screen.getByRole('menuitem', { name: /^Page Group…/ }));
+      const sheet = screen.getByRole('dialog', { name: 'Page Groups' });
+      fireEvent.click(within(within(sheet).getByText('Calendar').closest('tr')!).getByRole('button', { name: 'show' }));
+      // The heading's suffix is an inline span, so the accessible name may carry no space before the dot.
+      expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock\s*· Calendar$/ })).toBeTruthy();
+      expect(screen.getByRole('button', { name: /^Page Groups\s*· Calendar$/ })).toBeTruthy();
+      // Monza is editorial: filtered out of the Calendar list (the code pages of the fixture carry no row, so they have no Open button to assert).
+      expect(screen.queryByRole('button', { name: 'Open Monza, a history' })).toBeNull();
+      expect(window.location.search).toBe('?ws=builder');
+      // The list's own Page Groups button shows every page again.
+      fireEvent.click(screen.getByRole('button', { name: /^Page Groups/ }));
+      fireEvent.click(within(within(screen.getByRole('dialog', { name: 'Page Groups' })).getByText('All pages').closest('tr')!).getByRole('button', { name: 'show' }));
+      expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock$/ })).toBeTruthy();
     } finally {
       vi.unstubAllGlobals();
     }

@@ -23,7 +23,7 @@ import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import { CATALOGUE, LIST_COPY, type CatalogueItem } from './catalogue';
 import { SharedRail } from './Rails';
-import { PagesList } from './PagesList';
+import { PagesList, type PageFilter } from './PagesList';
 import { PageDesigner } from './PageDesigner';
 import { ListEditor } from './ListEditor';
 import { ListsEditor } from './ListsEditor';
@@ -400,6 +400,8 @@ export function Designer({
   const [openPage, setOpenPage] = useState<string | null>(initialPageId);
   /** The region the address named (P1.7), for the page it was opened with alone. */
   const [regionOnce, setRegionOnce] = useState<string | null>(initialRegion);
+  /** The pages list's filter when the designer returns to it (Create › Page Group… › show, P1.10). */
+  const [pagesFilter, setPagesFilter] = useState<PageFilter>('all');
   const [detail, setDetail] = useState<LoadedDetail>(() =>
     initialDetail ? { state: 'ready', detail: initialDetail } : { state: 'loading' },
   );
@@ -720,7 +722,10 @@ export function Designer({
                 setPages(s => (s.state === 'ready' ? { state: 'ready', pages: s.pages.map(p => (p.id && p.id === next.page.id ? next.page : p)) } : s));
               }}
               onOpenPage={id => openPageDetail(id)}
-              onBack={() => openPageDetail(null)}
+              onBack={filter => {
+                if (filter) setPagesFilter(filter);
+                openPageDetail(null);
+              }}
               onWorkspace={(ws, sc) => {
                 if (sc) select(sc);
                 selectWorkspace(ws);
@@ -759,6 +764,7 @@ export function Designer({
           {pages.state === 'ready' && (
             <PagesList
               pages={pages.pages}
+              initialFilter={pagesFilter}
               readOnly={readOnly}
               onOpen={id => openPageDetail(id)}
               onCreated={page => {

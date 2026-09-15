@@ -48,6 +48,7 @@ import { PropertyPane } from './PropertyPane';
 import { attrsOf, attrsProblem, groupsFor, type AttrsDraft, type PropsContext } from './PageDesignerProperties';
 import { Menu, Sheet, Toasts, anchorOf, useToasts, type MenuAt, type MenuEntry } from './DesignerMenu';
 import { CreatePageDialog } from './CreatePageDialog';
+import { PageGroupsSheet, type PageFilter } from './PagesList';
 import { SITE_URL } from '@/lib/site';
 
 // The Page Designer (Paddock Designer v2.4, docs/prototypes/paddock-designer-
@@ -194,7 +195,8 @@ export function PageDesigner({
   /** The detail as stored after a save, a publish or a reload. */
   onSaved: (detail: PageDetail) => void;
   onOpenPage: (id: string) => void;
-  onBack: () => void;
+  /** Back to the pages list; with a filter, the list opens on that group (Create › Page Group…, P1.10). */
+  onBack: (filter?: PageFilter) => void;
   /** Shared Components, optionally straight to one catalogue entry. */
   onWorkspace: (ws: 'shared', sc?: string) => void;
   onCreated: (page: PageRow) => void;
@@ -267,6 +269,8 @@ export function PageDesigner({
   const [menu, setMenu] = useState<{ at: MenuAt; entries: MenuEntry[] } | null>(null);
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [creating, setCreating] = useState(false);
+  // Create › Page Group… (P1.10): the pages list's sheet, opened here on the page's group.
+  const [groupsOpen, setGroupsOpen] = useState(false);
   const [busy, setBusy] = useState<Busy>(null);
   const [finderQuery, setFinderQuery] = useState('');
   const [finderRecent, setFinderRecent] = useState(false);
@@ -692,8 +696,30 @@ export function PageDesigner({
       setNumInput(number);
     }
   };
+  // Create › Developer Comment (APEX: the page's Comments attribute, "internal
+  // notes to other developers"): the page selected, the Advanced group opened,
+  // the Comments field focused once the pane has drawn it (the pane opens a
+  // focused group during the render; insertShortcut's pattern for the focus).
+  const developerComment = () => {
+    select(PAGE_SELECTION, { group: 'Advanced' });
+    requestAnimationFrame(() => document.getElementById(`${uid}-comments`)?.focus());
+  };
+  // APEX: the toolbar's Create menu, UX map (page-designer-toolbar): Page, Copy
+  // Page, Breadcrumb Region, Shared Component, Page Group, Developer Comment,
+  // Issue, in that order (P1.10). Copy Page arrives with Phase 4; Breadcrumb
+  // Region waits for the Breadcrumb component (the ledger's changes line of
+  // 2026-09-15 on the slot's "P2.17"); Issue has no counterpart, APEX's Team
+  // Development is not planned. Below the separator, OURS: APEX creates
+  // regions from the tree and the gallery and dynamic actions from the tree;
+  // the designer offers them here as well.
   const createMenu = (): MenuEntry[] => [
     { label: 'Page…', run: () => setCreating(true) },
+    { label: 'Copy Page', sub: 'arrives with Phase 4', disabled: true, run: () => {} },
+    { label: 'Breadcrumb Region', sub: 'until the Breadcrumb component', disabled: true, run: () => {} },
+    { label: 'Shared Component…', run: () => onWorkspace('shared') },
+    { label: 'Page Group…', run: () => setGroupsOpen(true) },
+    { label: 'Developer Comment', sub: 'the page’s Comments', run: developerComment },
+    { label: 'Issue', sub: 'no counterpart', disabled: true, run: () => {} },
     '-',
     { head: 'Region' },
     ...(['static', 'image', 'list', 'button'] as RegionKind[]).map(k => ({
@@ -704,8 +730,6 @@ export function PageDesigner({
     })),
     '-',
     { label: 'Dynamic Action', sub: effective.kind === 'region' ? 'click on this region' : undefined, disabled: readOnly, run: () => createAction(effective.kind === 'region' ? { region: effective.id } : undefined) },
-    '-',
-    { label: 'Shared Component…', run: () => onWorkspace('shared') },
   ];
   const utilitiesMenu = (): MenuEntry[] => [
     {
@@ -983,7 +1007,8 @@ export function PageDesigner({
       {/* ---------------------------------------------------------- toolbar */}
       <div className="flex min-w-0 items-center gap-1.5 overflow-hidden border-b border-border-strong bg-surface px-2.5">
         <div className={GRP}>
-          <button type="button" className={IB} title={tip('Application home')} aria-label="Back to all pages" onClick={onBack}>
+          {/* Called without the click event: onBack's argument is a group filter (Create › Page Group…), never the event. */}
+          <button type="button" className={IB} title={tip('Application home')} aria-label="Back to all pages" onClick={() => onBack()}>
             <ArrowLeft size={14} />
           </button>
           <div className="flex h-[30px] items-center border border-border-strong">
@@ -1269,6 +1294,18 @@ export function PageDesigner({
             setCreating(false);
             onCreated(p);
           }}
+        />
+      )}
+      {groupsOpen && (
+        // The page's group as the Property Editor's draft shows it (Identification › Page Group), saved or not.
+        <PageGroupsSheet
+          pages={pages}
+          current={attrs.group}
+          onShow={f => {
+            setGroupsOpen(false);
+            onBack(f);
+          }}
+          onClose={() => setGroupsOpen(false)}
         />
       )}
       {conflict && (
