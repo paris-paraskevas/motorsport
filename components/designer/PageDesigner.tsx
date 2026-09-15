@@ -228,6 +228,9 @@ export function PageDesigner({
   const [leftTab, setLeftTab] = useState<LeftTab>('rend');
   const [cTab, setCTab] = useState<CentreTab>('layout');
   const [gTab, setGTab] = useState<GalleryTab>('regions');
+  // Show Legacy (P1.11; APEX: the Gallery lists the supported components unless
+  // the legacy toggle is on): a moment of the gallery, not a preference.
+  const [showLegacy, setShowLegacy] = useState(false);
   const [treeQuery, setTreeQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpts, setSearchOpts] = useState({ matchCase: false, regex: false });
@@ -306,9 +309,17 @@ export function PageDesigner({
   // page since the components programme opened it (R2a).
   const home: Position = 'body';
   const open = openPositions(page);
-  // The components this page may still take: the transitional body only on a
-  // page whose route file still draws its body, and only once.
-  const componentTiles: ComponentTile[] = COMPONENTS.filter(c => !c.legacy || (routeFile && !doc.regions.some(isLegacyBody))).map(c => ({ key: c.key, name: c.name, desc: c.holds }));
+  // The components this page may take (P1.11: the Gallery's Show Legacy). A
+  // legacy component is listed where the page can take it, a code page whose
+  // route file still draws its body and holds none yet; with Show Legacy on it
+  // is listed everywhere, inert with the reason where the page cannot take it.
+  const legacyReason = !routeFile ? 'this page is served from rows; the code draws no body here' : doc.regions.some(isLegacyBody) ? 'this page already holds its body' : null;
+  const componentTiles: ComponentTile[] = COMPONENTS.filter(c => !c.legacy || legacyReason === null || showLegacy).map(c => ({
+    key: c.key,
+    name: c.name,
+    desc: c.holds,
+    ...(c.legacy ? { legacy: true as const, ...(legacyReason ? { inert: legacyReason } : {}) } : {}),
+  }));
   const attrsDirty = JSON.stringify(attrs) !== JSON.stringify(attrsOf(page));
   const dirty = docDirty || attrsDirty;
   const unpublishedNewest = newest !== null && newest.id !== (live?.id ?? null);
@@ -441,21 +452,6 @@ export function PageDesigner({
     removeEffect: (actionId, index) => {
       commit(patchAction(doc, actionId, a => ({ ...a, do: a.do.filter((_, j) => j !== index) })), 'Action deleted.');
       select({ kind: 'action', id: actionId });
-    },
-    insertShortcut: (regionId, key) => {
-      const el = document.getElementById(`${uid}-text`) as HTMLTextAreaElement | null;
-      const r = doc.regions.find(x => x.id === regionId);
-      if (!r || r.kind !== 'static') return;
-      const start = el ? el.selectionStart : r.text.length;
-      const end = el ? el.selectionEnd : start;
-      const token = `{shortcut:${key}}`;
-      commit(patchRegion(doc, regionId, x => (x.kind === 'static' ? { ...x, text: x.text.slice(0, start) + token + x.text.slice(end) } : x)), 'Shortcut inserted.');
-      if (el) {
-        requestAnimationFrame(() => {
-          el.focus();
-          el.setSelectionRange(start + token.length, start + token.length);
-        });
-      }
     },
   };
   /** Several regions at once (a Ctrl+click set): one commit, the page selected after. */
@@ -699,7 +695,7 @@ export function PageDesigner({
   // Create › Developer Comment (APEX: the page's Comments attribute, "internal
   // notes to other developers"): the page selected, the Advanced group opened,
   // the Comments field focused once the pane has drawn it (the pane opens a
-  // focused group during the render; insertShortcut's pattern for the focus).
+  // focused group during the render; the text picker's pattern for the focus).
   const developerComment = () => {
     select(PAGE_SELECTION, { group: 'Advanced' });
     requestAnimationFrame(() => document.getElementById(`${uid}-comments`)?.focus());
@@ -807,6 +803,21 @@ export function PageDesigner({
         { label: 'Move Up', disabled: readOnly || i <= 0, run: () => act.move(r.id, -1) },
         { label: 'Move Down', disabled: readOnly || i >= siblings.length - 1, run: () => act.move(r.id, 1) },
         { label: r.hidden ? 'Show at first' : 'Hide at first', sub: r.hidden ? '' : 'a dynamic action shows it', disabled: readOnly, run: () => commit(patchRegion(doc, r.id, x => ({ ...x, hidden: !x.hidden })), r.hidden ? 'Shown at first.' : 'Hidden at first.') },
+        // APEX: Comment Out / Uncomment (run 13): the region stays with all it holds and leaves the page when it runs (P1.11).
+        {
+          label: r.commentedOut ? 'Uncomment' : 'Comment Out',
+          sub: r.commentedOut ? '' : 'excluded when the page runs',
+          disabled: readOnly,
+          run: () =>
+            commit(
+              patchRegion(doc, r.id, x => {
+                const next: typeof x = { ...x };
+                delete next.commentedOut;
+                return r.commentedOut ? next : { ...next, commentedOut: true };
+              }),
+              r.commentedOut ? `${regionName(r)} uncommented.` : `${regionName(r)} commented out.`,
+            ),
+        },
         '-',
         { label: 'Delete', k: 'Del', disabled: readOnly, run: () => act.remove(r.id) },
       );
@@ -1252,6 +1263,8 @@ export function PageDesigner({
             onTab={setGTab}
             disabled={readOnly}
             components={componentTiles}
+            showLegacy={showLegacy}
+            onShowLegacy={setShowLegacy}
             tooltips={tooltips}
             onAdd={kind => act.addRegion(kind, home)}
             onAddComponent={key => act.addComponent(key, home)}

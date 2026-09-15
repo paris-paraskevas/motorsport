@@ -267,6 +267,37 @@ describe('Header Text, Footer Text and the Build Option (the components programm
   });
 });
 
+describe('Comment Out (the components programme, P1.11)', () => {
+  const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'body', ...over });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+
+  it('reads commentedOut true, and leaves it out when false, absent or not a boolean, as hidden and newRow are read', () => {
+    const on = parsePageDocument(doc([region({ commentedOut: true })]));
+    expect(on.problems).toEqual([]);
+    expect(on.value.regions[0]).toMatchObject({ commentedOut: true });
+    for (const raw of [region({}), region({ commentedOut: false }), region({ commentedOut: 'yes' })]) {
+      const off = parsePageDocument(doc([raw]));
+      expect(off.problems).toEqual([]);
+      expect(off.value.regions[0]).not.toHaveProperty('commentedOut');
+    }
+  });
+
+  it('applyBuildOptions drops a commented-out region as it drops an Excluded one, keeps the rest, and returns the document itself when none is', () => {
+    const parsed = parsePageDocument(
+      doc([region({ id: 'a' }), region({ id: 'b', commentedOut: true }), region({ id: 'c', buildOption: 'weather' }), region({ id: 'd', commentedOut: true, buildOption: 'social' })]),
+    ).value;
+    expect(applyBuildOptions(parsed, {}).regions.map(r => r.id)).toEqual(['a', 'c']);
+    expect(applyBuildOptions(parsed, { weather: 'exclude' }).regions.map(r => r.id)).toEqual(['a']);
+    const none = parsePageDocument(doc([region({ id: 'a' }), region({ id: 'c', buildOption: 'weather' })])).value;
+    expect(applyBuildOptions(none, {})).toBe(none);
+  });
+
+  it('a commented-out region keeps naming its rows in the refs projection: the write path stores the document as drawn, not as run', () => {
+    const parsed = parsePageDocument(doc([region({ id: 'a', commentedOut: true, text: 'Hello {shortcut:times.local}', authz: 'signed_in' })])).value;
+    expect(documentRefs(parsed)).toMatchObject({ shortcuts: ['times.local'], authz: ['signed_in'] });
+  });
+});
+
 describe('Template Options on a region (the components programme, P1.2)', () => {
   const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'body', ...over });
   const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });

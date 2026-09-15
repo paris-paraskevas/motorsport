@@ -502,13 +502,93 @@ describe('PageDesigner', () => {
     expect(onSaved).toHaveBeenCalledWith(current);
   });
 
-  it('inserts a shortcut into the text at the cursor', () => {
+  it('the picker beside Text inserts a shortcut at the cursor with a Preview and the caret lands after it (P1.11); the one beside Header Text inserts too; the pill row is gone', async () => {
     mount();
     fireEvent.click(tile('Static Content: A century of speed'));
     const text = screen.getByLabelText('Region text') as HTMLTextAreaElement;
-    text.setSelectionRange(text.value.length, text.value.length);
-    fireEvent.click(screen.getByRole('button', { name: 'times.local' }));
-    expect((screen.getByLabelText('Region text') as HTMLTextAreaElement).value).toBe('Opened in 1922.{shortcut:times.local}');
+    text.focus();
+    text.setSelectionRange(7, 7);
+    expect(screen.queryByRole('button', { name: 'times.local' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Insert a shortcut into Text' }));
+    const pop = screen.getByRole('dialog', { name: 'Shortcuts for Text' });
+    expect(within(pop).getByLabelText('Preview').textContent).toBe('Opened in 1922.');
+    fireEvent.mouseEnter(within(pop).getByRole('option', { name: /times\.local/ }));
+    expect(within(pop).getByLabelText('Preview').textContent).toBe('Opened All times are shown in your local time zone.in 1922.');
+    fireEvent.click(within(pop).getByRole('option', { name: /times\.local/ }));
+    expect((screen.getByLabelText('Region text') as HTMLTextAreaElement).value).toBe('Opened {shortcut:times.local}in 1922.');
+    expect(status()).toMatch(/Shortcut inserted\./);
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Region text')));
+    expect((screen.getByLabelText('Region text') as HTMLTextAreaElement).selectionStart).toBe('Opened {shortcut:times.local}'.length);
+    // Header Text takes the same picker; its group is folded at first.
+    fireEvent.click(screen.getByRole('button', { name: 'Header and Footer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Insert a shortcut into Header Text' }));
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Shortcuts for Header Text' })).getByRole('option', { name: /times\.local/ }));
+    expect((screen.getByLabelText('Region header text') as HTMLInputElement).value).toBe('{shortcut:times.local}');
+  });
+
+  it('Comment Out from the region’s menu strikes it through in the tree, tags its tile, sets Configuration › Commented Out to Yes and saves commentedOut; Uncomment clears it (P1.11)', async () => {
+    const { onSaved } = mount();
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Comment Out/ }));
+    expect(status()).toMatch(/A century of speed commented out\./);
+    const tree = () => screen.getByRole('tree', { name: 'Rendering' });
+    const label = within(tree()).getByText('A century of speed');
+    expect(label.className).toContain('line-through');
+    expect(within(label.parentElement!).getByText('commented out')).toBeTruthy();
+    expect(within(tile('Static Content: A century of speed')).getByText('commented out')).toBeTruthy();
+    // A right-click alone leaves the selection as it was; the click selects the region for the Property Editor.
+    fireEvent.click(tile('Static Content: A century of speed'));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.click(within(pe).getByRole('button', { name: 'Configuration' }));
+    expect(within(within(pe).getByRole('group', { name: 'Region commented out' })).getByRole('button', { name: 'Yes' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const body = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    expect(body.document.regions.find(r => r.id === 'intro')).toMatchObject({ commentedOut: true });
+    expect(body.document.regions.find(r => r.id === 'more')).not.toHaveProperty('commentedOut');
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Uncomment' }));
+    expect(status()).toMatch(/A century of speed uncommented\./);
+    expect(within(tree()).getByText('A century of speed').className).not.toContain('line-through');
+    expect(within(tile('Static Content: A century of speed')).queryByText('commented out')).toBeNull();
+    expect(within(within(pe).getByRole('group', { name: 'Region commented out' })).getByRole('button', { name: 'No' }).getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('Show Legacy (P1.11): off, a rows-served page lists no transitional body; on, the tile is listed inert with the reason; a code page holding its body says so, and lists it live once the body is gone', () => {
+    mount();
+    const gallery = screen.getByLabelText('Gallery');
+    fireEvent.click(within(gallery).getByRole('button', { name: 'Components' }));
+    expect(screen.queryByRole('button', { name: 'Gallery: Body as the code draws it' })).toBeNull();
+    const show = within(gallery).getByLabelText('Show Legacy') as HTMLInputElement;
+    expect(show.checked).toBe(false);
+    fireEvent.click(show);
+    const body = screen.getByRole('button', { name: 'Gallery: Body as the code draws it' });
+    expect(body.getAttribute('aria-disabled')).toBe('true');
+    expect(body.getAttribute('draggable')).toBe('false');
+    expect(body.getAttribute('tabindex')).toBe('-1');
+    expect(within(body).getByText('this page is served from rows; the code draws no body here')).toBeTruthy();
+    expect(within(body).getByText('legacy')).toBeTruthy();
+    fireEvent.doubleClick(body);
+    expect(screen.queryByRole('button', { name: 'Component: Body as the code draws it' })).toBeNull();
+    fireEvent.contextMenu(body);
+    expect(screen.queryByRole('menu')).toBeNull();
+    fireEvent.click(show);
+    expect(screen.queryByRole('button', { name: 'Gallery: Body as the code draws it' })).toBeNull();
+    fireEvent.click(within(gallery).getByRole('button', { name: 'Regions' }));
+    expect(within(gallery).queryByLabelText('Show Legacy')).toBeNull();
+    cleanup();
+    mount({ page: codePage, live: null, newest: null, revisions: [] });
+    const g2 = screen.getByLabelText('Gallery');
+    fireEvent.click(within(g2).getByRole('button', { name: 'Components' }));
+    expect(screen.queryByRole('button', { name: 'Gallery: Body as the code draws it' })).toBeNull();
+    fireEvent.click(within(g2).getByLabelText('Show Legacy'));
+    expect(within(screen.getByRole('button', { name: 'Gallery: Body as the code draws it' })).getByText('this page already holds its body')).toBeTruthy();
+    fireEvent.contextMenu(tile('Component: Body as the code draws it'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Delete/ }));
+    expect(screen.getByRole('button', { name: 'Gallery: Body as the code draws it' }).getAttribute('aria-disabled')).toBe('false');
+    fireEvent.click(within(g2).getByLabelText('Show Legacy'));
+    expect(screen.getByRole('button', { name: 'Gallery: Body as the code draws it' }).getAttribute('aria-disabled')).toBe('false');
+    expect(within(screen.getByRole('button', { name: 'Gallery: Body as the code draws it' })).getByText('legacy')).toBeTruthy();
   });
 
   it('Save and Run Page publishes what is unpublished and opens the live page in the one working tab (R5)', async () => {

@@ -459,7 +459,7 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
   // A warning, not an error: an empty page saves, runs and publishes as its
   // title alone, as an APEX page does (operator, 2026-09-09: "i should always
   // be able to run page").
-  if (!code && !doc.regions.some(r => r.position === 'body' && !r.hidden)) {
+  if (!code && !doc.regions.some(r => r.position === 'body' && !r.hidden && !r.commentedOut)) {
     out.push({ level: 'warn', text: 'The Body has no region showing. The page runs as its title alone.', sel: { kind: 'position', id: 'body' } });
   }
   const file = servedByFile(page);
@@ -482,6 +482,8 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
     if (r.hidden && !doc.actions.some(a => a.do.some(e => e.action !== 'go' && e.region === r.id))) {
       out.push({ level: 'warn', text: `${regionName(r)} is hidden at first and no dynamic action shows it.`, sel: { kind: 'region', id: r.id }, group: 'Advanced' });
     }
+    // Comment Out (P1.11): a note, so Messages lists what the running page leaves out.
+    if (r.commentedOut) out.push({ level: 'info', text: `${regionName(r)} is commented out and leaves the page when it runs.`, sel: { kind: 'region', id: r.id }, group: 'Configuration' });
   }
   // Two regions declared on one row cannot share a column (R5, the operator's
   // walkthrough of 2026-09-10): the page wraps the later one; the document says
@@ -549,7 +551,17 @@ export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { 
   };
   scan(PAGE_SELECTION, `Page · ${page.name}`, { name: page.name, path: page.path, title: page.title, group: page.group, authorization: page.authz, comments: page.comments });
   for (const r of doc.regions) {
-    const base = { name: regionName(r), type: REGION_KIND_LABELS[r.kind].label, position: PD_POSITION[r.position].label, column: r.column, span: r.span, authorization: r.authz, hidden: r.hidden ? 'hidden at first' : null, show: showText(r) || null };
+    const base = {
+      name: regionName(r),
+      type: REGION_KIND_LABELS[r.kind].label,
+      position: PD_POSITION[r.position].label,
+      column: r.column,
+      span: r.span,
+      authorization: r.authz,
+      hidden: r.hidden ? 'hidden at first' : null,
+      commented: r.commentedOut ? 'commented out' : null,
+      show: showText(r) || null,
+    };
     const src =
       r.kind === 'static'
         ? { text: r.text }

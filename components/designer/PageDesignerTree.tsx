@@ -42,6 +42,8 @@ interface NodeSpec {
   icon?: ReactNode;
   /** A mono tag at the right: a count, a span, "shared". */
   tag?: string;
+  /** Struck through: a commented-out region (P1.11; APEX draws it so). */
+  struck?: boolean;
   cls?: 'grp' | 'pos' | 'locked';
   marker?: 'err' | 'warn';
   sel?: Selection;
@@ -101,14 +103,15 @@ export function PageDesignerTree({
 
   const regionNodes = (pos: Position): NodeSpec[] =>
     doc.regions
-      .filter(r => r.position === pos && matches(regionName(r), REGION_KIND_LABELS[r.kind].label))
+      .filter(r => r.position === pos && matches(regionName(r), REGION_KIND_LABELS[r.kind].label, r.commentedOut ? 'commented out' : undefined))
       .map(r => {
         const Icon = KIND_ICON[r.kind];
         return {
           key: `region:${r.id}`,
           label: regionName(r),
           icon: <Icon size={11} />,
-          tag: pos === 'body' ? spanName(r.span) : r.hidden ? 'hidden' : undefined,
+          tag: r.commentedOut ? 'commented out' : pos === 'body' ? spanName(r.span) : r.hidden ? 'hidden' : undefined,
+          struck: r.commentedOut === true,
           marker: markers[`region:${r.id}`],
           sel: { kind: 'region', id: r.id },
           drag: { type: 'region', id: r.id },
@@ -326,7 +329,7 @@ export function PageDesignerTree({
             {hasKids ? open ? <ChevronDown size={10} /> : <ChevronRight size={10} /> : null}
           </button>
           {n.icon && <span className="grid w-3.5 shrink-0 place-items-center text-text-faint">{n.icon}</span>}
-          <span className="min-w-0 flex-1 truncate normal-case tracking-normal">{n.label}</span>
+          <span className={`min-w-0 flex-1 truncate normal-case tracking-normal ${n.struck ? 'line-through text-text-faint' : ''}`}>{n.label}</span>
           {n.marker && <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${n.marker === 'err' ? 'bg-negative' : 'bg-[color:var(--amber,#e0a52d)]'}`} aria-label={n.marker === 'err' ? 'error' : 'warning'} />}
           {n.tag && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.1em] text-text-faint">{n.tag}</span>}
         </div>

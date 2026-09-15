@@ -39,6 +39,7 @@ const home: PageDocument = {
     text('members', 'Members', { seq: 70, authz: 'signed_in' }),
     text('join', 'Join', { seq: 80, show: 'signed-in' }),
     text('weather', 'Weather', { seq: 90, buildOption: 'weather' }),
+    text('old', 'Old note', { seq: 95, commentedOut: true }),
   ],
 };
 const monza: PageRow = { ...page, id: 'a1b2c3d4-0000-4000-8000-000000000010', path: '/history/monza', name: 'Monza, a history', kind: 'row', served: undefined };
@@ -92,8 +93,11 @@ describe('the Debug trace (P1.9)', () => {
     expect(r!.entries.find(e => e.phase === 'authz:members')!.text).toBe('Members: scheme signed_in refused for you');
     expect(r!.entries.find(e => e.phase === 'show:join')!.text).toBe('Join hidden by the rule signed-in');
     expect(r!.entries.find(e => e.phase === 'build:weather')!.text).toBe('Weather excluded by weather');
+    // Comment Out (P1.11) leaves at the same step, named apart from the build options.
+    expect(r!.entries.find(e => e.phase === 'build:old')!.text).toBe('Old note commented out');
+    expect(r!.entries.find(e => e.phase === 'build' && e.text.includes('excluded by a build option'))!.text).toBe('1 region excluded by a build option, 1 commented out');
     expect(r!.entries.find(e => e.phase === 'show' && e.text.includes('hidden by a show rule'))!.text).toContain('1 region hidden by a show rule (signed in: false');
-    expect(r!.entries.find(e => e.phase === 'resolve' && e.text.startsWith('Home'))!.text).toBe('Home: 9 regions, 1 dynamic action');
+    expect(r!.entries.find(e => e.phase === 'resolve' && e.text.startsWith('Home'))!.text).toBe('Home: 10 regions, 1 dynamic action');
     expect(r).toMatchObject({ cid: 'cid12345', level: 6, page: '/' });
     expect(r!.totalMs).toBeGreaterThanOrEqual(0);
   });

@@ -86,13 +86,13 @@ export async function tracePage(target: TraceTarget, level: DebugLevel, cid: str
     if (!shown.regions.some(x => x.id === r.id)) d.note(6, `show:${r.id}`, `${name(r)} hidden by the rule ${r.show ?? 'always'}`);
   }
 
-  // Build options (P1.3): an Excluded region leaves before it is drawn.
+  // Build options (P1.3) and Comment Out (P1.11): an Excluded or a commented-out region leaves before it is drawn, at this one step.
   const options = await d.step(6, 'build', 'the build options', () => loadBuildOptions());
   const built = applyBuildOptions(shown, options);
-  d.note(4, 'build', `${plural(shown.regions.length - built.regions.length, 'region')} excluded by a build option`);
-  for (const r of shown.regions) {
-    if (!built.regions.some(x => x.id === r.id)) d.note(6, `build:${r.id}`, `${name(r)} excluded by ${r.buildOption ?? 'its build option'}`);
-  }
+  const dropped = shown.regions.filter(r => !built.regions.some(x => x.id === r.id));
+  const commented = dropped.filter(r => r.commentedOut).length;
+  d.note(4, 'build', `${plural(dropped.length - commented, 'region')} excluded by a build option, ${commented} commented out`);
+  for (const r of dropped) d.note(6, `build:${r.id}`, r.commentedOut ? `${name(r)} commented out` : `${name(r)} excluded by ${r.buildOption ?? 'its build option'}`);
 
   // What the regions name: shortcuts, photos, lists.
   const refs = documentRefs(built);

@@ -36,6 +36,7 @@ import { BUILD_OPTION_DEFAULTS, BUILD_OPTION_KEYS, type BuildOptionKey, type Bui
 import { REGION_TEMPLATES, type TemplatePresets } from '@/lib/design/template-options';
 import { FIELD, PBTN, Pills, Ro, TEXTAREA, YesNo, type PropGroup } from './PropertyPane';
 import { TemplateOptionsButton } from './TemplateOptionsDialog';
+import { TextPicker, type Cursor } from './TextPicker';
 import {
   PD_POSITION,
   SPAN_CHOICES,
@@ -131,7 +132,6 @@ export interface PropsContext {
     removeAction: (id: string) => void;
     addEffect: (actionId: string) => void;
     removeEffect: (actionId: string, index: number) => void;
-    insertShortcut: (regionId: string, key: string) => void;
   };
   /** Stable ids for the fields, so the designer can focus the name (`rname`) and read the text cursor (`text`). */
   fieldId: (name: string) => string;
@@ -184,6 +184,23 @@ function textAttr(r: Region, key: 'headerText' | 'footerText', value: string): R
   const next: Region = { ...r };
   delete next[key];
   return value === '' ? next : { ...next, [key]: value };
+}
+/** The picker's pick (P1.11): the token spliced into the field at the cursor
+ *  the picker read when it opened, one history entry, the caret put after the
+ *  token once the field has re-rendered (the next frame, as Comments' focus). */
+function insertToken(p: Patch, key: 'text' | 'headerText' | 'footerText', id: string, token: string, at: Cursor) {
+  p('Shortcut inserted.', x => {
+    if (key === 'text') return x.kind === 'static' ? { ...x, text: x.text.slice(0, at.start) + token + x.text.slice(at.end) } : x;
+    const current = x[key] ?? '';
+    return textAttr(x, key, current.slice(0, at.start) + token + current.slice(at.end));
+  });
+  const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
+  if (el) {
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(at.start + token.length, at.start + token.length);
+    });
+  }
 }
 
 function patchAction(ctx: PropsContext, id: string, label: string, fn: (a: DynamicAction) => DynamicAction) {
@@ -429,34 +446,23 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       changed: ch(f('text')),
       htmlFor: fieldId('text'),
       control: (
-        <textarea
-          id={fieldId('text')}
-          value={r.text}
-          rows={8}
-          maxLength={STATIC_TEXT_MAX}
-          disabled={readOnly}
-          aria-label="Region text"
-          className={`${TEXTAREA} font-sans text-12`}
-          onChange={e => p('Text updated.', x => (x.kind === 'static' ? { ...x, text: e.target.value } : x))}
-        />
-      ),
-      note: `${r.text.length.toLocaleString()} / ${STATIC_TEXT_MAX.toLocaleString()} · a shortcut inserts a house-style line at the cursor`,
-      help: 'Your words as paragraphs. {shortcut:key} inserts a shortcut so the line never goes stale.',
-    });
-    source.push({
-      label: 'Shortcuts',
-      common: true,
-      control: (
-        <div className="flex flex-wrap gap-1">
-          {shortcuts.length === 0 && <span className="text-11 text-text-faint">None yet: add one under Shared Components › Shortcuts.</span>}
-          {shortcuts.map(s => (
-            <button key={s.key} type="button" disabled={readOnly} title={s.text} className={PBTN} onClick={() => act.insertShortcut(r.id, s.key)}>
-              {s.key}
-            </button>
-          ))}
+        // The picker at the right (P1.11; APEX's picker icon on a text attribute) replaces the row of shortcut pills the pane had (the operator, 2026-09-15: "replace it").
+        <div className="flex items-start gap-1">
+          <textarea
+            id={fieldId('text')}
+            value={r.text}
+            rows={8}
+            maxLength={STATIC_TEXT_MAX}
+            disabled={readOnly}
+            aria-label="Region text"
+            className={`${TEXTAREA} font-sans text-12`}
+            onChange={e => p('Text updated.', x => (x.kind === 'static' ? { ...x, text: e.target.value } : x))}
+          />
+          <TextPicker field="Text" fieldId={fieldId('text')} shortcuts={shortcuts} value={r.text} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'text', fieldId('text'), token, at)} />
         </div>
       ),
-      help: 'House-style fragments kept once under Shared Components; inserted by key, substituted when the page renders.',
+      note: `${r.text.length.toLocaleString()} / ${STATIC_TEXT_MAX.toLocaleString()} · the picker inserts a shortcut at the cursor`,
+      help: 'Your words as paragraphs. {shortcut:key} inserts a shortcut, a house-style line kept once under Shared Components and substituted when the page renders, so the line never goes stale; the picker at the right lists them with a preview.',
     });
   }
   if (r.kind === 'image') {
@@ -718,16 +724,19 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           changed: ch(f('headerText')),
           htmlFor: fieldId('rheader'),
           control: (
-            <input
-              id={fieldId('rheader')}
-              type="text"
-              value={r.headerText ?? ''}
-              maxLength={REGION_TEXT_MAX}
-              disabled={readOnly}
-              aria-label="Region header text"
-              className={FIELD}
-              onChange={e => p('Header Text updated.', x => textAttr(x, 'headerText', e.target.value))}
-            />
+            <div className="flex items-start gap-1">
+              <input
+                id={fieldId('rheader')}
+                type="text"
+                value={r.headerText ?? ''}
+                maxLength={REGION_TEXT_MAX}
+                disabled={readOnly}
+                aria-label="Region header text"
+                className={FIELD}
+                onChange={e => p('Header Text updated.', x => textAttr(x, 'headerText', e.target.value))}
+              />
+              <TextPicker field="Header Text" fieldId={fieldId('rheader')} shortcuts={shortcuts} value={r.headerText ?? ''} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'headerText', fieldId('rheader'), token, at)} />
+            </div>
           ),
           note: 'Shown above the region’s content.',
           help: 'A line of plain text drawn above the region’s body (APEX: Header Text). {shortcut:key} inserts a shortcut; nothing else is substituted and no markup is read.',
@@ -737,16 +746,19 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           changed: ch(f('footerText')),
           htmlFor: fieldId('rfooter'),
           control: (
-            <input
-              id={fieldId('rfooter')}
-              type="text"
-              value={r.footerText ?? ''}
-              maxLength={REGION_TEXT_MAX}
-              disabled={readOnly}
-              aria-label="Region footer text"
-              className={FIELD}
-              onChange={e => p('Footer Text updated.', x => textAttr(x, 'footerText', e.target.value))}
-            />
+            <div className="flex items-start gap-1">
+              <input
+                id={fieldId('rfooter')}
+                type="text"
+                value={r.footerText ?? ''}
+                maxLength={REGION_TEXT_MAX}
+                disabled={readOnly}
+                aria-label="Region footer text"
+                className={FIELD}
+                onChange={e => p('Footer Text updated.', x => textAttr(x, 'footerText', e.target.value))}
+              />
+              <TextPicker field="Footer Text" fieldId={fieldId('rfooter')} shortcuts={shortcuts} value={r.footerText ?? ''} disabled={readOnly} onInsert={(token, at) => insertToken(p, 'footerText', fieldId('rfooter'), token, at)} />
+            </div>
           ),
           note: 'e.g. Times are local to you.',
           help: 'A line of plain text drawn below the region’s body (APEX: Footer Text). {shortcut:key} inserts a shortcut.',
@@ -844,6 +856,7 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
   const show = common(t => t.show ?? 'always');
   const authz = common(t => t.authz ?? 'public');
   const buildOption = common(t => t.buildOption ?? '');
+  const commentedOut = common(t => t.commentedOut ?? false);
   // The columns the row's other regions hold (R5, the operator's walkthrough of
   // 2026-09-10): a pick never lands on a neighbour, and stays inside the twelve.
   // For several targets, what fits every one of them on its own row.
@@ -1000,6 +1013,26 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
           ),
           note: noteOr(buildOption, 'Excluded options render nothing, on every page.'),
           help: 'The feature switch this region belongs to (APEX: Configuration › Build Option). Set the switch to Exclude under Shared Components → Build Options and every region tied to it leaves the running site, without being deleted.',
+        },
+        {
+          label: 'Commented Out',
+          changed: ch(t => t.commentedOut ?? false),
+          control: (
+            <YesNo
+              label="Region commented out"
+              value={commentedOut}
+              disabled={readOnly}
+              onPick={v =>
+                p(v ? 'Commented out.' : 'Uncommented.', x => {
+                  const next: Region = { ...x };
+                  delete next.commentedOut;
+                  return v ? { ...next, commentedOut: true } : next;
+                })
+              }
+            />
+          ),
+          note: noteOr(commentedOut, 'Yes leaves the region out when the page runs; it stays here, struck through, with all it holds.'),
+          help: 'APEX: Comment Out / Uncomment, the region’s context menu. A commented-out region is kept on the page and left out at runtime, so a piece can be set aside and brought back without being deleted.',
         },
       ],
     },

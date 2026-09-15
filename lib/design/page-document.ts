@@ -27,6 +27,11 @@
 // identifiers, one per group at most; lib/design/template-options.ts), and an
 // absent list means Use Template Defaults alone, so every stored region reads
 // as it did.
+//
+// P1.11 adds Comment Out (APEX: Comment Out / Uncomment on a page component),
+// still version 2: `commentedOut: true` keeps a region on the page with all it
+// holds and leaves it out when the page runs, through the same filter that
+// drops an Excluded build option; absent means the region runs.
 
 import { resolveDestination } from './destinations';
 import { findComponent, parseSettings, type SettingValue } from './components';
@@ -121,10 +126,12 @@ export function applyShow(doc: PageDocument, ctx: ShowContext): PageDocument {
 }
 
 /** The document with the regions whose Build Option is Excluded left out
- *  (APEX: Configuration › Build Option). A region with no option, or one the
+ *  (APEX: Configuration › Build Option), and the commented-out ones with them
+ *  (APEX: Comment Out, P1.11): the one filter the render sites and the Debug
+ *  trace apply before a region is drawn. A region with no option, or one the
  *  statuses do not name, stays: Include is the fallback, as in the loader. */
 export function applyBuildOptions(doc: PageDocument, options: Readonly<Partial<BuildOptions>>): PageDocument {
-  const regions = doc.regions.filter(r => r.buildOption === undefined || options[r.buildOption] !== 'exclude');
+  const regions = doc.regions.filter(r => !r.commentedOut && (r.buildOption === undefined || options[r.buildOption] !== 'exclude'));
   return regions.length === doc.regions.length ? doc : { ...doc, regions };
 }
 
@@ -160,6 +167,11 @@ export interface RegionBase {
    *  and option identifiers, one per group at most, canonical order; absent
    *  means Use Template Defaults alone. Resolved against the template's presets at render. */
   templateOptions?: string[];
+  /** Commented out (APEX: Comment Out / Uncomment): kept on the page with all it
+   *  holds, struck through in the designer, left out when the page runs; absent
+   *  means it runs. Its refs stay in the projection: the write path stores the
+   *  document as drawn, so a row it names cannot vanish while it is on the page. */
+  commentedOut?: true;
 }
 export interface StaticRegion extends RegionBase {
   kind: 'static';
@@ -287,6 +299,7 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
   if (span === null) problems.push(`${who}: the span must be 1 to ${column === null ? COLUMNS : COLUMNS + 1 - column}`);
   const newRow = r.newRow === true;
   const hidden = r.hidden === true;
+  const commentedOut = r.commentedOut === true;
   let authz: string | null = null;
   if (r.authz !== undefined && r.authz !== null) {
     if (typeof r.authz === 'string' && SLUG.test(r.authz)) authz = r.authz;
@@ -324,6 +337,7 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
       ...(footerText ? { footerText } : {}),
       ...(buildOption ? { buildOption } : {}),
       ...(templateOptions ? { templateOptions } : {}),
+      ...(commentedOut ? { commentedOut: true as const } : {}),
     };
     if (kind === 'component') {
       const key = typeof r.component === 'string' ? r.component : '';
@@ -476,7 +490,10 @@ export interface DocumentRefs {
 }
 
 /** Every row a document depends on, by key, unique and sorted: the refs
- *  projection the write path stores beside the revision. */
+ *  projection the write path stores beside the revision. Read from the document
+ *  as drawn, commented-out regions included (the write path never applies the
+ *  build filter), so a row such a region names stays undeletable while the
+ *  region is on the page. */
 export function documentRefs(doc: PageDocument): DocumentRefs {
   const lists = new Set<string>();
   const assets = new Set<string>();
