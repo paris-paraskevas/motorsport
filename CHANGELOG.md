@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.114 — 2026-09-15
+
+### Records — session 49 closed: P1.11's evidence, the session-50 handoff, the day in SCHEDULE, four Inbox items
+
+Records only, no code. `docs/plan/ledger.json`: P1.11 done with its evidence (#994, 1.0.113, merged 12:37Z, prod 12:42Z; the tests, the browser run, the reviewer, the review page); `docs/plan/components-programme.md` re-rendered. `docs/HANDOFF.md` LATEST (session 49): the heading, the session-50 prompt (Phase 1's state, eight slots done and P1.12 the last scan; the board's new address; the recipe's additions from the P1.11 run: the dev server stopped by its port's PID, the HTML-404 check, the run tab's viewport, the paused frames, aria-disabled and force; the reviewer's cost range and the second-commit rule), what shipped, the decisions, the questions (the documentRefs gap added). `SCHEDULE.md`: the session-49 block's fifth and sixth lines and the active time. `IDEAS.md`: four Inbox items. The progress board regenerated at a new address (658220a0-176c-404e-9172-a2222ccb18c3), the previous one having stopped answering to the account in use.
+
 ## 1.0.113 — 2026-09-15
 
 ### Designer — P1.11: the Gallery's Show Legacy, the text picker with a preview, Comment Out and Uncomment
