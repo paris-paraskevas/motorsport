@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.109 — 2026-09-15
+
+### Hooks — the agent-model guard reads the session's force when a call names no model
+
+Every subagent launch was denied at the start of session 49: the Agent tool no longer carries a `model` field (a subagent's model now comes from its type's definition, and `.claude/settings.json` forces every subagent onto `CLAUDE_CODE_SUBAGENT_MODEL=sonnet` with `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`), so `.claude/hooks/agent-model-guard.mjs` found no model in the call and denied it, Explore and general-purpose alike. Rule 7 is unchanged (every subagent on Sonnet or Haiku); the hook now allows a call that names no model when the session's force is on and names an allowed model, reading the same environment the session runs in (verified: a child process of the session sees both variables), and still denies a call that names a disallowed model whatever the force says. `.claude/hooks/test.mjs`: the runner takes an environment per case (set or blanked), and the guard's cases cover no model without the force (deny), the force on sonnet or haiku (allow), sonnet named but not forced (deny), the force on fable (deny), opus named under the force (deny), sonnet named (allow), a fork and another tool (allow). Gates: the hooks' test 31/31; no site code changed.
+
 ## 1.0.108 — 2026-09-10
 
 ### Records — session 48 closed: the ledger's evidence for P1.9 and R5b, the handoff for session 49, the Inbox
