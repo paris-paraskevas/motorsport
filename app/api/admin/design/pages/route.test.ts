@@ -9,6 +9,10 @@ vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePa
 const resetPageFrameMemo = vi.fn();
 vi.mock('@/lib/design/page-frame', () => ({ resetPageFrameMemo: () => resetPageFrameMemo() }));
 
+// A deleted, reinstated or purged page may be named by the shell's lists (P1.12 B1): the layout is revalidated and this isolate's lists memo dropped.
+const resetNavListsMemo = vi.fn();
+vi.mock('@/lib/design/lists', () => ({ resetNavListsMemo: () => resetNavListsMemo() }));
+
 // A fake database: `rows` answers the reads of the live `page` rows, `deleted`
 // the reads that ask for the deleted ones (a `.not('deleted_at', …)` step,
 // P1.12); `rpc` records every function call and answers design_create_page
@@ -119,6 +123,7 @@ describe('/api/admin/design/pages', () => {
     deleted = { data: [deletedFresh, deletedExpired], error: null };
     revalidatePath.mockClear();
     resetPageFrameMemo.mockClear();
+    resetNavListsMemo.mockClear();
     vi.useFakeTimers({ now: NOW, toFake: ['Date'] });
     process.env.PADDOCK_ENV = 'production';
   });
@@ -219,6 +224,8 @@ describe('/api/admin/design/pages', () => {
     expect(rpc.mock.calls).toEqual([['design_purge_page', { p_application: 'paddock', p_page_id: EXPIRED }]]);
     expect(resetPageFrameMemo).toHaveBeenCalledTimes(1);
     expect(revalidatePath).toHaveBeenCalledWith('/history/zolder');
+    expect(revalidatePath).toHaveBeenCalledWith('/', 'layout');
+    expect(resetNavListsMemo).toHaveBeenCalledTimes(1);
     rpc.mockClear();
     purgeAnswers = { [EXPIRED]: { data: null, error: { message: 'referenced: Home' } } };
     const held = await del('?expired=1');

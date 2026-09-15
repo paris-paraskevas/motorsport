@@ -74,6 +74,14 @@ describe('addEntry', () => {
     expect(addEntry(bar, 'news', 'bar')).toBe(bar);
     expect(addEntry(four, 'https://evil.example', 'menu')).toBe(four);
   });
+
+  it('appends a row page by its key with the page’s name and path as the entry’s href, given the pages; refuses it without them (P1.12 B1)', () => {
+    const MONZA = 'a1b2c3d4-0000-4000-8000-000000000010';
+    const pages = { [MONZA]: { path: '/history/monza', name: 'Monza, a history' } };
+    const menu = addEntry([four[0]], `page:${MONZA}`, 'menu', pages);
+    expect(menu[1]).toEqual({ label: 'Monza, a history', dest: `page:${MONZA}`, href: '/history/monza' });
+    expect(addEntry([four[0]], `page:${MONZA}`, 'menu')).toEqual([four[0]]);
+  });
 });
 
 describe('sameEntries', () => {

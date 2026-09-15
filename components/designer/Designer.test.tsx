@@ -103,6 +103,41 @@ describe('Designer keeps the selection in the URL', () => {
     expect(screen.getByRole('heading', { level: 2, name: /^Application 100 · Paddock/ })).toBeTruthy();
   });
 
+  it('a list editor offers the row pages under Pages, adds one with the page’s name and path so the preview links to it, and marks an entry whose page is deleted (P1.12 B1)', () => {
+    const MONZA = 'a1b2c3d4-0000-4000-8000-000000000010';
+    const IMOLA = 'a1b2c3d4-0000-4000-8000-000000000021';
+    const base: PageRow = { id: MONZA, path: '/history/monza', name: 'Monza, a history', kind: 'row', served: 'rows', group: 'editorial', template: 'paddock-standard', authz: 'public', title: null, rendering: 'cached', indexable: false, comments: null, updatedAt: STAMP };
+    const imola: PageRow = { ...base, id: IMOLA, path: '/history/imola', name: 'Imola', deletedAt: '2026-09-13T10:00:00.000+00:00', deletedBy: 'user_admin' };
+    const withImola = { ...lists, doors: { ...lists.doors!, entries: [...DEFAULT_NAV.doors, { label: 'Imola', dest: `page:${IMOLA}`, href: '/history/imola' }] } };
+    render(<Designer readOnly={false} who="Test · Administrator · production" initialPages={[...pagesFromCode(), base]} initialDeleted={[imola]} {...loaded} initialLists={withImola} />);
+    fireEvent.click(screen.getAllByRole('button', { name: /^Navigation Menu/ })[0]);
+    expect(screen.getByRole('heading', { level: 2, name: 'Navigation Menu' })).toBeTruthy();
+    const add = screen.getByLabelText('Add an entry from the catalogue') as HTMLSelectElement;
+    const options = Array.from(add.options).map(o => o.textContent?.trim());
+    expect(options).toContain('Monza, a history · /history/monza');
+    expect(options.some(o => o?.startsWith('Imola'))).toBe(false);
+    // The stored entry to the deleted page is kept, named for what it is.
+    expect(screen.getByText('deleted page')).toBeTruthy();
+    fireEvent.change(add, { target: { value: `page:${MONZA}` } });
+    const rows = screen.getAllByRole('row').filter(r => within(r).queryByLabelText(/Destination of entry/));
+    const last = rows[rows.length - 1];
+    expect((within(last).getByLabelText(/Destination of entry/) as HTMLSelectElement).value).toBe(`page:${MONZA}`);
+    expect((within(last).getByLabelText(/Label of entry/) as HTMLInputElement).value).toBe('Monza, a history');
+    const preview = screen.getByRole('navigation', { name: 'Doors' });
+    expect(within(preview).getByRole('link', { name: 'Monza, a history' }).getAttribute('href')).toBe('/history/monza');
+    expect(within(preview).queryByRole('link', { name: 'Imola' })).toBeNull();
+  });
+
+  it('a stored entry to a page that is neither live nor deleted reads "not in the catalogue" and stays out of the preview (the reviewer’s gap)', () => {
+    const GONE = 'a1b2c3d4-0000-4000-8000-000000000099';
+    const withGone = { ...lists, doors: { ...lists.doors!, entries: [...DEFAULT_NAV.doors, { label: 'Gone', dest: `page:${GONE}` }] } };
+    render(<Designer readOnly={false} who="Test · Administrator · production" initialPages={pagesFromCode()} initialDeleted={[]} {...loaded} initialLists={withGone} />);
+    fireEvent.click(screen.getAllByRole('button', { name: /^Navigation Menu/ })[0]);
+    expect(screen.getByText('not in the catalogue')).toBeTruthy();
+    expect(screen.queryByText('deleted page')).toBeNull();
+    expect(within(screen.getByRole('navigation', { name: 'Doors' })).queryByRole('link', { name: 'Gone' })).toBeNull();
+  });
+
   it('lists the deleted pages behind a Deleted button, and opens a deleted page read-only with its banner (P1.12)', () => {
     window.history.replaceState(null, '', '/admin/designer?ws=builder');
     const gone: PageRow = {

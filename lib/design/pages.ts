@@ -1,6 +1,7 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { CODE_PAGES, PAGE_GROUPS, isPageGroup, type PageAuthz, type PageGroup, type PageRendering } from './page-registry';
+import type { PageDestinations } from './destinations';
 
 export { CODE_PAGES, PAGE_GROUPS, PAGE_GROUP_LABELS, isPageGroup, registryPathOf } from './page-registry';
 export type { CodePage, PageAuthz, PageGroup, PageRendering } from './page-registry';
@@ -154,6 +155,27 @@ export async function loadDeletedPages(): Promise<PageRow[] | null> {
     return ((data ?? []) as unknown[]).map(pageFromRow).filter((p): p is PageRow => p !== null);
   } catch {
     return null;
+  }
+}
+
+/** The row pages a `page:` destination may name, by id (P1.12 B1): the live
+ *  ones for the shell and the write path; with the deleted ones too for the
+ *  editor, which shows an entry to a deleted page for what it is. Empty on any
+ *  failure, so an unresolved entry is left out rather than the list. */
+export async function loadPageDestinations(opts: { includeDeleted?: boolean } = {}): Promise<PageDestinations> {
+  if (!isBettingConfigured()) return {};
+  try {
+    let q = betDb().from('page').select('id, path, name').eq('application_key', APPLICATION_KEY).eq('kind', 'row');
+    if (!opts.includeDeleted) q = q.is('deleted_at', null);
+    const { data, error } = await q;
+    if (error || !Array.isArray(data)) return {};
+    const out: Record<string, { path: string; name: string }> = {};
+    for (const r of data as { id?: unknown; path?: unknown; name?: unknown }[]) {
+      if (typeof r.id === 'string' && typeof r.path === 'string' && typeof r.name === 'string') out[r.id] = { path: r.path, name: r.name };
+    }
+    return out;
+  } catch {
+    return {};
   }
 }
 

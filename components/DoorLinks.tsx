@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { isActivePath, resolveDestination, type NavEntry } from '@/lib/design/destinations';
+import { isActivePath, resolveEntry, type NavEntry } from '@/lib/design/destinations';
 import type { AuthzScheme } from '@/lib/design/authz-defaults';
 import { useVisibleEntries } from './useVisitor';
 
@@ -30,7 +30,7 @@ export function DoorLinks({
     // `preview`: the designer shows the doors at any width; the header hides them below lg.
     <nav aria-label="Doors" className={`${preview ? 'flex' : 'hidden lg:flex'} items-stretch gap-5 self-stretch`}>
       {visible.map((entry, i) => {
-        const dest = resolveDestination(entry.dest);
+        const dest = resolveEntry(entry);
         if (!dest || dest.kind === 'action') return null;
         const active = dest.kind === 'route' && isActivePath(dest.href, pathname);
         const className = `inline-flex items-center border-b-2 px-0.5 font-mono text-10 font-semibold uppercase tracking-[0.16em] transition-colors duration-(--duration-fast) ${

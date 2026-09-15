@@ -4,9 +4,10 @@ import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
-import { resolveDestination, type NavEntry } from '@/lib/design/destinations';
+import { resolveDestination, type NavEntry, type PageDestinations } from '@/lib/design/destinations';
 import { APPLICATION_KEY, BAR_MAX, BAR_MIN, loadListForEditing, resetNavListsMemo } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
+import { loadPageDestinations } from '@/lib/design/pages';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -32,7 +33,9 @@ const NAME_MAX = 40;
 
 type Rejection = { error: string };
 
-function validateEntries(raw: unknown, role: string, schemeKeys: ReadonlySet<string>): NavEntry[] | Rejection {
+// Every entry's destination is a catalogue key or a LIVE row page's key (P1.12
+// B1: a deleted or unknown page is refused like a typed URL).
+function validateEntries(raw: unknown, role: string, schemeKeys: ReadonlySet<string>, pages: PageDestinations): NavEntry[] | Rejection {
   if (!Array.isArray(raw)) return { error: 'entries must be an array' };
   const out: NavEntry[] = [];
   for (const [i, item] of raw.entries()) {
@@ -42,7 +45,7 @@ function validateEntries(raw: unknown, role: string, schemeKeys: ReadonlySet<str
     if (!label) return { error: `entry ${i + 1} needs a label` };
     if (label.length > LABEL_MAX) return { error: `entry ${i + 1}: labels are at most ${LABEL_MAX} characters` };
     const dest = typeof r.dest === 'string' ? r.dest.trim() : '';
-    if (!dest || !resolveDestination(dest)) return { error: `entry ${i + 1}: "${dest}" is not a destination in the catalogue` };
+    if (!dest || !resolveDestination(dest, pages)) return { error: `entry ${i + 1}: "${dest}" is not a destination in the catalogue` };
     const entry: NavEntry = { label, dest };
     if (r.icon !== undefined && r.icon !== null && r.icon !== '') {
       if (typeof r.icon !== 'string' || r.icon.length > NAME_MAX) return { error: `entry ${i + 1}: icon must be a short name` };
@@ -101,8 +104,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
   const list = await loadListForEditing(key);
   if (!list) return new Response('not found', { status: 404 });
 
-  const schemes = await loadAuthzSchemes();
-  const entries = validateEntries(body.entries, list.role, new Set(schemes.map(s => s.key)));
+  const [schemes, pages] = await Promise.all([loadAuthzSchemes(), loadPageDestinations()]);
+  const entries = validateEntries(body.entries, list.role, new Set(schemes.map(s => s.key)), pages);
   if (!Array.isArray(entries)) return NextResponse.json(entries, { status: 400 });
 
   try {

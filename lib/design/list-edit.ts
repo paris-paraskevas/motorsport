@@ -1,4 +1,4 @@
-import { BAR_MAX, BAR_MIN, NAV_LIST_KEYS, resolveDestination, type ListRole, type NavEntry } from './destinations';
+import { BAR_MAX, BAR_MIN, NAV_LIST_KEYS, pageIdOf, resolveDestination, type ListRole, type NavEntry, type PageDestinations } from './destinations';
 
 // A list of the operator's own (Phase 3): the key and label rules, shared by the
 // Lists page (which greys Create out) and the collection route (which refuses).
@@ -73,13 +73,15 @@ export function removeEntry(entries: NavEntry[], index: number, role: ListRole):
   return entries.filter((_, i) => i !== index);
 }
 
-/** Append a catalogue destination with the catalogue's own label; the bar gets
- *  a default icon so a cell is never blank. Unknown destinations and a full bar
- *  leave the list as it was. */
-export function addEntry(entries: NavEntry[], dest: string, role: ListRole): NavEntry[] {
-  const destination = resolveDestination(dest);
+/** Append a catalogue destination with the catalogue's own label, or a row page
+ *  (P1.12 B1) with the page's name and its path as the entry's href so the
+ *  preview draws it before a save; the bar gets a default icon so a cell is
+ *  never blank. Unknown destinations and a full bar leave the list as it was. */
+export function addEntry(entries: NavEntry[], dest: string, role: ListRole, pages?: PageDestinations): NavEntry[] {
+  const destination = resolveDestination(dest, pages);
   if (!destination || !canAdd(role, entries.length)) return entries;
   const entry: NavEntry = { label: destination.label, dest };
+  if (pageIdOf(dest) && destination.kind === 'route') entry.href = destination.href;
   if (role === 'bar') entry.icon = 'compass';
   return [...entries, entry];
 }

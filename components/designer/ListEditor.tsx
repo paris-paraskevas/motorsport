@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, Loader2, RotateCcw } from 'lucide-react';
-import { DESTINATIONS, resolveDestination, type ListRole, type NavEntry } from '@/lib/design/destinations';
+import { DESTINATIONS, pageDest, pageIdOf, resolveDestination, resolveEntry, type ListRole, type NavEntry, type PageDestinations } from '@/lib/design/destinations';
+import type { PageRow } from '@/lib/design/pages';
 import { DEFAULT_TEXT, type ChromeText } from '@/lib/design/text-defaults';
 import type { EditableList } from '@/lib/design/lists';
 import {
@@ -38,9 +39,16 @@ const FIELD =
 const MV =
   'grid h-6 w-6 place-items-center border border-border-strong text-text-muted hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-30';
 
-const DEST_OPTIONS = Object.entries(DESTINATIONS)
+type DestOption = { key: string; label: string; kind: string; href: string };
+const CATALOGUE_OPTIONS: DestOption[] = Object.entries(DESTINATIONS)
   .map(([key, d]) => ({ key, label: d.label, kind: d.kind, href: d.kind === 'action' ? d.action : d.href }))
   .sort((a, b) => a.label.localeCompare(b.label));
+/** The row pages as options (P1.12 B1), by name, after the catalogue's. */
+const pageOptions = (pages: readonly PageRow[], suffix = ''): DestOption[] =>
+  pages
+    .filter(p => p.id)
+    .map(p => ({ key: pageDest(p.id!), label: p.name + suffix, kind: 'route', href: p.path }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
 export function ListEditor({
   listKey,
@@ -52,6 +60,8 @@ export function ListEditor({
   otherFooter,
   text = DEFAULT_TEXT,
   schemes = DEFAULT_AUTHZ_SCHEMES,
+  pages = [],
+  deleted = [],
   onSaved,
 }: {
   /** One of the shell's four keys, or the key of a list of the operator's own. */
@@ -67,6 +77,9 @@ export function ListEditor({
   text?: ChromeText;
   /** The authorization schemes an entry may name, as currently stored. */
   schemes?: readonly AuthzScheme[];
+  /** The live row pages an entry may name (P1.12 B1), and the deleted ones, whose entries show for what they are. */
+  pages?: readonly PageRow[];
+  deleted?: readonly PageRow[];
   onSaved: (list: EditableList) => void;
 }) {
   const [entries, setEntries] = useState<NavEntry[]>(list.entries);
@@ -132,6 +145,21 @@ export function ListEditor({
 
   const bound = maxEntries(role);
   const columns = 3 + (isBar ? 1 : 0) + (withAuthz ? 1 : 0) + 1;
+  // Row pages as destinations (P1.12 B1): the live pages are offered; a stored
+  // entry to a deleted page keeps its option, named deleted, so the row reads
+  // right and Remove is at hand; the preview hides it as the shell does.
+  const livePages = pages.filter(p => p.kind === 'row');
+  const pageMap: PageDestinations = Object.fromEntries(livePages.filter(p => p.id).map(p => [p.id!, { path: p.path, name: p.name }]));
+  const deletedIds = new Set(deleted.map(p => p.id).filter((id): id is string => id !== null));
+  const stateOf = (entry: NavEntry): 'live' | 'deleted' | 'unknown' => {
+    const id = pageIdOf(entry.dest);
+    if (id) return pageMap[id] ? 'live' : deletedIds.has(id) ? 'deleted' : 'unknown';
+    return resolveDestination(entry.dest) ? 'live' : 'unknown';
+  };
+  const addOptions: DestOption[] = [...CATALOGUE_OPTIONS, ...pageOptions(livePages)];
+  const namedDeleted = deleted.filter(p => p.id && entries.some(e => pageIdOf(e.dest) === p.id));
+  const entryOptions: DestOption[] = [...addOptions, ...pageOptions(namedDeleted, ' · deleted')];
+  const previewEntries = entries.map(e => (stateOf(e) === 'deleted' ? { ...e, href: undefined } : e));
 
   return (
     <div>
@@ -152,7 +180,7 @@ export function ListEditor({
           </thead>
           <tbody>
             {entries.map((entry, i) => {
-              const dest = resolveDestination(entry.dest);
+              const state = stateOf(entry);
               return (
                 <tr key={`${entry.dest}-${i}`} className="border-t border-border align-middle">
                   <td className="px-2.5 py-1.5">
@@ -196,13 +224,14 @@ export function ListEditor({
                       className={`${FIELD} w-56`}
                       onChange={e => setEntries(list => updateEntry(list, i, { dest: e.target.value }))}
                     >
-                      {DEST_OPTIONS.map(o => (
+                      {entryOptions.map(o => (
                         <option key={o.key} value={o.key}>
                           {o.label} · {o.href}
                         </option>
                       ))}
                     </select>
-                    {!dest && <span className="ml-2 font-mono text-9 uppercase text-negative">not in the catalogue</span>}
+                    {state === 'unknown' && <span className="ml-2 font-mono text-9 uppercase text-negative">not in the catalogue</span>}
+                    {state === 'deleted' && <span className="ml-2 font-mono text-9 uppercase text-text-faint">deleted page</span>}
                   </td>
                   {isBar && (
                     <td className="px-2.5 py-1.5">
@@ -269,11 +298,11 @@ export function ListEditor({
             onChange={e => {
               const key = e.target.value;
               setAdding('');
-              if (key) setEntries(list => addEntry(list, key, role));
+              if (key) setEntries(list => addEntry(list, key, role, pageMap));
             }}
           >
             <option value="">＋ Add from the catalogue…</option>
-            {DEST_OPTIONS.map(o => (
+            {addOptions.map(o => (
               <option key={o.key} value={o.key}>
                 {o.label} · {o.href}
                 {entries.some(e => e.dest === o.key) ? ' · in use' : ''}
@@ -293,19 +322,19 @@ export function ListEditor({
             <span className="shrink-0 font-condensed text-19 font-bold uppercase tracking-[0.06em] text-text">
               Paddock<span className="text-brand">•</span>Tracker
             </span>
-            <DoorLinks entries={entries} preview />
+            <DoorLinks entries={previewEntries} preview />
           </div>
         )}
         {role === 'bar' && (
           <div className="max-w-[390px] border border-border-strong">
-            <BottomBar entries={entries} preview />
+            <BottomBar entries={previewEntries} preview />
           </div>
         )}
         {role === 'footer' && (
           <div className="overflow-hidden border border-border-strong [&_footer]:mt-0">
             <Footer
-              site={listKey === 'footer-site' ? entries : (otherFooter ?? [])}
-              legal={listKey === 'footer-legal' ? entries : (otherFooter ?? [])}
+              site={listKey === 'footer-site' ? previewEntries : (otherFooter ?? [])}
+              legal={listKey === 'footer-legal' ? previewEntries : (otherFooter ?? [])}
               text={text}
             />
           </div>
@@ -314,8 +343,8 @@ export function ListEditor({
           // A List region draws these as links (or cards); the region's own
           // title and style are set on the page.
           <ul className="m-0 list-none border border-border-strong bg-bg p-4" aria-label="Preview of the list">
-            {entries.map((e, i) => {
-              const dest = resolveDestination(e.dest);
+            {previewEntries.map((e, i) => {
+              const dest = resolveEntry(e);
               return (
                 <li key={`${e.dest}-${i}`} className="py-1 font-serif text-16 text-text underline underline-offset-2">
                   {e.label}

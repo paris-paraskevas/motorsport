@@ -9,6 +9,7 @@ import { PAGE_COMMENTS_MAX } from '@/lib/design/page-registry';
 import { loadPageDetail } from '@/lib/design/page-revisions';
 import { PAGE_NAME_MAX, PAGE_TITLE_MAX, RECOVERY_DAYS } from '@/lib/design/page-document';
 import { resetPageFrameMemo } from '@/lib/design/page-frame';
+import { resetNavListsMemo } from '@/lib/design/lists';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -143,6 +144,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (!page) return new Response('not found', { status: 404 });
     resetPageFrameMemo();
     revalidatePath(page.path);
+    // The shell's lists may name the page (B1): they follow at once on this isolate and on the next render everywhere.
+    resetNavListsMemo();
+    revalidatePath('/', 'layout');
     return NextResponse.json({ ok: true, page });
   } catch (err) {
     return NextResponse.json(
@@ -202,6 +206,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       if (data !== true) return new Response('not found', { status: 404 });
       resetPageFrameMemo();
       revalidatePath(detail.page.path);
+      resetNavListsMemo();
+      revalidatePath('/', 'layout');
       return NextResponse.json({ ok: true, id, path: detail.page.path, purged: true });
     }
     if (detail.page.deletedAt) {
@@ -220,6 +226,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     if (!page) return new Response('not found', { status: 404 });
     resetPageFrameMemo();
     revalidatePath(detail.page.path);
+    resetNavListsMemo();
+    revalidatePath('/', 'layout');
     return NextResponse.json({ ok: true, id, path: detail.page.path, page });
   } catch (err) {
     return NextResponse.json(

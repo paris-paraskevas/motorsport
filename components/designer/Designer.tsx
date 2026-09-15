@@ -996,6 +996,8 @@ export function Designer({
                 lists={listIndex.lists}
                 readOnly={readOnly}
                 schemes={schemes}
+                pages={pages.state === 'ready' ? pages.pages : []}
+                deleted={pages.state === 'ready' ? pages.deleted : []}
                 onOpenShell={key => select(key)}
                 onChanged={next => setListIndex({ state: 'ready', lists: next })}
               />
@@ -1069,6 +1071,8 @@ export function Designer({
                 otherFooter={other ? stored(other) : undefined}
                 text={chromeText}
                 schemes={schemes}
+                pages={pages.state === 'ready' ? pages.pages : []}
+                deleted={pages.state === 'ready' ? pages.deleted : []}
                 onSaved={list => {
                   setLists(s => ({ ...s, [listKey]: { state: 'ready', list } }));
                   indexFollows(list);

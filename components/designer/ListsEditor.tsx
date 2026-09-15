@@ -5,6 +5,7 @@ import { Loader2, Plus, Trash2 } from 'lucide-react';
 import type { EditableList, ListSummary, NavListKey } from '@/lib/design/lists';
 import { LIST_KEY_MAX, LIST_LABEL_MAX, listKeyProblem, listLabelProblem } from '@/lib/design/list-edit';
 import { DEFAULT_AUTHZ_SCHEMES, type AuthzScheme } from '@/lib/design/authz-defaults';
+import type { PageRow } from '@/lib/design/pages';
 import { ListEditor } from './ListEditor';
 
 // Lists (APEX: Lists), the Phase 3 entry: every list of the application in one
@@ -37,6 +38,8 @@ export function ListsEditor({
   lists,
   readOnly,
   schemes = DEFAULT_AUTHZ_SCHEMES,
+  pages = [],
+  deleted = [],
   onOpenShell,
   onChanged,
 }: {
@@ -44,6 +47,9 @@ export function ListsEditor({
   readOnly: boolean;
   /** The authorization schemes an entry may name, as currently stored. */
   schemes?: readonly AuthzScheme[];
+  /** The row pages an entry may name, and the deleted ones (P1.12 B1). */
+  pages?: readonly PageRow[];
+  deleted?: readonly PageRow[];
   /** One of the shell's four lists: its own catalogue entry opens. */
   onOpenShell: (key: NavListKey) => void;
   /** The index after a create, a save or a delete. */
@@ -259,6 +265,8 @@ export function ListsEditor({
               sub={`Your own list, key “${opened.key}”. A List region shows it as links or cards; an entry with an authorization is left out for a visitor who fails it.`}
               readOnly={readOnly}
               schemes={schemes}
+              pages={pages}
+              deleted={deleted}
               onSaved={saved}
             />
           )}

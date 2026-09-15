@@ -20,6 +20,10 @@ vi.mock('@/lib/design/page-revisions', () => ({ loadPageDetail: (id: string) => 
 const resetPageFrameMemo = vi.fn();
 vi.mock('@/lib/design/page-frame', () => ({ resetPageFrameMemo: () => resetPageFrameMemo() }));
 
+// A deleted, reinstated or purged page may be named by the shell's lists (P1.12 B1): the layout is revalidated and this isolate's lists memo dropped.
+const resetNavListsMemo = vi.fn();
+vi.mock('@/lib/design/lists', () => ({ resetNavListsMemo: () => resetNavListsMemo() }));
+
 // A fake database that records every step of the chain and answers with `result`;
 // `rpc` records the call and answers with `rpcResult`.
 const chain = vi.fn();
@@ -109,6 +113,7 @@ beforeEach(() => {
   loadPageDetail.mockImplementation(async (id: string) => (id === ROW ? rowDetail : id === GONE ? goneDetail : id === CODE ? codeDetail : null));
   revalidatePath.mockClear();
   resetPageFrameMemo.mockClear();
+  resetNavListsMemo.mockClear();
   chain.mockClear();
   rpc.mockClear();
   result = { data: [], error: null };
@@ -147,6 +152,9 @@ describe('DELETE /api/admin/design/pages/[id]', () => {
     ]);
     expect(resetPageFrameMemo).toHaveBeenCalledTimes(1);
     expect(revalidatePath).toHaveBeenCalledWith('/history/monza');
+    // The shell's lists may name the page (B1): the layout follows and this isolate's lists memo is dropped.
+    expect(revalidatePath).toHaveBeenCalledWith('/', 'layout');
+    expect(resetNavListsMemo).toHaveBeenCalledTimes(1);
     expect(rpc).not.toHaveBeenCalled();
   });
 
@@ -172,6 +180,8 @@ describe('DELETE /api/admin/design/pages/[id]', () => {
     expect(chain).not.toHaveBeenCalled();
     expect(resetPageFrameMemo).toHaveBeenCalledTimes(1);
     expect(revalidatePath).toHaveBeenCalledWith('/history/imola');
+    expect(revalidatePath).toHaveBeenCalledWith('/', 'layout');
+    expect(resetNavListsMemo).toHaveBeenCalledTimes(1);
     // The function separates the names with a middle dot, since a page's name may hold a comma.
     rpcResult = { data: null, error: { message: 'referenced: Monza, a history · Home', code: 'P0001' } };
     const held = await del(GONE, '?purge=1');
@@ -210,6 +220,8 @@ describe('POST /api/admin/design/pages/[id] (reinstate)', () => {
     ]);
     expect(resetPageFrameMemo).toHaveBeenCalledTimes(1);
     expect(revalidatePath).toHaveBeenCalledWith('/history/imola');
+    expect(revalidatePath).toHaveBeenCalledWith('/', 'layout');
+    expect(resetNavListsMemo).toHaveBeenCalledTimes(1);
     chain.mockClear();
     const live = await post(ROW, { action: 'reinstate' });
     expect(live.status).toBe(409);

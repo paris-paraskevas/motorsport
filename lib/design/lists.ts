@@ -1,6 +1,7 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
-import { BAR_MAX, BAR_MIN, NAV_LIST_KEYS, resolveDestination, type ListRole, type NavEntry, type NavListKey, type NavLists } from './destinations';
+import { BAR_MAX, BAR_MIN, NAV_LIST_KEYS, pageIdOf, resolveDestination, type ListRole, type NavEntry, type NavListKey, type NavLists, type PageDestinations } from './destinations';
+import { loadPageDestinations } from './pages';
 
 export { BAR_MAX, BAR_MIN, NAV_LIST_KEYS } from './destinations';
 export type { ListRole, NavEntry, NavListKey, NavLists } from './destinations';
@@ -83,9 +84,11 @@ const text = (v: unknown): string | undefined => (typeof v === 'string' && v.tri
  * Coerce rows (or any JSON) into entries. A row without a label, or naming a
  * destination the catalogue does not know, is dropped on its own; nothing usable
  * returns null so the caller falls back to the default. A bar outside BAR_MIN..BAR_MAX
- * also returns null: the design cannot render it.
+ * also returns null: the design cannot render it. A page key (P1.12 B1) resolves
+ * against `pages` and carries the page's path as the entry's href; without the
+ * map, or for a page not in it, the row is dropped like an unknown key.
  */
-export function parseEntries(raw: unknown, role: ListRole): NavEntry[] | null {
+export function parseEntries(raw: unknown, role: ListRole, pages?: PageDestinations): NavEntry[] | null {
   if (!Array.isArray(raw)) return null;
   const out: NavEntry[] = [];
   for (const item of raw) {
@@ -93,8 +96,11 @@ export function parseEntries(raw: unknown, role: ListRole): NavEntry[] | null {
     const row = item as Record<string, unknown>;
     const label = text(row.label);
     const dest = text(row.dest_key) ?? text(row.dest);
-    if (!label || !dest || !resolveDestination(dest)) continue;
+    if (!label || !dest) continue;
+    const resolved = resolveDestination(dest, pages);
+    if (!resolved) continue;
     const entry: NavEntry = { label, dest };
+    if (pageIdOf(dest) && resolved.kind === 'route') entry.href = resolved.href;
     const icon = text(row.icon);
     if (icon) entry.icon = icon;
     const authz = text(row.authz_key) ?? text(row.authz);
@@ -123,12 +129,16 @@ export async function loadNavLists(): Promise<NavLists> {
   if (!isBettingConfigured()) return DEFAULT_NAV;
   if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
   try {
-    const { data, error } = await betDb()
-      .from('list_entry')
-      .select('list_key, seq, label, dest_key, icon, authz_key')
-      .eq('application_key', APPLICATION_KEY)
-      .in('list_key', [...NAV_LIST_KEYS])
-      .order('seq', { ascending: true });
+    // The live row pages the entries may name (P1.12 B1), read with the entries; a deleted page's entry leaves with it.
+    const [{ data, error }, pages] = await Promise.all([
+      betDb()
+        .from('list_entry')
+        .select('list_key, seq, label, dest_key, icon, authz_key')
+        .eq('application_key', APPLICATION_KEY)
+        .in('list_key', [...NAV_LIST_KEYS])
+        .order('seq', { ascending: true }),
+      loadPageDestinations(),
+    ]);
     if (error || !data) return DEFAULT_NAV;
     const grouped = new Map<string, unknown[]>();
     for (const row of data as Array<Record<string, unknown>>) {
@@ -139,7 +149,7 @@ export async function loadNavLists(): Promise<NavLists> {
     }
     const value: NavLists = { ...DEFAULT_NAV };
     for (const key of NAV_LIST_KEYS) {
-      const parsed = parseEntries(grouped.get(key) ?? [], ROLE[key]);
+      const parsed = parseEntries(grouped.get(key) ?? [], ROLE[key], pages);
       if (parsed) value[FIELD[key]] = parsed;
     }
     memo = { at: Date.now(), value };
@@ -173,12 +183,16 @@ export async function loadListForEditing(key: string): Promise<EditableList | nu
       .eq('key', key)
       .maybeSingle();
     if (error || !list) return null;
-    const { data: rows, error: rowsError } = await betDb()
-      .from('list_entry')
-      .select('seq, label, dest_key, icon, authz_key')
-      .eq('application_key', APPLICATION_KEY)
-      .eq('list_key', key)
-      .order('seq', { ascending: true });
+    // Every row page, the deleted ones too (P1.12 B1): the editor shows an entry to a deleted page for what it is.
+    const [{ data: rows, error: rowsError }, pages] = await Promise.all([
+      betDb()
+        .from('list_entry')
+        .select('seq, label, dest_key, icon, authz_key')
+        .eq('application_key', APPLICATION_KEY)
+        .eq('list_key', key)
+        .order('seq', { ascending: true }),
+      loadPageDestinations({ includeDeleted: true }),
+    ]);
     if (rowsError) return null;
     const row = list as { key: string; role: string; label: string; updated_at: string };
     return {
@@ -186,7 +200,7 @@ export async function loadListForEditing(key: string): Promise<EditableList | nu
       role: row.role as ListRole,
       label: String(row.label),
       updatedAt: String(row.updated_at),
-      entries: parseEntries(rows ?? [], 'generic') ?? [],
+      entries: parseEntries(rows ?? [], 'generic', pages) ?? [],
     };
   } catch {
     return null;
@@ -247,12 +261,15 @@ export async function loadDocumentLists(keys: readonly string[], nav: NavLists):
   for (const key of own) out[key] = [];
   if (own.length === 0 || !isBettingConfigured()) return out;
   try {
-    const { data, error } = await betDb()
-      .from('list_entry')
-      .select('list_key, seq, label, dest_key, icon, authz_key')
-      .eq('application_key', APPLICATION_KEY)
-      .in('list_key', own)
-      .order('seq', { ascending: true });
+    const [{ data, error }, pages] = await Promise.all([
+      betDb()
+        .from('list_entry')
+        .select('list_key, seq, label, dest_key, icon, authz_key')
+        .eq('application_key', APPLICATION_KEY)
+        .in('list_key', own)
+        .order('seq', { ascending: true }),
+      loadPageDestinations(),
+    ]);
     if (error || !Array.isArray(data)) return out;
     const grouped = new Map<string, unknown[]>();
     for (const row of data as Array<Record<string, unknown>>) {
@@ -261,7 +278,7 @@ export async function loadDocumentLists(keys: readonly string[], nav: NavLists):
       if (bucket) bucket.push(row);
       else grouped.set(key, [row]);
     }
-    for (const key of own) out[key] = parseEntries(grouped.get(key) ?? [], 'generic') ?? [];
+    for (const key of own) out[key] = parseEntries(grouped.get(key) ?? [], 'generic', pages) ?? [];
     return out;
   } catch {
     return out;
