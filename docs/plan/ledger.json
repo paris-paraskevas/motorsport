@@ -59,6 +59,11 @@
    "date": "2026-09-10",
    "change": "The operator, ~13:45Z: \"i dont think r5 did what i wanted. i wanted to be able to move components around by drag and drop on middle pane, this is not possible at the moment, the rest of r5's statements did work however.\" Read as: R5's drag did not work in the browser. The cause, found by the research the operator asked for instead of a guess: Chromium aborts a native drag whose source's DOM changes while dragstart is still being handled (Chromium bug 168544; react-dnd issue 1085), and the designer set its drag state, and so drew the yellow drop tiles, inside that handler; every drag ended before it began, on every drag source (Layout tiles, tree nodes, gallery tiles), since the drop tiles were introduced. R5's browser evidence for the drag was synthetic drag events, which cannot show it. Built in R5b: the drag begins one task after dragstart; proven with the browser's own drag.",
    "word": "the operator, 2026-09-10 ~13:45Z, verbatim above, and ~13:50Z: \"do you want to research how to build this. instead of trusting your gut once again?\""
+  },
+  {
+   "date": "2026-09-15",
+   "change": "The operator, ~08:30Z, on the P1.7 scan: \"quick edit should be hideable, also if i tap to edit a page from the help bar, then it should take me to the one tab i have for developing the app, ntot open another, same as when i save and run from dev side it opens same tab each time. also the bar shouldnt show on mobile for me. other than that, you can go.\" Read as three fixed points for P1.7 (Developer Toolbar: Quick Edit and Info): (1) Quick Edit Mode is a toggle that can be turned off from the menu as well as by Escape or a click outside, and its outlines and wrenches leave the page with it; (2) every link from the toolbar into the designer (Home, App 100, Page <id>, and a Quick Edit click on a region) opens ONE named developer tab, reused every time, the way Save and Run reuses the one running tab; (3) the toolbar is not drawn on phones (below the site's large breakpoint, 1024 px). The scan's two defaults stood: the two new files; Show Landmarks and Show Headings left out of this slot.",
+   "word": "the operator, 2026-09-15 ~08:30Z, verbatim above"
   }
  ],
  "phases": {
@@ -214,7 +219,9 @@
    "fixedBy": "the UX map's Developer Toolbar structures",
    "acceptance": "From Save and Run, Quick Edit lands on the region; the wrench changes a template option live; browser run.",
    "status": "planned",
-   "scopeHash": "094979cc618e"
+   "scopeHash": "094979cc618e",
+   "defaults": "Quick Edit Mode outlines every region on hover and a click opens the designer on that page with the region selected through a `region=<id>` parameter on the designer URL; the mode is a menu toggle and also exits on Escape or a click outside a region (the operator: hideable); the wrench in a region's top right corner opens P1.2's Template Options dialog on the live page and OK saves and publishes a revision and reloads, the way Save and Run publishes; every link from the toolbar into the designer opens one named developer tab, reused every time (the operator), the way Save and Run reuses the running tab; the toolbar is not drawn below the large breakpoint (the operator: not on mobile); Show Layout Columns draws the twelve columns over the page's standard width and the entry toggles to Hide Layout Columns; Show Page Timing opens a dialog with the browser's navigation and resource timings, Copy and Clear; the Options gear keeps Auto Hide, Show Icons Only and Display Position (Top · Left · Bottom · Right) in the browser's storage; Show Landmarks and Show Headings are left out (a dated line adds them); two new files: components/page/QuickEdit.tsx and components/page/PageTiming.tsx",
+   "needsWord": ""
   },
   {
    "id": "P1.8",
