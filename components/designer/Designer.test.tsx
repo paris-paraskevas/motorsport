@@ -145,12 +145,16 @@ describe('Designer keeps the selection in the URL', () => {
         initialPages={[...pagesFromCode(), page]}
         initialPageId={page.id}
         initialDetail={detail}
+        initialRegion="intro"
         {...loaded}
       />,
     );
     expect(screen.getByLabelText('Page Designer')).toBeTruthy();
     expect(screen.getByText('Page Designer', { selector: 'span' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Static Content: Monza' })).toBeTruthy();
+    // P1.7: the designer names its window, so the toolbar's links from a running page find this one tab; the address's region is selected.
+    expect(window.name).toBe('paddock-designer');
+    expect((within(screen.getByLabelText('Property Editor')).getByLabelText('Region title') as HTMLInputElement).value).toBe('Monza');
     expect(screen.getByRole('status').textContent).toMatch(/draft/);
     expect(screen.getByRole('button', { name: 'Publish' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Back to all pages' }));

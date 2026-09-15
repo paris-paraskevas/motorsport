@@ -87,7 +87,7 @@ function serve(over: Partial<Record<Method, () => unknown>> = {}) {
   });
 }
 
-function mount(d: PageDetail = detail, readOnly = false) {
+function mount(d: PageDetail = detail, readOnly = false, initialRegion: string | null = null) {
   const onSaved = vi.fn();
   const onOpenPage = vi.fn();
   const onBack = vi.fn();
@@ -95,6 +95,7 @@ function mount(d: PageDetail = detail, readOnly = false) {
   const el = (dd: PageDetail) => (
     <PageDesigner
       onDeleted={onDeleted}
+      initialRegion={initialRegion}
       detail={dd}
       pages={pages}
       readOnly={readOnly}
@@ -145,6 +146,14 @@ describe('PageDesigner', () => {
     expect(status()).toMatch(/Revision b1b2c3d4 · draft/);
     expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
     expect((screen.getByRole('button', { name: 'Publish' }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('opens on the region the address names (P1.7: Quick Edit lands on the region), and on the page when the id is not on it', () => {
+    mount(detail, false, 'more');
+    expect((within(screen.getByLabelText('Property Editor')).getByLabelText('Region title') as HTMLInputElement).value).toBe('Elsewhere');
+    cleanup();
+    mount(detail, false, 'nowhere');
+    expect(within(screen.getByLabelText('Property Editor')).getByText('a1b2c3d4: Monza, a history')).toBeTruthy();
   });
 
   it('adds a region from the gallery, selects it, edits it in the Property Editor, and Save comes alive', () => {
