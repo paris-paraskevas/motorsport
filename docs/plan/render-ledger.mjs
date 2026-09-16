@@ -37,7 +37,7 @@ for (const ph of phases) {
   for (const s of L.slots.filter(s => s.phase === ph)) {
     const scan = [`Fixed by: ${esc(s.fixedBy)}`, s.defaults ? `Defaults: ${esc(s.defaults)}` : '', s.needsWord ? `**Needs your word:** ${esc(s.needsWord)}` : 'Needs your word: none'].filter(Boolean).join(' · ');
     const pages = s.pages?.length ? ` · serves ${s.pages.join(', ')}` : '';
-    const ev = s.status === 'done' ? `done · ${esc(s.evidence)}${pages}` : s.status === 'started' ? `started · ${esc(s.evidence ?? '')}` : 'planned';
+    const ev = s.status === 'done' ? `done · ${esc(s.evidence)}${pages}` : s.status === 'started' ? `started${s.evidence ? ` · ${esc(s.evidence)}` : ''}` : 'planned';
     lines.push(`| **${s.id}** ${esc(s.title)} | ${esc(s.scope)} | ${scan} | ${esc(s.acceptance)} | ${ev} |`);
   }
 }
