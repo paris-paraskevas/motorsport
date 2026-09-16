@@ -4,7 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 1.0.124 — 2026-09-16
+## 1.0.125 — 2026-09-16
+
+### Records — P1.4 done in the ledger, the session-51 handoff and its prompt
+
+Records only. `docs/plan/ledger.json`: P1.4 `done` with its evidence (PR #1005, merged 12:55:20Z; the acceptance as seen in the browser with the drag events read back; the gates; the plan critic's and the reviewer's verdicts; the reviewer's blocking finding stated to the operator and taken as the first task of session 51). `docs/HANDOFF.md` LATEST: the second close of session 50, the session-51 prompt with the component-render test repair FIRST (the file never ran; two of five tests reach live upstreams when switched on), then P1.8 asked at its turn, then the Phase 2 screen. `SCHEDULE.md`: the day's second half and the active time. `IDEAS.md` Inbox: two items. The progress board regenerated as a new artifact (the previous one stopped answering).
+
+## 1.0.124 — 2026-09-16
 
 ### Designer — [P1.4] Rendering points and tree creates: sub regions at any depth, APEX's six points, the documented right-click menu, Copy To, Ctrl+drag copies
 
