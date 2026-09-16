@@ -275,6 +275,10 @@ describe('page search', () => {
     expect(hits.map(h => `${h.what} · ${h.where}`)).toEqual(expect.arrayContaining(['Region · Aside · name', 'Action · Unfold · effect']));
     expect(searchPage('monza', doc, page)[0]).toMatchObject({ sel: { kind: 'page' }, where: 'name' });
     expect(searchPage('', doc, page)).toEqual([]);
+    // The look (P1.1) by its label; Plain, the absent default, is not a hit.
+    const banded: PageDocument = { ...doc, regions: doc.regions.map(r => (r.id === 'aside' ? { ...r, template: 'band' as const } : r)) };
+    expect(searchPage('band', banded, page).map(h => `${h.what} · ${h.where} · ${h.value}`)).toEqual(['Region · Aside · look · Band']);
+    expect(searchPage('plain', banded, page)).toEqual([]);
   });
 });
 
@@ -303,13 +307,30 @@ describe('region defaults from Component Settings', () => {
   it('start a new region with the defaults it is given, the shipped ones otherwise', () => {
     const shipped = addRegion(doc, 'image', { position: 'body' });
     expect((shipped.doc.regions.find(r => r.id === shipped.id) as { showCaption: boolean }).showCaption).toBe(true);
-    const own = { imageShowCaption: false, listStyle: 'cards' as const, buttonLabel: 'Read on' };
+    const own = {
+      imageShowCaption: false,
+      listStyle: 'cards' as const,
+      buttonLabel: 'Read on',
+      templates: { static: 'boxed' as const, image: 'standard' as const, list: 'standard' as const, button: 'band' as const },
+    };
     const image = addRegion(doc, 'image', { position: 'body' }, own);
     expect((image.doc.regions.find(r => r.id === image.id) as { showCaption: boolean }).showCaption).toBe(false);
+    expect(image.doc.regions.find(r => r.id === image.id)).not.toHaveProperty('template');
     const list = addRegion(doc, 'list', { position: 'right' }, own);
     expect((list.doc.regions.find(r => r.id === list.id) as { style: string }).style).toBe('cards');
     const button = addRegion(doc, 'button', { position: 'footer' }, own);
     expect((button.doc.regions.find(r => r.id === button.id) as { label: string }).label).toBe('Read on');
-    expect(SHIPPED_REGION_DEFAULTS).toEqual({ imageShowCaption: true, listStyle: 'links', buttonLabel: 'Read more' });
+    // The template default (P1.1) is stored on the new region; a Band takes the whole row whatever the placement offered.
+    const text = addRegion(doc, 'static', { position: 'body', column: 7, span: 6 }, own);
+    expect(text.doc.regions.find(r => r.id === text.id)).toMatchObject({ template: 'boxed', column: 7, span: 6 });
+    expect(button.doc.regions.find(r => r.id === button.id)).toMatchObject({ template: 'band', column: 1, span: 12, newRow: true });
+    const capped = addRegion(doc, 'button', { position: 'body', column: 7, span: 6, newRow: false }, own);
+    expect(capped.doc.regions.find(r => r.id === capped.id)).toMatchObject({ template: 'band', column: 1, span: 12, newRow: true });
+    expect(SHIPPED_REGION_DEFAULTS).toEqual({
+      imageShowCaption: true,
+      listStyle: 'links',
+      buttonLabel: 'Read more',
+      templates: { static: 'standard', image: 'standard', list: 'standard', button: 'standard' },
+    });
   });
 });

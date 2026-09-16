@@ -61,10 +61,10 @@ describe('parseAppearance', () => {
     expect(roomy.value.faces).toEqual(SHIPPED_APPEARANCE.faces);
     const bad = parseAppearance({ templates: { standard: { heading: 'HEADING_BIG' } } });
     expect(bad.value.templates).toEqual(SHIPPED_PRESETS);
-    expect(bad.problems).toEqual(['Templates › Standard › Heading style: "HEADING_BIG" is not one of its options']);
-    const unknown = parseAppearance({ templates: { hero: { spacing: 'SPACING_ROOMY' } } });
+    expect(bad.problems).toEqual(['Templates › Plain › Heading style: "HEADING_BIG" is not one of its options']);
+    const unknown = parseAppearance({ templates: { carousel: { spacing: 'SPACING_ROOMY' } } });
     expect(unknown.value.templates).toEqual(SHIPPED_PRESETS);
-    expect(unknown.problems).toEqual(['Templates: names a template the code does not have (hero)']);
+    expect(unknown.problems).toEqual(['Templates: names a template the code does not have (carousel)']);
     expect(isShippedAppearance(roomy.value)).toBe(true);
     expect(appearanceCss(roomy.value)).toBe('');
     // The parsed presets are a copy: a later edit of the value cannot reach the shipped constant.

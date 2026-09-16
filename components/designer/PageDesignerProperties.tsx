@@ -33,7 +33,7 @@ import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import { BUILD_OPTION_DEFAULTS, BUILD_OPTION_KEYS, type BuildOptionKey, type BuildOptionStatus } from '@/lib/design/build-option-defaults';
-import { REGION_TEMPLATES, type TemplatePresets } from '@/lib/design/template-options';
+import { DEFAULT_REGION_TEMPLATE, REGION_TEMPLATES, regionTemplate, type RegionTemplateKey, type TemplatePresets } from '@/lib/design/template-options';
 import { FIELD, PBTN, Pills, Ro, TEXTAREA, YesNo, type PropGroup } from './PropertyPane';
 import { TemplateOptionsButton } from './TemplateOptionsDialog';
 import { TextPicker, type Cursor } from './TextPicker';
@@ -711,16 +711,39 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
     { title: 'Source', props: source },
     cg.layout,
     {
-      // APEX: Appearance › Template, Template Options (P1.2). The template is
-      // read-only until P1.1 brings the five looks; the options are the button
-      // and the dialog of TemplateOptionsDialog.tsx.
+      // APEX: Appearance › Template (P1.1, the five looks as pills, APEX's
+      // select), Template Options (P1.2: the button and the dialog of
+      // TemplateOptionsDialog.tsx).
       title: 'Appearance',
       props: [
         {
           label: 'Template',
           common: true,
-          control: <Ro dim>{`${REGION_TEMPLATES[0].label} · ${REGION_TEMPLATES[0].description}`}</Ro>,
-          help: 'The region template (APEX: Appearance › Template). One today, Standard; the five looks arrive with a later step.',
+          changed: ch(f('template')),
+          control: (
+            <Pills
+              label="Region template"
+              items={REGION_TEMPLATES.map(t => ({ key: t.key, label: t.label, title: t.description }))}
+              current={r.template ?? DEFAULT_REGION_TEMPLATE}
+              disabled={readOnly}
+              onPick={(k: RegionTemplateKey) =>
+                p(`Template: ${regionTemplate(k).label}.`, x => {
+                  const y: Region = { ...x };
+                  if (k === DEFAULT_REGION_TEMPLATE) delete y.template;
+                  else y.template = k;
+                  // A band takes the whole row (the review page's drawing): its own row, the twelve columns.
+                  if (k === 'band') {
+                    y.column = 1;
+                    y.span = COLUMNS;
+                    y.newRow = true;
+                  }
+                  return y;
+                })
+              }
+            />
+          ),
+          note: `${regionTemplate(r.template).description} ${regionTemplate(r.template).apex ? `APEX: ${regionTemplate(r.template).apex}.` : 'Ours.'}`,
+          help: 'The region template (APEX: Appearance › Template): how the region is drawn around its content. Plain answers to the Universal Theme’s Content Block, Boxed to Standard, Hero to Hero; Band and Aside are ours. A band takes the whole row.',
         },
         {
           label: 'Template Options',
@@ -733,6 +756,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
               key={r.id}
               id={fieldId('rtopts')}
               value={r.templateOptions}
+              template={r.template}
               presets={ctx.templates}
               disabled={readOnly}
               onChange={next =>
@@ -884,6 +908,9 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
   const inBody = targets.every(t => t.position === 'body');
   // The transitional body is drawn by the code at the full width: its size cannot change until the page is split.
   const fullWidthOnly = targets.some(isLegacyBody);
+  // A Band (P1.1) takes the whole row: its column and span are the template's, not a pick.
+  const bandOnly = targets.some(t => t.template === 'band');
+  const BAND_NOTE = 'A band takes the whole row; pick another template to size it.';
   const position = common(t => t.position);
   const newRow = common(t => t.newRow);
   const column = common(t => t.column);
@@ -944,36 +971,20 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
                 label: 'Column',
                 common: true,
                 changed: ch(t => t.column),
-                control: <Pills label="Region column" items={colChoices} current={column} disabled={readOnly} onPick={c => p(`Column ${c}.`, x => ({ ...x, column: c, span: Math.min(x.span, COLUMNS + 1 - c) }))} />,
-                note: noteOr(column),
+                control: <Pills label="Region column" items={colChoices} current={column} disabled={readOnly || bandOnly} onPick={c => p(`Column ${c}.`, x => ({ ...x, column: c, span: Math.min(x.span, COLUMNS + 1 - c) }))} />,
+                note: noteOr(column, bandOnly ? BAND_NOTE : undefined),
                 help: 'The column the region’s left edge starts at, one to twelve.',
               },
-              {
-                label: 'Size',
-                common: true,
-                changed: ch(t => t.span),
-                control: (
-                  <Pills
-                    label="Region size"
-                    items={[
-                      { key: 4, label: 'Small', disabled: !widthFits(4) },
-                      { key: 6, label: 'Mid', disabled: !widthFits(6) },
-                      { key: 12, label: 'Large', disabled: !widthFits(12) },
-                    ]}
-                    current={span === 4 || span === 6 || span === 12 ? span : null}
-                    disabled={readOnly || fullWidthOnly}
-                    onPick={s => p(`Size: ${s === 4 ? 'small' : s === 6 ? 'mid' : 'large'}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))}
-                  />
-                ),
-                note: noteOr(span, fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : 'The boxes on Home, in the words you used for them: small is a third of the row, mid a half, large the whole row.'),
-                help: 'A quick pick for the width. Small is a third of the twelve columns, Mid a half, Large the full row; Column Span below sets any width.',
-              },
+              // The Size row (Small · Mid · Large, ours since R4.1) left on the operator's word of 2026-09-16 ("drop size"); Column Span, APEX's, is the one width.
               {
                 label: 'Column Span',
                 common: true,
                 changed: ch(t => t.span),
-                control: <Pills label="Region span" items={spanChoices} current={span} disabled={readOnly || fullWidthOnly} onPick={s => p(`Column Span ${s}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))} />,
-                note: noteOr(span, fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : 'In twelfths, like APEX.'),
+                control: <Pills label="Region span" items={spanChoices} current={span} disabled={readOnly || fullWidthOnly || bandOnly} onPick={s => p(`Column Span ${s}.`, x => ({ ...x, span: s, column: Math.min(x.column, COLUMNS + 1 - s) }))} />,
+                note: noteOr(
+                  span,
+                  fullWidthOnly ? 'The code draws its body at the full width. Split the page to size its parts.' : bandOnly ? BAND_NOTE : 'In twelfths, like APEX. Home’s boxes: small is a third (4), mid a half (6), large the whole row (12).',
+                ),
                 help: 'Width in twelfths. Full is 12, half is 6, a third is 4. Phones ignore it and stack every region.',
               },
               ...(one ? [{ label: 'Where it lands', common: true, control: <MiniMap doc={doc} id={one.id} />, note: 'Desktop and laptop. A phone stacks regions in sequence.' }] : []),

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import {
+  DEFAULT_REGION_TEMPLATE,
   DEFAULT_TOKEN,
   SHIPPED_PRESETS,
   TEMPLATE_OPTION_GROUPS,
@@ -9,6 +10,7 @@ import {
   presetOf,
   templateOptionsSummary,
   usesDefaults,
+  type RegionTemplateKey,
   type TemplateOptionGroupKey,
   type TemplatePresets,
 } from '@/lib/design/template-options';
@@ -30,6 +32,7 @@ const SELECT = 'w-full border border-border-strong bg-bg px-2 py-1 text-12 leadi
 export function TemplateOptionsButton({
   id,
   value,
+  template,
   presets,
   disabled,
   onChange,
@@ -37,6 +40,8 @@ export function TemplateOptionsButton({
   id?: string;
   /** The region's list as stored; absent means Use Template Defaults alone. */
   value: string[] | undefined;
+  /** The region's template (P1.1), whose presets Default draws; absent is Plain. */
+  template?: RegionTemplateKey;
   /** The templates' presets, for naming what Default draws; the shipped ones until loaded. */
   presets?: TemplatePresets;
   disabled?: boolean;
@@ -52,6 +57,7 @@ export function TemplateOptionsButton({
       {open && (
         <TemplateOptionsDialog
           value={value}
+          template={template}
           presets={presets ?? SHIPPED_PRESETS}
           onCancel={() => setOpen(false)}
           onOk={next => {
@@ -75,11 +81,14 @@ function picksOf(value: string[] | undefined): Partial<Record<TemplateOptionGrou
 
 export function TemplateOptionsDialog({
   value,
+  template = DEFAULT_REGION_TEMPLATE,
   presets,
   onOk,
   onCancel,
 }: {
   value: string[] | undefined;
+  /** The region's template (P1.1): Default draws its presets. */
+  template?: RegionTemplateKey;
   presets: TemplatePresets;
   onOk: (next: string[] | undefined) => void;
   onCancel: () => void;
@@ -106,7 +115,7 @@ export function TemplateOptionsDialog({
         <fieldset className="m-0 grid gap-3 border border-border p-3">
           <legend className="px-1 font-mono text-9 uppercase tracking-[0.12em] text-text-faint">Common</legend>
           {TEMPLATE_OPTION_GROUPS.map(group => {
-            const preset = optionById(presetOf(group.key, presets));
+            const preset = optionById(presetOf(group.key, presets, template));
             const picked = picks[group.key] ? optionById(picks[group.key] as string) : undefined;
             return (
               <div key={group.key} className="grid gap-1">

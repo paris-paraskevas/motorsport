@@ -111,7 +111,7 @@ describe('/preview/[rev]', () => {
   it('P1.2: draws a region on Use Template Defaults with the stored presets, the shipped ones when nothing is stored', async () => {
     const shipped = renderToStaticMarkup(await RevisionPreviewPage({ params }));
     expect(shipped).not.toMatch(/id="region-intro"[^>]*class="[^"]*py-4/);
-    loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: { standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } } });
+    loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: { ...SHIPPED_PRESETS, standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } } });
     const roomy = renderToStaticMarkup(await RevisionPreviewPage({ params }));
     expect(roomy).toMatch(/id="region-intro"[^>]*class="[^"]*py-4/);
     expect(roomy).toContain('class="space-y-6"');

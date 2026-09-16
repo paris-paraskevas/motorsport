@@ -99,6 +99,10 @@ describe('settingsFromRows — the shipped value is the fallback', () => {
       'region.image.show_caption': true,
       'region.list.style': 'links',
       'region.button.label': 'Read more',
+      'region.static.template': 'standard',
+      'region.image.template': 'standard',
+      'region.list.template': 'standard',
+      'region.button.template': 'standard',
     });
   });
 });
@@ -155,6 +159,10 @@ describe('loadSettingsForEditing', () => {
       'region.image.show_caption',
       'region.list.style',
       'region.button.label',
+      'region.static.template',
+      'region.image.template',
+      'region.list.template',
+      'region.button.template',
     ]);
     expect(rows!.find(r => r.key === 'home.major_series')).toEqual({
       key: 'home.major_series',
@@ -199,7 +207,17 @@ describe('the announcement setting reaches currentWhatsNew', () => {
   });
 });
 
-describe('Component Settings — the three region defaults', () => {
+describe('Component Settings — the region defaults', () => {
+  it('parses the template a new region starts with (P1.1): one of the five looks, Plain shipped, anything else refused', () => {
+    expect(parseSettingValue('region.static.template', 'boxed')).toBe('boxed');
+    expect(parseSettingValue('region.list.template', ' hero ')).toBe('hero');
+    expect(parseSettingValue('region.image.template', 'nope')).toBeUndefined();
+    expect(parseSettingValue('region.button.template', 3)).toBeUndefined();
+    expect(serialiseSettingValue('region.static.template', 'band')).toBe('band');
+    expect(DEFAULT_SETTINGS['region.static.template']).toBe('standard');
+    expect(DEFAULT_SETTINGS['region.button.template']).toBe('standard');
+  });
+
   it('parses yes/no, a choice and a short text from the column and from the editor alike, refusing the rest', () => {
     expect(parseSettingValue('region.image.show_caption', 'true')).toBe(true);
     expect(parseSettingValue('region.image.show_caption', false)).toBe(false);
@@ -218,7 +236,15 @@ describe('Component Settings — the three region defaults', () => {
 
   it('separates the component keys from the application keys, together the whole set', async () => {
     const { APPLICATION_SETTING_KEYS, COMPONENT_SETTING_KEYS, SETTING_KEYS } = await import('./setting-defaults');
-    expect([...COMPONENT_SETTING_KEYS]).toEqual(['region.image.show_caption', 'region.list.style', 'region.button.label']);
+    expect([...COMPONENT_SETTING_KEYS]).toEqual([
+      'region.image.show_caption',
+      'region.list.style',
+      'region.button.label',
+      'region.static.template',
+      'region.image.template',
+      'region.list.template',
+      'region.button.template',
+    ]);
     expect([...APPLICATION_SETTING_KEYS, ...COMPONENT_SETTING_KEYS].sort()).toEqual([...SETTING_KEYS].sort());
   });
 });

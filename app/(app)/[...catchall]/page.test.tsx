@@ -117,7 +117,7 @@ describe('the catch-all serving row pages', () => {
     loadLivePage.mockResolvedValue(live());
     const shipped = renderToStaticMarkup(await CatchAll({ params }));
     expect(shipped).not.toMatch(/id="region-intro"[^>]*class="[^"]*py-4/);
-    loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: { standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } } });
+    loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: { ...SHIPPED_PRESETS, standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } } });
     const roomy = renderToStaticMarkup(await CatchAll({ params }));
     expect(roomy).toMatch(/id="region-intro"[^>]*class="[^"]*py-4/);
     expect(roomy).toContain('class="space-y-6"');

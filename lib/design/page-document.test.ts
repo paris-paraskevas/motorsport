@@ -348,6 +348,23 @@ describe('Template Options on a region (the components programme, P1.2)', () => 
   });
 });
 
+describe('Appearance › Template on a region (the components programme, P1.1)', () => {
+  const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'body', ...over });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+
+  it('keeps a look, reads absent, empty and Plain as absent, and refuses a template the code does not have, naming the region', () => {
+    expect(parsePageDocument(doc([region({})])).value.regions[0]).not.toHaveProperty('template');
+    expect(parsePageDocument(doc([region({ template: '' })])).value.regions[0]).not.toHaveProperty('template');
+    expect(parsePageDocument(doc([region({ template: 'standard' })])).value.regions[0]).not.toHaveProperty('template');
+    const boxed = parsePageDocument(doc([region({ template: 'boxed' })]));
+    expect(boxed.problems).toEqual([]);
+    expect(boxed.value.regions[0]).toMatchObject({ template: 'boxed' });
+    const unknown = parsePageDocument(doc([region({ template: 'nope' })]));
+    expect(unknown.value.regions).toEqual([]);
+    expect(unknown.problems).toEqual(['region r: the template must be one of standard, boxed, band, aside, hero']);
+  });
+});
+
 describe('row page paths', () => {
   const code = ['/', '/about', '/series/[slug]', '/series/[slug]/[tab]', '/archive/[season]/[slug]/weekend/[round]', '/sign-in'];
 
