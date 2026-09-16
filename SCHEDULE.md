@@ -1926,6 +1926,18 @@ Won't touch this session: P1.4 and P1.8 before their turn (asked in the operator
 6. **Close 2** (~15 min at 94% context): the ledger's evidence (P1.4 done), the handoff and the session-51 prompt (the component-render.test.tsx repair first, then P1.8 asked), this block, the Inbox, the board; the records PR 1.0.125 on the word.
 Active: ~5h 50m from ~06:50Z to ~13:00Z (the operator present; the words came at ~08:00Z, ~08:35Z, ~09:22Z, ~10:55Z, ~11:20Z and ~12:55Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
+### Wed 2026-09-16 — session 51 (from ~13:05Z, the operator present) — the test repair, P1.8 asked and built, Phase 1 complete
+
+Order fixed by the session-51 handoff prompt ("merge then handoff … then first task is the fix") and the operator's words: "#1006 merge, then #1007 merge, and the P1.8 answer: the nine" (~13:45Z), the plan approved (~14:35Z), "merge" (~16:02Z). Every subagent on Sonnet, one at a time; no agent builds; the gates and a fresh-context reviewer before any merge; merge only on the word.
+
+1. **Session start and the repair** (~55 min): the files in order; `lib/design/component-render.test.tsx` switched on (the include broadened), its two failures reproduced (timeouts), the cause found with a fetch stub and its stacks (not the Home components: vitest 4.1.6 hands a vi.mock factory to only the first of concurrent dynamic imports of one module from one importer; a twelve-line probe reproduced it), spies on the real module, the h1 wiring test (seen failing against the pre-P1.4 rule by a mutation) → tsc 0 · lint 0 errors · vitest 209 files, 2140 tests · hooks 31/31 → PR #1007 → done.
+2. **The P1.8 ask** (~45 min): the review page with a working drawing of the Roller over Monza (the pickers recolour the mock, the gate follows) and the three answers as swatch strips → the word "the nine" with the two merges: #1006 (566fddab, 13:46:58Z), #1007 rebased onto main and merged (78ea27dd, 13:47:32Z; prod 1.0.126 ~13:58Z) → done.
+3. **P1.8 Theme Roller from the toolbar** (~2h 20m): plan mode (a Sonnet plan critic, 211k tokens, SOUND WITH FIXES, all folded) → the plan approved → tests first (4 files red) → built (three new files, seven changed) → tsc 0 · lint 0 errors · vitest 211 files, 2151 tests · hooks 31/31 · dry run 43295.31 KiB → the browser run (nine screenshots; a new default reached a fresh visitor page in 18 s; the local database put back) → review page → reviewer (Sonnet, 272k tokens, FAIL on one blocking gap: Escape taken on the document would have swallowed the site's dialogs' Escape; taken in 0981a178 with the test it named; the gates re-run; the dry run 43295.29 KiB, built alone after the harness killed the dev server and a rebuild for low memory; re-checked in the browser with Contact open beside the Roller) → PR #1008 → "merge" → merged 16:03:08Z as 848f81f3 → done. Phase 1 complete: fourteen slots done.
+4. **Close** (~30 min): the ledger's evidence (P1.8 done), the handoff and the session-52 prompt (the Phase 2 screen first), this block, the Inbox triage, the board; the records PR 1.0.128 on the word; then the Phase 2 screen.
+
+Won't touch this session: any Phase 2 slot before the screen's word; the cost PR; branch deletions; any prod Supabase write without "apply <id>"; any push to `main`; any agent on Fable; any fan-out.
+Active: ~3h 05m from ~13:05Z to ~16:10Z (the operator present; the words came at ~13:45Z, ~14:35Z and ~16:02Z; one mid-session note, the 2027 calendar; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
