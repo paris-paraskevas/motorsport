@@ -129,7 +129,9 @@ export function ComponentView({
       regionName(r),
       REGION_KIND_LABELS[r.kind].label,
       PD_POSITION[r.position].label,
-      r.position === 'body' ? `col ${r.column} · ${spanName(r.span)}${r.newRow ? ' · new row' : ''}` : 'stacked',
+      r.position === 'body' || r.parent ? `col ${r.column} · ${spanName(r.span)}${r.newRow ? ' · new row' : ''}` : 'stacked',
+      // The parent (P1.4): the region this one sits inside, or the page.
+      r.parent ? regionName(doc.regions.find(x => x.id === r.parent) ?? r) : 'page',
       // The look (P1.1): the template's label, Plain when none is stored.
       regionTemplate(r.template).label,
       r.authz ? (AUTHZ[r.authz] ?? r.authz) : 'Public',
@@ -149,7 +151,7 @@ export function ComponentView({
   }));
   return (
     <div className="grid gap-4 px-4 pb-6 pt-3.5">
-      <Report title="Regions" cols={['Seq', 'Name', 'Type', 'Position', 'Grid', 'Look', 'Authorization', 'Shows', 'Hidden']} rows={regions} selection={selection} onSelect={onSelect} />
+      <Report title="Regions" cols={['Seq', 'Name', 'Type', 'Position', 'Grid', 'Parent', 'Look', 'Authorization', 'Shows', 'Hidden']} rows={regions} selection={selection} onSelect={onSelect} />
       <Report title="Buttons" cols={['Seq', 'Label', 'Position', 'Target']} rows={buttons} selection={selection} onSelect={onSelect} />
       <Report title="Dynamic Actions" cols={['Seq', 'Name', 'When', 'Actions']} rows={actions} selection={selection} onSelect={onSelect} />
       {doc.regions.length > 0 && (
@@ -263,9 +265,9 @@ export function PageSearchTab({
 }
 
 const HOW: [string, string][] = [
-  ['Layout', 'The page as a schematic of template positions. Regions are tiles on a twelve-column ruler; their width is Column Span, their order is Sequence. Drag a tile’s header to move it; yellow tiles show where it may land.'],
-  ['Gallery', 'Regions, Items, Buttons and Components. Drag a tile onto a yellow drop position, or double-click to add it to the Body. A component is a piece the code draws, with its settings and its rule; a page whose body the code still draws carries it as one component until it is split. Items arrive with a later step.'],
-  ['Rendering tree', 'Everything the page renders, in order: Pre-Rendering steps, Components by position, Post-Rendering. Right-click a node for its actions.'],
+  ['Layout', 'The page as a schematic of template positions. Regions are tiles on a twelve-column ruler; their width is Column Span, their order is Sequence. Drag a tile to move it; yellow tiles show where it may land, inside a region with sub regions too. Hold Ctrl while dropping to copy the region instead.'],
+  ['Gallery', 'Regions, Items, Buttons and Components. Drag a tile onto a yellow drop position, or double-click to add it to the Body; a region that already holds sub regions offers yellow positions inside it too. A component is a piece the code draws, with its settings and its rule; a page whose body the code still draws carries it as one component until it is split. Items arrive with a later step.'],
+  ['Rendering tree', 'Everything the page renders, in order: Pre-Rendering (Before Header, After Header, Before Regions), Components by position with each region’s Sub Regions inside it, Post-Rendering (After Regions, Before Footer, After Footer). Right-click a region for its actions: Create Region, Create Sub Region, Create Button, Duplicate, Delete, Copy To.'],
   ['Property Editor', 'Grouped attributes of the selection. Filter narrows them; Show Common hides the rarely used ones. Click a label for its help.'],
   ['Dynamic Actions', 'Behaviour without code: When (an event on a region or the page) then Actions (show, hide, toggle, scroll to, go), each chosen from lists. The running page executes them.'],
   ['Save · Publish · Save and Run Page', 'Save writes a draft revision (Alt+F7); problems in Messages hold it. Publish makes the newest revision live. Save and Run Page opens a draft in a new tab wearing the developer toolbar (Alt+F8).'],

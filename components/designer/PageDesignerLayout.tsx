@@ -2,7 +2,7 @@
 
 import type { DragEvent, MouseEvent, ReactNode } from 'react';
 import { Boxes, Image as ImageIcon, List, Lock, MousePointerClick, Pilcrow, Puzzle, type LucideIcon } from 'lucide-react';
-import { COLUMNS, POSITIONS, REGION_KIND_LABELS, rowsAt, type PageDocument, type Position, type Region, type RegionKind } from '@/lib/design/page-document';
+import { COLUMNS, NESTING_CAP, POSITIONS, REGION_KIND_LABELS, childrenOf, isInside, parentOf, rowsAt, type PageDocument, type Position, type Region, type RegionKind } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import {
@@ -74,7 +74,8 @@ export function PageDesignerLayout({
   onSelect: (sel: Selection, opts?: { rename?: boolean; toggle?: boolean }) => void;
   onContext: (at: { x: number; y: number }, sel: Selection) => void;
   onDragStart: (drag: Drag) => void;
-  onDrop: (drag: Drag, where: Placement) => void;
+  /** `copy`: Ctrl or Cmd held on the drop (P1.4), so a copy lands and the original stays. */
+  onDrop: (drag: Drag, where: Placement, opts?: { copy: boolean }) => void;
   /** Edit on a shared tile: the entry opens in Shared Components. */
   onEditShared: (sc: string) => void;
   /** Display from Here (APEX: the Layout tab's menu): the id of the one region the tab shows; null shows the page. */
@@ -95,24 +96,28 @@ export function PageDesignerLayout({
   const dropTile = (label: string, where: Placement, style?: React.CSSProperties) =>
     dropping ? (
       <div
-        key={`drop:${where.position}:${where.after ?? ''}:${where.before ?? ''}:${where.first ? 'first' : ''}:${where.newRow ? 'row' : 'same'}`}
+        key={`drop:${where.position}:${where.parent ?? ''}:${where.after ?? ''}:${where.before ?? ''}:${where.first ? 'first' : ''}:${where.newRow ? 'row' : 'same'}`}
         role="button"
         tabIndex={-1}
         aria-label={`Drop here: ${label}`}
         className="flex min-h-[34px] items-center justify-center border border-dashed border-[color:var(--amber,#e0a52d)] bg-[color:var(--edit-dim)] px-2.5 py-2 text-center font-mono text-9 uppercase tracking-[0.12em] text-text-muted"
         style={style}
-        onDragOver={e => e.preventDefault()}
+        onDragOver={e => {
+          e.preventDefault();
+          // Ctrl (Cmd) asks for a copy (P1.4); the source allows both, so the drop fires either way.
+          e.dataTransfer.dropEffect = e.ctrlKey || e.metaKey ? 'copy' : 'move';
+        }}
         onDrop={e => {
           e.preventDefault();
           e.stopPropagation();
-          if (drag) onDrop(drag, where);
+          if (drag) onDrop(drag, where, { copy: e.ctrlKey || e.metaKey || e.dataTransfer.dropEffect === 'copy' });
         }}
       >
         {label}
       </div>
     ) : null;
 
-  const tile = (r: Region, style?: React.CSSProperties) => {
+  const tile = (r: Region, style?: React.CSSProperties, depth = 0) => {
     const sel: Selection = { kind: 'region', id: r.id };
     const Icon = KIND_ICON[r.kind];
     const mark = markers[`region:${r.id}`];
@@ -132,7 +137,8 @@ export function PageDesignerLayout({
         onDragStart={e => {
           e.stopPropagation();
           e.dataTransfer.setData('text/plain', r.id);
-          e.dataTransfer.effectAllowed = 'move';
+          // A copy or a move: Ctrl on the drop decides (P1.4); 'move' alone would cancel a Ctrl-drop.
+          e.dataTransfer.effectAllowed = 'copyMove';
           onDragStart({ type: 'region', id: r.id });
         }}
         onClick={e => {
@@ -166,10 +172,20 @@ export function PageDesignerLayout({
           <div className="border border-dashed border-border-strong px-2 pb-1.5 pt-1">
             <div className="flex justify-between gap-2 font-mono text-8 uppercase tracking-[0.14em] text-text-faint">
               <span>Region Body</span>
-              <span>{r.position === 'body' ? spanName(r.span) : ''}</span>
+              <span>{r.position === 'body' || r.parent ? spanName(r.span) : ''}</span>
             </div>
             <div className="mt-0.5 truncate text-11 text-text-muted">{regionSummary(r, assets, lists, pages)}</div>
           </div>
+          {/* Sub Regions (P1.4; APEX's region position): the region's own twelve columns, drawn only once it holds one. */}
+          {depth < NESTING_CAP && childrenOf(doc, r.id).length > 0 && (
+            <div className="border border-dashed border-border-strong px-2 pb-2 pt-1" data-sub-regions={r.id}>
+              <div className="flex justify-between gap-2 font-mono text-8 uppercase tracking-[0.14em] text-text-faint">
+                <span>Sub Regions</span>
+                <span>{childrenOf(doc, r.id).length}</span>
+              </div>
+              {gridOf(r.position, r.id, depth + 1)}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -235,7 +251,7 @@ export function PageDesignerLayout({
   };
 
   const stack = (pos: Position) => {
-    const regs = doc.regions.filter(r => r.position === pos);
+    const regs = doc.regions.filter(r => r.position === pos && !r.parent);
     const last = regs[regs.length - 1];
     return (
       <div className="grid gap-1.5 pt-1.5">
@@ -245,63 +261,71 @@ export function PageDesignerLayout({
     );
   };
 
-  const body = () => {
-    const regs = doc.regions.filter(r => r.position === 'body');
-    const rows = rowsAt(doc, 'body');
+  // The rows of one group on a twelve-column grid: the Body at the page level,
+  // or a region's Sub Regions (P1.4), with the yellow tiles while dragging. No
+  // tile inside the dragged region's own subtree: no region lands inside itself.
+  const gridOf = (position: Position, parent: string | null, depth: number): ReactNode => {
+    const holder = parent ? doc.regions.find(r => r.id === parent) : undefined;
+    const regs = doc.regions.filter(r => r.position === position && parentOf(r) === parent);
+    const rows = rowsAt(doc, position, parent);
+    const blocked = parent !== null && drag?.type === 'region' && isInside(doc, parent, drag.id);
+    const drops = dropping && !blocked;
+    const of = holder ? `Sub Regions of ${regionName(holder)}` : 'Body';
+    const at = (where: Placement): Placement => ({ ...where, parent });
     const cells: ReactNode[] = [];
-    const first = regs[0];
-    cells.push(dropTile('Body · first row', { position: 'body', first: true, newRow: true }, { gridColumn: '1 / span 12', gridRow: 1 }));
+    if (drops) cells.push(dropTile(`${of} · first row`, at({ position, first: true, newRow: true }), { gridColumn: '1 / span 12', gridRow: 1 }));
     rows.forEach((row, ri) => {
       const gridRow = 2 * (ri + 1);
       let used = 0;
       for (const r of row) {
-        cells.push(tile(r, { gridColumn: `${r.column} / span ${r.span}`, gridRow, minHeight: 64 }));
+        cells.push(tile(r, { gridColumn: `${r.column} / span ${r.span}`, gridRow, minHeight: 64 }, depth));
         used = Math.max(used, r.column + r.span - 1);
       }
       const last = row[row.length - 1];
       const free = COLUMNS - used;
-      if (free >= 2) {
+      if (drops && free >= 2) {
         cells.push(
-          dropTile(`Same row · ${free} col${free > 1 ? 's' : ''}`, { position: 'body', after: last.id, newRow: false, column: used + 1, span: Math.min(free, 6) }, { gridColumn: `${used + 1} / span ${free}`, gridRow }),
+          dropTile(`Same row · ${free} col${free > 1 ? 's' : ''}`, at({ position, after: last.id, newRow: false, column: used + 1, span: Math.min(free, 6) }), { gridColumn: `${used + 1} / span ${free}`, gridRow }),
         );
       }
-      cells.push(dropTile('New row', { position: 'body', after: last.id, newRow: true, column: 1 }, { gridColumn: '1 / span 12', gridRow: gridRow + 1 }));
+      if (drops) cells.push(dropTile(holder ? `${of} · new row` : 'New row', at({ position, after: last.id, newRow: true, column: 1 }), { gridColumn: '1 / span 12', gridRow: gridRow + 1 }));
     });
     return (
       <>
-        <div className="mt-0.5 grid grid-cols-12 gap-1 px-2">
-          {Array.from({ length: COLUMNS }, (_, i) => (
-            <span key={i} className="border-b border-border-strong pb-0.5 text-center font-mono text-8 text-text-faint">
-              {i + 1}
-            </span>
-          ))}
-        </div>
+        {!holder && (
+          <div className="mt-0.5 grid grid-cols-12 gap-1 px-2">
+            {Array.from({ length: COLUMNS }, (_, i) => (
+              <span key={i} className="border-b border-border-strong pb-0.5 text-center font-mono text-8 text-text-faint">
+                {i + 1}
+              </span>
+            ))}
+          </div>
+        )}
         <div
-          className="grid min-w-0 grid-cols-12 gap-1 px-2 pt-1.5"
+          className={`grid min-w-0 grid-cols-12 gap-1 ${holder ? 'pt-1' : 'px-2 pt-1.5'}`}
           style={
-            showCols
+            showCols && !holder
               ? { backgroundImage: 'repeating-linear-gradient(90deg, transparent 0 calc((100% - 44px) / 12), var(--border) calc((100% - 44px) / 12) calc((100% - 44px) / 12 + 4px))', backgroundOrigin: 'content-box' }
               : undefined
           }
         >
           {cells}
         </div>
-        {regs.length === 0 && !dropping && (
+        {!holder && regs.length === 0 && !dropping && (
           <p className="m-0 px-3.5 py-4 text-12 leading-relaxed text-text-faint">
             Nothing in the Body. Drag a region from the gallery onto the yellow position, or double-click a gallery tile.
           </p>
         )}
-        {first && null}
       </>
     );
   };
 
-  const count = (pos: Position) => doc.regions.filter(r => r.position === pos).length;
+  const count = (pos: Position) => doc.regions.filter(r => r.position === pos && !r.parent).length;
   const pageSel: Selection = { kind: 'page' };
 
   // Display from Here: the selected region alone, in its position, at the full
-  // width; Display from Page returns to the page. A region has no children of
-  // its own until the tree creates (P1.4), so the isolated view is one tile.
+  // width, its sub regions inside its tile (P1.4); Display from Page returns to
+  // the page.
   const rootRegion = root ? doc.regions.find(r => r.id === root) : undefined;
   if (rootRegion) {
     return (
@@ -340,7 +364,7 @@ export function PageDesignerLayout({
         {position({ label: PD_POSITION.header.label, count: count('header'), sel: { kind: 'position', id: 'header' }, children: stack('header') })}
         {position({ label: PD_POSITION.breadcrumb.label, count: count('breadcrumb'), sel: { kind: 'position', id: 'breadcrumb' }, children: stack('breadcrumb') })}
 
-        {position({ label: 'Body', count: count('body'), sel: { kind: 'position', id: 'body' }, children: body() })}
+        {position({ label: 'Body', count: count('body'), sel: { kind: 'position', id: 'body' }, children: gridOf('body', null, 0) })}
 
         {position({
           label: PD_POSITION.right.label,

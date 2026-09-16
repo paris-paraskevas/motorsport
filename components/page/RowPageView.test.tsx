@@ -362,6 +362,50 @@ describe('components (the components programme, R2a)', () => {
   });
 });
 
+describe('Sub regions (the components programme, P1.4)', () => {
+  const region = (id: string, over: Record<string, unknown> = {}) =>
+    ({ id, kind: 'static', title: id.toUpperCase(), position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'One.\n\nTwo.', ...over }) as PageDocument['regions'][number];
+  const own: PageDocument = {
+    version: 2,
+    actions: [],
+    regions: [
+      region('story', { span: 8, footerText: 'Below the story' }),
+      region('pull', { parent: 'story', seq: 10, template: 'aside' }),
+      region('strip', { parent: 'story', seq: 20, template: 'band' }),
+      region('deep', { parent: 'strip', seq: 10 }),
+      region('side', { column: 9, span: 4, newRow: false }),
+    ],
+  };
+  const boxClass = (html: string, id: string) => new RegExp(`id="region-${id}"[\\s\\S]*?data-region-box=""[^>]*class="([^"]*)"`).exec(html)?.[1] ?? '';
+
+  it('draws a sub region inside its parent, after the parent’s paragraphs and before its Footer Text, never at the page level; nesting goes on inside; a nested band has no page-edge bleed', () => {
+    const html = renderToStaticMarkup(<RowPageView {...data} document={own} />);
+    const at = (s: string) => html.indexOf(s);
+    expect(html.match(/id="region-pull"/g)).toHaveLength(1);
+    expect(at('id="region-story"')).toBeLessThan(at('id="region-pull"'));
+    expect(at('>STORY</h2>')).toBeLessThan(at('id="region-pull"'));
+    expect(at('id="region-pull"')).toBeLessThan(at('id="region-strip"'));
+    expect(at('id="region-strip"')).toBeLessThan(at('id="region-deep"'));
+    expect(at('id="region-deep"')).toBeLessThan(at('data-region-footer'));
+    expect(at('data-region-footer')).toBeLessThan(at('id="region-side"'));
+    expect(boxClass(html, 'pull')).toBe('border-l-2 border-brand pl-4');
+    expect(boxClass(html, 'strip')).toContain('bg-surface-elevated');
+    expect(boxClass(html, 'strip')).not.toContain('-mx-4');
+  });
+
+  it('a parent hidden at first carries its children inside the hidden cell; a refused parent draws its message alone', () => {
+    const hiddenDoc: PageDocument = { ...own, regions: own.regions.map(r => (r.id === 'story' ? { ...r, hidden: true } : r)) };
+    const h = renderToStaticMarkup(<RowPageView {...data} document={hiddenDoc} />);
+    expect(h).toMatch(/id="region-story"[^>]*hidden=""/);
+    expect(h.indexOf('id="region-pull"')).toBeGreaterThan(h.indexOf('id="region-story"'));
+    const lockedDoc: PageDocument = { ...own, regions: own.regions.map(r => (r.id === 'story' ? { ...r, authz: 'signed_in' } : r)) };
+    const l = renderToStaticMarkup(<RowPageView {...data} document={lockedDoc} />);
+    expect(l).toContain('Sign in to see this.');
+    expect(l).not.toContain('id="region-pull"');
+    expect(l).not.toContain('PULL');
+  });
+});
+
 describe('Region templates, the five looks (the components programme, P1.1)', () => {
   const region = (id: string, over: Record<string, unknown> = {}) =>
     ({ id, kind: 'static', title: id.toUpperCase(), position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'One.\n\nTwo.', ...over }) as PageDocument['regions'][number];

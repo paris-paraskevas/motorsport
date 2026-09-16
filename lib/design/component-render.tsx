@@ -1,6 +1,6 @@
 import 'server-only';
 import { cache, type ReactNode } from 'react';
-import { isLegacyBody, type ComponentRegion, type PageDocument } from './page-document';
+import { firstBodyRegion, isLegacyBody, type ComponentRegion, type PageDocument } from './page-document';
 import type { SettingValue } from './components';
 import type { PageRow } from './pages';
 
@@ -153,7 +153,8 @@ export interface RenderPage {
  */
 export async function renderComponents(doc: PageDocument, where: RenderPage, hooks?: RenderHooks): Promise<Record<string, ReactNode>> {
   const out: Record<string, ReactNode> = {};
-  const firstInBody = doc.regions.find(r => r.position === 'body' && !r.hidden)?.id ?? null;
+  // The first page-level region showing in the Body (P1.4: never a sub region).
+  const firstInBody = firstBodyRegion(doc)?.id ?? null;
   const regions = doc.regions.filter((r): r is ComponentRegion => r.kind === 'component' && !isLegacyBody(r));
   const page = where.page ?? { path: where.path, name: '', title: null };
   await Promise.all(

@@ -4,8 +4,11 @@ import {
   POSITIONS,
   REGION_KIND_LABELS,
   SHOW_RULE_LABELS,
+  descendantsOf,
+  isInside,
   isLegacyBody,
   overlappingRegions,
+  parentOf,
   parsePageDocument,
   type ComponentRegion,
   type DynamicAction,
@@ -153,10 +156,12 @@ const ORDER: Record<string, number> = Object.fromEntries(POSITIONS.map((p, i) =>
 /** Regions in position and sequence order, renumbered by tens within each position. */
 export function renumber(regions: Region[]): Region[] {
   const sorted = [...regions].sort((a, b) => ORDER[a.position] - ORDER[b.position] || a.seq - b.seq);
-  const next: Partial<Record<Position, number>> = {};
+  // By tens within each group: a position at the page level, or inside one parent (P1.4).
+  const next = new Map<string, number>();
   return sorted.map(r => {
-    const seq = (next[r.position] ?? 0) + 10;
-    next[r.position] = seq;
+    const key = `${r.position}|${parentOf(r) ?? ''}`;
+    const seq = (next.get(key) ?? 0) + 10;
+    next.set(key, seq);
     return r.seq === seq ? r : { ...r, seq };
   });
 }
@@ -253,12 +258,21 @@ export interface Placement {
   column?: number;
   /** A cap on the span (the free columns of a row). */
   span?: number;
+  /** Inside this region (P1.4: a sub region, in the parent's position and columns); null or absent is the page level. */
+  parent?: string | null;
 }
 
-/** The region at a placement, its neighbours renumbered. */
+/** The region at a placement, its neighbours renumbered. A region never lands
+ *  inside itself or inside a region it holds (the document comes back as it
+ *  was); a region moved to another position takes everything inside it along. */
 export function placeRegion(doc: PageDocument, region: Region, where: Placement): PageDocument {
+  const parent = where.parent ?? null;
+  const parentRegion = parent ? doc.regions.find(r => r.id === parent) : undefined;
+  if (parent !== null && !parentRegion) return doc;
+  if (parentRegion && doc.regions.some(r => r.id === region.id) && isInside(doc, parentRegion.id, region.id)) return doc;
+  const position = parentRegion ? parentRegion.position : where.position;
   const rest = doc.regions.filter(r => r.id !== region.id);
-  const siblings = rest.filter(r => r.position === where.position);
+  const siblings = rest.filter(r => r.position === position && parentOf(r) === parent);
   let seq: number;
   if (where.first) seq = (siblings[0]?.seq ?? 10) - 5;
   else if (where.after) seq = (siblings.find(r => r.id === where.after)?.seq ?? 0) + 5;
@@ -268,13 +282,16 @@ export function placeRegion(doc: PageDocument, region: Region, where: Placement)
   const span = Math.min(where.span ?? region.span, COLUMNS + 1 - column);
   const placed: Region = {
     ...region,
-    position: where.position,
+    position,
     seq,
     newRow: where.newRow ?? region.newRow,
     column,
     span: Math.max(1, span),
   };
-  return { ...doc, regions: renumber([...rest, placed]) };
+  if (parent) placed.parent = parent;
+  else delete placed.parent;
+  const inside = position === region.position ? new Set<string>() : new Set(descendantsOf(doc, region.id));
+  return { ...doc, regions: renumber([...rest.map(r => (inside.has(r.id) ? { ...r, position } : r)), placed]) };
 }
 
 export function addRegion(doc: PageDocument, kind: RegionKind, where: Placement, defaults: RegionDefaults = SHIPPED_REGION_DEFAULTS): { doc: PageDocument; id: string } {
@@ -286,33 +303,53 @@ export function addRegion(doc: PageDocument, kind: RegionKind, where: Placement,
   return { doc: placeRegion(doc, region, placement), id };
 }
 
-/** Removing a region takes with it every trigger and effect that named it; an
- *  action left with no effect goes too, so the parser never sees a dangling name. */
+/** Removing a region takes with it everything inside it (P1.4) and every
+ *  trigger and effect that named any of them; an action left with no effect
+ *  goes too, so the parser never sees a dangling name. */
 export function removeRegion(doc: PageDocument, id: string): PageDocument {
+  const gone = new Set([id, ...descendantsOf(doc, id)]);
   return {
     ...doc,
-    regions: renumber(doc.regions.filter(r => r.id !== id)),
+    regions: renumber(doc.regions.filter(r => !gone.has(r.id))),
     actions: doc.actions
-      .filter(a => !('region' in a.when && a.when.region === id))
-      .map(a => ({ ...a, do: a.do.filter(e => e.action === 'go' || e.region !== id) }))
+      .filter(a => !('region' in a.when && gone.has(a.when.region)))
+      .map(a => ({ ...a, do: a.do.filter(e => e.action === 'go' || !gone.has(e.region)) }))
       .filter(a => a.do.length > 0),
   };
 }
 
-export function duplicateRegion(doc: PageDocument, id: string): { doc: PageDocument; id: string } | null {
+/** A copy of a region and everything inside it (P1.4), with fresh ids and the
+ *  parents remapped; beneath the original when no placement is given (the
+ *  copy's title says so), else at the placement (Copy To, a Ctrl+drop). */
+export function duplicateRegion(doc: PageDocument, id: string, where?: Placement): { doc: PageDocument; id: string } | null {
   const r = doc.regions.find(x => x.id === id);
   if (!r) return null;
-  const nid = nextRegionId(r.kind, doc.regions.map(x => x.id));
-  const copy: Region = { ...r, id: nid, title: r.title ? `${r.title} (copy)` : '', seq: r.seq + 5, newRow: true };
-  return { doc: { ...doc, regions: renumber([...doc.regions, copy]) }, id: nid };
+  // Each id minted is taken before the next, so two children of one kind never share one.
+  const taken = doc.regions.map(x => x.id);
+  const fresh = new Map<string, string>();
+  const mint = (x: Region) => {
+    const nid = nextRegionId(x.kind, taken);
+    taken.push(nid);
+    fresh.set(x.id, nid);
+    return nid;
+  };
+  const rootId = mint(r);
+  const copies: Region[] = [{ ...r, id: rootId, title: r.title ? `${r.title} (copy)` : '', seq: r.seq + 5, newRow: true }];
+  for (const did of descendantsOf(doc, id)) {
+    const d = doc.regions.find(x => x.id === did)!;
+    copies.push({ ...d, id: mint(d), parent: fresh.get(d.parent as string) as string });
+  }
+  const withCopies = { ...doc, regions: renumber([...doc.regions, ...copies]) };
+  if (!where) return { doc: withCopies, id: rootId };
+  return { doc: placeRegion(withCopies, withCopies.regions.find(x => x.id === rootId)!, where), id: rootId };
 }
 
-/** Swap a region with its neighbour in the same position. */
+/** Swap a region with its neighbour among the siblings of its position and parent. */
 export function moveRegion(doc: PageDocument, id: string, dir: -1 | 1): PageDocument {
   const ordered = renumber(doc.regions);
   const me = ordered.find(r => r.id === id);
   if (!me) return doc;
-  const siblings = ordered.filter(r => r.position === me.position);
+  const siblings = ordered.filter(r => r.position === me.position && parentOf(r) === parentOf(me));
   const i = siblings.findIndex(r => r.id === id);
   const other = siblings[i + dir];
   if (!other) return doc;
@@ -484,7 +521,7 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
   // A warning, not an error: an empty page saves, runs and publishes as its
   // title alone, as an APEX page does (operator, 2026-09-09: "i should always
   // be able to run page").
-  if (!code && !doc.regions.some(r => r.position === 'body' && !r.hidden && !r.commentedOut)) {
+  if (!code && !doc.regions.some(r => r.position === 'body' && !r.hidden && !r.commentedOut && !r.parent)) {
     out.push({ level: 'warn', text: 'The Body has no region showing. The page runs as its title alone.', sel: { kind: 'position', id: 'body' } });
   }
   const file = servedByFile(page);
@@ -518,7 +555,8 @@ export function designerMessages(doc: PageDocument, page: PageRow): DesignerMess
     const b = doc.regions.find(r => r.id === o.b);
     if (!a || !b) continue;
     const where = o.from === o.to ? `column ${o.from}` : `columns ${o.from} to ${o.to}`;
-    out.push({ level: 'err', text: `${regionName(b)} overlaps ${regionName(a)} on one row (${where}). Move it, or start a new row.`, sel: { kind: 'region', id: b.id }, group: 'Layout' });
+    const holder = o.parent ? doc.regions.find(r => r.id === o.parent) : undefined;
+    out.push({ level: 'err', text: `${regionName(b)} overlaps ${regionName(a)} on one row${holder ? ` inside ${regionName(holder)}` : ''} (${where}). Move it, or start a new row.`, sel: { kind: 'region', id: b.id }, group: 'Layout' });
   }
   for (const a of doc.actions) {
     if (!a.name.trim()) out.push({ level: 'info', text: `Dynamic action ${a.id} has no name.`, sel: { kind: 'action', id: a.id }, group: 'Identification' });
@@ -584,6 +622,8 @@ export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { 
       span: r.span,
       // The look (P1.1), by its label; Plain is the absent default and is not a hit.
       look: r.template ? regionTemplate(r.template).label : null,
+      // The parent (P1.4), by its name; the page level is not a hit.
+      parent: r.parent ? regionName(doc.regions.find(x => x.id === r.parent) ?? r) : null,
       authorization: r.authz,
       hidden: r.hidden ? 'hidden at first' : null,
       commented: r.commentedOut ? 'commented out' : null,
@@ -612,7 +652,7 @@ export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { 
 
 export interface SystemStep {
   id: string;
-  point: 'before-header' | 'after-header' | 'after-footer';
+  point: 'before-header' | 'after-header' | 'before-regions' | 'after-regions' | 'before-footer' | 'after-footer';
   name: string;
   note: string;
 }
@@ -640,7 +680,12 @@ export function systemSteps(page: Pick<PageRow, 'kind' | 'served'>): SystemStep[
 }
 
 export const STEP_POINTS: { key: SystemStep['point']; label: string; phase: 'Pre-Rendering' | 'Post-Rendering' }[] = [
+  // APEX's six points (P1.4); the site's steps sit at three of them today, the
+  // others wait for rules and processes.
   { key: 'before-header', label: 'Before Header', phase: 'Pre-Rendering' },
   { key: 'after-header', label: 'After Header', phase: 'Pre-Rendering' },
+  { key: 'before-regions', label: 'Before Regions', phase: 'Pre-Rendering' },
+  { key: 'after-regions', label: 'After Regions', phase: 'Post-Rendering' },
+  { key: 'before-footer', label: 'Before Footer', phase: 'Post-Rendering' },
   { key: 'after-footer', label: 'After Footer', phase: 'Post-Rendering' },
 ];

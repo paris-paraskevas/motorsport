@@ -66,7 +66,12 @@ export function bindActions(actions: readonly DynamicAction[], root: ParentNode 
     } else if (when.event === 'click') {
       const el = regionEl(root, when.region);
       if (!el) continue;
-      const handler = () => run(a);
+      // A sub region's wrapper sits inside its parent's (P1.4): a click inside the child is the child's alone.
+      const handler = (e: Event) => {
+        const target = e.target instanceof Element ? e.target.closest('[data-region]') : null;
+        if (target && target !== el) return;
+        run(a);
+      };
       el.addEventListener('click', handler);
       el.style.cursor = 'pointer';
       cleanups.push(() => el.removeEventListener('click', handler));
