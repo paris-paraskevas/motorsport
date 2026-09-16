@@ -28,7 +28,7 @@ export const metadata: Metadata = { title: 'Designer · Admin' };
 // the build options and the settings loaded once so the designer opens with
 // them. The editor itself is a browser-only chunk (DesignerLoader). `?sc=<key>`
 // opens a catalogue entry directly.
-export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string; ws?: string; page?: string; region?: string }> }) {
+export default async function DesignerPage({ searchParams }: { searchParams: Promise<{ sc?: string; ws?: string; page?: string; region?: string; focus?: string }> }) {
   await requireAdmin();
   const { page: pageId } = await searchParams;
   const initialDetail = typeof pageId === 'string' && pageId ? await loadPageDetail(pageId) : null;
@@ -100,6 +100,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialPageId={initialDetail ? initialDetail.page.id : null}
       initialDetail={initialDetail}
       initialRegion={initialDetail && typeof params.region === 'string' ? params.region : null}
+      initialFocus={typeof params.focus === 'string' && /^[a-z][a-z-]{0,30}$/i.test(params.focus) ? params.focus : null}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
     />
   );

@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.127 — 2026-09-16
+
+In the design tool's toolbar on a running page, Customize now opens a Theme Roller: the theme's colours move live as you pick them, with the contrast check beside them, and a theme you like can be saved, or saved as a new one and made the site's default. Nothing changes for readers until a theme is saved and made the default.
+
 ## 1.0.126 — 2026-09-16
 
 Internal only: a test of the design tool's components that had never run now runs with the rest. Nothing changes for readers.

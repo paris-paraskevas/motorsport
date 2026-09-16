@@ -318,6 +318,7 @@ export function Designer({
   initialPageId = null,
   initialDetail = null,
   initialRegion = null,
+  initialFocus = null,
   series = [],
 }: {
   readOnly: boolean;
@@ -336,6 +337,8 @@ export function Designer({
   initialDetail?: PageDetail | null;
   /** A region of that page to open on, from `?region=` (P1.7: Quick Edit lands on the region). */
   initialRegion?: string | null;
+  /** A field of the Application Definition to land on, from `?focus=` (P1.8: the toolbar's Edit Logo lands on the Wordmark). */
+  initialFocus?: string | null;
   /** Lists the server already loaded, so opening needs no round trip; any list
    *  missing here is fetched. */
   initialLists?: Partial<Record<NavListKey, EditableList>>;
@@ -1021,6 +1024,7 @@ export function Designer({
                 loaded={application.loaded}
                 readOnly={readOnly}
                 onSaved={next => setApplication({ state: 'ready', loaded: next })}
+                focus={initialFocus}
               />
             );
           })()}

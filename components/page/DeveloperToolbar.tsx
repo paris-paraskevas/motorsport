@@ -14,15 +14,16 @@ import { noteNavigation } from '@/lib/design/debug-client';
 // hydration, so the HTML readers get is the same cached render as before and a
 // public page carries nothing of it. APEX's nine entries in APEX's order: Home,
 // App, Page, Session, Debug, Quick Edit, Customize, Info, Options. Home, App,
-// Page, Debug (P1.9), Quick Edit, Info and Options (P1.7) are live; an entry a
-// later slot builds is disabled and says which. Not drawn below the large
-// breakpoint, and every link into the designer opens the one developer tab
-// (the operator's asks of 2026-09-15).
+// Page, Debug (P1.9), Quick Edit, Info and Options (P1.7) and Customize (P1.8)
+// are live; an entry a later slot builds is disabled and says which. Not drawn
+// below the large breakpoint, and every link into the designer opens the one
+// developer tab (the operator's asks of 2026-09-15).
 
-// The panel, Quick Edit and the timing dialog arrive only when asked for: a public page's chunk carries the bar, not the report.
+// The panels, Quick Edit and the timing dialog arrive only when asked for: a public page's chunk carries the bar, not the report or the Roller.
 const DebugPanel = dynamic(() => import('./DebugPanel').then(m => m.DebugPanel), { ssr: false });
 const QuickEdit = dynamic(() => import('./QuickEdit').then(m => m.QuickEdit), { ssr: false });
 const PageTiming = dynamic(() => import('./PageTiming').then(m => m.PageTiming), { ssr: false });
+const ThemeRoller = dynamic(() => import('./ThemeRoller').then(m => m.ThemeRoller), { ssr: false });
 
 /** The ONE developer tab (the operator, 2026-09-15: "the one tab i have for
  *  developing the app, not open another, same as when i save and run"): the
@@ -164,25 +165,51 @@ function Entry({ icon: Icon, label, href, target, title, iconOnly = false }: { i
   );
 }
 
-/** A menu entry: plain, or checkable as a radio (one of a set) or a checkbox (on or off). */
-function MenuItem({ label, onPick, disabled = false, checked, kind = 'radio' }: { label: string; onPick: () => void; disabled?: boolean; checked?: boolean; kind?: 'radio' | 'checkbox' }) {
+/** A menu entry: plain, or checkable as a radio (one of a set) or a checkbox (on
+ *  or off); with `href`, a link into the designer's one tab (P1.8: Edit Logo). */
+function MenuItem({
+  label,
+  onPick,
+  disabled = false,
+  checked,
+  kind = 'radio',
+  title,
+  href,
+  target,
+}: {
+  label: string;
+  onPick: () => void;
+  disabled?: boolean;
+  checked?: boolean;
+  kind?: 'radio' | 'checkbox';
+  title?: string;
+  href?: string;
+  target?: string;
+}) {
   return (
     <li role="none">
-      <button
-        type="button"
-        role={checked === undefined ? 'menuitem' : kind === 'checkbox' ? 'menuitemcheckbox' : 'menuitemradio'}
-        aria-checked={checked}
-        disabled={disabled}
-        className={MENU_ITEM}
-        onClick={onPick}
-      >
-        {label}
-      </button>
+      {href ? (
+        <a role="menuitem" href={href} target={target} title={title} className={MENU_ITEM} onClick={onPick}>
+          {label}
+        </a>
+      ) : (
+        <button
+          type="button"
+          role={checked === undefined ? 'menuitem' : kind === 'checkbox' ? 'menuitemcheckbox' : 'menuitemradio'}
+          aria-checked={checked}
+          disabled={disabled}
+          title={title}
+          className={MENU_ITEM}
+          onClick={onPick}
+        >
+          {label}
+        </button>
+      )}
     </li>
   );
 }
 
-type OpenMenu = 'debug' | 'quick' | 'info' | 'options' | null;
+type OpenMenu = 'debug' | 'quick' | 'customize' | 'info' | 'options' | null;
 
 interface Trace {
   n: number;
@@ -206,6 +233,8 @@ export function DeveloperToolbar() {
   const [mode, setMode] = useState<'jump' | 'live' | null>(null);
   const [columns, setColumns] = useState(false);
   const [timing, setTiming] = useState(false);
+  // P1.8: the Theme Roller over the page; one tool over the page at a time, so it and the Debug panel close each other.
+  const [roller, setRoller] = useState(false);
   const [options, setOptions] = useState<ToolbarOptions>(readOptions);
   // One identity, so Quick Edit's listeners are not re-registered on every render of the bar.
   const exitQuickEdit = useCallback(() => setMode(null), []);
@@ -330,7 +359,18 @@ export function DeveloperToolbar() {
           <SquareMousePointer size={14} aria-hidden="true" />
           <span className={options.iconsOnly ? 'sr-only' : 'whitespace-nowrap'}>Quick Edit</span>
         </button>
-        <Entry icon={PaintRoller} label="Customize" title="Customize (Theme Roller) arrives with P1.8" iconOnly={options.iconsOnly} />
+        <button
+          type="button"
+          className={ENTRY}
+          aria-pressed={roller}
+          aria-haspopup="menu"
+          aria-expanded={menu === 'customize'}
+          title={roller ? 'Customize: the Theme Roller is open' : 'Customize'}
+          onClick={() => toggleMenu('customize')}
+        >
+          <PaintRoller size={14} aria-hidden="true" />
+          <span className={options.iconsOnly ? 'sr-only' : 'whitespace-nowrap'}>Customize</span>
+        </button>
         <button type="button" className={ENTRY} aria-haspopup="menu" aria-expanded={menu === 'info'} aria-pressed={columns} title="Info" onClick={() => toggleMenu('info')}>
           <Info size={14} aria-hidden="true" />
           <span className="sr-only">Info</span>
@@ -356,6 +396,7 @@ export function DeveloperToolbar() {
             disabled={level === 0}
             onPick={() => {
               setPanel(true);
+              setRoller(false);
               setMenu(null);
             }}
           />
@@ -366,6 +407,23 @@ export function DeveloperToolbar() {
         <ul role="menu" aria-label="Quick Edit" className={MENU}>
           <MenuItem label="Quick Edit Mode" kind="checkbox" checked={mode === 'jump'} onPick={() => toggleMode('jump')} />
           <MenuItem label="Edit Live Template Options" kind="checkbox" checked={mode === 'live'} onPick={() => toggleMode('live')} />
+        </ul>
+      )}
+      {menu === 'customize' && (
+        // APEX: the Customize menu (UX map line 112): Theme Roller, Edit Logo, Edit App Icon. The Roller docks over the page (P1.8);
+        // Edit Logo opens the Application Definition's Wordmark, the site's logo, in the one developer tab; Edit App Icon is ours to
+        // disable: the icon ships with the code.
+        <ul role="menu" aria-label="Customize" className={MENU}>
+          <MenuItem
+            label="Theme Roller"
+            onPick={() => {
+              setRoller(true);
+              setPanel(false);
+              setMenu(null);
+            }}
+          />
+          <MenuItem label="Edit Logo" href="/admin/designer?ws=shared&sc=appdef&focus=wordmark" target={DESIGNER_TAB} title="The Wordmark in the Application Definition" onPick={() => setMenu(null)} />
+          <MenuItem label="Edit App Icon" disabled title="The icon ships with the code" onPick={() => setMenu(null)} />
         </ul>
       )}
       {menu === 'info' && (
@@ -404,6 +462,7 @@ export function DeveloperToolbar() {
         </ul>
       )}
       {panel && level > 0 && <DebugPanel report={fresh ? trace.report : null} loading={tracing} onRefresh={() => setTraceN(n => n + 1)} onClose={() => setPanel(false)} />}
+      {roller && <ThemeRoller barPosition={pos} onClose={() => setRoller(false)} />}
       {columns && (
         // APEX: Show Layout Columns draws the grid over the page. The site's twelve columns inside the standard width's paddings (PAGE_WIDE, lib/site.ts), the rows' gap.
         <div aria-hidden="true" data-layout-columns="" className="pointer-events-none fixed inset-0 z-30 px-4 md:px-6 lg:px-8">

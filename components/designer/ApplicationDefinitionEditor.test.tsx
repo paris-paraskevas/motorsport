@@ -63,4 +63,11 @@ describe('ApplicationDefinitionEditor', () => {
     expect((screen.getByLabelText('Application name') as HTMLInputElement).disabled).toBe(true);
     expect(screen.queryByRole('button', { name: 'Save definition' })).toBeNull();
   });
+
+  it('lands on a field when asked (P1.8: the toolbar’s Edit Logo opens the Wordmark): the Properties group open, the field focused', async () => {
+    render(<ApplicationDefinitionEditor loaded={loaded} readOnly={false} onSaved={() => {}} focus="wordmark" />);
+    const wordmark = screen.getByLabelText('Wordmark') as HTMLInputElement;
+    await waitFor(() => expect(document.activeElement).toBe(wordmark));
+    expect(screen.getByRole('button', { name: 'Properties' }).getAttribute('aria-expanded')).toBe('true');
+  });
 });

@@ -29,7 +29,13 @@ const report = {
     { at: 20, level: 4, phase: 'render:intro', text: 'Static Content', ms: 3 },
   ],
 };
-const fetchMock = vi.fn(async (url: string) => (url.includes('/api/admin/design/debug') ? { ok: true, status: 200, json: async () => report } : { ok: true, status: 200, json: async () => ({ pages }) }));
+const fetchMock = vi.fn(async (url: string) =>
+  url.includes('/api/admin/design/debug')
+    ? { ok: true, status: 200, json: async () => report }
+    : url.includes('/api/admin/design/themes')
+      ? { ok: true, status: 200, json: async () => ({ themes: [] }) }
+      : { ok: true, status: 200, json: async () => ({ pages }) },
+);
 
 beforeEach(() => {
   fetchMock.mockClear();
@@ -63,11 +69,12 @@ describe('DeveloperToolbar', () => {
     expect(screen.getByRole('link', { name: /^Page a1b2c3d4/ }).getAttribute('href')).toBe('/admin/designer?ws=builder&page=a1b2c3d4-0000-4000-8000-000000000010');
     // The operator, 2026-09-15: every link into the designer opens the one developer tab, the way Save and Run reuses the one running tab.
     for (const name of ['Home', 'App 100', /^Page a1b2c3d4/] as const) expect(screen.getByRole('link', { name }).getAttribute('target')).toBe('paddock-designer');
+    // P1.8: Customize is a menu like Debug's (Theme Roller, Edit Logo, Edit App Icon).
     const customize = screen.getByRole('button', { name: 'Customize' }) as HTMLButtonElement;
-    expect(customize.disabled).toBe(true);
-    expect(customize.title).toContain('P1.8');
+    expect(customize.disabled).toBe(false);
+    expect(customize.getAttribute('aria-haspopup')).toBe('menu');
     expect((screen.getByRole('button', { name: 'Session' }) as HTMLButtonElement).disabled).toBe(true);
-    for (const name of ['Debug', 'Quick Edit', 'Info', 'Options']) expect((screen.getByRole('button', { name }) as HTMLButtonElement).disabled).toBe(false);
+    for (const name of ['Debug', 'Quick Edit', 'Customize', 'Info', 'Options']) expect((screen.getByRole('button', { name }) as HTMLButtonElement).disabled).toBe(false);
     // The operator, 2026-09-15: "the bar shouldnt show on mobile for me": one root, out of the layout below lg, holding the bar and everything the bar opens.
     const root = container.firstElementChild as HTMLElement;
     expect(root.className.split(' ')).toEqual(expect.arrayContaining(['max-lg:hidden', 'lg:contents']));
@@ -223,5 +230,50 @@ describe('DeveloperToolbar', () => {
     render(<DeveloperToolbar />);
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     await waitFor(() => expect((screen.getByRole('button', { name: /^Page/ }) as HTMLButtonElement).title).toBe('Not a page of the application'));
+  });
+
+  it("Customize (P1.8): APEX's three items in order; Theme Roller opens the panel, presses the entry and closes an open Debug panel; Edit Logo opens the Wordmark in the one developer tab; Edit App Icon is ours, disabled with its reason", async () => {
+    render(<DeveloperToolbar />);
+    await waitFor(() => expect(screen.getByRole('link', { name: /^Page a1b2c3d4/ })).toBeTruthy());
+    // A Debug panel open first, so the exclusion shows.
+    fireEvent.click(screen.getByRole('button', { name: 'Debug' }));
+    fireEvent.click(within(screen.getByRole('menu', { name: 'Debug' })).getByRole('menuitemradio', { name: 'App Trace' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Debug' }));
+    fireEvent.click(within(screen.getByRole('menu', { name: 'Debug' })).getByRole('menuitem', { name: 'View Debug' }));
+    await screen.findByRole('dialog', { name: 'Debug' });
+    const customize = () => screen.getByRole('button', { name: 'Customize' });
+    expect(customize().getAttribute('aria-pressed')).toBe('false');
+    fireEvent.click(customize());
+    const menu = screen.getByRole('menu', { name: 'Customize' });
+    expect([...menu.querySelectorAll('[role^="menuitem"]')].map(el => el.textContent)).toEqual(['Theme Roller', 'Edit Logo', 'Edit App Icon']);
+    const logo = within(menu).getByRole('menuitem', { name: 'Edit Logo' });
+    expect(logo.tagName).toBe('A');
+    expect(logo.getAttribute('href')).toBe('/admin/designer?ws=shared&sc=appdef&focus=wordmark');
+    expect(logo.getAttribute('target')).toBe('paddock-designer');
+    const icon = within(menu).getByRole('menuitem', { name: 'Edit App Icon' }) as HTMLButtonElement;
+    expect(icon.disabled).toBe(true);
+    expect(icon.title).toBe('The icon ships with the code');
+    fireEvent.click(within(menu).getByRole('menuitem', { name: 'Theme Roller' }));
+    expect(screen.queryByRole('menu')).toBeNull();
+    const roller = await screen.findByRole('dialog', { name: 'Theme Roller' });
+    expect(customize().getAttribute('aria-pressed')).toBe('true');
+    expect(screen.queryByRole('dialog', { name: 'Debug' })).toBeNull();
+    // View Debug closes the Roller in turn: one tool over the page at a time.
+    fireEvent.click(screen.getByRole('button', { name: 'Debug' }));
+    fireEvent.click(within(screen.getByRole('menu', { name: 'Debug' })).getByRole('menuitem', { name: 'View Debug' }));
+    await screen.findByRole('dialog', { name: 'Debug' });
+    expect(screen.queryByRole('dialog', { name: 'Theme Roller' })).toBeNull();
+    expect(customize().getAttribute('aria-pressed')).toBe('false');
+    fireEvent.click(customize());
+    fireEvent.click(within(screen.getByRole('menu', { name: 'Customize' })).getByRole('menuitem', { name: 'Theme Roller' }));
+    await screen.findByRole('dialog', { name: 'Theme Roller' });
+    fireEvent.click(screen.getByRole('button', { name: 'Close Theme Roller' }));
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Theme Roller' })).toBeNull());
+    expect(customize().getAttribute('aria-pressed')).toBe('false');
+    // A pick from the menu closes it, the link included.
+    fireEvent.click(customize());
+    fireEvent.click(within(screen.getByRole('menu', { name: 'Customize' })).getByRole('menuitem', { name: 'Edit Logo' }));
+    expect(screen.queryByRole('menu')).toBeNull();
+    expect(roller).toBeTruthy();
   });
 });

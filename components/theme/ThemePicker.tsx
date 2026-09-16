@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useSyncExternalStore } from 'react';
-import { THEME_STORAGE_KEY } from '@/components/theme/ThemeScript';
+import { THEME_CHANGE_EVENT, THEME_STORAGE_KEY } from '@/components/theme/ThemeScript';
 import { pickableThemes, resolveThemeAttributes, type ThemeOption, type ThemeSet } from '@/lib/design/theme-defaults';
 
 // The visitor's theme picker. The themes come from the same set the layout and
@@ -11,10 +11,6 @@ import { pickableThemes, resolveThemeAttributes, type ThemeOption, type ThemeSet
 // tokens: each card shows itself.
 
 type ThemeChoice = string;
-
-// Same-tab picks dispatch this so useSyncExternalStore re-reads; cross-tab
-// picks arrive via the native storage event.
-const CHANGE_EVENT = 'paddock:theme-change';
 
 function systemResolved(set: ThemeSet): string {
   const wants = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'paper';
@@ -41,10 +37,10 @@ function readChoice(set: ThemeSet): ThemeChoice {
 }
 
 function subscribe(onStoreChange: () => void) {
-  window.addEventListener(CHANGE_EVENT, onStoreChange);
+  window.addEventListener(THEME_CHANGE_EVENT, onStoreChange);
   window.addEventListener('storage', onStoreChange);
   return () => {
-    window.removeEventListener(CHANGE_EVENT, onStoreChange);
+    window.removeEventListener(THEME_CHANGE_EVENT, onStoreChange);
     window.removeEventListener('storage', onStoreChange);
   };
 }
@@ -101,7 +97,7 @@ export function ThemePicker({ set }: { set: ThemeSet }) {
   const pick = (next: ThemeChoice) => {
     localStorage.setItem(THEME_STORAGE_KEY, next);
     applyTheme(next, set);
-    window.dispatchEvent(new Event(CHANGE_EVENT));
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   };
 
   const themes = pickableThemes(set);
