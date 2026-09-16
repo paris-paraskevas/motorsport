@@ -1921,7 +1921,10 @@ Order fixed by the session-50 handoff prompt and the operator's words: "1. they 
 
 Won't touch this session: P1.4 and P1.8 before their turn (asked in the operator's order); Phase 2 (its screen once Phase 1 is all done); any prod Supabase write without "apply <id>"; any push to `main`; any agent on Fable; any fan-out.
 
-Active: ~3h 10m from ~06:50Z to ~10:00Z (the operator present; the words came at ~08:00Z, ~08:35Z and ~09:22Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+4. **P1.4 asked at its turn** (~30 min): the ask page, one question with the default (one level); the operator: "merge, sub region may have sub regions" (~10:55Z) → done.
+5. **P1.4 Rendering points and tree creates** (~1h 55m): plan mode (a Sonnet plan critic, 254k tokens, five blocking fixes folded) → tests first (12 seen failing) → built → tsc 0 · lint 0 errors · vitest 208 files, 2134 tests · hooks 31/31 · dry run 43291.32 KiB (66.1%) → the browser run (the menu's order, Create Sub Region, the running page, Ctrl+drag with the browser's own gesture, Copy To, Monza put back) → review page → reviewer (Sonnet, 332k tokens, FAIL on one blocking finding; 4 gaps taken in a second commit) → the finding stated with a default → "merge then handoff … then first task is the fix" → #1005 (1.0.124) merged 12:55:20Z → done.
+6. **Close 2** (~15 min at 94% context): the ledger's evidence (P1.4 done), the handoff and the session-51 prompt (the component-render.test.tsx repair first, then P1.8 asked), this block, the Inbox, the board; the records PR 1.0.125 on the word.
+Active: ~5h 50m from ~06:50Z to ~13:00Z (the operator present; the words came at ~08:00Z, ~08:35Z, ~09:22Z, ~10:55Z, ~11:20Z and ~12:55Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
 ---
 
