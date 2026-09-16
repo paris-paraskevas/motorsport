@@ -17,13 +17,13 @@ import type { Appearance, EditableAppearance } from '@/lib/design/appearance';
 import { Pills } from './PropertyPane';
 
 // Templates (APEX: Shared Components › Templates › a template › Template
-// Options, where the Preset of each group is set at the template level). One
-// region template today, Standard; the five looks arrive with P1.1 and take a
-// presets set each. The presets ride the Appearance document (the application
-// row's `ui` column) and save through its route on its stamp, so a change
-// reaches every region on Use Template Defaults the way a changed face does.
-// The sample region under the presets is drawn with the very classes the
-// served page will use.
+// Options, where the Preset of each group is set at the template level). Five
+// region templates, the looks (P1.1), each with a presets set of its own. The
+// presets ride the Appearance document (the application row's `ui` column) and
+// save through its route on its stamp, so a change reaches every region on Use
+// Template Defaults the way a changed face does. The sample region under the
+// presets is drawn with the very classes the served page will use, the look's
+// box included.
 
 const TB =
   'inline-flex h-[30px] items-center gap-1.5 border border-border-strong px-2.5 text-12 text-text-muted transition-colors duration-(--duration-fast) hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-40';
@@ -101,14 +101,23 @@ export function TemplatesEditor({
     <div>
       <h2 className="m-0 mb-1 text-20 font-bold text-text">Templates</h2>
       <p className="m-0 mb-4 max-w-[76ch] text-13 text-text-muted">
-        The region templates and their Template Options. A preset is what a region on Use Template Defaults draws for that
-        group; change it here and every such region follows, while a region that picked its own option keeps it. The five
-        looks arrive with a later step; today every region uses Standard.
+        The five region templates, the looks a region may wear, and their Template Options. A preset is what a region on
+        that template and on Use Template Defaults draws for the group; change it here and every such region follows, while a
+        region that picked its own option keeps it. A region wears Plain until it is given another look.
       </p>
 
       {REGION_TEMPLATES.map(template => {
         const presets = draft[template.key];
-        const parts = templateOptionClasses(resolveTemplateOptions(undefined, draft, template.key));
+        const parts = templateOptionClasses(resolveTemplateOptions(undefined, draft, template.key), template.key);
+        const inner = (
+          <>
+            <h2 className={parts.heading}>Winners by decade</h2>
+            <div className={parts.paragraphs}>
+              <p className={parts.body}>The Autodromo opened in 1922 and has hosted a round of the championship every season but one.</p>
+              <p className={parts.body}>Its banking stands where it was left in 1969.</p>
+            </div>
+          </>
+        );
         return (
           <section key={template.key} aria-labelledby={`tpl-${template.key}`} className="mb-6 border border-border">
             <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border px-4 py-3">
@@ -118,7 +127,10 @@ export function TemplatesEditor({
                 </h3>
                 <p className="m-0 text-12 text-text-muted">{template.description}</p>
               </div>
-              <span className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint">Used by every region of every page</span>
+              {/* Rule 3: the Universal Theme counterpart, or ours with the reason on hover. */}
+              <span className="font-mono text-10 uppercase tracking-[0.12em] text-text-faint" title={template.why}>
+                {template.apex ? `APEX: ${template.apex}` : 'Ours'}
+              </span>
             </div>
 
             <div className="grid gap-5 px-4 py-4 xl:grid-cols-[minmax(0,1fr)_360px]">
@@ -141,13 +153,15 @@ export function TemplatesEditor({
 
               <div className="grid content-start gap-2">
                 <h4 className="m-0 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">A region on the presets</h4>
-                <div className="border border-border bg-bg p-4" data-template-sample="">
+                <div className="border border-border bg-bg p-4" data-template-sample={template.key}>
                   <div className={parts.wrapper}>
-                    <h2 className={parts.heading}>Winners by decade</h2>
-                    <div className={parts.paragraphs}>
-                      <p className={parts.body}>The Autodromo opened in 1922 and has hosted a round of the championship every season but one.</p>
-                      <p className={parts.body}>Its banking stands where it was left in 1969.</p>
-                    </div>
+                    {parts.box ? (
+                      <div data-region-box="" className={parts.box}>
+                        {inner}
+                      </div>
+                    ) : (
+                      inner
+                    )}
                   </div>
                 </div>
               </div>

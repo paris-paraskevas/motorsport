@@ -212,7 +212,7 @@ describe('PageDesigner', () => {
     const pe = screen.getByLabelText('Property Editor');
     // The pane keeps a group's fold by title across selections, and the page's Appearance group starts folded.
     fireEvent.click(within(pe).getByRole('button', { name: 'Appearance' }));
-    expect(within(pe).getByText(/^Standard · /)).toBeTruthy();
+    expect(within(within(pe).getByRole('group', { name: 'Region template' })).getByRole('button', { name: 'Plain' }).getAttribute('aria-pressed')).toBe('true');
     // The row's label names the button (a button is labelable); its text is the selection, as APEX writes it.
     const button = () => within(pe).getByRole('button', { name: 'Template Options' });
     expect(button().textContent).toBe('Use Template Defaults');
@@ -701,7 +701,45 @@ describe('PageDesigner', () => {
     expect(screen.queryByRole('button', { name: /^Drop here/ })).toBeNull();
   });
 
-  it('the Column, Size and Column Span pills offer only the free columns of the row; an overlap holds Save with the reason (R5)', () => {
+  it('gives a region its template (P1.1): five pills, Band takes the whole row and locks its size, the dialog names the template’s preset, Plain stores no field', async () => {
+    const { onSaved } = mount();
+    fireEvent.click(tile('Static Content: A century of speed'));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.click(within(pe).getByRole('button', { name: 'Appearance' }));
+    const templates = () => within(pe).getByRole('group', { name: 'Region template' });
+    expect(within(templates()).getAllByRole('button').map(b => b.textContent)).toEqual(['Plain', 'Boxed', 'Band', 'Aside', 'Hero']);
+    expect(within(pe).queryByRole('group', { name: 'Region size' })).toBeNull();
+    // Band: the row is its own; Column and Column Span lock with the reason.
+    fireEvent.click(within(templates()).getByRole('button', { name: 'Band' }));
+    expect(status()).toMatch(/Template: Band/);
+    const span = within(pe).getByRole('group', { name: 'Region span' });
+    expect(within(span).getByRole('button', { name: 'Full · 12' }).getAttribute('aria-pressed')).toBe('true');
+    expect((within(span).getByRole('button', { name: 'Full · 12' }) as HTMLButtonElement).disabled).toBe(true);
+    expect((within(within(pe).getByRole('group', { name: 'Region column' })).getByRole('button', { name: '1' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(within(within(pe).getByRole('group', { name: 'Start a new row' })).getByRole('button', { name: 'Yes' }).getAttribute('aria-pressed')).toBe('true');
+    expect(within(pe).getAllByText('A band takes the whole row; pick another template to size it.').length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));
+    const first = calls.filter(c => c.method === 'POST')[0];
+    expect((first.body as { document: PageDocument }).document.regions.find((r: Region) => r.id === 'intro')).toMatchObject({ template: 'band', column: 1, span: 12, newRow: true });
+    // Hero: the Template Options dialog names the template’s preset as what Default draws.
+    fireEvent.click(within(templates()).getByRole('button', { name: 'Hero' }));
+    expect((within(span).getByRole('button', { name: 'Full · 12' }) as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(within(pe).getByRole('button', { name: 'Template Options' }));
+    const dialog = screen.getByRole('dialog', { name: 'Template Options' });
+    expect((within(dialog).getByLabelText('Heading style') as HTMLSelectElement).options[0].textContent).toBe('Default (Display)');
+    expect((within(dialog).getByLabelText('Emphasis') as HTMLSelectElement).options[0].textContent).toBe('Default (Strong)');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    // Plain again: the saved document carries no template field.
+    fireEvent.click(within(templates()).getByRole('button', { name: 'Plain' }));
+    expect(status()).toMatch(/Template: Plain/);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(2));
+    const second = calls.filter(c => c.method === 'POST')[1];
+    expect((second.body as { document: PageDocument }).document.regions.find((r: Region) => r.id === 'intro')).not.toHaveProperty('template');
+  });
+
+  it('the Column and Column Span pills offer only the free columns of the row; an overlap holds Save with the reason (R5)', () => {
     const twoUp: PageDocument = {
       ...doc,
       regions: [
@@ -713,9 +751,6 @@ describe('PageDesigner', () => {
     fireEvent.click(tile('Static Content: Right'));
     const pe = screen.getByLabelText('Property Editor');
     expect(within(within(pe).getByRole('group', { name: 'Region column' })).getAllByRole('button').map(b => b.textContent)).toEqual(['7']);
-    const size = within(pe).getByRole('group', { name: 'Region size' });
-    expect((within(size).getByRole('button', { name: 'Large' }) as HTMLButtonElement).disabled).toBe(true);
-    expect((within(size).getByRole('button', { name: 'Mid' }) as HTMLButtonElement).disabled).toBe(false);
     expect(within(within(pe).getByRole('group', { name: 'Region span' })).getAllByRole('button').map(b => b.textContent)).toEqual(['Half · 6', 'Third · 4', 'Quarter · 3']);
     fireEvent.click(tile('Static Content: Left'));
     expect(within(within(pe).getByRole('group', { name: 'Region column' })).getAllByRole('button').map(b => b.textContent)).toEqual(['1']);

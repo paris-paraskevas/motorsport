@@ -17,6 +17,7 @@ vi.mock('next/image', () => ({
 
 import { CodePageFrame, RowPageView, type RowPageData } from './RowPageView';
 import { DEFAULT_NAV } from '@/lib/design/lists';
+import { SHIPPED_PRESETS } from '@/lib/design/template-options';
 import type { PageDocument } from '@/lib/design/page-document';
 
 const ASSET = 'c1b2c3d4-0000-4000-8000-000000000031';
@@ -242,7 +243,7 @@ describe('Template Options (the components programme, P1.2)', () => {
     const next = html.indexOf('id="region-', at + 1);
     return html.slice(at, next < 0 ? undefined : next);
   };
-  const ROOMY = { standard: { spacing: 'SPACING_ROOMY', heading: 'HEADING_LABEL', rule: 'RULE_NONE', emphasis: 'EMPHASIS_NORMAL', width: 'WIDTH_FULL' } };
+  const ROOMY = { ...SHIPPED_PRESETS, standard: { spacing: 'SPACING_ROOMY', heading: 'HEADING_LABEL', rule: 'RULE_NONE', emphasis: 'EMPHASIS_NORMAL', width: 'WIDTH_FULL' } };
 
   it('the acceptance: a changed preset reaches every region on Use Template Defaults, and a region that picked its own keeps it', () => {
     const own: PageDocument = { version: 2, actions: [], regions: [region('follows', { seq: 10 }), region('own', { seq: 20, templateOptions: ['#DEFAULT#', 'SPACING_COMPACT'] })] };
@@ -283,7 +284,7 @@ describe('Template Options (the components programme, P1.2)', () => {
     expect(wrapperOf(html, 'plain')).not.toContain('border-t');
   });
 
-  it('a component region takes the wrapper’s options only, and a refused region draws its message without them', () => {
+  it('a component region takes the wrapper’s options only, and a refused region draws its message without them (P1.2)', () => {
     const own: PageDocument = {
       version: 2,
       actions: [],
@@ -358,5 +359,84 @@ describe('components (the components programme, R2a)', () => {
     expect(plain).toContain('KICKER');
     expect(plain).not.toContain('body-before');
     expect(plain).not.toContain('data-page-frame="body');
+  });
+});
+
+describe('Region templates, the five looks (the components programme, P1.1)', () => {
+  const region = (id: string, over: Record<string, unknown> = {}) =>
+    ({ id, kind: 'static', title: id.toUpperCase(), position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'One.\n\nTwo.', ...over }) as PageDocument['regions'][number];
+  const markupOf = (html: string, id: string) => {
+    const at = html.indexOf(`id="region-${id}"`);
+    const next = html.indexOf('id="region-', at + 1);
+    return html.slice(at, next < 0 ? undefined : next);
+  };
+  const wrapperOf = (html: string, id: string) => new RegExp(`id="region-${id}"[^>]*class="([^"]*)"`).exec(html)?.[1] ?? '';
+  const boxOf = (html: string, id: string) => /data-region-box=""[^>]*class="([^"]*)"/.exec(markupOf(html, id))?.[1] ?? null;
+
+  it('the acceptance: a saved document with each look renders it; Plain is the region as before and draws no box', () => {
+    const five: PageDocument = {
+      version: 2,
+      actions: [],
+      regions: [
+        region('plain', { seq: 10 }),
+        region('boxed', { seq: 20, template: 'boxed' }),
+        region('band', { seq: 30, template: 'band' }),
+        region('aside', { seq: 40, template: 'aside', column: 9, span: 4 }),
+        region('hero', { seq: 50, template: 'hero' }),
+        // A Right Side Column, so the Body's band has something to its right.
+        region('more', { position: 'right', seq: 10, kind: 'list', listKey: 'footer-site', style: 'links', text: undefined }),
+      ],
+    };
+    const html = renderToStaticMarkup(<RowPageView {...data} document={five} />);
+    // Plain: exactly what a region drew before this slot, no box element.
+    expect(boxOf(html, 'plain')).toBeNull();
+    expect(markupOf(html, 'plain')).toMatch(/<h2 class="(?=[^"]*font-mono)(?=[^"]*border-b)[^"]*">PLAIN<\/h2>/);
+    expect(markupOf(html, 'plain')).toMatch(/<p class="font-serif text-16 leading-relaxed text-text-muted">/);
+    // Boxed: the site's card around the label and the text.
+    expect(boxOf(html, 'boxed')).toBe('border border-border bg-surface p-4');
+    expect(markupOf(html, 'boxed')).toMatch(/<h2 class="(?=[^"]*font-mono)(?=[^"]*border-b)[^"]*">BOXED<\/h2>/);
+    // Band: the strip, in the full ink; the Body beside a Right Side Column bleeds left only at the desktop breakpoint.
+    expect(boxOf(html, 'band')).toContain('border-y border-border bg-surface-elevated py-6 px-4 md:px-6 lg:px-8');
+    expect(boxOf(html, 'band')).toContain('-mx-4 md:-mx-6 lg:-ml-8 lg:mr-0');
+    expect(markupOf(html, 'band')).toMatch(/<p class="font-serif text-16 leading-relaxed text-text">/);
+    // Aside: the brand rule, the quiet label, the smaller fainter text.
+    expect(boxOf(html, 'aside')).toBe('border-l-2 border-brand pl-4');
+    expect(markupOf(html, 'aside')).toMatch(/<h2 class="(?=[^"]*font-mono)(?=[^"]*text-text-faint)[^"]*">ASIDE<\/h2>/);
+    expect(markupOf(html, 'aside')).not.toMatch(/<h2 class="[^"]*border-b/);
+    expect(markupOf(html, 'aside')).toMatch(/<p class="font-serif text-15 leading-relaxed text-text-faint">/);
+    // Hero: the display headline, the lead, the hairline to close, no box.
+    expect(boxOf(html, 'hero')).toBeNull();
+    expect(markupOf(html, 'hero')).toMatch(/<h2 class="(?=[^"]*font-serif)(?=[^"]*text-34)(?=[^"]*md:text-40)[^"]*">HERO<\/h2>/);
+    expect(markupOf(html, 'hero')).toMatch(/<p class="font-serif text-20 leading-snug text-text">/);
+    expect(wrapperOf(html, 'hero').split(' ')).toEqual(expect.arrayContaining(['border-b', 'border-border', 'pb-4']));
+    // The cell keeps its grid classes on every look.
+    for (const id of ['plain', 'boxed', 'band', 'aside', 'hero']) expect(wrapperOf(html, id)).toContain('col-span-12 min-w-0 lg:[grid-column:var(--gc)]');
+  });
+
+  it('a band bleeds to the edges it reaches: both in the Footer, the right one held back beside the Right Side Column, neither in mid-row, and a boxed component wears its box', () => {
+    const own: PageDocument = {
+      version: 2,
+      actions: [],
+      regions: [
+        region('foot', { position: 'footer', seq: 10, template: 'band' }),
+        region('mid', { position: 'footer', seq: 20, column: 4, span: 6, template: 'band' }),
+        region('drawn', { seq: 10, kind: 'component', component: 'page.body', settings: {}, text: undefined, template: 'boxed' }),
+      ],
+    };
+    const html = renderToStaticMarkup(<RowPageView {...data} document={own} components={{ drawn: <p>DRAWN</p> }} />);
+    expect(boxOf(html, 'foot')).toContain('-mx-4 md:-mx-6 lg:-ml-8 lg:-mr-8');
+    expect(boxOf(html, 'mid')).toContain('-mx-4 md:-mx-6 lg:ml-0 lg:mr-0');
+    expect(markupOf(html, 'drawn')).toMatch(/data-region-box=""[^>]*class="border border-border bg-surface p-4"><p>DRAWN<\/p><\/div>/);
+    // Without a Right Side Column a Body band reaches the right edge too.
+    const noRight: PageDocument = { version: 2, actions: [], regions: [region('wide', { seq: 10, template: 'band' })] };
+    const open = renderToStaticMarkup(<RowPageView {...data} document={noRight} />);
+    expect(boxOf(open, 'wide')).toContain('lg:-ml-8 lg:-mr-8');
+    // A page the code serves: its strips have no Right Side Column either.
+    const framed = renderToStaticMarkup(
+      <CodePageFrame d={{ ...data, document: { version: 2, actions: [], regions: [region('above', { position: 'header', seq: 10, template: 'band' })] } }}>
+        <main>THE CODE BODY</main>
+      </CodePageFrame>,
+    );
+    expect(boxOf(framed, 'above')).toContain('lg:-ml-8 lg:-mr-8');
   });
 });

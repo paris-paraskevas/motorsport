@@ -621,7 +621,12 @@ export function Designer({
     if (settings.state !== 'ready') return SHIPPED_REGION_DEFAULTS;
     const v = <K extends keyof typeof DEFAULT_SETTINGS>(key: K): (typeof DEFAULT_SETTINGS)[K] =>
       (settings.settings.find(s => s.key === key)?.value as (typeof DEFAULT_SETTINGS)[K] | undefined) ?? DEFAULT_SETTINGS[key];
-    return { imageShowCaption: v('region.image.show_caption'), listStyle: v('region.list.style'), buttonLabel: v('region.button.label') };
+    return {
+      imageShowCaption: v('region.image.show_caption'),
+      listStyle: v('region.list.style'),
+      buttonLabel: v('region.button.label'),
+      templates: { static: v('region.static.template'), image: v('region.image.template'), list: v('region.list.template'), button: v('region.button.template') },
+    };
   })();
   /** A shell list saved in its own entry: the index's count and stamp follow. */
   const indexFollows = (list: EditableList) =>

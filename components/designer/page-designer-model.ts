@@ -23,6 +23,7 @@ import { adoptRecipe } from '@/lib/design/composed-page';
 import { DESTINATIONS, pageDest, resolveDestination, type PageDestinations } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
+import { DEFAULT_REGION_TEMPLATE, type RegionTemplateKey } from '@/lib/design/template-options';
 
 // The Page Designer's model (Paddock Designer v2.4, docs/prototypes/paddock-
 // designer-v2.4): what is selected, how the document changes, what the
@@ -187,11 +188,21 @@ export interface RegionDefaults {
   imageShowCaption: boolean;
   listStyle: 'links' | 'cards';
   buttonLabel: string;
+  /** The template (the look, P1.1) a new region of each kind starts with; a component draws its own. */
+  templates: Record<Exclude<RegionKind, 'component'>, RegionTemplateKey>;
 }
-export const SHIPPED_REGION_DEFAULTS: RegionDefaults = { imageShowCaption: true, listStyle: 'links', buttonLabel: 'Read more' };
+export const SHIPPED_REGION_DEFAULTS: RegionDefaults = {
+  imageShowCaption: true,
+  listStyle: 'links',
+  buttonLabel: 'Read more',
+  templates: { static: 'standard', image: 'standard', list: 'standard', button: 'standard' },
+};
 
 export function newRegion(kind: RegionKind, position: Position, id: string, span = COLUMNS, defaults: RegionDefaults = SHIPPED_REGION_DEFAULTS): Region {
-  const base = { id, title: '', position, seq: 1_000_000, column: 1, span, newRow: true, authz: null, hidden: false };
+  // The kind's default template is stored on the region (APEX: a theme's component defaults apply at creation); Plain is absent. A band takes the whole row.
+  const template = kind === 'component' ? DEFAULT_REGION_TEMPLATE : defaults.templates[kind];
+  const look = template === DEFAULT_REGION_TEMPLATE ? {} : { template };
+  const base = { id, title: '', position, seq: 1_000_000, column: 1, span: template === 'band' ? COLUMNS : span, newRow: true, authz: null, hidden: false, ...look };
   if (kind === 'static') return { ...base, kind, text: '' };
   if (kind === 'image') return { ...base, kind, assetId: '', alt: '', showCaption: defaults.imageShowCaption };
   if (kind === 'button') return { ...base, kind, label: defaults.buttonLabel, dest: null };
@@ -270,7 +281,9 @@ export function addRegion(doc: PageDocument, kind: RegionKind, where: Placement,
   const id = nextRegionId(kind, doc.regions.map(r => r.id));
   const span = kind === 'button' ? 3 : COLUMNS;
   const region = newRegion(kind, where.position, id, span, defaults);
-  return { doc: placeRegion(doc, region, { ...where, newRow: where.newRow ?? true }), id };
+  // A band takes the whole row whatever the placement offered (P1.1).
+  const placement: Placement = region.template === 'band' ? { ...where, newRow: true, column: 1, span: COLUMNS } : { ...where, newRow: where.newRow ?? true };
+  return { doc: placeRegion(doc, region, placement), id };
 }
 
 /** Removing a region takes with it every trigger and effect that named it; an

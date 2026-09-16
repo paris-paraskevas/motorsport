@@ -56,6 +56,7 @@ function describe(key: SettingKey, value: SettingValue, series: SeriesOption[]):
     case 'boolean':
       return value === true ? 'yes' : 'no';
     case 'choice':
+      return control.labels?.[String(value)] ?? String(value);
     case 'text':
       return String(value);
   }
@@ -304,12 +305,12 @@ function Control({
         </select>
       );
     case 'choice': {
-      const options = spec.control.options;
+      const { options, labels } = spec.control;
       return (
         <select value={String(value)} disabled={disabled} aria-label={spec.label} className={`${FIELD} w-full`} onChange={e => onChange(e.target.value)}>
           {options.map(o => (
             <option key={o} value={o}>
-              {o}
+              {labels?.[o] ?? o}
             </option>
           ))}
         </select>

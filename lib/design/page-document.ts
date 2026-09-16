@@ -28,6 +28,10 @@
 // absent list means Use Template Defaults alone, so every stored region reads
 // as it did.
 //
+// P1.1 adds the region template, the look (`template`, one of the five of
+// lib/design/template-options.ts), still version 2: absent means Plain, the
+// one template every region had, so every stored region draws as it did.
+//
 // P1.11 adds Comment Out (APEX: Comment Out / Uncomment on a page component),
 // still version 2: `commentedOut: true` keeps a region on the page with all it
 // holds and leaves it out when the page runs, through the same filter that
@@ -36,7 +40,7 @@
 import { pageIdOf, resolveDestination } from './destinations';
 import { findComponent, parseSettings, type SettingValue } from './components';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
-import { parseTemplateOptions } from './template-options';
+import { parseRegionTemplate, parseTemplateOptions, type RegionTemplateKey } from './template-options';
 
 /** The version the parser writes; it reads every version in PAGE_DOCUMENT_VERSIONS. */
 export const PAGE_DOCUMENT_VERSION = 2 as const;
@@ -167,6 +171,10 @@ export interface RegionBase {
    *  and option identifiers, one per group at most, canonical order; absent
    *  means Use Template Defaults alone. Resolved against the template's presets at render. */
   templateOptions?: string[];
+  /** Appearance › Template (APEX): the region template, one of the five looks
+   *  (template-options.ts REGION_TEMPLATES); absent means Plain (`standard`),
+   *  so every region stored before P1.1 draws as it did. */
+  template?: RegionTemplateKey;
   /** Commented out (APEX: Comment Out / Uncomment): kept on the page with all it
    *  holds, struck through in the designer, left out when the page runs; absent
    *  means it runs. Its refs stay in the projection: the write path stores the
@@ -318,6 +326,8 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
   const options = parseTemplateOptions(r.templateOptions);
   problems.push(...options.problems.map(p => `${who}: ${p}`));
   const templateOptions = options.value;
+  const template = parseRegionTemplate(r.template);
+  if (template.problem) problems.push(`${who}: ${template.problem}`);
 
   let region: Region | null = null;
   if (kind && position && seq !== null && column !== null && span !== null && problems.length === 0) {
@@ -337,6 +347,7 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
       ...(footerText ? { footerText } : {}),
       ...(buildOption ? { buildOption } : {}),
       ...(templateOptions ? { templateOptions } : {}),
+      ...(template.value ? { template: template.value } : {}),
       ...(commentedOut ? { commentedOut: true as const } : {}),
     };
     if (kind === 'component') {

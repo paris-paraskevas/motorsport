@@ -22,15 +22,80 @@
 
 export const DEFAULT_TOKEN = '#DEFAULT#' as const;
 
-/** The region templates (APEX: region templates; P1.1 brings the five looks).
- *  One today: the region as the site draws it, named as the Universal Theme
- *  names its default region template. */
-export const REGION_TEMPLATE_KEYS = ['standard'] as const;
+/** The region templates, the five looks (APEX: Appearance › Template; the
+ *  components programme, P1.1). A look is a box drawn inside the region's grid
+ *  cell (none for Plain and Hero), the body text's base type, and its presets
+ *  over the five groups (SHIPPED_PRESETS). An option adds its classes to other
+ *  parts or other properties, so no look and no option set one CSS property on
+ *  one element, and no class order is relied on. Today's one template keeps its
+ *  stored key `standard` under the label Plain: a region with no template reads
+ *  as Plain, and every stored page draws as it did. Each names its Universal
+ *  Theme counterpart (rule 3; read from the UT 26.1 app's Components page,
+ *  2026-09-16) or is ours, with the reason. */
+export const REGION_TEMPLATE_KEYS = ['standard', 'boxed', 'band', 'aside', 'hero'] as const;
 export type RegionTemplateKey = (typeof REGION_TEMPLATE_KEYS)[number];
 export const DEFAULT_REGION_TEMPLATE: RegionTemplateKey = 'standard';
-export const REGION_TEMPLATES: readonly { key: RegionTemplateKey; label: string; description: string }[] = [
-  { key: 'standard', label: 'Standard', description: 'The region as the site draws it: the title as a small label over the content, no box, no rule.' },
+
+export interface RegionTemplate {
+  key: RegionTemplateKey;
+  label: string;
+  description: string;
+  /** The Universal Theme template it answers to; null marks it ours, `why` says why. */
+  apex: string | null;
+  why?: string;
+  /** Classes of the box drawn inside the cell around the region's content; '' draws none. */
+  box: string;
+  /** The body text's base type (face, size, leading); Emphasis adds the colour. */
+  body: string;
+  /** The box runs to the page's edges where the region reaches them (RowPageView's bandBleed). */
+  bleeds: boolean;
+}
+
+const BODY = 'font-serif text-16 leading-relaxed';
+
+export const REGION_TEMPLATES: readonly RegionTemplate[] = [
+  { key: 'standard', label: 'Plain', description: 'The title as a small label over the text, no box, no rule: the region as the site draws it.', apex: 'Content Block', box: '', body: BODY, bleeds: false },
+  { key: 'boxed', label: 'Boxed', description: 'The site’s card: a hairline box on the surface colour, the label and the text inside it.', apex: 'Standard', box: 'border border-border bg-surface p-4', body: BODY, bleeds: false },
+  {
+    key: 'band',
+    label: 'Band',
+    description: 'A strip across the whole row on the elevated surface, running to the page’s edges, a hairline above and below.',
+    apex: null,
+    why: 'the Universal Theme has no full-row band; Hero is the nearest, and Hero here is the display headline',
+    box: 'border-y border-border bg-surface-elevated py-6 px-4 md:px-6 lg:px-8',
+    body: BODY,
+    bleeds: true,
+  },
+  {
+    key: 'aside',
+    label: 'Aside',
+    description: 'A pull-out: a rule in the brand colour on the left, the text a size smaller and fainter.',
+    apex: null,
+    why: 'the Universal Theme has no pull-out template',
+    box: 'border-l-2 border-brand pl-4',
+    body: 'font-serif text-15 leading-relaxed',
+    bleeds: false,
+  },
+  { key: 'hero', label: 'Hero', description: 'The title as a display headline in the page’s serif with a lead paragraph in the full ink, a hairline to close.', apex: 'Hero', box: '', body: 'font-serif text-20 leading-snug', bleeds: false },
 ];
+
+export function isRegionTemplateKey(x: unknown): x is RegionTemplateKey {
+  return typeof x === 'string' && (REGION_TEMPLATE_KEYS as readonly string[]).includes(x);
+}
+
+/** A template by key; Plain for a key the code does not have. */
+export function regionTemplate(key: RegionTemplateKey | undefined): RegionTemplate {
+  return REGION_TEMPLATES.find(t => t.key === key) ?? REGION_TEMPLATES[0];
+}
+
+/** Parse a region's template as stored (`template` on the region): absent,
+ *  null, empty and the default read as absent, since absent means Plain; a
+ *  look is kept; anything else is a problem for the writer. */
+export function parseRegionTemplate(raw: unknown): { value: RegionTemplateKey | undefined; problem?: string } {
+  if (raw === undefined || raw === null || raw === '' || raw === DEFAULT_REGION_TEMPLATE) return { value: undefined };
+  if (isRegionTemplateKey(raw)) return { value: raw };
+  return { value: undefined, problem: `the template must be one of ${REGION_TEMPLATE_KEYS.join(', ')}` };
+}
 
 export const TEMPLATE_OPTION_GROUP_KEYS = ['spacing', 'heading', 'rule', 'emphasis', 'width'] as const;
 export type TemplateOptionGroupKey = (typeof TEMPLATE_OPTION_GROUP_KEYS)[number];
@@ -82,6 +147,10 @@ export const TEMPLATE_OPTION_GROUPS: readonly TemplateOptionGroup[] = [
     options: [
       { id: 'HEADING_LABEL', label: 'Label', help: 'A small capitals label with a hairline under it, as the site draws it.', classes: { heading: 'border-b border-text pb-1 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted' } },
       { id: 'HEADING_HEADLINE', label: 'Headline', help: 'The title in the page’s serif, larger, no hairline.', classes: { heading: 'font-serif text-20 font-medium leading-tight text-text' } },
+      // P1.1: the Hero look's preset, the site's masthead type (RowPageView's h1).
+      { id: 'HEADING_DISPLAY', label: 'Display', help: 'The title as a display headline in the page’s serif, as the page title is drawn.', classes: { heading: 'font-serif text-34 font-medium leading-none tracking-[-0.02em] text-text md:text-40' } },
+      // P1.1: the Aside look's preset.
+      { id: 'HEADING_QUIET', label: 'Quiet label', help: 'The small capitals label without its hairline, in the faint colour.', classes: { heading: 'font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-faint' } },
       { id: 'HEADING_HIDDEN', label: 'Hidden', help: 'The title is not drawn; the tree, Messages and assistive technology still know it.', classes: { heading: 'sr-only' } },
     ],
   },
@@ -105,7 +174,9 @@ export const TEMPLATE_OPTION_GROUPS: readonly TemplateOptionGroup[] = [
     options: [
       { id: 'EMPHASIS_NORMAL', label: 'Normal', help: 'The body text in the muted colour, as the site draws it.', classes: { body: 'text-text-muted' } },
       { id: 'EMPHASIS_MUTED', label: 'Muted', help: 'The body text in the faint colour, for an aside.', classes: { body: 'text-text-faint' } },
-      { id: 'EMPHASIS_ACCENT', label: 'Accent', help: 'A rule in the brand colour on the region’s left, the content indented from it.', classes: { wrapper: 'border-l-2 border-brand pl-4', body: 'text-text-muted' } },
+      { id: 'EMPHASIS_ACCENT', label: 'Accent', help: 'A rule in the brand colour on the region’s left, the content indented from it (an Aside already carries one).', classes: { wrapper: 'border-l-2 border-brand pl-4', body: 'text-text-muted' } },
+      // P1.1: the Band and Hero looks' preset.
+      { id: 'EMPHASIS_STRONG', label: 'Strong', help: 'The body text in the full ink.', classes: { body: 'text-text' } },
     ],
   },
   {
@@ -137,10 +208,19 @@ export function optionById(id: string): TemplateOption | undefined {
 /** The preset per group, per template (APEX: the Preset, set at the template level). */
 export type TemplatePresets = Record<RegionTemplateKey, Record<TemplateOptionGroupKey, string>>;
 
-/** What the code ships: the first option of every group, on every template. */
-export const SHIPPED_PRESETS: TemplatePresets = Object.fromEntries(
-  REGION_TEMPLATE_KEYS.map(t => [t, Object.fromEntries(TEMPLATE_OPTION_GROUPS.map(g => [g.key, g.options[0].id]))]),
-) as TemplatePresets;
+/** The first option of every group: what the site drew before P1.2, and Plain's presets. */
+const FIRST = Object.fromEntries(TEMPLATE_OPTION_GROUPS.map(g => [g.key, g.options[0].id])) as Record<TemplateOptionGroupKey, string>;
+
+/** What the code ships, per template (P1.1): Plain and Boxed on the first
+ *  options; Band in the full ink; Aside with the quiet label and the faint
+ *  text; Hero with the display headline, the full ink and the hairline below. */
+export const SHIPPED_PRESETS: TemplatePresets = {
+  standard: { ...FIRST },
+  boxed: { ...FIRST },
+  band: { ...FIRST, emphasis: 'EMPHASIS_STRONG' },
+  aside: { ...FIRST, heading: 'HEADING_QUIET', emphasis: 'EMPHASIS_MUTED' },
+  hero: { ...FIRST, heading: 'HEADING_DISPLAY', rule: 'RULE_BELOW', emphasis: 'EMPHASIS_STRONG' },
+};
 
 export function clonePresets(p: TemplatePresets): TemplatePresets {
   return Object.fromEntries(REGION_TEMPLATE_KEYS.map(t => [t, { ...p[t] }])) as TemplatePresets;
@@ -206,6 +286,8 @@ export function resolveTemplateOptions(
 export interface TemplateOptionClasses {
   /** The region's wrapper (its grid cell): the rule, the width, the accent, the outer air. */
   wrapper: string;
+  /** The look's box inside the cell (P1.1): the card, the band's strip, the aside's rule; '' draws none. */
+  box: string;
   /** The region's title element. */
   heading: string;
   /** The body text (a paragraph, a caption's lead). */
@@ -214,16 +296,16 @@ export interface TemplateOptionClasses {
   paragraphs: string;
 }
 
-const BODY_BASE = 'font-serif text-16 leading-relaxed';
-
 /** The Heading style option that draws no title; the heading part is then
  *  `sr-only` alone, with no gap from Spacing, since nothing is drawn. */
 export const HIDDEN_HEADING = 'HEADING_HIDDEN';
 
-/** The classes per part for a resolved set, the options' fragments joined in
- *  group order; the body's base type comes first, then Emphasis's colour. */
-export function templateOptionClasses(resolved: Record<TemplateOptionGroupKey, string>): TemplateOptionClasses {
-  const parts: Record<RegionPart, string[]> = { wrapper: [], heading: [], body: [BODY_BASE], paragraphs: [] };
+/** The classes per part for a resolved set on a template, the options'
+ *  fragments joined in group order; the body's base type is the template's,
+ *  then Emphasis's colour; the box is the template's alone. */
+export function templateOptionClasses(resolved: Record<TemplateOptionGroupKey, string>, template: RegionTemplateKey = DEFAULT_REGION_TEMPLATE): TemplateOptionClasses {
+  const look = regionTemplate(template);
+  const parts: Record<RegionPart, string[]> = { wrapper: [], heading: [], body: [look.body], paragraphs: [] };
   for (const group of TEMPLATE_OPTION_GROUPS) {
     const option = group.options.find(o => o.id === resolved[group.key]) ?? group.options[0];
     for (const part of ['wrapper', 'heading', 'body', 'paragraphs'] as const) {
@@ -233,6 +315,7 @@ export function templateOptionClasses(resolved: Record<TemplateOptionGroupKey, s
   }
   return {
     wrapper: parts.wrapper.join(' '),
+    box: look.box,
     heading: resolved.heading === HIDDEN_HEADING ? 'sr-only' : parts.heading.join(' '),
     body: parts.body.join(' '),
     paragraphs: parts.paragraphs.join(' '),

@@ -11,9 +11,11 @@ const loaded: EditableAppearance = { appearance: SHIPPED_APPEARANCE, updatedAt: 
 
 const fetchMock = vi.fn();
 const json = (status: number, body: unknown) => ({ ok: status < 400, status, json: async () => body });
-const pills = (group: string) => screen.getByRole('group', { name: `Standard preset for ${group}` });
-const pressed = (group: string) => within(pills(group)).getAllByRole('button').find(b => b.getAttribute('aria-pressed') === 'true')?.textContent;
-const sample = () => document.querySelector('[data-template-sample] h2')?.getAttribute('class') ?? '';
+// Five templates render at once (P1.1), so every helper is scoped to one of them; Plain, today's key `standard`, is the default.
+const pills = (group: string, template = 'Plain') => screen.getByRole('group', { name: `${template} preset for ${group}` });
+const pressed = (group: string, template = 'Plain') => within(pills(group, template)).getAllByRole('button').find(b => b.getAttribute('aria-pressed') === 'true')?.textContent;
+const sample = (template = 'standard') => document.querySelector(`[data-template-sample="${template}"] h2`)?.getAttribute('class') ?? '';
+const box = (template: string) => document.querySelector(`[data-template-sample="${template}"] [data-region-box]`)?.getAttribute('class') ?? null;
 const save = () => screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement;
 
 beforeEach(() => {
@@ -26,11 +28,24 @@ afterEach(() => {
 });
 
 describe('TemplatesEditor (the components programme, P1.2)', () => {
-  it('lists the Standard template with the five groups, the shipped preset pressed in each, a sample region drawn with them, and Save off', () => {
+  it('lists the five templates with the five groups, each template’s shipped preset pressed, a sample region drawn in the look, and Save off (P1.1)', () => {
     render(<TemplatesEditor loaded={loaded} readOnly={false} onSaved={vi.fn()} />);
-    expect(screen.getByRole('heading', { name: 'Standard' })).toBeTruthy();
-    expect(['Spacing', 'Heading style', 'Rule', 'Emphasis', 'Width'].map(pressed)).toEqual(['Standard', 'Label', 'None', 'Normal', 'Full']);
+    for (const name of ['Plain', 'Boxed', 'Band', 'Aside', 'Hero']) expect(screen.getByRole('heading', { name })).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Standard' })).toBeNull();
+    const groups = ['Spacing', 'Heading style', 'Rule', 'Emphasis', 'Width'];
+    expect(groups.map(g => pressed(g))).toEqual(['Standard', 'Label', 'None', 'Normal', 'Full']);
+    expect(groups.map(g => pressed(g, 'Boxed'))).toEqual(['Standard', 'Label', 'None', 'Normal', 'Full']);
+    expect(groups.map(g => pressed(g, 'Band'))).toEqual(['Standard', 'Label', 'None', 'Strong', 'Full']);
+    expect(groups.map(g => pressed(g, 'Aside'))).toEqual(['Standard', 'Quiet label', 'None', 'Muted', 'Full']);
+    expect(groups.map(g => pressed(g, 'Hero'))).toEqual(['Standard', 'Display', 'Below', 'Strong', 'Full']);
+    // The sample wears the look: Plain no box, Boxed the card, Hero the display headline. Each names its counterpart (rule 3).
     expect(sample()).toContain('font-mono');
+    expect(box('standard')).toBeNull();
+    expect(box('boxed')).toContain('border-border');
+    expect(box('band')).toContain('bg-surface-elevated');
+    expect(sample('hero')).toContain('text-34');
+    expect(screen.getByText('APEX: Content Block')).toBeTruthy();
+    expect(screen.getAllByText('Ours').length).toBe(2);
     expect(save().disabled).toBe(true);
   });
 

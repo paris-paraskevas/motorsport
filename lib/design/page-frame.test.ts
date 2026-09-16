@@ -269,7 +269,7 @@ describe('withPageGate', () => {
     loadLiveFrame.mockResolvedValue(live([welcome({ id: 'above', position: 'header', seq: 10 })]));
     const gated = withPageGate('/calendar', Page);
     expect(dataOf(await gated(props)).templates).toEqual(SHIPPED_PRESETS);
-    const roomy = { standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } };
+    const roomy = { ...SHIPPED_PRESETS, standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } };
     loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: roomy });
     expect(dataOf(await gated(props)).templates).toEqual(roomy);
   });

@@ -74,6 +74,11 @@
    "date": "2026-09-16",
    "change": "The order of the rest of Phase 1 and the gate on Phase 2, on the operator's word after the second close of session 49 (asked \"does that mean we are on to phase 2?\", answered with the three things left): (1) P1.12 PR B2 (buttons and go effects to a page, Named by) first; (2) then P1.1 Region looks, (3) then P1.4 Rendering points and tree creates and (4) P1.8 Theme Roller (the operator joined these two with \"and\", not \"then\": P1.4 first is the reading, P1.8 first if the operator prefers when the turn comes), each of the three ASKED when its turn comes and not before (P1.1 with the five looks shown side by side, P1.4 with the nesting depth and its default of one level, P1.8 with the tokens and its default of the nine of the contrast gate), then built on the answer; (5) Phase 2 enters the ledger only once all of Phase 1 is done, presented as one screen (the draft's 25 slots with a decision scan) for the word. The two small questions of session 49 (Size and Column Span in the Layout group; the documentRefs gap for Header Text and Footer Text shortcuts) keep their place at the operator's turn and are asked alongside the nearest slot (the first with P1.1, the second before Phase 2 as a quick slot if the operator says so).",
    "word": "the operator, 2026-09-16 ~00:33Z, verbatim: \"b2 then p1.1 then p1.4 and p1.8 ask me as those go and then once all done pphase 2 screen\""
+  },
+  {
+   "date": "2026-09-16",
+   "change": "The operator, ~08:00Z, on the P1.1 ask (the review page 66e2a1eb-fa5a-426d-88ac-5169417039c5: the five looks drawn side by side on the Monza page on Midnight and Paper, the Universal Theme counterparts, three drawings of the Layout group): \"1. they stand, 2. drop size.\" Read as: (1) the five looks stand as drawn, named as the scope spells them (Plain · Boxed · Band · Aside · Hero; today's template keeps its stored key standard under the label Plain; Plain answers to the Universal Theme's Content Block, Boxed to Standard, Hero to Hero; Band and Aside are ours); (2) the Size row (Small · Mid · Large, ours since R4.1) leaves the Layout group and Column Span, APEX's, stays with Home's three words in its note, a change outside P1.1's scope text folded into the slot as the changes line of 2026-09-16 placed it. Defaults taken in P1.1's plan (approved ~08:35Z after a Sonnet plan critic): a look is a box inside the region's cell, the body's base type and its presets over the five groups, with three options added to the global groups (Heading style › Display and Quiet label, Emphasis › Strong) so the presets express the drawings; a Band takes the whole row (Column 1, Column Span Full, Start New Row Yes, the two locked while it is a Band) and bleeds to the page's edges where the region reaches them; the Component Settings default per kind (region.static.template, region.image.template, region.list.template, region.button.template, shipped Plain) applies when the designer creates a region, never at render, so a changed default restyles no existing page; the four rows are a seed migration (20260916081500) applied on the word \"apply\"; a region stored without a template reads as Plain, so readers see no change until a region is given a look.",
+   "word": "the operator, 2026-09-16 ~08:00Z, verbatim: \"1. they stand, 2. drop size.\"; the plan approved ~08:35Z"
   }
  ],
  "phases": {
@@ -154,7 +159,7 @@
    "defaults": "the five names",
    "needsWord": "the five looks shown side by side before the names are final",
    "acceptance": "Pick band on a Static Content region, Save and Run: preview and served page carry it; a test renders a saved document with each look.",
-   "status": "planned",
+   "status": "started",
    "scopeHash": "456d1f955cae"
   },
   {

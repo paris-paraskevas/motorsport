@@ -221,7 +221,7 @@ export function QuickEdit({
             </div>
           </div>
         ))}
-      {dialog && region && <TemplateOptionsDialog value={region.templateOptions} presets={presets} onOk={publish} onCancel={() => setDialog(false)} />}
+      {dialog && region && <TemplateOptionsDialog value={region.templateOptions} template={region.template} presets={presets} onOk={publish} onCancel={() => setDialog(false)} />}
       {error && (
         <div role="alert" className="fixed bottom-20 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-3 border border-negative bg-bg px-3 py-2 text-12 text-text shadow-lg">
           <span>{error}</span>

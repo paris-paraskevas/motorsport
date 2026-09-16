@@ -2,8 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PAGE_WIDE } from '@/lib/site';
 import { pageIdOf, resolveDestination, resolveEntry, type NavEntry, type NavLists, type PageDestinations } from '@/lib/design/destinations';
-import { isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
-import { SHIPPED_PRESETS, resolveTemplateOptions, templateOptionClasses, type TemplateOptionClasses, type TemplatePresets } from '@/lib/design/template-options';
+import { COLUMNS, isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
+import { SHIPPED_PRESETS, regionTemplate, resolveTemplateOptions, templateOptionClasses, type TemplateOptionClasses, type TemplatePresets } from '@/lib/design/template-options';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
 import { DynamicActions } from './DynamicActions';
@@ -141,7 +141,21 @@ export function CodePageFrame({ d, children }: { d: RowPageData; children?: Reac
 }
 
 function Strip({ d, position, className = '' }: { d: RowPageData; position: Position; className?: string }) {
-  return <Rows d={d} rows={rowsAt(d.document, position)} className={className} />;
+  // Only the Body has something to its right, and only when the page has a Right Side Column.
+  const rightFree = position !== 'body' || !d.document.regions.some(r => r.position === 'right');
+  return <Rows d={d} rows={rowsAt(d.document, position)} className={className} rightFree={rightFree} />;
+}
+
+/** A Band runs to the page's edges where the region reaches them (P1.1): on
+ *  phones and tablets every region is full width, so both sides; at the desktop
+ *  breakpoint the left when it starts at column 1, the right when it ends at
+ *  column 12 with nothing to its right. The margins cancel PAGE_WIDE's padding
+ *  (p-4 md:p-6 lg:p-8); the box's own padding puts the text back on the
+ *  content edge. */
+function bandBleed(r: Region, rightFree: boolean): string {
+  const left = r.column === 1 ? 'lg:-ml-8' : 'lg:ml-0';
+  const right = r.column + r.span === COLUMNS + 1 && rightFree ? 'lg:-mr-8' : 'lg:mr-0';
+  return `-mx-4 md:-mx-6 ${left} ${right}`;
 }
 
 /** A show rule the stylesheet decides: phones only, or desktop and laptop only. */
@@ -158,7 +172,18 @@ function isDrawn(d: RowPageData, r: Region): boolean {
   return id === null || (d.pages !== undefined && id in d.pages);
 }
 
-function Rows({ d, rows: stored, className = '' }: { d: RowPageData; rows: Region[][]; className?: string }) {
+function Rows({
+  d,
+  rows: stored,
+  className = '',
+  rightFree = true,
+}: {
+  d: RowPageData;
+  rows: Region[][];
+  className?: string;
+  /** Nothing sits to the right of a full-width region here, so a Band may run to the page's right edge; a code page's strips never have a Right Side Column. */
+  rightFree?: boolean;
+}) {
   const rows = stored.map(row => row.filter(r => isDrawn(d, r))).filter(row => row.length > 0);
   if (rows.length === 0) return null;
   const presets = d.templates ?? SHIPPED_PRESETS;
@@ -169,8 +194,12 @@ function Rows({ d, rows: stored, className = '' }: { d: RowPageData; rows: Regio
           {row.map(r => {
             // The region's Template Options resolved against its template's
             // presets (APEX: #DEFAULT# and the picks; P1.2): the wrapper's
-            // classes here, the heading's and the body's in RegionBody.
-            const parts = templateOptionClasses(resolveTemplateOptions(r.templateOptions, presets));
+            // classes here, the heading's and the body's in RegionBody. The
+            // template's box (P1.1) is its own element inside the cell, so its
+            // border and padding never meet the options' on one element.
+            const parts = templateOptionClasses(resolveTemplateOptions(r.templateOptions, presets, r.template), r.template);
+            const box = parts.box ? `${parts.box}${regionTemplate(r.template).bleeds ? ` ${bandBleed(r, rightFree)}` : ''}` : '';
+            const block = <RegionBlock d={d} region={r} parts={parts} />;
             return (
               // `data-region` is what a dynamic action finds; `hidden` is the
               // region's starting state, so a "read more" never flashes.
@@ -182,7 +211,13 @@ function Rows({ d, rows: stored, className = '' }: { d: RowPageData; rows: Regio
                 className={`col-span-12 min-w-0 lg:[grid-column:var(--gc)] ${showClass(r)} ${parts.wrapper}`.trim()}
                 style={{ ['--gc' as string]: `${r.column} / span ${r.span}` }}
               >
-                <RegionBlock d={d} region={r} parts={parts} />
+                {box ? (
+                  <div data-region-box="" className={box}>
+                    {block}
+                  </div>
+                ) : (
+                  block
+                )}
               </div>
             );
           })}
