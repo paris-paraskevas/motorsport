@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.118 — 2026-09-16
+
+### Records — the operator's order for the rest of Phase 1 and the gate on Phase 2
+
+Records only, no code. `docs/plan/ledger.json` gains a dated changes line with the operator's words of 2026-09-16 ~00:33Z, given after the second close of session 49 when asked whether Phase 2 was next: P1.12 PR B2 first, then P1.1, then P1.4 and P1.8 (P1.4 first as the reading; the operator joined the two with "and"), each asked when its turn comes and built on the answer, and Phase 2 into the ledger only once all of Phase 1 is done, presented as one screen with a decision scan. `docs/HANDOFF.md` LATEST: the session-50 agenda rewritten in that order (P1.1 asked first with the five looks side by side, the Size / Column Span question alongside; P1.4 and P1.8 with their defaults; the documentRefs gap offered as a quick slot before Phase 2), the questions section headed by the order. `docs/plan/components-programme.md` re-rendered.
+
 ## 1.0.117 — 2026-09-15
 
 ### Records — session 49 closed a second time: P1.12's evidence for PR A and PR B1, the session-50 handoff, the day in SCHEDULE, three Inbox items
