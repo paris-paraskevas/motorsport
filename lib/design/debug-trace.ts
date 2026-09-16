@@ -5,7 +5,7 @@ import { loadRevisionPreview } from './live-page';
 import { composedDocument } from './composed-page';
 import { loadAuthzSchemes } from './authz';
 import { allowedKeys, currentVisitor } from './authz-evaluate';
-import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks, type PageDocument, type Region } from './page-document';
+import { applyBuildOptions, applyShow, documentRefs, passesShow, schemesAsked, showAsks, type PageDocument, type Region } from './page-document';
 import { loadBuildOptions } from './build-options';
 import { READS, raceWeekendNow, renderComponents, type RenderPage } from './component-render';
 import { findComponent } from './components';
@@ -80,19 +80,28 @@ export async function tracePage(target: TraceTarget, level: DebugLevel, cid: str
 
   // Show rules (APEX: which conditions fired), with the facts they read.
   const raceWeekend = asks.calendar ? await d.step(6, 'show', 'the race-weekend fact', () => raceWeekendNow()) : null;
-  const shown = applyShow(doc, { signedIn: visitor.signedIn, raceWeekend });
+  const showCtx = { signedIn: visitor.signedIn, raceWeekend };
+  const shown = applyShow(doc, showCtx);
+  // A sub region (P1.4) leaves with its parent, whatever its own rule or option says.
+  const parentName = (r: Region) => {
+    const p = doc.regions.find(x => x.id === r.parent);
+    return p ? name(p) : (r.parent ?? 'its parent');
+  };
   d.note(4, 'show', `${plural(doc.regions.length - shown.regions.length, 'region')} hidden by a show rule (signed in: ${visitor.signedIn}; race weekend: ${raceWeekend === null ? 'not asked' : raceWeekend})`);
   for (const r of doc.regions) {
-    if (!shown.regions.some(x => x.id === r.id)) d.note(6, `show:${r.id}`, `${name(r)} hidden by the rule ${r.show ?? 'always'}`);
+    if (!shown.regions.some(x => x.id === r.id)) d.note(6, `show:${r.id}`, passesShow(r.show, showCtx) ? `${name(r)} left with its parent ${parentName(r)}` : `${name(r)} hidden by the rule ${r.show ?? 'always'}`);
   }
 
   // Build options (P1.3) and Comment Out (P1.11): an Excluded or a commented-out region leaves before it is drawn, at this one step.
   const options = await d.step(6, 'build', 'the build options', () => loadBuildOptions());
   const built = applyBuildOptions(shown, options);
   const dropped = shown.regions.filter(r => !built.regions.some(x => x.id === r.id));
+  const excluded = (r: Region) => r.buildOption !== undefined && options[r.buildOption] === 'exclude';
   const commented = dropped.filter(r => r.commentedOut).length;
-  d.note(4, 'build', `${plural(dropped.length - commented, 'region')} excluded by a build option, ${commented} commented out`);
-  for (const r of dropped) d.note(6, `build:${r.id}`, r.commentedOut ? `${name(r)} commented out` : `${name(r)} excluded by ${r.buildOption ?? 'its build option'}`);
+  const byOption = dropped.filter(r => !r.commentedOut && excluded(r)).length;
+  const withParent = dropped.length - commented - byOption;
+  d.note(4, 'build', `${plural(byOption, 'region')} excluded by a build option, ${commented} commented out${withParent ? `, ${withParent} left with a parent` : ''}`);
+  for (const r of dropped) d.note(6, `build:${r.id}`, r.commentedOut ? `${name(r)} commented out` : excluded(r) ? `${name(r)} excluded by ${r.buildOption}` : `${name(r)} left with its parent ${parentName(r)}`);
 
   // What the regions name: shortcuts, photos, lists.
   const refs = documentRefs(built);

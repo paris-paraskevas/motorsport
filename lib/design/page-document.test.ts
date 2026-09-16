@@ -3,7 +3,12 @@ import {
   EMPTY_DOCUMENT,
   applyBuildOptions,
   applyShow,
+  childrenOf,
+  descendantsOf,
   documentRefs,
+  firstBodyRegion,
+  isInside,
+  parentOf,
   isLegacyBody,
   parsePageDocument,
   passesShow,
@@ -362,6 +367,87 @@ describe('Appearance › Template on a region (the components programme, P1.1)',
     const unknown = parsePageDocument(doc([region({ template: 'nope' })]));
     expect(unknown.value.regions).toEqual([]);
     expect(unknown.problems).toEqual(['region r: the template must be one of standard, boxed, band, aside, hero']);
+  });
+});
+
+describe('Sub regions (the components programme, P1.4)', () => {
+  const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'body', ...over });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+  const ids = (d: { regions: { id: string }[] }) => d.regions.map(r => r.id);
+
+  it('keeps a parent the page has; refuses a parent it lacks, a region inside itself, a cycle and a position other than the parent’s; a dropped region takes its descendants with it', () => {
+    const ok = parsePageDocument(doc([region({ id: 'story' }), region({ id: 'pull', parent: 'story', seq: 20 })]));
+    expect(ok.problems).toEqual([]);
+    expect(ok.value.regions.find(r => r.id === 'pull')).toMatchObject({ parent: 'story', position: 'body' });
+    expect(ok.value.regions.find(r => r.id === 'story')).not.toHaveProperty('parent');
+    expect(parsePageDocument(doc([region({ id: 'story', parent: null }), region({ id: 'pull', parent: '', seq: 20 })])).value.regions.every(r => !('parent' in r))).toBe(true);
+    const missing = parsePageDocument(doc([region({ id: 'pull', parent: 'nope' })]));
+    expect(missing.value.regions).toEqual([]);
+    expect(missing.problems).toEqual(['region pull: names a parent the page does not have (nope)']);
+    expect(parsePageDocument(doc([region({ id: 'pull', parent: 'Bad Id' })])).problems).toEqual(['region pull: the parent must be a region id']);
+    const self = parsePageDocument(doc([region({ id: 'loop', parent: 'loop' })]));
+    expect(self.value.regions).toEqual([]);
+    expect(self.problems).toEqual(['region loop: is inside itself']);
+    const cycle = parsePageDocument(doc([region({ id: 'a', parent: 'b' }), region({ id: 'b', parent: 'a', seq: 20 })]));
+    expect(cycle.value.regions).toEqual([]);
+    expect(cycle.problems).toEqual(['region a: is inside itself', 'region b: is inside itself']);
+    const elsewhere = parsePageDocument(doc([region({ id: 'story' }), region({ id: 'pull', parent: 'story', position: 'footer' })]));
+    expect(ids(elsewhere.value)).toEqual(['story']);
+    expect(elsewhere.problems).toEqual(['region pull: must sit in its parent’s position (body)']);
+    // Three levels: the grandparent's bad parent takes the child and the grandchild with it; an unrelated region stays.
+    const cascade = parsePageDocument(doc([region({ id: 'a', parent: 'nope' }), region({ id: 'b', parent: 'a', seq: 20 }), region({ id: 'c', parent: 'b', seq: 30 }), region({ id: 'd', seq: 40 })]));
+    expect(ids(cascade.value)).toEqual(['d']);
+    expect(cascade.problems).toEqual(['region a: names a parent the page does not have (nope)', 'region b: left with its parent a', 'region c: left with its parent b']);
+  });
+
+  it('groups rows by parent: the page level draws no sub region, a parent’s rows hold its children, and the row mates and the overlaps stay inside one group', () => {
+    const d = parsePageDocument(
+      doc([
+        region({ id: 'story', span: 8 }),
+        region({ id: 'aside', seq: 20, column: 9, span: 4, newRow: false }),
+        region({ id: 'one', parent: 'story', seq: 10, column: 1, span: 6 }),
+        region({ id: 'two', parent: 'story', seq: 20, column: 7, span: 6, newRow: false }),
+        region({ id: 'three', parent: 'story', seq: 30, column: 1, span: 6, newRow: false }),
+      ]),
+    ).value;
+    expect(rowsAt(d, 'body').map(row => row.map(r => r.id))).toEqual([['story', 'aside']]);
+    expect(rowsAt(d, 'body', null).map(row => row.map(r => r.id))).toEqual([['story', 'aside']]);
+    expect(rowsAt(d, 'body', 'story').map(row => row.map(r => r.id))).toEqual([['one', 'two'], ['three']]);
+    expect(rowsAt(d, 'body', 'aside')).toEqual([]);
+    expect(rowMates(d, d.regions.find(r => r.id === 'three')!).map(r => r.id)).toEqual(['one', 'two']);
+    expect(rowMates(d, d.regions.find(r => r.id === 'aside')!).map(r => r.id)).toEqual(['story']);
+    // three shares one's columns inside story: an overlap in the parent's group; aside shares no group with the children.
+    expect(overlappingRegions(d)).toEqual([{ position: 'body', parent: 'story', a: 'one', b: 'three', from: 1, to: 6 }]);
+    expect(childrenOf(d, 'story').map(r => r.id)).toEqual(['one', 'two', 'three']);
+    expect(childrenOf(d, 'aside')).toEqual([]);
+    expect(parentOf(d.regions.find(r => r.id === 'one')!)).toBe('story');
+    expect(parentOf(d.regions.find(r => r.id === 'story')!)).toBeNull();
+    expect(isInside(d, 'three', 'story')).toBe(true);
+    expect(isInside(d, 'story', 'three')).toBe(false);
+    expect(isInside(d, 'story', 'story')).toBe(true);
+  });
+
+  it('a region dropped by a show rule or a build option takes its descendants with it; the phone bar counts page-level regions', () => {
+    const d = parsePageDocument(
+      doc([
+        region({ id: 'story', show: 'signed-in' }),
+        region({ id: 'pull', parent: 'story', seq: 20 }),
+        region({ id: 'deep', parent: 'pull', seq: 30 }),
+        region({ id: 'other', seq: 40, commentedOut: true }),
+        region({ id: 'inner', parent: 'other', seq: 50 }),
+      ]),
+    ).value;
+    expect(applyShow(d, { signedIn: false, raceWeekend: null }).regions.map(r => r.id)).toEqual(['other', 'inner']);
+    expect(applyShow(d, { signedIn: true, raceWeekend: null })).toBe(d);
+    expect(applyBuildOptions(d, {}).regions.map(r => r.id)).toEqual(['story', 'pull', 'deep']);
+    expect(descendantsOf(d, 'story')).toEqual(['pull', 'deep']);
+    expect(descendantsOf(d, 'deep')).toEqual([]);
+    const bar = parsePageDocument(doc([region({ id: 'bar', position: 'phonebar' }), region({ id: 'cell', parent: 'bar', position: 'phonebar', seq: 20 })]));
+    expect(bar.problems).toEqual([]);
+    // The page's h1 goes to the first page-level Body region showing, never to a sub region that comes first in the document.
+    const early = parsePageDocument(doc([region({ id: 'story', seq: 10 }), region({ id: 'inner', parent: 'story', seq: 5 }), region({ id: 'shy', seq: 8, hidden: true })])).value;
+    expect(early.regions.map(r => r.id)).toEqual(['inner', 'shy', 'story']);
+    expect(firstBodyRegion(early)?.id).toBe('story');
   });
 });
 

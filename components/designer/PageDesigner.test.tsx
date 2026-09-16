@@ -745,6 +745,93 @@ describe('PageDesigner', () => {
     expect((second.body as { document: PageDocument }).document.regions.find((r: Region) => r.id === 'intro')).not.toHaveProperty('template');
   });
 
+  it('the Rendering and Processing trees list APEX’s six points, the three new ones empty (P1.4)', () => {
+    mount();
+    const tree = screen.getByRole('tree', { name: 'Rendering' });
+    for (const p of ['Before Header', 'After Header', 'Before Regions', 'After Regions', 'Before Footer', 'After Footer']) expect(within(tree).getByText(p)).toBeTruthy();
+    expect(within(within(tree).getByText('Before Regions').parentElement!).getByText('no steps yet')).toBeTruthy();
+    expect(within(within(tree).getByText('After Header').parentElement!).queryByText('no steps yet')).toBeNull();
+    fireEvent.click(screen.getByRole('tab', { name: 'Processing' }));
+    const proc = screen.getByRole('tree', { name: 'Processing' });
+    for (const p of ['Before Regions', 'After Regions', 'Before Footer']) expect(within(proc).getByText(p)).toBeTruthy();
+  });
+
+  it('the region menu in the documented order (P1.4): Create Sub Region places a Static Content inside, Create Page Item waits, Create Button places one below; the Component View names the parent', () => {
+    mount();
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    const menu = screen.getByRole('menu');
+    const labels = within(menu).getAllByRole('menuitem').map(m => m.querySelector('span')?.textContent);
+    expect(labels).toEqual(['Create Region', 'Create Sub Region', 'Create Page Item', 'Create Button', 'Create Dynamic Action', 'Duplicate', 'Move Up', 'Move Down', 'Hide at first', 'Comment Out', 'Delete', 'Copy To', 'Expand All', 'Collapse All', 'Help']);
+    expect((within(menu).getByRole('menuitem', { name: /^Create Page Item/ }) as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(within(menu).getByRole('menuitem', { name: /^Create Sub Region/ }));
+    expect(status()).toMatch(/Static Content created/);
+    const tree = () => screen.getByRole('tree', { name: 'Rendering' });
+    const subs = within(tree()).getByText('Sub Regions');
+    expect(within(subs.parentElement!).getByText('1')).toBeTruthy();
+    // The child's tile sits inside the parent's, in its Sub Regions area; the Property Editor names the parent and locks the position.
+    expect(tile('Static Content: A century of speed').contains(tile('Static Content: text-1'))).toBe(true);
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(pe).getByText('A century of speed · inside')).toBeTruthy();
+    expect((within(within(pe).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Body' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(within(pe).getByText('Inside A century of speed: it takes its parent’s position.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('tab', { name: 'Component View' }));
+    expect(screen.getByRole('columnheader', { name: 'Parent' })).toBeTruthy();
+    expect(screen.getAllByRole('cell', { name: 'A century of speed' }).length).toBeGreaterThanOrEqual(2);
+    fireEvent.click(screen.getByRole('tab', { name: 'Layout' }));
+    // Create Button places a button below the parent, at the page level.
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Create Button/ }));
+    expect(status()).toMatch(/Button created/);
+    expect(tile('Static Content: A century of speed').contains(tile('Button: Read more'))).toBe(false);
+    // A sub region's own menu offers Create Sub Region too: the nesting goes on.
+    fireEvent.contextMenu(tile('Static Content: text-1'));
+    expect(screen.getByRole('menuitem', { name: /^Create Sub Region/ })).toBeTruthy();
+  });
+
+  it('Copy To places a copy with its sub regions in another position; Duplicate and Delete carry the sub regions; a drop with Ctrl held copies where a plain drop moves (P1.4)', async () => {
+    mount();
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Create Sub Region/ }));
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Copy To/ }));
+    fireEvent.click(within(screen.getByRole('menu', { name: 'Copy To' })).getByRole('menuitem', { name: 'Footer' }));
+    expect(status()).toMatch(/A century of speed copied to Footer/);
+    const copy = screen.getByRole('button', { name: 'Static Content: A century of speed (copy)' });
+    expect(copy.contains(tile('Static Content: text-3'))).toBe(true);
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Duplicate' }));
+    expect(screen.getAllByRole('button', { name: 'Static Content: A century of speed (copy)' })).toHaveLength(2);
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Delete/ }));
+    expect(screen.queryByRole('button', { name: 'Static Content: A century of speed' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Static Content: text-1' })).toBeNull();
+    // Ctrl held on the drop: a copy lands and the original stays; the drag source allows a copy. jsdom has no
+    // DragEvent, so the modifier arrives as the dropEffect the dragover set from it (the browser run proves the key itself).
+    const dataTransfer = { setData: vi.fn(), effectAllowed: 'move', dropEffect: 'copy' };
+    fireEvent.dragStart(tile('List: Elsewhere'), { dataTransfer });
+    expect(dataTransfer.effectAllowed).toBe('copyMove');
+    const target = await screen.findByRole('button', { name: 'Drop here: Region · Footer' });
+    fireEvent.drop(target, { dataTransfer, ctrlKey: true });
+    expect(status()).toMatch(/Elsewhere copied/);
+    expect(screen.getAllByRole('button', { name: /^List: Elsewhere/ })).toHaveLength(2);
+  });
+
+  it('a region with sub regions offers drop targets inside it while dragging; the dragged region’s own subtree offers none (P1.4)', async () => {
+    mount();
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Create Sub Region/ }));
+    const dataTransfer = { setData: vi.fn(), effectAllowed: 'move' };
+    fireEvent.dragStart(tile('List: Elsewhere'), { dataTransfer });
+    const inside = await screen.findByRole('button', { name: 'Drop here: Sub Regions of A century of speed · new row' });
+    fireEvent.drop(inside, { dataTransfer });
+    expect(status()).toMatch(/Elsewhere moved/);
+    expect(tile('Static Content: A century of speed').contains(tile('List: Elsewhere'))).toBe(true);
+    fireEvent.dragStart(tile('Static Content: A century of speed'), { dataTransfer });
+    await screen.findByRole('button', { name: 'Drop here: Region · Footer' });
+    expect(screen.queryByRole('button', { name: /Sub Regions of A century of speed/ })).toBeNull();
+    fireEvent.dragEnd(document);
+  });
+
   it('the Column and Column Span pills offer only the free columns of the row; an overlap holds Save with the reason (R5)', () => {
     const twoUp: PageDocument = {
       ...doc,

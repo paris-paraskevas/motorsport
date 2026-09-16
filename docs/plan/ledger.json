@@ -79,6 +79,11 @@
    "date": "2026-09-16",
    "change": "The operator, ~08:00Z, on the P1.1 ask (the review page 66e2a1eb-fa5a-426d-88ac-5169417039c5: the five looks drawn side by side on the Monza page on Midnight and Paper, the Universal Theme counterparts, three drawings of the Layout group): \"1. they stand, 2. drop size.\" Read as: (1) the five looks stand as drawn, named as the scope spells them (Plain · Boxed · Band · Aside · Hero; today's template keeps its stored key standard under the label Plain; Plain answers to the Universal Theme's Content Block, Boxed to Standard, Hero to Hero; Band and Aside are ours); (2) the Size row (Small · Mid · Large, ours since R4.1) leaves the Layout group and Column Span, APEX's, stays with Home's three words in its note, a change outside P1.1's scope text folded into the slot as the changes line of 2026-09-16 placed it. Defaults taken in P1.1's plan (approved ~08:35Z after a Sonnet plan critic): a look is a box inside the region's cell, the body's base type and its presets over the five groups, with three options added to the global groups (Heading style › Display and Quiet label, Emphasis › Strong) so the presets express the drawings; a Band takes the whole row (Column 1, Column Span Full, Start New Row Yes, the two locked while it is a Band) and bleeds to the page's edges where the region reaches them; the Component Settings default per kind (region.static.template, region.image.template, region.list.template, region.button.template, shipped Plain) applies when the designer creates a region, never at render, so a changed default restyles no existing page; the four rows are a seed migration (20260916081500) applied on the word \"apply\"; a region stored without a template reads as Plain, so readers see no change until a region is given a look.",
    "word": "the operator, 2026-09-16 ~08:00Z, verbatim: \"1. they stand, 2. drop size.\"; the plan approved ~08:35Z"
+  },
+  {
+   "date": "2026-09-16",
+   "change": "The operator, ~10:55Z, on the P1.4 ask (the review page 60a2573b-3ed3-4695-ba2b-11f9f97a4da8: the Rendering tree today and with the four points and a sub region, the right-click menu in the documented order, the Layout tile and the served page with a sub region inside its parent): \"merge, sub region may have sub regions\". Read as: the merge of the records PR #1004, and for P1.4 the nesting depth is unlimited, as APEX allows; the slot's default (\"Sub Region = one level of nesting\") is not taken, and the rest of the drawings stand. Defaults taken in P1.4's plan (approved ~11:20Z after a Sonnet plan critic): a sub region is a region with a parent, in its parent's position and inside its parent's twelve columns, rendered after the parent's body and before its Footer Text at the parent's width; the four points are tree nodes in APEX's order, today's system steps keep their points and an empty point reads \"no steps yet\"; the right-click menu in the documented order with ours where they stood (Create Region · Create Sub Region · Create Page Item, disabled until items · Create Button · Create Dynamic Action · Duplicate · Move Up · Move Down · Hide at first · Comment Out · Delete · Copy To ▸ the other positions); Duplicate, Delete and Copy To carry the sub regions; Ctrl (or Cmd) on a drop copies, drag sources allowing copyMove; drop targets inside a region only once it holds sub regions, the first sub region created from the menu; the parser refuses a parent the page lacks, a region inside itself, a cycle and a position other than the parent's, and drops a failing region with everything inside it; a recursion cap of 50 as a guard against a crafted document.",
+   "word": "the operator, 2026-09-16 ~10:55Z, verbatim: \"merge, sub region may have sub regions\"; the plan approved ~11:20Z"
   }
  ],
  "phases": {
@@ -198,7 +203,7 @@
    "defaults": "Sub Region = one level of nesting",
    "needsWord": "nesting depth (one level proposed)",
    "acceptance": "Menu items in the documented order; Ctrl+drag makes a copy beneath; browser run.",
-   "status": "planned",
+   "status": "started",
    "scopeHash": "5435a437fb61"
   },
   {

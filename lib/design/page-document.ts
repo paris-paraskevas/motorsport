@@ -125,8 +125,20 @@ export function showAsks(doc: PageDocument): { visitor: boolean; calendar: boole
 
 /** The document with the regions whose rule fails this visit left out. */
 export function applyShow(doc: PageDocument, ctx: ShowContext): PageDocument {
-  const regions = doc.regions.filter(r => passesShow(r.show, ctx));
-  return regions.length === doc.regions.length ? doc : { ...doc, regions };
+  return without(doc, r => !passesShow(r.show, ctx));
+}
+
+/** The document without the regions a test names and everything inside them
+ *  (P1.4: a region leaves with its parent); the same document when none leaves. */
+function without(doc: PageDocument, leaves: (r: Region) => boolean): PageDocument {
+  const gone = new Set<string>();
+  for (const r of doc.regions) {
+    if (!leaves(r)) continue;
+    gone.add(r.id);
+    for (const id of descendantsOf(doc, r.id)) gone.add(id);
+  }
+  if (gone.size === 0) return doc;
+  return { ...doc, regions: doc.regions.filter(r => !gone.has(r.id)) };
 }
 
 /** The document with the regions whose Build Option is Excluded left out
@@ -135,8 +147,7 @@ export function applyShow(doc: PageDocument, ctx: ShowContext): PageDocument {
  *  trace apply before a region is drawn. A region with no option, or one the
  *  statuses do not name, stays: Include is the fallback, as in the loader. */
 export function applyBuildOptions(doc: PageDocument, options: Readonly<Partial<BuildOptions>>): PageDocument {
-  const regions = doc.regions.filter(r => !r.commentedOut && (r.buildOption === undefined || options[r.buildOption] !== 'exclude'));
-  return regions.length === doc.regions.length ? doc : { ...doc, regions };
+  return without(doc, r => r.commentedOut === true || (r.buildOption !== undefined && options[r.buildOption] === 'exclude'));
 }
 
 export interface RegionBase {
@@ -175,6 +186,13 @@ export interface RegionBase {
    *  (template-options.ts REGION_TEMPLATES); absent means Plain (`standard`),
    *  so every region stored before P1.1 draws as it did. */
   template?: RegionTemplateKey;
+  /** Layout › Parent Region (APEX; the components programme, P1.4): the id of
+   *  the region this one sits inside, drawn after that region's body at its
+   *  content width; its position is its parent's and its columns count inside
+   *  the parent's twelve. Absent means the page level. Any depth (the operator,
+   *  2026-09-16: "sub region may have sub regions"); the parser refuses a
+   *  parent the page lacks, a region inside itself and a position of its own. */
+  parent?: string;
   /** Commented out (APEX: Comment Out / Uncomment): kept on the page with all it
    *  holds, struck through in the designer, left out when the page runs; absent
    *  means it runs. Its refs stay in the projection: the write path stores the
@@ -328,6 +346,11 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
   const templateOptions = options.value;
   const template = parseRegionTemplate(r.template);
   if (template.problem) problems.push(`${who}: ${template.problem}`);
+  let parent: string | undefined;
+  if (r.parent !== undefined && r.parent !== null && r.parent !== '') {
+    if (typeof r.parent === 'string' && REGION_ID.test(r.parent)) parent = r.parent;
+    else problems.push(`${who}: the parent must be a region id`);
+  }
 
   let region: Region | null = null;
   if (kind && position && seq !== null && column !== null && span !== null && problems.length === 0) {
@@ -348,6 +371,7 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
       ...(buildOption ? { buildOption } : {}),
       ...(templateOptions ? { templateOptions } : {}),
       ...(template.value ? { template: template.value } : {}),
+      ...(parent ? { parent } : {}),
       ...(commentedOut ? { commentedOut: true as const } : {}),
     };
     if (kind === 'component') {
@@ -459,20 +483,76 @@ function parseAction(raw: unknown, index: number, regionIds: Set<string>, seen: 
  * sequence order); the write route refuses when `problems` is not empty. A
  * document whose version this code does not know is refused whole.
  */
+/**
+ * Sub regions (P1.4): a parent must be a region of the page, not the region
+ * itself or a region inside it, in the same position. A region that fails goes,
+ * and everything inside it goes with it, to a fixed point, so the renderer,
+ * the tree and the Layout never meet a dangling parent or a cycle. The problems
+ * name each region in the document's order.
+ */
+function settleParents(regions: Region[], problems: string[]): Region[] {
+  const byId = new Map(regions.map(r => [r.id, r]));
+  const bad = new Set<string>();
+  for (const r of regions) {
+    if (!r.parent) continue;
+    const p = byId.get(r.parent);
+    if (!p) {
+      problems.push(`region ${r.id}: names a parent the page does not have (${r.parent})`);
+      bad.add(r.id);
+      continue;
+    }
+    // Up the chain: back at this region is a cycle it belongs to.
+    const visited = new Set<string>([r.id]);
+    let cur: Region | undefined = p;
+    let cyclic = false;
+    while (cur) {
+      if (cur.id === r.id) {
+        cyclic = true;
+        break;
+      }
+      if (visited.has(cur.id)) break;
+      visited.add(cur.id);
+      cur = cur.parent ? byId.get(cur.parent) : undefined;
+    }
+    if (cyclic) {
+      problems.push(`region ${r.id}: is inside itself`);
+      bad.add(r.id);
+      continue;
+    }
+    if (p.position !== r.position) {
+      problems.push(`region ${r.id}: must sit in its parent’s position (${p.position})`);
+      bad.add(r.id);
+    }
+  }
+  // What hangs off a dropped region goes with it, however deep.
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const r of regions) {
+      if (bad.has(r.id) || !r.parent || !bad.has(r.parent)) continue;
+      problems.push(`region ${r.id}: left with its parent ${r.parent}`);
+      bad.add(r.id);
+      changed = true;
+    }
+  }
+  return bad.size === 0 ? regions : regions.filter(r => !bad.has(r.id));
+}
+
 export function parsePageDocument(raw: unknown): { value: PageDocument; problems: string[] } {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { value: EMPTY_DOCUMENT, problems: ['the document must be an object'] };
   const d = raw as Record<string, unknown>;
   if (!(PAGE_DOCUMENT_VERSIONS as readonly unknown[]).includes(d.version)) return { value: EMPTY_DOCUMENT, problems: [`unknown document version ${String(d.version)}`] };
   if (!Array.isArray(d.regions)) return { value: EMPTY_DOCUMENT, problems: ['regions must be a list'] };
   const problems: string[] = [];
-  const regions: Region[] = [];
+  const parsed: Region[] = [];
   const seen = new Set<string>();
   d.regions.forEach((item, i) => {
     const { region, problems: p } = parseRegion(item, i, seen);
     problems.push(...p);
-    if (region) regions.push(region);
+    if (region) parsed.push(region);
   });
-  const phone = regions.filter(r => r.position === 'phonebar');
+  const regions = settleParents(parsed, problems);
+  const phone = regions.filter(r => r.position === 'phonebar' && !r.parent);
   if (phone.length > 1) problems.push('the phone bar holds one region at most');
   regions.sort((a, b) => POSITION_ORDER[a.position] - POSITION_ORDER[b.position] || a.seq - b.seq);
 
@@ -557,13 +637,60 @@ export function refRows(refs: DocumentRefs): { kind: 'list' | 'asset' | 'shortcu
 /** Whether two regions' column spans share a column. */
 const shareColumns = (a: Region, b: Region): boolean => a.column < b.column + b.span && b.column < a.column + a.span;
 
-/** The regions of one position in sequence, split into rows: a region starts a
- *  row when it says so, and also when the columns it names are already held on
- *  the current row (R5): the page wraps rather than draws one region over
- *  another. What the schematic and the served page draw. */
-export function rowsAt(doc: PageDocument, position: Position): Region[][] {
+/** The region a region sits inside, null at the page level (P1.4). Every
+ *  grouping compares through this, since an absent parent reads undefined. */
+export function parentOf(r: Region): string | null {
+  return r.parent ?? null;
+}
+
+/** The regions directly inside a region, in document order. */
+export function childrenOf(doc: PageDocument, id: string): Region[] {
+  return doc.regions.filter(r => r.parent === id);
+}
+
+/** The recursion's ceiling: any depth is allowed, but a document that came in
+ *  through the parser is acyclic, so this only ever stops a crafted one. */
+export const NESTING_CAP = 50;
+
+/** The ids of everything inside a region, depth first, however deep. */
+export function descendantsOf(doc: PageDocument, id: string): string[] {
+  const out: string[] = [];
+  const walk = (pid: string, depth: number) => {
+    if (depth > NESTING_CAP) return;
+    for (const c of doc.regions) {
+      if (c.parent === pid) {
+        out.push(c.id);
+        walk(c.id, depth + 1);
+      }
+    }
+  };
+  walk(id, 0);
+  return out;
+}
+
+/** Whether a region is the ancestor itself or sits somewhere inside it. */
+export function isInside(doc: PageDocument, id: string, ancestor: string): boolean {
+  return id === ancestor || descendantsOf(doc, ancestor).includes(id);
+}
+
+/** The first page-level region showing in the Body: the one that carries the
+ *  page's h1 (component-render.tsx). A sub region never does, whatever its
+ *  place in the document. Kept here so the rule has a test of its own. */
+export function firstBodyRegion(doc: PageDocument): Region | undefined {
+  return doc.regions.find(r => r.position === 'body' && !r.hidden && !r.parent);
+}
+
+/** The regions of one group: a position at the page level, or inside one parent. */
+const groupOf = (doc: PageDocument, position: Position, parent: string | null): Region[] => doc.regions.filter(x => x.position === position && parentOf(x) === parent);
+
+/** The regions of one position (and, since P1.4, one parent: the page level
+ *  when none is given) in sequence, split into rows: a region starts a row when
+ *  it says so, and also when the columns it names are already held on the
+ *  current row (R5): the page wraps rather than draws one region over another.
+ *  What the schematic and the served page draw. */
+export function rowsAt(doc: PageDocument, position: Position, parent: string | null = null): Region[][] {
   const rows: Region[][] = [];
-  for (const r of doc.regions.filter(x => x.position === position)) {
+  for (const r of groupOf(doc, position, parent)) {
     const row = rows[rows.length - 1];
     if (!row || r.newRow || row.some(x => shareColumns(x, r))) rows.push([r]);
     else row.push(r);
@@ -572,9 +699,9 @@ export function rowsAt(doc: PageDocument, position: Position): Region[][] {
 }
 
 /** The rows as the document declares them, by Start New Row alone. */
-function declaredRowsAt(doc: PageDocument, position: Position): Region[][] {
+function declaredRowsAt(doc: PageDocument, position: Position, parent: string | null): Region[][] {
   const rows: Region[][] = [];
-  for (const r of doc.regions.filter(x => x.position === position)) {
+  for (const r of groupOf(doc, position, parent)) {
     if (rows.length === 0 || r.newRow) rows.push([r]);
     else rows[rows.length - 1].push(r);
   }
@@ -583,11 +710,13 @@ function declaredRowsAt(doc: PageDocument, position: Position): Region[][] {
 
 /** The other regions of a region's declared row: the columns its Column and Span may not cross. */
 export function rowMates(doc: PageDocument, r: Region): Region[] {
-  return declaredRowsAt(doc, r.position).find(row => row.some(x => x.id === r.id))?.filter(x => x.id !== r.id) ?? [];
+  return declaredRowsAt(doc, r.position, parentOf(r)).find(row => row.some(x => x.id === r.id))?.filter(x => x.id !== r.id) ?? [];
 }
 
 export interface Overlap {
   position: Position;
+  /** The parent the row sits inside; absent at the page level (P1.4). */
+  parent?: string;
   /** The earlier region's id, then the later one's. */
   a: string;
   b: string;
@@ -596,16 +725,22 @@ export interface Overlap {
   to: number;
 }
 
-/** Every pair of regions declared on one row that share a column, the earlier first. */
+/** Every pair of regions declared on one row that share a column, the earlier
+ *  first; a row is one position at the page level or inside one parent. */
 export function overlappingRegions(doc: PageDocument): Overlap[] {
   const out: Overlap[] = [];
   for (const position of POSITIONS) {
-    for (const row of declaredRowsAt(doc, position)) {
-      for (let i = 0; i < row.length; i++) {
-        for (let j = i + 1; j < row.length; j++) {
-          const a = row[i];
-          const b = row[j];
-          if (shareColumns(a, b)) out.push({ position, a: a.id, b: b.id, from: Math.max(a.column, b.column), to: Math.min(a.column + a.span, b.column + b.span) - 1 });
+    const parents: (string | null)[] = [null, ...new Set(doc.regions.filter(r => r.position === position && r.parent).map(r => r.parent as string))];
+    for (const parent of parents) {
+      for (const row of declaredRowsAt(doc, position, parent)) {
+        for (let i = 0; i < row.length; i++) {
+          for (let j = i + 1; j < row.length; j++) {
+            const a = row[i];
+            const b = row[j];
+            if (shareColumns(a, b)) {
+              out.push({ position, ...(parent ? { parent } : {}), a: a.id, b: b.id, from: Math.max(a.column, b.column), to: Math.min(a.column + a.span, b.column + b.span) - 1 });
+            }
+          }
         }
       }
     }

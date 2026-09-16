@@ -4,6 +4,7 @@ import type { PageRow } from '@/lib/design/pages';
 import {
   PAGE_SELECTION,
   SHIPPED_REGION_DEFAULTS,
+  STEP_POINTS,
   addAction,
   addComponent,
   addRegion,
@@ -300,6 +301,71 @@ describe('selection', () => {
     expect(toggleRegion({ kind: 'region', id: 'intro' }, 'intro')).toEqual(PAGE_SELECTION);
     expect(toggleRegion(PAGE_SELECTION, 'intro')).toEqual({ kind: 'region', id: 'intro' });
     expect(toggleRegion({ kind: 'position', id: 'body' }, 'intro')).toEqual({ kind: 'region', id: 'intro' });
+  });
+});
+
+describe('sub regions (the components programme, P1.4)', () => {
+  const nested: PageDocument = {
+    version: 2,
+    regions: [
+      region({ id: 'story', title: 'Story', seq: 10, span: 8 }),
+      region({ id: 'aside', title: 'Aside', seq: 20, column: 9, span: 4, newRow: false }),
+      region({ id: 'one', title: 'One', seq: 10, parent: 'story', span: 6 }),
+      region({ id: 'two', title: 'Two', seq: 20, parent: 'story', column: 7, span: 6, newRow: false }),
+      region({ id: 'deep', title: 'Deep', seq: 10, parent: 'two' }),
+    ],
+    actions: [{ id: 'action-1', name: 'Unfold', when: { event: 'click', region: 'deep' }, do: [{ action: 'toggle', region: 'aside' }] }],
+  };
+  const ids = (d: PageDocument) => d.regions.map(r => r.id);
+  const seqsOf = (d: PageDocument, parent: string | null) => d.regions.filter(r => (r.parent ?? null) === parent).map(r => r.seq);
+
+  it('places a region inside a parent: the parent’s position and siblings, renumbered by tens per group; never inside itself or a descendant; a moved parent takes its descendants’ positions along', () => {
+    const placed = placeRegion(nested, region({ id: 'new', position: 'footer' }), { position: 'body', parent: 'story', newRow: true });
+    expect(placed.regions.find(r => r.id === 'new')).toMatchObject({ parent: 'story', position: 'body', seq: 30 });
+    expect(seqsOf(placed, 'story')).toEqual([10, 20, 30]);
+    expect(seqsOf(placed, null)).toEqual([10, 20]);
+    expect(placeRegion(nested, nested.regions[0], { position: 'body', parent: 'deep' })).toBe(nested);
+    expect(placeRegion(nested, nested.regions[0], { position: 'body', parent: 'story' })).toBe(nested);
+    const out = placeRegion(nested, nested.regions.find(r => r.id === 'one')!, { position: 'footer', parent: null, newRow: true });
+    expect(out.regions.find(r => r.id === 'one')).not.toHaveProperty('parent');
+    expect(out.regions.find(r => r.id === 'one')).toMatchObject({ position: 'footer', seq: 10 });
+    expect(seqsOf(out, 'story')).toEqual([10]);
+    const moved = placeRegion(nested, nested.regions[0], { position: 'footer', newRow: true });
+    expect(['story', 'one', 'two', 'deep'].map(id => moved.regions.find(r => r.id === id)!.position)).toEqual(['footer', 'footer', 'footer', 'footer']);
+    expect(moved.regions.find(r => r.id === 'aside')!.position).toBe('body');
+    expect(Object.fromEntries(renumber(nested.regions).map(r => [r.id, r.seq]))).toEqual({ story: 10, aside: 20, one: 10, two: 20, deep: 10 });
+  });
+
+  it('removes a region with its descendants and the actions naming any of them; duplicates a subtree with fresh ids and remapped parents, beneath or at a placement; moves among the siblings of one parent', () => {
+    const gone = removeRegion(nested, 'story');
+    expect(ids(gone)).toEqual(['aside']);
+    expect(gone.actions).toEqual([]);
+    const dup = duplicateRegion(nested, 'story')!;
+    expect(dup.id).toBe('text-1');
+    expect(dup.doc.regions.filter(r => r.id.startsWith('text-')).map(r => r.id).sort()).toEqual(['text-1', 'text-2', 'text-3', 'text-4']);
+    const root = dup.doc.regions.find(r => r.id === 'text-1')!;
+    expect(root).toMatchObject({ title: 'Story (copy)', seq: 20, position: 'body' });
+    expect(root).not.toHaveProperty('parent');
+    expect(dup.doc.regions.filter(r => r.parent === 'text-1').map(r => r.title)).toEqual(['One', 'Two']);
+    const twoCopy = dup.doc.regions.find(r => r.title === 'Two' && r.parent === 'text-1')!;
+    expect(dup.doc.regions.filter(r => r.parent === twoCopy.id).map(r => r.title)).toEqual(['Deep']);
+    expect(ids(dup.doc)).toHaveLength(9);
+    const to = duplicateRegion(nested, 'story', { position: 'footer', newRow: true })!;
+    expect(to.doc.regions.find(r => r.id === to.id)).toMatchObject({ position: 'footer', seq: 10, title: 'Story (copy)' });
+    expect(to.doc.regions.filter(r => r.parent === to.id).map(r => r.position)).toEqual(['footer', 'footer']);
+    expect(moveRegion(nested, 'one', -1)).toBe(nested);
+    expect(moveRegion(nested, 'two', -1).regions.filter(r => r.parent === 'story').map(r => r.id)).toEqual(['two', 'one']);
+    expect(moveRegion(nested, 'deep', 1)).toBe(nested);
+    expect(moveRegion(nested, 'aside', -1).regions.filter(r => !r.parent).map(r => r.id)).toEqual(['aside', 'story']);
+  });
+
+  it('Messages name the parent of a nested overlap; Page Search finds a child by its parent; the six points stand in APEX’s order', () => {
+    const clash: PageDocument = { ...nested, regions: nested.regions.map(r => (r.id === 'two' ? { ...r, column: 1 } : r)) };
+    expect(designerMessages(clash, page).map(m => m.text)).toContain('Two overlaps One on one row inside Story (columns 1 to 6). Move it, or start a new row.');
+    expect(designerMessages(nested, page).filter(m => m.level === 'err')).toEqual([]);
+    expect(searchPage('story', nested, page).map(h => `${h.what} · ${h.where}`)).toEqual(expect.arrayContaining(['Region · Story · name', 'Region · One · parent', 'Region · Two · parent']));
+    expect(STEP_POINTS.map(p => p.key)).toEqual(['before-header', 'after-header', 'before-regions', 'after-regions', 'before-footer', 'after-footer']);
+    expect(STEP_POINTS.map(p => p.phase)).toEqual(['Pre-Rendering', 'Pre-Rendering', 'Pre-Rendering', 'Post-Rendering', 'Post-Rendering', 'Post-Rendering']);
   });
 });
 

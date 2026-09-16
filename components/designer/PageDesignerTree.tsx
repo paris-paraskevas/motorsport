@@ -2,7 +2,7 @@
 
 import type { MouseEvent, ReactNode } from 'react';
 import { ChevronDown, ChevronRight, FileText, Puzzle, RefreshCw, Zap } from 'lucide-react';
-import { POSITIONS, REGION_KIND_LABELS, type PageDocument, type Position } from '@/lib/design/page-document';
+import { NESTING_CAP, POSITIONS, REGION_KIND_LABELS, parentOf, type PageDocument, type Position } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import {
   PD_POSITION,
@@ -104,25 +104,30 @@ export function PageDesignerTree({
   const code = page.kind === 'code';
   const number = page.id ? page.id.slice(0, 8) : 'no row';
 
-  const regionNodes = (pos: Position): NodeSpec[] =>
+  // A region's node carries its sub regions (P1.4) under one Sub Regions node,
+  // as APEX draws the region positions; any depth, capped only against a
+  // crafted document.
+  const regionNodes = (pos: Position, parent: string | null = null, depth = 0): NodeSpec[] =>
     doc.regions
-      .filter(r => r.position === pos && matches(regionName(r), REGION_KIND_LABELS[r.kind].label, r.commentedOut ? 'commented out' : undefined))
+      .filter(r => r.position === pos && parentOf(r) === parent && matches(regionName(r), REGION_KIND_LABELS[r.kind].label, r.commentedOut ? 'commented out' : undefined))
       .map(r => {
         const Icon = KIND_ICON[r.kind];
+        const subs = depth < NESTING_CAP ? regionNodes(pos, r.id, depth + 1) : [];
         return {
           key: `region:${r.id}`,
           label: regionName(r),
           icon: <Icon size={11} />,
-          tag: r.commentedOut ? 'commented out' : pos === 'body' ? spanName(r.span) : r.hidden ? 'hidden' : undefined,
+          tag: r.commentedOut ? 'commented out' : pos === 'body' || parent ? spanName(r.span) : r.hidden ? 'hidden' : undefined,
           struck: r.commentedOut === true,
           marker: markers[`region:${r.id}`],
           sel: { kind: 'region', id: r.id },
           drag: { type: 'region', id: r.id },
+          children: subs.length ? [{ key: `subs:${r.id}`, label: 'Sub Regions', cls: 'pos', tag: String(subs.length), children: subs }] : undefined,
         };
       });
   const positionNode = (pos: Position): NodeSpec => {
     const kids = regionNodes(pos);
-    const n = doc.regions.filter(r => r.position === pos).length;
+    const n = doc.regions.filter(r => r.position === pos && !r.parent).length;
     return { key: `pos:${pos}`, label: PD_POSITION[pos].label, cls: 'pos', tag: n ? String(n) : 'empty', sel: { kind: 'position', id: pos }, children: kids };
   };
   const sharedNode = (key: SharedKey, label: string): NodeSpec => ({
@@ -138,6 +143,14 @@ export function PageDesignerTree({
     steps
       .filter(s => s.point === point && matches(s.name, s.note))
       .map(s => ({ key: `proc:${s.id}`, label: s.name, icon: <RefreshCw size={10} />, cls: 'locked', tag: 'system', sel: { kind: 'proc', id: s.id } }));
+  // APEX's six points (P1.4): a point with no step of the site's says so.
+  const pointNode = (key: string, point: (typeof STEP_POINTS)[number]['key']): NodeSpec => ({
+    key,
+    label: STEP_POINTS.find(p => p.key === point)!.label,
+    cls: 'pos',
+    tag: steps.some(s => s.point === point) ? undefined : 'no steps yet',
+    children: stepNodes(point),
+  });
 
   let tree: NodeSpec[] = [];
   let foot: ReactNode = null;
@@ -169,13 +182,10 @@ export function PageDesignerTree({
             label: 'Pre-Rendering',
             cls: 'pos',
             onClick: () => onTab('proc'),
-            children: [
-              { key: 'bh', label: 'Before Header', cls: 'pos', children: stepNodes('before-header') },
-              { key: 'ah', label: 'After Header', cls: 'pos', children: stepNodes('after-header') },
-            ],
+            children: [pointNode('bh', 'before-header'), pointNode('ah', 'after-header'), pointNode('br', 'before-regions')],
           },
           { key: 'comps', label: 'Components', cls: 'pos', sel: { kind: 'page' }, children: components },
-          { key: 'post', label: 'Post-Rendering', cls: 'pos', onClick: () => onTab('proc'), children: [{ key: 'af', label: 'After Footer', cls: 'pos', children: stepNodes('after-footer') }] },
+          { key: 'post', label: 'Post-Rendering', cls: 'pos', onClick: () => onTab('proc'), children: [pointNode('ar', 'after-regions'), pointNode('bf', 'before-footer'), pointNode('af', 'after-footer')] },
         ],
       },
     ];
@@ -222,12 +232,9 @@ export function PageDesignerTree({
         key: 'ppre',
         label: 'Pre-Rendering',
         cls: 'grp',
-        children: [
-          { key: 'pbh', label: 'Before Header', cls: 'pos', children: stepNodes('before-header') },
-          { key: 'pah', label: 'After Header', cls: 'pos', children: stepNodes('after-header') },
-        ],
+        children: [pointNode('pbh', 'before-header'), pointNode('pah', 'after-header'), pointNode('pbr', 'before-regions')],
       },
-      { key: 'ppost', label: 'Post-Rendering', cls: 'grp', children: [{ key: 'paf', label: 'After Footer', cls: 'pos', children: stepNodes('after-footer') }] },
+      { key: 'ppost', label: 'Post-Rendering', cls: 'grp', children: [pointNode('par', 'after-regions'), pointNode('pbf', 'before-footer'), pointNode('paf', 'after-footer')] },
     ];
     foot = (
       <p className="m-0 px-3.5 py-3 text-12 leading-relaxed text-text-faint">
@@ -316,6 +323,8 @@ export function PageDesignerTree({
           onDragStart={e => {
             if (!n.drag) return;
             e.dataTransfer.setData('text/plain', n.key);
+            // A copy or a move: Ctrl on the drop decides (P1.4); 'move' alone would cancel a Ctrl-drop.
+            e.dataTransfer.effectAllowed = 'copyMove';
             onDragStart(n.drag);
           }}
         >
@@ -361,8 +370,9 @@ export function PageDesignerTree({
 
 /** Every node key, so Expand All and Collapse All can set them. */
 export function treeKeys(doc: PageDocument): string[] {
-  const keys = ['page', 'pre', 'bh', 'ah', 'comps', 'post', 'af', 'ppre', 'pbh', 'pah', 'ppost', 'paf', 'pn', 'pu', 'ps', 'po', 'pos:dialog'];
+  const keys = ['page', 'pre', 'bh', 'ah', 'br', 'comps', 'post', 'ar', 'bf', 'af', 'ppre', 'pbh', 'pah', 'pbr', 'ppost', 'par', 'pbf', 'paf', 'pn', 'pu', 'ps', 'po', 'pos:dialog'];
   for (const p of POSITIONS) keys.push(`pos:${p}`);
+  for (const r of doc.regions) if (doc.regions.some(c => c.parent === r.id)) keys.push(`subs:${r.id}`);
   for (const a of doc.actions) keys.push(`action:${a.id}`, `ta:${a.id}`);
   for (const ev of ['click', 'load', 'timer', 'visible']) keys.push(`ev:${ev}`);
   return keys;

@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.124 — 2026-09-16
+
+In the design tool a region can now hold regions of its own, at any depth. A right-click on a region offers Create Region, Create Sub Region, Create Button, Duplicate, Delete and Copy To, in that order, and holding Ctrl while dropping a dragged region places a copy and leaves the original where it was. The Rendering tree shows all six of the points a page renders through. Nothing changes for readers until a page uses a sub region.
+
 ## 1.0.123 — 2026-09-16
 
 Internal only: the day's working records. Nothing changes for readers.

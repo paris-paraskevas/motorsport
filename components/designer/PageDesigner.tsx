@@ -484,7 +484,7 @@ export function PageDesigner({
     setLeftTab('da');
     select({ kind: 'action', id: r.id });
   };
-  const onDrop = (d: Drag, where: Placement) => {
+  const onDrop = (d: Drag, where: Placement, opts?: { copy: boolean }) => {
     endDrag();
     if (readOnly) return;
     if (d.type === 'gallery') {
@@ -502,6 +502,14 @@ export function PageDesigner({
     }
     const r = doc.regions.find(x => x.id === d.id);
     if (!r) return;
+    // Ctrl held on the drop (P1.4): a copy, sub regions included, lands where the drop says and the original stays.
+    if (opts?.copy) {
+      const c = duplicateRegion(doc, r.id, where);
+      if (!c) return;
+      commit(c.doc, `${regionName(r)} copied.`);
+      select({ kind: 'region', id: c.id });
+      return;
+    }
     commit(placeRegion(doc, r, where), `${regionName(r)} moved.`);
     select({ kind: 'region', id: r.id });
   };
@@ -849,15 +857,21 @@ export function PageDesigner({
     if (sel.kind === 'region') {
       const r = doc.regions.find(x => x.id === sel.id);
       if (!r) return;
-      const siblings = doc.regions.filter(x => x.position === r.position);
+      // Siblings: the same position and the same parent (P1.4).
+      const siblings = doc.regions.filter(x => x.position === r.position && (x.parent ?? null) === (r.parent ?? null));
       const i = siblings.findIndex(x => x.id === r.id);
+      const created = (a: { doc: PageDocument; id: string }, what: string) => {
+        commit(a.doc, `${what} created. Its attributes are in the Property Editor.`);
+        select({ kind: 'region', id: a.id });
+      };
+      // The documented order (the UX map, line 87): Create Region, Create Sub
+      // Region, Create Page Item, Create Button; then ours where they stood.
       entries.push(
         { head: regionName(r) },
-        { label: 'Create Region below', sub: 'Static Content', disabled: readOnly, run: () => {
-          const a = addRegion(doc, 'static', { position: r.position, after: r.id, newRow: true }, regionDefaults);
-          commit(a.doc, 'Static Content created. Its attributes are in the Property Editor.');
-          select({ kind: 'region', id: a.id });
-        } },
+        { label: 'Create Region', sub: 'Static Content, below', disabled: readOnly, run: () => created(addRegion(doc, 'static', { position: r.position, after: r.id, newRow: true, parent: r.parent ?? null }, regionDefaults), 'Static Content') },
+        { label: 'Create Sub Region', sub: 'Static Content, inside', disabled: readOnly, run: () => created(addRegion(doc, 'static', { position: r.position, parent: r.id, newRow: true }, regionDefaults), 'Static Content') },
+        { label: 'Create Page Item', sub: 'items arrive with a later phase', disabled: true, run: () => {} },
+        { label: 'Create Button', sub: 'below', disabled: readOnly, run: () => created(addRegion(doc, 'button', { position: r.position, after: r.id, newRow: true, parent: r.parent ?? null }, regionDefaults), 'Button') },
         { label: 'Create Dynamic Action', sub: 'click on this region', disabled: readOnly, run: () => createAction({ region: r.id }) },
         '-',
         { label: 'Duplicate', disabled: readOnly, run: () => act.duplicate(r.id) },
@@ -881,6 +895,23 @@ export function PageDesigner({
         },
         '-',
         { label: 'Delete', k: 'Del', disabled: readOnly, run: () => act.remove(r.id) },
+        // APEX: Copy To (the UX map, line 89): a copy, sub regions included, at the end of another position, page level.
+        {
+          label: 'Copy To',
+          disabled: readOnly,
+          items: openPositions(page)
+            .filter(pos => pos !== r.position || r.parent)
+            .map(pos => ({
+              label: PD_POSITION[pos].label,
+              disabled: readOnly,
+              run: () => {
+                const c = duplicateRegion(doc, r.id, { position: pos, newRow: true });
+                if (!c) return;
+                commit(c.doc, `${regionName(r)} copied to ${PD_POSITION[pos].label}.`);
+                select({ kind: 'region', id: c.id });
+              },
+            })),
+        },
       );
     } else if (sel.kind === 'position') {
       entries.push({ head: sel.id }, { label: 'Create Region here', sub: 'Static Content', disabled: readOnly || !open.includes(sel.id), run: () => act.addRegion('static', sel.id) });

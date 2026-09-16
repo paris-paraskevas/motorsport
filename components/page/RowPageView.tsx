@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PAGE_WIDE } from '@/lib/site';
 import { pageIdOf, resolveDestination, resolveEntry, type NavEntry, type NavLists, type PageDestinations } from '@/lib/design/destinations';
-import { COLUMNS, isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
+import { COLUMNS, NESTING_CAP, childrenOf, isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
 import { SHIPPED_PRESETS, regionTemplate, resolveTemplateOptions, templateOptionClasses, type TemplateOptionClasses, type TemplatePresets } from '@/lib/design/template-options';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
@@ -177,12 +177,18 @@ function Rows({
   rows: stored,
   className = '',
   rightFree = true,
+  nested = false,
+  depth = 0,
 }: {
   d: RowPageData;
   rows: Region[][];
   className?: string;
   /** Nothing sits to the right of a full-width region here, so a Band may run to the page's right edge; a code page's strips never have a Right Side Column. */
   rightFree?: boolean;
+  /** The rows of a region's sub regions (P1.4): inside their parent, so a Band there never bleeds to the page's edges. */
+  nested?: boolean;
+  /** How deep these rows sit; the recursion stops at NESTING_CAP. */
+  depth?: number;
 }) {
   const rows = stored.map(row => row.filter(r => isDrawn(d, r))).filter(row => row.length > 0);
   if (rows.length === 0) return null;
@@ -198,8 +204,8 @@ function Rows({
             // template's box (P1.1) is its own element inside the cell, so its
             // border and padding never meet the options' on one element.
             const parts = templateOptionClasses(resolveTemplateOptions(r.templateOptions, presets, r.template), r.template);
-            const box = parts.box ? `${parts.box}${regionTemplate(r.template).bleeds ? ` ${bandBleed(r, rightFree)}` : ''}` : '';
-            const block = <RegionBlock d={d} region={r} parts={parts} />;
+            const box = parts.box ? `${parts.box}${!nested && regionTemplate(r.template).bleeds ? ` ${bandBleed(r, rightFree)}` : ''}` : '';
+            const block = <RegionBlock d={d} region={r} parts={parts} depth={depth} />;
             return (
               // `data-region` is what a dynamic action finds; `hidden` is the
               // region's starting state, so a "read more" never flashes.
@@ -227,16 +233,18 @@ function Rows({
   );
 }
 
-/** A region as served: refused whole when the visitor fails its scheme; else
- *  its Header Text, its body and its Footer Text (APEX: Region Header and
- *  Footer), the texts plain, shortcuts substituted, escaped like any text. */
-function RegionBlock({ d, region, parts }: { d: RowPageData; region: Region; parts: TemplateOptionClasses }) {
+/** A region as served: refused whole when the visitor fails its scheme (its
+ *  sub regions with it); else its Header Text, its body, its sub regions
+ *  (P1.4; APEX's region template order) and its Footer Text (APEX: Region
+ *  Header and Footer), the texts plain, shortcuts substituted, escaped like any text. */
+function RegionBlock({ d, region, parts, depth = 0 }: { d: RowPageData; region: Region; parts: TemplateOptionClasses; depth?: number }) {
   if (region.authz && region.authz !== 'public' && !d.allowed.has(region.authz)) {
     const message = d.messages[region.authz];
     return message ? <p className="border border-border px-3 py-2 text-13 text-text-faint">{message}</p> : null;
   }
   const header = region.headerText === undefined ? '' : substituteShortcuts(region.headerText, d.shortcuts).trim();
   const footer = region.footerText === undefined ? '' : substituteShortcuts(region.footerText, d.shortcuts).trim();
+  const subs = depth < NESTING_CAP && childrenOf(d.document, region.id).length > 0;
   return (
     <>
       {header !== '' && (
@@ -245,6 +253,7 @@ function RegionBlock({ d, region, parts }: { d: RowPageData; region: Region; par
         </p>
       )}
       <RegionBody d={d} region={region} parts={parts} />
+      {subs && <Rows d={d} rows={rowsAt(d.document, region.position, region.id)} className="mt-6" nested depth={depth + 1} />}
       {footer !== '' && (
         <p data-region-footer="" className="mt-3 text-13 text-text-faint">
           {footer}

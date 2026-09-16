@@ -28,7 +28,7 @@ import {
 import { SITE_URL } from '@/lib/site';
 import { findComponent, type SettingValue } from '@/lib/design/components';
 import { PAGE_COMMENTS_MAX, PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
-import { PAGE_NAME_MAX, PAGE_TITLE_MAX, isLegacyBody } from '@/lib/design/page-document';
+import { PAGE_NAME_MAX, PAGE_TITLE_MAX, isLegacyBody, parentOf } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
@@ -50,6 +50,7 @@ import {
   sharedOf,
   spanName,
   splitRecipe,
+  STEP_POINTS,
   systemSteps,
   triggerFor,
   type Selection,
@@ -212,7 +213,9 @@ function patchAction(ctx: PropsContext, id: string, label: string, fn: (a: Dynam
 }
 
 function MiniMap({ doc, id }: { doc: PageDocument; id: string }) {
-  const rows = rowsAt(doc, 'body');
+  // The region's own group (P1.4): its siblings inside its parent, or the page-level Body.
+  const me = doc.regions.find(r => r.id === id);
+  const rows = rowsAt(doc, me?.position ?? 'body', me ? parentOf(me) : null);
   return (
     <div className="grid grid-cols-12 gap-px border border-border-strong bg-bg p-1" aria-hidden="true">
       {rows.map((row, ri) =>
@@ -911,6 +914,10 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
   // A Band (P1.1) takes the whole row: its column and span are the template's, not a pick.
   const bandOnly = targets.some(t => t.template === 'band');
   const BAND_NOTE = 'A band takes the whole row; pick another template to size it.';
+  // A sub region (P1.4) sits in its parent's position; '' is the page level, null mixed.
+  const parentId = common(t => t.parent ?? '');
+  const parentRegion = parentId ? doc.regions.find(r => r.id === parentId) : undefined;
+  const inParent = targets.some(t => t.parent);
   const position = common(t => t.position);
   const newRow = common(t => t.newRow);
   const column = common(t => t.column);
@@ -940,7 +947,12 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
     layout: {
       title: 'Layout',
       props: [
-        { label: 'Parent Region', control: <Ro dim>None · page level</Ro> },
+        {
+          // APEX: Parent Region (P1.4). Set from a region's right-click menu (Create Sub Region) or by dragging into a region's Sub Regions; read here.
+          label: 'Parent Region',
+          control: <Ro dim>{parentId === null ? MIXED : parentRegion ? `${regionName(parentRegion)} · inside` : 'None · page level'}</Ro>,
+          help: 'The region this one sits inside (APEX: Parent Region). A sub region takes its parent’s position and counts its columns inside the parent’s twelve; it is created from a region’s right-click menu, Create Sub Region, and moved by dragging.',
+        },
         {
           label: 'Position',
           common: true,
@@ -950,11 +962,11 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
               label="Region position"
               items={openPositions(ctx.page).map(x => ({ key: x, label: PD_POSITION[x].label }))}
               current={position}
-              disabled={readOnly}
+              disabled={readOnly || inParent}
               onPick={pos => p(`Position: ${PD_POSITION[pos].label}.`, x => ({ ...x, position: pos, seq: 1_000_000, column: 1, span: pos === 'body' ? x.span : COLUMNS }))}
             />
           ),
-          note: noteOr(position),
+          note: noteOr(position, inParent ? `Inside ${parentRegion ? regionName(parentRegion) : 'its parent'}: it takes its parent’s position.` : undefined),
           help: 'The template position. The Header, Footer and Navigation Bar are shared components, so nothing is placed there from a page.',
         },
         ...(inBody
@@ -987,7 +999,9 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
                 ),
                 help: 'Width in twelfths. Full is 12, half is 6, a third is 4. Phones ignore it and stack every region.',
               },
-              ...(one ? [{ label: 'Where it lands', common: true, control: <MiniMap doc={doc} id={one.id} />, note: 'Desktop and laptop. A phone stacks regions in sequence.' }] : []),
+              ...(one
+                ? [{ label: 'Where it lands', common: true, control: <MiniMap doc={doc} id={one.id} />, note: parentRegion ? `Inside ${regionName(parentRegion)}, desktop and laptop.` : 'Desktop and laptop. A phone stacks regions in sequence.' }]
+                : []),
             ]
           : []),
       ],
@@ -1393,7 +1407,7 @@ export function sharedGroups(ctx: PropsContext, key: 'doors' | 'footer' | 'bar')
 export function procGroups(ctx: PropsContext, id: string): PaneGroups {
   const step = systemSteps(ctx.page).find(s => s.id === id);
   if (!step) return { head: { kind: 'System process', name: id }, groups: [] };
-  const point = step.point === 'before-header' ? 'Before Header' : step.point === 'after-header' ? 'After Header' : 'After Footer';
+  const point = STEP_POINTS.find(p => p.key === step.point)?.label ?? step.point;
   return {
     head: { kind: 'System process', name: step.name },
     groups: [
