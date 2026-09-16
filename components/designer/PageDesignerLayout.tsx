@@ -42,6 +42,7 @@ export function PageDesignerLayout({
   markers,
   assets,
   lists,
+  pages = [],
   shared,
   hideEmpty,
   showCols,
@@ -61,6 +62,8 @@ export function PageDesignerLayout({
   markers: Record<string, 'err' | 'warn'>;
   assets: EditableAsset[];
   lists: { key: string; label: string }[];
+  /** The application's live pages, for naming where a Button goes (P1.12 B2). */
+  pages?: PageRow[];
   /** One line under each shared tile: the entries of the list it shows. */
   shared: Record<SharedKey, string>;
   hideEmpty: boolean;
@@ -165,7 +168,7 @@ export function PageDesignerLayout({
               <span>Region Body</span>
               <span>{r.position === 'body' ? spanName(r.span) : ''}</span>
             </div>
-            <div className="mt-0.5 truncate text-11 text-text-muted">{regionSummary(r, assets, lists)}</div>
+            <div className="mt-0.5 truncate text-11 text-text-muted">{regionSummary(r, assets, lists, pages)}</div>
           </div>
         </div>
       </div>

@@ -3,14 +3,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 let configured = true;
 let pageRows: { data: unknown; error: { message: string } | null } = { data: [], error: null };
 let revRows: { data: unknown; error: { message: string } | null } = { data: [], error: null };
+// Named by (P1.12 B2): the list entries and the live revisions' refs naming the page.
+let entryRows: { data: unknown; error: { message: string } | null } = { data: [], error: null };
+let listRows: { data: unknown; error: { message: string } | null } = { data: [], error: null };
+let refRows: { data: unknown; error: { message: string } | null } = { data: [], error: null };
 vi.mock('@/lib/betting/client', () => ({
   isBettingConfigured: () => configured,
   betDb: () => ({
     from: (table: string) => {
-      const result = table === 'page' ? pageRows : revRows;
+      const result = table === 'page' ? pageRows : table === 'list_entry' ? entryRows : table === 'list' ? listRows : table === 'page_revision_ref' ? refRows : revRows;
       const q = {
         select: () => q,
         eq: () => q,
+        in: () => q,
+        is: () => q,
+        not: () => q,
+        order: () => q,
         then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
           Promise.resolve(result).then(resolve, reject),
       };
@@ -66,6 +74,33 @@ describe('loadPageDetail', () => {
     expect(d?.newest?.document.regions.map(r => r.id)).toEqual(['intro']);
     expect(d?.newest?.problems).toEqual(['region bad: the kind must be static, image, list, button or component', 'region bad: the position must be one of the six', 'region bad: the sequence must be a whole number', 'region bad: the column must be 1 to 12', 'region bad: the span must be 1 to 12']);
     expect(d?.revisions.map(r => r.id)).toEqual([r2.id, r1.id]);
+  });
+
+  it('names what names the page (P1.12 B2): the lists holding an entry to it, and the pages whose LIVE revision carries a dest ref to it; nothing for a code page', async () => {
+    const HOME = 'c0de0001-0000-4000-8000-000000000001';
+    entryRows = { data: [{ list_key: 'footer-site' }, { list_key: 'footer-site' }, { list_key: 'useful' }], error: null };
+    listRows = { data: [{ key: 'footer-site', label: 'Footer: Site' }, { key: 'useful', label: 'Useful links' }], error: null };
+    refRows = {
+      data: [
+        { revision_id: 'b1b2c3d4-0000-4000-8000-000000000011', page_revision: { id: 'b1b2c3d4-0000-4000-8000-000000000011', page_id: HOME, published_at: '2026-09-08T16:01:00+00:00', page: { id: HOME, name: 'Home', deleted_at: null } } },
+        // A superseded revision naming the page does not count: the live one is the newest published.
+        { revision_id: 'b1b2c3d4-0000-4000-8000-000000000012', page_revision: { id: 'b1b2c3d4-0000-4000-8000-000000000012', page_id: 'c0de0002-0000-4000-8000-000000000002', published_at: '2026-09-08T16:01:00+00:00', page: { id: 'c0de0002-0000-4000-8000-000000000002', name: 'Calendar', deleted_at: null } } },
+      ],
+      error: null,
+    };
+    // The newest published revision per page: Home's is the one naming us; Calendar's is a later one.
+    revRows = {
+      data: [
+        { id: 'b1b2c3d4-0000-4000-8000-000000000011', page_id: HOME, published_at: '2026-09-08T16:01:00+00:00' },
+        { id: 'b1b2c3d4-0000-4000-8000-000000000013', page_id: 'c0de0002-0000-4000-8000-000000000002', published_at: '2026-09-09T16:01:00+00:00' },
+        { id: 'b1b2c3d4-0000-4000-8000-000000000012', page_id: 'c0de0002-0000-4000-8000-000000000002', published_at: '2026-09-08T16:01:00+00:00' },
+      ],
+      error: null,
+    };
+    const d = await loadPageDetail(ID);
+    expect(d?.namedBy).toEqual({ lists: ['Footer: Site', 'Useful links'], pages: ['Home'] });
+    pageRows = { data: [{ ...page, kind: 'code', path: '/calendar' }], error: null };
+    expect((await loadPageDetail(ID))?.namedBy).toEqual({ lists: [], pages: [] });
   });
 
   it('has no live and no newest revision for a page never saved', async () => {

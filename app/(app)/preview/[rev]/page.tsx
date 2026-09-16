@@ -6,6 +6,7 @@ import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { applyBuildOptions, documentRefs, schemesAsked } from '@/lib/design/page-document';
+import { loadNamedPages } from '@/lib/design/pages';
 import { loadBuildOptions } from '@/lib/design/build-options';
 import { loadAppearance } from '@/lib/design/appearance';
 import { renderComponents } from '@/lib/design/component-render';
@@ -57,7 +58,7 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   const document = applyBuildOptions(stored, await loadBuildOptions());
   const asked = schemesAsked(preview.page.authz, document);
   const refs = documentRefs(document);
-  const [shortcuts, assets, nav, schemes, components, extras, appearance] = await Promise.all([
+  const [shortcuts, assets, nav, schemes, components, extras, appearance, pages] = await Promise.all([
     loadShortcuts(),
     loadAssetsById(refs.assets),
     loadNavLists(),
@@ -67,11 +68,13 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
     composed ? familyExtras(preview.page.path, {}) : Promise.resolve(null),
     // The templates' presets (P1.2), as the catch-all reads them.
     loadAppearance(),
+    // The live row pages the buttons and go effects name (P1.12 B2), as the catch-all reads them.
+    loadNamedPages(refs.dests),
   ]);
   const messages: Record<string, string | null> = {};
   for (const key of asked) messages[key] = schemes.find(s => s.key === key)?.message ?? null;
   const lists = await loadDocumentLists(refs.lists, nav);
-  const d = { page: preview.page, document, shortcuts, assets, nav, lists, allowed: new Set(asked), messages, components, templates: appearance.templates };
+  const d = { page: preview.page, document, shortcuts, assets, nav, lists, allowed: new Set(asked), messages, components, templates: appearance.templates, pages };
 
   // The Developer Toolbar is the app layout's, drawn for the administrator on
   // every running page (R5); what it cannot know from the address, which

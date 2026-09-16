@@ -162,7 +162,7 @@ describe('Designer keeps the selection in the URL', () => {
     fireEvent.click(screen.getByRole('button', { name: /^Deleted · 1/ }));
     expect(screen.getByText('Imola')).toBeTruthy();
     cleanup();
-    const detail: PageDetail = { page: gone, live: null, newest: null, revisions: [] };
+    const detail: PageDetail = { page: gone, live: null, newest: null, revisions: [], namedBy: { lists: [], pages: [] } };
     render(
       <Designer readOnly={false} who="Test · Administrator · production" initialWorkspace="builder" initialPages={pagesFromCode()} initialDeleted={[gone]} initialPageId={gone.id} initialDetail={detail} {...loaded} />,
     );
@@ -203,6 +203,7 @@ describe('Designer keeps the selection in the URL', () => {
         },
       },
       revisions: [{ id: 'b1b2c3d4-0000-4000-8000-000000000002', createdAt: STAMP, publishedAt: null, author: 'user_admin', base: null }],
+      namedBy: { lists: [], pages: [] },
     };
     render(
       <Designer

@@ -53,6 +53,7 @@ const detail: PageDetail = {
     { id: R2, createdAt: '2026-09-08T18:42:00Z', publishedAt: null, author: 'user_admin', base: R1 },
     { id: R1, createdAt: '2026-09-08T17:10:00Z', publishedAt: '2026-09-08T17:10:00Z', author: 'user_admin', base: null },
   ],
+  namedBy: { lists: [], pages: [] },
 };
 const assets: EditableAsset[] = [
   { id: ASSET, key: '2026/09/photo.jpg', url: '/media/2026/09/photo.jpg', caption: 'The banking', credit: 'P. Paraskevas', licence: 'CC BY 4.0', width: 1200, height: 800, bytes: 1000, contentType: 'image/jpeg', createdAt: STAMP, updatedAt: STAMP },
@@ -549,6 +550,29 @@ describe('PageDesigner', () => {
     expect((screen.getByLabelText('Region title') as HTMLInputElement).value).toBe('Elsewhere');
   });
 
+  it('a Button’s Target offers the row pages under their names, never a code page, and the tile says where it goes (P1.12 B2)', () => {
+    mount();
+    fireEvent.click(screen.getByRole('button', { name: 'Buttons' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Button' }));
+    const target = screen.getByLabelText('Button destination') as HTMLSelectElement;
+    const options = Array.from(target.options).map(o => [o.value, o.textContent?.trim()]);
+    expect(options).toContainEqual([`page:${page.id}`, 'Monza, a history']);
+    expect(options.some(([value]) => value === `page:${codePage.id}`)).toBe(false);
+    fireEvent.change(target, { target: { value: `page:${page.id}` } });
+    expect(screen.getByText(/→ Monza, a history/)).toBeTruthy();
+    expect(status()).toMatch(/Target set\./);
+  });
+
+  it('Named by (P1.12 B2): the page’s Advanced group lists the lists and the live pages naming it, and the Delete Page sheet repeats them', () => {
+    mount({ ...detail, namedBy: { lists: ['Footer: Site'], pages: ['Home'] } });
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(pe).getByText('Named by')).toBeTruthy();
+    expect(within(pe).getByText('Footer: Site · Home')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Delete Page/ }));
+    expect(within(screen.getByRole('dialog')).getByText(/Named by Footer: Site · Home/)).toBeTruthy();
+  });
+
   it('Comment Out from the region’s menu strikes it through in the tree, tags its tile, sets Configuration › Commented Out to Yes and saves commentedOut; Uncomment clears it (P1.11)', async () => {
     const { onSaved } = mount();
     fireEvent.contextMenu(tile('Static Content: A century of speed'));
@@ -600,7 +624,7 @@ describe('PageDesigner', () => {
     fireEvent.click(within(gallery).getByRole('button', { name: 'Regions' }));
     expect(within(gallery).queryByLabelText('Show Legacy')).toBeNull();
     cleanup();
-    mount({ page: codePage, live: null, newest: null, revisions: [] });
+    mount({ page: codePage, live: null, newest: null, revisions: [], namedBy: { lists: [], pages: [] } });
     const g2 = screen.getByLabelText('Gallery');
     fireEvent.click(within(g2).getByRole('button', { name: 'Components' }));
     expect(screen.queryByRole('button', { name: 'Gallery: Body as the code draws it' })).toBeNull();
@@ -642,7 +666,7 @@ describe('PageDesigner', () => {
     cleanup();
     calls = [];
     openMock.mockReset();
-    mount({ page: codePage, live: null, newest: null, revisions: [] });
+    mount({ page: codePage, live: null, newest: null, revisions: [], namedBy: { lists: [], pages: [] } });
     fireEvent.click(screen.getByRole('button', { name: 'Save and Run Page' }));
     expect(calls.some(c => c.method === 'POST')).toBe(false);
     expect(openMock).toHaveBeenCalledWith(expect.stringMatching(/\/calendar$/), 'paddock-run');
@@ -745,7 +769,7 @@ describe('PageDesigner', () => {
   });
 
   it('a page whose body the code still draws opens with that body as one component tile, takes a region in the Body beside it, and saves attributes and draft together', async () => {
-    const { onSaved } = mount({ page: codePage, live: null, newest: null, revisions: [] });
+    const { onSaved } = mount({ page: codePage, live: null, newest: null, revisions: [], namedBy: { lists: [], pages: [] } });
     expect(tile('Component: Body as the code draws it')).toBeTruthy();
     expect(screen.queryByText('Served by the code')).toBeNull();
     expect((screen.getByRole('button', { name: 'Publish' }) as HTMLButtonElement).disabled).toBe(true);
@@ -776,7 +800,7 @@ describe('PageDesigner', () => {
 
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {
     const home: PageRow = { ...codePage, id: 'c0de0001-0000-4000-8000-000000000001', path: '/', name: 'Home', group: 'home' };
-    const { onSaved } = mount({ page: home, live: null, newest: null, revisions: [] });
+    const { onSaved } = mount({ page: home, live: null, newest: null, revisions: [], namedBy: { lists: [], pages: [] } });
     fireEvent.click(tile('Component: Body as the code draws it'));
     fireEvent.click(screen.getByRole('button', { name: 'Split into 6 components' }));
     expect(screen.queryByRole('button', { name: 'Component: Body as the code draws it' })).toBeNull();

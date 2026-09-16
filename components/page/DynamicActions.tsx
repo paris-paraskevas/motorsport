@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import type { DynamicAction, Effect } from '@/lib/design/page-document';
-import { resolveDestination } from '@/lib/design/destinations';
+import { resolveDestination, type PageDestinations } from '@/lib/design/destinations';
 import { record } from '@/lib/design/debug-client';
 
 // The dynamic-action interpreter (APEX: Dynamic Actions, Phase 3 step 5): the
@@ -17,10 +17,12 @@ import { record } from '@/lib/design/debug-client';
 const regionEl = (root: ParentNode, id: string): HTMLElement | null =>
   root.querySelector<HTMLElement>(`[data-region="${id}"]`);
 
-/** Run one effect against the document; exported for the tests. */
-export function applyEffect(effect: Effect, root: ParentNode = document): void {
+/** Run one effect against the document; exported for the tests. A `go` to a
+ *  row page resolves through the live pages the server handed over (P1.12 B2)
+ *  and goes nowhere for a page not live. */
+export function applyEffect(effect: Effect, root: ParentNode = document, pages?: PageDestinations): void {
   if (effect.action === 'go') {
-    const dest = resolveDestination(effect.dest);
+    const dest = resolveDestination(effect.dest, pages);
     if (dest && dest.kind !== 'action') window.location.assign(dest.href);
     return;
   }
@@ -46,12 +48,12 @@ export function applyEffect(effect: Effect, root: ParentNode = document): void {
 }
 
 /** Bind every action's trigger; returns the function that unbinds them all. */
-export function bindActions(actions: readonly DynamicAction[], root: ParentNode = document): () => void {
+export function bindActions(actions: readonly DynamicAction[], root: ParentNode = document, pages?: PageDestinations): () => void {
   const cleanups: (() => void)[] = [];
   // Each firing goes to the Debug panel's browser log (P1.9; APEX: which dynamic actions fired).
   const run = (a: DynamicAction) => {
     record(`action:${a.id}`, `${a.name || a.id} on ${a.when.event}: ${a.do.map(e => (e.action === 'go' ? `go ${e.dest}` : `${e.action} ${e.region}`)).join(', ')}`);
-    a.do.forEach(e => applyEffect(e, root));
+    a.do.forEach(e => applyEffect(e, root, pages));
   };
   record('bind', `${actions.length} dynamic action${actions.length === 1 ? '' : 's'} bound`);
   for (const a of actions) {
@@ -84,10 +86,10 @@ export function bindActions(actions: readonly DynamicAction[], root: ParentNode 
   return () => cleanups.forEach(c => c());
 }
 
-export function DynamicActions({ actions }: { actions: readonly DynamicAction[] }) {
+export function DynamicActions({ actions, pages }: { actions: readonly DynamicAction[]; pages?: PageDestinations }) {
   useEffect(() => {
     if (actions.length === 0) return;
-    return bindActions(actions);
-  }, [actions]);
+    return bindActions(actions, document, pages);
+  }, [actions, pages]);
   return null;
 }

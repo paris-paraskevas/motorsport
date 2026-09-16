@@ -1,7 +1,7 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { CODE_PAGES, PAGE_GROUPS, isPageGroup, type PageAuthz, type PageGroup, type PageRendering } from './page-registry';
-import type { PageDestinations } from './destinations';
+import { pageIdOf, type PageDestinations } from './destinations';
 
 export { CODE_PAGES, PAGE_GROUPS, PAGE_GROUP_LABELS, isPageGroup, registryPathOf } from './page-registry';
 export type { CodePage, PageAuthz, PageGroup, PageRendering } from './page-registry';
@@ -156,6 +156,16 @@ export async function loadDeletedPages(): Promise<PageRow[] | null> {
   } catch {
     return null;
   }
+}
+
+/** The live row pages a document's buttons and go effects name, by id (P1.12
+ *  B2): what the served page and its dynamic actions resolve `page:` keys
+ *  against. Nothing is asked when the document names no page. */
+export async function loadNamedPages(dests: readonly string[]): Promise<PageDestinations> {
+  const ids = dests.map(pageIdOf).filter((id): id is string => id !== null);
+  if (ids.length === 0) return {};
+  const live = await loadPageDestinations();
+  return Object.fromEntries(ids.filter(id => id in live).map(id => [id, live[id]]));
 }
 
 /** The row pages a `page:` destination may name, by id (P1.12 B1): the live

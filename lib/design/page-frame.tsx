@@ -16,7 +16,7 @@ import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks } fr
 import { loadBuildOptions } from './build-options';
 import { loadAppearance } from './appearance';
 import { raceWeekendNow, renderComponents } from './component-render';
-import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, pageFromRow, type PageRow } from './pages';
+import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, loadNamedPages, pageFromRow, type PageRow } from './pages';
 
 // The frame around a page the code serves (the Page Designer plan, PR 1): the
 // attributes a code page's row carries that the site reads at render, and the
@@ -153,7 +153,7 @@ async function framed(
     // it; the race-weekend fact is read when a rule asks for it.
     const asked = schemesAsked(null, stored);
     const asks = showAsks(stored);
-    const [shortcuts, assets, nav, rules, who, raceWeekend, buildOptions, appearance] = await Promise.all([
+    const [shortcuts, assets, nav, rules, who, raceWeekend, buildOptions, appearance, pages] = await Promise.all([
       loadShortcuts(),
       loadAssetsById(refs.assets),
       loadNavLists(),
@@ -163,13 +163,15 @@ async function framed(
       loadBuildOptions(),
       // The templates' presets (P1.2) for the regions around the code's page, as the catch-all reads them.
       loadAppearance(),
+      // The live row pages the buttons and go effects name (P1.12 B2), as the catch-all reads them.
+      loadNamedPages(refs.dests),
     ]);
     const document = applyBuildOptions(applyShow(stored, { signedIn: who ? who.signedIn : null, raceWeekend }), buildOptions);
     const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
     const messages: Record<string, string | null> = {};
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
     const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path })]);
-    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates } }, await body);
+    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages } }, await body);
   } catch {
     return body;
   }

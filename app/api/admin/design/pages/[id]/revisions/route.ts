@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
-import { PAGE_APPLICATION_KEY } from '@/lib/design/pages';
+import { PAGE_APPLICATION_KEY, loadPageDestinations } from '@/lib/design/pages';
+import { pageIdOf } from '@/lib/design/destinations';
 import { documentRefs, loadPageDetail, parsePageDocument } from '@/lib/design/page-revisions';
 import { refRows } from '@/lib/design/page-document';
 
@@ -55,6 +56,22 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
   const refs = documentRefs(parsed.value);
   const p_refs = refRows(refs);
+  // A publish may not send readers to a page that is not live (P1.12 B2): a
+  // deleted page, or one that no longer exists. A draft keeps the key, as it
+  // keeps a stale base, so the work is not lost while the page is Deleted.
+  if (action === 'publish') {
+    const named = refs.dests.filter(key => pageIdOf(key) !== null);
+    if (named.length > 0) {
+      const live = await loadPageDestinations();
+      const missing = named.filter(key => !(pageIdOf(key)! in live));
+      if (missing.length > 0) {
+        return NextResponse.json(
+          { error: `The layout names a page that is not live: ${missing.join(', ')}. Reinstate it or point the button elsewhere; a draft may keep it.`, pages: missing },
+          { status: 400 },
+        );
+      }
+    }
+  }
 
   try {
     const { data, error } = await betDb().rpc('design_save_page_revision', {

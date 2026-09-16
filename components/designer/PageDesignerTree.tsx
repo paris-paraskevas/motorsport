@@ -62,6 +62,7 @@ export function PageDesignerTree({
   expanded,
   shared,
   usage,
+  pages = [],
   onToggle,
   onSelect,
   onContext,
@@ -83,6 +84,8 @@ export function PageDesignerTree({
   shared: Record<SharedKey, string>;
   /** What this page borrows, for the Page Shared Components tab. */
   usage: { theme: string; schemes: string[]; shortcuts: string[]; assets: string[]; lists: string[] };
+  /** The application's live pages, for naming where a go effect leads (P1.12 B2). */
+  pages?: PageRow[];
   onToggle: (key: string) => void;
   /** `toggle`: Ctrl, Cmd or Shift held, so a region joins or leaves the selection (APEX: several components selected). */
   onSelect: (sel: Selection, opts?: { toggle?: boolean }) => void;
@@ -193,7 +196,7 @@ export function PageDesignerTree({
             key: `ta:${a.id}`,
             label: 'True Actions',
             cls: 'pos',
-            children: a.do.map((e, i) => ({ key: `effect:${a.id}:${i}`, label: effectText(e, doc.regions), icon: <ChevronRight size={10} />, sel: { kind: 'effect', id: a.id, index: i } })),
+            children: a.do.map((e, i) => ({ key: `effect:${a.id}:${i}`, label: effectText(e, doc.regions, pages), icon: <ChevronRight size={10} />, sel: { kind: 'effect', id: a.id, index: i } })),
           },
         ],
       });

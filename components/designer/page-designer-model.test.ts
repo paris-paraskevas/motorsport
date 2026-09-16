@@ -18,6 +18,9 @@ import {
   regionName,
   regionSummary,
   removeRegion,
+  goOptions,
+  destinationLabel,
+  effectText,
   renumber,
   sameSelection,
   searchPage,
@@ -248,6 +251,21 @@ describe('messages', () => {
     expect(ms[0]).toMatchObject({ sel: { kind: 'region', id: 'right' }, group: 'Layout' });
     const beside: PageDocument = { ...overlapping, regions: [overlapping.regions[0], { ...overlapping.regions[1], column: 7 }] };
     expect(designerMessages(beside, page)).toEqual([]);
+  });
+});
+
+describe('destinations a button or a go effect may name (P1.12 B2)', () => {
+  const PAGE = 'a1b2c3d4-0000-4000-8000-000000000010';
+  const pages: PageRow[] = [{ ...page, id: PAGE, kind: 'row', name: 'Monza, a history', path: '/history/monza' }];
+
+  it('goOptions lists the catalogue and, given the pages, the row pages under their names; the labels name a page or fall back to the key', () => {
+    expect(goOptions().some(o => o.key === `page:${PAGE}`)).toBe(false);
+    expect(goOptions(pages).find(o => o.key === `page:${PAGE}`)?.label).toBe('Monza, a history');
+    expect(goOptions([{ ...pages[0], kind: 'code' }]).some(o => o.key.startsWith('page:'))).toBe(false);
+    expect(destinationLabel(`page:${PAGE}`, pages)).toBe('Monza, a history');
+    expect(destinationLabel(`page:${PAGE}`)).toBe(`page:${PAGE}`);
+    expect(effectText({ action: 'go', dest: `page:${PAGE}` }, [], pages)).toBe('Navigate to Page · Monza, a history');
+    expect(regionSummary(region({ id: 'b', kind: 'button', label: 'Go', dest: `page:${PAGE}` } as Partial<Region> & { id: string }), [], [], pages)).toBe('“Go” → Monza, a history');
   });
 });
 

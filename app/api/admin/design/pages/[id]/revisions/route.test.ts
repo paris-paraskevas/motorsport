@@ -31,6 +31,7 @@ vi.mock('@/lib/betting/client', () => ({
       const q = {
         select: () => q,
         eq: () => q,
+        is: () => q,
         then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
           Promise.resolve(result).then(resolve, reject),
       };
@@ -127,6 +128,22 @@ describe('/api/admin/design/pages/[id]/revisions', () => {
     expect(res.status).toBe(409);
     const json = (await res.json()) as { current: { page: { path: string } } };
     expect(json.current.page.path).toBe('/history/monza');
+  });
+
+  it('refuses a publish whose layout names a page that is not live, naming it, and lets a draft through; a live page passes (P1.12 B2)', async () => {
+    const GONE = 'a1b2c3d4-0000-4000-8000-000000000099';
+    const button = (dest: string) => ({ id: 'go', kind: 'button', position: 'body', seq: 30, column: 1, span: 12, label: 'Go', dest });
+    const naming = { ...DOC, regions: [...DOC.regions, button(`page:${GONE}`)] };
+    const res = await call(ID, { document: naming, action: 'publish', base: null });
+    expect(res.status).toBe(400);
+    expect(((await res.json()) as { error: string }).error).toMatch(/page:a1b2c3d4-0000-4000-8000-000000000099/);
+    expect(rpc).not.toHaveBeenCalled();
+    expect((await call(ID, { document: naming, action: 'draft', base: null })).status).toBe(200);
+    rpc.mockClear();
+    rpc.mockResolvedValueOnce({ data: [{ id: 'b1b2c3d4-0000-4000-8000-000000000003', created_at: '2026-09-08T16:06:00+00:00', published_at: '2026-09-08T16:06:00+00:00' }], error: null });
+    const ok = { ...DOC, regions: [...DOC.regions, button(`page:${ID}`)] };
+    expect((await call(ID, { document: ok, action: 'publish', base: null })).status).toBe(200);
+    expect((rpc.mock.calls[0] as [string, { p_refs: { kind: string; key: string }[] }])[1].p_refs).toContainEqual({ kind: 'dest', key: `page:${ID}` });
   });
 
   it('answers 409 with the reason when the function says the page is deleted (P1.12: reinstate it first)', async () => {

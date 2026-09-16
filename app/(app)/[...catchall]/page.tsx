@@ -8,6 +8,7 @@ import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
 import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts } from '@/lib/design/page-document';
+import { loadNamedPages } from '@/lib/design/pages';
 import { loadBuildOptions } from '@/lib/design/build-options';
 import { loadAppearance } from '@/lib/design/appearance';
 import { raceWeekendNow, renderComponents } from '@/lib/design/component-render';
@@ -112,9 +113,10 @@ export default async function CatchAll({ params }: { params: Params }) {
   const refs = documentRefs(document);
   const where = r.kind === 'composed' ? { path: r.pattern, params: r.params, page: r.page } : { path, params: {}, page: r.page };
   // The templates' presets (P1.2) ride the appearance the layout already read (memoised).
-  const [shortcuts, assets, nav, components, appearance] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, where), loadAppearance()]);
+  // The live row pages the buttons and go effects name (P1.12 B2) ride along; a page not live is drawn as nothing.
+  const [shortcuts, assets, nav, components, appearance, pages] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, where), loadAppearance(), loadNamedPages(refs.dests)]);
   const lists = await loadDocumentLists(refs.lists, nav);
-  const d = { page: r.page, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates };
+  const d = { page: r.page, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages };
   if (r.kind === 'row') return <RowPageView {...d} />;
   const extras = await familyExtras(r.pattern, r.params);
   return (
