@@ -104,6 +104,10 @@ export interface PropsContext {
   schemes: { key: string; label: string; type: string }[];
   assets: EditableAsset[];
   lists: { key: string; label: string }[];
+  /** The application's live pages: what a Button's Target and a go effect's Destination offer under Pages (P1.12 B2). */
+  pages: PageRow[];
+  /** What names this page (rule 10): the lists holding an entry to it and the live pages whose button or go effect goes to it (P1.12 B2). */
+  namedBy: { lists: string[]; pages: string[] };
   shortcuts: EditableShortcut[];
   /** The Build Options' statuses by key, for the Configuration group's labels; a key missing here reads as Include. */
   buildOptions: Readonly<Partial<Record<BuildOptionKey, BuildOptionStatus>>>;
@@ -226,7 +230,35 @@ function MiniMap({ doc, id }: { doc: PageDocument; id: string }) {
   );
 }
 
+/** The options of a destination picker: the catalogue's, then the row pages
+ *  under Pages, by name (P1.12 B2). Never a code page, never a typed address. */
+function DestinationOptions({ pages }: { pages: readonly PageRow[] }) {
+  const options = goOptions(pages);
+  const own = options.filter(o => o.group === 'Pages');
+  return (
+    <>
+      {options
+        .filter(o => !o.group)
+        .map(o => (
+          <option key={o.key} value={o.key}>
+            {o.label}
+          </option>
+        ))}
+      {own.length > 0 && (
+        <optgroup label="Pages">
+          {own.map(o => (
+            <option key={o.key} value={o.key}>
+              {o.label}
+            </option>
+          ))}
+        </optgroup>
+      )}
+    </>
+  );
+}
+
 export function pageGroups(ctx: PropsContext): PaneGroups {
+  const named = [...ctx.namedBy.lists, ...ctx.namedBy.pages];
   const { page, attrs, setAttrs, readOnly, schemes, fieldId } = ctx;
   const number = page.id ? page.id.slice(0, 8) : 'no row';
   const chosen = schemes.find(o => o.key === attrs.authz);
@@ -373,6 +405,12 @@ export function pageGroups(ctx: PropsContext): PaneGroups {
     {
       title: 'Advanced',
       props: [
+        {
+          label: 'Named by',
+          control: <Ro dim={named.length === 0}>{named.length > 0 ? named.join(' · ') : 'Nothing names this page yet.'}</Ro>,
+          note: 'Ours (rule 10): the lists holding an entry to this page and the live pages whose button or dynamic action goes to it.',
+          help: 'A shared object shows where it is used. Delete permanently is refused while a live page names this one; while the page is deleted, those entries and buttons show nothing.',
+        },
         {
           label: 'Rendering',
           common: true,
@@ -585,15 +623,11 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           onChange={e => p('Target set.', x => (x.kind === 'button' ? { ...x, dest: e.target.value || null } : x))}
         >
           <option value="">Nowhere: it fires dynamic actions only</option>
-          {goOptions().map(o => (
-            <option key={o.key} value={o.key}>
-              {o.label}
-            </option>
-          ))}
+          <DestinationOptions pages={ctx.pages} />
         </select>
       ),
-      note: 'Picked from places the site has. Never typed.',
-      help: 'A place the site has, chosen from the catalogue. URLs are never typed here.',
+      note: 'Picked from places the site has, or a page made here. Never typed.',
+      help: 'A place the site has, chosen from the catalogue, or a page of this application under Pages. URLs are never typed here.',
     });
   }
   if (r.kind === 'component') {
@@ -1231,14 +1265,10 @@ export function effectGroups(ctx: PropsContext, a: DynamicAction, index: number)
               htmlFor: fieldId('dest'),
               control: (
                 <select id={fieldId('dest')} value={e.dest} disabled={readOnly} aria-label={`Destination of effect ${index + 1} of ${a.id}`} className={FIELD} onChange={ev => pe('Destination set.', () => ({ action: 'go', dest: ev.target.value }))}>
-                  {goOptions().map(o => (
-                    <option key={o.key} value={o.key}>
-                      {o.label}
-                    </option>
-                  ))}
+                  <DestinationOptions pages={ctx.pages} />
                 </select>
               ),
-              note: destinationLabel(e.dest),
+              note: destinationLabel(e.dest, ctx.pages),
               help: 'A place the site has, chosen from the catalogue. URLs are never typed here.',
             },
           ],

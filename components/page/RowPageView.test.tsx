@@ -115,6 +115,17 @@ describe('RowPageView', () => {
     expect(withPages).not.toContain('Gone');
   });
 
+  it('renders a Button to a row page through the pages the loader hands over, and draws nothing for a Button whose page is not live (P1.12 B2)', () => {
+    const PAGE = 'a1b2c3d4-0000-4000-8000-000000000010';
+    const button = { id: 'go', kind: 'button', title: '', position: 'body', seq: 90, column: 1, span: 12, newRow: true, hidden: false, authz: null, label: 'Read Monza', dest: `page:${PAGE}` } as (typeof document)['regions'][number];
+    const docWith = { ...document, regions: [...document.regions, button] };
+    const live = renderToStaticMarkup(<RowPageView {...data} document={docWith} pages={{ [PAGE]: { path: '/history/monza', name: 'Monza, a history' } }} />);
+    expect(live).toContain('Read Monza');
+    expect(live).toContain('href="/history/monza"');
+    const gone = renderToStaticMarkup(<RowPageView {...data} document={docWith} pages={{}} />);
+    expect(gone).not.toContain('Read Monza');
+  });
+
   it('wraps each region for the dynamic actions, renders a hidden region hidden, a Button as a link or a plain button, and mounts the interpreter only with actions', () => {
     expect(html).toContain('id="region-intro" data-region="intro"');
     expect(html).not.toContain('data-dynamic-actions');

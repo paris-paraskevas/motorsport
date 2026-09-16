@@ -53,6 +53,18 @@ describe('applyEffect', () => {
     applyEffect({ action: 'go', dest: 'nope' });
     expect(assign).toHaveBeenCalledTimes(2);
   });
+
+  it('goes to a row page through the pages it is given, and nowhere without them (P1.12 B2)', () => {
+    const assign = vi.fn();
+    vi.stubGlobal('location', { assign });
+    const PAGE = 'a1b2c3d4-0000-4000-8000-000000000010';
+    applyEffect({ action: 'go', dest: `page:${PAGE}` }, document, { [PAGE]: { path: '/history/monza', name: 'Monza, a history' } });
+    expect(assign).toHaveBeenCalledWith('/history/monza');
+    applyEffect({ action: 'go', dest: `page:${PAGE}` }, document);
+    // The page deleted: the map the server hands over has no such id (the reviewer’s gap).
+    applyEffect({ action: 'go', dest: `page:${PAGE}` }, document, {});
+    expect(assign).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('bindActions', () => {

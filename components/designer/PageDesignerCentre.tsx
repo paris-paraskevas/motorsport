@@ -107,6 +107,7 @@ export function ComponentView({
   selection,
   assets,
   lists,
+  pages = [],
   onSelect,
 }: {
   /** Kept for the caller; the view reads the document alone since the Body became the same on every page. */
@@ -115,6 +116,8 @@ export function ComponentView({
   selection: Selection;
   assets: EditableAsset[];
   lists: { key: string; label: string }[];
+  /** The application's live pages, for naming where a Button or a go effect leads (P1.12 B2). */
+  pages?: PageRow[];
   onSelect: (s: Selection) => void;
 }) {
   const AUTHZ: Record<string, string> = { public: 'Public', signed_in: 'Signed in', contributor: 'Contributor', administrator: 'Administrator' };
@@ -135,11 +138,11 @@ export function ComponentView({
     .filter(r => r.kind === 'button')
     .map(r => ({
       sel: { kind: 'region', id: r.id } as Selection,
-      cells: [String(r.seq), r.kind === 'button' ? r.label : '', PD_POSITION[r.position].label, r.kind === 'button' && r.dest ? destinationLabel(r.dest) : 'dynamic actions only'],
+      cells: [String(r.seq), r.kind === 'button' ? r.label : '', PD_POSITION[r.position].label, r.kind === 'button' && r.dest ? destinationLabel(r.dest, pages) : 'dynamic actions only'],
     }));
   const actions = doc.actions.map((a, i) => ({
     sel: { kind: 'action', id: a.id } as Selection,
-    cells: [String((i + 1) * 10), actionName(a), triggerText(a.when, doc.regions), a.do.map(e => effectText(e, doc.regions)).join(', ')],
+    cells: [String((i + 1) * 10), actionName(a), triggerText(a.when, doc.regions), a.do.map(e => effectText(e, doc.regions, pages)).join(', ')],
   }));
   return (
     <div className="grid gap-4 px-4 pb-6 pt-3.5">
@@ -147,7 +150,7 @@ export function ComponentView({
       <Report title="Buttons" cols={['Seq', 'Label', 'Position', 'Target']} rows={buttons} selection={selection} onSelect={onSelect} />
       <Report title="Dynamic Actions" cols={['Seq', 'Name', 'When', 'Actions']} rows={actions} selection={selection} onSelect={onSelect} />
       {doc.regions.length > 0 && (
-        <p className="m-0 text-11 text-text-faint">Source: {doc.regions.map(r => `${regionName(r)}: ${regionSummary(r, assets, lists)}`).join(' · ').slice(0, 400)}</p>
+        <p className="m-0 text-11 text-text-faint">Source: {doc.regions.map(r => `${regionName(r)}: ${regionSummary(r, assets, lists, pages)}`).join(' · ').slice(0, 400)}</p>
       )}
     </div>
   );

@@ -33,7 +33,7 @@
 // holds and leaves it out when the page runs, through the same filter that
 // drops an Excluded build option; absent means the region runs.
 
-import { resolveDestination } from './destinations';
+import { pageIdOf, resolveDestination } from './destinations';
 import { findComponent, parseSettings, type SettingValue } from './components';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
 import { parseTemplateOptions } from './template-options';
@@ -378,8 +378,12 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
 }
 
 /** A destination a button or a `go` effect may name: a route or an external
- *  link from the catalogue, never one of the fixed actions. */
+ *  link from the catalogue, never one of the fixed actions; or a row page by
+ *  its key (P1.12 B2). The parser is synchronous and cannot look a page up, so
+ *  it accepts the key's shape: the write path checks a publish against the live
+ *  pages, and the served page draws nothing for a page not live. */
 export function isGoDestination(key: string): boolean {
+  if (pageIdOf(key) !== null) return true;
   const d = resolveDestination(key);
   return d !== null && d.kind !== 'action';
 }

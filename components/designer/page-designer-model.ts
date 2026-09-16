@@ -20,7 +20,7 @@ import {
 } from '@/lib/design/page-document';
 import { SPLITS, componentDefaults, componentId, findComponent, recipeRegions, settingsSummary } from '@/lib/design/components';
 import { adoptRecipe } from '@/lib/design/composed-page';
-import { DESTINATIONS, resolveDestination } from '@/lib/design/destinations';
+import { DESTINATIONS, pageDest, resolveDestination, type PageDestinations } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 
@@ -327,14 +327,26 @@ const GO_OPTIONS = Object.entries(DESTINATIONS)
   .map(([key, d]) => ({ key, label: d.label }))
   .sort((a, b) => a.label.localeCompare(b.label));
 
-/** The destinations a button or a `go` effect may name, by label. */
-export function goOptions(): { key: string; label: string }[] {
-  return GO_OPTIONS;
+/** The live row pages by id, as resolveDestination takes them (P1.12 B2). The
+ *  designer's pages are the live ones; a code page is never a destination. */
+export function pageDestinationsOf(pages: readonly PageRow[] = []): PageDestinations {
+  return Object.fromEntries(pages.filter(p => p.kind === 'row' && !p.deletedAt).map(p => [p.id, { path: p.path, name: p.name }]));
 }
 
-export function destinationLabel(key: string | null): string {
+/** The destinations a button or a `go` effect may name, by label: the
+ *  catalogue's, then the row pages under their names (`group: 'Pages'`). */
+export function goOptions(pages: readonly PageRow[] = []): { key: string; label: string; group?: 'Pages' }[] {
+  const own = Object.entries(pageDestinationsOf(pages))
+    .map(([id, p]) => ({ key: pageDest(id), label: p.name, group: 'Pages' as const }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+  return [...GO_OPTIONS, ...own];
+}
+
+/** What a destination key is called: the catalogue's label, a page's name, or
+ *  the key itself when nothing answers (a page not live, or unknown here). */
+export function destinationLabel(key: string | null, pages?: readonly PageRow[]): string {
   if (!key) return '';
-  const d = resolveDestination(key);
+  const d = resolveDestination(key, pages ? pageDestinationsOf(pages) : undefined);
   return d ? d.label : key;
 }
 
@@ -399,8 +411,8 @@ export function triggerText(t: Trigger, regions: readonly Region[]): string {
   }
 }
 
-export function effectText(e: Effect, regions: readonly Region[]): string {
-  if (e.action === 'go') return `Navigate to Page · ${destinationLabel(e.dest)}`;
+export function effectText(e: Effect, regions: readonly Region[], pages?: readonly PageRow[]): string {
+  if (e.action === 'go') return `Navigate to Page · ${destinationLabel(e.dest, pages)}`;
   const r = regions.find(x => x.id === e.region);
   const target = r ? regionName(r) : e.region;
   const verb = e.action === 'show' ? 'Show' : e.action === 'hide' ? 'Hide' : e.action === 'toggle' ? 'Toggle visibility' : 'Scroll To';
@@ -408,7 +420,7 @@ export function effectText(e: Effect, regions: readonly Region[]): string {
 }
 
 /** One line about a region's source, for its tile and the Component View. */
-export function regionSummary(r: Region, assets: readonly EditableAsset[], lists: readonly { key: string; label: string }[]): string {
+export function regionSummary(r: Region, assets: readonly EditableAsset[], lists: readonly { key: string; label: string }[], pages?: readonly PageRow[]): string {
   switch (r.kind) {
     case 'static':
       return r.text.trim() ? r.text.trim().replace(/\s+/g, ' ').slice(0, 140) : 'Empty. Your words; {shortcut:key} inserts a shortcut.';
@@ -421,7 +433,7 @@ export function regionSummary(r: Region, assets: readonly EditableAsset[], lists
       return `${l ? l.label : r.listKey} · ${r.style === 'cards' ? 'cards' : 'links'}`;
     }
     case 'button':
-      return `“${r.label}”${r.dest ? ` → ${destinationLabel(r.dest)}` : ' · fires dynamic actions only'}`;
+      return `“${r.label}”${r.dest ? ` → ${destinationLabel(r.dest, pages)}` : ' · fires dynamic actions only'}`;
     case 'component': {
       const spec = findComponent(r.component);
       return spec ? settingsSummary(spec, r.settings) : `Unknown component ${r.component}`;
@@ -525,7 +537,7 @@ export interface SearchHit {
 /** Every attribute value of every component on the page, for Page Search.
  *  Match Case and Regular Expression as APEX offers them; a regular expression
  *  that does not parse finds nothing. */
-export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { matchCase?: boolean; regex?: boolean } = {}): SearchHit[] {
+export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { matchCase?: boolean; regex?: boolean; pages?: readonly PageRow[] } = {}): SearchHit[] {
   const query = q.trim();
   if (!query) return [];
   let test: (s: string) => boolean;
@@ -571,12 +583,12 @@ export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { 
             ? { list: r.listKey, style: r.style }
             : r.kind === 'component'
               ? { component: findComponent(r.component)?.name ?? r.component, ...r.settings }
-              : { label: r.label, destination: destinationLabel(r.dest) };
+              : { label: r.label, destination: destinationLabel(r.dest, opts.pages) };
     scan({ kind: 'region', id: r.id }, `Region · ${regionName(r)}`, { ...base, ...src });
   }
   for (const a of doc.actions) {
     scan({ kind: 'action', id: a.id }, `Dynamic action · ${actionName(a)}`, { name: a.name, when: triggerText(a.when, doc.regions) });
-    a.do.forEach((e, i) => scan({ kind: 'effect', id: a.id, index: i }, `Action · ${actionName(a)}`, { effect: effectText(e, doc.regions) }));
+    a.do.forEach((e, i) => scan({ kind: 'effect', id: a.id, index: i }, `Action · ${actionName(a)}`, { effect: effectText(e, doc.regions, opts.pages) }));
   }
   return hits;
 }

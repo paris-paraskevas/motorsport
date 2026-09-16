@@ -11,6 +11,7 @@ import {
   patternMatches,
   refRows,
   rowPagePathProblem,
+  isGoDestination,
   RECOVERY_DAYS,
   daysLeft,
   purgeDueAt,
@@ -298,6 +299,28 @@ describe('Comment Out (the components programme, P1.11)', () => {
   it('a commented-out region keeps naming its rows in the refs projection: the write path stores the document as drawn, not as run', () => {
     const parsed = parsePageDocument(doc([region({ id: 'a', commentedOut: true, text: 'Hello {shortcut:times.local}', authz: 'signed_in' })])).value;
     expect(documentRefs(parsed)).toMatchObject({ shortcuts: ['times.local'], authz: ['signed_in'] });
+  });
+});
+
+describe('page destinations in a document (P1.12 B2)', () => {
+  const PAGE = 'a1b2c3d4-0000-4000-8000-000000000010';
+  const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'body', ...over });
+  const doc = (regions: unknown[], actions: unknown[] = []) => ({ version: 2, regions, actions });
+
+  it('a page key has the shape of a destination a button or a go effect may name; a malformed one has not', () => {
+    expect(isGoDestination(`page:${PAGE}`)).toBe(true);
+    expect(isGoDestination('page:nope')).toBe(false);
+    expect(isGoDestination('page:')).toBe(false);
+  });
+
+  it('the parser keeps a button and a go effect naming a page, and the refs projection carries the key as a dest', () => {
+    const parsed = parsePageDocument(
+      doc([region({ id: 'go', kind: 'button', label: 'Read Monza', dest: `page:${PAGE}` })], [{ id: 'a1', name: 'Jump', when: { event: 'load' }, do: [{ action: 'go', dest: `page:${PAGE}` }] }]),
+    );
+    expect(parsed.problems).toEqual([]);
+    expect(parsed.value.regions[0]).toMatchObject({ kind: 'button', dest: `page:${PAGE}` });
+    expect(parsed.value.actions[0].do).toEqual([{ action: 'go', dest: `page:${PAGE}` }]);
+    expect(documentRefs(parsed.value).dests).toEqual([`page:${PAGE}`]);
   });
 });
 

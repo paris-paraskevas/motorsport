@@ -220,6 +220,8 @@ export function PageDesigner({
   // two actions a deleted page still takes, Reinstate and Delete permanently.
   const deletedAt = page.deletedAt ?? null;
   const readOnly = readOnlyProp || deletedAt !== null;
+  // What names this page (P1.12 B2, rule 10), for the Advanced group and the Delete Page sheet.
+  const named = [...detail.namedBy.lists, ...detail.namedBy.pages];
   const number = page.id ? page.id.slice(0, 8) : 'no row';
   const uid = useId();
   // A page whose body the code still draws opens with that body as one
@@ -1036,6 +1038,8 @@ export function PageDesigner({
     schemes: schemeList,
     assets,
     lists,
+    pages,
+    namedBy: detail.namedBy,
     shortcuts,
     buildOptions: Object.fromEntries((buildOptions ?? []).map(b => [b.key, b.status])),
     templates,
@@ -1058,7 +1062,7 @@ export function PageDesigner({
     assets: [...new Set(doc.regions.flatMap(r => (r.kind === 'image' && r.assetId ? [r.assetId] : [])))],
     lists: [...new Set(doc.regions.flatMap(r => (r.kind === 'list' ? [lists.find(l => l.key === r.listKey)?.label ?? r.listKey] : [])))],
   };
-  const hits = searchPage(searchQuery, doc, page, searchOpts);
+  const hits = searchPage(searchQuery, doc, page, { ...searchOpts, pages });
   const statusText = status
     ? status.text
     : deletedAt !== null
@@ -1240,6 +1244,7 @@ export function PageDesigner({
               expanded={expanded}
               shared={shared}
               usage={usage}
+              pages={pages}
               onToggle={toggleExpanded}
               onSelect={(sel, opts) => select(sel, { toggle: opts?.toggle })}
               onContext={contextMenu}
@@ -1312,6 +1317,7 @@ export function PageDesigner({
                 markers={markers}
                 assets={assets}
                 lists={lists}
+                pages={pages}
                 shared={shared}
                 hideEmpty={hideEmpty}
                 showCols={showCols}
@@ -1325,7 +1331,7 @@ export function PageDesigner({
                 root={rootLive}
               />
             )}
-            {cTab === 'cv' && <ComponentView page={page} doc={doc} selection={effective} assets={assets} lists={lists} onSelect={sel => select(sel)} />}
+            {cTab === 'cv' && <ComponentView page={page} doc={doc} selection={effective} assets={assets} lists={lists} pages={pages} onSelect={sel => select(sel)} />}
             {cTab === 'msgs' && <MessagesTab messages={messages} onPick={m => select(m.sel, { group: m.group })} />}
             {cTab === 'search' && <PageSearchTab query={searchQuery} onQuery={setSearchQuery} options={searchOpts} onOptions={setSearchOpts} hits={hits} onPick={h => select(h.sel)} />}
             {cTab === 'help' && <HelpTab helpFor={helpFor?.label ?? null} helpText={helpFor?.text ?? null} selected={selectedName} />}
@@ -1469,6 +1475,11 @@ export function PageDesigner({
             The page moves to Deleted: readers find nothing at {page.path} from then on, and its address stays reserved. Reinstate it from the pages list within {RECOVERY_DAYS} days;
             after that it can be removed for good, with its {revisions.length} revision{revisions.length === 1 ? '' : 's'}. The header, the footer and the phone bar are shared and stay.
           </p>
+          {named.length > 0 && (
+            <p className="m-0 px-[18px] pb-3 text-13 text-text">
+              Named by {named.join(' · ')}. Their entries and buttons show nothing while the page is deleted and come back with Reinstate; Delete permanently is refused while a live page names it.
+            </p>
+          )}
         </Sheet>
       )}
       {sheet === 'purge' && (

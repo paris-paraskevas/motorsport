@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { PAGE_WIDE } from '@/lib/site';
-import { resolveDestination, resolveEntry, type NavEntry, type NavLists } from '@/lib/design/destinations';
+import { pageIdOf, resolveDestination, resolveEntry, type NavEntry, type NavLists, type PageDestinations } from '@/lib/design/destinations';
 import { isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
 import { SHIPPED_PRESETS, resolveTemplateOptions, templateOptionClasses, type TemplateOptionClasses, type TemplatePresets } from '@/lib/design/template-options';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -41,6 +41,11 @@ export interface RowPageData {
   /** The region templates' Template Option presets (APEX: Template Options, P1.2),
    *  what a region on Use Template Defaults draws; absent reads as shipped. */
   templates?: TemplatePresets;
+  /** The live row pages the document's buttons and go effects name, by id
+   *  (P1.12 B2; lib/design/pages.ts loadNamedPages). A page missing here is
+   *  not live: its button is not drawn and its go effect goes nowhere, until
+   *  Reinstate brings the page back. */
+  pages?: PageDestinations;
 }
 
 const LIST_FIELD: Record<string, keyof NavLists> = {
@@ -78,7 +83,7 @@ export function RowPageView(d: RowPageData) {
       </div>
       <Strip d={d} position="footer" className="mt-8" />
       <Strip d={d} position="phonebar" className="mt-8 lg:hidden" />
-      {d.document.actions.length > 0 && <DynamicActions actions={d.document.actions} />}
+      {d.document.actions.length > 0 && <DynamicActions actions={d.document.actions} pages={d.pages} />}
     </article>
   );
 }
@@ -130,7 +135,7 @@ export function CodePageFrame({ d, children }: { d: RowPageData; children?: Reac
           <Strip d={d} position="phonebar" className="mt-8 lg:hidden" />
         </div>
       )}
-      {d.document.actions.length > 0 && <DynamicActions actions={d.document.actions} />}
+      {d.document.actions.length > 0 && <DynamicActions actions={d.document.actions} pages={d.pages} />}
     </>
   );
 }
@@ -144,7 +149,17 @@ function showClass(r: Region): string {
   return r.show === 'phones' ? 'lg:hidden' : r.show === 'desktop' ? 'max-lg:hidden' : '';
 }
 
-function Rows({ d, rows, className = '' }: { d: RowPageData; rows: Region[][]; className?: string }) {
+/** A Button to a row page is drawn only while the page is live (P1.12 B2): a
+ *  deleted or vanished page leaves no button and no empty box behind, and the
+ *  region returns with Reinstate. Every other region is drawn. */
+function isDrawn(d: RowPageData, r: Region): boolean {
+  if (r.kind !== 'button' || !r.dest) return true;
+  const id = pageIdOf(r.dest);
+  return id === null || (d.pages !== undefined && id in d.pages);
+}
+
+function Rows({ d, rows: stored, className = '' }: { d: RowPageData; rows: Region[][]; className?: string }) {
+  const rows = stored.map(row => row.filter(r => isDrawn(d, r))).filter(row => row.length > 0);
   if (rows.length === 0) return null;
   const presets = d.templates ?? SHIPPED_PRESETS;
   return (
@@ -259,7 +274,7 @@ function RegionBody({ d, region, parts }: { d: RowPageData; region: Region; part
     );
   }
   if (region.kind === 'button') {
-    const dest = region.dest ? resolveDestination(region.dest) : null;
+    const dest = region.dest ? resolveDestination(region.dest, d.pages) : null;
     const cls =
       'inline-flex min-h-11 items-center bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted';
     return (
