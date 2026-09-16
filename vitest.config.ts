@@ -6,7 +6,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: [
-      'lib/**/*.test.ts',
+      'lib/**/*.test.{ts,tsx}',
       'tests/**/*.test.ts',
       'app/**/*.test.{ts,tsx}',
       'components/**/*.test.{ts,tsx}',
