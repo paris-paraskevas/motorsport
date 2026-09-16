@@ -816,6 +816,27 @@ describe('PageDesigner', () => {
     expect(screen.getAllByRole('button', { name: /^List: Elsewhere/ })).toHaveLength(2);
   });
 
+  it('the tree’s filter keeps a region whose sub region matches; a sub region inside a Right Side Column region keeps its grid rows in the Property Editor (P1.4, the reviewer’s gaps)', () => {
+    mount();
+    fireEvent.contextMenu(tile('Static Content: A century of speed'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Create Sub Region/ }));
+    fireEvent.change(screen.getByLabelText('Region title'), { target: { value: 'Pull-out' } });
+    fireEvent.change(screen.getByPlaceholderText('Filter this tree'), { target: { value: 'pull' } });
+    const tree = screen.getByRole('tree', { name: 'Rendering' });
+    expect(within(tree).getByText('Pull-out')).toBeTruthy();
+    expect(within(tree).getByText('A century of speed')).toBeTruthy();
+    expect(within(tree).queryByText('Elsewhere')).toBeNull();
+    fireEvent.change(screen.getByPlaceholderText('Filter this tree'), { target: { value: '' } });
+    // A sub region of a region outside the Body still has Column, Column Span and Start New Row: its parent's twelve columns.
+    fireEvent.contextMenu(tile('List: Elsewhere'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Create Sub Region/ }));
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(pe).getByText('Elsewhere · inside')).toBeTruthy();
+    expect(within(pe).getByRole('group', { name: 'Region span' })).toBeTruthy();
+    expect(within(pe).getByRole('group', { name: 'Start a new row' })).toBeTruthy();
+    expect(within(pe).getByText(/Inside Elsewhere, desktop and laptop\./)).toBeTruthy();
+  });
+
   it('a region with sub regions offers drop targets inside it while dragging; the dragged region’s own subtree offers none (P1.4)', async () => {
     mount();
     fireEvent.contextMenu(tile('Static Content: A century of speed'));

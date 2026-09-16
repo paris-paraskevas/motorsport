@@ -109,10 +109,12 @@ export function PageDesignerTree({
   // crafted document.
   const regionNodes = (pos: Position, parent: string | null = null, depth = 0): NodeSpec[] =>
     doc.regions
-      .filter(r => r.position === pos && parentOf(r) === parent && matches(regionName(r), REGION_KIND_LABELS[r.kind].label, r.commentedOut ? 'commented out' : undefined))
-      .map(r => {
+      .filter(r => r.position === pos && parentOf(r) === parent)
+      .map(r => ({ r, subs: depth < NESTING_CAP ? regionNodes(pos, r.id, depth + 1) : [] }))
+      // The filter keeps a region that matches, and one whose sub regions do (the reviewer's gap).
+      .filter(({ r, subs }) => subs.length > 0 || matches(regionName(r), REGION_KIND_LABELS[r.kind].label, r.commentedOut ? 'commented out' : undefined))
+      .map(({ r, subs }) => {
         const Icon = KIND_ICON[r.kind];
-        const subs = depth < NESTING_CAP ? regionNodes(pos, r.id, depth + 1) : [];
         return {
           key: `region:${r.id}`,
           label: regionName(r),

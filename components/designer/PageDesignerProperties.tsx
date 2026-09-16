@@ -908,7 +908,8 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
   const { doc, readOnly, schemes, buildOptions } = ctx;
   const common = commonOf(targets);
   const one = targets.length === 1 ? targets[0] : null;
-  const inBody = targets.every(t => t.position === 'body');
+  // The grid rows show for the Body and for every sub region (P1.4: a parent's twelve columns, whatever its position).
+  const inBody = targets.every(t => t.position === 'body' || t.parent);
   // The transitional body is drawn by the code at the full width: its size cannot change until the page is split.
   const fullWidthOnly = targets.some(isLegacyBody);
   // A Band (P1.1) takes the whole row: its column and span are the template's, not a pick.

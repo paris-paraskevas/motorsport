@@ -96,6 +96,26 @@ describe('bindActions', () => {
     expect(el(root, 'more').hidden).toBe(true);
   });
 
+  it('a click inside a sub region is the sub region’s alone: the parent’s click action does not fire with it (P1.4, the reviewer’s find)', () => {
+    const root = document.createElement('div');
+    root.innerHTML = `
+      <div data-region="parent">Parent <div data-region="child"><span>Child</span></div></div>
+      <div data-region="a" hidden>A</div>
+      <div data-region="b" hidden>B</div>`;
+    document.body.appendChild(root);
+    const actions: DynamicAction[] = [
+      { id: 'p', name: '', when: { event: 'click', region: 'parent' }, do: [{ action: 'show', region: 'a' }] },
+      { id: 'c', name: '', when: { event: 'click', region: 'child' }, do: [{ action: 'show', region: 'b' }] },
+    ];
+    const unbind = bindActions(actions, root);
+    el(root, 'child').querySelector('span')!.click();
+    expect(el(root, 'b').hidden).toBe(false);
+    expect(el(root, 'a').hidden).toBe(true);
+    el(root, 'parent').click();
+    expect(el(root, 'a').hidden).toBe(false);
+    unbind();
+  });
+
   it('runs a visible action once when the region scrolls into view', () => {
     const observe = vi.fn();
     const disconnect = vi.fn();

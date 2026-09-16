@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Lock, Maximize2, Minimize2, Play, Plus, Puzzle, Redo2, RefreshCw, Search, TriangleAlert, Undo2, Wrench, Zap } from 'lucide-react';
-import { EMPTY_DOCUMENT, RECOVERY_DAYS, SHORTCUT_TOKEN, daysLeft, isLegacyBody, parsePageDocument, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
+import { EMPTY_DOCUMENT, RECOVERY_DAYS, SHORTCUT_TOKEN, daysLeft, isLegacyBody, parentOf, parsePageDocument, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
 import { COMPONENTS } from '@/lib/design/components';
 import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
@@ -858,7 +858,7 @@ export function PageDesigner({
       const r = doc.regions.find(x => x.id === sel.id);
       if (!r) return;
       // Siblings: the same position and the same parent (P1.4).
-      const siblings = doc.regions.filter(x => x.position === r.position && (x.parent ?? null) === (r.parent ?? null));
+      const siblings = doc.regions.filter(x => x.position === r.position && parentOf(x) === parentOf(r));
       const i = siblings.findIndex(x => x.id === r.id);
       const created = (a: { doc: PageDocument; id: string }, what: string) => {
         commit(a.doc, `${what} created. Its attributes are in the Property Editor.`);
@@ -868,10 +868,10 @@ export function PageDesigner({
       // Region, Create Page Item, Create Button; then ours where they stood.
       entries.push(
         { head: regionName(r) },
-        { label: 'Create Region', sub: 'Static Content, below', disabled: readOnly, run: () => created(addRegion(doc, 'static', { position: r.position, after: r.id, newRow: true, parent: r.parent ?? null }, regionDefaults), 'Static Content') },
+        { label: 'Create Region', sub: 'Static Content, below', disabled: readOnly, run: () => created(addRegion(doc, 'static', { position: r.position, after: r.id, newRow: true, parent: parentOf(r) }, regionDefaults), 'Static Content') },
         { label: 'Create Sub Region', sub: 'Static Content, inside', disabled: readOnly, run: () => created(addRegion(doc, 'static', { position: r.position, parent: r.id, newRow: true }, regionDefaults), 'Static Content') },
         { label: 'Create Page Item', sub: 'items arrive with a later phase', disabled: true, run: () => {} },
-        { label: 'Create Button', sub: 'below', disabled: readOnly, run: () => created(addRegion(doc, 'button', { position: r.position, after: r.id, newRow: true, parent: r.parent ?? null }, regionDefaults), 'Button') },
+        { label: 'Create Button', sub: 'below', disabled: readOnly, run: () => created(addRegion(doc, 'button', { position: r.position, after: r.id, newRow: true, parent: parentOf(r) }, regionDefaults), 'Button') },
         { label: 'Create Dynamic Action', sub: 'click on this region', disabled: readOnly, run: () => createAction({ region: r.id }) },
         '-',
         { label: 'Duplicate', disabled: readOnly, run: () => act.duplicate(r.id) },
