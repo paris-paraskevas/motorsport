@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.126 — 2026-09-16
+
+### Designer — the components' render test runs at last (P1.4's blocking finding): the include broadened, the mock that concurrency bypassed replaced by spies, the h1 wiring test added
+
+The first task of session 51 on the operator's word of 2026-09-16 ("merge then handoff … then first task is the fix"): the one blocking finding of P1.4's reviewer. `lib/design/component-render.test.tsx` had never run in the suite because `vitest.config.ts` included `lib/**/*.test.ts` and not `.tsx`. Switched on, two of its five tests timed out at 5 s while the real home assembly ran against the network (calendar.google.com's ICS feeds, api.jolpi.ca, fiawec.com, the news feeds).
+
+- The cause is not the one the handoff guessed (the Home components' own imports). A fetch stub that throws, and its stacks, showed `home.wire` in `component-render.tsx` calling the REAL `buildWire` of `lib/home-model.ts` although the test mocks `@/lib/home-model`: the renderers import that module in parallel, one dynamic import per region, and vitest 4.1.6's module runner hands a `vi.mock` factory to only the first of concurrent imports of one module from one importer; the rest receive the real module. Its own source says so (`requestWithMockedModule` in `node_modules/vitest/dist/chunks/startVitestModuleRunner.*.js`: "this will not work if user does Promise.all(import(), import())"), and a twelve-line probe reproduced it: six parallel `import('@/lib/home-model')` answered the mock once and the real module five times, even after the mock was cached.
+- `lib/design/component-render.test.tsx`: `vi.spyOn(homeModel, …)` on the real module's `loadHomeModel`, `buildWire` and `loadSeriesMeta` replaces the factory mock, so every import resolves to the one spied namespace (the probe: six of six); the wire assertion sees both arguments (`8, expect.any(Map)`); the wiring test the P1.4 plan promised: a document whose first region in document order is a component inside a parent and whose first page-level Body region is another component renders the nested one with an h2 and the page-level one with the h1 (`firstBodyRegion` in `page-document.ts` is the rule; against the pre-P1.4 rule, any first Body region, the test fails: checked by a mutation of the renderer, then restored). Six tests green.
+- `vitest.config.ts`: `lib/**/*.test.{ts,tsx}`; this is the only `.tsx` test under `lib/`.
+- No shipped file changes. `IDEAS.md` Inbox: the operator's item (the 2027 calendar, just announced: the calendar itself, a learn page and an article) and the vitest note for future tests of the renderers.
+
 ## 1.0.125 — 2026-09-16
 
 ### Records — P1.4 done in the ledger, the session-51 handoff and its prompt
