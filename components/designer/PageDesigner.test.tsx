@@ -718,6 +718,12 @@ describe('PageDesigner', () => {
     expect((within(within(pe).getByRole('group', { name: 'Region column' })).getByRole('button', { name: '1' }) as HTMLButtonElement).disabled).toBe(true);
     expect(within(within(pe).getByRole('group', { name: 'Start a new row' })).getByRole('button', { name: 'Yes' }).getAttribute('aria-pressed')).toBe('true');
     expect(within(pe).getAllByText('A band takes the whole row; pick another template to size it.').length).toBeGreaterThan(0);
+    // The Component View names the look in its Regions report (the reviewer's gap).
+    fireEvent.click(screen.getByRole('tab', { name: 'Component View' }));
+    expect(screen.getByRole('columnheader', { name: 'Look' })).toBeTruthy();
+    expect(screen.getByRole('cell', { name: 'Band' })).toBeTruthy();
+    expect(screen.getByRole('cell', { name: 'Plain' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('tab', { name: 'Layout' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));
     const first = calls.filter(c => c.method === 'POST')[0];

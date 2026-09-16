@@ -275,6 +275,10 @@ describe('page search', () => {
     expect(hits.map(h => `${h.what} · ${h.where}`)).toEqual(expect.arrayContaining(['Region · Aside · name', 'Action · Unfold · effect']));
     expect(searchPage('monza', doc, page)[0]).toMatchObject({ sel: { kind: 'page' }, where: 'name' });
     expect(searchPage('', doc, page)).toEqual([]);
+    // The look (P1.1) by its label; Plain, the absent default, is not a hit.
+    const banded: PageDocument = { ...doc, regions: doc.regions.map(r => (r.id === 'aside' ? { ...r, template: 'band' as const } : r)) };
+    expect(searchPage('band', banded, page).map(h => `${h.what} · ${h.where} · ${h.value}`)).toEqual(['Region · Aside · look · Band']);
+    expect(searchPage('plain', banded, page)).toEqual([]);
   });
 });
 

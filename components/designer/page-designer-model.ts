@@ -23,7 +23,7 @@ import { adoptRecipe } from '@/lib/design/composed-page';
 import { DESTINATIONS, pageDest, resolveDestination, type PageDestinations } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
-import { DEFAULT_REGION_TEMPLATE, type RegionTemplateKey } from '@/lib/design/template-options';
+import { DEFAULT_REGION_TEMPLATE, regionTemplate, type RegionTemplateKey } from '@/lib/design/template-options';
 
 // The Page Designer's model (Paddock Designer v2.4, docs/prototypes/paddock-
 // designer-v2.4): what is selected, how the document changes, what the
@@ -582,6 +582,8 @@ export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { 
       position: PD_POSITION[r.position].label,
       column: r.column,
       span: r.span,
+      // The look (P1.1), by its label; Plain is the absent default and is not a hit.
+      look: r.template ? regionTemplate(r.template).label : null,
       authorization: r.authz,
       hidden: r.hidden ? 'hidden at first' : null,
       commented: r.commentedOut ? 'commented out' : null,
