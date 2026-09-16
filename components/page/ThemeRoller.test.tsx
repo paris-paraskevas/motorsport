@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SHIPPED_THEMES } from '@/lib/design/theme-defaults';
 import { THEME_STORAGE_KEY } from '@/components/theme/ThemeScript';
+import { Modal } from '@/components/Modal';
 
 // The Theme Roller (P1.8; APEX: Customize › Theme Roller, a live editor over
 // the running page). It opens on the theme this tab runs, previews every edit
@@ -168,7 +169,7 @@ describe('ThemeRoller', () => {
     expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
   });
 
-  it('Escape closes the panel alone, taken before Quick Edit’s own listener; Close clears the preview; a failed read shows the route’s words', async () => {
+  it('Escape inside the panel closes it alone (Quick Edit’s document listener never hears it); Escape elsewhere is the other dialog’s, a Contact-style modal beside the Roller included; Close clears the preview; a failed read shows the route’s words', async () => {
     runs('midnight');
     fetchMock.mockResolvedValueOnce(listing([...shipped]));
     const onClose = vi.fn();
@@ -184,6 +185,20 @@ describe('ThemeRoller', () => {
     expect(quickEdit).toHaveBeenCalledTimes(1);
     expect(inline('--brand')).toBe('');
     document.removeEventListener('keydown', quickEdit);
+    // The site's own dialogs keep their Escape: the Modal (useFocusTrap, a document listener) opened beside the Roller, as Contact is.
+    const other = vi.fn();
+    render(
+      <Modal title="Contact" onClose={other}>
+        <input aria-label="Your message" />
+      </Modal>,
+    );
+    fireEvent.keyDown(screen.getByLabelText('Your message'), { key: 'Escape' });
+    expect(other).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
+    // Nor is an Escape on the page itself the Roller's.
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(other).toHaveBeenCalledTimes(2);
     // The mock kept the panel mounted; a further edit previews again, Close takes it away.
     fireEvent.change(colour('Accent'), { target: { value: '#ffc857' } });
     expect(inline('--brand')).toBe('#ffc857');

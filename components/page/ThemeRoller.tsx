@@ -84,17 +84,17 @@ export function ThemeRoller({ barPosition, onClose }: { barPosition: Position; o
     clearPreview(document.documentElement);
     onClose();
   }, [onClose]);
-  // Escape in the capture phase, stopped there: Quick Edit's own bubble-phase
-  // listener never hears it, so the Roller closes alone (the Sheet's pattern).
-  useEffect(() => {
-    const key = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      e.stopPropagation();
-      close();
-    };
-    document.addEventListener('keydown', key, true);
-    return () => document.removeEventListener('keydown', key, true);
-  }, [close]);
+  // Escape is taken on the panel itself (onKeyDown below), never on the
+  // document: a key pressed inside the Roller closes it and stops there, so
+  // Quick Edit's document listener does not exit as well; a key pressed
+  // anywhere else never passes through the Roller, so the site's own dialogs on
+  // a running page (Contact, What's New, the support prompt, all closing on a
+  // document listener) keep their Escape while the Roller is open.
+  const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key !== 'Escape') return;
+    e.stopPropagation();
+    close();
+  };
 
   const step = (fn: (s: RollerState) => RollerState) => {
     setRoller(s => (s ? fn(s) : s));
@@ -219,7 +219,12 @@ export function ThemeRoller({ barPosition, onClose }: { barPosition: Position; o
   const negative = listing.state === 'error' || (can !== null && can.problems.length > 0);
 
   return (
-    <section role="dialog" aria-label="Theme Roller" className={`fixed ${dock} top-3 z-40 flex max-h-[calc(100vh-88px)] w-[340px] max-w-[calc(100vw-24px)] flex-col border border-text/40 bg-bg text-text shadow-2xl`}>
+    <section
+      role="dialog"
+      aria-label="Theme Roller"
+      className={`fixed ${dock} top-3 z-40 flex max-h-[calc(100vh-88px)] w-[340px] max-w-[calc(100vw-24px)] flex-col border border-text/40 bg-bg text-text shadow-2xl`}
+      onKeyDown={onKeyDown}
+    >
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border px-3 py-2 font-mono text-10 uppercase tracking-[0.14em] text-text-muted">
         <span className="font-semibold text-text">Theme Roller</span>
         {running && <span>{`On ${running.label} · ${running.shipped ? 'shipped' : 'yours'}`}</span>}
