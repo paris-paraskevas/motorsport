@@ -181,6 +181,16 @@ const CSS_TOKEN: Record<ThemeTokenKey, string> = {
   accent: '--brand',
 };
 
+/** What a custom theme declares: the nine tokens as the stylesheet's custom
+ *  properties, then the three the stylesheet derives from them. One list, so
+ *  the style block (themeCss) and the Theme Roller's live preview (P1.8) can
+ *  never disagree. */
+export function themeDeclarations(tokens: ThemeTokens): [string, string][] {
+  const decls: [string, string][] = THEME_TOKEN_KEYS.map(k => [CSS_TOKEN[k], tokens[k]]);
+  decls.push(['--brand-fill', tokens.accent], ['--numeral', tokens.text], ['--tint-contrast', tokens.bg]);
+  return decls;
+}
+
 /** The style block that makes the operator's themes real: one rule per custom
  *  theme on `:root[data-theme-custom=<key>]`, later in the document than the
  *  stylesheet so it wins at equal specificity. The base theme's block keeps
@@ -189,11 +199,7 @@ const CSS_TOKEN: Record<ThemeTokenKey, string> = {
 export function themeCss(set: ThemeSet): string {
   return set.themes
     .filter(t => t.base !== null)
-    .map(t => {
-      const decls = THEME_TOKEN_KEYS.map(k => `${CSS_TOKEN[k]}:${t.tokens[k]}`);
-      decls.push(`--brand-fill:${t.tokens.accent}`, `--numeral:${t.tokens.text}`, `--tint-contrast:${t.tokens.bg}`);
-      return `:root[data-theme-custom='${t.key}']{${decls.join(';')}}`;
-    })
+    .map(t => `:root[data-theme-custom='${t.key}']{${themeDeclarations(t.tokens).map(([name, value]) => `${name}:${value}`).join(';')}}`)
     .join('\n');
 }
 

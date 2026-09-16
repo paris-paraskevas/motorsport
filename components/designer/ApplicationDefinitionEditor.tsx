@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { APP_VERSION } from '@/lib/version';
 import {
@@ -31,10 +31,13 @@ export function ApplicationDefinitionEditor({
   loaded,
   readOnly,
   onSaved,
+  focus = null,
 }: {
   loaded: EditableApplication;
   readOnly: boolean;
   onSaved: (next: EditableApplication) => void;
+  /** A field to land on, by the part of its id after `appdef-` (P1.8: the toolbar's Edit Logo lands on `wordmark`). */
+  focus?: string | null;
 }) {
   const [draft, setDraft] = useState<ApplicationDefinition>(loaded.definition);
   const [seen, setSeen] = useState(loaded.updatedAt);
@@ -51,6 +54,13 @@ export function ApplicationDefinitionEditor({
   const problems = parseDefinition({ ...draft, name: draft.name }).problems;
   const problem = !draft.name.trim() ? 'the application needs a name' : (problems[0] ?? null);
   const set = (fn: (d: ApplicationDefinition) => ApplicationDefinition) => setDraft(d => fn(d));
+  // The pane has opened the field's group by the time this runs (focusGroup below, adjusted during its render).
+  useEffect(() => {
+    if (!focus) return;
+    const el = document.getElementById(`appdef-${focus}`);
+    el?.scrollIntoView?.({ block: 'center' });
+    el?.focus();
+  }, [focus]);
 
   async function save() {
     if (busy || readOnly || problem || !dirty) return;
@@ -187,6 +197,7 @@ export function ApplicationDefinitionEditor({
         <PropertyPane
           head={{ kind: 'Application', name: `100: ${draft.name.trim() || 'Paddock'}` }}
           groups={groups}
+          focusGroup={focus ? { title: groups.find(g => g.props.some(p => 'htmlFor' in p && p.htmlFor === `appdef-${focus}`))?.title ?? 'Properties', n: 1 } : null}
           footer={
             !readOnly ? (
               <div className="flex items-center gap-3 border-t border-border px-3 py-2">

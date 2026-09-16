@@ -12,6 +12,10 @@ import { SHIPPED_THEME_SET, pickableThemes, resolveThemeAttributes, type ThemeSe
 // dark→midnight / light→paper (GitHub precedent: system-light lands on the
 // soft paper theme, never high-contrast).
 export const THEME_STORAGE_KEY = 'paddock:theme';
+/** Dispatched on window after a same-tab pick (the picker's, or the Theme
+ *  Roller's after a save, P1.8), so the picker re-reads the stored choice;
+ *  cross-tab picks arrive as the native storage event. */
+export const THEME_CHANGE_EVENT = 'paddock:theme-change';
 /** '1' = dyslexic mode on (html[data-dyslexic] swaps the font tokens to
  *  OpenDyslexic — globals.css). Same pre-paint contract as the theme. */
 export const DYSLEXIC_STORAGE_KEY = 'paddock:dyslexic';
