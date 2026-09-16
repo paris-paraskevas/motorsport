@@ -295,7 +295,7 @@ export function ThemeRoller({ barPosition, onClose }: { barPosition: Position; o
                 maxLength={THEME_LABEL_MAX}
                 placeholder="Name the new theme"
                 aria-label="Name of the new theme"
-                className={`${FIELD} min-w-0 flex-1`}
+                className={`${FIELD} min-w-[150px] flex-1`}
                 onChange={e => {
                   setLabel(e.target.value);
                   setMessage(null);
