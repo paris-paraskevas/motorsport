@@ -61,6 +61,8 @@ describe('applyEffect', () => {
     applyEffect({ action: 'go', dest: `page:${PAGE}` }, document, { [PAGE]: { path: '/history/monza', name: 'Monza, a history' } });
     expect(assign).toHaveBeenCalledWith('/history/monza');
     applyEffect({ action: 'go', dest: `page:${PAGE}` }, document);
+    // The page deleted: the map the server hands over has no such id (the reviewer’s gap).
+    applyEffect({ action: 'go', dest: `page:${PAGE}` }, document, {});
     expect(assign).toHaveBeenCalledTimes(1);
   });
 });
