@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.128 — 2026-09-16
+
+### Records — P1.8 done in the ledger, Phase 1 complete, the session-52 handoff
+
+Records only. `docs/plan/ledger.json`: P1.8 `done` with its evidence (PR #1008, merged 16:03:08Z as 848f81f3, prod 16:09:37Z; the browser run's read-backs; the gates; the plan critic's and the reviewer's verdicts; the blocking gap taken in 0981a178 and re-checked in the browser); Phase 1's fourteen slots are all done. `docs/HANDOFF.md` LATEST: session 51, the session-52 prompt with the Phase 2 screen FIRST (the v2 draft's slots for the word "Phase 2 go" or a changed list), the day's evidence, the browser-run recipe's additions (the harness's memory kills, Playwright's substring names, the tab to drive, Quick Edit's attached root, the picker's storage sync, the Roller's handles) and the landmines (the concurrent-import mock bypass, Escape on a running page, sed on CRLF files). `SCHEDULE.md`: the session's block and the active time. `IDEAS.md`: the resolved item (the never-run test) removed; the day's notes stay. The progress board regenerated.
+
 ## 1.0.127 — 2026-09-16
 
 ### Designer — [P1.8] Theme Roller from the toolbar: Customize opens Theme Roller, Edit Logo and Edit App Icon; the nine colours edited live over the running page; Save, Save as new theme, Set as default
