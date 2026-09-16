@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.120 — 2026-09-16
+
+### Records — session 49 closed a third time: P1.12 done, the session-50 handoff with P1.1 first, the night in SCHEDULE, two Inbox items
+
+Records only, no code. `docs/plan/ledger.json`: P1.12 `done` with the evidence of its third PR (PR B2 #1000, 1.0.119, merged 05:57Z, prod 06:01Z; the nine tests, the browser run, the reviewer, the review page) and the acceptance met across the three PRs; `docs/plan/components-programme.md` re-rendered. `docs/HANDOFF.md` LATEST (session 49): the heading (P1.12 done; the operator's order recorded; P1.1 next, asked first with the five looks), the session-50 prompt's first sentence and state, the agenda with PR B2 marked done, the numbered account of the night (#998, the order and #999, #1000), the decisions with the operator's words, the landmines of the B2 run. `SCHEDULE.md`: a block for the night of 2026-09-16 with its four items and the active time. `IDEAS.md` Inbox: the publish refusal naming the raw key and a deleted page's key in the tile until Reinstate; the self-reference the Target picker offers. The progress board regenerated.
+
 ## 1.0.119 — 2026-09-16
 
 ### Designer — P1.12 PR B2: a Button or a go effect to a page made in the designer; Named by on the page; a publish refused while it points at a page not live

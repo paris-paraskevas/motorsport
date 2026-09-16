@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.120 — 2026-09-16
+
+Internal only: the night's working records. Nothing changes for readers.
+
 ## 1.0.119 — 2026-09-16
 
 In the design tool, a button on a page, or a page action that sends the reader somewhere, can now point at a page made in the tool, picked by name. While that page is deleted the button is not shown and the action does nothing; both return when the page is brought back. Publishing a page that points at a deleted page is refused with the reason, and every page now shows what points at it. Nothing changes for readers until a page points at another.

@@ -1897,6 +1897,19 @@ Won't touch this session: any Phase 2–4 slot; P1.1, P1.4, P1.8 (they carry que
 
 Active: ~10h 20m to the second close (the operator present throughout; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts from ~06:50Z to ~17:10Z)
 
+### Wed 2026-09-16 — session 49, continued past midnight (the operator present) — the records, the order, P1.12 PR B2
+
+Order fixed by the operator's words: "merge" (the records #998), "b2 then p1.1 then p1.4 and p1.8 ask me as those go and then once all done pphase 2 screen", "merge then b2 go", "merge". Every subagent on Sonnet, one at a time; the gates and a fresh-context reviewer before any merge; merge only on the word.
+
+1. **The second close's records** (~10 min): #998 (1.0.117) merged 00:31Z, prod 00:37Z; the board rebuilt.
+2. **The order recorded** (~35 min): asked "does that mean we are on to phase 2?", answered with the three things left; the operator's order → a dated changes line in the ledger, the session-50 agenda rewritten → PR #999 (1.0.118) → reviewer (PASS, one gap taken: P1.4 before P1.8 labelled a reading) → merged 01:11Z, prod 01:16Z.
+3. **P1.12 PR B2** (~40 min): the tests written the day before applied and seen failing (nine cases, seven files) → built (fifteen code files; the fixtures given namedBy) → tsc 0 · lint 0 errors · vitest 208 files, 2111 tests · hooks 31/31 · cf:build + dry run 43225.09 KiB (66.0%) → the browser run on the local server (Imola created and published; a Button on Monza to it; the live link; Named by; Delete → no button, the publish refused, the draft kept; Reinstate → back; Delete permanently refused, "named by Monza"; the go effect's Destination) → review page → reviewer → merged 05:57Z, prod 06:01Z. PR #1000, 1.0.119. P1.12 done.
+4. **Close 3** (~15 min): the ledger's evidence (P1.12 done), the handoff (P1.1 first, asked with the five looks), this block, the Inbox, the board; the records PR 1.0.120 on the word.
+
+Won't touch: P1.1, P1.4, P1.8 (asked at their turn, in the operator's order); Phase 2 (its screen once Phase 1 is all done); any prod Supabase write without "apply <id>"; any push to `main`; any agent on Fable; any fan-out.
+
+Active: ~1h 50m of work between ~00:30Z and ~02:00Z (the operator present; the merge word for PR B2 came at 05:57Z after a pause, the close followed)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
