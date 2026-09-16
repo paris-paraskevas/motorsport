@@ -159,8 +159,9 @@
    "defaults": "the five names",
    "needsWord": "the five looks shown side by side before the names are final",
    "acceptance": "Pick band on a Static Content region, Save and Run: preview and served page carry it; a test renders a saved document with each look.",
-   "status": "started",
-   "scopeHash": "456d1f955cae"
+   "status": "done",
+   "scopeHash": "456d1f955cae",
+   "evidence": "PR #1003 (1.0.122) squash-merged 2026-09-16 09:23:09Z as 1042996e, prod 09:29Z; the seed migration 20260916081500 (region.static/image/list/button.template) applied to prod 09:23:05Z on the word \"merge and apply 20260916081500\" (0 rows before, 4 after; rehearsed inside begin … rollback first; applied locally too). Acceptance: Band picked on \"A century of speed\" (Static Content) in the designer on the local server, Save and Run published 08:55Z; the running page carried the strip (data-region-box class \"border-y border-border bg-surface-elevated py-6 px-4 md:px-6 lg:px-8 -mx-4 md:-mx-6 lg:-ml-8 lg:mr-0\", x 0, width 934 against the cell's 902) and the preview route of the live revision carried it too; components/page/RowPageView.test.tsx renders a saved document with each of the five looks (the box for Boxed, Band and Aside, none for Plain and Hero, the bleed cases). Also seen in the browser: the Templates screen's five with their samples; Component Settings' Static default set to Boxed and a new Static Content region starting Boxed; Monza put back. Gates after the last edit: tsc 0 · lint 0 errors · vitest 208 files, 2120 tests · hooks 31/31 · wrangler dry run 43278.01 KiB (66.0%). Plan critic (Sonnet, fresh context, 231k tokens): SOUND WITH FIXES, all folded before the build. Reviewer (Sonnet, fresh context, 289k tokens): PASS, 0 blocking, 2 gaps taken in b225e1a2 with their tests (Page Search finds a region by its look; the Component View's Regions report names the look), 1 nit (the renderer's \"started ·\" row, fixed in the records PR). Review pages: the ask 66e2a1eb-fa5a-426d-88ac-5169417039c5, the build 7a2b3835-61d1-422f-bba7-d25d8b459bb2. The defaults taken are the changes line of 2026-09-16 (\"1. they stand, 2. drop size.\"): the five names as the scope spells them, today's key standard under the label Plain; the Size row gone, Column Span kept."
   },
   {
    "id": "P1.2",

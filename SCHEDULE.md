@@ -1911,6 +1911,18 @@ Won't touch: P1.1, P1.4, P1.8 (asked at their turn, in the operator's order); Ph
 
 Active: ~1h 50m of work between ~00:30Z and ~02:00Z, then ~1h 05m from 05:57Z to ~06:50Z (the operator present; the merge word for PR B2 came at 05:57Z after a pause, the close and the audit followed)
 
+### Wed 2026-09-16 — session 50 (from ~06:50Z, the operator present) — P1.1 asked first, then built
+
+Order fixed by the session-50 handoff prompt and the operator's words: "1. they stand, 2. drop size." (~08:00Z), the plan approved (~08:35Z), "merge and apply 20260916081500" (~09:22Z). Every subagent on Sonnet, one at a time, writing to files; no agent builds; the gates and a fresh-context reviewer before any merge; merge only on the word.
+
+1. **Session start and the P1.1 ask** (~1h 10m): the files in order; the dev server left from session 49 restarted on a cleared cache (its dynamic admin API routes answered Next's HTML 404); the review page with the five looks drawn side by side on the Monza page (Midnight and Paper), the Universal Theme counterparts read from the UT 26.1 app, and three drawings of the Layout group for the Size question → the decision scan's two questions with defaults → answered "1. they stand, 2. drop size." → done.
+2. **P1.1 Region looks** (~2h 25m): plan mode (a Sonnet plan critic, 231k tokens, SOUND WITH FIXES, all folded) → the plan approved → tests first (18 seen failing across 8 files) → built (12 code files, a seed migration) → tsc 0 · lint 0 errors · vitest 208 files, 2120 tests · hooks 31/31 · cf:build + dry run 43278.01 KiB (66.0%) → the browser run on the local server (Band on "A century of speed", Save and Run, the running page and the preview, the Templates screen, the Component Settings default, Monza put back) → review page → reviewer (Sonnet, 289k tokens, PASS; two gaps taken in a second commit with their tests) → "merge and apply 20260916081500" → the seed applied to prod 09:23:05Z, #1003 (1.0.122) merged 09:23:09Z, prod 09:29Z → done.
+3. **Close** (~25 min): the ledger's evidence (P1.1 done), the render-ledger nit, the handoff and the session-51 prompt (P1.4 first, asked with the default and a drawing), this block, the Inbox, the board; the records PR 1.0.123 on the word.
+
+Won't touch this session: P1.4 and P1.8 before their turn (asked in the operator's order); Phase 2 (its screen once Phase 1 is all done); any prod Supabase write without "apply <id>"; any push to `main`; any agent on Fable; any fan-out.
+
+Active: ~3h 10m from ~06:50Z to ~10:00Z (the operator present; the words came at ~08:00Z, ~08:35Z and ~09:22Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

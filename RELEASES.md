@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.123 — 2026-09-16
+
+Internal only: the day's working records. Nothing changes for readers.
+
 ## 1.0.122 — 2026-09-16
 
 In the design tool, every region on a page can now wear one of five looks: Plain (as before), Boxed (a card), Band (a strip across the whole row), Aside (a pull-out with a rule in the site's colour) and Hero (a display headline with a lead). A new region starts with the look set for its kind under Component Settings. Nothing changes for readers until a region is given a look.

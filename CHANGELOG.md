@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.123 — 2026-09-16
+
+### Records — P1.1 done in the ledger, the session-50 handoff and its prompt
+
+Records only, no code readers run. `docs/plan/ledger.json`: P1.1 `done` with its evidence (PR #1003, the merge and prod times, the seed applied to prod 09:23:05Z on the word, the acceptance as seen in the browser, the gates, the plan critic's and the reviewer's verdicts, the review pages). `docs/plan/render-ledger.mjs`: a started slot without evidence no longer draws a trailing separator (the reviewer's nit); the Markdown regenerated. `docs/HANDOFF.md` LATEST: session 50 (P1.1 asked first with the review page, the word, the build, the merge), the session-51 prompt with P1.4 first (asked with the default and a drawing), the recipe's new landmines (the Playwright MCP's allowed roots, Save and Run reusing the one tab, the lazy image in a screenshot, the local Paper default, the preview frame's missing Right Side Column). `SCHEDULE.md`: the session-50 block and the active time. `IDEAS.md` Inbox: seven items. The progress board regenerated.
+
 ## 1.0.122 — 2026-09-16
 
 ### Designer — [P1.1] Region looks: Appearance › Template offers five templates; the Size row leaves the Layout group
