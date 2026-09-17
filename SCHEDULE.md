@@ -1971,6 +1971,21 @@ Order fixed by the handoff and the operator's words: the reads, the decision sca
 Won't touch this session: any slot beyond P2.1 (P2.6 only after P2.1's merge, and only if time); the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out; the Inbox questions.
 Active: ~2h 50m from ~12:05Z to ~14:55Z (the operator present; the words came at ~13:15Z, ~13:20Z and ~14:28Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
+### Thu 2026-09-17 — session 53 (from ~17:15Z, the operator present) — P2.6 The Conditions vocabulary
+
+Order fixed by the handoff and the operator's words: the reads, the board with every phase (the operator's ask mid-reads, ~17:40Z), the decision scan (its third line empty), plan mode with a Sonnet plan critic, the plan approved (~18:05Z), tests first, build, gates, the browser run, the review page, the PR, the reviewer, "merge" (~19:31Z). Every subagent on Sonnet, one at a time; no agent builds; merge on the word.
+
+1. **The reads and the board** (~35 min): CLAUDE.md, the rules, the ledger, the handoff, the four memories, IDEAS, SCHEDULE; Appendix E of the study; the show rule at its five sites and in its tests; the stored show values read from production (none) and the local database (two); "can we have all phases with steps shown" → the board regenerated from the ledger and the study's Phase 3 and 4 tables at the same link → done.
+2. **The decision scan and the plan** (~45 min): the scan's third line empty; plan mode; the plan file; a fresh-context Sonnet plan critic (244,035 tokens against the ~280k said; SOUND WITH FIXES: one blocking, APEX's labels verbatim; seven non-blocking, all folded); approved ~18:05Z → done.
+3. **Tests first and the build** (~40 min): fifteen red across eight files; page-document.ts, the trace, the three render sites, RowPageView, the designer (the model, Properties, Centre, Layout, Tree); green; tsc 0 · lint 0 errors · vitest 222 files, 2232 tests · hooks 31/31; cf:build alone and the dry run 41618.19 KiB (63.50%) → done.
+4. **The browser run and the review page** (~20 min): the sign-in helper rewritten; Monza's Aside set to Never (the tree struck, the tile tagged, the preview without it, the trace line); Current Page is in published on the local database with /history/spa (hidden on the live local page, the trace by path) and with /history/monza, /history/spa (shown again); the Component View's Condition column; seven screenshots into the review page e6078da6-8698-4ddf-b6cc-cf2aa9348bf2 → done.
+5. **PR, reviewer, merge** (~25 min): PR #1017; the ledger flipped to started (ebaf3a4b); a fresh-context Sonnet reviewer (189,294 tokens against the ~300k said): PASS, three non-blocking, two taken in eef73b57 with the gates re-run; "merge" → squash-merged 19:31:37Z as 1dd5dfda → main forward → prod → done.
+6. **Close**: the ledger (P2.6 done with its evidence; the dated changes line carrying the plan's defaults), the handoff and the session-54 prompt (P2.2's scan first, with the list of shapes), this block, the Inbox, the board; the records PR 1.0.137 on the word; P2.2's decision scan presented with the list and stopped for the word.
+
+Won't touch this session: any slot beyond P2.6 except P2.2's decision scan; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~2h 45m from ~17:15Z to ~20:00Z (the operator present; the words came ~17:40Z (the board), ~18:05Z (the plan approved) and ~19:31Z ("merge"); no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

@@ -182,6 +182,12 @@ _(Removed 2026-09-08: "`.supabase-pat` is DEAD". The operator regenerated it on 
 **F1 upgrades — now a habit rather than a project**
 
 The ingest exists as of 0.334.103: `npm run upgrades:draft` does discovery, fetch, extraction and emission, and the review is the git diff. **Deliberately not in CI** (operator, 2026-08-28) — the parser is welded to Xpdf 4.00 and the human review step does not go away, so automating the one command that is already easy buys nothing. Round 13's FIA document publishes **Friday 4 September**; the cadence is one draft per Grand Prix, checked against the PDF.
+- (2026-09-17, session 53) The stored show rule’s reader (SHOW_TO_CONDITION in lib/design/page-document.ts) leaves in the release after 1.0.136, as the slot says; the parser then refuses `show` as unknown.
+- (2026-09-17, session 53) The tile’s amber tag and the closed select carry APEX’s long condition names whole (“Current Page is in comma delimited list: /history/spa”); a shorter tag would be ours to name, the operator’s call.
+- (2026-09-17, session 53) A designer-level test of Request = Value’s Part and Value rows needs a page whose address has a part; add it with Phase 3’s first pattern page (the P2.6 reviewer’s third point).
+- (2026-09-17, session 53) The preview applies the conditions since 1.0.136 (an administrator is signed in, so a public-user region does not show in a preview); whether the preview should offer “as a signed-out visitor” is a product question.
+- (2026-09-17, session 53) The local Monza page carries What it changed (P2.1’s draft, published on the local database in the P2.6 browser run) and the Aside’s condition (pages /history/monza, /history/spa); production is untouched.
+- (2026-09-17, session 53) The progress board shows Phases 3 and 4 from the study’s draft tables (P3.1–P3.19, P4.1–P4.9) with the spherical view’s Phase 4 additions as prose; the 78-slot draft (P4.0–P4.16) went with its scratchpad and the plan page, so the numbered Phase 4 list is drafted again at Phase 4’s turn.
 
 ## A "connection is secure" interstitial — operator ask, 2026-08-22, RECOMMEND AGAINST as asked
 

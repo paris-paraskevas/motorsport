@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.137 — 2026-09-17
+
+### Records — P2.6 done in the ledger, the session-54 handoff with P2.2’s decision scan first
+
+Records only. `docs/plan/ledger.json`: P2.6 `done` with its evidence (#1017, 1.0.136, merged 19:31:37Z as 1dd5dfda; the plan critic’s and the reviewer’s figures; the browser run’s review page e6078da6-8698-4ddf-b6cc-cf2aa9348bf2) and one dated changes line carrying the plan’s approval and the defaults it took (the region field, APEX’s verbatim names with four ours, the fact-not-known rule at the frame and the preview, the preview applying the conditions, the one-release reader of the stored show rule, Item = Value listed and refused until P2.18); `docs/plan/components-programme.md` regenerated. `docs/HANDOFF.md`: the session-53 close with the session-54 prompt (P2.2 The data region with views first: its decision scan asks the preset names per series shape, shown as the list of the site’s standings and results shapes). `SCHEDULE.md`: the day. `IDEAS.md`: six Inbox lines (the show reader’s removal after 1.0.136, the long APEX names in the tile tag and the select, the Part and Value rows’ test at the first pattern page, the preview’s signed-in view, the local Monza’s state, the board’s drafted Phases 3 and 4). The progress board republished at its link with every phase and its steps (Phases 3 and 4 from the study’s draft tables) on the operator’s ask.
+
 ## 1.0.136 — 2026-09-17
 
 ### Designer — [P2.6] The Conditions vocabulary: one typed Condition on every region replaces the seven show rules
