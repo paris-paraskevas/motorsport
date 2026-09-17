@@ -27,6 +27,7 @@ import {
   substituteShortcuts,
   type PageDocument,
 } from './page-document';
+import { COMPONENTS, type ComponentDefinition } from './components';
 
 const ASSET = 'a1b2c3d4-0000-4000-8000-000000000001';
 const DOC: PageDocument = {
@@ -193,6 +194,31 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(none.problems[0]).toMatch(/names a component the code does not have \(none\)/);
     const settings = parsePageDocument(doc([region({ component: 'page.body', settings: { items: 5 } })]));
     expect(settings.problems).toEqual(['region r: Body as the code draws it has no setting called items']);
+  });
+
+  it('reads a component’s link attribute against the destination rule and projects it into the refs; a colour outside its rule is a problem (P2.0)', () => {
+    const card: ComponentDefinition = {
+      key: 'test.card',
+      name: 'Card',
+      group: 'Page',
+      holds: 'a card',
+      settings: [
+        { key: 'more', label: 'Read more', kind: 'link', default: '' },
+        { key: 'accent', label: 'Accent', kind: 'colour', default: '#8c1c13' },
+      ],
+    };
+    const components = [...COMPONENTS, card];
+    const ok = parsePageDocument(doc([region({ component: 'test.card', settings: { more: 'calendar', accent: '#123456' } })]), components);
+    expect(ok.problems).toEqual([]);
+    expect(ok.value.regions[0]).toMatchObject({ component: 'test.card', settings: { more: 'calendar', accent: '#123456' } });
+    expect(documentRefs(ok.value, components).dests).toEqual(['calendar']);
+    // Without the definition the attribute is not known as a link: nothing is projected.
+    expect(documentRefs(ok.value).dests).toEqual([]);
+    const nowhere = parsePageDocument(doc([region({ component: 'test.card', settings: { more: 'nowhere-at-all' } })]), components);
+    expect(nowhere.problems).toEqual(['region r: Read more must be a page or a link from the catalogue']);
+    expect(nowhere.value.regions).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'test.card', settings: { accent: 'red' } })]), components).problems).toEqual(['region r: Accent must be a colour as #rrggbb']);
+    expect(parsePageDocument(doc([region({ component: 'test.card' })])).problems).toEqual(['region r: names a component the code does not have (test.card)']);
   });
 
   it('reads a show rule, leaves it out when it is always, and refuses one it does not know', () => {

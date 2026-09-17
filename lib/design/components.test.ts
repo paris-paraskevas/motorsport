@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPONENTS, COMPONENT_KEY, SPLITS, componentDefaults, componentId, defaultDocument, findComponent, parseSettings, recipeRegions, settingsSummary } from './components';
+import { COMPONENTS, COMPONENT_KEY, SPLITS, componentDefaults, componentId, defaultDocument, findComponent, parseSettings, recipeRegions, settingsSummary, type ComponentDefinition } from './components';
 
 // The component catalogue: every key well formed and unique, settings read
 // against their spec with defaults standing in, the summary in words, Home's
@@ -60,5 +60,32 @@ describe('the component catalogue', () => {
     expect(componentId('page.body', [])).toBe('code-body');
     expect(componentId('home.wire', ['wire', 'wire-2'])).toBe('wire-3');
     expect(defaultDocument('/calendar').regions.map(r => r.component)).toEqual(['page.heading', 'calendar.month']);
+  });
+
+  it('reads the colour, icon and link kinds, and leaves an application-scope attribute to Component Settings (P2.0)', () => {
+    const card: ComponentDefinition = {
+      key: 'test.card',
+      name: 'Card',
+      group: 'Page',
+      holds: 'a card',
+      groups: [{ key: 'colours', title: 'Colours', seq: 10 }],
+      settings: [
+        { key: 'accent', label: 'Accent', kind: 'colour', default: '#8c1c13', group: 'colours' },
+        { key: 'icon', label: 'Icon', kind: 'icon', default: '' },
+        { key: 'more', label: 'Read more', kind: 'link', default: '' },
+        { key: 'theme', label: 'Theme', kind: 'text', default: 'paper', maxLength: 20, scope: 'application' },
+      ],
+    };
+    expect(componentDefaults(card)).toEqual({ accent: '#8c1c13', icon: '', more: '' });
+    expect(parseSettings(card, { accent: '#ABCDEF' })).toEqual({ settings: { accent: '#abcdef', icon: '', more: '' }, problems: [] });
+    expect(parseSettings(card, { accent: 'red' }).problems).toEqual(['Accent must be a colour as #rrggbb']);
+    expect(parseSettings(card, { icon: 'calendar' }).settings.icon).toBe('calendar');
+    expect(parseSettings(card, { icon: 'Calendar!' }).problems).toEqual(['Icon must be an icon name: lower-case letters, digits and dashes']);
+    expect(parseSettings(card, { more: 'page:a1b2c3d4-0000-4000-8000-000000000010' }).settings.more).toBe('page:a1b2c3d4-0000-4000-8000-000000000010');
+    expect(parseSettings(card, { more: 'x'.repeat(121) }).problems).toEqual(['Read more must name a destination of at most 120 characters']);
+    expect(parseSettings(card, { theme: 'midnight' }).problems).toEqual(['Theme is set for the application, not on a region']);
+    expect(settingsSummary(card, {})).toBe('Accent #8c1c13 · Icon none · Read more nowhere');
+    expect(findComponent('test.card')).toBeNull();
+    expect(findComponent('test.card', [...COMPONENTS, card])?.name).toBe('Card');
   });
 });

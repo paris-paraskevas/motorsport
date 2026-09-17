@@ -16,6 +16,7 @@ import type { PageDetail } from '@/lib/design/page-revisions';
 import type { PageDocument, Region } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
+import { COMPONENTS, type ComponentDefinition } from '@/lib/design/components';
 
 const STAMP = '2026-09-08T16:00:00.505502+00:00';
 const R1 = 'b1b2c3d4-0000-4000-8000-000000000001';
@@ -90,7 +91,7 @@ function serve(over: Partial<Record<Method, () => unknown>> = {}) {
   });
 }
 
-function mount(d: PageDetail = detail, readOnly = false, initialRegion: string | null = null, userId: string | null = null) {
+function mount(d: PageDetail = detail, readOnly = false, initialRegion: string | null = null, userId: string | null = null, components?: readonly ComponentDefinition[]) {
   const onSaved = vi.fn();
   const onOpenPage = vi.fn();
   const onBack = vi.fn();
@@ -105,6 +106,7 @@ function mount(d: PageDetail = detail, readOnly = false, initialRegion: string |
       onPurged={onPurged}
       initialRegion={initialRegion}
       userId={userId}
+      components={components}
       detail={dd}
       pages={pages}
       readOnly={readOnly}
@@ -970,6 +972,75 @@ describe('PageDesigner', () => {
     expect(body.base).toBeNull();
     // The transitional body is written explicitly once the page is saved, first in the Body, the new region after it.
     expect(body.document.regions.map(r => `${r.position}:${r.kind}`)).toEqual(['body:component', 'body:static']);
+  });
+
+  it('draws a component’s attributes in its groups with the colour, icon and link editors, and a definition’s capability flags leave out Template and Header and Footer (P2.0)', async () => {
+    const card: ComponentDefinition = {
+      key: 'test.card',
+      name: 'Card',
+      group: 'Page',
+      holds: 'a card of the test’s own',
+      groups: [{ key: 'colours', title: 'Colours', seq: 10 }],
+      settings: [
+        { key: 'note', label: 'Note', kind: 'text', default: '', maxLength: 40 },
+        { key: 'rows', label: 'Rows', kind: 'number', default: 3, min: 1, max: 9, scope: 'report' },
+        { key: 'theme', label: 'Theme', kind: 'text', default: 'paper', maxLength: 20, scope: 'application' },
+        { key: 'accent', label: 'Accent', kind: 'colour', default: '#8c1c13', group: 'colours' },
+        { key: 'icon', label: 'Icon', kind: 'icon', default: '', group: 'colours' },
+        { key: 'more', label: 'Read more', kind: 'link', default: '' },
+      ],
+    };
+    const bare: ComponentDefinition = { key: 'test.bare', name: 'Bare', group: 'Page', holds: 'draws its own frame', settings: [], capabilities: { template: false, headerFooter: false } };
+    const cardDoc: PageDocument = {
+      version: 1,
+      actions: [],
+      regions: [
+        { id: 'card', kind: 'component', component: 'test.card', settings: { note: '', rows: 3, accent: '#8c1c13', icon: '', more: '' }, title: 'Card', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null },
+        { id: 'bare', kind: 'component', component: 'test.bare', settings: {}, title: 'Bare', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null },
+      ],
+    };
+    const { onSaved } = mount({ ...detail, newest: { ...detail.newest!, document: cardDoc } }, false, null, null, [...COMPONENTS, card, bare]);
+    const pe = screen.getByLabelText('Property Editor');
+    // The flags first: Bare draws its own frame, so the Appearance group (Template, Template Options) and Header and
+    // Footer are not offered; Card keeps both (the group headers are buttons, folded until opened).
+    fireEvent.click(tile('Component: Bare'));
+    expect(within(pe).queryByRole('button', { name: 'Appearance' })).toBeNull();
+    expect(within(pe).queryByRole('button', { name: 'Header and Footer' })).toBeNull();
+    expect(within(pe).getByRole('button', { name: 'Layout' })).toBeTruthy();
+    fireEvent.click(tile('Component: Card'));
+    expect(within(pe).getByRole('button', { name: 'Header and Footer' })).toBeTruthy();
+    fireEvent.click(within(pe).getByRole('button', { name: 'Appearance' }));
+    expect(within(pe).getByRole('group', { name: 'Region template' })).toBeTruthy();
+    // The Attributes tab: Settings holds the ungrouped attributes, Colours its two, in that order; the report-scope
+    // Rows draws as a region's own; the application-scope Theme is read-only, set under Component Settings.
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const settingsHead = within(pe).getByText('Settings');
+    const coloursHead = within(pe).getByText('Colours');
+    expect(settingsHead.compareDocumentPosition(coloursHead) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect((within(pe).getByLabelText('Note') as HTMLInputElement).value).toBe('');
+    expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('3');
+    expect(within(pe).getByText('Set under Shared Components › Component Settings')).toBeTruthy();
+    expect(within(pe).queryByLabelText('Theme')).toBeNull();
+    const picker = within(pe).getByLabelText('Accent') as HTMLInputElement;
+    expect(picker.type).toBe('color');
+    expect(picker.value).toBe('#8c1c13');
+    fireEvent.change(within(pe).getByLabelText('Accent as #rrggbb'), { target: { value: '#123456' } });
+    expect((within(pe).getByLabelText('Accent') as HTMLInputElement).value).toBe('#123456');
+    const icon = within(pe).getByLabelText('Icon') as HTMLSelectElement;
+    expect(icon.options[0].textContent).toBe('none');
+    expect(icon.options.length).toBeGreaterThan(1);
+    const chosenIcon = icon.options[1].value;
+    fireEvent.change(icon, { target: { value: chosenIcon } });
+    const link = within(pe).getByLabelText('Read more') as HTMLSelectElement;
+    expect(link.options[0].textContent).toMatch(/^Nowhere/);
+    const monza = [...link.options].find(o => o.textContent?.includes('Monza, a history'))!;
+    expect(monza.value).toBe(`page:${page.id}`);
+    fireEvent.change(link, { target: { value: monza.value } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    const saved = posted.document.regions[0];
+    expect(saved.kind === 'component' && saved.settings).toEqual({ note: '', rows: 3, accent: '#123456', icon: chosenIcon, more: `page:${page.id}` });
   });
 
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {

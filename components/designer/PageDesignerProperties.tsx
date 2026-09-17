@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import {
   BUTTON_LABEL_MAX,
@@ -26,7 +27,9 @@ import {
   type TriggerEvent,
 } from '@/lib/design/page-document';
 import { SITE_URL } from '@/lib/site';
-import { findComponent, type SettingValue } from '@/lib/design/components';
+import { findComponent, type ComponentDefinition, type SettingValue } from '@/lib/design/components';
+import { normaliseHex } from '@/lib/design/contrast';
+import { BAR_ICON_NAMES } from '@/components/BottomBar';
 import { PAGE_COMMENTS_MAX, PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
 import { PAGE_NAME_MAX, PAGE_TITLE_MAX, isLegacyBody, parentOf } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
@@ -34,7 +37,7 @@ import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
 import { BUILD_OPTION_DEFAULTS, BUILD_OPTION_KEYS, type BuildOptionKey, type BuildOptionStatus } from '@/lib/design/build-option-defaults';
 import { DEFAULT_REGION_TEMPLATE, REGION_TEMPLATES, regionTemplate, type RegionTemplateKey, type TemplatePresets } from '@/lib/design/template-options';
-import { FIELD, PBTN, Pills, Ro, TEXTAREA, YesNo, type PropGroup } from './PropertyPane';
+import { FIELD, PBTN, Pills, Ro, TEXTAREA, YesNo, type PropGroup, type PropRow } from './PropertyPane';
 import { TemplateOptionsButton } from './TemplateOptionsDialog';
 import { TextPicker, type Cursor } from './TextPicker';
 import {
@@ -107,6 +110,8 @@ export interface PropsContext {
   lists: { key: string; label: string }[];
   /** The application's live pages: what a Button's Target and a go effect's Destination offer under Pages (P1.12 B2). */
   pages: PageRow[];
+  /** The component definitions (P2.0): the code's, or the merged list once definitions have rows. */
+  components: readonly ComponentDefinition[];
   /** What names this page (rule 10): the lists holding an entry to it and the live pages whose button or go effect goes to it (P1.12 B2). */
   namedBy: { lists: string[]; pages: string[] };
   shortcuts: EditableShortcut[];
@@ -466,6 +471,42 @@ export function pageGroups(ctx: PropsContext): PaneGroups {
   return { head: { kind: 'Page', name: `${number}: ${attrs.name.trim() || page.name}` }, groups };
 }
 
+/** A colour attribute (P2.0; APEX: the Color attribute type): the picker and
+ *  the hex beside it, the Theme Roller's pair. What is typed stays in the field
+ *  until it is a #rrggbb; only then does the region take it. */
+function HexField({ label, value, disabled, onPick }: { label: string; value: string; disabled?: boolean; onPick: (hex: string) => void }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const pick = (v: string) => {
+    const hex = normaliseHex(v);
+    if (hex) {
+      setDraft(null);
+      onPick(hex);
+    } else setDraft(v);
+  };
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="color"
+        value={normaliseHex(value) ?? '#000000'}
+        aria-label={label}
+        disabled={disabled}
+        className="h-6 w-8 cursor-pointer border border-border-strong bg-transparent p-0"
+        onChange={e => pick(e.target.value)}
+      />
+      <input
+        type="text"
+        value={draft ?? value}
+        maxLength={7}
+        aria-label={`${label} as #rrggbb`}
+        disabled={disabled}
+        className={`${FIELD} w-[88px] font-mono`}
+        onChange={e => pick(e.target.value)}
+        onBlur={() => setDraft(null)}
+      />
+    </div>
+  );
+}
+
 export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
   const { doc, readOnly, assets, lists, shortcuts, act, fieldId } = ctx;
   const K = REGION_KIND_LABELS[r.kind];
@@ -480,6 +521,12 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
 
   const source: PropGroup['props'] = [];
   const attributeRows: PropGroup['props'] = [];
+  const groupedRows = new Map<string, PropRow[]>();
+  // The component's definition (P2.0), for its attributes and its capability
+  // flags; read here, since the groups below honour the flags.
+  const componentSpec = r.kind === 'component' ? findComponent(r.component, ctx.components) : null;
+  const withTemplate = componentSpec?.capabilities?.template !== false;
+  const withHeaderFooter = componentSpec?.capabilities?.headerFooter !== false;
   if (r.kind === 'static') {
     source.push({
       label: 'Text',
@@ -634,7 +681,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
     });
   }
   if (r.kind === 'component') {
-    const spec = findComponent(r.component);
+    const spec = componentSpec;
     source.push({
       label: 'Component',
       common: true,
@@ -643,25 +690,54 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       help: 'A piece the code draws. Its kind is deployed code; its settings and its rule are yours, here.',
     });
     // APEX: the type-specific settings are the Attributes tab (UX map line 133); the Source group keeps the component itself.
+    // P2.0: the definition's attributes, each in its group (ungrouped under Settings), drawn by its editor: the four of R2b,
+    // then colour (the picker and the hex), icon (the bar's icon names) and link (the Button's Target, a destination key,
+    // never a typed URL). An application-scope attribute is set once, under Component Settings, and only reads here.
     for (const s of spec?.settings ?? []) {
+      const application = s.scope === 'application';
       const value = r.settings[s.key] ?? s.default;
       const set = (v: SettingValue) => p(`${s.label} set.`, x => (x.kind === 'component' ? { ...x, settings: { ...x.settings, [s.key]: v } } : x));
-      attributeRows.push({
+      const row: PropRow = {
         label: s.label,
         common: true,
-        changed: ch(x => (x.kind === 'component' ? x.settings[s.key] : undefined)),
-        control:
-          s.kind === 'boolean' ? (
-            <YesNo label={s.label} value={Boolean(value)} disabled={readOnly} onPick={set} />
-          ) : s.kind === 'choice' ? (
-            <Pills label={s.label} items={(s.options ?? []).map(o => ({ key: o.key, label: o.label }))} current={String(value)} disabled={readOnly} onPick={set} />
-          ) : s.kind === 'number' ? (
-            <input type="number" value={Number(value)} min={s.min} max={s.max} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(Number(e.target.value))} />
-          ) : (
-            <input type="text" value={String(value)} maxLength={s.maxLength ?? 200} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)} />
-          ),
-        help: s.help,
-      });
+        changed: application ? false : ch(x => (x.kind === 'component' ? x.settings[s.key] : undefined)),
+        control: application ? (
+          <Ro dim>Set under Shared Components › Component Settings</Ro>
+        ) : s.kind === 'boolean' ? (
+          <YesNo label={s.label} value={Boolean(value)} disabled={readOnly} onPick={set} />
+        ) : s.kind === 'choice' ? (
+          <Pills label={s.label} items={(s.options ?? []).map(o => ({ key: o.key, label: o.label }))} current={String(value)} disabled={readOnly} onPick={set} />
+        ) : s.kind === 'number' ? (
+          <input type="number" value={Number(value)} min={s.min} max={s.max} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(Number(e.target.value))} />
+        ) : s.kind === 'colour' ? (
+          <HexField key={`${r.id}:${s.key}`} label={s.label} value={String(value)} disabled={readOnly} onPick={set} />
+        ) : s.kind === 'icon' ? (
+          <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
+            <option value="">none</option>
+            {BAR_ICON_NAMES.map(name => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        ) : s.kind === 'link' ? (
+          <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
+            <option value="">Nowhere</option>
+            <DestinationOptions pages={ctx.pages} />
+          </select>
+        ) : (
+          <input type="text" value={String(value)} maxLength={s.maxLength ?? 200} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)} />
+        ),
+        note: s.scope === 'report' ? 'Per multi-row region; drawn as the region’s own until the data region arrives.' : undefined,
+        help: application
+          ? `${s.help ? `${s.help} ` : ''}One value for the whole application (APEX: an attribute of Application scope), set under Shared Components › Component Settings.`
+          : s.kind === 'link'
+            ? `${s.help ? `${s.help} ` : ''}A place the site has, chosen from the catalogue, or a page of this application under Pages. URLs are never typed here.`
+            : s.help,
+      };
+      const group = s.group && spec?.groups?.some(g => g.key === s.group) ? s.group : '';
+      if (group) groupedRows.set(group, [...(groupedRows.get(group) ?? []), row]);
+      else attributeRows.push(row);
     }
     if (spec?.legacy) {
       const recipe = splitRecipe(ctx.page.path);
@@ -897,7 +973,22 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       ],
     },
   ];
-  return { head: { kind: K.label, name: regionName(r) }, groups, attributes: attributeRows.length ? [{ title: 'Settings', props: attributeRows }] : undefined };
+  // The capability flags (P2.0; APEX: a plug-in's Standard Attributes toggle sections of the editor):
+  // a component whose definition draws its own frame offers no Appearance › Template, and one with
+  // no Header and Footer none. Every shipped definition keeps both.
+  const shown = groups.filter(g => (withTemplate || g.title !== 'Appearance') && (withHeaderFooter || g.title !== 'Header and Footer'));
+  // The Attributes tab: Settings first (the ungrouped attributes, APEX's generic heading), then the
+  // definition's groups in sequence; a group with nothing to show is not drawn.
+  const attributes: PropGroup[] = [
+    ...(attributeRows.length ? [{ title: 'Settings', props: attributeRows }] : []),
+    ...[...(componentSpec?.groups ?? [])]
+      .sort((a, b) => a.seq - b.seq)
+      .flatMap(g => {
+        const rows = groupedRows.get(g.key);
+        return rows?.length ? [{ title: g.title, props: rows }] : [];
+      }),
+  ];
+  return { head: { kind: K.label, name: regionName(r) }, groups: shown, attributes: attributes.length ? attributes : undefined };
 }
 
 /** Layout, Rules, Security and Configuration for one region or for several: the

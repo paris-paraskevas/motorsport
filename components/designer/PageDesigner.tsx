@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Lock, Maximize2, Minimize2, Play, Plus, Puzzle, Redo2, RefreshCw, Search, TriangleAlert, Undo2, Wrench, Zap } from 'lucide-react';
 import { EMPTY_DOCUMENT, RECOVERY_DAYS, SHORTCUT_TOKEN, daysLeft, isLegacyBody, parentOf, parsePageDocument, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
-import { COMPONENTS } from '@/lib/design/components';
+import { COMPONENTS, type ComponentDefinition } from '@/lib/design/components';
 import type { PageRow } from '@/lib/design/pages';
 import type { PageDetail } from '@/lib/design/page-revisions';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -177,6 +177,7 @@ export function PageDesigner({
   shortcuts,
   themeDefault = 'Paper',
   regionDefaults = SHIPPED_REGION_DEFAULTS,
+  components = COMPONENTS,
   initialRegion = null,
   userId = null,
   onSaved,
@@ -191,6 +192,8 @@ export function PageDesigner({
   detail: PageDetail;
   /** What a new region starts with (Component Settings). */
   regionDefaults?: RegionDefaults;
+  /** The component definitions the page may take (P2.0): the code's, or the merged list once definitions have rows. */
+  components?: readonly ComponentDefinition[];
   /** Every page of the application, for the finder and the page stepper. */
   pages: PageRow[];
   readOnly: boolean;
@@ -333,7 +336,7 @@ export function PageDesigner({
     setNumInput(number);
   }
 
-  const parsed = parsePageDocument(doc);
+  const parsed = parsePageDocument(doc, components);
   const docDirty = JSON.stringify(doc) !== JSON.stringify(stored);
   // Where a new region goes when nothing narrower is chosen: the Body, on every
   // page since the components programme opened it (R2a).
@@ -344,7 +347,7 @@ export function PageDesigner({
   // route file still draws its body and holds none yet; with Show Legacy on it
   // is listed everywhere, inert with the reason where the page cannot take it.
   const legacyReason = !routeFile ? 'this page is served from rows; the code draws no body here' : doc.regions.some(isLegacyBody) ? 'this page already holds its body' : null;
-  const componentTiles: ComponentTile[] = COMPONENTS.filter(c => !c.legacy || legacyReason === null || showLegacy).map(c => ({
+  const componentTiles: ComponentTile[] = components.filter(c => !c.legacy || legacyReason === null || showLegacy).map(c => ({
     key: c.key,
     name: c.name,
     desc: c.holds,
@@ -353,7 +356,7 @@ export function PageDesigner({
   const attrsDirty = JSON.stringify(attrs) !== JSON.stringify(attrsOf(page));
   const dirty = docDirty || attrsDirty;
   const unpublishedNewest = newest !== null && newest.id !== (live?.id ?? null);
-  const messages: DesignerMessage[] = designerMessages(doc, page);
+  const messages: DesignerMessage[] = designerMessages(doc, page, components);
   if (newest && newest.problems.length > 0) {
     messages.unshift({ level: 'warn', text: `The stored document had problems the reader worked around: ${newest.problems.join('; ')}. Saving writes the usable part.`, sel: PAGE_SELECTION });
   }
@@ -445,7 +448,7 @@ export function PageDesigner({
     },
     addComponent: (key, position) => {
       if (readOnly) return;
-      const r = addComponent(doc, key, { position: open.includes(position) ? position : home });
+      const r = addComponent(doc, key, { position: open.includes(position) ? position : home }, components);
       if (!r) return;
       commit(r.doc, 'Component placed. Its settings and its rule are in the Property Editor.');
       select({ kind: 'region', id: r.id });
@@ -511,7 +514,7 @@ export function PageDesigner({
       return;
     }
     if (d.type === 'component') {
-      const r = addComponent(doc, d.key, where);
+      const r = addComponent(doc, d.key, where, components);
       if (!r) return;
       commit(r.doc, 'Component placed. Its settings and its rule are in the Property Editor.');
       select({ kind: 'region', id: r.id });
@@ -1087,6 +1090,7 @@ export function PageDesigner({
     assets,
     lists,
     pages,
+    components,
     namedBy: detail.namedBy,
     shortcuts,
     buildOptions: Object.fromEntries((buildOptions ?? []).map(b => [b.key, b.status])),
