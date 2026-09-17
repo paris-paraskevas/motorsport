@@ -91,8 +91,10 @@ export function PageOutlines({ kind }: { kind: OutlineKind }) {
     };
   }, [items]);
   // Boxes that start at the same corner (the banner and main, an aside and the
-  // nav it opens with) stack their labels instead of drawing one over another.
-  const stacked = boxes.map((box, i) => boxes.slice(0, i).filter(b => Math.abs(b.top - box.top) < 6 && Math.abs(b.left - box.left) < 6).length);
+  // nav it opens with) stack their labels instead of drawing one over another;
+  // a box with no size draws nothing and takes no place in the stack.
+  const drawn = (b: Box) => b.width > 0 || b.height > 0;
+  const stacked = boxes.map((box, i) => (drawn(box) ? boxes.slice(0, i).filter(b => drawn(b) && Math.abs(b.top - box.top) < 6 && Math.abs(b.left - box.left) < 6).length : 0));
   return (
     <div data-page-outlines={kind} aria-hidden="true">
       {items.map((item, i) => {
