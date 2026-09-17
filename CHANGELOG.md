@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.133 — 2026-09-17
+
+### Records — P2.0 done in the ledger (both PRs, the migration applied), Phase 2 under way, the session-52 handoff
+
+Records only. `docs/plan/ledger.json`: P2.0 `done` with both PRs' evidence (#1012 merged 10:41:09Z as eaedb0b5; #1013 merged 11:39:42Z as f3ddd42e; migration 20260917100000 rehearsed inside begin … rollback at 11:39:02Z and applied 11:39:15Z on the operator's word "apply 20260917100000 and merge"; the gates, the browser runs, the plan critic's and the reviewers' verdicts, the blocking finding taken); Phase 2 stands at one slot done, twenty-four planned. `docs/HANDOFF.md` LATEST: session 51's third close, the session-52 prompt with P2.1 Data Sources first (its decision scan, then plan mode), the recipe's additions (the local migration command, the sign-in wait, the run script's shape, the Plug-ins page's handles) and the landmines (the heredoc limit, the import-inserting script, the guard-and-parser fact, the memo and a write path). `SCHEDULE.md`: the day's items 5–8 and the active time. `IDEAS.md`: the Utilization scan's growth noted. The progress board regenerated with Phase 2.
+
 ## 1.0.132 — 2026-09-17
 
 ### Designer — [P2.0, PR B] Plug-ins: the component definitions as a shared component, with Utilization, History, Add Attribute and Add Group as an overlay row, a delete guard; the merged definitions reach the parser, the write route, the live readers and the designer
