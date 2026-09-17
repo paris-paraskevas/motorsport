@@ -90,6 +90,9 @@ export function PageOutlines({ kind }: { kind: OutlineKind }) {
       window.removeEventListener('resize', measure);
     };
   }, [items]);
+  // Boxes that start at the same corner (the banner and main, an aside and the
+  // nav it opens with) stack their labels instead of drawing one over another.
+  const stacked = boxes.map((box, i) => boxes.slice(0, i).filter(b => Math.abs(b.top - box.top) < 6 && Math.abs(b.left - box.left) < 6).length);
   return (
     <div data-page-outlines={kind} aria-hidden="true">
       {items.map((item, i) => {
@@ -98,7 +101,9 @@ export function PageOutlines({ kind }: { kind: OutlineKind }) {
         const empty = !box || (box.width === 0 && box.height === 0);
         return (
           <div key={i} data-page-outline={kind} hidden={empty} className="pointer-events-none fixed z-[55] border-2 border-brand bg-brand/5" style={box}>
-            <span className={`absolute left-0 top-0 ${LABEL}`}>{item.label}</span>
+            <span className={`absolute left-0 ${LABEL}`} style={{ top: (stacked[i] ?? 0) * 18 }}>
+              {item.label}
+            </span>
           </div>
         );
       })}
