@@ -98,9 +98,16 @@ interface LayoutMemory {
   rw?: string;
 }
 const LAYOUT_KEY = 'paddock-developer.page-designer';
+/** The stored layout follows the signed-in user (P1.13; P1.5's scope): the key
+ *  carries the Clerk user id; the plain key when none is known. */
+function layoutKey(userId: string | null | undefined): string {
+  return userId ? `${LAYOUT_KEY}.${userId}` : LAYOUT_KEY;
+}
 const EMPTY_MEMORY: LayoutMemory = {};
 const layoutListeners = new Set<() => void>();
-let memoryCache: { raw: string | null; value: LayoutMemory } = { raw: null, value: EMPTY_MEMORY };
+/** One cache per key: useSyncExternalStore wants the same object back while the
+ *  stored string is the same, for every key read in one process. */
+const memoryCaches = new Map<string, { raw: string | null; value: LayoutMemory }>();
 function parseLayoutMemory(raw: string | null): LayoutMemory {
   if (!raw) return EMPTY_MEMORY;
   try {
@@ -117,23 +124,29 @@ function parseLayoutMemory(raw: string | null): LayoutMemory {
     return EMPTY_MEMORY;
   }
 }
-/** The snapshot: the same object while the stored string is the same. */
-function readLayoutMemory(): LayoutMemory {
-  let raw: string | null = null;
+function readStored(key: string): string | null {
   try {
-    raw = window.localStorage.getItem(LAYOUT_KEY);
+    return window.localStorage.getItem(key);
   } catch {
-    raw = null;
+    return null;
   }
-  if (raw !== memoryCache.raw) memoryCache = { raw, value: parseLayoutMemory(raw) };
-  return memoryCache.value;
 }
-function writeLayoutMemory(patch: LayoutMemory): void {
-  const next: Record<string, unknown> = { ...readLayoutMemory(), ...patch };
+/** The snapshot for a key: the same object while the stored string is the same.
+ *  A user with nothing of their own reads the browser's old, unkeyed entry, so
+ *  nobody loses the layout they had; their first pick writes under their key. */
+function readLayoutMemory(key: string): LayoutMemory {
+  let raw = readStored(key);
+  if (raw === null && key !== LAYOUT_KEY) raw = readStored(LAYOUT_KEY);
+  const cached = memoryCaches.get(key);
+  if (!cached || raw !== cached.raw) memoryCaches.set(key, { raw, value: parseLayoutMemory(raw) });
+  return memoryCaches.get(key)!.value;
+}
+function writeLayoutMemory(key: string, patch: LayoutMemory): void {
+  const next: Record<string, unknown> = { ...readLayoutMemory(key), ...patch };
   for (const k of Object.keys(next)) if (next[k] === undefined) delete next[k];
   try {
-    if (Object.keys(next).length > 0) window.localStorage.setItem(LAYOUT_KEY, JSON.stringify(next));
-    else window.localStorage.removeItem(LAYOUT_KEY);
+    if (Object.keys(next).length > 0) window.localStorage.setItem(key, JSON.stringify(next));
+    else window.localStorage.removeItem(key);
   } catch {
     /* no storage: the layout lives for the page's life */
   }
@@ -147,8 +160,8 @@ function subscribeLayout(listener: () => void): () => void {
     window.removeEventListener('storage', listener);
   };
 }
-function useLayoutMemory(): LayoutMemory {
-  return useSyncExternalStore(subscribeLayout, readLayoutMemory, () => EMPTY_MEMORY);
+function useLayoutMemory(key: string): LayoutMemory {
+  return useSyncExternalStore(subscribeLayout, () => readLayoutMemory(key), () => EMPTY_MEMORY);
 }
 
 export function PageDesigner({
@@ -165,6 +178,7 @@ export function PageDesigner({
   themeDefault = 'Paper',
   regionDefaults = SHIPPED_REGION_DEFAULTS,
   initialRegion = null,
+  userId = null,
   onSaved,
   onOpenPage,
   onBack,
@@ -194,6 +208,8 @@ export function PageDesigner({
   themeDefault?: string;
   /** A region to open on, from `?region=` on the address (P1.7: Quick Edit lands on the region); the page when absent or unknown. */
   initialRegion?: string | null;
+  /** The signed-in user, keying the remembered pane layout (P1.13); the browser's plain entry when unknown. */
+  userId?: string | null;
   /** The detail as stored after a save, a publish or a reload. */
   onSaved: (detail: PageDetail) => void;
   onOpenPage: (id: string) => void;
@@ -251,14 +267,15 @@ export function PageDesigner({
   const [hideEmpty, setHideEmpty] = useState(false);
   const [showCols, setShowCols] = useState(false);
   // The pane layout (APEX: Utilities › Layout and Utilities › Show; the UX map
-  // lines 14–16 and 26), remembered per browser profile under LAYOUT_KEY.
-  const memory = useLayoutMemory();
+  // lines 14–16 and 26), remembered per user in the browser's storage (P1.13).
+  const memoryKey = layoutKey(userId);
+  const memory = useLayoutMemory(memoryKey);
   const paneMode = memory.paneMode ?? 'three';
   const tooltips = memory.tooltips ?? true;
   const layoutView = memory.layoutView ?? true;
-  const setPaneMode = (mode: 'three' | 'two') => writeLayoutMemory({ paneMode: mode });
-  const setTooltips = (on: boolean) => writeLayoutMemory({ tooltips: on });
-  const setLayoutView = (on: boolean) => writeLayoutMemory({ layoutView: on });
+  const setPaneMode = (mode: 'three' | 'two') => writeLayoutMemory(memoryKey, { paneMode: mode });
+  const setTooltips = (on: boolean) => writeLayoutMemory(memoryKey, { tooltips: on });
+  const setLayoutView = (on: boolean) => writeLayoutMemory(memoryKey, { layoutView: on });
   // Expand is a moment, not a preference: the centre alone until Restore.
   const [expandedLayout, setExpandedLayout] = useState(false);
   // Display from Here (the Layout tab's menu, UX map lines 47–48): the region the tab shows alone.
@@ -956,20 +973,20 @@ export function PageDesigner({
     panesRef.current?.style.removeProperty('--rw');
     setExpandedLayout(false);
     // The widths and the mode only (UX map line 14): Tooltips and Layout View are Show's, not Layout's.
-    writeLayoutMemory({ paneMode: undefined, lw: undefined, rw: undefined });
+    writeLayoutMemory(memoryKey, { paneMode: undefined, lw: undefined, rw: undefined });
     toast('Layout reset');
   };
   // The remembered splitter widths land on the grid once it exists; a release
   // of a splitter writes them back (the splitters call rememberWidths).
   const rememberWidths = () => {
     const style = panesRef.current?.style;
-    writeLayoutMemory({ lw: style?.getPropertyValue('--lw') || undefined, rw: style?.getPropertyValue('--rw') || undefined });
+    writeLayoutMemory(memoryKey, { lw: style?.getPropertyValue('--lw') || undefined, rw: style?.getPropertyValue('--rw') || undefined });
   };
   useEffect(() => {
-    const m = readLayoutMemory();
+    const m = readLayoutMemory(memoryKey);
     if (m.lw) panesRef.current?.style.setProperty('--lw', m.lw);
     if (m.rw) panesRef.current?.style.setProperty('--rw', m.rw);
-  }, []);
+  }, [memoryKey]);
   /** A hover tip, unless Utilities › Show › Tooltips is off. */
   const tip = (text: string | undefined) => (tooltips ? text : undefined);
   // The Layout tab's menu (APEX, UX map lines 47–48).

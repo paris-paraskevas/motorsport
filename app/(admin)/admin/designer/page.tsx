@@ -101,6 +101,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialDetail={initialDetail}
       initialRegion={initialDetail && typeof params.region === 'string' ? params.region : null}
       initialFocus={typeof params.focus === 'string' && /^[a-z][a-z-]{0,30}$/i.test(params.focus) ? params.focus : null}
+      userId={user?.id ?? null}
       series={seriesMeta.map(m => ({ slug: m.slug, name: m.name }))}
     />
   );

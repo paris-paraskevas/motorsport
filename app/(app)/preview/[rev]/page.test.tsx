@@ -124,6 +124,17 @@ describe('/preview/[rev]', () => {
     expect(html).toContain('1 problem in the stored document');
   });
 
+  it('P1.13: previews a plain row page as the site serves it, whatever the served flag says: the page title, the Right Side Column, no code frame', async () => {
+    const right = { id: 'more', kind: 'list', title: 'More', position: 'right', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: null, listKey: 'footer-site', style: 'links' };
+    // pageFromRow marks every row page served: 'rows' too; the rule is the kind, as the catch-all's resolver has it.
+    loadRevisionPreview.mockResolvedValue({ ...preview, page: { ...page, served: 'rows' }, document: { ...preview.document, regions: [...preview.document.regions, right] } });
+    const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
+    expect(html).toContain('data-page-revision=""');
+    expect(html).toMatch(/<h1[^>]*>Monza<\/h1>/);
+    expect(html).toContain('<aside class="min-w-0 lg:col-span-4">');
+    expect(html).not.toContain('data-page-frame');
+  });
+
   it('previews a page served from rows as the site serves it: the components in the code frame, a transitional body adopting the recipe, the family’s structured data, no second heading', async () => {
     const calendar: PageRow = { ...page, path: '/calendar', name: 'Calendar', kind: 'code', served: 'rows', group: 'site', title: null };
     const legacy = { id: 'code-body', kind: 'component', component: 'page.body', settings: {}, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null };

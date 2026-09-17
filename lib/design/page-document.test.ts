@@ -34,8 +34,8 @@ const DOC: PageDocument = {
   actions: [],
   regions: [
     { id: 'intro', kind: 'static', title: 'Monza, a history', position: 'body', seq: 10, column: 1, span: 8, newRow: false, hidden: false, authz: null, text: 'The Autodromo opened in 1922. {shortcut:times.local} {shortcut:data.sources}' },
-    { id: 'photo', kind: 'image', title: '', position: 'body', seq: 20, column: 9, span: 4, newRow: false, hidden: false, authz: null, assetId: ASSET, alt: 'The grid at Monza', showCaption: true },
-    { id: 'more', kind: 'list', title: 'More', position: 'right', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: 'signed_in', listKey: 'footer-site', style: 'links' },
+    { id: 'photo', kind: 'image', title: '', position: 'body', seq: 20, column: 9, span: 4, newRow: false, hidden: false, authz: null, assetId: ASSET, alt: 'The grid at Monza', showCaption: true, headerText: 'The grid {shortcut:hdr.note}' },
+    { id: 'more', kind: 'list', title: 'More', position: 'right', seq: 10, column: 1, span: 12, newRow: false, hidden: false, authz: 'signed_in', listKey: 'footer-site', style: 'links', footerText: 'Times {shortcut:times.local}' },
   ],
 };
 
@@ -81,12 +81,12 @@ describe('parsePageDocument', () => {
     ]);
   });
 
-  it('projects every reference a document names, unique and sorted', () => {
+  it('projects every reference a document names, unique and sorted; a shortcut in a header or footer text counts (P1.13)', () => {
     expect(documentRefs(DOC)).toEqual({
       lists: ['footer-site'],
       assets: [ASSET],
       authz: ['signed_in'],
-      shortcuts: ['data.sources', 'times.local'],
+      shortcuts: ['data.sources', 'hdr.note', 'times.local'],
       dests: [],
     });
     expect(documentRefs(EMPTY_DOCUMENT)).toEqual({ lists: [], assets: [], authz: [], shortcuts: [], dests: [] });

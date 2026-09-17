@@ -110,7 +110,8 @@ describe('DeveloperToolbar', () => {
     await waitFor(() => expect(screen.getByRole('link', { name: /^Page a1b2c3d4/ })).toBeTruthy());
     fireEvent.click(screen.getByRole('button', { name: 'Info' }));
     const menu = screen.getByRole('menu', { name: 'Info' });
-    expect([...menu.querySelectorAll('button')].map(b => b.textContent)).toEqual(['Show Layout Columns', 'Show Page Timing']);
+    // APEX's Info menu in its order: Show Layout Columns, Show Page Timing, Show Landmarks, Show Headings (the last two P1.13).
+    expect([...menu.querySelectorAll('button')].map(b => b.textContent)).toEqual(['Show Layout Columns', 'Show Page Timing', 'Show Landmarks', 'Show Headings']);
     fireEvent.click(within(menu).getByRole('menuitemcheckbox', { name: 'Show Layout Columns' }));
     const columns = document.querySelector('[data-layout-columns]') as HTMLElement;
     expect(columns).toBeTruthy();
@@ -125,6 +126,34 @@ describe('DeveloperToolbar', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Page Performance Timing' });
     fireEvent.click(within(dialog).getByRole('button', { name: 'Close Page Timing' }));
     expect(screen.queryByRole('dialog', { name: 'Page Performance Timing' })).toBeNull();
+  });
+
+  it('Info (P1.13): Show Landmarks and Show Headings draw their outlines over the page, read Hide … while on and press the entry; each turns off again', async () => {
+    document.body.insertAdjacentHTML('beforeend', '<main id="pd-fixture"><h1>Monza, a history</h1><nav aria-label="Doors"></nav></main>');
+    render(<DeveloperToolbar />);
+    await waitFor(() => expect(screen.getByRole('link', { name: /^Page a1b2c3d4/ })).toBeTruthy());
+    const info = () => screen.getByRole('button', { name: 'Info' });
+    const infoMenu = () => within(screen.getByRole('menu', { name: 'Info' }));
+    fireEvent.click(info());
+    fireEvent.click(infoMenu().getByRole('menuitemcheckbox', { name: 'Show Landmarks' }));
+    expect(screen.queryByRole('menu')).toBeNull();
+    await waitFor(() => expect(document.querySelector('[data-page-outlines="landmarks"]')).toBeTruthy());
+    expect([...document.querySelectorAll('[data-page-outlines="landmarks"] [data-page-outline]')].map(b => b.textContent)).toEqual(['main', 'navigation · Doors']);
+    expect(info().getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(info());
+    expect(infoMenu().getByRole('menuitemcheckbox', { name: 'Hide Landmarks' }).getAttribute('aria-checked')).toBe('true');
+    fireEvent.click(infoMenu().getByRole('menuitemcheckbox', { name: 'Show Headings' }));
+    await waitFor(() => expect(document.querySelector('[data-page-outlines="headings"]')).toBeTruthy());
+    expect(document.querySelector('[data-page-outlines="headings"] [data-page-outline]')?.textContent).toBe('H1 · Monza, a history');
+    fireEvent.click(info());
+    fireEvent.click(infoMenu().getByRole('menuitemcheckbox', { name: 'Hide Landmarks' }));
+    await waitFor(() => expect(document.querySelector('[data-page-outlines="landmarks"]')).toBeNull());
+    expect(info().getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(info());
+    fireEvent.click(infoMenu().getByRole('menuitemcheckbox', { name: 'Hide Headings' }));
+    await waitFor(() => expect(document.querySelector('[data-page-outlines]')).toBeNull());
+    expect(info().getAttribute('aria-pressed')).toBe('false');
+    document.getElementById('pd-fixture')?.remove();
   });
 
   it('Options (P1.7): Show Icons Only, Display Position and Auto Hide, kept for the browser and read back on the next page', async () => {

@@ -24,6 +24,7 @@ const DebugPanel = dynamic(() => import('./DebugPanel').then(m => m.DebugPanel),
 const QuickEdit = dynamic(() => import('./QuickEdit').then(m => m.QuickEdit), { ssr: false });
 const PageTiming = dynamic(() => import('./PageTiming').then(m => m.PageTiming), { ssr: false });
 const ThemeRoller = dynamic(() => import('./ThemeRoller').then(m => m.ThemeRoller), { ssr: false });
+const PageOutlines = dynamic(() => import('./PageOutlines').then(m => m.PageOutlines), { ssr: false });
 
 /** The ONE developer tab (the operator, 2026-09-15: "the one tab i have for
  *  developing the app, not open another, same as when i save and run"): the
@@ -232,6 +233,8 @@ export function DeveloperToolbar() {
   // P1.7: Quick Edit's mode (a moment, never stored), the Info overlays, the Options.
   const [mode, setMode] = useState<'jump' | 'live' | null>(null);
   const [columns, setColumns] = useState(false);
+  // P1.13: Info › Show Landmarks and Show Headings, each an overlay of its own over the page.
+  const [outlines, setOutlines] = useState({ landmarks: false, headings: false });
   const [timing, setTiming] = useState(false);
   // P1.8: the Theme Roller over the page; one tool over the page at a time, so it and the Debug panel close each other.
   const [roller, setRoller] = useState(false);
@@ -371,7 +374,15 @@ export function DeveloperToolbar() {
           <PaintRoller size={14} aria-hidden="true" />
           <span className={options.iconsOnly ? 'sr-only' : 'whitespace-nowrap'}>Customize</span>
         </button>
-        <button type="button" className={ENTRY} aria-haspopup="menu" aria-expanded={menu === 'info'} aria-pressed={columns} title="Info" onClick={() => toggleMenu('info')}>
+        <button
+          type="button"
+          className={ENTRY}
+          aria-haspopup="menu"
+          aria-expanded={menu === 'info'}
+          aria-pressed={columns || outlines.landmarks || outlines.headings}
+          title="Info"
+          onClick={() => toggleMenu('info')}
+        >
           <Info size={14} aria-hidden="true" />
           <span className="sr-only">Info</span>
         </button>
@@ -427,7 +438,7 @@ export function DeveloperToolbar() {
         </ul>
       )}
       {menu === 'info' && (
-        // APEX: the Info menu: Show Layout Columns / Hide Layout Columns, Show Page Timing (Show Landmarks and Show Headings wait for a dated line).
+        // APEX: the Info menu in its order: Show Layout Columns / Hide Layout Columns, Show Page Timing, Show Landmarks / Hide Landmarks, Show Headings / Hide Headings (the last two P1.13).
         <ul role="menu" aria-label="Info" className={MENU}>
           <MenuItem
             label={columns ? 'Hide Layout Columns' : 'Show Layout Columns'}
@@ -442,6 +453,24 @@ export function DeveloperToolbar() {
             label="Show Page Timing"
             onPick={() => {
               setTiming(true);
+              setMenu(null);
+            }}
+          />
+          <MenuItem
+            label={outlines.landmarks ? 'Hide Landmarks' : 'Show Landmarks'}
+            kind="checkbox"
+            checked={outlines.landmarks}
+            onPick={() => {
+              setOutlines(o => ({ ...o, landmarks: !o.landmarks }));
+              setMenu(null);
+            }}
+          />
+          <MenuItem
+            label={outlines.headings ? 'Hide Headings' : 'Show Headings'}
+            kind="checkbox"
+            checked={outlines.headings}
+            onPick={() => {
+              setOutlines(o => ({ ...o, headings: !o.headings }));
               setMenu(null);
             }}
           />
@@ -463,6 +492,8 @@ export function DeveloperToolbar() {
       )}
       {panel && level > 0 && <DebugPanel report={fresh ? trace.report : null} loading={tracing} onRefresh={() => setTraceN(n => n + 1)} onClose={() => setPanel(false)} />}
       {roller && <ThemeRoller barPosition={pos} onClose={() => setRoller(false)} />}
+      {outlines.landmarks && <PageOutlines kind="landmarks" />}
+      {outlines.headings && <PageOutlines kind="headings" />}
       {columns && (
         // APEX: Show Layout Columns draws the grid over the page. The site's twelve columns inside the standard width's paddings (PAGE_WIDE, lib/site.ts), the rows' gap.
         <div aria-hidden="true" data-layout-columns="" className="pointer-events-none fixed inset-0 z-30 px-4 md:px-6 lg:px-8">

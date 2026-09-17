@@ -90,7 +90,7 @@ function serve(over: Partial<Record<Method, () => unknown>> = {}) {
   });
 }
 
-function mount(d: PageDetail = detail, readOnly = false, initialRegion: string | null = null) {
+function mount(d: PageDetail = detail, readOnly = false, initialRegion: string | null = null, userId: string | null = null) {
   const onSaved = vi.fn();
   const onOpenPage = vi.fn();
   const onBack = vi.fn();
@@ -104,6 +104,7 @@ function mount(d: PageDetail = detail, readOnly = false, initialRegion: string |
       onReinstated={onReinstated}
       onPurged={onPurged}
       initialRegion={initialRegion}
+      userId={userId}
       detail={dd}
       pages={pages}
       readOnly={readOnly}
@@ -335,6 +336,30 @@ describe('PageDesigner', () => {
     expect(screen.getByRole('tablist', { name: 'Left pane' })).toBeTruthy();
     expect(JSON.parse(window.localStorage.getItem(LAYOUT_KEY) ?? '{}').paneMode ?? 'three').toBe('three');
     expect(JSON.parse(window.localStorage.getItem(LAYOUT_KEY) ?? '{}').lw).toBeUndefined();
+    window.localStorage.clear();
+  });
+
+  it('P1.13: the pane layout follows the signed-in user: one user’s Two Pane Mode is stored under their own key and is not another’s; a user with nothing of their own starts from the browser’s old entry', () => {
+    window.localStorage.setItem(LAYOUT_KEY, JSON.stringify({ paneMode: 'two' }));
+    // A user with nothing stored starts from the unkeyed entry (nobody loses their layout), and writes under their own key.
+    mount(detail, false, null, 'user_a');
+    expect(screen.queryByRole('tablist', { name: 'Left pane' })).toBeNull();
+    utilities('Layout', 'Three Pane Mode');
+    expect(screen.getByRole('tablist', { name: 'Left pane' })).toBeTruthy();
+    expect(JSON.parse(window.localStorage.getItem(`${LAYOUT_KEY}.user_a`) ?? '{}').paneMode).toBe('three');
+    expect(JSON.parse(window.localStorage.getItem(LAYOUT_KEY) ?? '{}').paneMode).toBe('two');
+    cleanup();
+    // Another user: their own key is empty, so the old entry (two panes) is their start, untouched by user_a's pick.
+    mount(detail, false, null, 'user_b');
+    expect(screen.queryByRole('tablist', { name: 'Left pane' })).toBeNull();
+    cleanup();
+    // user_a again: three panes, as they left it.
+    mount(detail, false, null, 'user_a');
+    expect(screen.getByRole('tablist', { name: 'Left pane' })).toBeTruthy();
+    cleanup();
+    // No user known: the unkeyed entry as before.
+    mount();
+    expect(screen.queryByRole('tablist', { name: 'Left pane' })).toBeNull();
     window.localStorage.clear();
   });
 
