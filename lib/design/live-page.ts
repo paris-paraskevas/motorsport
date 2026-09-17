@@ -4,6 +4,7 @@ import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, pageFromRow, type PageRow } from './pages';
 import { ROW_PAGE_PATH, parsePageDocument, type PageDocument } from './page-document';
 import { ASSET_APPLICATION_KEY, ASSET_COLUMNS, assetFromRow, type EditableAsset } from './assets';
+import { loadComponents } from './definitions';
 
 // A row page as the site serves it (Phase 3 step 3): the `page` row at a path
 // and its live revision, the newest one published. The catch-all reads it for
@@ -48,7 +49,7 @@ async function readLivePage(path: string): Promise<LivePage | null> {
     if (rev.error) return null;
     const row = ((rev.data ?? []) as unknown[])[0] as { id?: unknown; published_at?: unknown; document?: unknown } | undefined;
     if (!row || typeof row.id !== 'string' || row.published_at == null) return null;
-    return { page, revisionId: row.id, publishedAt: String(row.published_at), document: parsePageDocument(row.document).value };
+    return { page, revisionId: row.id, publishedAt: String(row.published_at), document: parsePageDocument(row.document, await loadComponents()).value };
   } catch {
     return null;
   }
@@ -89,7 +90,7 @@ async function readLiveFrame(path: string): Promise<LiveFrame | null> {
     if (rev.error) return null;
     const row = ((rev.data ?? []) as unknown[])[0] as { id?: unknown; published_at?: unknown; document?: unknown } | undefined;
     if (!row || typeof row.id !== 'string' || row.published_at == null) return null;
-    return { revisionId: row.id, publishedAt: String(row.published_at), document: parsePageDocument(row.document).value };
+    return { revisionId: row.id, publishedAt: String(row.published_at), document: parsePageDocument(row.document, await loadComponents()).value };
   } catch {
     return null;
   }
@@ -132,7 +133,7 @@ async function readLiveComposed(pattern: string): Promise<LiveComposed | null> {
     if (rev.error) return { page, revision: null };
     const row = ((rev.data ?? []) as unknown[])[0] as { id?: unknown; published_at?: unknown; document?: unknown } | undefined;
     if (!row || typeof row.id !== 'string' || row.published_at == null) return { page, revision: null };
-    return { page, revision: { id: row.id, publishedAt: String(row.published_at), document: parsePageDocument(row.document).value } };
+    return { page, revision: { id: row.id, publishedAt: String(row.published_at), document: parsePageDocument(row.document, await loadComponents()).value } };
   } catch {
     return null;
   }
@@ -181,7 +182,7 @@ export const loadRevisionPreview = cache(async function readRevisionPreview(revi
       .order('published_at', { ascending: false })
       .limit(1);
     const liveId = live.error ? null : (((live.data ?? []) as { id?: unknown }[])[0]?.id ?? null);
-    const parsed = parsePageDocument(row.document);
+    const parsed = parsePageDocument(row.document, await loadComponents());
     return {
       page,
       revisionId,

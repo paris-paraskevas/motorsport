@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFINITIONS, REGION_DEFINITIONS, componentSettingSpecs } from './component-definitions';
+import { DEFINITIONS, EMPTY_OVERLAY, REGION_DEFINITIONS, componentDefinitionsOf, componentSettingSpecs, mergeDefinition, mergeDefinitions, parseOverlay, type EditableDefinition } from './component-definitions';
 import { COMPONENTS, componentDefaults, type ComponentDefinition } from './components';
 import { COMPONENT_SETTING_KEYS, SETTING_SPECS } from './setting-defaults';
 import { REGION_KIND_LABELS, type RegionKind } from './page-document';
@@ -113,5 +113,66 @@ describe('the component definition model', () => {
     expect(specs['test.rows.note']).toMatchObject({ type: 'text', control: { kind: 'text', max: 30 } });
     const agree = { boolean: 'boolean', integer: 'number', choice: 'text', text: 'text' } as const;
     for (const [key, spec] of Object.entries({ ...componentSettingSpecs(), ...specs })) expect(spec.type, key).toBe(agree[spec.control.kind as keyof typeof agree]);
+  });
+});
+
+describe('a definition’s overlay (P2.0, PR B): what the operator adds to a shipped definition', () => {
+  const heading = DEFINITIONS.find(d => d.key === 'page.heading')!;
+  const overlay = {
+    attributes: [
+      { key: 'accent', label: 'Accent', kind: 'colour', default: '#8C1C13', group: 'colours', help: 'The rule under the heading.' },
+      { key: 'badge', label: 'Badge', kind: 'choice', options: [{ key: 'none', label: 'None' }, { key: 'new', label: 'New' }], default: 'none' },
+    ],
+    groups: [{ key: 'colours', title: 'Colours', seq: 10 }],
+  };
+
+  it('reads a well-formed overlay, keeping the known fields only and the defaults as the kinds store them', () => {
+    const { value, problems } = parseOverlay({ ...overlay, extra: 1 }, heading);
+    expect(problems).toEqual([]);
+    expect(value).toEqual({
+      attributes: [
+        { key: 'accent', label: 'Accent', kind: 'colour', default: '#8c1c13', group: 'colours', help: 'The rule under the heading.' },
+        { key: 'badge', label: 'Badge', kind: 'choice', options: [{ key: 'none', label: 'None' }, { key: 'new', label: 'New' }], default: 'none' },
+      ],
+      groups: [{ key: 'colours', title: 'Colours', seq: 10 }],
+    });
+    expect(parseOverlay({}, heading)).toEqual({ value: EMPTY_OVERLAY, problems: [] });
+    expect(parseOverlay(null, heading).problems).toEqual(['the overlay must be an object']);
+    expect(parseOverlay({ attributes: 'x' }, heading).problems).toEqual(['attributes must be a list']);
+  });
+
+  it('refuses a shipped key, a duplicate, a bad kind or scope, a default outside its kind’s rule, and an undeclared group', () => {
+    const bad = (attributes: unknown[], groups: unknown[] = []) => parseOverlay({ attributes, groups }, heading).problems;
+    expect(bad([{ key: 'text', label: 'Words', kind: 'text', default: '' }])).toEqual(['attribute text: the code’s Page heading has an attribute with that key']);
+    expect(bad([{ key: 'Accent', label: 'Accent', kind: 'colour', default: '#8c1c13' }])).toEqual(['attribute 1: the key must be lower-case letters, digits and underscores, at most 40']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'text', default: '' }, { key: 'a', label: 'A', kind: 'text', default: '' }])).toEqual(['attribute a: the key is used twice']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'blob', default: '' }])).toEqual(['attribute a: the kind must be one of choice, number, boolean, text, colour, icon, link']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'text', default: '', scope: 'page' }])).toEqual(['attribute a: the scope must be application, component or report']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'colour', default: 'red' }])).toEqual(['attribute a: the default: A must be a colour as #rrggbb']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'choice', default: 'x' }])).toEqual(['attribute a: a choice needs options, each with a key and a label']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'number', min: 5, max: 1, default: 3 }])).toEqual(['attribute a: min and max must be numbers with min at most max']);
+    expect(bad([{ key: 'a', label: '', kind: 'text', default: '' }])).toEqual(['attribute a: the label must be 1 to 60 characters']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'text', default: '', group: 'nope' }])).toEqual(['attribute a: names the group nope, which neither the code nor this overlay declares']);
+    expect(bad([], [{ key: 'g', title: '', seq: 10 }])).toEqual(['group g: the title must be 1 to 60 characters']);
+    expect(bad([], [{ key: 'g', title: 'G', seq: 1.5 }])).toEqual(['group g: seq must be a whole number']);
+  });
+
+  it('merges shipped first, then the overlay; an empty overlay leaves the shipped definition as it is', () => {
+    const merged = mergeDefinition(heading, parseOverlay(overlay, heading).value);
+    expect(merged.settings.map(s => s.key)).toEqual(['text', 'accent', 'badge']);
+    expect(merged.groups).toEqual([{ key: 'colours', title: 'Colours', seq: 10 }]);
+    expect(merged.name).toBe(heading.name);
+    expect(mergeDefinition(heading, EMPTY_OVERLAY)).toBe(heading);
+    const all = mergeDefinitions(DEFINITIONS, { 'page.heading': parseOverlay(overlay, heading).value });
+    expect(all).toHaveLength(DEFINITIONS.length);
+    expect(all.find(d => d.key === 'page.heading')?.settings).toHaveLength(3);
+    expect(all.find(d => d.key === 'home.wire')).toBe(DEFINITIONS.find(d => d.key === 'home.wire'));
+  });
+
+  it('the component kinds of an editable list, merged, are what the Page Designer takes', () => {
+    const list: EditableDefinition[] = DEFINITIONS.map(d => ({ key: d.key, definition: d.key === 'page.heading' ? mergeDefinition(d, parseOverlay(overlay, d).value) : d, overlay: EMPTY_OVERLAY, updatedAt: null, updatedBy: null, usedOn: [], regions: 0 }));
+    const components = componentDefinitionsOf(list);
+    expect(components.map(d => d.key)).toEqual(DEFINITIONS.filter(d => d.group !== 'Region').map(d => d.key));
+    expect(components.find(d => d.key === 'page.heading')?.settings).toHaveLength(3);
   });
 });

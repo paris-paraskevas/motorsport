@@ -10,6 +10,7 @@ import { loadAuthzForEditing } from '@/lib/design/authz';
 import { loadThemesForEditing } from '@/lib/design/themes';
 import { loadAppearanceForEditing } from '@/lib/design/appearance';
 import { loadShortcutsForEditing } from '@/lib/design/shortcuts';
+import { loadDefinitionsForEditing } from '@/lib/design/definitions';
 import { loadSearchHintsForEditing } from '@/lib/design/search-hints';
 import { loadApplicationForEditing } from '@/lib/design/application';
 import { getMediaBucket, loadAssetsForEditing } from '@/lib/design/assets';
@@ -42,6 +43,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     initialThemes,
     initialAppearance,
     initialShortcuts,
+    initialDefinitions,
     initialAssets,
     initialPages,
     initialDeleted,
@@ -60,6 +62,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     loadThemesForEditing(),
     loadAppearanceForEditing(),
     loadShortcutsForEditing(),
+    loadDefinitionsForEditing(),
     loadAssetsForEditing(),
     loadPagesForEditing(),
     loadDeletedPages(),
@@ -90,6 +93,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
       initialThemes={initialThemes}
       initialAppearance={initialAppearance}
       initialShortcuts={initialShortcuts}
+      initialDefinitions={initialDefinitions}
       initialSearchHints={initialSearchHints}
       initialApplication={initialApplication}
       initialAssets={initialAssets}

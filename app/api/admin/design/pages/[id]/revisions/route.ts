@@ -8,6 +8,7 @@ import { PAGE_APPLICATION_KEY, loadPageDestinations } from '@/lib/design/pages';
 import { pageIdOf } from '@/lib/design/destinations';
 import { documentRefs, loadPageDetail, parsePageDocument } from '@/lib/design/page-revisions';
 import { refRows } from '@/lib/design/page-document';
+import { loadComponents } from '@/lib/design/definitions';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -50,11 +51,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (base !== null && typeof base !== 'string') {
     return NextResponse.json({ error: 'base must be the id of the live revision you loaded, or null' }, { status: 400 });
   }
-  const parsed = parsePageDocument(body.document);
+  // The definitions as they stand, rows included (P2.0): an attribute the operator added is read, not refused.
+  const components = await loadComponents();
+  const parsed = parsePageDocument(body.document, components);
   if (parsed.problems.length > 0) {
     return NextResponse.json({ error: parsed.problems.join('; '), problems: parsed.problems }, { status: 400 });
   }
-  const refs = documentRefs(parsed.value);
+  const refs = documentRefs(parsed.value, components);
   const p_refs = refRows(refs);
   // A publish may not send readers to a page that is not live (P1.12 B2): a
   // deleted page, or one that no longer exists. A draft keeps the key, as it
