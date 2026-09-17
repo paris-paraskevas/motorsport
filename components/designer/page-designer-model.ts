@@ -21,7 +21,7 @@ import {
   type Trigger,
   type TriggerEvent,
 } from '@/lib/design/page-document';
-import { SPLITS, componentDefaults, componentId, findComponent, recipeRegions, settingsSummary } from '@/lib/design/components';
+import { COMPONENTS, SPLITS, componentDefaults, componentId, findComponent, recipeRegions, settingsSummary, type ComponentDefinition } from '@/lib/design/components';
 import { adoptRecipe } from '@/lib/design/composed-page';
 import { DESTINATIONS, pageDest, resolveDestination, type PageDestinations } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
@@ -217,8 +217,8 @@ export function newRegion(kind: RegionKind, position: Position, id: string, span
 
 /** A component from the catalogue placed on the page, its settings at their
  *  defaults; null for a key the catalogue does not have. */
-export function addComponent(doc: PageDocument, key: string, where: Placement): { doc: PageDocument; id: string } | null {
-  const spec = findComponent(key);
+export function addComponent(doc: PageDocument, key: string, where: Placement, components: readonly ComponentDefinition[] = COMPONENTS): { doc: PageDocument; id: string } | null {
+  const spec = findComponent(key, components);
   if (!spec) return null;
   const id = nextComponentId(key, doc.regions.map(r => r.id));
   const region: ComponentRegion = { id, kind: 'component', component: spec.key, settings: componentDefaults(spec), title: '', position: where.position, seq: 1_000_000, column: 1, span: COLUMNS, newRow: true, authz: null, hidden: false };
@@ -470,7 +470,7 @@ export function effectText(e: Effect, regions: readonly Region[], pages?: readon
 }
 
 /** One line about a region's source, for its tile and the Component View. */
-export function regionSummary(r: Region, assets: readonly EditableAsset[], lists: readonly { key: string; label: string }[], pages?: readonly PageRow[]): string {
+export function regionSummary(r: Region, assets: readonly EditableAsset[], lists: readonly { key: string; label: string }[], pages?: readonly PageRow[], components: readonly ComponentDefinition[] = COMPONENTS): string {
   switch (r.kind) {
     case 'static':
       return r.text.trim() ? r.text.trim().replace(/\s+/g, ' ').slice(0, 140) : 'Empty. Your words; {shortcut:key} inserts a shortcut.';
@@ -485,7 +485,7 @@ export function regionSummary(r: Region, assets: readonly EditableAsset[], lists
     case 'button':
       return `“${r.label}”${r.dest ? ` → ${destinationLabel(r.dest, pages)}` : ' · fires dynamic actions only'}`;
     case 'component': {
-      const spec = findComponent(r.component);
+      const spec = findComponent(r.component, components);
       return spec ? settingsSummary(spec, r.settings) : `Unknown component ${r.component}`;
     }
   }
@@ -507,10 +507,10 @@ const ACTION_PROBLEM = /^action ([a-z0-9-]+)(?:, effect (\d+))?:/;
 
 /** What the Messages tab lists: the parser's problems (they hold Save) and the
  *  designer's own warnings and notes, in the prototype's manner. */
-export function designerMessages(doc: PageDocument, page: PageRow): DesignerMessage[] {
+export function designerMessages(doc: PageDocument, page: PageRow, components: readonly ComponentDefinition[] = COMPONENTS): DesignerMessage[] {
   const out: DesignerMessage[] = [];
   const code = page.kind === 'code';
-  const { problems } = parsePageDocument(doc);
+  const { problems } = parsePageDocument(doc, components);
   for (const p of problems) {
     const rm = p.match(REGION_PROBLEM);
     const am = p.match(ACTION_PROBLEM);

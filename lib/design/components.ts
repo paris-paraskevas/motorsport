@@ -14,37 +14,106 @@
 
 export type SettingValue = string | number | boolean;
 
-export interface ComponentSetting {
+// THE COMPONENT DEFINITION MODEL (the components programme, P2.0; APEX:
+// Plug-ins). A definition says what a component type takes: its attributes,
+// each with a scope, an editor and a default, in named groups; the events it
+// fires; the capability flags that gate sections of the Property Editor; the
+// slots other components may nest in. The documents store an instance's
+// attribute values under `settings`, the field's name since R2b, so the word
+// stays here; APEX calls them attributes and so does the Property Editor.
+
+/** APEX: the Scope of a custom attribute. Absent reads as component. */
+export type AttributeScope = 'application' | 'component' | 'report';
+/** APEX: Select List · Number · Yes/No · Text · Color · Icon · Link to Target Page. */
+export type AttributeKind = 'choice' | 'number' | 'boolean' | 'text' | 'colour' | 'icon' | 'link';
+
+export interface AttributeDefinition {
   key: string;
   label: string;
-  kind: 'choice' | 'number' | 'boolean' | 'text';
+  kind: AttributeKind;
   /** For a choice. */
   options?: readonly { key: string; label: string }[];
   /** For a number. */
   min?: number;
   max?: number;
-  /** For text. */
+  /** For text (and the destination key of a link, at most 120). */
   maxLength?: number;
   default: SettingValue;
   help?: string;
+  /** component (absent): one value per instance, on the region. application:
+   *  one value for the application, edited under Shared Components › Component
+   *  Settings and never stored on a region. report: one value per multi-row
+   *  region (none today; drawn as component scope until the data region). */
+  scope?: AttributeScope;
+  /** A key of the definition's `groups`; absent falls under Settings (APEX:
+   *  ungrouped attributes under a generic Settings heading). */
+  group?: string;
 }
-
-export interface ComponentSpec {
-  /** Dotted, lower-case: `page.body`, `home.wire`. */
+/** APEX: Attribute Groups, named and sequenced sections of the Attributes tab. */
+export interface AttributeGroup {
+  key: string;
+  title: string;
+  seq: number;
+}
+/** APEX: Plug-in Events, a display name and the internal name a dynamic action
+ *  may listen for. Declared here; the first component that fires one wires the
+ *  trigger list (P2.23). */
+export interface ComponentEvent {
   key: string;
   name: string;
-  group: 'Page' | 'Home' | 'Series' | 'Editorial' | 'Data';
+}
+/** APEX: the Standard Attributes of a plug-in, each toggling a section of the
+ *  Property Editor. Absent reads true. */
+export interface ComponentCapabilities {
+  /** Appearance › Template and Template Options (false: the component draws its own frame). */
+  template?: boolean;
+  /** The Header and Footer group. */
+  headerFooter?: boolean;
+}
+/** APEX: Template Component Slots, named nesting points restricted to region
+ *  kinds (by name: page-document owns the kinds list). Declared here; the first
+ *  component with a slot wires the Layout (P2.2's Card). */
+export interface ComponentSlot {
+  key: string;
+  name: string;
+  accepts: readonly string[];
+}
+
+export interface ComponentDefinition {
+  /** Dotted, lower-case: `page.body`, `home.wire`, `region.image`. */
+  key: string;
+  name: string;
+  group: 'Page' | 'Home' | 'Series' | 'Editorial' | 'Data' | 'Region';
   /** One line for the gallery tile and the Property Editor. */
   holds: string;
-  settings: readonly ComponentSetting[];
+  /** The attributes (APEX), stored on an instance under `settings`. */
+  settings: readonly AttributeDefinition[];
+  groups?: readonly AttributeGroup[];
+  events?: readonly ComponentEvent[];
+  capabilities?: ComponentCapabilities;
+  slots?: readonly ComponentSlot[];
   /** The transitional component: a page not yet split holds its body as the
    *  code draws it today, one per page, and loses nothing until it is split. */
   legacy?: true;
 }
+/** The names before P2.0; every reader of them keeps compiling. */
+export type ComponentSpec = ComponentDefinition;
+export type ComponentSetting = AttributeDefinition;
 
 export const COMPONENT_KEY = /^[a-z][a-z0-9]*(\.[a-z][a-z0-9-]*)+$/;
 
-export const COMPONENTS: readonly ComponentSpec[] = [
+/** Lower-case #rrggbb. */
+const HEX_COLOUR = /^#[0-9a-f]{6}$/i;
+/** An icon's name, as the bar's icons are named. */
+const ICON_NAME = /^[a-z][a-z0-9-]{0,39}$/;
+const LINK_MAX = 120;
+
+/** The attributes an instance carries: every scope but application. */
+export function instanceAttributes(spec: ComponentDefinition): AttributeDefinition[] {
+  return spec.settings.filter(s => s.scope !== 'application');
+}
+
+export const COMPONENTS: readonly ComponentDefinition[] = [
   {
     key: 'page.body',
     name: 'Body as the code draws it',
@@ -161,13 +230,13 @@ export function componentId(key: string, taken: readonly string[]): string {
 
 /** The recipe's components as Body regions, in order, renumbered by tens from
  *  `seqFrom`; the halves share one row. Empty for a path without a recipe. */
-export function recipeRegions(path: string, taken: readonly string[] = [], seqFrom = 10): RecipeRegion[] {
+export function recipeRegions(path: string, taken: readonly string[] = [], seqFrom = 10, components: readonly ComponentDefinition[] = COMPONENTS): RecipeRegion[] {
   const recipe = SPLITS[path];
   if (!recipe) return [];
   const out: RecipeRegion[] = [];
   let seq = seqFrom;
   for (const key of recipe) {
-    const spec = findComponent(key);
+    const spec = findComponent(key, components);
     if (!spec) continue;
     const half = HALVES.has(key);
     const second = half && out.some(r => HALVES.has(r.component));
@@ -195,30 +264,35 @@ export function defaultDocument(path: string): { version: 1; regions: RecipeRegi
   return { version: 1, regions: recipeRegions(path), actions: [] };
 }
 
-export function findComponent(key: string): ComponentSpec | null {
-  return COMPONENTS.find(c => c.key === key) ?? null;
+/** A definition by key, from the code's list or the one handed in (the
+ *  designer's, the merged one once definitions have rows). */
+export function findComponent(key: string, components: readonly ComponentDefinition[] = COMPONENTS): ComponentDefinition | null {
+  return components.find(c => c.key === key) ?? null;
 }
 
-/** Every setting at its default. */
-export function componentDefaults(spec: ComponentSpec): Record<string, SettingValue> {
-  return Object.fromEntries(spec.settings.map(s => [s.key, s.default]));
+/** Every attribute an instance carries, at its default. */
+export function componentDefaults(spec: ComponentDefinition): Record<string, SettingValue> {
+  return Object.fromEntries(instanceAttributes(spec).map(s => [s.key, s.default]));
 }
 
 /**
- * Read a stored settings object against the spec: a missing setting takes its
- * default, an unknown key or a value outside its spec is a problem (and the
- * default stands in). Always answers a full settings object.
+ * Read a stored settings object against the definition: a missing attribute
+ * takes its default, an unknown key or a value outside its rule is a problem
+ * (and the default stands in); an application-scope attribute has no home on
+ * an instance. Always answers a full settings object.
  */
-export function parseSettings(spec: ComponentSpec, raw: unknown): { settings: Record<string, SettingValue>; problems: string[] } {
+export function parseSettings(spec: ComponentDefinition, raw: unknown): { settings: Record<string, SettingValue>; problems: string[] } {
   const problems: string[] = [];
   const settings = componentDefaults(spec);
   if (raw === undefined || raw === null) return { settings, problems };
   if (typeof raw !== 'object' || Array.isArray(raw)) return { settings, problems: ['the settings must be an object'] };
   const given = raw as Record<string, unknown>;
   for (const key of Object.keys(given)) {
-    if (!spec.settings.some(s => s.key === key)) problems.push(`${spec.name} has no setting called ${key}`);
+    const s = spec.settings.find(x => x.key === key);
+    if (!s) problems.push(`${spec.name} has no setting called ${key}`);
+    else if (s.scope === 'application') problems.push(`${s.label} is set for the application, not on a region`);
   }
-  for (const s of spec.settings) {
+  for (const s of instanceAttributes(spec)) {
     const v = given[s.key];
     if (v === undefined) continue;
     if (s.kind === 'boolean') {
@@ -230,17 +304,38 @@ export function parseSettings(spec: ComponentSpec, raw: unknown): { settings: Re
     } else if (s.kind === 'choice') {
       if (typeof v === 'string' && s.options?.some(o => o.key === v)) settings[s.key] = v;
       else problems.push(`${s.label} must be one of ${(s.options ?? []).map(o => o.label).join(', ')}`);
+    } else if (s.kind === 'colour') {
+      if (typeof v === 'string' && HEX_COLOUR.test(v)) settings[s.key] = v.toLowerCase();
+      else problems.push(`${s.label} must be a colour as #rrggbb`);
+    } else if (s.kind === 'icon') {
+      if (typeof v === 'string' && (v === '' || ICON_NAME.test(v))) settings[s.key] = v;
+      else problems.push(`${s.label} must be an icon name: lower-case letters, digits and dashes`);
+    } else if (s.kind === 'link') {
+      // The key's shape only; whether it names a page or a catalogue link is the document parser's rule (isGoDestination).
+      if (typeof v === 'string' && v.length <= LINK_MAX) settings[s.key] = v;
+      else problems.push(`${s.label} must name a destination of at most ${LINK_MAX} characters`);
     } else if (typeof v === 'string' && v.length <= (s.maxLength ?? 200)) settings[s.key] = v;
     else problems.push(`${s.label} must be text of at most ${s.maxLength ?? 200} characters`);
   }
   return { settings, problems };
 }
 
-/** One line about a component's settings, for its tile: `Items 8 · Series All`. */
-export function settingsSummary(spec: ComponentSpec, settings: Readonly<Record<string, SettingValue>>): string {
-  const parts = spec.settings.map(s => {
+/** One line about an instance's attributes, for its tile: `Items 8 · Series All`. */
+export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Record<string, SettingValue>>): string {
+  const parts = instanceAttributes(spec).map(s => {
     const v = settings[s.key] ?? s.default;
-    const shown = s.kind === 'boolean' ? (v ? 'yes' : 'no') : s.kind === 'choice' ? (s.options?.find(o => o.key === v)?.label ?? String(v)) : String(v);
+    const shown =
+      s.kind === 'boolean'
+        ? v
+          ? 'yes'
+          : 'no'
+        : s.kind === 'choice'
+          ? (s.options?.find(o => o.key === v)?.label ?? String(v))
+          : s.kind === 'icon'
+            ? String(v) || 'none'
+            : s.kind === 'link'
+              ? String(v) || 'nowhere'
+              : String(v);
     return `${s.label} ${shown}`;
   });
   return parts.length ? parts.join(' · ') : spec.holds;

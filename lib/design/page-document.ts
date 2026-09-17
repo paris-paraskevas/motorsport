@@ -38,7 +38,7 @@
 // drops an Excluded build option; absent means the region runs.
 
 import { pageIdOf, resolveDestination } from './destinations';
-import { findComponent, parseSettings, type SettingValue } from './components';
+import { COMPONENTS, findComponent, parseSettings, type ComponentDefinition, type SettingValue } from './components';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
 import { parseRegionTemplate, parseTemplateOptions, type RegionTemplateKey } from './template-options';
 
@@ -300,7 +300,7 @@ export const SHORTCUT_TOKEN = /\{shortcut:([a-z0-9][a-z0-9._-]{0,59})\}/g;
 
 const POSITION_ORDER: Record<string, number> = Object.fromEntries(POSITIONS.map((p, i) => [p, i]));
 
-function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: Region | null; problems: string[] } {
+function parseRegion(raw: unknown, index: number, seen: Set<string>, components: readonly ComponentDefinition[]): { region: Region | null; problems: string[] } {
   const problems: string[] = [];
   if (!raw || typeof raw !== 'object') return { region: null, problems: [`region ${index + 1}: not an object`] };
   const r = raw as Record<string, unknown>;
@@ -376,10 +376,15 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>): { region: 
     };
     if (kind === 'component') {
       const key = typeof r.component === 'string' ? r.component : '';
-      const spec = key ? findComponent(key) : null;
+      const spec = key ? findComponent(key, components) : null;
       if (!spec) problems.push(`${who}: names a component the code does not have (${key || 'none'})`);
       else {
         const parsed = parseSettings(spec, r.settings);
+        // A link attribute (P2.0) names a page or a catalogue link, as a Button's Target does; never a typed URL.
+        for (const s of spec.settings) {
+          const v = parsed.settings[s.key];
+          if (s.kind === 'link' && typeof v === 'string' && v && !isGoDestination(v)) parsed.problems.push(`${s.label} must be a page or a link from the catalogue`);
+        }
         if (parsed.problems.length) problems.push(...parsed.problems.map(p => `${who}: ${p}`));
         else region = { ...base, kind, component: spec.key, settings: parsed.settings };
       }
@@ -538,7 +543,10 @@ function settleParents(regions: Region[], problems: string[]): Region[] {
   return bad.size === 0 ? regions : regions.filter(r => !bad.has(r.id));
 }
 
-export function parsePageDocument(raw: unknown): { value: PageDocument; problems: string[] } {
+/** A stored document read against the rules and the component definitions
+ *  (the code's, or the list handed in: the designer's, the merged one once
+ *  definitions have rows). */
+export function parsePageDocument(raw: unknown, components: readonly ComponentDefinition[] = COMPONENTS): { value: PageDocument; problems: string[] } {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { value: EMPTY_DOCUMENT, problems: ['the document must be an object'] };
   const d = raw as Record<string, unknown>;
   if (!(PAGE_DOCUMENT_VERSIONS as readonly unknown[]).includes(d.version)) return { value: EMPTY_DOCUMENT, problems: [`unknown document version ${String(d.version)}`] };
@@ -547,7 +555,7 @@ export function parsePageDocument(raw: unknown): { value: PageDocument; problems
   const parsed: Region[] = [];
   const seen = new Set<string>();
   d.regions.forEach((item, i) => {
-    const { region, problems: p } = parseRegion(item, i, seen);
+    const { region, problems: p } = parseRegion(item, i, seen, components);
     problems.push(...p);
     if (region) parsed.push(region);
   });
@@ -589,8 +597,9 @@ export interface DocumentRefs {
  *  as drawn, commented-out regions included (the write path never applies the
  *  build filter), so a row such a region names stays undeletable while the
  *  region is on the page. A shortcut counts wherever a text substitutes it:
- *  Static Content's text and every region's Header Text and Footer Text (P1.13). */
-export function documentRefs(doc: PageDocument): DocumentRefs {
+ *  Static Content's text and every region's Header Text and Footer Text (P1.13).
+ *  A component's link attribute names a destination as a button does (P2.0). */
+export function documentRefs(doc: PageDocument, components: readonly ComponentDefinition[] = COMPONENTS): DocumentRefs {
   const lists = new Set<string>();
   const assets = new Set<string>();
   const authz = new Set<string>();
@@ -603,6 +612,12 @@ export function documentRefs(doc: PageDocument): DocumentRefs {
     if (r.kind === 'static') for (const m of r.text.matchAll(SHORTCUT_TOKEN)) shortcuts.add(m[1]);
     for (const t of [r.headerText, r.footerText]) if (t) for (const m of t.matchAll(SHORTCUT_TOKEN)) shortcuts.add(m[1]);
     if (r.kind === 'button' && r.dest) dests.add(r.dest);
+    if (r.kind === 'component') {
+      for (const s of findComponent(r.component, components)?.settings ?? []) {
+        const v = r.settings[s.key];
+        if (s.kind === 'link' && typeof v === 'string' && v) dests.add(v);
+      }
+    }
   }
   for (const a of doc.actions) for (const e of a.do) if (e.action === 'go') dests.add(e.dest);
   const sorted = (s: Set<string>) => [...s].sort();

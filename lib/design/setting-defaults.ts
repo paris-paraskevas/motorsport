@@ -5,7 +5,8 @@
 // falls back to them, and the home model and the layout read the loader's answer.
 
 import { WHATS_NEW } from '@/lib/whats-new';
-import { REGION_TEMPLATES, REGION_TEMPLATE_KEYS, type RegionTemplateKey } from './template-options';
+import type { RegionTemplateKey } from './template-options';
+import { componentSettingSpecs } from './component-definitions';
 
 export const SETTING_KEYS = [
   'home.lead_series',
@@ -27,7 +28,10 @@ export type SettingKey = (typeof SETTING_KEYS)[number];
  *  type): what a region of each kind starts with when it is placed on a page.
  *  The Page Designer reads them when it creates a region; a region carries its
  *  own values from then on, so changing a default changes no page. P1.1 adds
- *  the template (the look) per kind. */
+ *  the template (the look) per kind. Since P2.0 each is an application-scope
+ *  attribute of its region kind's definition (component-definitions.ts) and
+ *  its spec derives from there; this tuple stays as the type's anchor and the
+ *  test keeps the two equal. */
 export const COMPONENT_SETTING_KEYS = [
   'region.image.show_caption',
   'region.list.style',
@@ -87,8 +91,8 @@ export interface SettingSpec<K extends SettingKey = SettingKey> {
  *  the parser. Empty means no notice. */
 export const ANNOUNCEMENT_IDS: readonly string[] = WHATS_NEW.map(e => e.id);
 
-/** The five looks (P1.1), stored by key and named for a person by label. */
-const TEMPLATE_CHOICE: SettingControl = { kind: 'choice', options: REGION_TEMPLATE_KEYS, labels: Object.fromEntries(REGION_TEMPLATES.map(t => [t.key, t.label])) };
+/** The Component Settings' specs, from the region kinds' definitions (P2.0). */
+const COMPONENT_SETTING_SPECS = componentSettingSpecs() as unknown as { [K in ComponentSettingKey]: SettingSpec<K> };
 
 export const SETTING_SPECS: { [K in SettingKey]: SettingSpec<K> } = {
   'home.lead_series': {
@@ -128,55 +132,9 @@ export const SETTING_SPECS: { [K in SettingKey]: SettingSpec<K> } = {
     control: { kind: 'announcement' },
     shipped: WHATS_NEW.find(e => e.active)?.id ?? '',
   },
-  'region.image.show_caption': {
-    type: 'boolean',
-    label: 'New Image regions: caption',
-    description: 'Whether a photo placed on a page starts with its caption, credit and licence shown. Each region can still be changed on its page.',
-    control: { kind: 'boolean' },
-    shipped: true,
-  },
-  'region.list.style': {
-    type: 'text',
-    label: 'New List regions: style',
-    description: 'How a list placed on a page starts: as plain links, or as cards. Each region can still be changed on its page.',
-    control: { kind: 'choice', options: ['links', 'cards'] },
-    shipped: 'links',
-  },
-  'region.button.label': {
-    type: 'text',
-    label: 'New Button regions: label',
-    description: 'The words a button placed on a page starts with, up to 40 characters. Each region can still be changed on its page.',
-    control: { kind: 'text', max: 40 },
-    shipped: 'Read more',
-  },
-  'region.static.template': {
-    type: 'text',
-    label: 'New Static Content regions: template',
-    description: 'The template, the look, a Static Content region placed on a page starts with: Plain, Boxed, Band, Aside or Hero. Each region can still be changed on its page.',
-    control: TEMPLATE_CHOICE,
-    shipped: 'standard',
-  },
-  'region.image.template': {
-    type: 'text',
-    label: 'New Image regions: template',
-    description: 'The template, the look, an Image region placed on a page starts with: Plain, Boxed, Band, Aside or Hero. Each region can still be changed on its page.',
-    control: TEMPLATE_CHOICE,
-    shipped: 'standard',
-  },
-  'region.list.template': {
-    type: 'text',
-    label: 'New List regions: template',
-    description: 'The template, the look, a List region placed on a page starts with: Plain, Boxed, Band, Aside or Hero. Each region can still be changed on its page.',
-    control: TEMPLATE_CHOICE,
-    shipped: 'standard',
-  },
-  'region.button.template': {
-    type: 'text',
-    label: 'New Button regions: template',
-    description: 'The template, the look, a Button region placed on a page starts with: Plain, Boxed, Band, Aside or Hero. Each region can still be changed on its page.',
-    control: TEMPLATE_CHOICE,
-    shipped: 'standard',
-  },
+  // The seven Component Settings (region.image.show_caption, region.list.style,
+  // region.button.label, the four templates): the region kinds' definitions.
+  ...COMPONENT_SETTING_SPECS,
 };
 
 /** The shipped values: what the site does when it cannot read the rows. */
