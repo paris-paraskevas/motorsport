@@ -383,8 +383,9 @@
    "defaults": "A definition is a document per component type in a shared component, Component Definitions (rule 10: Utilization, History, a delete guard); today’s six Home specs, the heading and the calendar become definitions; the Property Editor’s Attributes tab reads a definition’s groups and editors; today’s Component Settings keys read through the model unchanged.",
    "needsWord": "the seed migration on 'apply <id>'",
    "acceptance": "Today's three component settings read through the new model unchanged; a new attribute with a group and a colour editor renders in the Property Editor; test.",
-   "status": "planned",
-   "scopeHash": "a6c84e125b33"
+   "status": "started",
+   "scopeHash": "a6c84e125b33",
+   "evidence": "PR A open: #1012 (1.0.131), branch feat/p2.0-component-definition-model, the model in the editor (two PRs on the plan's approval of 2026-09-17 ~09:50Z; PR B brings the shared component and migration 20260917100000 on \"apply <id>\"). Tests first, seen failing (four files: the new component-definitions test on import, the three kinds and the application scope, the link rule and the refs, the Property Editor's groups, editors and flags), then green. Gates after the last edit: tsc 0 · lint 0 errors · vitest 213 files, 2164 tests · hooks 31/31 · wrangler dry run 43267.73 KiB (66.02%). The read-through proof: component-definitions.test.ts holds today's seven Component Settings as a literal and the derivation reproduces them byte for byte. Browser run on the local server (regression): review page f28d456c-d213-4352-a48d-430d5d5c9ffb. Plan critic (Sonnet, 244,805 tokens): SOUND WITH FIXES, folded."
   },
   {
    "id": "P2.1",
