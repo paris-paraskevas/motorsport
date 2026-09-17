@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.130 — 2026-09-17
+
+### Records — P1.13 done in the ledger, Phase 1 complete (fifteen slots), the Phase 2 screen presented, the session-52 handoff
+
+Records only. `docs/plan/ledger.json`: P1.13 `done` with its evidence (PR #1010, merged 08:48:59Z as c3e01239, prod 09:04:15Z; the browser run's read-backs; the production read; the gates; the plan critic's and the reviewer's verdicts); Phase 1's fifteen slots are all done. `docs/plan/phase-2-draft.json` (new): the twenty-five Phase 2 slots of the v2 draft as they would enter the ledger (scope, fixed by, the defaults proposed on the screen, needs the word, acceptance), the proposed order and the seven questions with their defaults; it enters the ledger only by a dated changes line with the operator's word ("Phase 2 go" or a changed list) and is the input of that line. `docs/HANDOFF.md` LATEST: session 51's second close, the session-52 prompt with the screen's word first, then the changes line, then P2.0; the checklist, P1.13 and the screen with evidence; the recipe's additions (the lint scan of .playwright-mcp, the closed Header and Footer group, the preview reached by its id, Quick Edit's aria-checked, supabase stop before cf:build, the Management API read pattern) and the landmines (composed by kind, HTML-AAM's nested header, the react-hooks effect rule, the refs' foreign key). `SCHEDULE.md`: the first close's item marked done and the day's block. `IDEAS.md`: the preview-frame item closed by P1.13 removed; the day's findings stay (the footer inside main, the shortcuts DELETE message, the refs backfill). The progress board regenerated.
+
 ## 1.0.129 — 2026-09-17
 
 ### Designer — [P1.13] Phase 1 loose ends: shortcuts in header and footer texts count, the preview shows a row page as the live page does, Info › Show Landmarks and Show Headings, the pane layout per user
