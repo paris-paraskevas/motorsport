@@ -108,13 +108,14 @@ export interface DerivedSettingSpec {
 /** The application-scope attributes as Component Settings: `<definition>.<attribute>`
  *  is the setting key; the label reads `New <Name> regions: <attribute>`; the
  *  control follows the editor. Today's seven, exactly as they were written. */
-export function componentSettingSpecs(): Record<string, DerivedSettingSpec> {
+export function componentSettingSpecs(definitions: readonly ComponentDefinition[] = DEFINITIONS): Record<string, DerivedSettingSpec> {
   const out: Record<string, DerivedSettingSpec> = {};
-  for (const d of DEFINITIONS) {
+  for (const d of definitions) {
     for (const a of d.settings) {
       if (a.scope !== 'application') continue;
       out[`${d.key}.${a.key}`] = {
-        type: a.kind === 'boolean' ? 'boolean' : 'text',
+        // The `setting.type` column agrees with the control: boolean, number (an integer control), else text.
+        type: a.kind === 'boolean' ? 'boolean' : a.kind === 'number' ? 'number' : 'text',
         label: `New ${d.name} regions: ${a.label.toLowerCase()}`,
         description: a.help ?? '',
         control: controlFor(a),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DEFINITIONS, REGION_DEFINITIONS, componentSettingSpecs } from './component-definitions';
-import { COMPONENTS, componentDefaults } from './components';
+import { COMPONENTS, componentDefaults, type ComponentDefinition } from './components';
 import { COMPONENT_SETTING_KEYS, SETTING_SPECS } from './setting-defaults';
 import { REGION_KIND_LABELS, type RegionKind } from './page-document';
 
@@ -93,5 +93,25 @@ describe('the component definition model', () => {
 
   it('an application-scope attribute has no home on a region: a region kind’s defaults are empty', () => {
     for (const d of REGION_DEFINITIONS) expect(componentDefaults(d)).toEqual({});
+  });
+
+  it('a derived spec’s type agrees with its control for every kind, a number included (the reviewer’s note)', () => {
+    const rows: ComponentDefinition = {
+      key: 'test.rows',
+      name: 'Rows',
+      group: 'Data',
+      holds: 'rows',
+      settings: [
+        { key: 'count', label: 'Count', kind: 'number', min: 1, max: 50, default: 10, scope: 'application' },
+        { key: 'open', label: 'Open', kind: 'boolean', default: false, scope: 'application' },
+        { key: 'note', label: 'Note', kind: 'text', maxLength: 30, default: '', scope: 'application' },
+      ],
+    };
+    const specs = componentSettingSpecs([rows]);
+    expect(specs['test.rows.count']).toEqual({ type: 'number', label: 'New Rows regions: count', description: '', control: { kind: 'integer', min: 1, max: 50 }, shipped: 10 });
+    expect(specs['test.rows.open'].type).toBe('boolean');
+    expect(specs['test.rows.note']).toMatchObject({ type: 'text', control: { kind: 'text', max: 30 } });
+    const agree = { boolean: 'boolean', integer: 'number', choice: 'text', text: 'text' } as const;
+    for (const [key, spec] of Object.entries({ ...componentSettingSpecs(), ...specs })) expect(spec.type, key).toBe(agree[spec.control.kind as keyof typeof agree]);
   });
 });
