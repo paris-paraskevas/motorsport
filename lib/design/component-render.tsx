@@ -15,8 +15,8 @@ import type { PageRow } from './pages';
 //
 // The Home components read the same assembly the home route uses
 // (loadHomeModel, once per request) and apply their settings on top; the
-// Calendar component reads its family's assembly the same way; the facts a
-// show rule needs come from the same place (raceWeekendNow).
+// Calendar component reads its family's assembly the same way; the fact the
+// race-weekend conditions need comes from the same place (raceWeekendNow).
 //
 // THE IMPORTS ARE DYNAMIC ON PURPOSE. This file is reached from
 // page-frame.tsx, which every code route imports; a static import of an
@@ -201,8 +201,8 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
 }
 
 /** Whether a race weekend is under way now: a weekend with a box or a row on
- *  Home's live band, the fact the show rules "during a race weekend" and
- *  "between race weekends" decide on. Once per request. */
+ *  Home's live band, the fact the conditions Race weekend and Between weekends
+ *  (ours, P2.6) decide on. Once per request. */
 export const raceWeekendNow = cache(async (): Promise<boolean> => {
   try {
     const { loadHomeModel } = await home();

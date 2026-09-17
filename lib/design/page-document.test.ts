@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   EMPTY_DOCUMENT,
   applyBuildOptions,
-  applyShow,
+  applyConditions,
+  conditionAsks,
+  conditionText,
   childrenOf,
   descendantsOf,
   documentRefs,
@@ -11,8 +13,7 @@ import {
   parentOf,
   isLegacyBody,
   parsePageDocument,
-  passesShow,
-  showAsks,
+  passesCondition,
   patternMatches,
   refRows,
   rowPagePathProblem,
@@ -25,6 +26,7 @@ import {
   rowsAt,
   schemesAsked,
   substituteShortcuts,
+  type Condition,
   type PageDocument,
 } from './page-document';
 import { COMPONENTS, type ComponentDefinition } from './components';
@@ -236,44 +238,120 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'home.changed', source: 42 })])).problems).toEqual(['region r: Source must be text']);
   });
 
-  it('reads a show rule, leaves it out when it is always, and refuses one it does not know', () => {
-    const rule = parsePageDocument(doc([region({ component: 'page.body', show: 'signed-in' })]));
-    expect(rule.problems).toEqual([]);
-    expect(rule.value.regions[0].show).toBe('signed-in');
-    const always = parsePageDocument(doc([region({ component: 'page.body', show: 'always' })]));
-    expect(always.value.regions[0].show).toBeUndefined();
+  // The Conditions vocabulary (P2.6; APEX: Server-side Condition, Appendix E).
+  const LABELS =
+    'Never, User is authenticated (not public), User is the public user (user has not authenticated), Race weekend, Between weekends, Phones, Desktop and laptop, Request = Value, Current Page is in comma delimited list, Item = Value';
+  const PAGES_PROBLEM = 'region r: Current Page is in comma delimited list needs 1 to 20 paths of this site, like /history/monza';
+
+  it('P2.6: reads a condition of each type and stores it canonically in one field order, leaves it out when absent, and refuses one it does not know or cannot evaluate yet', () => {
+    const parsed = (condition: unknown) => parsePageDocument(doc([region({ component: 'page.body', condition })]));
+    expect(parsed(undefined).value.regions[0]).not.toHaveProperty('condition');
+    expect(parsed(null).value.regions[0]).not.toHaveProperty('condition');
+    for (const type of ['never', 'authenticated', 'public', 'race-weekend', 'between-weekends', 'phones', 'desktop'] as const) {
+      const r = parsed({ type, part: 'ignored' });
+      expect(r.problems).toEqual([]);
+      expect(r.value.regions[0].condition).toEqual({ type });
+    }
+    const req = parsed({ value: ' f1 ', part: 'slug', type: 'request-equals' });
+    expect(req.problems).toEqual([]);
+    expect(JSON.stringify(req.value.regions[0].condition)).toBe('{"type":"request-equals","part":"slug","value":"f1"}');
+    const pages = parsed({ pages: ['/series/f1', ' /series/f1 ', '/series/motogp', ''], type: 'page-in' });
+    expect(pages.problems).toEqual([]);
+    expect(JSON.stringify(pages.value.regions[0].condition)).toBe('{"type":"page-in","pages":["/series/f1","/series/motogp"]}');
+    // The comma-delimited string the type is named for is read too.
+    expect(parsed({ type: 'page-in', pages: '/a, /b,' }).value.regions[0].condition).toEqual({ type: 'page-in', pages: ['/a', '/b'] });
+    const unknown = parsed({ type: 'on tuesdays' });
+    expect(unknown.value.regions).toEqual([]);
+    expect(unknown.problems).toEqual([`region r: the condition must be one of ${LABELS}`]);
+    expect(parsed('never').problems).toEqual(['region r: the condition must be an object with a type']);
+    // The same words the Rules group's note uses for the disabled entry.
+    expect(parsed({ type: 'item-equals', item: 'p1', value: 'x' }).problems).toEqual(['region r: Item = Value arrives with the page items (P2.18)']);
+    expect(parsed({ type: 'request-equals', value: 'f1' }).problems).toEqual(['region r: Request = Value needs a part of the address, like slug']);
+    expect(parsed({ type: 'request-equals', part: 'Slug!', value: 'f1' }).problems).toEqual(['region r: Request = Value needs a part of the address, like slug']);
+    expect(parsed({ type: 'request-equals', part: 'slug', value: '  ' }).problems).toEqual(['region r: Request = Value needs a value of 1 to 80 characters']);
+    expect(parsed({ type: 'request-equals', part: 'slug', value: 'x'.repeat(81) }).problems).toEqual(['region r: Request = Value needs a value of 1 to 80 characters']);
+    expect(parsed({ type: 'page-in', pages: [] }).problems).toEqual([PAGES_PROBLEM]);
+    expect(parsed({ type: 'page-in', pages: ['https://example.com/a'] }).problems).toEqual([PAGES_PROBLEM]);
+    expect(parsed({ type: 'page-in', pages: ['/Series/[slug]'] }).problems).toEqual([PAGES_PROBLEM]);
+    expect(parsed({ type: 'page-in', pages: Array.from({ length: 21 }, (_, i) => `/p${i}`) }).problems).toEqual([PAGES_PROBLEM]);
+  });
+
+  it('P2.6: every show rule of a document stored before the conditions maps to its condition, for one release; a condition beside it wins', () => {
+    const map: Record<string, unknown> = {
+      always: undefined,
+      'race-weekend': { type: 'race-weekend' },
+      'between-weekends': { type: 'between-weekends' },
+      'signed-in': { type: 'authenticated' },
+      'signed-out': { type: 'public' },
+      phones: { type: 'phones' },
+      desktop: { type: 'desktop' },
+    };
+    for (const [show, condition] of Object.entries(map)) {
+      const r = parsePageDocument(doc([region({ component: 'page.body', show })]));
+      expect(r.problems).toEqual([]);
+      expect(r.value.regions[0]).not.toHaveProperty('show');
+      if (condition === undefined) expect(r.value.regions[0]).not.toHaveProperty('condition');
+      else expect(r.value.regions[0].condition).toEqual(condition);
+    }
+    expect(parsePageDocument(doc([region({ component: 'page.body', show: 'signed-in', condition: { type: 'never' } })])).value.regions[0].condition).toEqual({ type: 'never' });
     const unknown = parsePageDocument(doc([region({ component: 'page.body', show: 'on tuesdays' })]));
     expect(unknown.value.regions).toEqual([]);
-    expect(unknown.problems[0]).toMatch(/the show rule must be one of always, race-weekend/);
+    expect(unknown.problems).toEqual([`region r: the show rule must be one of always, race-weekend, between-weekends, signed-in, signed-out, phones, desktop; the conditions replace it: ${LABELS}`]);
   });
 
-  it('passesShow: a fact the server lacks shows the region; phones and desktop pass here because the stylesheet decides them', () => {
-    expect(passesShow(undefined, { signedIn: null, raceWeekend: null })).toBe(true);
-    expect(passesShow('signed-in', { signedIn: false, raceWeekend: null })).toBe(false);
-    expect(passesShow('signed-in', { signedIn: true, raceWeekend: null })).toBe(true);
-    expect(passesShow('signed-in', { signedIn: null, raceWeekend: null })).toBe(true);
-    expect(passesShow('signed-out', { signedIn: true, raceWeekend: null })).toBe(false);
-    expect(passesShow('race-weekend', { signedIn: null, raceWeekend: false })).toBe(false);
-    expect(passesShow('between-weekends', { signedIn: null, raceWeekend: true })).toBe(false);
-    expect(passesShow('between-weekends', { signedIn: null, raceWeekend: null })).toBe(true);
-    expect(passesShow('phones', { signedIn: false, raceWeekend: false })).toBe(true);
-    expect(passesShow('desktop', { signedIn: false, raceWeekend: false })).toBe(true);
+  it('P2.6 passesCondition: Never fails in every context; a fact the server has not got shows the region; phones and desktop pass here because the stylesheet decides them', () => {
+    const none = { signedIn: null, raceWeekend: null, params: null, path: null };
+    expect(passesCondition(undefined, none)).toBe(true);
+    expect(passesCondition({ type: 'never' }, none)).toBe(false);
+    expect(passesCondition({ type: 'never' }, { signedIn: true, raceWeekend: true, params: { slug: 'f1' }, path: '/series/f1' })).toBe(false);
+    expect(passesCondition({ type: 'authenticated' }, { ...none, signedIn: false })).toBe(false);
+    expect(passesCondition({ type: 'authenticated' }, { ...none, signedIn: true })).toBe(true);
+    expect(passesCondition({ type: 'authenticated' }, none)).toBe(true);
+    expect(passesCondition({ type: 'public' }, { ...none, signedIn: true })).toBe(false);
+    expect(passesCondition({ type: 'public' }, { ...none, signedIn: false })).toBe(true);
+    expect(passesCondition({ type: 'race-weekend' }, { ...none, raceWeekend: false })).toBe(false);
+    expect(passesCondition({ type: 'between-weekends' }, { ...none, raceWeekend: true })).toBe(false);
+    expect(passesCondition({ type: 'between-weekends' }, none)).toBe(true);
+    expect(passesCondition({ type: 'phones' }, { ...none, signedIn: false, raceWeekend: false })).toBe(true);
+    expect(passesCondition({ type: 'desktop' }, { ...none, signedIn: false, raceWeekend: false })).toBe(true);
+    const f1: Condition = { type: 'request-equals', part: 'slug', value: 'f1' };
+    expect(passesCondition(f1, none)).toBe(true);
+    expect(passesCondition(f1, { ...none, params: { slug: 'f1' } })).toBe(true);
+    expect(passesCondition(f1, { ...none, params: { slug: 'motogp' } })).toBe(false);
+    // A part the address does not have is a fact not known: the region shows.
+    expect(passesCondition(f1, { ...none, params: { round: '14' } })).toBe(true);
+    expect(passesCondition(f1, { ...none, params: {} })).toBe(true);
+    const monza: Condition = { type: 'page-in', pages: ['/history/monza', '/history/spa'] };
+    expect(passesCondition(monza, none)).toBe(true);
+    expect(passesCondition(monza, { ...none, path: '/history/monza' })).toBe(true);
+    expect(passesCondition(monza, { ...none, path: '/history/imola' })).toBe(false);
   });
 
-  it('applyShow drops the regions whose rule fails and keeps the document as it was when none does; showAsks names the facts the rules need', () => {
+  it('P2.6 applyConditions drops the regions whose condition fails and keeps the document as it was when none does; conditionAsks names the facts the conditions need', () => {
     const parsed = parsePageDocument(
       doc([
         region({ id: 'a', component: 'page.body' }),
-        region({ id: 'b', kind: 'static', text: 'members', show: 'signed-in' }),
-        region({ id: 'c', kind: 'static', text: 'guests', show: 'signed-out' }),
-        region({ id: 'd', kind: 'static', text: 'race', show: 'race-weekend' }),
+        region({ id: 'b', kind: 'static', text: 'members', condition: { type: 'authenticated' } }),
+        region({ id: 'c', kind: 'static', text: 'guests', condition: { type: 'public' } }),
+        region({ id: 'd', kind: 'static', text: 'race', condition: { type: 'race-weekend' } }),
+        region({ id: 'e', kind: 'static', text: 'gone', condition: { type: 'never' } }),
+        region({ id: 'f', kind: 'static', text: 'f1', condition: { type: 'request-equals', part: 'slug', value: 'f1' } }),
       ]),
     ).value;
-    expect(showAsks(parsed)).toEqual({ visitor: true, calendar: true });
-    expect(showAsks(DOC)).toEqual({ visitor: false, calendar: false });
-    expect(applyShow(parsed, { signedIn: true, raceWeekend: false }).regions.map(r => r.id)).toEqual(['a', 'b']);
-    expect(applyShow(parsed, { signedIn: false, raceWeekend: null }).regions.map(r => r.id)).toEqual(['a', 'c', 'd']);
-    expect(applyShow(DOC, { signedIn: false, raceWeekend: false })).toBe(DOC);
+    expect(conditionAsks(parsed)).toEqual({ visitor: true, calendar: true });
+    expect(conditionAsks(DOC)).toEqual({ visitor: false, calendar: false });
+    expect(applyConditions(parsed, { signedIn: true, raceWeekend: false, params: { slug: 'f1' }, path: '/series/f1' }).regions.map(r => r.id)).toEqual(['a', 'b', 'f']);
+    expect(applyConditions(parsed, { signedIn: false, raceWeekend: null, params: { slug: 'motogp' }, path: null }).regions.map(r => r.id)).toEqual(['a', 'c', 'd']);
+    expect(applyConditions(parsed, { signedIn: false, raceWeekend: null, params: null, path: null }).regions.map(r => r.id)).toEqual(['a', 'c', 'd', 'f']);
+    expect(applyConditions(DOC, { signedIn: false, raceWeekend: false, params: {}, path: '/x' })).toBe(DOC);
+  });
+
+  it("P2.6 conditionText names a condition in APEX's words, with its value; empty when there is none", () => {
+    expect(conditionText(undefined)).toBe('');
+    expect(conditionText({ type: 'never' })).toBe('Never');
+    expect(conditionText({ type: 'authenticated' })).toBe('User is authenticated (not public)');
+    expect(conditionText({ type: 'request-equals', part: 'slug', value: 'f1' })).toBe('Request = Value: slug = f1');
+    expect(conditionText({ type: 'page-in', pages: ['/a', '/b'] })).toBe('Current Page is in comma delimited list: /a, /b');
   });
 });
 
@@ -468,18 +546,18 @@ describe('Sub regions (the components programme, P1.4)', () => {
     expect(isInside(d, 'story', 'story')).toBe(true);
   });
 
-  it('a region dropped by a show rule or a build option takes its descendants with it; the phone bar counts page-level regions', () => {
+  it('a region dropped by a condition or a build option takes its descendants with it; the phone bar counts page-level regions', () => {
     const d = parsePageDocument(
       doc([
-        region({ id: 'story', show: 'signed-in' }),
+        region({ id: 'story', condition: { type: 'authenticated' } }),
         region({ id: 'pull', parent: 'story', seq: 20 }),
         region({ id: 'deep', parent: 'pull', seq: 30 }),
         region({ id: 'other', seq: 40, commentedOut: true }),
         region({ id: 'inner', parent: 'other', seq: 50 }),
       ]),
     ).value;
-    expect(applyShow(d, { signedIn: false, raceWeekend: null }).regions.map(r => r.id)).toEqual(['other', 'inner']);
-    expect(applyShow(d, { signedIn: true, raceWeekend: null })).toBe(d);
+    expect(applyConditions(d, { signedIn: false, raceWeekend: null, params: null, path: null }).regions.map(r => r.id)).toEqual(['other', 'inner']);
+    expect(applyConditions(d, { signedIn: true, raceWeekend: null, params: null, path: null })).toBe(d);
     expect(applyBuildOptions(d, {}).regions.map(r => r.id)).toEqual(['story', 'pull', 'deep']);
     expect(descendantsOf(d, 'story')).toEqual(['pull', 'deep']);
     expect(descendantsOf(d, 'deep')).toEqual([]);

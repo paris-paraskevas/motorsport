@@ -37,7 +37,10 @@ const home: PageDocument = {
     component('next', 'home.next', { seq: 50 }),
     component('wire', 'home.wire', { seq: 60, settings: { items: 5 } }),
     text('members', 'Members', { seq: 70, authz: 'signed_in' }),
-    text('join', 'Join', { seq: 80, show: 'signed-in' }),
+    text('join', 'Join', { seq: 80, condition: { type: 'authenticated' } }),
+    // P2.6: a Never region leaves at the condition step; a part the address does not have is a fact not known, so F1 only stays.
+    text('gone', 'Never here', { seq: 85, condition: { type: 'never' } }),
+    text('f1only', 'F1 only', { seq: 88, condition: { type: 'request-equals', part: 'slug', value: 'f1' } }),
     text('weather', 'Weather', { seq: 90, buildOption: 'weather' }),
     text('old', 'Old note', { seq: 95, commentedOut: true }),
   ],
@@ -89,7 +92,8 @@ describe('the Debug trace (P1.9)', () => {
     const r = await tracePage({ path: '/' }, 6, 'cid12345');
     expect(r).not.toBeNull();
     const phases = r!.entries.map(e => e.phase);
-    for (const p of ['resolve', 'session', 'authz', 'show', 'build', 'refs', 'render']) expect(phases).toContain(p);
+    for (const p of ['resolve', 'session', 'authz', 'condition', 'build', 'refs', 'render']) expect(phases).toContain(p);
+    expect(phases).not.toContain('show');
     const renders = r!.entries.filter(e => e.phase.startsWith('render:'));
     expect(renders.map(e => e.phase)).toEqual(['render:lead', 'render:live', 'render:result', 'render:changed', 'render:next', 'render:wire']);
     expect(renders.every(e => e.ms !== undefined && e.src !== undefined && e.src.length > 0)).toBe(true);
@@ -102,20 +106,24 @@ describe('the Debug trace (P1.9)', () => {
     expect(renders.find(e => e.phase === 'render:result')!.run).toContain('paddock:home:podium:v2:f1:2026 · local');
     expect(renders.find(e => e.phase === 'render:next')!.run).toBeUndefined();
     expect(r!.entries.find(e => e.phase === 'authz:members')!.text).toBe('Members: scheme signed_in refused for you');
-    expect(r!.entries.find(e => e.phase === 'show:join')!.text).toBe('Join hidden by the rule signed-in');
+    // P2.6: the condition that hid a region, in APEX's words; a region whose condition passed has no line.
+    expect(r!.entries.find(e => e.phase === 'condition:join')!.text).toBe('Join hidden by the condition User is authenticated (not public)');
+    expect(r!.entries.find(e => e.phase === 'condition:gone')!.text).toBe('Never here hidden by the condition Never');
+    expect(r!.entries.find(e => e.phase === 'condition:f1only')).toBeUndefined();
+    // No condition on the page asks for the calendar, so the race-weekend fact is not read.
+    expect(r!.entries.find(e => e.phase === 'condition' && e.text.includes('hidden by a condition'))!.text).toBe('2 regions hidden by a condition (signed in: false; race weekend: not asked)');
     expect(r!.entries.find(e => e.phase === 'build:weather')!.text).toBe('Weather excluded by weather');
     // Comment Out (P1.11) leaves at the same step, named apart from the build options.
     expect(r!.entries.find(e => e.phase === 'build:old')!.text).toBe('Old note commented out');
     expect(r!.entries.find(e => e.phase === 'build' && e.text.includes('excluded by a build option'))!.text).toBe('1 region excluded by a build option, 1 commented out');
-    expect(r!.entries.find(e => e.phase === 'show' && e.text.includes('hidden by a show rule'))!.text).toContain('1 region hidden by a show rule (signed in: false');
-    expect(r!.entries.find(e => e.phase === 'resolve' && e.text.startsWith('Home'))!.text).toBe('Home: 10 regions, 1 dynamic action');
+    expect(r!.entries.find(e => e.phase === 'resolve' && e.text.startsWith('Home'))!.text).toBe('Home: 12 regions, 1 dynamic action');
     expect(r).toMatchObject({ cid: 'cid12345', level: 6, page: '/' });
     expect(r!.totalMs).toBeGreaterThanOrEqual(0);
   });
 
   it("at Info keeps the steps and the components but not a region's verdicts; nothing at a path no page answers; a revision by its id", async () => {
     const info = await tracePage({ path: '/' }, 4, 'c');
-    expect(info!.entries.some(e => e.phase.startsWith('authz:') || e.phase.startsWith('show:') || e.phase.startsWith('build:'))).toBe(false);
+    expect(info!.entries.some(e => e.phase.startsWith('authz:') || e.phase.startsWith('condition:') || e.phase.startsWith('build:'))).toBe(false);
     expect(info!.entries.filter(e => e.phase.startsWith('render:'))).toHaveLength(6);
     expect(info!.entries.find(e => e.phase === 'render:changed')!.run).toBeUndefined();
     expect(await tracePage({ path: '/nowhere' }, 4, 'c')).toBeNull();

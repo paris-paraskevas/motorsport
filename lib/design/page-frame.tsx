@@ -12,7 +12,7 @@ import { allowedKeys, currentVisitor, type Visitor } from './authz-evaluate';
 import { loadAssetsById, loadLiveFrame } from './live-page';
 import { loadDocumentLists, loadNavLists } from './lists';
 import { loadShortcuts } from './shortcuts';
-import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks } from './page-document';
+import { applyBuildOptions, applyConditions, conditionAsks, documentRefs, schemesAsked } from './page-document';
 import { loadBuildOptions } from './build-options';
 import { loadAppearance } from './appearance';
 import { raceWeekendNow, renderComponents } from './component-render';
@@ -149,10 +149,10 @@ async function framed(
     const stored = live.document;
     const refs = documentRefs(stored);
     // The page's own scheme was met at the gate; only the regions' matter here.
-    // The session is read when a region asks for a scheme or a show rule needs
-    // it; the race-weekend fact is read when a rule asks for it.
+    // The session is read when a region asks for a scheme or a condition needs
+    // it; the race-weekend fact is read when a condition asks for it.
     const asked = schemesAsked(null, stored);
-    const asks = showAsks(stored);
+    const asks = conditionAsks(stored);
     const [shortcuts, assets, nav, rules, who, raceWeekend, buildOptions, appearance, pages] = await Promise.all([
       loadShortcuts(),
       loadAssetsById(refs.assets),
@@ -166,7 +166,8 @@ async function framed(
       // The live row pages the buttons and go effects name (P1.12 B2), as the catch-all reads them.
       loadNamedPages(refs.dests),
     ]);
-    const document = applyBuildOptions(applyShow(stored, { signedIn: who ? who.signedIn : null, raceWeekend }), buildOptions);
+    // The frame is keyed by the route's pattern and knows neither the visited address nor its parts (P2.6): a fact not known shows the region.
+    const document = applyBuildOptions(applyConditions(stored, { signedIn: who ? who.signedIn : null, raceWeekend, params: null, path: null }), buildOptions);
     const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
     const messages: Record<string, string | null> = {};
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;

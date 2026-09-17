@@ -9,14 +9,17 @@ import {
   REGION_KIND_LABELS,
   REGION_TEXT_MAX,
   REGION_TITLE_MAX,
-  SHOW_RULES,
-  SHOW_RULE_LABELS,
+  CONDITION_LABELS,
+  CONDITION_TYPES,
+  CONDITION_VALUE_MAX,
   STATIC_TEXT_MAX,
   TIMER_MAX_SECONDS,
   TIMER_MIN_SECONDS,
   ACTION_NAME_MAX,
   rowMates,
   rowsAt,
+  type Condition,
+  type ConditionType,
   type DynamicAction,
   type Effect,
   type EffectAction,
@@ -1111,7 +1114,17 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
   const newRow = common(t => t.newRow);
   const column = common(t => t.column);
   const span = common(t => t.span);
-  const show = common(t => t.show ?? 'always');
+  // The condition (P2.6) as JSON, so several regions compare by value: 'null' when every target is Always, null when they differ.
+  const conditionJson = common(t => JSON.stringify(t.condition ?? null));
+  const condition: Condition | null = conditionJson === null ? null : (JSON.parse(conditionJson) as Condition | null);
+  // The parts of this page's address (`/series/[slug]` → slug), what Request = Value may name; a literal address has none.
+  const parts = Array.from(ctx.page.path.matchAll(/\[([a-z0-9-]+)\]/g), m => m[1]);
+  const setCondition = (label: string, next: Condition | null) =>
+    p(label, x => {
+      const rest: Region = { ...x };
+      delete rest.condition;
+      return next ? { ...rest, condition: next } : rest;
+    });
   const authz = common(t => t.authz ?? 'public');
   const buildOption = common(t => t.buildOption ?? '');
   const commentedOut = common(t => t.commentedOut ?? false);
@@ -1195,31 +1208,82 @@ function commonGroups(ctx: PropsContext, targets: readonly Region[], p: Patch, c
           : []),
       ],
     },
+    // Rules (ours by name; APEX: the Server-side Condition group): the Condition's Type as APEX's select, then what the type needs.
     rules: {
       title: 'Rules',
       props: [
         {
-          label: 'Show',
+          label: 'Condition',
           common: true,
-          changed: ch(t => t.show ?? 'always'),
+          changed: ch(t => t.condition ?? null),
           control: (
-            <Pills
-              label="Region show rule"
-              items={SHOW_RULES.map(k => ({ key: k, label: SHOW_RULE_LABELS[k] }))}
-              current={show}
+            <select
+              value={conditionJson === null ? '' : (condition?.type ?? '')}
               disabled={readOnly}
-              onPick={k =>
-                p(`Shows: ${SHOW_RULE_LABELS[k]}.`, x => {
-                  const next: Region = { ...x };
-                  delete next.show;
-                  return k === 'always' ? next : { ...next, show: k };
-                })
-              }
-            />
+              aria-label="Condition type"
+              className={FIELD}
+              onChange={e => {
+                const type = e.target.value as ConditionType | '';
+                if (type === '') return setCondition('Condition cleared.', null);
+                if (type === 'item-equals') return;
+                const next: Condition = type === 'request-equals' ? { type, part: parts[0] ?? '', value: '' } : type === 'page-in' ? { type, pages: [] } : { type };
+                setCondition(`Condition: ${CONDITION_LABELS[type]}.`, next);
+              }}
+            >
+              <option value="">{conditionJson === null ? MIXED : 'Always'}</option>
+              {CONDITION_TYPES.map(t => (
+                // Item = Value waits for the page items (P2.18); Request = Value needs an address with parts; the row's note says so.
+                <option key={t} value={t} disabled={t === 'item-equals' || (t === 'request-equals' && parts.length === 0)}>
+                  {CONDITION_LABELS[t]}
+                </option>
+              ))}
+            </select>
           ),
-          note: noteOr(show, 'Phones and desktop are decided by the stylesheet; the rest by what the server knows when it serves the page.'),
-          help: 'When the region shows (APEX: Server-side Condition). Always; during a race weekend or between them; to signed-in or signed-out visitors; on phones or on desktop and laptop only. A fact the server does not have shows the region rather than hiding it.',
+          note: noteOr(
+            conditionJson,
+            ['Item = Value arrives with the page items (P2.18).', parts.length === 0 ? 'Request = Value needs an address with parts, like /series/[slug].' : null, 'Phones and Desktop and laptop are decided by the stylesheet; the rest by what the server knows when it serves the page.']
+              .filter((s): s is string => s !== null)
+              .join(' '),
+          ),
+          help: 'When the region renders (APEX: Server-side Condition › Type). Always; Never; to authenticated or public visitors; during a race weekend or between them; on phones or on desktop and laptop only; when a part of the address equals a value; when the visited address is one of a list. A fact the server does not have shows the region rather than hiding it.',
         },
+        ...(condition?.type === 'request-equals'
+          ? [
+              {
+                label: 'Part',
+                common: true,
+                changed: ch(t => t.condition ?? null),
+                control: (
+                  <select value={condition.part} disabled={readOnly} aria-label="Condition part" className={FIELD} onChange={e => setCondition(`Part: ${e.target.value}.`, { type: 'request-equals', part: e.target.value, value: condition.value })}>
+                    {parts.map(pt => (
+                      <option key={pt} value={pt}>
+                        {pt}
+                      </option>
+                    ))}
+                  </select>
+                ),
+                help: 'The part of this page’s address the value is compared with (ours: the pattern’s part, slug or round; APEX compares the request).',
+              },
+              {
+                label: 'Value',
+                common: true,
+                changed: ch(t => t.condition ?? null),
+                control: <input value={condition.value} disabled={readOnly} aria-label="Condition value" maxLength={CONDITION_VALUE_MAX} className={FIELD} onChange={e => setCondition('Value updated.', { type: 'request-equals', part: condition.part, value: e.target.value })} />,
+                help: `What the part must equal for the region to render (APEX: Value); 1 to ${CONDITION_VALUE_MAX} characters, like f1.`,
+              },
+            ]
+          : []),
+        ...(condition?.type === 'page-in'
+          ? [
+              {
+                label: 'Pages',
+                common: true,
+                changed: ch(t => t.condition ?? null),
+                control: <input value={condition.pages.join(', ')} disabled={readOnly} aria-label="Condition pages" className={FIELD} placeholder="/history/monza, /history/spa" onChange={e => setCondition('Pages updated.', { type: 'page-in', pages: e.target.value.split(',').map(s => s.trim()) })} />,
+                help: 'The addresses of this site the region renders on, comma-separated (APEX: the pages; ours compares the visited address, so a pattern page can show a region on some of its addresses only). A comparison, not a link: typed paths are right here.',
+              },
+            ]
+          : []),
       ],
     },
     security: {

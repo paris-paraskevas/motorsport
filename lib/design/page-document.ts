@@ -74,59 +74,140 @@ export const REGION_KIND_LABELS: Record<RegionKind, { label: string; holds: stri
   component: { label: 'Component', holds: 'a piece the code draws, with its settings and its rule' },
 };
 
-// When a region shows (APEX: Server-side Condition, the operator's "rules on
-// what to show on home and in what order", 2026-09-09). Phones and desktop are
-// decided by the stylesheet at render; the rest by facts the server has when
-// it serves the page. Absent means always.
-export const SHOW_RULES = ['always', 'race-weekend', 'between-weekends', 'signed-in', 'signed-out', 'phones', 'desktop'] as const;
-export type ShowRule = (typeof SHOW_RULES)[number];
-export const SHOW_RULE_LABELS: Record<ShowRule, string> = {
-  always: 'Always',
-  'race-weekend': 'During a race weekend',
-  'between-weekends': 'Between race weekends',
-  'signed-in': 'Signed in',
-  'signed-out': 'Signed out',
-  phones: 'Phones only',
-  desktop: 'Desktop and laptop only',
+// Conditions (P2.6; APEX: Server-side Condition, the types of Appendix E):
+// when a region renders. Absent means always (APEX's "- Select -"). The types
+// are APEX's, spelled as APEX spells them; four are ours: Race weekend and
+// Between weekends read the fact Home's live band reads (raceWeekendNow, the
+// operator's "rules on what to show on home", 2026-09-09), Phones and Desktop
+// and laptop are decided by the stylesheet at render. Item = Value is in the
+// vocabulary and refused until the page items arrive (P2.18). Before 1.0.136 a
+// region carried a `show` rule with seven values: the parser reads one for a
+// release and maps it to its condition (SHOW_TO_CONDITION).
+export const CONDITION_TYPES = ['never', 'authenticated', 'public', 'race-weekend', 'between-weekends', 'phones', 'desktop', 'request-equals', 'page-in', 'item-equals'] as const;
+export type ConditionType = (typeof CONDITION_TYPES)[number];
+export const CONDITION_LABELS: Record<ConditionType, string> = {
+  never: 'Never',
+  authenticated: 'User is authenticated (not public)',
+  public: 'User is the public user (user has not authenticated)',
+  'race-weekend': 'Race weekend',
+  'between-weekends': 'Between weekends',
+  phones: 'Phones',
+  desktop: 'Desktop and laptop',
+  'request-equals': 'Request = Value',
+  'page-in': 'Current Page is in comma delimited list',
+  'item-equals': 'Item = Value',
 };
+/** A condition a stored region carries: every type but Item = Value, which
+ *  waits for the page items (P2.18). Built in one field order everywhere,
+ *  since the designer compares conditions as JSON. */
+export type Condition =
+  | { type: 'never' | 'authenticated' | 'public' | 'race-weekend' | 'between-weekends' | 'phones' | 'desktop' }
+  /** Request = Value (APEX); ours compares a part of a pattern page's address (`slug`, `round`) with a value. */
+  | { type: 'request-equals'; part: string; value: string }
+  /** Current Page is in comma delimited list (APEX): the visited address is one of these paths of this site. */
+  | { type: 'page-in'; pages: string[] };
+export const CONDITION_VALUE_MAX = 80;
+export const CONDITION_PAGES_MAX = 20;
+/** A part of a pattern page's address, as the registry names it: `slug`, `round`. */
+const ADDRESS_PART = /^[a-z][a-z0-9-]{0,39}$/;
+/** The show rules of the documents stored before P2.6, each mapped to its condition; always maps to none. Read for one release, then gone. */
+const SHOW_TO_CONDITION: Readonly<Record<string, Condition | undefined>> = {
+  always: undefined,
+  'race-weekend': { type: 'race-weekend' },
+  'between-weekends': { type: 'between-weekends' },
+  'signed-in': { type: 'authenticated' },
+  'signed-out': { type: 'public' },
+  phones: { type: 'phones' },
+  desktop: { type: 'desktop' },
+};
+const conditionNames = () => CONDITION_TYPES.map(t => CONDITION_LABELS[t]).join(', ');
 
-export interface ShowContext {
+export interface ConditionContext {
   /** Whether the visitor is signed in; null when the server has not read the session. */
   signedIn: boolean | null;
   /** Whether a race weekend is under way; null when the server has not looked. */
   raceWeekend: boolean | null;
+  /** The address's parts for a pattern page (`slug`, `round`), empty for a
+   *  literal address; null when the server does not know the address (a code
+   *  page's frame, a preview). */
+  params: Readonly<Record<string, string>> | null;
+  /** The address served; null when the server does not know it. */
+  path: string | null;
 }
 
-/** Whether a region with this rule renders for this visit. A fact the server
- *  does not have shows the region rather than hiding it; phones and desktop
- *  always pass here because the stylesheet decides them. */
-export function passesShow(rule: ShowRule | undefined, ctx: ShowContext): boolean {
-  switch (rule) {
-    case 'signed-in':
+/** Whether a region with this condition renders for this visit. Never never
+ *  does; a fact the server does not have shows the region rather than hiding
+ *  it; phones and desktop always pass here because the stylesheet decides them. */
+export function passesCondition(c: Condition | undefined, ctx: ConditionContext): boolean {
+  switch (c?.type) {
+    case 'never':
+      return false;
+    case 'authenticated':
       return ctx.signedIn !== false;
-    case 'signed-out':
+    case 'public':
       return ctx.signedIn !== true;
     case 'race-weekend':
       return ctx.raceWeekend !== false;
     case 'between-weekends':
       return ctx.raceWeekend !== true;
+    case 'request-equals':
+      // A part the address does not have is a fact not known.
+      return ctx.params === null || !(c.part in ctx.params) || ctx.params[c.part] === c.value;
+    case 'page-in':
+      return ctx.path === null || c.pages.includes(ctx.path);
     default:
       return true;
   }
 }
 
-/** Which facts a document's rules need: the session, the calendar. */
-export function showAsks(doc: PageDocument): { visitor: boolean; calendar: boolean } {
-  const rules = doc.regions.map(r => r.show);
+/** Which facts a document's conditions need: the session, the calendar. The address needs no read. */
+export function conditionAsks(doc: PageDocument): { visitor: boolean; calendar: boolean } {
+  const types = doc.regions.map(r => r.condition?.type);
   return {
-    visitor: rules.some(s => s === 'signed-in' || s === 'signed-out'),
-    calendar: rules.some(s => s === 'race-weekend' || s === 'between-weekends'),
+    visitor: types.some(t => t === 'authenticated' || t === 'public'),
+    calendar: types.some(t => t === 'race-weekend' || t === 'between-weekends'),
   };
 }
 
-/** The document with the regions whose rule fails this visit left out. */
-export function applyShow(doc: PageDocument, ctx: ShowContext): PageDocument {
-  return without(doc, r => !passesShow(r.show, ctx));
+/** The document with the regions whose condition fails this visit left out. */
+export function applyConditions(doc: PageDocument, ctx: ConditionContext): PageDocument {
+  return without(doc, r => !passesCondition(r.condition, ctx));
+}
+
+/** A condition in APEX's words, with its value (`Request = Value: slug = f1`); empty when there is none. */
+export function conditionText(c: Condition | undefined): string {
+  if (!c) return '';
+  const label = CONDITION_LABELS[c.type];
+  if (c.type === 'request-equals') return `${label}: ${c.part} = ${c.value}`;
+  if (c.type === 'page-in') return `${label}: ${c.pages.join(', ')}`;
+  return label;
+}
+
+/** A condition as stored or as the editor sets it: the type, then what the
+ *  type needs, trimmed, in the one field order; the pages as a list or as the
+ *  comma-delimited string the type is named for. */
+function parseCondition(raw: unknown): { value?: Condition; problem?: string } {
+  if (!raw || typeof raw !== 'object' || typeof (raw as { type?: unknown }).type !== 'string') return { problem: 'the condition must be an object with a type' };
+  const c = raw as Record<string, unknown>;
+  const type = c.type as string;
+  if (!(CONDITION_TYPES as readonly string[]).includes(type)) return { problem: `the condition must be one of ${conditionNames()}` };
+  if (type === 'item-equals') return { problem: `${CONDITION_LABELS['item-equals']} arrives with the page items (P2.18)` };
+  if (type === 'request-equals') {
+    const part = typeof c.part === 'string' ? c.part.trim() : '';
+    if (!ADDRESS_PART.test(part)) return { problem: `${CONDITION_LABELS['request-equals']} needs a part of the address, like slug` };
+    const value = typeof c.value === 'string' ? c.value.trim() : '';
+    if (!value || value.length > CONDITION_VALUE_MAX) return { problem: `${CONDITION_LABELS['request-equals']} needs a value of 1 to ${CONDITION_VALUE_MAX} characters` };
+    return { value: { type, part, value } };
+  }
+  if (type === 'page-in') {
+    const list: unknown[] = Array.isArray(c.pages) ? c.pages : typeof c.pages === 'string' ? c.pages.split(',') : [];
+    const pages = [...new Set(list.map(p => (typeof p === 'string' ? p.trim() : '')).filter(Boolean))];
+    if (pages.length === 0 || pages.length > CONDITION_PAGES_MAX || pages.some(p => !ROW_PAGE_PATH.test(p))) {
+      return { problem: `${CONDITION_LABELS['page-in']} needs 1 to ${CONDITION_PAGES_MAX} paths of this site, like /history/monza` };
+    }
+    return { value: { type, pages } };
+  }
+  return { value: { type: type as Exclude<ConditionType, 'request-equals' | 'page-in' | 'item-equals'> } };
 }
 
 /** The document without the regions a test names and everything inside them
@@ -169,8 +250,10 @@ export interface RegionBase {
   /** Rendered hidden until a dynamic action shows it (step 5), so a
    *  "read more" never flashes; false when absent. */
   hidden: boolean;
-  /** When the region shows; absent means always. */
-  show?: ShowRule;
+  /** Rules › Condition (APEX: Server-side Condition, P2.6): when the region
+   *  renders; absent means always. Replaced the seven-valued `show` rule in
+   *  1.0.136; the parser still reads a stored `show` for one release. */
+  condition?: Condition;
   /** Header Text (APEX: Region Header and Footer): plain text drawn above the
    *  region's body, shortcuts substituted; absent means none. */
   headerText?: string;
@@ -316,9 +399,16 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
   else if (seen.has(id)) problems.push(`${who}: the id is used twice`);
   const kind = typeof r.kind === 'string' && (REGION_KINDS as readonly string[]).includes(r.kind) ? (r.kind as RegionKind) : null;
   if (!kind) problems.push(`${who}: the kind must be static, image, list, button or component`);
-  const show: ShowRule | undefined | null =
-    r.show === undefined || r.show === null || r.show === 'always' ? undefined : typeof r.show === 'string' && (SHOW_RULES as readonly string[]).includes(r.show) ? (r.show as ShowRule) : null;
-  if (show === null) problems.push(`${who}: the show rule must be one of ${SHOW_RULES.join(', ')}`);
+  // The condition (P2.6), or, for one release, the show rule a document stored before it carried.
+  let condition: Condition | undefined;
+  if (r.condition !== undefined && r.condition !== null) {
+    const parsed = parseCondition(r.condition);
+    if (parsed.problem) problems.push(`${who}: ${parsed.problem}`);
+    else condition = parsed.value;
+  } else if (r.show !== undefined && r.show !== null) {
+    if (typeof r.show === 'string' && Object.hasOwn(SHOW_TO_CONDITION, r.show)) condition = SHOW_TO_CONDITION[r.show];
+    else problems.push(`${who}: the show rule must be one of ${Object.keys(SHOW_TO_CONDITION).join(', ')}; the conditions replace it: ${conditionNames()}`);
+  }
   const position = typeof r.position === 'string' && (POSITIONS as readonly string[]).includes(r.position) ? (r.position as Position) : null;
   if (!position) problems.push(`${who}: the position must be one of the six`);
   const title = typeof r.title === 'string' ? r.title.trim() : '';
@@ -371,7 +461,7 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
       newRow,
       authz,
       hidden,
-      ...(show ? { show } : {}),
+      ...(condition ? { condition } : {}),
       ...(headerText ? { headerText } : {}),
       ...(footerText ? { footerText } : {}),
       ...(buildOption ? { buildOption } : {}),

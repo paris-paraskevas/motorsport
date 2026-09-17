@@ -158,6 +158,23 @@ describe('the catch-all serving row pages', () => {
     expect(html).not.toContain('For writers');
     expect(html).toContain('For approved writers.');
   });
+
+  it('P2.6: a region with condition Never does not render, whoever visits; Current Page is in compares the visited address; neither reads the session', async () => {
+    const at = (id: string, text: string, condition: unknown, seq: number) => ({ id, kind: 'static', title: id, position: 'body', seq, column: 1, span: 12, newRow: false, authz: null, text, condition });
+    loadLivePage.mockResolvedValue(
+      live({}, [
+        at('gone', 'Never drawn', { type: 'never' }, 20),
+        at('here', 'On this page', { type: 'page-in', pages: ['/history/monza', '/history/spa'] }, 30),
+        at('elsewhere', 'On another page', { type: 'page-in', pages: ['/history/spa'] }, 40),
+      ]),
+    );
+    const html = renderToStaticMarkup(await CatchAll({ params }));
+    expect(html).toContain('Opened in 1922');
+    expect(html).not.toContain('Never drawn');
+    expect(html).toContain('On this page');
+    expect(html).not.toContain('On another page');
+    expect(currentVisitor).not.toHaveBeenCalled();
+  });
 });
 
 describe('the catch-all serving a page from rows (R4.1)', () => {
@@ -217,6 +234,18 @@ describe('the catch-all serving a page from rows (R4.1)', () => {
     expect(adopted).toContain('data-component="calendar.month"');
     expect(adopted).toContain('data-page-frame="body"');
     expect(adopted).not.toContain('data-page-frame="body-after"');
+  });
+
+  it('P2.6: on a composed page a Never region leaves and a Request = Value naming a part the address does not have shows (a fact not known)', async () => {
+    const own = region({ id: 'own', kind: 'static', title: 'Note', text: 'Times are local.' });
+    const f1 = region({ id: 'f1', kind: 'static', title: 'F1', text: 'F1 only', seq: 20, condition: { type: 'request-equals', part: 'slug', value: 'f1' } });
+    const gone = region({ id: 'gone', kind: 'static', title: 'Gone', text: 'Never drawn', seq: 30, condition: { type: 'never' } });
+    loadLiveComposed.mockResolvedValue({ page: calendar, revision: revision([own, f1, gone]) });
+    const html = renderToStaticMarkup(await CatchAll({ params: cparams }));
+    expect(html).toContain('Times are local.');
+    expect(html).toContain('F1 only');
+    expect(html).not.toContain('Never drawn');
+    expect(currentVisitor).not.toHaveBeenCalled();
   });
 
   it('renders the 404 for an address under the pattern that is not the page', async () => {

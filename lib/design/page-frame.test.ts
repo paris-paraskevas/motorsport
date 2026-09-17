@@ -235,21 +235,30 @@ describe('withPageGate', () => {
     expect([...dataOf(await gated(props)).allowed]).toEqual(['signed_in']);
   });
 
-  it('R2a: body regions go around the code’s body, and a signed-in rule reads the session and leaves the region out for an anonymous visitor', async () => {
+  it('R2a: body regions go around the code’s body, and an authenticated condition reads the session and leaves the region out for an anonymous visitor; a Never region never draws (P2.6)', async () => {
     const legacy: Region = { id: 'code-body', kind: 'component', component: 'page.body', settings: {}, title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null };
-    loadLiveFrame.mockResolvedValue(live([welcome({ id: 'above', position: 'body', seq: 10 }), legacy, welcome({ id: 'members', position: 'body', seq: 30, show: 'signed-in' })]));
+    loadLiveFrame.mockResolvedValue(
+      live([
+        welcome({ id: 'above', position: 'body', seq: 10 }),
+        legacy,
+        welcome({ id: 'members', position: 'body', seq: 30, condition: { type: 'authenticated' } }),
+        welcome({ id: 'gone', position: 'body', seq: 40, condition: { type: 'never' } }),
+        // The frame knows neither the address nor its parts: a fact not known shows the region.
+        welcome({ id: 'f1only', position: 'body', seq: 50, condition: { type: 'request-equals', part: 'slug', value: 'f1' } }),
+      ]),
+    );
     const gated = withPageGate('/calendar', Page);
     const anonymous = await gated(props);
     expect(typeOf(anonymous)).toBe(CodePageFrame);
-    expect(dataOf(anonymous).document.regions.map(r => r.id)).toEqual(['above', 'code-body']);
+    expect(dataOf(anonymous).document.regions.map(r => r.id)).toEqual(['above', 'code-body', 'f1only']);
     expect(currentUser).toHaveBeenCalledTimes(1);
     currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
-    expect(dataOf(await gated(props)).document.regions.map(r => r.id)).toEqual(['above', 'code-body', 'members']);
+    expect(dataOf(await gated(props)).document.regions.map(r => r.id)).toEqual(['above', 'code-body', 'members', 'f1only']);
   });
 
   it('R2b: the components a revision places are drawn for the frame, and a race-weekend rule reads the calendar fact only when a rule asks', async () => {
     const wire: Region = { id: 'wire', kind: 'component', component: 'home.wire', settings: { items: 5 }, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null };
-    loadLiveFrame.mockResolvedValue(live([wire, welcome({ id: 'quiet', position: 'body', seq: 20, show: 'between-weekends' })]));
+    loadLiveFrame.mockResolvedValue(live([wire, welcome({ id: 'quiet', position: 'body', seq: 20, condition: { type: 'between-weekends' } })]));
     const gated = withPageGate('/calendar', Page);
     raceWeekend.mockResolvedValue(true);
     let d = dataOf(await gated(props));

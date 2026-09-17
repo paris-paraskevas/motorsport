@@ -96,7 +96,7 @@ describe('/preview/[rev]', () => {
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
   });
 
-  it('is the 404 for a revision that does not exist, and shows an administrator the draft with every region; the toolbar is the app layout’s, not the page’s (R5)', async () => {
+  it('is the 404 for a revision that does not exist, and shows an administrator the draft with every region a condition does not hide (P2.6); the toolbar is the app layout’s, not the page’s (R5)', async () => {
     loadRevisionPreview.mockResolvedValueOnce(null);
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
     const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
@@ -106,6 +106,18 @@ describe('/preview/[rev]', () => {
     expect(html).toContain('Opened in 1922. All times are local.');
     expect(html).toContain('For members');
     expect(html).not.toContain('Sign in to see this.');
+  });
+
+  it('P2.6: the preview applies the conditions as the live page does: a Never region and a public-user region leave (the administrator is signed in); the address is not known, so Current Page is in shows', async () => {
+    const at = (id: string, text: string, condition: unknown, seq: number) => ({ id, kind: 'static', title: id, position: 'body', seq, column: 1, span: 12, newRow: false, hidden: false, authz: null, text, condition });
+    const regions = [...preview.document.regions, at('gone', 'Never drawn', { type: 'never' }, 30), at('guests', 'For guests', { type: 'public' }, 40), at('here', 'Somewhere', { type: 'page-in', pages: ['/history/spa'] }, 50)];
+    loadRevisionPreview.mockResolvedValue({ ...preview, document: { ...preview.document, regions } });
+    const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
+    expect(html).toContain('Opened in 1922');
+    expect(html).toContain('For members');
+    expect(html).not.toContain('Never drawn');
+    expect(html).not.toContain('For guests');
+    expect(html).toContain('Somewhere');
   });
 
   it('P1.2: draws a region on Use Template Defaults with the stored presets, the shipped ones when nothing is stored', async () => {

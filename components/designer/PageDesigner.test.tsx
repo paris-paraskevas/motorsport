@@ -601,6 +601,40 @@ describe('PageDesigner', () => {
     expect(within(screen.getByRole('dialog')).getByText(/Named by Footer: Site · Home/)).toBeTruthy();
   });
 
+  it('P2.6: Rules › Condition picks a condition in APEX’s words: Never strikes the region through in the tree and tags its tile; Current Page is in takes paths and saves condition; Request = Value and Item = Value are disabled here with their reasons', async () => {
+    const { onSaved } = mount();
+    fireEvent.click(tile('Static Content: A century of speed'));
+    const pe = screen.getByLabelText('Property Editor');
+    // The Rules group is open at first, as the common groups are.
+    const type = within(pe).getByLabelText('Condition type') as HTMLSelectElement;
+    expect(type.value).toBe('');
+    const option = (label: string) => within(type).getByRole('option', { name: label }) as HTMLOptionElement;
+    expect(option('Always').disabled).toBe(false);
+    expect(option('Never').disabled).toBe(false);
+    expect(option('Item = Value').disabled).toBe(true);
+    // Monza's address has no parts, so Request = Value has nothing to name here.
+    expect(option('Request = Value').disabled).toBe(true);
+    expect(within(pe).getByText(/Item = Value arrives with the page items \(P2\.18\)/)).toBeTruthy();
+    expect(within(pe).getByText(/Request = Value needs an address with parts/)).toBeTruthy();
+    fireEvent.change(type, { target: { value: 'never' } });
+    expect(status()).toMatch(/Condition: Never\./);
+    const label = within(screen.getByRole('tree', { name: 'Rendering' })).getByText('A century of speed');
+    expect(label.className).toContain('line-through');
+    expect(within(tile('Static Content: A century of speed')).getByText('Never')).toBeTruthy();
+    fireEvent.change(type, { target: { value: 'page-in' } });
+    expect(status()).toMatch(/Condition: Current Page is in comma delimited list\./);
+    fireEvent.change(within(pe).getByLabelText('Condition pages'), { target: { value: '/history/monza, /history/spa' } });
+    expect(status()).toMatch(/Pages updated\./);
+    expect(label.className).not.toContain('line-through');
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const body = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    expect(body.document.regions.find(r => r.id === 'intro')!.condition).toEqual({ type: 'page-in', pages: ['/history/monza', '/history/spa'] });
+    expect(body.document.regions.find(r => r.id === 'more')).not.toHaveProperty('condition');
+    fireEvent.change(type, { target: { value: '' } });
+    expect(status()).toMatch(/Condition cleared\./);
+  });
+
   it('Comment Out from the region’s menu strikes it through in the tree, tags its tile, sets Configuration › Commented Out to Yes and saves commentedOut; Uncomment clears it (P1.11)', async () => {
     const { onSaved } = mount();
     fireEvent.contextMenu(tile('Static Content: A century of speed'));
