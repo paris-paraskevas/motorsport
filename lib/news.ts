@@ -5,7 +5,8 @@ import { withSourceSnapshot } from './source-snapshot';
 const UA = 'PaddockTracker-PWA (https://paddock-tracker.com)';
 const BASE = 'https://www.motorsport.com/rss';
 const MAX_ITEMS = 10;
-const MAX_PER_SERIES_AGGREGATE = 3;
+/** The home wire's cap per series; the source catalogue offers this count and the News page's (P2.1), so a pick names a snapshot the pages keep warm. */
+export const MAX_PER_SERIES_AGGREGATE = 3;
 
 /**
  * Map our series slugs to motorsport.com's RSS slugs.

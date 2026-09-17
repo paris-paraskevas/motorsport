@@ -5,6 +5,7 @@ import { CURRENT_SEASON, REMOTE_SERVERS, SERIES_OPTIONS, SOURCES, defaultSourceR
 import { HEALTH_SEASON } from '@/lib/standings-health';
 import { RESULTS_HEALTH_SEASON } from '@/lib/results-health';
 import { SESSIONS_HEALTH_SEASON } from '@/lib/sessions-health';
+import { MAX_PER_SERIES_AGGREGATE } from '@/lib/news';
 
 // The source catalogue (the components programme, P2.1; APEX: REST Data
 // Sources, Data Profile, Remote Servers): the thirteen the changes line of
@@ -52,6 +53,19 @@ describe('the source catalogue', () => {
     expect(CURRENT_SEASON).toBe(HEALTH_SEASON);
     expect(CURRENT_SEASON).toBe(RESULTS_HEALTH_SEASON);
     expect(CURRENT_SEASON).toBe(SESSIONS_HEALTH_SEASON);
+  });
+
+  it('every pick names a snapshot the pages keep warm: the news source offers the home wire’s cap and the News page’s ten, nothing else (the reviewer’s finding)', () => {
+    const per = findSource('news')!.parameters[0];
+    expect(per.key).toBe('per');
+    expect(per.default).toBe(MAX_PER_SERIES_AGGREGATE);
+    // The News page (app/(app)/news/page.tsx) asks the aggregate for ten per series; the page's constant is its own, so the number is held here.
+    expect(per.options?.map(o => o.key)).toEqual([String(MAX_PER_SERIES_AGGREGATE), '10']);
+    expect(parseSourceRef('news?per=10')).toEqual({ value: { source: 'news', params: { per: 10 } }, problems: [] });
+    expect(parseSourceRef('news?per=5').problems).toEqual(['Per series must be 3 (the home wire) or 10 (the News page)']);
+    expect(parseSourceRef('news').value).toEqual({ source: 'news', params: {} });
+    // A parameter named twice is refused, never the first value kept.
+    expect(parseSourceRef('standings?series=f1&series=wec&season=2026').problems).toEqual(['Standings names series twice']);
   });
 
   it('encodes a ref canonically (the source, then its parameters in the declared order) and parses it back, numbers as numbers; empty is none', () => {

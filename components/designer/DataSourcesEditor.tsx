@@ -133,9 +133,9 @@ function ParameterField({ param, value, series, onChange }: { param: SourceParam
       </select>
     );
   }
-  if (param.kind === 'season' || param.kind === 'choice') {
+  if (param.kind === 'season' || param.kind === 'choice' || (param.kind === 'number' && param.options)) {
     return (
-      <select className={FIELD} value={String(value ?? '')} onChange={e => onChange(param.kind === 'season' ? Number(e.target.value) : e.target.value)}>
+      <select className={FIELD} value={String(value ?? '')} onChange={e => onChange(param.kind === 'choice' ? e.target.value : Number(e.target.value))}>
         {(param.options ?? []).map(o => (
           <option key={o.key} value={o.key}>
             {o.label}

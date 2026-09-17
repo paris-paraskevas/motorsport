@@ -282,7 +282,21 @@ export const SOURCES: readonly SourceDefinition[] = [
     key: 'news',
     name: 'News',
     holds: 'the newest headlines reported elsewhere, across the series',
-    parameters: [{ key: 'per', label: 'Per series', kind: 'number', min: 1, max: 20, default: 5, help: 'The reader’s cap per series, not a total.' }],
+    // The two counts the pages keep warm (the home wire's 3, the News page's 10), never a free value: under DATA_SOURCE=db a
+    // snapshot nobody writes would send the Worker upstream (the reviewer's finding).
+    parameters: [
+      {
+        key: 'per',
+        label: 'Per series',
+        kind: 'number',
+        options: [
+          { key: '3', label: '3 (the home wire)' },
+          { key: '10', label: '10 (the News page)' },
+        ],
+        default: 3,
+        help: 'The reader’s cap per series, not a total: one of the two counts the pages keep warm.',
+      },
+    ],
     columns: [col('title', 'Title', 'text'), col('link', 'Link', 'link'), col('source', 'Source', 'text'), col('published', 'Published', 'date'), col('series', 'Series', 'text')],
     fresh: 'loader',
     load: 'append',
@@ -360,6 +374,8 @@ function readParameter(source: SourceDefinition, p: SourceParameter, v: string):
     }
     case 'number': {
       const n = Number(v);
+      // A number with options is one of them (the counts the pages keep warm), never a free value.
+      if (p.options) return p.options.some(o => o.key === v) && Number.isInteger(n) ? { value: n } : { problem: `${p.label} must be ${p.options.map(o => o.label).join(' or ')}` };
       const ok = /^-?\d+$/.test(v) && Number.isFinite(n) && (p.min === undefined || n >= p.min) && (p.max === undefined || n <= p.max);
       return ok ? { value: n } : { problem: `${p.label} must be a number${p.min !== undefined && p.max !== undefined ? ` from ${p.min} to ${p.max}` : ''}` };
     }
@@ -389,7 +405,10 @@ export function parseSourceRef(raw: unknown, allowed?: readonly string[]): { val
   const given = new URLSearchParams(q === -1 ? '' : text.slice(q + 1));
   const problems: string[] = [];
   const params: SourceParams = {};
-  for (const k of new Set(given.keys())) if (!source.parameters.some(p => p.key === k)) problems.push(`${source.name} has no parameter called ${k}`);
+  for (const k of new Set(given.keys())) {
+    if (!source.parameters.some(p => p.key === k)) problems.push(`${source.name} has no parameter called ${k}`);
+    else if (given.getAll(k).length > 1) problems.push(`${source.name} names ${k} twice`);
+  }
   for (const p of source.parameters) {
     const v = given.get(p.key);
     if (v === null || v === '') {

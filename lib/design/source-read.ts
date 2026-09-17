@@ -135,6 +135,7 @@ const READERS: Readonly<Record<string, Reader>> = {
     };
   },
   async results(params, keys) {
+    // The season parameter offers the one the loader warms, which is the one the dispatch reads; when the archive brings earlier seasons, the dispatch takes it.
     const [{ loadSeries }, { loadSnapshotSource }] = await Promise.all([import('@/lib/series'), import('@/components/weekend/WeekendStandingsSnapshot')]);
     const series = await loadSeries(String(params.series));
     const snapshot = await loadSnapshotSource(series);
@@ -184,7 +185,7 @@ const READERS: Readonly<Record<string, Reader>> = {
   },
   async news(params, keys) {
     const { fetchAggregatedNews } = await import('@/lib/news');
-    const per = num(params.per) ?? 5;
+    const per = num(params.per) ?? 3;
     const items = await fetchAggregatedNews(per);
     return { tier: 'snapshot', rows: items.map(i => ({ title: i.title, link: i.link, source: hostOf(i.link), published: iso(i.pubDate), series: i.seriesSlug })), run: null, meta: await metaFor(keys) };
   },

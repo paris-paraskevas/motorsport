@@ -767,8 +767,8 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
                     </option>
                   ))}
                 </select>
-              ) : param.kind === 'season' || param.kind === 'choice' ? (
-                <select value={String(value ?? '')} disabled={readOnly} aria-label={param.label} className={FIELD} onChange={e => set(param.kind === 'season' ? Number(e.target.value) : e.target.value)}>
+              ) : param.kind === 'season' || param.kind === 'choice' || (param.kind === 'number' && param.options) ? (
+                <select value={String(value ?? '')} disabled={readOnly} aria-label={param.label} className={FIELD} onChange={e => set(param.kind === 'choice' ? e.target.value : Number(e.target.value))}>
                   {(param.options ?? []).map(o => (
                     <option key={o.key} value={o.key}>
                       {o.label}

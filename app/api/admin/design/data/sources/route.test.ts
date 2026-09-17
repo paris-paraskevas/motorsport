@@ -91,12 +91,18 @@ describe('GET /api/admin/design/data/sources', () => {
     expect(body.sources.find(s => s.key === 'authors')).toEqual({ key: 'authors', usedOn: [], runs: [], snapshots: [] });
   });
 
-  it('answers the list when the runs cannot be read: the loader’s work is empty, Utilization stands', async () => {
+  it('answers the list when the runs cannot be read, answered null or thrown: the loader’s work is empty, Utilization stands', async () => {
     loadRunsLog.mockResolvedValueOnce(null as unknown as typeof runsLog);
     const res = await GET();
     expect(res.status).toBe(200);
     const body = (await res.json()) as { sources: { key: string; usedOn: unknown[]; runs: unknown[] }[] };
     expect(body.sources.find(s => s.key === 'standings')!.runs).toEqual([]);
     expect(body.sources.find(s => s.key === 'standings')!.usedOn).toHaveLength(1);
+    loadRunsLog.mockRejectedValueOnce(new Error('down'));
+    const thrown = await GET();
+    expect(thrown.status).toBe(200);
+    const again = (await thrown.json()) as { sources: { key: string; runs: unknown[]; snapshots: unknown[] }[] };
+    expect(again.sources.find(s => s.key === 'standings')!.runs).toEqual([]);
+    expect(again.sources.find(s => s.key === 'standings')!.snapshots).toHaveLength(1);
   });
 });
