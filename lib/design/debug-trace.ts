@@ -9,6 +9,7 @@ import { applyBuildOptions, applyShow, documentRefs, passesShow, schemesAsked, s
 import { loadBuildOptions } from './build-options';
 import { READS, raceWeekendNow, renderComponents, type RenderPage } from './component-render';
 import { findComponent } from './components';
+import { loadComponents } from './definitions';
 import { readSnapshotMeta, type SnapshotMeta } from '@/lib/source-snapshot';
 
 // The Debug trace (P1.9; APEX: View Debug's report of a page's render, the
@@ -105,7 +106,7 @@ export async function tracePage(target: TraceTarget, level: DebugLevel, cid: str
   for (const r of dropped) d.note(6, `build:${r.id}`, r.commentedOut ? `${name(r)} commented out` : excluded(r) ? `${name(r)} excluded by ${r.buildOption}` : `${name(r)} left with its parent ${parentName(r)}`);
 
   // What the regions name: shortcuts, photos, lists.
-  const refs = documentRefs(built);
+  const refs = documentRefs(built, await loadComponents());
   d.note(4, 'refs', `${plural(refs.shortcuts.length, 'shortcut')}, ${plural(refs.assets.length, 'photo')}, ${plural(refs.lists.length, 'list')}`);
   if (level >= 9) d.note(9, 'refs', [...refs.shortcuts, ...refs.assets, ...refs.lists].join(', ') || 'none');
 

@@ -120,6 +120,21 @@ describe('PluginsEditor', () => {
     expect(calls.some(c => c.method === 'GET' && c.url === '/api/admin/design/definitions')).toBe(true);
   });
 
+  it('an added attribute leaves the draft on Remove, and nothing is left to save', () => {
+    render(<PluginsEditor definitions={list} readOnly={false} onSaved={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Open Page heading' }));
+    const open = screen.getByRole('region', { name: 'Plug-in: Page heading' });
+    fireEvent.click(within(open).getByRole('button', { name: 'Add Attribute' }));
+    const form = within(open).getByRole('form', { name: 'Add Attribute' });
+    fireEvent.change(within(form).getByLabelText('Label'), { target: { value: 'Badge' } });
+    fireEvent.click(within(form).getByRole('button', { name: 'Add' }));
+    expect(within(open).getByRole('row', { name: /Badge/ })).toBeTruthy();
+    expect((within(open).getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(within(open).getByRole('button', { name: 'Remove badge' }));
+    expect(within(open).queryByRole('row', { name: /Badge/ })).toBeNull();
+    expect((within(open).getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
   it('is read-only on a preview: no Add Attribute, no Save', () => {
     render(<PluginsEditor definitions={list} readOnly={true} onSaved={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Open Page heading' }));

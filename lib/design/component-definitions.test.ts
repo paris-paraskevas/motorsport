@@ -153,6 +153,8 @@ describe('a definition’s overlay (P2.0, PR B): what the operator adds to a shi
     expect(bad([{ key: 'a', label: 'A', kind: 'number', min: 5, max: 1, default: 3 }])).toEqual(['attribute a: min and max must be numbers with min at most max']);
     expect(bad([{ key: 'a', label: '', kind: 'text', default: '' }])).toEqual(['attribute a: the label must be 1 to 60 characters']);
     expect(bad([{ key: 'a', label: 'A', kind: 'text', default: '', group: 'nope' }])).toEqual(['attribute a: names the group nope, which neither the code nor this overlay declares']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'link', default: 'nowhere-at-all' }])).toEqual(['attribute a: the default: A must be a page or a link from the catalogue']);
+    expect(bad([{ key: 'a', label: 'A', kind: 'link', default: 'calendar' }])).toEqual([]);
     expect(bad([], [{ key: 'g', title: '', seq: 10 }])).toEqual(['group g: the title must be 1 to 60 characters']);
     expect(bad([], [{ key: 'g', title: 'G', seq: 1.5 }])).toEqual(['group g: seq must be a whole number']);
   });

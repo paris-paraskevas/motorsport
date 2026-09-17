@@ -72,6 +72,19 @@ export async function loadOverlays(): Promise<Record<string, DefinitionOverlay>>
   }
 }
 
+/** One definition's row as it is NOW, read fresh (no memo): what the write
+ *  path's guard compares against, so a stale isolate can never let an
+ *  attribute a page carries slip out. Null when there is no row; throws when
+ *  the read fails, so the caller stops rather than guard blind. */
+export async function loadOverlayRow(key: string): Promise<{ overlay: DefinitionOverlay; updatedAt: string; updatedBy: string | null } | null> {
+  const { data, error } = await betDb().from('component_definition').select('key, overlay, updated_at, updated_by').eq('application_key', APPLICATION_KEY).eq('key', key);
+  if (error) throw new Error(error.message);
+  const rows = Array.isArray(data) ? (data as Record<string, unknown>[]).filter(r => r && r.key === key) : [];
+  const { overlays, stamps } = readRows(rows);
+  const stamp = stamps[key];
+  return overlays[key] && stamp ? { overlay: overlays[key], updatedAt: stamp.updatedAt, updatedBy: stamp.updatedBy } : null;
+}
+
 /** Every definition, the code's merged with its row. */
 export async function loadDefinitions(): Promise<ComponentDefinition[]> {
   return mergeDefinitions(DEFINITIONS, await loadOverlays());

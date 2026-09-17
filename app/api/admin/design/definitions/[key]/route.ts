@@ -4,7 +4,7 @@ import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
 import { DEFINITIONS, EMPTY_OVERLAY, mergeDefinition, parseOverlay, type EditableDefinition } from '@/lib/design/component-definitions';
-import { DEFINITION_APPLICATION_KEY, loadDefinitionsForEditing, loadOverlays, loadUsage, resetDefinitionsMemo } from '@/lib/design/definitions';
+import { DEFINITION_APPLICATION_KEY, loadDefinitionsForEditing, loadOverlayRow, loadUsage, resetDefinitionsMemo } from '@/lib/design/definitions';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -60,8 +60,15 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
   // them all), and a key the parser no longer knows would cost the page that
   // region, so the refusal says how the key got there rather than promise a
   // way to take it off; whether a stale key should read as a warning instead is
-  // the operator's question (the Inbox).
-  const previous = (await loadOverlays())[key] ?? EMPTY_OVERLAY;
+  // the operator's question (the Inbox). The previous overlay is the row as it
+  // is now, read fresh: the readers' 60-second memo is per isolate, and a stale
+  // one would not know an attribute added elsewhere (the reviewer's finding).
+  let previous;
+  try {
+    previous = (await loadOverlayRow(key))?.overlay ?? EMPTY_OVERLAY;
+  } catch (err) {
+    return refused(500, `The definition could not be read: ${err instanceof Error ? err.message : 'unknown'}`);
+  }
   const removed = previous.attributes.filter(a => !overlay.attributes.some(x => x.key === a.key));
   const usage = (await loadUsage())[key];
   for (const a of removed) {

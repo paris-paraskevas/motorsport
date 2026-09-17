@@ -41,7 +41,7 @@ vi.mock('@/lib/betting/client', () => ({
 }));
 
 import { PUT } from './route';
-import { resetDefinitionsMemo } from '@/lib/design/definitions';
+import { loadOverlays, resetDefinitionsMemo } from '@/lib/design/definitions';
 
 const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
 const STAMP = '2026-09-17T11:00:00.000001+00:00';
@@ -121,5 +121,26 @@ describe('PUT /api/admin/design/definitions/[key]', () => {
     const allowed = await put('page.heading', { overlay: { attributes: [accent], groups: [colours] }, updatedAt: STAMP });
     expect(allowed.status).toBe(200);
     expect(update).toHaveBeenCalledTimes(1);
+  });
+
+  it('the guard reads the row as it is now, not a memo: an attribute added since this isolate last read the rows is still kept (the reviewer’s scenario)', async () => {
+    // This isolate remembers the row without badge…
+    tables.component_definition = { data: [{ key: 'page.heading', overlay: { attributes: [accent], groups: [colours] }, updated_at: STAMP, updated_by: 'user_admin' }], error: null };
+    await loadOverlays();
+    // …then badge is added elsewhere and a page saves a value for it.
+    tables.component_definition = { data: [{ key: 'page.heading', overlay: { attributes: [accent, badge], groups: [colours] }, updated_at: STAMP, updated_by: 'user_admin' }], error: null };
+    tables.page = { data: [{ id: CAL, path: '/calendar', name: 'Calendar' }], error: null };
+    tables.page_revision = { data: [{ page_id: CAL, created_at: '2026-09-17T10:00:00Z', published_at: null, document: { version: 1, actions: [], regions: [region('heading', 'component', { component: 'page.heading', settings: { text: '', accent: '#8c1c13', badge: 'new' } })] } }], error: null };
+    const refused = await put('page.heading', { overlay: { attributes: [accent], groups: [colours] }, updatedAt: STAMP });
+    expect(refused.status).toBe(409);
+    expect(((await refused.json()) as { error: string }).error).toMatch(/^Badge is on a page, Calendar/);
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it('a row that cannot be read stops the write: no guard, no save', async () => {
+    tables.component_definition = { data: null, error: { message: 'down' } };
+    const res = await put('page.heading', { overlay: { attributes: [accent], groups: [colours] }, updatedAt: null });
+    expect(res.status).toBe(500);
+    expect(insert).not.toHaveBeenCalled();
   });
 });

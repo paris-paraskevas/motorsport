@@ -1,5 +1,6 @@
 import { COMPONENTS, parseSettings, type AttributeDefinition, type AttributeGroup, type AttributeKind, type AttributeScope, type ComponentDefinition } from './components';
 import { REGION_TEMPLATES } from './template-options';
+import { isGoDestination } from './page-document';
 import type { SettingControl, SettingType, SettingValue } from './setting-defaults';
 
 // The definitions of every component type (the components programme, P2.0;
@@ -234,6 +235,8 @@ export function parseOverlay(raw: unknown, shipped: ComponentDefinition): { valu
     const probe = parseSettings({ ...shipped, settings: [def] }, { [key]: a.default });
     if (probe.problems.length) return void problems.push(`${who}: the default: ${probe.problems[0]}`);
     def.default = probe.settings[key];
+    // A link's default names a page or a catalogue link, as the parser will ask of every value (the reviewer's note).
+    if (kind === 'link' && def.default && !isGoDestination(String(def.default))) return void problems.push(`${who}: the default: ${label} must be a page or a link from the catalogue`);
     if (a.help !== undefined) {
       if (typeof a.help !== 'string' || a.help.length > HELP_MAX) return void problems.push(`${who}: the help is at most ${HELP_MAX} characters`);
       if (a.help.trim()) def.help = a.help.trim();
