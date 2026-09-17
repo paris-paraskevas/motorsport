@@ -52,7 +52,8 @@ export async function tracePage(target: TraceTarget, level: DebugLevel, cid: str
     }
     const p = await loadRevisionPreview(target.revisionId);
     if (!p) return null;
-    const document = p.page.served === 'rows' ? composedDocument(p.document, p.page.path) : p.document;
+    // Only a code page served from rows adopts a recipe; a row page is traced as stored (the preview's rule, P1.13).
+    const document = p.page.kind !== 'row' ? composedDocument(p.document, p.page.path) : p.document;
     return { page: p.page, document, where: { path: p.page.path, params: {}, page: p.page } };
   });
   if (!resolved) return null;

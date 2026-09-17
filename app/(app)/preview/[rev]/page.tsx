@@ -48,11 +48,14 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   const preview = await loadRevisionPreview(rev);
   if (!preview) notFound();
 
-  // A page served from rows (R4.1) previews as the catch-all serves it: the
+  // A code page served from rows (R4.1) previews as the catch-all serves it: the
   // revision's document read the same way (a transitional body adopting the
   // recipe, an empty body the default composition), its components in the code
-  // page's frame, with its family's structured data.
-  const composed = preview.page.served === 'rows';
+  // page's frame, with its family's structured data. A plain row page previews
+  // as the catch-all's row branch renders it (RowPageView: the title, the Right
+  // Side Column). The rule is the page's kind, as the resolver has it: pageFromRow
+  // marks a row page served: 'rows' too (P1.13).
+  const composed = preview.page.kind !== 'row';
   const stored = composed ? composedDocument(preview.document, preview.page.path) : preview.document;
   // An Excluded region leaves the preview as it leaves the running site (APEX: Build Option, P1.3); the show rules are not applied here.
   const document = applyBuildOptions(stored, await loadBuildOptions());

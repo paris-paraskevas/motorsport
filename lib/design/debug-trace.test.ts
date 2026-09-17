@@ -50,7 +50,10 @@ vi.mock('./live-page', () => ({
   loadRevisionPreview: async (id: string) =>
     id === 'b1b2c3d4-0000-4000-8000-000000000002'
       ? { page: monza, revisionId: id, createdAt: '2026-09-10T11:00:00Z', publishedAt: null, isLive: false, problems: [], document: { version: 2, actions: [], regions: [component('heading', 'page.heading')] } }
-      : null,
+      : id === 'c1c2c3d4-0000-4000-8000-000000000003'
+        ? // A row page as pageFromRow marks it (served: 'rows' too), holding a legacy body: only a composed page adopts a recipe (P1.13).
+          { page: { ...monza, served: 'rows' as const }, revisionId: id, createdAt: '2026-09-10T11:00:00Z', publishedAt: null, isLive: false, problems: [], document: { version: 2, actions: [], regions: [component('heading', 'page.heading'), component('legacy', 'page.body', { seq: 20 })] } }
+        : null,
 }));
 vi.mock('./authz-evaluate', () => ({ currentVisitor: async () => ({ signedIn: false, role: null, author: false, emails: [] }), allowedKeys: () => new Set<string>() }));
 vi.mock('./authz', () => ({ loadAuthzSchemes: async () => [{ key: 'signed_in', label: 'Signed in', type: 'signed_in', message: null }] }));
@@ -113,5 +116,10 @@ describe('the Debug trace (P1.9)', () => {
     expect(rev!.entries.map(e => e.phase)).toContain('render:heading');
     expect(rev!.entries.filter(e => e.phase === 'render:heading').map(e => e.text)).toEqual(['Page heading', 'settings {}']);
     expect(await tracePage({ revisionId: 'nope' }, 4, 'c')).toBeNull();
+  });
+
+  it('P1.13: a row page’s revision is traced as stored, whatever the served flag says (only a composed page adopts a recipe): its legacy body region stays', async () => {
+    const rev = await tracePage({ revisionId: 'c1c2c3d4-0000-4000-8000-000000000003' }, 4, 'c');
+    expect(rev!.entries.find(e => e.phase === 'resolve' && e.text.startsWith('Monza'))?.text).toBe('Monza, a history: 2 regions, 0 dynamic actions');
   });
 });

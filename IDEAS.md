@@ -35,8 +35,7 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 ## Inbox — merged and deduped 2026-08-28 (session 41)
 
-- (2026-09-10, session 47) The preview route (`/preview/<revision>`, no longer opened by Save and Run since R5) renders a row page through the composed-page frame, so it shows no page title where the live page does; `loadRevisionPreview` marks every row page `served: 'rows'` since R4.1.
-- (2026-09-10, session 47) Thread the Tooltips toggle through the Property Editor's header controls; key the remembered pane layout by Clerk user once the designer knows the user.
+- (2026-09-10, session 47) Thread the Tooltips toggle through the Property Editor's header controls.
 - (2026-09-10, session 47) A push-guard that matches a push only at a command position, so a heredoc quoting the words is not denied (the operator let the strict form stand for now).
 - (2026-09-10, session 48) Dropping a tile onto another tile with a before/after gesture; today the drop targets are the yellow tiles between rows and columns only.
 - (2026-09-10, session 48) The Developer Toolbar fetches the pages list on every page load for an administrator; cache it for the tab.
@@ -58,7 +57,6 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 - (2026-09-15, session 49) The Page Designer's `pages` prop falls back to the one open page while the pages list loads, so the Page Groups sheet opened from the designer would undercount in that window (pre-existing; the reviewer's nit).
 - (2026-09-15, session 49) The one-shot pages filter after Create › Page Group… › show: the plain back arrow shows every page again; whether the list should remember the last group is the operator's call.
 - (2026-09-15, session 49) `DESIGNER_TAB` lives in the toolbar's module and is imported by the designer's (a layering oddity); a shared constant when a third module needs it.
-- (2026-09-15, session 49) `documentRefs` projects `{shortcut:key}` from Static Content's text alone; Header Text and Footer Text are not scanned, so a shortcut used only there can be deleted while a page names it (the Monza trace read "0 shortcuts" with one in the Standfirst's header); scan the two texts as the body is scanned, a small fix now or with P1.12, the operator's call.
 - (2026-09-15, session 49) The Component View's Hidden column says "hidden at first" or "no"; a commented-out region could say so there too.
 - (2026-09-15, session 49) A Gallery tile whose description wraps (the inert legacy tile's reason) grows taller than its neighbours (132 px against theirs); a fixed tile height or a clamped description would keep the row even.
 - (2026-09-16, session 49, the audit) R1's Run-link test asserts a suffix (/history/monza$) that a relative address would also satisfy; anchor it on the site's origin so "absolute" is tested.
@@ -82,6 +80,7 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 - (2026-09-16, session 51) vitest 4.1.6 hands a vi.mock factory to only the first of concurrent dynamic imports of one module from one importer (its runner's own comment: "this will not work if user does Promise.all(import(), import())"); a test of anything that imports a mocked module in parallel (the renderers) spies on the real module's namespace instead, as component-render.test.tsx does; check whether a later vitest lifts it before writing another factory mock there.
 - (2026-09-16, session 51) After the Theme Roller switches a tab to a theme the page's set did not carry (a theme saved in this tab), the picker shows the default card pressed until a reload: its set is the server's and readChoice falls back. Cosmetic; a client-side merge of the saved theme into the picker's set would close it.
 - (2026-09-16, session 51) The themes memo (loadThemeSet, 60 s) is per isolate: resetThemesMemo clears only the Worker that served the write, so a new default reaches every server within a minute, not at once (the Themes editor has the same window). A shared revalidation tag or a shorter memo if the minute ever matters.
+- (2026-09-17, session 51) P1.13 made a header or footer shortcut part of the refs projection, but a revision saved before it keeps its stored projection until its page is saved again, so such a shortcut on an untouched page is unguarded until then; a backfill (recompute the refs of every newest revision) is a prod write for the operator's turn, on "apply <id>".
 
 Three overlapping inboxes (2026-08-20, 08-24, 08-26) collapsed into one. Items verified shipped were deleted, not struck through: `/social/leagues` play-money framing (0.334.93, confirmed on prod), the site-wide og:image fault (0.334.37, confirmed — ten route types all emit absolute URLs), the mobile calendar, the `/blog` cover listing, the blog SEO pass, the What's-New modal (0.334.66) and the §A9 announcement surface.
 

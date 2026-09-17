@@ -319,6 +319,7 @@ export function Designer({
   initialDetail = null,
   initialRegion = null,
   initialFocus = null,
+  userId = null,
   series = [],
 }: {
   readOnly: boolean;
@@ -339,6 +340,8 @@ export function Designer({
   initialRegion?: string | null;
   /** A field of the Application Definition to land on, from `?focus=` (P1.8: the toolbar's Edit Logo lands on the Wordmark). */
   initialFocus?: string | null;
+  /** The signed-in user's id, keying the Page Designer's remembered pane layout (P1.13). */
+  userId?: string | null;
   /** Lists the server already loaded, so opening needs no round trip; any list
    *  missing here is fetched. */
   initialLists?: Partial<Record<NavListKey, EditableList>>;
@@ -727,6 +730,7 @@ export function Designer({
               buildOptions={build.state === 'ready' ? build.options : undefined}
               templates={appearance.state === 'ready' ? appearance.loaded.appearance.templates : undefined}
               initialRegion={openPage === initialPageId ? regionOnce : null}
+              userId={userId}
               shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
               themeDefault={themeDefault}
               onSaved={next => {

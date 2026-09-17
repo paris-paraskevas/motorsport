@@ -588,7 +588,8 @@ export interface DocumentRefs {
  *  projection the write path stores beside the revision. Read from the document
  *  as drawn, commented-out regions included (the write path never applies the
  *  build filter), so a row such a region names stays undeletable while the
- *  region is on the page. */
+ *  region is on the page. A shortcut counts wherever a text substitutes it:
+ *  Static Content's text and every region's Header Text and Footer Text (P1.13). */
 export function documentRefs(doc: PageDocument): DocumentRefs {
   const lists = new Set<string>();
   const assets = new Set<string>();
@@ -600,6 +601,7 @@ export function documentRefs(doc: PageDocument): DocumentRefs {
     if (r.kind === 'list') lists.add(r.listKey);
     if (r.kind === 'image') assets.add(r.assetId);
     if (r.kind === 'static') for (const m of r.text.matchAll(SHORTCUT_TOKEN)) shortcuts.add(m[1]);
+    for (const t of [r.headerText, r.footerText]) if (t) for (const m of t.matchAll(SHORTCUT_TOKEN)) shortcuts.add(m[1]);
     if (r.kind === 'button' && r.dest) dests.add(r.dest);
   }
   for (const a of doc.actions) for (const e of a.do) if (e.action === 'go') dests.add(e.dest);
