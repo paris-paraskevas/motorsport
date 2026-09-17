@@ -9,6 +9,7 @@ import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
 import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts } from '@/lib/design/page-document';
 import { loadNamedPages } from '@/lib/design/pages';
+import { loadComponents } from '@/lib/design/definitions';
 import { loadBuildOptions } from '@/lib/design/build-options';
 import { loadAppearance } from '@/lib/design/appearance';
 import { raceWeekendNow, renderComponents } from '@/lib/design/component-render';
@@ -110,7 +111,7 @@ export default async function CatchAll({ params }: { params: Params }) {
   // A region whose Build Option is Excluded leaves the page here, before its component is drawn (P1.3).
   const document = applyBuildOptions(applyShow(r.document, { signedIn, raceWeekend: asks.calendar ? await raceWeekendNow() : null }), await loadBuildOptions());
 
-  const refs = documentRefs(document);
+  const refs = documentRefs(document, await loadComponents());
   const where = r.kind === 'composed' ? { path: r.pattern, params: r.params, page: r.page } : { path, params: {}, page: r.page };
   // The templates' presets (P1.2) ride the appearance the layout already read (memoised).
   // The live row pages the buttons and go effects name (P1.12 B2) ride along; a page not live is drawn as nothing.

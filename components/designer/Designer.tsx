@@ -35,6 +35,8 @@ import { ThemesEditor } from './ThemesEditor';
 import { AppearanceEditor } from './AppearanceEditor';
 import { TemplatesEditor } from './TemplatesEditor';
 import { ShortcutsEditor } from './ShortcutsEditor';
+import { PluginsEditor } from './PluginsEditor';
+import { componentDefinitionsOf, type EditableDefinition } from '@/lib/design/component-definitions';
 import { AssetsEditor } from './AssetsEditor';
 import { SearchHintsEditor } from './SearchHintsEditor';
 import { ApplicationDefinitionEditor } from './ApplicationDefinitionEditor';
@@ -211,6 +213,22 @@ async function fetchShortcuts(): Promise<LoadedShortcuts> {
   }
 }
 
+type LoadedDefinitions =
+  | { state: 'loading' }
+  | { state: 'error'; message: string }
+  | { state: 'ready'; definitions: EditableDefinition[] };
+
+async function fetchDefinitions(): Promise<LoadedDefinitions> {
+  try {
+    const res = await fetch('/api/admin/design/definitions', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The component definitions could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { definitions: EditableDefinition[] };
+    return { state: 'ready', definitions: d.definitions };
+  } catch {
+    return { state: 'error', message: 'The component definitions could not be loaded: network error.' };
+  }
+}
+
 type LoadedAssets =
   | { state: 'loading' }
   | { state: 'error'; message: string }
@@ -308,6 +326,7 @@ export function Designer({
   initialThemes,
   initialAppearance,
   initialShortcuts,
+  initialDefinitions,
   initialAssets,
   mediaConfigured = false,
   initialSearchHints,
@@ -361,6 +380,8 @@ export function Designer({
   initialAppearance?: EditableAppearance | null;
   /** The shortcuts the server already loaded; fetched when absent. */
   initialShortcuts?: EditableShortcut[] | null;
+  /** The component definitions (P2.0) the server already loaded; fetched when absent. */
+  initialDefinitions?: EditableDefinition[] | null;
   /** The assets the server already loaded; fetched when absent. */
   initialAssets?: EditableAsset[] | null;
   /** Whether this Worker has the media binding (uploads and photos need it). */
@@ -392,6 +413,9 @@ export function Designer({
   );
   const [shortcuts, setShortcuts] = useState<LoadedShortcuts>(() =>
     initialShortcuts ? { state: 'ready', shortcuts: initialShortcuts } : { state: 'loading' },
+  );
+  const [definitions, setDefinitions] = useState<LoadedDefinitions>(() =>
+    initialDefinitions ? { state: 'ready', definitions: initialDefinitions } : { state: 'loading' },
   );
   const [assets, setAssets] = useState<LoadedAssets>(() =>
     initialAssets ? { state: 'ready', assets: initialAssets, mediaConfigured } : { state: 'loading' },
@@ -481,6 +505,11 @@ export function Designer({
         if (!cancelled) setShortcuts(loaded);
       });
     }
+    if (!initialDefinitions) {
+      void fetchDefinitions().then(loaded => {
+        if (!cancelled) setDefinitions(loaded);
+      });
+    }
     if (!initialAssets) {
       void fetchAssets().then(loaded => {
         if (!cancelled) setAssets(loaded);
@@ -509,7 +538,7 @@ export function Designer({
     return () => {
       cancelled = true;
     };
-  }, [initialLists, initialListIndex, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialAssets, initialPages, initialSearchHints, initialApplication, initialPageId, initialDetail]);
+  }, [initialLists, initialListIndex, initialText, initialBuildOptions, initialSettings, initialAuthz, initialThemes, initialAppearance, initialShortcuts, initialDefinitions, initialAssets, initialPages, initialSearchHints, initialApplication, initialPageId, initialDetail]);
 
   // The selection lives in the URL too (`?sc=`), written with the browser's own
   // replaceState, which Next's router integrates: a refresh reopens the same
@@ -732,6 +761,7 @@ export function Designer({
               initialRegion={openPage === initialPageId ? regionOnce : null}
               userId={userId}
               shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
+              components={definitions.state === 'ready' ? componentDefinitionsOf(definitions.definitions) : undefined}
               themeDefault={themeDefault}
               onSaved={next => {
                 setDetail({ state: 'ready', detail: next });
@@ -965,6 +995,24 @@ export function Designer({
                 shortcuts={shortcuts.shortcuts}
                 readOnly={readOnly}
                 onSaved={next => setShortcuts({ state: 'ready', shortcuts: next })}
+              />
+            );
+          })()}
+
+          {item?.editor === 'plugins' && (() => {
+            if (definitions.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Plug-ins…</p>;
+            }
+            if (definitions.state === 'error') return <p className="text-12 text-negative">{definitions.message}</p>;
+            return (
+              <PluginsEditor
+                definitions={definitions.definitions}
+                readOnly={readOnly}
+                onSaved={next => setDefinitions({ state: 'ready', definitions: next })}
+                onOpenPage={id => {
+                  selectWorkspace('builder');
+                  openPageDetail(id);
+                }}
               />
             );
           })()}

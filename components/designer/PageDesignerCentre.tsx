@@ -23,6 +23,7 @@ import {
 } from './page-designer-model';
 import type { Drag } from './PageDesignerLayout';
 import type { MenuAt } from './DesignerMenu';
+import type { ComponentDefinition } from '@/lib/design/components';
 
 // The centre pane's other tabs and the gallery (Paddock Designer v2.4):
 // Component View (every component as report rows, a row selects), Messages
@@ -110,6 +111,7 @@ export function ComponentView({
   lists,
   pages = [],
   onSelect,
+  components,
 }: {
   /** Kept for the caller; the view reads the document alone since the Body became the same on every page. */
   page?: PageRow;
@@ -119,6 +121,8 @@ export function ComponentView({
   lists: { key: string; label: string }[];
   /** The application's live pages, for naming where a Button or a go effect leads (P1.12 B2). */
   pages?: PageRow[];
+  /** The component definitions (P2.0), for the summaries; the code's when absent. */
+  components?: readonly ComponentDefinition[];
   onSelect: (s: Selection) => void;
 }) {
   const AUTHZ: Record<string, string> = { public: 'Public', signed_in: 'Signed in', contributor: 'Contributor', administrator: 'Administrator' };
@@ -155,7 +159,7 @@ export function ComponentView({
       <Report title="Buttons" cols={['Seq', 'Label', 'Position', 'Target']} rows={buttons} selection={selection} onSelect={onSelect} />
       <Report title="Dynamic Actions" cols={['Seq', 'Name', 'When', 'Actions']} rows={actions} selection={selection} onSelect={onSelect} />
       {doc.regions.length > 0 && (
-        <p className="m-0 text-11 text-text-faint">Source: {doc.regions.map(r => `${regionName(r)}: ${regionSummary(r, assets, lists, pages)}`).join(' · ').slice(0, 400)}</p>
+        <p className="m-0 text-11 text-text-faint">Source: {doc.regions.map(r => `${regionName(r)}: ${regionSummary(r, assets, lists, pages, components)}`).join(' · ').slice(0, 400)}</p>
       )}
     </div>
   );

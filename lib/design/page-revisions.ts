@@ -3,6 +3,7 @@ import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { EMPTY_DOCUMENT, parsePageDocument, type PageDocument } from './page-document';
 import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, pageFromRow, type PageRow } from './pages';
 import { pageDest } from './destinations';
+import { loadComponents } from './definitions';
 
 export {
   EMPTY_DOCUMENT,
@@ -161,7 +162,7 @@ export async function loadPageDetail(id: string): Promise<PageDetail | null> {
     const newestRaw = all[0];
     let newest: PageDetail['newest'] = null;
     if (newestRaw) {
-      const parsed = parsePageDocument(newestRaw.document);
+      const parsed = parsePageDocument(newestRaw.document, await loadComponents());
       newest = { ...strip(newestRaw), document: parsed.problems.length > 0 && parsed.value.regions.length === 0 ? EMPTY_DOCUMENT : parsed.value, problems: parsed.problems };
     }
     return {

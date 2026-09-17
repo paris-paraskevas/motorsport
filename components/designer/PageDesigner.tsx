@@ -1370,6 +1370,7 @@ export function PageDesigner({
                 assets={assets}
                 lists={lists}
                 pages={pages}
+                components={components}
                 shared={shared}
                 hideEmpty={hideEmpty}
                 showCols={showCols}
@@ -1383,7 +1384,7 @@ export function PageDesigner({
                 root={rootLive}
               />
             )}
-            {cTab === 'cv' && <ComponentView page={page} doc={doc} selection={effective} assets={assets} lists={lists} pages={pages} onSelect={sel => select(sel)} />}
+            {cTab === 'cv' && <ComponentView page={page} doc={doc} selection={effective} assets={assets} lists={lists} pages={pages} components={components} onSelect={sel => select(sel)} />}
             {cTab === 'msgs' && <MessagesTab messages={messages} onPick={m => select(m.sel, { group: m.group })} />}
             {cTab === 'search' && <PageSearchTab query={searchQuery} onQuery={setSearchQuery} options={searchOpts} onOptions={setSearchOpts} hits={hits} onPick={h => select(h.sel)} />}
             {cTab === 'help' && <HelpTab helpFor={helpFor?.label ?? null} helpText={helpFor?.text ?? null} selected={selectedName} />}

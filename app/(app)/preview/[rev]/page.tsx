@@ -7,6 +7,7 @@ import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { applyBuildOptions, documentRefs, schemesAsked } from '@/lib/design/page-document';
 import { loadNamedPages } from '@/lib/design/pages';
+import { loadComponents } from '@/lib/design/definitions';
 import { loadBuildOptions } from '@/lib/design/build-options';
 import { loadAppearance } from '@/lib/design/appearance';
 import { renderComponents } from '@/lib/design/component-render';
@@ -60,7 +61,7 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   // An Excluded region leaves the preview as it leaves the running site (APEX: Build Option, P1.3); the show rules are not applied here.
   const document = applyBuildOptions(stored, await loadBuildOptions());
   const asked = schemesAsked(preview.page.authz, document);
-  const refs = documentRefs(document);
+  const refs = documentRefs(document, await loadComponents());
   const [shortcuts, assets, nav, schemes, components, extras, appearance, pages] = await Promise.all([
     loadShortcuts(),
     loadAssetsById(refs.assets),

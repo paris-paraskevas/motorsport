@@ -17,6 +17,7 @@ import {
   type Selection,
   type SharedKey,
 } from './page-designer-model';
+import type { ComponentDefinition } from '@/lib/design/components';
 
 // The Layout tab (Paddock Designer v2.4, docs/prototypes/paddock-designer-v2.4,
 // renderLayout): the page as a schematic of its template's positions. Shared
@@ -54,6 +55,7 @@ export function PageDesignerLayout({
   onDrop,
   onEditShared,
   root = null,
+  components,
 }: {
   page: PageRow;
   doc: PageDocument;
@@ -64,6 +66,8 @@ export function PageDesignerLayout({
   lists: { key: string; label: string }[];
   /** The application's live pages, for naming where a Button goes (P1.12 B2). */
   pages?: PageRow[];
+  /** The component definitions (P2.0), for the summaries; the code's when absent. */
+  components?: readonly ComponentDefinition[];
   /** One line under each shared tile: the entries of the list it shows. */
   shared: Record<SharedKey, string>;
   hideEmpty: boolean;
@@ -174,7 +178,7 @@ export function PageDesignerLayout({
               <span>Region Body</span>
               <span>{r.position === 'body' || r.parent ? spanName(r.span) : ''}</span>
             </div>
-            <div className="mt-0.5 truncate text-11 text-text-muted">{regionSummary(r, assets, lists, pages)}</div>
+            <div className="mt-0.5 truncate text-11 text-text-muted">{regionSummary(r, assets, lists, pages, components)}</div>
           </div>
           {/* Sub Regions (P1.4; APEX's region position): the region's own twelve columns, drawn only once it holds one. */}
           {depth < NESTING_CAP && childrenOf(doc, r.id).length > 0 && (
