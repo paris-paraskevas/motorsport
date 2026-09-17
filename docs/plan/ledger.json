@@ -94,6 +94,11 @@
    "date": "2026-09-17",
    "change": "The operator, ~06:35Z, on the Phase 1 checklist (artifact 8ea90feb-d14e-490c-b428-e67499809f51: 72 goals done, 12 left out on purpose, 5 loose ends) and the recommendation to close four loose ends before Phase 2: \"Phase 1 loose ends\". Read as: slot P1.13 added with the four items (the shortcut reference scan over Header Text and Footer Text; the preview route rendering a plain row page as the live page does, with its title and Right Side Column; Info › Show Landmarks and Show Headings; the pane state per user); the other left-out items stay where the ledger put them (Create Page Item with items, Breadcrumb Region with the component, Copy Page with Phase 4, page-level and ungrouped template options with the page template, Edit App Icon and the Roller’s Custom CSS, Export and Import by the tokens-first decision, Session and the Text Messages Picker as ours, code pages undeletable until Phase 3); the conformance-list test the rules name is a separate harness item at the operator’s turn. Defaults taken in P1.13’s plan (approved 2026-09-17 ~07:25Z after a Sonnet plan critic, 284k tokens, SOUND WITH FIXES, four blocking fixes folded: the foreign key on the refs, a trace test that diverges, nested headers no landmarks, the preview reached by its own address): the refs scan reads Header Text and Footer Text on every region kind, and a shortcut named there that no row holds refuses the next save with the route’s message, as a body text already does (prod read before the merge: 58 pages, 37 revisions, 3 shortcuts, no header or footer token at all, none dangling); existing revisions keep their stored projection until their page is saved again; the preview and the Debug trace decide composed by the page’s kind, the resolver’s rule; Show Landmarks outlines the HTML-AAM landmarks (a header or footer inside sectioning content is none; a region only with a name) with the role and the accessible name as its label, Show Headings h1–h6 with the level and the first forty characters, both as fixed boxes over the page in Quick Edit’s outline style, measured again on scroll and resize, collected once per toggle, the toolbar’s own elements skipped, the entries reading Hide … while on and Info pressed while any is on; the pane memory keyed by the Clerk user id (paddock-developer.page-designer.<id>), the browser’s old unkeyed entry read as a user’s start until their first pick, the unkeyed key when no user is known; one new file, components/page/PageOutlines.tsx with its test.",
    "word": "the operator, 2026-09-17 ~06:35Z, verbatim: \"Phase 1 loose ends\""
+  },
+  {
+   "date": "2026-09-17",
+   "change": "The operator, ~09:19Z, on the Phase 2 screen (artifact 9bf1e3be-ba94-4956-a0bb-5cf03b3f5732: the twenty-five slots of the v2 draft, each with Fixed by · Defaults I take · Needs your word, the order proposed, the seven questions with a default each, three drawings: the data region’s views over F1’s standings with the Source and Attributes groups, the Conditions vocabulary against today’s seven show rules, a component definition as a document): \"merge and \"Phase 2 go\"\", the merge for the records PR #1011 (1.0.130, merged 09:19:18Z as 14bf3d61) and the go for the list. Read as: Phase 2 opens with the twenty-five slots P2.0–P2.24 exactly as docs/plan/phase-2-draft.json holds them (scope, fixed by, defaults, needs the word, acceptance), added to the ledger in the order proposed for building, P2.0 → P2.1 → P2.6 → P2.2 → P2.9 → P2.24 → P2.3 → P2.4 → P2.5 → P2.7 → P2.8 → P2.10 → P2.11 → P2.12 → P2.13 → P2.14 → P2.15 → P2.16 → P2.17 → P2.18 → P2.20 → P2.21 → P2.22 → P2.23 → P2.19; each slot’s Defaults I take are the screen’s, folded into the slot. The seven questions are answered by their defaults: P2.0 The seed migration (Component Settings into the model): Applied on the operator’s \"apply <id>\" with the operator present, rehearsed first inside begin … rollback; P2.1 The first catalogue of sources and its migration: The thirteen the draft names: series · season · standings · results · rounds · sessions · drivers · teams · posts · news · authors · releases · tracks; the migration on \"apply <id>\"; P2.2 The preset names per series shape: The fifteen standings and results shapes named as the site names them today, shown as a list at P2.2’s turn; P2.3 TanStack Table as a dependency: Yes, at P2.3’s turn, the bundle delta quoted against the 80% alarm (the dry run stands at 66%); no other new dependency in Phase 2 (Recharts 3.8 and Leaflet are installed); P2.10 The series tabs as one page with Tabs, or one page per tab: Decided at P3.4, where the series pages are rebuilt; P2.10 builds the component either way; P2.18 The item set for Form: Five: text · textarea · select (from a list of values) · switch · choice; P2.19 Comments: Deferred; listed as \"on the word\" and not built until replies are wanted. A slot still opens with its decision scan at its turn (a migration waits for \"apply <id>\", TanStack Table for the delta quoted at P2.3’s turn, the preset names for the list at P2.2’s turn); P2.19 Comments stays listed and is not built until replies are wanted. P2.0 next, in plan mode with a Sonnet plan critic, tests first, one PR.",
+   "word": "the operator, 2026-09-17 ~09:19Z, verbatim: \"merge and \"Phase 2 go\"\""
   }
  ],
  "phases": {
@@ -104,6 +109,10 @@
   "P1": {
    "title": "Phase 1 — The shell grows to APEX's shape",
    "note": "Every component inherits these; nothing changes for readers until a region is given a look. Acceptance tests quote the click-level map."
+  },
+  "P2": {
+   "title": "Phase 2 — The general components, over declared sources",
+   "note": "The definition model first, then the sources, then the components; each with spec, settings, defaults, template options, renderer and a test from a saved document."
   }
  },
  "slots": [
@@ -359,6 +368,306 @@
    "status": "done",
    "scopeHash": "d96194bbd57f",
    "evidence": "PR #1010 (1.0.129) squash-merged 2026-09-17 08:48:59Z as c3e01239 (prod /changelog 1.0.129 at 2026-09-17T09:04:15Z). Four commits: the build, the outline labels stacking, an Inbox line, the reviewer’s note taken. Acceptance in a real browser on the local server (PADDOCK_ENV=production, the admin signed in through the scratch redirect): a throwaway shortcut p113.probe named in Standfirst’s Header Text and published could not be deleted (the refs projection’s foreign key page_revision_ref_shortcut_key_fkey refused the DELETE), the header put back and published; /preview/73256b65… (Monza’s live revision) rendered data-page-revision, the h1 \"Monza, a history\" and the aside with Elsewhere on Paddock, no data-page-frame, while the Calendar’s revision 7b475bff… kept its frame (\"Race calendar 2026\", no aside); the Info menu read Show Layout Columns · Show Page Timing · Show Landmarks · Show Headings, Show Landmarks drew banner, navigation · Doors, main, complementary and navigation · Elsewhere on Paddock (no second banner for the article’s header; the footer sits inside main, an Inbox finding), Show Headings drew H1 · Monza, a history and seven H2s, each entry read Hide … while on and turned off, Info pressed while any was on and unpressed after; Two Pane Mode wrote paddock-developer.page-designer.user_3J40T0N8dWLFMqgMb06DjsgIj3c with paneMode two and left the browser’s unkeyed entry untouched, Three Pane Mode put it back. Production read before the merge (a SELECT through the Management API): 58 pages, 37 revisions, 3 shortcuts, no header or footer shortcut token, none dangling. Tests first: six files seen failing (the refs, the preview, the trace, the Info menu, the new outlines file, the keyed memory), then green. Gates after the last edit: tsc 0 · lint 0 errors · vitest 212 files, 2157 tests · hooks 31/31 · wrangler dry run 43295.88 KiB (66.06%, the first commit’s build). Plan critic (Sonnet, 284k tokens): SOUND WITH FIXES, four blocking fixes folded. Reviewer (Sonnet, 226k tokens): PASS, no blocking gap; its cosmetic note taken in 73d488b2. Review page f04f6009-1d2c-49ab-88cd-6745d8f1cf80. The operator’s word \"Phase 1 loose ends\" is the changes line of 2026-09-17."
+  },
+  {
+   "id": "P2.0",
+   "phase": "P2",
+   "title": "The component definition model",
+   "scope": "Attributes with a scope (application, component, report), typed editors (colour, icon, code-free text, select, link, boolean), named attribute groups, declared events, capability flags gating editor sections, slots as typed nesting points; Component Settings migrates into it; a compatibility layer for today's settings.",
+   "fixedBy": "Plug-ins (runs 10–11)",
+   "defaults": "A definition is a document per component type in a shared component, Component Definitions (rule 10: Utilization, History, a delete guard); today’s six Home specs, the heading and the calendar become definitions; the Property Editor’s Attributes tab reads a definition’s groups and editors; today’s Component Settings keys read through the model unchanged.",
+   "needsWord": "the seed migration on 'apply <id>'",
+   "acceptance": "Today's three component settings read through the new model unchanged; a new attribute with a group and a colour editor renders in the Property Editor; test.",
+   "status": "planned",
+   "scopeHash": "a6c84e125b33"
+  },
+  {
+   "id": "P2.1",
+   "phase": "P2",
+   "title": "Data Sources shared component and the Source picker",
+   "scope": "Sources: series, season, standings, results, rounds, sessions, drivers, teams, posts, news, authors, releases, tracks; a data profile discovered from a pasted sample; a Remote Server base URL per environment; pagination presets; caching with scheduled invalidation; a delete guard; the loader adopts append / merge / replace, steps and a run log; the Object Browser lists the same catalogue.",
+   "fixedBy": "Data chapters (runs 9–10); rule 3",
+   "defaults": "The catalogue declared in code first (a source is a name, parameters and a reader), rows only for the operator’s additions (remote servers, profiles); the Source group as APEX draws it (Type · Location · the source’s parameters); the loader’s run log in the Debug trace’s phases; the Data workspace’s Object Browser.",
+   "needsWord": "the first catalogue list; the migration on 'apply <id>'",
+   "acceptance": "A component's Source picks standings · f1 · 2026 and the renderer reads it; the Data page shows the loader's runs in the new vocabulary; test.",
+   "status": "planned",
+   "scopeHash": "e1930a5b8622"
+  },
+  {
+   "id": "P2.6",
+   "phase": "P2",
+   "title": "The Conditions vocabulary",
+   "scope": "One typed Condition attribute on every component (item = value, request, current page, authenticated, race weekend, never…), replacing show rules; both readable for one release.",
+   "fixedBy": "Appendix E (run 14)",
+   "defaults": "Today’s seven show rules map one to one (always, race weekend, between weekends, signed in, signed out, phones, desktop) and gain Never, Item = Value, Request = Value and Current page in; the Condition editor sits where Show sits (the Rules group); the Debug trace names the condition that hid a region; the parser reads both for one release, then show goes.",
+   "needsWord": "none",
+   "acceptance": "Every show rule maps to a condition; a region with condition never does not render; test.",
+   "status": "planned",
+   "scopeHash": "b3a4072c22d5"
+  },
+  {
+   "id": "P2.2",
+   "phase": "P2",
+   "title": "The data region with views",
+   "scope": "One region over a source with views table · cards · list · timeline · detail; row templates (content row, media list, timeline, avatar, badge) as column types; typed columns (text, number, gap, link, badge, position, percent graph, image); named presets for the fifteen standings and results shapes; Card slots Title, Subtitle, Body, Media, Badge and five action zones.",
+   "fixedBy": "Reports chapters (runs 7–8)",
+   "defaults": "View is a setting of one data region (your word of 2026-09-10), default table; the presets are definitions of P2.0 (a preset names its columns and view); the fifteen shapes ship as presets, not pages; a card’s slots map to a source’s fields in the Attributes tab.",
+   "needsWord": "preset names per series shape",
+   "acceptance": "f1 and MotoGP standings render from the same region with different presets; the same source flips to cards; test per preset.",
+   "status": "planned",
+   "scopeHash": "79a3abc48ae5"
+  },
+  {
+   "id": "P2.9",
+   "phase": "P2",
+   "title": "Live band",
+   "scope": "Weekends under way; also-racing rows; the race-weekend fact for conditions.",
+   "fixedBy": "domain component",
+   "defaults": "home.live’s renderer as the first instance; the race-weekend fact stays the one the conditions read.",
+   "needsWord": "none",
+   "acceptance": "Home's This weekend as an instance; test.",
+   "status": "planned",
+   "scopeHash": "fcc88f7b3add"
+  },
+  {
+   "id": "P2.24",
+   "phase": "P2",
+   "title": "Home's six become instances",
+   "scope": "home.lead → data region (cards, one card); home.live → Live band; home.result, home.changed → data region presets; home.next → data region (cards); home.wire → data region (list); the home.* specs retired.",
+   "fixedBy": "rule 3",
+   "defaults": "Parity output (the served HTML compared before and after) pasted in the PR; you publish the Home revision; the home.* specs leave the catalogue in the same PR.",
+   "needsWord": "none",
+   "acceptance": "Home renders identically from general components; parity output.",
+   "status": "planned",
+   "scopeHash": "3c2153316b73"
+  },
+  {
+   "id": "P2.3",
+   "phase": "P2",
+   "title": "Saved views, sort options, URL filters",
+   "scope": "Users may sort, filter, hide columns, download CSV (TanStack Table on the word); saved views in four tiers with share links; a sort-options list for card views; a URL filter vocabulary.",
+   "fixedBy": "Interactive Report (runs 7–8)",
+   "defaults": "The URL vocabulary first (it serves Filters too), the client table second; saved views as rows of a shared component; CSV from the source, not the DOM.",
+   "needsWord": "TanStack Table as a dependency",
+   "acceptance": "Sort and CSV work on a served table; a saved view opens from its link; bundle delta quoted.",
+   "status": "planned",
+   "scopeHash": "f009308b8861"
+  },
+  {
+   "id": "P2.4",
+   "phase": "P2",
+   "title": "Region rules and links",
+   "scope": "Row highlight rule (leader, podium, followed series); column link to a page or pattern; master-detail between two regions on a page.",
+   "fixedBy": "runs 7–8",
+   "defaults": "Highlight rules as conditions over a row; a column link names a page or a pattern as buttons do (P1.12 B2); master-detail through the events P2.0 declares.",
+   "needsWord": "none",
+   "acceptance": "A highlighted leader; a driver name linking to /drivers/[slug]; a season list filtering a results table; test.",
+   "status": "planned",
+   "scopeHash": "b6e6849d7555"
+  },
+  {
+   "id": "P2.5",
+   "phase": "P2",
+   "title": "Filters as a layer",
+   "scope": "A decoupled Filters region attached to a data region by reference: facets from the source's columns, cascading (Depending On), chip preview separate from the value list, search within a facet, a size guardrail, batch apply, reset, facet count charts.",
+   "fixedBy": "Faceted Search and Smart Filters (run 7)",
+   "defaults": "A Filters region names its data region; facets are the source’s declared columns; the URL vocabulary of P2.3 carries the state.",
+   "needsWord": "none",
+   "acceptance": "The calendar's series filter and the news filter as instances; a cascading team → driver facet; test.",
+   "status": "planned",
+   "scopeHash": "f3bbaaa5de53"
+  },
+  {
+   "id": "P2.7",
+   "phase": "P2",
+   "title": "Metric cards",
+   "scope": "Figures with labels and trend over standings brief, weekend facts, data counts.",
+   "fixedBy": "Metric Card (26.1 gallery)",
+   "defaults": "A card is one figure, label and trend from a source field; a row of cards is one region.",
+   "needsWord": "none",
+   "acceptance": "Leader and gap on a series hub; test.",
+   "status": "planned",
+   "scopeHash": "2b0f6cfad1af"
+  },
+  {
+   "id": "P2.8",
+   "phase": "P2",
+   "title": "Countdown",
+   "scope": "Next session of a series or all; session name; local time.",
+   "fixedBy": "domain component",
+   "defaults": "NextRaceCountdown’s renderer as the instance; venue-local and viewer-local both shown.",
+   "needsWord": "none",
+   "acceptance": "The driver page's Next out; test.",
+   "status": "planned",
+   "scopeHash": "9f51818233b9"
+  },
+  {
+   "id": "P2.10",
+   "phase": "P2",
+   "title": "Tabs",
+   "scope": "Region Display Selector: view single / scroll; remember last; icons; over regions or child pages.",
+   "fixedBy": "APEX Region Display Selector",
+   "defaults": "A Tabs region lists sibling regions; the remembered tab per browser; child pages when P3 has them.",
+   "needsWord": "series tabs as one page with Tabs or one page per tab (asked at P3.4)",
+   "acceptance": "Weekend Preview and Report as Tabs; test.",
+   "status": "planned",
+   "scopeHash": "0ee56619ee63"
+  },
+  {
+   "id": "P2.11",
+   "phase": "P2",
+   "title": "Chart",
+   "scope": "Type, series, axes, legend; season trend, qualifying gaps, comparisons (Recharts).",
+   "fixedBy": "APEX Chart",
+   "defaults": "Recharts 3.8 as installed; the chart’s series are source fields; the season trend’s invariant holds (totals match the standings tab).",
+   "needsWord": "none",
+   "acceptance": "The points trajectory on a team page; test.",
+   "status": "planned",
+   "scopeHash": "3c29c60cd702"
+  },
+  {
+   "id": "P2.12",
+   "phase": "P2",
+   "title": "Map and Map Backgrounds",
+   "scope": "Map Backgrounds as a shared component (one named basemap: tile URL, key in the environment, a dark tile pair); the Map region: layer, initial view, markers (Leaflet).",
+   "fixedBy": "runs 8–9",
+   "defaults": "Leaflet as installed; the key named, never stored in a row (rule 10); the dark pair follows the theme’s family.",
+   "needsWord": "none",
+   "acceptance": "The tracks map from a named background; the dark pair follows the theme; test.",
+   "status": "planned",
+   "scopeHash": "91e52d8df2c1"
+  },
+  {
+   "id": "P2.13",
+   "phase": "P2",
+   "title": "Embed",
+   "scope": "Video or allowed iframe; provider, ratio, consent.",
+   "fixedBy": "APEX URL region",
+   "defaults": "An allow-list of providers (rule 10); consent through the site’s consent state; no autoplay.",
+   "needsWord": "none",
+   "acceptance": "A highlights clip on a weekend; test.",
+   "status": "planned",
+   "scopeHash": "60f81265bcf4"
+  },
+  {
+   "id": "P2.14",
+   "phase": "P2",
+   "title": "Weather",
+   "scope": "Open-Meteo by venue-local date; hourly or daily; sessions overlay.",
+   "fixedBy": "domain component; the venue-local rule",
+   "defaults": "The existing weather reader as the source; venue-local dates, never UTC.",
+   "needsWord": "none",
+   "acceptance": "The weekend's weather strip; test.",
+   "status": "planned",
+   "scopeHash": "29afc84ce35d"
+  },
+  {
+   "id": "P2.15",
+   "phase": "P2",
+   "title": "Circuit",
+   "scope": "The round's venue: map, facts, layout image where one exists.",
+   "fixedBy": "domain component",
+   "defaults": "The tracks content as the source (the Madring fix of 1.0.97 holds); the map through P2.12.",
+   "needsWord": "none",
+   "acceptance": "Round 14 shows Madring (fixed in 1.0.97); test.",
+   "status": "planned",
+   "scopeHash": "a5873e70c730"
+  },
+  {
+   "id": "P2.16",
+   "phase": "P2",
+   "title": "Search: results and configurations",
+   "scope": "A Results region over named Search Configurations (one per content type: title, description, link, icon, query prefix), search-as-you-type with a minimum, lazy loading, empty and no-results messages.",
+   "fixedBy": "Search (run 9)",
+   "defaults": "The site index as it is; configurations as a shared component; the Learn hub first.",
+   "needsWord": "none",
+   "acceptance": "The Learn hub's search as an instance over drivers, races and posts; test.",
+   "status": "planned",
+   "scopeHash": "375053f65f24"
+  },
+  {
+   "id": "P2.17",
+   "phase": "P2",
+   "title": "Breadcrumb",
+   "scope": "From the page tree; show home; separator.",
+   "fixedBy": "APEX Breadcrumb",
+   "defaults": "The page tree from the pages’ paths; Create › Breadcrumb Region comes alive (P1.10); a deleted page leaves the breadcrumb (P1.12).",
+   "needsWord": "none",
+   "acceptance": "A series tab's breadcrumb; test.",
+   "status": "planned",
+   "scopeHash": "a178c06d9dbf"
+  },
+  {
+   "id": "P2.18",
+   "phase": "P2",
+   "title": "Form, field templates, lists of values",
+   "scope": "Items text, textarea, select (from a list of values, static or dynamic, cascading), switch, choice; Field templates as the label + input + help + inline error contract; validations inline or in a notification; a success step that sends an email (Resend) or a push.",
+   "fixedBy": "Forms, Label Templates, LOVs (runs 3, 8, 9)",
+   "defaults": "Five items; lists of values as a shared component; the Contact form as the first instance through the existing Resend wrapper; Create › Create Page Item comes alive (P1.4).",
+   "needsWord": "the item set (five proposed)",
+   "acceptance": "Contact as a Form; a validation shows inline; the success step mails; test.",
+   "status": "planned",
+   "scopeHash": "2b132dcc7b87"
+  },
+  {
+   "id": "P2.20",
+   "phase": "P2",
+   "title": "Clerk widget",
+   "scope": "Sign-in, sign-up, account profile as a region; appearance from the theme.",
+   "fixedBy": "domain component",
+   "defaults": "Clerk’s components wrapped as one region kind with a mode setting; the theme’s tokens through Clerk’s appearance.",
+   "needsWord": "none",
+   "acceptance": "/sign-in as a composed page; test.",
+   "status": "planned",
+   "scopeHash": "52ac12e8d5d0"
+  },
+  {
+   "id": "P2.21",
+   "phase": "P2",
+   "title": "Email Templates",
+   "scope": "Shared component: subject and body with placeholders, edited in the designer, sent through the existing Resend wrapper by contact, welcome, feedback, draft-ready.",
+   "fixedBy": "APEX Email Templates; Resend wired",
+   "defaults": "Placeholders as {name}; a preview with sample values; the four senders read their template by key with the code’s text as the fallback.",
+   "needsWord": "none",
+   "acceptance": "The welcome email renders from the row; test.",
+   "status": "planned",
+   "scopeHash": "c6d9eb480f49"
+  },
+  {
+   "id": "P2.22",
+   "phase": "P2",
+   "title": "Automations page",
+   "scope": "Data › Automations: GitHub Actions workflows and crons with last run, next run, Run now (dispatch), an execution log.",
+   "fixedBy": "APEX Automations, adapted",
+   "defaults": "Read through the GitHub API with the existing token, named not stored; Run now dispatches the loader; the log is the runs list.",
+   "needsWord": "none",
+   "acceptance": "Run now dispatches the loader; the run appears; browser run.",
+   "status": "planned",
+   "scopeHash": "2c83e5e019ea"
+  },
+  {
+   "id": "P2.23",
+   "phase": "P2",
+   "title": "Calendar settings and events",
+   "scope": "Series filter, mode and range as settings; events Date Selected, Event Selected, View Changed other regions react to.",
+   "fixedBy": "Calendar (run 8)",
+   "defaults": "The calendar component gains its settings in the Attributes tab and declares its events through P2.0.",
+   "needsWord": "none",
+   "acceptance": "Clicking a weekend refreshes a sessions list beside the calendar; test.",
+   "status": "planned",
+   "scopeHash": "cab77f5bc8fc"
+  },
+  {
+   "id": "P2.19",
+   "phase": "P2",
+   "title": "Comments",
+   "scope": "Threads and replies; order; sign-in prompt.",
+   "fixedBy": "APEX Comments",
+   "defaults": "Not built until the word; the slot stays listed.",
+   "needsWord": "only if replies are wanted (nothing has them today)",
+   "acceptance": "Deferred until the word.",
+   "status": "planned",
+   "scopeHash": "2e7134321819"
   }
  ]
 }
