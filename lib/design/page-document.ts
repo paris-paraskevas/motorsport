@@ -39,6 +39,7 @@
 
 import { pageIdOf, resolveDestination } from './destinations';
 import { COMPONENTS, findComponent, parseSettings, type ComponentDefinition, type SettingValue } from './components';
+import { encodeSourceRef, parseSourceRef } from './sources';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
 import { parseRegionTemplate, parseTemplateOptions, type RegionTemplateKey } from './template-options';
 
@@ -227,6 +228,11 @@ export interface ComponentRegion extends RegionBase {
   component: string;
   /** Every setting of the component, at its value or its default. */
   settings: Record<string, SettingValue>;
+  /** The Source the region picked (P2.1; APEX: the Source group), as
+   *  lib/design/sources.ts encodes it: `standings?series=f1&season=2026`.
+   *  Only when the definition declares `sources`; absent means none, the
+   *  component's own assembly. */
+  source?: string;
 }
 export type Region = StaticRegion | ImageRegion | ListRegion | ButtonRegion | ComponentRegion;
 
@@ -385,8 +391,18 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
           const v = parsed.settings[s.key];
           if (s.kind === 'link' && typeof v === 'string' && v && !isGoDestination(v)) parsed.problems.push(`${s.label} must be a page or a link from the catalogue`);
         }
+        // The Source (P2.1): read against the sources the definition declares, stored canonically; a component that declares none takes none.
+        let source: string | undefined;
+        if (r.source !== undefined && r.source !== null && r.source !== '') {
+          if (!spec.sources?.length) parsed.problems.push(`${spec.name} reads no source`);
+          else {
+            const ref = parseSourceRef(r.source, spec.sources);
+            if (ref.problems.length) parsed.problems.push(...ref.problems);
+            else if (ref.value) source = encodeSourceRef(ref.value);
+          }
+        }
         if (parsed.problems.length) problems.push(...parsed.problems.map(p => `${who}: ${p}`));
-        else region = { ...base, kind, component: spec.key, settings: parsed.settings };
+        else region = { ...base, kind, component: spec.key, settings: parsed.settings, ...(source ? { source } : {}) };
       }
     } else if (kind === 'static') {
       const text = typeof r.text === 'string' ? r.text : '';

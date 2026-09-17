@@ -146,6 +146,23 @@ export const loadSeriesMeta = cache(async (): Promise<Map<string, { name: string
   return new Map(all.map(s => [s.meta.slug, { name: s.meta.name, color: s.meta.color }]));
 });
 
+/**
+ * What it changed from a Source's standings rows (P2.1): the driver rows by
+ * position, the leader, the gap to second and the top ten, the shape the
+ * assembly builds from the brief. A pinned championship has no race context,
+ * so no winner's accent and no champion's headline. Null without a driver row;
+ * a row missing its numbers is skipped.
+ */
+export function changedFromStandings(rows: readonly Record<string, unknown>[], seriesName: string): HomeLeadChanged | null {
+  const drivers = rows
+    .filter(r => r.kind === 'driver' && typeof r.position === 'number' && Number.isFinite(r.position) && typeof r.points === 'number' && Number.isFinite(r.points) && typeof r.name === 'string' && r.name)
+    .map(r => ({ position: r.position as number, name: r.name as string, points: r.points as number }))
+    .sort((a, b) => a.position - b.position);
+  if (drivers.length === 0) return null;
+  const [leader, second] = drivers;
+  return { seriesName, leader: { name: leader.name, points: leader.points }, gapToSecond: second ? leader.points - second.points : null, top: drivers.slice(0, 10) };
+}
+
 export async function buildHomeModel(layout: HomeLayout, now = new Date()): Promise<HomeModel> {
   const all = await loadAllSeries();
   const metaBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));

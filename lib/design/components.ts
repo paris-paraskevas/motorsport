@@ -92,6 +92,11 @@ export interface ComponentDefinition {
   events?: readonly ComponentEvent[];
   capabilities?: ComponentCapabilities;
   slots?: readonly ComponentSlot[];
+  /** The catalogue sources (lib/design/sources.ts) the component may read
+   *  (P2.1; APEX: the Source group is a standard part of a region, not a custom
+   *  attribute). Absent, it reads none and the Source group holds the Component
+   *  row alone. A region carries its pick as `source`, never among the settings. */
+  sources?: readonly string[];
   /** The transitional component: a page not yet split holds its body as the
    *  code draws it today, one per page, and loses nothing until it is split. */
   legacy?: true;
@@ -174,6 +179,8 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     group: 'Home',
     holds: 'the championship read after the race: the leader, the gap, the table',
     settings: [{ key: 'rows', label: 'Rows', kind: 'number', default: 5, min: 1, max: 10, help: 'How many standings rows the table shows.' }],
+    // P2.1: a Source pins the table to one championship; none reads the page's assembly (the race that just finished).
+    sources: ['standings'],
   },
   {
     key: 'home.next',

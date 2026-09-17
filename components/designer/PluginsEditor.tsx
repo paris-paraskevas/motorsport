@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { BAR_ICON_NAMES } from '@/components/BottomBar';
 import { DEFINITIONS, EMPTY_OVERLAY, definitionKind, mergeDefinition, parseOverlay, type DefinitionOverlay, type EditableDefinition } from '@/lib/design/component-definitions';
+import { findSource } from '@/lib/design/sources';
 import type { AttributeDefinition, AttributeKind, AttributeScope, ComponentDefinition } from '@/lib/design/components';
 
 // Plug-ins (the components programme, P2.0, PR B; APEX: Plug-ins, the
@@ -358,6 +359,8 @@ export function PluginsEditor({
             </dd>
             <dt className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">Slots</dt>
             <dd className="m-0 text-text-muted">{shipped.slots?.length ? shipped.slots.map(s => `${s.name} (${s.accepts.join(', ')})`).join(', ') : 'none'}</dd>
+            <dt className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">Sources</dt>
+            <dd className="m-0 text-text-muted">{shipped.sources?.length ? shipped.sources.map(k => findSource(k)?.name ?? k).join(', ') : 'none; the component draws its own assembly'}</dd>
             <dt className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">Used on</dt>
             <dd className="m-0 text-text-muted">
               {open.usedOn.length === 0

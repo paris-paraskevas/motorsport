@@ -84,6 +84,19 @@ describe('Designer keeps the selection in the URL', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Shared Components' })).toBeTruthy();
   });
 
+  it('P2.1: opens Data Sources from ?sc=datasources and reads the catalogue’s Utilization and the loader’s work', async () => {
+    // The sources list answers; every other route the shell fetches fails, as an unstubbed fetch would.
+    const fetchMock = vi.fn(async (url: string) => (url === '/api/admin/design/data/sources' ? { ok: true, status: 200, json: async () => ({ sources: [] }) } : { ok: false, status: 500, json: async () => ({}) }));
+    vi.stubGlobal('fetch', fetchMock);
+    try {
+      render(<Designer readOnly={false} who="Test · Administrator · production" initialSelected="datasources" {...loaded} />);
+      expect(screen.getByRole('heading', { level: 2, name: 'Data Sources' })).toBeTruthy();
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/admin/design/data/sources', expect.anything()));
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('opens the overview for a key the catalogue does not know', () => {
     render(<Designer readOnly={false} who="Test · Administrator · production" initialSelected="no-such-entry" {...loaded} />);
     expect(screen.getByRole('heading', { level: 2, name: 'Shared Components' })).toBeTruthy();

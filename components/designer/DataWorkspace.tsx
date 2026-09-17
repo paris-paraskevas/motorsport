@@ -5,6 +5,7 @@ import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { BAND_LABEL, DATA_SERVICES, DATA_TIERS, bandOf, findDataService, type DataBand, type DataService, type DataState } from '@/lib/design/data-services';
 import type { DataIndexEntry, DataOverview } from '@/lib/design/data';
 import { DataRuns } from './DataRuns';
+import { SourceBrowser, type SeriesName } from './DataSourcesEditor';
 import { BTN, Band, RuledTable, Strip, Swatch, TONE_VARS, toneColor, type StripCell } from './data-ui';
 
 // The Data workspace (Paddock Designer v2.4, the Data screen; Phase 4, PR 4.1,
@@ -21,7 +22,7 @@ import { BTN, Band, RuledTable, Strip, Swatch, TONE_VARS, toneColor, type StripC
 type LoadedIndex = { state: 'loading' } | { state: 'error'; message: string } | { state: 'ready'; services: DataIndexEntry[] };
 type LoadedOverview = { state: 'loading' } | { state: 'error'; message: string } | { state: 'ready'; overview: DataOverview };
 type Tab = 'overview' | 'breakdowns' | 'health' | 'connection';
-type View = { kind: 'home' } | { kind: 'service'; key: string } | { kind: 'runs' };
+type View = { kind: 'home' } | { kind: 'service'; key: string } | { kind: 'runs' } | { kind: 'sources' };
 
 const RUNS_SERVICES = new Set(['sb', 'upstream']);
 
@@ -79,7 +80,7 @@ function BandWord({ band }: { band: DataBand }) {
   );
 }
 
-export function DataWorkspace() {
+export function DataWorkspace({ series = [] }: { series?: readonly SeriesName[] }) {
   const [index, setIndex] = useState<LoadedIndex>({ state: 'loading' });
   const [overviews, setOverviews] = useState<Record<string, LoadedOverview>>({});
   const [view, setView] = useState<View>({ kind: 'home' });
@@ -135,6 +136,23 @@ export function DataWorkspace() {
     return (
       <div style={TONE_VARS}>
         <DataRuns onBack={() => setView({ kind: 'home' })} />
+      </div>
+    );
+  }
+
+  // The Object Browser (P2.1; APEX's name, SQL Workshop): the catalogue's sources as data, the loader's work behind each.
+  if (view.kind === 'sources') {
+    return (
+      <div style={TONE_VARS}>
+        <button type="button" className={BTN} onClick={() => setView({ kind: 'home' })}>
+          <ArrowLeft size={15} /> Data
+        </button>
+        <h2 className="m-0 mt-4 text-22 font-bold text-text">Object Browser · the catalogue’s sources</h2>
+        <p className="m-0 mt-1 mb-5 max-w-[78ch] text-15 text-text-muted">
+          Every source a component may read (Shared Components › Data Sources), as data: its columns, its first rows through the reader, and the loader’s work behind it in its two tiers. Nothing here is
+          written anywhere.
+        </p>
+        <SourceBrowser series={series} mode="data" />
       </div>
     );
   }
@@ -306,6 +324,9 @@ export function DataWorkspace() {
           {loader?.headline ? `${loader.headline.value} ${loader.headline.unit} · ${loader.headline.context}` : overviews.upstream?.state === 'error' ? overviews.upstream.message : 'Reading the loader’s runs…'}
         </span>
         <span className="flex-1" />
+        <button type="button" className={BTN} onClick={() => setView({ kind: 'sources' })}>
+          Object Browser
+        </button>
         <button type="button" className={BTN} onClick={() => setView({ kind: 'runs' })}>
           Open the runs
         </button>

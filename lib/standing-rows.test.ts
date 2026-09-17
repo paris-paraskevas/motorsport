@@ -45,6 +45,7 @@ import {
   standingRowsFromPayload,
   writeStandingRun,
   readCurrentStandings,
+  readCurrentStandingsWithRun,
   latestRuns,
   pruneStandingRuns,
 } from './standing-rows';
@@ -140,6 +141,25 @@ describe('readCurrentStandings', () => {
     const out = await readCurrentStandings('f1', 2026);
     expect(out?.drivers).toEqual([{ position: 1, driverName: 'Kimi Antonelli', driverCode: 'ANT', team: 'Mercedes', points: 267, wins: 7 }]);
     expect(out?.constructors).toEqual([{ position: 1, name: 'Mercedes', points: 468, wins: undefined }]);
+  });
+
+  it('P2.1: readCurrentStandingsWithRun selects the run behind the rows and answers it beside the shape; null on no rows', async () => {
+    replies['standing_current:select'] = {
+      data: [
+        { kind: 'driver', position: 1, name: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', points: '267', wins: 7, source_run_id: 'run-1' },
+        { kind: 'constructor', position: 1, name: 'Mercedes', code: null, team: null, points: '468', wins: null, source_run_id: 'run-1' },
+      ],
+      error: null,
+    };
+    const out = await readCurrentStandingsWithRun('f1', 2026);
+    expect(out?.runId).toBe('run-1');
+    expect(out?.standings.drivers).toEqual([{ position: 1, driverName: 'Kimi Antonelli', driverCode: 'ANT', team: 'Mercedes', points: 267, wins: 7 }]);
+    expect(out?.standings.constructors).toEqual([{ position: 1, name: 'Mercedes', points: 468, wins: undefined }]);
+    expect(String(calls.find(c => c.table === 'standing_current' && c.op === 'select')?.arg)).toContain('source_run_id');
+    replies['standing_current:select'] = { data: [], error: null };
+    expect(await readCurrentStandingsWithRun('f1', 2026)).toBeNull();
+    replies['standing_current:select'] = { data: null, error: { message: 'boom' } };
+    expect(await readCurrentStandingsWithRun('f1', 2026)).toBeNull();
   });
 
   it('returns null on no rows, on an error and when unconfigured, so the caller falls back', async () => {

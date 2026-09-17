@@ -2,6 +2,7 @@ import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { COMPONENTS, type ComponentDefinition } from './components';
 import { DEFINITIONS, EMPTY_OVERLAY, isDefinitionKey, mergeDefinition, mergeDefinitions, parseOverlay, type DefinitionOverlay, type EditableDefinition } from './component-definitions';
+import { encodeSourceRef, parseSourceRef } from './sources';
 
 // The component definitions as the site and the designer read them (the
 // components programme, P2.0, PR B; APEX: Plug-ins): the code's definitions
@@ -109,14 +110,18 @@ export interface Usage {
 
 const REGION_KINDS = new Set(['static', 'image', 'list', 'button']);
 
-/** Utilization from the live pages and their revisions (newest first): for each
- *  definition, the pages whose newest or live revision uses it, with the
- *  attribute keys those regions carry, and the count of regions of that type
- *  on the newest revisions. A raw scan, so a value of an attribute the code no
- *  longer knows still counts. */
-export function usageFromRows(pages: unknown, revisions: unknown): Record<string, Usage> {
-  const out: Record<string, Usage> = {};
-  if (!Array.isArray(pages) || !Array.isArray(revisions)) return out;
+interface PageLatest {
+  page: { id: string; path: string; name: string };
+  /** The newest revision's regions, and the live one's; the same array when the newest is live. */
+  newest: unknown[] | null;
+  live: unknown[] | null;
+}
+
+/** The pages with their newest and their live revision's regions (the rule
+ *  every Utilization scan shares: a page carries what its newest revision
+ *  holds, and what its live one still shows). A raw read of the rows. */
+function latestRevisions(pages: unknown, revisions: unknown): PageLatest[] {
+  if (!Array.isArray(pages) || !Array.isArray(revisions)) return [];
   const byPage = new Map<string, { created: string; published: boolean; regions: unknown[] }[]>();
   for (const item of revisions) {
     if (!item || typeof item !== 'object') continue;
@@ -128,6 +133,26 @@ export function usageFromRows(pages: unknown, revisions: unknown): Record<string
     list.push({ created: String(r.created_at ?? ''), published: r.published_at != null, regions });
     byPage.set(r.page_id, list);
   }
+  const out: PageLatest[] = [];
+  for (const item of pages) {
+    if (!item || typeof item !== 'object') continue;
+    const p = item as Record<string, unknown>;
+    if (typeof p.id !== 'string' || typeof p.path !== 'string' || typeof p.name !== 'string') continue;
+    const revs = [...(byPage.get(p.id) ?? [])].sort((a, b) => (a.created < b.created ? 1 : a.created > b.created ? -1 : 0));
+    const newest = revs[0];
+    const live = revs.find(r => r.published);
+    out.push({ page: { id: p.id, path: p.path, name: p.name }, newest: newest?.regions ?? null, live: live?.regions ?? null });
+  }
+  return out;
+}
+
+/** Utilization from the live pages and their revisions (newest first): for each
+ *  definition, the pages whose newest or live revision uses it, with the
+ *  attribute keys those regions carry, and the count of regions of that type
+ *  on the newest revisions. A raw scan, so a value of an attribute the code no
+ *  longer knows still counts. */
+export function usageFromRows(pages: unknown, revisions: unknown): Record<string, Usage> {
+  const out: Record<string, Usage> = {};
   const keys = new Map<string, Map<string, Set<string>>>();
   const scan = (page: { id: string; path: string; name: string }, regions: unknown[], count: boolean) => {
     for (const item of regions) {
@@ -151,28 +176,75 @@ export function usageFromRows(pages: unknown, revisions: unknown): Record<string
       }
     }
   };
-  for (const item of pages) {
-    if (!item || typeof item !== 'object') continue;
-    const p = item as Record<string, unknown>;
-    if (typeof p.id !== 'string' || typeof p.path !== 'string' || typeof p.name !== 'string') continue;
-    const page = { id: p.id, path: p.path, name: p.name };
-    const revs = [...(byPage.get(page.id) ?? [])].sort((a, b) => (a.created < b.created ? 1 : a.created > b.created ? -1 : 0));
-    const newest = revs[0];
-    const live = revs.find(r => r.published);
-    if (newest) scan(page, newest.regions, true);
-    if (live && live !== newest) scan(page, live.regions, false);
+  for (const { page, newest, live } of latestRevisions(pages, revisions)) {
+    if (newest) scan(page, newest, true);
+    if (live && live !== newest) scan(page, live, false);
   }
   for (const [key, perKey] of keys) for (const entry of out[key]?.usedOn ?? []) entry.attributes = [...(perKey.get(entry.id) ?? [])].sort();
   return out;
 }
 
-async function readUsage(): Promise<Record<string, Usage> | null> {
+/** A page a source is used on (P2.1; APEX: a REST Data Source's Utilization), with the refs its regions carry. */
+export interface SourceUsagePage {
+  id: string;
+  path: string;
+  name: string;
+  refs: string[];
+}
+
+/** Utilization of the sources: for each catalogue source, the pages whose
+ *  newest or live revision has a component region picking it, with the refs
+ *  (canonical, sorted). The same raw scan as the definitions'; a ref the
+ *  catalogue refuses is left out, never a throw. */
+export function sourceUsageFromRows(pages: unknown, revisions: unknown): Record<string, SourceUsagePage[]> {
+  const out: Record<string, SourceUsagePage[]> = {};
+  for (const { page, newest, live } of latestRevisions(pages, revisions)) {
+    for (const regions of [newest, live]) {
+      if (!regions) continue;
+      for (const item of regions) {
+        if (!item || typeof item !== 'object') continue;
+        const region = item as Record<string, unknown>;
+        if (region.kind !== 'component' || typeof region.source !== 'string' || !region.source) continue;
+        const parsed = parseSourceRef(region.source);
+        if (!parsed.value) continue;
+        const list = (out[parsed.value.source] ??= []);
+        let entry = list.find(p => p.id === page.id);
+        if (!entry) {
+          entry = { ...page, refs: [] };
+          list.push(entry);
+        }
+        const canonical = encodeSourceRef(parsed.value);
+        if (!entry.refs.includes(canonical)) entry.refs.push(canonical);
+      }
+    }
+  }
+  for (const list of Object.values(out)) for (const entry of list) entry.refs.sort();
+  return out;
+}
+
+async function readUsageRows(): Promise<{ pages: unknown; revisions: unknown } | null> {
   const [pagesRes, revRes] = await Promise.all([
     betDb().from('page').select('id, path, name').eq('application_key', APPLICATION_KEY).is('deleted_at', null).order('name'),
     betDb().from('page_revision').select('page_id, document, published_at, created_at').order('created_at', { ascending: false }),
   ]);
   if (pagesRes.error || revRes.error) return null;
-  return usageFromRows(pagesRes.data, revRes.data);
+  return { pages: pagesRes.data, revisions: revRes.data };
+}
+
+async function readUsage(): Promise<Record<string, Usage> | null> {
+  const rows = await readUsageRows();
+  return rows ? usageFromRows(rows.pages, rows.revisions) : null;
+}
+
+/** Utilization of every source in use (P2.1). Empty on any failure. */
+export async function loadSourceUsage(): Promise<Record<string, SourceUsagePage[]>> {
+  if (!isBettingConfigured()) return {};
+  try {
+    const rows = await readUsageRows();
+    return rows ? sourceUsageFromRows(rows.pages, rows.revisions) : {};
+  } catch {
+    return {};
+  }
 }
 
 /** Utilization for every definition in use. Empty on any failure. */

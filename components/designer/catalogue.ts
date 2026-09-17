@@ -16,7 +16,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'templates' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef' | 'lists' | 'compsettings' | 'computations' | 'plugins';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'templates' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef' | 'lists' | 'compsettings' | 'computations' | 'plugins' | 'datasources';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -94,7 +94,10 @@ export const CATALOGUE: CatalogueGroup[] = [
   {
     group: 'Data Sources',
     items: [
-      { key: 'data', label: 'REST Data Sources', later: 'read-only, later' },
+      // The source catalogue (P2.1). Ours by name: APEX's item is REST Data Sources, and our sources are the code's readers, not endpoints.
+      { key: 'datasources', label: 'Data Sources', editor: 'datasources' },
+      // APEX: Remote Servers. The hosts live in code today; rows for the operator's own arrive with the first remote source.
+      { key: 'remoteservers', label: 'Remote Servers', later: 'with the first remote source' },
       { key: 'json', label: 'JSON Sources', later: 'Phase 4' },
     ],
   },

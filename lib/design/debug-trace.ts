@@ -10,6 +10,8 @@ import { loadBuildOptions } from './build-options';
 import { READS, raceWeekendNow, renderComponents, type RenderPage } from './component-render';
 import { findComponent } from './components';
 import { loadComponents } from './definitions';
+import { findSource } from './sources';
+import type { SourceProvenance } from './source-read';
 import { readSnapshotMeta, type SnapshotMeta } from '@/lib/source-snapshot';
 
 // The Debug trace (P1.9; APEX: View Debug's report of a page's render, the
@@ -38,6 +40,17 @@ function runsFor(src: readonly string[], meta: Readonly<Record<string, SnapshotM
     }
   }
   return lines.length ? lines.join('\n') : undefined;
+}
+
+const stamp = (iso: string) => `${iso.replace('T', ' ').slice(0, 16)}Z`;
+
+/** A source read in one line (P2.1): the pick in the catalogue's words, the tier, the rows, the run or the snapshot's meta behind them, or the reason there are none. */
+function sourceLine(p: SourceProvenance): string {
+  const parts = [p.label, `${p.tier} tier`, `${p.rows} ${p.rows === 1 ? 'row' : 'rows'}`];
+  if (p.run) parts.push(`run ${p.run.runner ?? p.run.id}`, p.run.status, ...(p.run.finished ? [stamp(p.run.finished)] : []));
+  if (p.meta) parts.push(p.meta.run, stamp(p.meta.at), ...[p.meta.F !== undefined ? `F ${p.meta.F}ms` : null, p.meta.W !== undefined ? `W ${p.meta.W}ms` : null].filter((x): x is string => x !== null));
+  if (p.error) parts.push(p.error);
+  return parts.join(' · ');
 }
 
 export async function tracePage(target: TraceTarget, level: DebugLevel, cid: string): Promise<DebugReport | null> {
@@ -112,14 +125,22 @@ export async function tracePage(target: TraceTarget, level: DebugLevel, cid: str
 
   // The components, each timed, with the sources it declares and the loader runs behind them.
   const rendered: { id: string; component: string; ms: number; ok: boolean }[] = [];
+  // The Sources the components read (P2.1), by region: the tier, the rows and the run behind each.
+  const sourced = new Map<string, SourceProvenance[]>();
   const components = built.regions.filter(r => r.kind === 'component');
   await d.step(4, 'render', plural(components.length, 'component'), () =>
-    renderComponents(built, where, { onRendered: (id, component, ms, ok) => rendered.push({ id, component, ms, ok }) }),
+    renderComponents(built, where, {
+      onRendered: (id, component, ms, ok) => rendered.push({ id, component, ms, ok }),
+      onSourceRead: (id, p) => sourced.set(id, [...(sourced.get(id) ?? []), p]),
+    }),
   );
   const meta = level >= 6 && rendered.length > 0 ? await d.step(6, 'render', "the loader's runs behind the sources", () => readSnapshotMeta()) : {};
   for (const c of rendered) {
-    const src = READS[c.component] ?? [];
-    d.note(4, `render:${c.id}`, `${findComponent(c.component)?.name ?? c.component}${c.ok ? '' : ' failed and drew nothing'}`, { ms: c.ms, src, run: level >= 6 ? runsFor(src, meta) : undefined });
+    const reads = sourced.get(c.id) ?? [];
+    // The component's declared reads, then its Source's own.
+    const src = [...new Set([...(READS[c.component] ?? []), ...reads.flatMap(p => findSource(p.ref.source)?.reads ?? [])])];
+    const lines = level >= 6 ? [runsFor(src, meta), ...reads.map(sourceLine)].filter((x): x is string => x !== undefined) : [];
+    d.note(4, `render:${c.id}`, `${findComponent(c.component)?.name ?? c.component}${c.ok ? '' : ' failed and drew nothing'}`, { ms: c.ms, src, run: lines.length ? lines.join('\n') : undefined });
     if (level >= 9) {
       const r = built.regions.find(x => x.id === c.id);
       if (r && r.kind === 'component') d.note(9, `render:${c.id}`, `settings ${JSON.stringify(r.settings)}`);

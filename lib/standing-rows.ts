@@ -188,29 +188,61 @@ export async function readCurrentStandings(series: string, season: number): Prom
       .eq('season', season)
       .order('position', { ascending: true });
     if (error || !data || data.length === 0) return null;
-    const drivers: DriverStanding[] = [];
-    const constructors: ConstructorStanding[] = [];
-    for (const r of data as Record<string, unknown>[]) {
-      const wins = r.wins == null ? undefined : Number(r.wins);
-      if (r.kind === 'driver') {
-        drivers.push({
-          position: Number(r.position),
-          driverName: String(r.name),
-          driverCode: r.code ? String(r.code) : undefined,
-          team: r.team ? String(r.team) : '',
-          points: Number(r.points),
-          wins,
-        });
-      } else {
-        constructors.push({ position: Number(r.position), name: String(r.name), points: Number(r.points), wins });
-      }
-    }
-    if (!drivers.length) return null;
-    return { drivers, constructors };
+    return shapeOf(data as Record<string, unknown>[]);
   } catch (err) {
     logSourceError(`standing:read:${series}`, err);
     return null;
   }
+}
+
+/**
+ * The current standings with the run that wrote them (P2.1, the source
+ * catalogue's rows tier): the same view and shape as readCurrentStandings, plus
+ * the `source_run_id` the rows carry, so a reader can name the loader run
+ * behind a table. Null on no rows, error or unconfigured, like its sibling.
+ */
+export async function readCurrentStandingsWithRun(series: string, season: number): Promise<{ standings: StandingsShape; runId: string | null } | null> {
+  if (!isBettingConfigured()) return null;
+  try {
+    const { data, error } = await betDb()
+      .from('standing_current')
+      .select('kind, position, name, code, team, points, wins, source_run_id')
+      .eq('series', series)
+      .eq('season', season)
+      .order('position', { ascending: true });
+    if (error || !data || data.length === 0) return null;
+    const rows = data as Record<string, unknown>[];
+    const standings = shapeOf(rows);
+    if (!standings) return null;
+    const run = rows.find(r => r.source_run_id != null)?.source_run_id;
+    return { standings, runId: run == null ? null : String(run) };
+  } catch (err) {
+    logSourceError(`standing:read:${series}`, err);
+    return null;
+  }
+}
+
+/** The view's rows in the tab shape; `points` arrives as a string (numeric over JSON) and is coerced. Null without a driver row. */
+function shapeOf(rows: Record<string, unknown>[]): StandingsShape | null {
+  const drivers: DriverStanding[] = [];
+  const constructors: ConstructorStanding[] = [];
+  for (const r of rows) {
+    const wins = r.wins == null ? undefined : Number(r.wins);
+    if (r.kind === 'driver') {
+      drivers.push({
+        position: Number(r.position),
+        driverName: String(r.name),
+        driverCode: r.code ? String(r.code) : undefined,
+        team: r.team ? String(r.team) : '',
+        points: Number(r.points),
+        wins,
+      });
+    } else {
+      constructors.push({ position: Number(r.position), name: String(r.name), points: Number(r.points), wins });
+    }
+  }
+  if (!drivers.length) return null;
+  return { drivers, constructors };
 }
 
 export interface SourceRunSummary {

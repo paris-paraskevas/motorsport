@@ -91,7 +91,7 @@ function serve(over: Partial<Record<Method, () => unknown>> = {}) {
   });
 }
 
-function mount(d: PageDetail = detail, readOnly = false, initialRegion: string | null = null, userId: string | null = null, components?: readonly ComponentDefinition[]) {
+function mount(d: PageDetail = detail, readOnly = false, initialRegion: string | null = null, userId: string | null = null, components?: readonly ComponentDefinition[], series?: readonly { slug: string; name: string }[]) {
   const onSaved = vi.fn();
   const onOpenPage = vi.fn();
   const onBack = vi.fn();
@@ -107,6 +107,7 @@ function mount(d: PageDetail = detail, readOnly = false, initialRegion: string |
       initialRegion={initialRegion}
       userId={userId}
       components={components}
+      series={series}
       detail={dd}
       pages={pages}
       readOnly={readOnly}
@@ -1041,6 +1042,56 @@ describe('PageDesigner', () => {
     const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
     const saved = posted.document.regions[0];
     expect(saved.kind === 'component' && saved.settings).toEqual({ note: '', rows: 3, accent: '#123456', icon: chosenIcon, more: `page:${page.id}` });
+  });
+
+  it('P2.1: What it changed offers a Source in the Source group: Location, Type (None · Standings); Standings shows Series and Season with the defaults and writes the ref; another series rewrites it; Save carries it; None removes it; a static region’s Source group holds its text alone', async () => {
+    const changedDoc: PageDocument = {
+      version: 2,
+      actions: [],
+      regions: [
+        { id: 'changed', kind: 'component', component: 'home.changed', settings: { rows: 5 }, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null },
+        { ...doc.regions[0], seq: 20 },
+      ],
+    };
+    const { onSaved } = mount({ ...detail, newest: { ...detail.newest!, document: changedDoc } }, false, null, null, undefined, [
+      { slug: 'f1', name: 'Formula 1' },
+      { slug: 'wec', name: 'FIA WEC' },
+      { slug: 'nls', name: 'NLS Nürburgring' },
+    ]);
+    fireEvent.click(tile('Component: What it changed'));
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(pe).getByText('Catalogue · the site’s own readers')).toBeTruthy();
+    const type = within(pe).getByLabelText('Source type') as HTMLSelectElement;
+    expect(type.value).toBe('');
+    expect([...type.options].map(o => o.textContent)).toEqual(['None · the page’s assembly', 'Standings']);
+    expect(within(pe).queryByLabelText('Series')).toBeNull();
+    fireEvent.change(type, { target: { value: 'standings' } });
+    expect(status()).toMatch(/Source set/);
+    const series = within(pe).getByLabelText('Series') as HTMLSelectElement;
+    expect(series.value).toBe('f1');
+    // Only the series the source offers, by the names the designer holds: NLS has no standings.
+    expect([...series.options].map(o => [o.value, o.textContent])).toEqual([
+      ['f1', 'Formula 1'],
+      ['wec', 'FIA WEC'],
+    ]);
+    const season = within(pe).getByLabelText('Season') as HTMLSelectElement;
+    expect(season.value).toBe('2026');
+    expect(season.options).toHaveLength(1);
+    fireEvent.change(series, { target: { value: 'wec' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    expect(posted.document.regions[0]).toMatchObject({ component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=wec&season=2026' });
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: '' } });
+    expect(within(pe).queryByLabelText('Series')).toBeNull();
+    expect((within(pe).getByLabelText('Source type') as HTMLSelectElement).value).toBe('');
+    // The tile summary names the source while one is set.
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
+    expect(tile('Component: What it changed').textContent).toMatch(/Standings · Formula 1 · 2026/);
+    // A static region's Source group is its text alone.
+    fireEvent.click(tile('Static Content: A century of speed'));
+    expect(within(pe).queryByLabelText('Source type')).toBeNull();
+    expect(within(pe).getByLabelText('Region text')).toBeTruthy();
   });
 
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {

@@ -10,6 +10,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DataWorkspace } from './DataWorkspace';
 import { DATA_SERVICES } from '@/lib/design/data-services';
+import { SOURCES } from '@/lib/design/sources';
 
 const fetchMock = vi.fn();
 let urls: string[] = [];
@@ -66,6 +67,7 @@ beforeEach(() => {
     urls.push(url);
     if (url === '/api/admin/design/data') return json(200, index);
     if (url.startsWith('/api/admin/design/data/runs')) return json(200, runsLog);
+    if (url === '/api/admin/design/data/sources') return json(200, { sources: SOURCES.map(s => ({ key: s.key, usedOn: [], runs: [], snapshots: [] })) });
     const m = /\/api\/admin\/design\/data\/([a-z0-9]+)/.exec(url);
     if (m?.[1] === 'ga4') return json(200, ga4);
     if (m) return json(200, own(m[1]));
@@ -152,7 +154,10 @@ describe('DataWorkspace', () => {
     expect(within(strip).getByText('failed · 24 hours').previousSibling?.textContent).toBe('1');
     expect(within(strip).getByText('loads · 24 hours').previousSibling?.textContent).toBe('2');
     expect(screen.getByText('never ran')).toBeTruthy();
-    expect(screen.getByText('GT World Challenge')).toBeTruthy();
+    // P2.1: the loader's keys read in the catalogue's words, the raw key kept beside them.
+    expect(screen.getByText('Standings · GT World Challenge · 2026')).toBeTruthy();
+    expect(screen.getAllByText('standings:gt-world').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Standings · Formula 1 · 2026').length).toBeGreaterThan(0);
     expect(screen.getAllByText('upstream 503 from wrc.com')).toHaveLength(2);
     expect(screen.getByRole('heading', { name: /^Runs · the newest 2$/ })).toBeTruthy();
     fireEvent.change(screen.getByLabelText('Result'), { target: { value: 'failed' } });
@@ -164,5 +169,18 @@ describe('DataWorkspace', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open Supabase · our tables' }));
     fireEvent.click(screen.getByRole('button', { name: 'Open the runs' }));
     await screen.findByRole('heading', { name: /Loads · the loader/ });
+  });
+
+  it('P2.1: the Object Browser opens from the Data page, lists the catalogue’s sources with the loader’s work behind them, and Data returns', async () => {
+    await home();
+    fireEvent.click(screen.getByRole('button', { name: 'Object Browser' }));
+    await screen.findByRole('heading', { name: /^Object Browser/ });
+    await waitFor(() => expect(urls).toContain('/api/admin/design/data/sources'));
+    await screen.findByRole('button', { name: 'Open Standings' });
+    expect(screen.getAllByRole('row').slice(1)).toHaveLength(13);
+    fireEvent.click(screen.getByRole('button', { name: 'Open Standings' }));
+    expect(screen.getByRole('region', { name: 'Data Source: Standings' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Data' }));
+    expect(screen.getByRole('heading', { name: 'Data' })).toBeTruthy();
   });
 });

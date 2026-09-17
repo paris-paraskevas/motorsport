@@ -36,6 +36,7 @@ import { AppearanceEditor } from './AppearanceEditor';
 import { TemplatesEditor } from './TemplatesEditor';
 import { ShortcutsEditor } from './ShortcutsEditor';
 import { PluginsEditor } from './PluginsEditor';
+import { DataSourcesEditor } from './DataSourcesEditor';
 import { componentDefinitionsOf, type EditableDefinition } from '@/lib/design/component-definitions';
 import { AssetsEditor } from './AssetsEditor';
 import { SearchHintsEditor } from './SearchHintsEditor';
@@ -762,6 +763,7 @@ export function Designer({
               userId={userId}
               shortcuts={shortcuts.state === 'ready' ? shortcuts.shortcuts : []}
               components={definitions.state === 'ready' ? componentDefinitionsOf(definitions.definitions) : undefined}
+              series={series}
               themeDefault={themeDefault}
               onSaved={next => {
                 setDetail({ state: 'ready', detail: next });
@@ -839,7 +841,7 @@ export function Designer({
         </main>
       ) : workspace === 'data' ? (
         <main className="min-w-0 overflow-auto px-6 pb-8 pt-[18px]">
-          <DataWorkspace />
+          <DataWorkspace series={series} />
         </main>
       ) : (
         <main className="min-w-0 overflow-auto px-6 pb-8 pt-[18px]">
@@ -1016,6 +1018,16 @@ export function Designer({
               />
             );
           })()}
+
+          {item?.editor === 'datasources' && (
+            <DataSourcesEditor
+              series={series}
+              onOpenPage={id => {
+                selectWorkspace('builder');
+                openPageDetail(id);
+              }}
+            />
+          )}
 
           {item?.editor === 'assets' && (() => {
             if (assets.state === 'loading') {

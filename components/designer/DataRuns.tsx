@@ -4,7 +4,20 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import type { DataBand } from '@/lib/design/data-services';
 import type { RunsLog, SourceState } from '@/lib/design/data';
+import { describeLoaderKey } from '@/lib/design/sources';
 import { BTN, RuledTable, Strip, Swatch, ago, took, when, type StripCell } from './data-ui';
+
+/** A loader key in the catalogue's words (P2.1), the raw key kept beside it; a key the vocabulary lacks stands as it is. */
+function SourceName({ keyName, fallback }: { keyName: string; fallback?: string }) {
+  const d = describeLoaderKey(keyName);
+  const label = d?.label ?? fallback ?? keyName;
+  return (
+    <span className="font-medium">
+      {label}
+      {label !== keyName && <span className="ml-2 font-mono text-12 text-text-faint">{keyName}</span>}
+    </span>
+  );
+}
 
 // The loader's runs (Phase 4, PR 4.2): what the site's own data loader has been
 // doing. A strip that answers "is it running and is anything failing", one row
@@ -112,10 +125,7 @@ export function DataRuns({ onBack }: { onBack: () => void }) {
               const st = SOURCE_STATE[s.state];
               const at = s.newest?.finished ?? s.newest?.started ?? null;
               return [
-                <span key="s" className="font-medium">
-                  {s.label}
-                  {s.label !== s.key && <span className="ml-2 font-mono text-12 text-text-faint">{s.key}</span>}
-                </span>,
+                <SourceName key="s" keyName={s.key} fallback={s.label} />,
                 <span key="st" style={{ color: `var(--${st.band})` }}>
                   <Swatch band={st.band} />
                   {st.word}
@@ -148,7 +158,7 @@ export function DataRuns({ onBack }: { onBack: () => void }) {
                 <option value="">all</option>
                 {sourcesSeen.map(k => (
                   <option key={k} value={k}>
-                    {k}
+                    {describeLoaderKey(k)?.label ?? k}
                   </option>
                 ))}
               </select>
@@ -173,9 +183,7 @@ export function DataRuns({ onBack }: { onBack: () => void }) {
             numeric={[3, 4]}
             rows={shown.map(r => [
               <span key="w" title={r.started ?? undefined}>{when(r.started)}</span>,
-              <span key="s" className="font-mono text-13">
-                {r.source}
-              </span>,
+              <SourceName key="s" keyName={r.source} />,
               <span key="st" style={{ color: `var(--${RESULT_BAND[r.status] ?? 'off'})` }}>
                 <Swatch band={RESULT_BAND[r.status] ?? 'off'} />
                 {r.status}

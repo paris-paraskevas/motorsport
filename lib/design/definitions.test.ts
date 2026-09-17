@@ -27,7 +27,7 @@ vi.mock('@/lib/betting/client', () => ({
   }),
 }));
 
-import { loadComponents, loadDefinitions, loadDefinitionsForEditing, overlaysFromRows, resetDefinitionsMemo, usageFromRows } from './definitions';
+import { loadComponents, loadDefinitions, loadDefinitionsForEditing, loadSourceUsage, overlaysFromRows, resetDefinitionsMemo, sourceUsageFromRows, usageFromRows } from './definitions';
 import { DEFINITIONS } from './component-definitions';
 import { COMPONENTS } from './components';
 
@@ -85,6 +85,40 @@ describe('the definitions loader', () => {
     expect(usage['region.static']).toEqual({ usedOn: [{ id: MONZA, path: '/history/monza', name: 'Monza, a history', attributes: [] }], regions: 2 });
     expect(usage['region.list']?.regions).toBe(1);
     expect(usage['home.wire']).toBeUndefined();
+  });
+
+  it('P2.1: Utilization of a source: the pages whose newest or live revision carries a Source of it, with the refs; a bad ref and a region without one are ignored; the same newest-and-live rule as the definitions’', async () => {
+    const revs = [
+      ...revisions,
+      {
+        page_id: MONZA,
+        created_at: '2026-09-17T12:00:00Z',
+        published_at: null,
+        document: {
+          version: 2,
+          actions: [],
+          regions: [
+            region('changed', 'component', { component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=f1&season=2026' }),
+            region('bad', 'component', { component: 'home.changed', settings: { rows: 5 }, source: 'nope?x=1' }),
+            region('wire', 'component', { component: 'home.wire', settings: { items: 5 } }),
+          ],
+        },
+      },
+      // The Calendar's LIVE revision (the newest published one, 12:00 on the 16th) carries a source its newer draft dropped: the live one still counts (the guard's rule).
+      { page_id: CAL, created_at: '2026-09-16T12:00:00Z', published_at: '2026-09-16T12:00:00Z', document: { version: 2, actions: [], regions: [region('changed', 'component', { component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=wec&season=2026' })] } },
+    ];
+    const usage = sourceUsageFromRows(pages, revs);
+    expect(usage).toEqual({
+      standings: [
+        { id: CAL, path: '/calendar', name: 'Calendar', refs: ['standings?series=wec&season=2026'] },
+        { id: MONZA, path: '/history/monza', name: 'Monza, a history', refs: ['standings?series=f1&season=2026'] },
+      ],
+    });
+    tables.page_revision = { data: revs, error: null };
+    expect(await loadSourceUsage()).toEqual(usage);
+    throwOn = 'page';
+    expect(await loadSourceUsage()).toEqual({});
+    throwOn = null;
   });
 
   it('the editable list: every definition in the code’s order, the merged definition, its overlay, the stamp or null, Utilization', async () => {
