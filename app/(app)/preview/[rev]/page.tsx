@@ -5,12 +5,12 @@ import { loadAssetsById, loadRevisionPreview } from '@/lib/design/live-page';
 import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
-import { applyBuildOptions, documentRefs, schemesAsked } from '@/lib/design/page-document';
+import { applyBuildOptions, applyConditions, conditionAsks, documentRefs, schemesAsked } from '@/lib/design/page-document';
 import { loadNamedPages } from '@/lib/design/pages';
 import { loadComponents } from '@/lib/design/definitions';
 import { loadBuildOptions } from '@/lib/design/build-options';
 import { loadAppearance } from '@/lib/design/appearance';
-import { renderComponents } from '@/lib/design/component-render';
+import { raceWeekendNow, renderComponents } from '@/lib/design/component-render';
 import { CodePageFrame, RowPageView } from '@/components/page/RowPageView';
 import { familyExtras } from '@/lib/design/page-families';
 import { composedDocument } from '@/lib/design/composed-page';
@@ -58,8 +58,12 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   // marks a row page served: 'rows' too (P1.13).
   const composed = preview.page.kind !== 'row';
   const stored = composed ? composedDocument(preview.document, preview.page.path) : preview.document;
-  // An Excluded region leaves the preview as it leaves the running site (APEX: Build Option, P1.3); the show rules are not applied here.
-  const document = applyBuildOptions(stored, await loadBuildOptions());
+  // The conditions apply as on the running site (P2.6): the administrator previewing is signed in, the race-weekend fact is
+  // read when a condition asks, and a preview has no address, so a condition on the address shows its region (a fact not
+  // known). Then an Excluded region leaves as it leaves the running site (APEX: Build Option, P1.3).
+  const asks = conditionAsks(stored);
+  const conditions = { signedIn: true, raceWeekend: asks.calendar ? await raceWeekendNow() : null, params: null, path: null };
+  const document = applyBuildOptions(applyConditions(stored, conditions), await loadBuildOptions());
   const asked = schemesAsked(preview.page.authz, document);
   const refs = documentRefs(document, await loadComponents());
   const [shortcuts, assets, nav, schemes, components, extras, appearance, pages] = await Promise.all([
@@ -67,7 +71,7 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
     loadAssetsById(refs.assets),
     loadNavLists(),
     asked.length > 0 ? loadAuthzSchemes() : Promise.resolve([]),
-    // Every component draws in the preview too; the show rules are not applied here.
+    // Every component the conditions kept draws in the preview too.
     renderComponents(document, { path: preview.page.path, params: {}, page: preview.page }),
     composed ? familyExtras(preview.page.path, {}) : Promise.resolve(null),
     // The templates' presets (P1.2), as the catch-all reads them.

@@ -3,7 +3,7 @@ import {
   LEGACY_BODY,
   POSITIONS,
   REGION_KIND_LABELS,
-  SHOW_RULE_LABELS,
+  conditionText,
   descendantsOf,
   isInside,
   isLegacyBody,
@@ -435,11 +435,6 @@ export function regionName(r: Region): string {
   return r.title || (r.kind === 'button' ? r.label : r.id);
 }
 
-/** The show rule in words, for tiles and reports; empty when always. */
-export function showText(r: Region): string {
-  return r.show ? SHOW_RULE_LABELS[r.show] : '';
-}
-
 /** What the tree calls an action. */
 export function actionName(a: DynamicAction): string {
   return a.name || a.id;
@@ -632,7 +627,8 @@ export function searchPage(q: string, doc: PageDocument, page: PageRow, opts: { 
       authorization: r.authz,
       hidden: r.hidden ? 'hidden at first' : null,
       commented: r.commentedOut ? 'commented out' : null,
-      show: showText(r) || null,
+      // The condition (P2.6) in APEX's words with its value; none is not a hit.
+      condition: conditionText(r.condition) || null,
     };
     const src =
       r.kind === 'static'

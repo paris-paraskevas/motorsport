@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { Boxes, Image as ImageIcon, List, MousePointerClick, Pilcrow } from 'lucide-react';
-import { REGION_KIND_LABELS, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
+import { REGION_KIND_LABELS, conditionText, type PageDocument, type Position, type RegionKind } from '@/lib/design/page-document';
 import { regionTemplate } from '@/lib/design/template-options';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
@@ -14,7 +14,6 @@ import {
   regionName,
   regionSummary,
   selectionCovers,
-  showText,
   spanName,
   triggerText,
   type DesignerMessage,
@@ -139,7 +138,8 @@ export function ComponentView({
       // The look (P1.1): the template's label, Plain when none is stored.
       regionTemplate(r.template).label,
       r.authz ? (AUTHZ[r.authz] ?? r.authz) : 'Public',
-      showText(r) || 'Always',
+      // The condition (P2.6) in APEX's words; Always when none.
+      conditionText(r.condition) || 'Always',
       r.hidden ? 'hidden at first' : 'no',
     ],
   }));
@@ -155,7 +155,7 @@ export function ComponentView({
   }));
   return (
     <div className="grid gap-4 px-4 pb-6 pt-3.5">
-      <Report title="Regions" cols={['Seq', 'Name', 'Type', 'Position', 'Grid', 'Parent', 'Look', 'Authorization', 'Shows', 'Hidden']} rows={regions} selection={selection} onSelect={onSelect} />
+      <Report title="Regions" cols={['Seq', 'Name', 'Type', 'Position', 'Grid', 'Parent', 'Look', 'Authorization', 'Condition', 'Hidden']} rows={regions} selection={selection} onSelect={onSelect} />
       <Report title="Buttons" cols={['Seq', 'Label', 'Position', 'Target']} rows={buttons} selection={selection} onSelect={onSelect} />
       <Report title="Dynamic Actions" cols={['Seq', 'Name', 'When', 'Actions']} rows={actions} selection={selection} onSelect={onSelect} />
       {doc.regions.length > 0 && (

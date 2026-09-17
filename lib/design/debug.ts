@@ -37,8 +37,8 @@ export interface DebugEntry {
   at: number;
   level: OnLevel;
   /** The step's code: the Processing tab's names (resolve · session · authz ·
-   *  show · build · refs · render · bind), a region's own as `render:<id>`,
-   *  `show:<id>`, `authz:<id>`, `build:<id>`, an action's as `action:<id>`. */
+   *  condition · build · refs · render · bind), a region's own as `render:<id>`,
+   *  `condition:<id>`, `authz:<id>`, `build:<id>`, an action's as `action:<id>`. */
   phase: string;
   text: string;
   ms?: number;

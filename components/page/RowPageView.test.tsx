@@ -310,7 +310,7 @@ describe('components (the components programme, R2a)', () => {
     const own: PageDocument = {
       version: 1,
       actions: [],
-      regions: [component('drawn', 10), region('phone', { seq: 20, show: 'phones' }), region('wide', { seq: 30, show: 'desktop' }), component('blank', 40)],
+      regions: [component('drawn', 10), region('phone', { seq: 20, condition: { type: 'phones' } }), region('wide', { seq: 30, condition: { type: 'desktop' } }), component('blank', 40)],
     };
     const html = renderToStaticMarkup(<RowPageView {...data} document={own} components={{ drawn: <p>DRAWN BY THE SERVER</p> }} />);
     expect(html).toContain('DRAWN BY THE SERVER');

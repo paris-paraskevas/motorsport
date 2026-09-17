@@ -158,9 +158,10 @@ function bandBleed(r: Region, rightFree: boolean): string {
   return `-mx-4 md:-mx-6 ${left} ${right}`;
 }
 
-/** A show rule the stylesheet decides: phones only, or desktop and laptop only. */
+/** A condition the stylesheet decides (P2.6): Phones, or Desktop and laptop. */
 function showClass(r: Region): string {
-  return r.show === 'phones' ? 'lg:hidden' : r.show === 'desktop' ? 'max-lg:hidden' : '';
+  const type = r.condition?.type;
+  return type === 'phones' ? 'lg:hidden' : type === 'desktop' ? 'max-lg:hidden' : '';
 }
 
 /** A Button to a row page is drawn only while the page is live (P1.12 B2): a

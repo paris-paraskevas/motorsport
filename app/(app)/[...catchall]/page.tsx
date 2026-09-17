@@ -7,7 +7,7 @@ import { loadShortcuts } from '@/lib/design/shortcuts';
 import { loadDocumentLists, loadNavLists } from '@/lib/design/lists';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { allowedKeys, currentVisitor } from '@/lib/design/authz-evaluate';
-import { applyBuildOptions, applyShow, documentRefs, schemesAsked, showAsks, substituteShortcuts } from '@/lib/design/page-document';
+import { applyBuildOptions, applyConditions, conditionAsks, documentRefs, schemesAsked, substituteShortcuts } from '@/lib/design/page-document';
 import { loadNamedPages } from '@/lib/design/pages';
 import { loadComponents } from '@/lib/design/definitions';
 import { loadBuildOptions } from '@/lib/design/build-options';
@@ -89,9 +89,9 @@ export default async function CatchAll({ params }: { params: Params }) {
   if (r.page.rendering === 'dynamic') await connection();
 
   const asked = schemesAsked(r.page.authz, r.document);
-  // A show rule that needs the session reads it like a scheme does (R2a); the
-  // race-weekend fact is read when a rule asks for it.
-  const asks = showAsks(r.document);
+  // A condition that needs the session reads it like a scheme does (R2a); the
+  // race-weekend fact is read when a condition asks for it.
+  const asks = conditionAsks(r.document);
   let allowed = new Set<string>();
   let signedIn: boolean | null = null;
   const messages: Record<string, string | null> = {};
@@ -108,8 +108,10 @@ export default async function CatchAll({ params }: { params: Params }) {
       return <RefusedPage title={r.page.title ?? r.page.name} message={message} signInHelps={signInHelps} />;
     }
   }
-  // A region whose Build Option is Excluded leaves the page here, before its component is drawn (P1.3).
-  const document = applyBuildOptions(applyShow(r.document, { signedIn, raceWeekend: asks.calendar ? await raceWeekendNow() : null }), await loadBuildOptions());
+  // The conditions (P2.6) read the visited address and its parts for a composed page (never the pattern); then a region whose
+  // Build Option is Excluded leaves the page, before its component is drawn (P1.3).
+  const conditions = { signedIn, raceWeekend: asks.calendar ? await raceWeekendNow() : null, params: r.kind === 'composed' ? r.params : {}, path };
+  const document = applyBuildOptions(applyConditions(r.document, conditions), await loadBuildOptions());
 
   const refs = documentRefs(document, await loadComponents());
   const where = r.kind === 'composed' ? { path: r.pattern, params: r.params, page: r.page } : { path, params: {}, page: r.page };

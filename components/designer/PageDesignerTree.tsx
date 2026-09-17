@@ -120,7 +120,8 @@ export function PageDesignerTree({
           label: regionName(r),
           icon: <Icon size={11} />,
           tag: r.commentedOut ? 'commented out' : pos === 'body' || parent ? spanName(r.span) : r.hidden ? 'hidden' : undefined,
-          struck: r.commentedOut === true,
+          // Struck through when commented out (P1.11) and when its condition is Never (P2.6; APEX draws Never so in the Rendering tab).
+          struck: r.commentedOut === true || r.condition?.type === 'never',
           marker: markers[`region:${r.id}`],
           sel: { kind: 'region', id: r.id },
           drag: { type: 'region', id: r.id },

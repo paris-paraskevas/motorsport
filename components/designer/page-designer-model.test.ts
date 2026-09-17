@@ -280,6 +280,10 @@ describe('page search', () => {
     const banded: PageDocument = { ...doc, regions: doc.regions.map(r => (r.id === 'aside' ? { ...r, template: 'band' as const } : r)) };
     expect(searchPage('band', banded, page).map(h => `${h.what} · ${h.where} · ${h.value}`)).toEqual(['Region · Aside · look · Band']);
     expect(searchPage('plain', banded, page)).toEqual([]);
+    // The condition (P2.6) in APEX's words, with its value; none is not a hit.
+    const gated: PageDocument = { ...doc, regions: doc.regions.map(r => (r.id === 'aside' ? { ...r, condition: { type: 'request-equals' as const, part: 'slug', value: 'f1' } } : r)) };
+    expect(searchPage('slug = f1', gated, page).map(h => `${h.what} · ${h.where} · ${h.value}`)).toEqual(['Region · Aside · condition · Request = Value: slug = f1']);
+    expect(searchPage('never', gated, page)).toEqual([]);
   });
 });
 

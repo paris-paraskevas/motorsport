@@ -2,7 +2,7 @@
 
 import type { DragEvent, MouseEvent, ReactNode } from 'react';
 import { Boxes, Image as ImageIcon, List, Lock, MousePointerClick, Pilcrow, Puzzle, type LucideIcon } from 'lucide-react';
-import { COLUMNS, NESTING_CAP, POSITIONS, REGION_KIND_LABELS, childrenOf, isInside, parentOf, rowsAt, type PageDocument, type Position, type Region, type RegionKind } from '@/lib/design/page-document';
+import { COLUMNS, NESTING_CAP, POSITIONS, REGION_KIND_LABELS, childrenOf, conditionText, isInside, parentOf, rowsAt, type PageDocument, type Position, type Region, type RegionKind } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import {
@@ -11,7 +11,6 @@ import {
   regionName,
   regionSummary,
   selectionCovers,
-  showText,
   spanName,
   type Placement,
   type Selection,
@@ -168,7 +167,8 @@ export function PageDesignerLayout({
           <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">{r.commentedOut ? 'commented out' : REGION_KIND_LABELS[r.kind].label}</span>
           {r.authz && r.authz !== 'public' && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">{AUTHZ_LABEL[r.authz] ?? r.authz}</span>}
           {r.hidden && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-text-faint">hidden at first</span>}
-          {showText(r) && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-[color:var(--amber,#e0a52d)]">{showText(r)}</span>}
+          {/* The condition (P2.6) in APEX's words, as the show rule was tagged. */}
+          {conditionText(r.condition) && <span className="whitespace-nowrap font-mono text-8 uppercase tracking-[0.12em] text-[color:var(--amber,#e0a52d)]">{conditionText(r.condition)}</span>}
           {mark && <span className={`h-2 w-2 shrink-0 rounded-full ${mark === 'err' ? 'bg-negative' : 'bg-[color:var(--amber,#e0a52d)]'}`} aria-label={mark === 'err' ? 'error' : 'warning'} />}
           <span className="ml-auto whitespace-nowrap font-mono text-9 text-text-faint">{r.seq}</span>
         </div>

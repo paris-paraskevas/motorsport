@@ -5,7 +5,7 @@ import { loadRevisionPreview } from './live-page';
 import { composedDocument } from './composed-page';
 import { loadAuthzSchemes } from './authz';
 import { allowedKeys, currentVisitor } from './authz-evaluate';
-import { applyBuildOptions, applyShow, documentRefs, passesShow, schemesAsked, showAsks, type PageDocument, type Region } from './page-document';
+import { applyBuildOptions, applyConditions, conditionAsks, conditionText, documentRefs, passesCondition, schemesAsked, type PageDocument, type Region } from './page-document';
 import { loadBuildOptions } from './build-options';
 import { READS, raceWeekendNow, renderComponents, type RenderPage } from './component-render';
 import { findComponent } from './components';
@@ -74,13 +74,13 @@ export async function tracePage(target: TraceTarget, level: DebugLevel, cid: str
   const { page, document: doc, where } = resolved;
   d.note(4, 'resolve', `${page.name}: ${plural(doc.regions.length, 'region')}, ${plural(doc.actions.length, 'dynamic action')}`);
 
-  // The session: a live render reads it only when a scheme or a show rule asks; the trace always says who is tracing.
+  // The session: a live render reads it only when a scheme or a condition asks; the trace always says who is tracing.
   const asked = schemesAsked(page.authz, doc);
-  const asks = showAsks(doc);
+  const asks = conditionAsks(doc);
   const [visitor, schemes] = await d.step(
     4,
     'session',
-    asked.length > 0 || asks.visitor ? `the visitor, for ${plural(asked.length, 'scheme')}${asks.visitor ? ' and a show rule' : ''}` : 'the visitor (nothing asks; a live render skips this and stays cached)',
+    asked.length > 0 || asks.visitor ? `the visitor, for ${plural(asked.length, 'scheme')}${asks.visitor ? ' and a condition' : ''}` : 'the visitor (nothing asks; a live render skips this and stays cached)',
     () => Promise.all([currentVisitor(), asked.length > 0 ? loadAuthzSchemes() : Promise.resolve([])]),
   );
   d.note(6, 'session', visitor.signedIn ? `signed in${visitor.role ? ` as ${visitor.role}` : ''}` : 'signed out');
@@ -93,18 +93,20 @@ export async function tracePage(target: TraceTarget, level: DebugLevel, cid: str
     if (r.authz && r.authz !== 'public') d.note(6, `authz:${r.id}`, `${name(r)}: scheme ${r.authz} ${allowed.has(r.authz) ? 'allowed' : 'refused'} for you`);
   }
 
-  // Show rules (APEX: which conditions fired), with the facts they read.
-  const raceWeekend = asks.calendar ? await d.step(6, 'show', 'the race-weekend fact', () => raceWeekendNow()) : null;
-  const showCtx = { signedIn: visitor.signedIn, raceWeekend };
-  const shown = applyShow(doc, showCtx);
-  // A sub region (P1.4) leaves with its parent, whatever its own rule or option says.
+  // Conditions (P2.6; APEX: which conditions fired), with the facts they read. The
+  // address is the traced path with its parts for a composed page; a revision
+  // traced by its id has none, and a fact not known shows the region.
+  const raceWeekend = asks.calendar ? await d.step(6, 'condition', 'the race-weekend fact', () => raceWeekendNow()) : null;
+  const ctx = { signedIn: visitor.signedIn, raceWeekend, params: 'path' in target ? (where.params ?? {}) : null, path: 'path' in target ? target.path : null };
+  const shown = applyConditions(doc, ctx);
+  // A sub region (P1.4) leaves with its parent, whatever its own condition or option says.
   const parentName = (r: Region) => {
     const p = doc.regions.find(x => x.id === r.parent);
     return p ? name(p) : (r.parent ?? 'its parent');
   };
-  d.note(4, 'show', `${plural(doc.regions.length - shown.regions.length, 'region')} hidden by a show rule (signed in: ${visitor.signedIn}; race weekend: ${raceWeekend === null ? 'not asked' : raceWeekend})`);
+  d.note(4, 'condition', `${plural(doc.regions.length - shown.regions.length, 'region')} hidden by a condition (signed in: ${visitor.signedIn}; race weekend: ${raceWeekend === null ? 'not asked' : raceWeekend})`);
   for (const r of doc.regions) {
-    if (!shown.regions.some(x => x.id === r.id)) d.note(6, `show:${r.id}`, passesShow(r.show, showCtx) ? `${name(r)} left with its parent ${parentName(r)}` : `${name(r)} hidden by the rule ${r.show ?? 'always'}`);
+    if (!shown.regions.some(x => x.id === r.id)) d.note(6, `condition:${r.id}`, passesCondition(r.condition, ctx) ? `${name(r)} left with its parent ${parentName(r)}` : `${name(r)} hidden by the condition ${conditionText(r.condition)}`);
   }
 
   // Build options (P1.3) and Comment Out (P1.11): an Excluded or a commented-out region leaves before it is drawn, at this one step.
