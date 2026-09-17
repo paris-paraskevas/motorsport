@@ -264,7 +264,8 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(unknown.value.regions).toEqual([]);
     expect(unknown.problems).toEqual([`region r: the condition must be one of ${LABELS}`]);
     expect(parsed('never').problems).toEqual(['region r: the condition must be an object with a type']);
-    expect(parsed({ type: 'item-equals', item: 'p1', value: 'x' }).problems).toEqual(['region r: Item = Value waits for the page items (P2.18)']);
+    // The same words the Rules group's note uses for the disabled entry.
+    expect(parsed({ type: 'item-equals', item: 'p1', value: 'x' }).problems).toEqual(['region r: Item = Value arrives with the page items (P2.18)']);
     expect(parsed({ type: 'request-equals', value: 'f1' }).problems).toEqual(['region r: Request = Value needs a part of the address, like slug']);
     expect(parsed({ type: 'request-equals', part: 'Slug!', value: 'f1' }).problems).toEqual(['region r: Request = Value needs a part of the address, like slug']);
     expect(parsed({ type: 'request-equals', part: 'slug', value: '  ' }).problems).toEqual(['region r: Request = Value needs a value of 1 to 80 characters']);

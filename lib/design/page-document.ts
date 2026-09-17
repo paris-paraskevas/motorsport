@@ -191,7 +191,7 @@ function parseCondition(raw: unknown): { value?: Condition; problem?: string } {
   const c = raw as Record<string, unknown>;
   const type = c.type as string;
   if (!(CONDITION_TYPES as readonly string[]).includes(type)) return { problem: `the condition must be one of ${conditionNames()}` };
-  if (type === 'item-equals') return { problem: `${CONDITION_LABELS['item-equals']} waits for the page items (P2.18)` };
+  if (type === 'item-equals') return { problem: `${CONDITION_LABELS['item-equals']} arrives with the page items (P2.18)` };
   if (type === 'request-equals') {
     const part = typeof c.part === 'string' ? c.part.trim() : '';
     if (!ADDRESS_PART.test(part)) return { problem: `${CONDITION_LABELS['request-equals']} needs a part of the address, like slug` };

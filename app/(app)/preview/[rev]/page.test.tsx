@@ -96,7 +96,7 @@ describe('/preview/[rev]', () => {
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
   });
 
-  it('is the 404 for a revision that does not exist, and shows an administrator the draft with every region; the toolbar is the app layout’s, not the page’s (R5)', async () => {
+  it('is the 404 for a revision that does not exist, and shows an administrator the draft with every region a condition does not hide (P2.6); the toolbar is the app layout’s, not the page’s (R5)', async () => {
     loadRevisionPreview.mockResolvedValueOnce(null);
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
     const html = renderToStaticMarkup(await RevisionPreviewPage({ params }));
