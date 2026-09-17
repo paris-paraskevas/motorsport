@@ -1,7 +1,9 @@
 import 'server-only';
 import { cache, type ReactNode } from 'react';
 import { firstBodyRegion, isLegacyBody, type ComponentRegion, type PageDocument } from './page-document';
-import type { SettingValue } from './components';
+import { findComponent, type SettingValue } from './components';
+import { parseSourceRef, type SourceRef } from './sources';
+import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 
 // The server half of the component catalogue (lib/design/components.ts): how
@@ -29,6 +31,7 @@ const pieces = () => import('@/components/HomeLead');
 const blog = () => import('@/lib/blog');
 const calendar = () => import('./families/calendar');
 const calendarView = () => import('@/components/calendar/CalendarView');
+const sourceRead = () => import('./source-read');
 
 export interface RenderContext {
   /** The registry pattern or literal path of the page. */
@@ -39,6 +42,10 @@ export interface RenderContext {
   page: Pick<PageRow, 'path' | 'name' | 'title'>;
   /** This component is the first region showing in the Body: it carries the page's h1. */
   first: boolean;
+  /** The Source the region picked (P2.1), read against the sources its definition declares; null when none. */
+  source: SourceRef | null;
+  /** Tells the Debug trace what a source read answered (P2.1). */
+  onSourceRead?: (p: SourceProvenance) => void;
 }
 
 type Renderer = (settings: Readonly<Record<string, SettingValue>>, ctx: RenderContext) => Promise<ReactNode> | ReactNode;
@@ -89,8 +96,18 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     if (!model.result) return null;
     return <HomeLatestResult result={model.result} changed={model.changed} heading={ctx.first ? 'h1' : 'h2'} compact={!ctx.first} />;
   },
-  async 'home.changed'(settings) {
-    const [{ loadHomeModel }, { HomeWhatChanged }] = await Promise.all([home(), pieces()]);
+  async 'home.changed'(settings, ctx) {
+    const [{ loadHomeModel, loadSeriesMeta, changedFromStandings }, { HomeWhatChanged }] = await Promise.all([home(), pieces()]);
+    // A Source pins the table to one championship (P2.1): the catalogue's reader, the same shape the assembly builds.
+    if (ctx.source) {
+      const { readSource } = await sourceRead();
+      const read = await readSource(ctx.source);
+      ctx.onSourceRead?.(read.provenance);
+      const slug = String(ctx.source.params.series ?? '');
+      const changed = changedFromStandings(read.rows, (await loadSeriesMeta()).get(slug)?.name ?? slug);
+      if (!changed) return null;
+      return <HomeWhatChanged changed={changed} rows={num(settings.rows, 5)} />;
+    }
     const model = await loadHomeModel();
     if (!model.changed) return null;
     return <HomeWhatChanged changed={model.changed} rows={num(settings.rows, 5)} />;
@@ -136,6 +153,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
 /** What the Debug trace asks of a render (P1.9): each component's timing and outcome. */
 export interface RenderHooks {
   onRendered?: (id: string, component: string, ms: number, ok: boolean) => void;
+  /** A component's Source read (P2.1): what came back and from which tier. */
+  onSourceRead?: (id: string, p: SourceProvenance) => void;
 }
 
 /** What a renderer is told about the page: the pattern or path, the address's parts, the row. */
@@ -165,8 +184,12 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
         return;
       }
       const t = performance.now();
+      // The Source (P2.1): the region's pick against the sources its definition declares; the code's list, since a row cannot add one.
+      const spec = findComponent(r.component);
+      const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
+      const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody });
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, onSourceRead });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;

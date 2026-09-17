@@ -178,6 +178,7 @@ export function PageDesigner({
   themeDefault = 'Paper',
   regionDefaults = SHIPPED_REGION_DEFAULTS,
   components = COMPONENTS,
+  series = [],
   initialRegion = null,
   userId = null,
   onSaved,
@@ -194,6 +195,8 @@ export function PageDesigner({
   regionDefaults?: RegionDefaults;
   /** The component definitions the page may take (P2.0): the code's, or the merged list once definitions have rows. */
   components?: readonly ComponentDefinition[];
+  /** The championships by name, for a Source's Series parameter (P2.1). */
+  series?: readonly { slug: string; name: string }[];
   /** Every page of the application, for the finder and the page stepper. */
   pages: PageRow[];
   readOnly: boolean;
@@ -1091,6 +1094,7 @@ export function PageDesigner({
     lists,
     pages,
     components,
+    series,
     namedBy: detail.namedBy,
     shortcuts,
     buildOptions: Object.fromEntries((buildOptions ?? []).map(b => [b.key, b.status])),

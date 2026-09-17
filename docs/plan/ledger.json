@@ -396,7 +396,7 @@
    "defaults": "The catalogue declared in code first (a source is a name, parameters and a reader), rows only for the operator’s additions (remote servers, profiles); the Source group as APEX draws it (Type · Location · the source’s parameters); the loader’s run log in the Debug trace’s phases; the Data workspace’s Object Browser.",
    "needsWord": "the first catalogue list; the migration on 'apply <id>'",
    "acceptance": "A component's Source picks standings · f1 · 2026 and the renderer reads it; the Data page shows the loader's runs in the new vocabulary; test.",
-   "status": "planned",
+   "status": "started",
    "scopeHash": "e1930a5b8622"
   },
   {

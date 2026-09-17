@@ -28,6 +28,7 @@ import {
 } from '@/lib/design/page-document';
 import { SITE_URL } from '@/lib/site';
 import { findComponent, type ComponentDefinition, type SettingValue } from '@/lib/design/components';
+import { SERIES_OPTIONS, defaultSourceRef, encodeSourceRef, findSource, parseSourceRef, type SourceDefinition, type SourceParameter, type SourceRef } from '@/lib/design/sources';
 import { normaliseHex } from '@/lib/design/contrast';
 import { BAR_ICON_NAMES } from '@/components/BottomBar';
 import { PAGE_COMMENTS_MAX, PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
@@ -112,6 +113,8 @@ export interface PropsContext {
   pages: PageRow[];
   /** The component definitions (P2.0): the code's, or the merged list once definitions have rows. */
   components: readonly ComponentDefinition[];
+  /** The championships by name, for a Source's Series parameter (P2.1); absent, the catalogue's names. */
+  series?: readonly { slug: string; name: string }[];
   /** What names this page (rule 10): the lists holding an entry to it and the live pages whose button or go effect goes to it (P1.12 B2). */
   namedBy: { lists: string[]; pages: string[] };
   shortcuts: EditableShortcut[];
@@ -507,6 +510,13 @@ function HexField({ label, value, disabled, onPick }: { label: string; value: st
   );
 }
 
+/** The series a Source parameter offers, by the names the designer holds (the catalogue's when it has none). */
+function seriesChoices(param: SourceParameter, series: readonly { slug: string; name: string }[] | undefined): { slug: string; name: string }[] {
+  const offered = param.options ?? SERIES_OPTIONS;
+  const names = series && series.length ? series : offered.map(o => ({ slug: o.key, name: o.label }));
+  return names.filter(n => offered.some(o => o.key === n.slug));
+}
+
 export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
   const { doc, readOnly, assets, lists, shortcuts, act, fieldId } = ctx;
   const K = REGION_KIND_LABELS[r.kind];
@@ -689,6 +699,93 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       control: <Ro>{spec ? `${spec.name} · ${spec.holds}` : `Unknown component ${r.component}`}</Ro>,
       help: 'A piece the code draws. Its kind is deployed code; its settings and its rule are yours, here.',
     });
+    // The Source (P2.1; APEX: the Source group's Location and Type, then the source's own parameters as rows, ours):
+    // a component whose definition declares sources picks one here; the region carries the ref, never a setting,
+    // the catalogue's reader reads it, and the Attributes tab is untouched.
+    if (spec?.sources?.length) {
+      const allowed = spec.sources.map(k => findSource(k)).filter((s): s is SourceDefinition => s !== null);
+      const picked = r.source ? parseSourceRef(r.source, spec.sources).value : null;
+      const def = picked ? findSource(picked.source) : null;
+      const setSource = (next: SourceRef | null) =>
+        p('Source set.', x => {
+          if (x.kind !== 'component') return x;
+          const rest = { ...x };
+          delete rest.source;
+          return next ? { ...rest, source: encodeSourceRef(next) } : rest;
+        });
+      source.push({
+        label: 'Location',
+        common: true,
+        control: <Ro dim>Catalogue · the site’s own readers</Ro>,
+        help: 'Where the rows come from (APEX: Location, Local Database). Ours reads the catalogue under Shared Components › Data Sources: the site’s own readers, never a query or a typed address. Remote servers arrive with the first remote source.',
+      });
+      source.push({
+        label: 'Type',
+        common: true,
+        changed: ch(f('source')),
+        control: (
+          <select
+            value={picked?.source ?? ''}
+            disabled={readOnly}
+            aria-label="Source type"
+            className={FIELD}
+            onChange={e => {
+              const s = allowed.find(x => x.key === e.target.value);
+              setSource(s ? defaultSourceRef(s) : null);
+            }}
+          >
+            <option value="">None · the page’s assembly</option>
+            {allowed.map(s => (
+              <option key={s.key} value={s.key}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        ),
+        help: 'Which source the component reads (APEX: Type). None keeps the page’s own assembly, as the component draws today; a source pins it to one pick, read through the catalogue’s reader.',
+      });
+      if (picked && def) {
+        for (const param of def.parameters) {
+          const value = picked.params[param.key];
+          const set = (v: string | number | undefined) => {
+            const params = { ...picked.params };
+            if (v === undefined || v === '') delete params[param.key];
+            else params[param.key] = v;
+            setSource({ ...picked, params });
+          };
+          source.push({
+            label: param.label,
+            common: true,
+            changed: ch(f('source')),
+            control:
+              param.kind === 'series' ? (
+                <select value={String(value ?? '')} disabled={readOnly} aria-label={param.label} className={FIELD} onChange={e => set(e.target.value)}>
+                  {!param.required && <option value="">every series</option>}
+                  {seriesChoices(param, ctx.series).map(o => (
+                    <option key={o.slug} value={o.slug}>
+                      {o.name}
+                    </option>
+                  ))}
+                </select>
+              ) : param.kind === 'season' || param.kind === 'choice' ? (
+                <select value={String(value ?? '')} disabled={readOnly} aria-label={param.label} className={FIELD} onChange={e => set(param.kind === 'season' ? Number(e.target.value) : e.target.value)}>
+                  {(param.options ?? []).map(o => (
+                    <option key={o.key} value={o.key}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              ) : param.kind === 'number' ? (
+                <input type="number" value={value === undefined ? '' : Number(value)} min={param.min} max={param.max} disabled={readOnly} aria-label={param.label} className={FIELD} onChange={e => set(e.target.value === '' ? undefined : Number(e.target.value))} />
+              ) : (
+                <input type="text" value={String(value ?? '')} maxLength={120} disabled={readOnly} aria-label={param.label} className={FIELD} onChange={e => set(e.target.value)} />
+              ),
+            note: param.kind === 'season' ? 'the season the loader warms' : undefined,
+            help: `${param.help ? `${param.help} ` : ''}A parameter of the ${def.name} source (ours; APEX draws a source’s own attributes beneath its Type). The picker fills the catalogue’s default.`,
+          });
+        }
+      }
+    }
     // APEX: the type-specific settings are the Attributes tab (UX map line 133); the Source group keeps the component itself.
     // P2.0: the definition's attributes, each in its group (ungrouped under Settings), drawn by its editor: the four of R2b,
     // then colour (the picker and the hex), icon (the bar's icon names) and link (the Button's Target, a destination key,

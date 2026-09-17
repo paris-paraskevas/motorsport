@@ -11,7 +11,7 @@ describe('shared components catalogue', () => {
     for (const item of items) expect(Boolean(item.listKey || item.editor) !== Boolean(item.later), item.key).toBe(true);
   });
 
-  it('opens exactly the four navigation lists, each with its copy, and the fifteen editors', () => {
+  it('opens exactly the four navigation lists, each with its copy, and the sixteen editors', () => {
     const listed = items.filter(i => i.listKey).map(i => i.listKey);
     expect([...listed].sort()).toEqual([...NAV_LIST_KEYS].sort());
     for (const key of NAV_LIST_KEYS) expect(LIST_COPY[key].title.length).toBeGreaterThan(0);
@@ -30,7 +30,15 @@ describe('shared components catalogue', () => {
       ['themes', 'themes'],
       ['templates', 'templates'],
       ['assets', 'assets'],
+      ['datasources', 'datasources'],
       ['textmsgs', 'text'],
+    ]);
+    // P2.1: Data Sources is editable; Remote Servers and JSON Sources say when they arrive.
+    const data = CATALOGUE.find(g => g.group === 'Data Sources')!;
+    expect(data.items.map(i => [i.key, i.editor ?? null, i.later ?? null])).toEqual([
+      ['datasources', 'datasources', null],
+      ['remoteservers', null, 'with the first remote source'],
+      ['json', null, 'Phase 4'],
     ]);
   });
 });

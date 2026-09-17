@@ -221,6 +221,21 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'test.card' })])).problems).toEqual(['region r: names a component the code does not have (test.card)']);
   });
 
+  it('P2.1: a component region carries a Source when its definition declares sources, stored canonically; a bad ref, or a source on a component that reads none, is the writer’s refusal naming the region', () => {
+    const ok = parsePageDocument(doc([region({ component: 'home.changed', source: 'standings?season=2026&series=f1' })]));
+    expect(ok.problems).toEqual([]);
+    expect(ok.value.regions[0]).toMatchObject({ component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=f1&season=2026' });
+    const none = parsePageDocument(doc([region({ component: 'home.changed' })]));
+    expect(none.problems).toEqual([]);
+    expect(none.value.regions[0]).not.toHaveProperty('source');
+    expect(parsePageDocument(doc([region({ component: 'home.changed', source: '' })])).value.regions[0]).not.toHaveProperty('source');
+    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 'standings?season=2026' })])).problems).toEqual(['region r: Standings needs a series']);
+    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 'posts?count=3' })])).problems).toEqual(['region r: Source must be one of Standings']);
+    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 'standings?series=f1&season=2025' })])).value.regions).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'home.wire', source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: The wire reads no source']);
+    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 42 })])).problems).toEqual(['region r: Source must be text']);
+  });
+
   it('reads a show rule, leaves it out when it is always, and refuses one it does not know', () => {
     const rule = parsePageDocument(doc([region({ component: 'page.body', show: 'signed-in' })]));
     expect(rule.problems).toEqual([]);

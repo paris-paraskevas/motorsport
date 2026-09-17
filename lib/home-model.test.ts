@@ -1,5 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { rankLiveWeekends } from './home-model';
+import { changedFromStandings, rankLiveWeekends } from './home-model';
+
+// P2.1: What it changed drawn from a Source's rows, the same shape the
+// assembly builds from the brief: the leader, the gap to second, the top ten;
+// no race context, so no winner's accent.
+describe('changedFromStandings', () => {
+  const driver = (position: number, points: number) => ({ kind: 'driver', position, name: `Driver ${position}`, points, code: null, team: 'T', wins: 0, class: null });
+  it('reads the leader, the gap and the top ten from the driver rows, whatever their order; constructors are left aside', () => {
+    const rows = [{ kind: 'constructor', position: 1, name: 'Mercedes', points: 468 }, ...Array.from({ length: 12 }, (_, i) => driver(12 - i, (12 - i) * -20 + 300))];
+    const c = changedFromStandings(rows, 'Formula 1');
+    expect(c).toMatchObject({ seriesName: 'Formula 1', leader: { name: 'Driver 1', points: 280 }, gapToSecond: 20 });
+    expect(c!.top).toHaveLength(10);
+    expect(c!.top[0]).toEqual({ position: 1, name: 'Driver 1', points: 280 });
+    expect(c!.top[9]).toEqual({ position: 10, name: 'Driver 10', points: 100 });
+    expect(c!.winnerName).toBeUndefined();
+    expect(c!.seasonComplete).toBeUndefined();
+  });
+  it('is nothing without driver rows; a lone leader has no gap; a row missing its numbers is skipped', () => {
+    expect(changedFromStandings([{ kind: 'constructor', position: 1, name: 'Mercedes', points: 468 }], 'Formula 1')).toBeNull();
+    expect(changedFromStandings([], 'Formula 1')).toBeNull();
+    expect(changedFromStandings([driver(1, 10)], 'X')).toMatchObject({ leader: { name: 'Driver 1', points: 10 }, gapToSecond: null });
+    expect(changedFromStandings([driver(1, 10), { kind: 'driver', position: 'x', name: 'Broken', points: 1 }], 'X')!.top).toHaveLength(1);
+  });
+});
 
 // Home-page precedence. Before 2026-09-04 this was purely temporal and on
 // Italian Grand Prix Friday the page led with FORMULA 3, because F3's

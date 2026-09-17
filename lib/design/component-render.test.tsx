@@ -11,6 +11,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { ReactNode } from 'react';
 import type { PageDocument, Region } from './page-document';
 import * as homeModel from '@/lib/home-model';
+import * as sourceRead from './source-read';
 
 vi.mock('next/link', () => ({
   default: ({ href, children, className }: { href: unknown; children: ReactNode; className?: string }) => (
@@ -40,6 +41,17 @@ type HomeModel = Awaited<ReturnType<typeof homeModel.loadHomeModel>>;
 vi.spyOn(homeModel, 'loadHomeModel').mockResolvedValue(model as unknown as HomeModel);
 const buildWire = vi.spyOn(homeModel, 'buildWire').mockImplementation(async (count: number) => Array.from({ length: count }, (_, i) => ({ title: `More ${i + 1}`, link: `https://example.com/m${i}`, sourceHost: 'example.com', ageLabel: '1h ago', seriesName: 'Formula 1', seriesColor: '#e10600' })));
 vi.spyOn(homeModel, 'loadSeriesMeta').mockResolvedValue(new Map([['f1', { name: 'Formula 1', color: '#e10600' }]]));
+// The source reader (P2.1), spied on its namespace for the same reason.
+const readSource = vi.spyOn(sourceRead, 'readSource').mockImplementation(async ref => ({
+  columns: [],
+  total: 2,
+  rows: [
+    { kind: 'driver', position: 1, name: 'Andrea Kimi Antonelli', code: 'ANT', team: 'Mercedes', points: 267, wins: 7, class: null },
+    { kind: 'driver', position: 2, name: 'George Russell', code: 'RUS', team: 'Mercedes', points: 201, wins: 2, class: null },
+    { kind: 'constructor', position: 1, name: 'Mercedes', code: null, team: null, points: 468, wins: 9, class: null },
+  ],
+  provenance: { ref, label: 'Standings · Formula 1 · 2026', tier: 'rows', keys: ['standings:f1', 'f1:standings'], rows: 3, ms: 3, run: { id: 'run-1', status: 'ok', finished: '2026-09-17T12:20:04Z', rows: 44, runner: 'warm-live-data#77' } },
+}));
 const fetchHomeBlogLead = vi.fn(async (slug?: string | null) => (slug === 'pinned-post' ? { slug: 'pinned-post', title: 'The pinned one', summary: 'Pinned.', heroImage: null, publishedAtIso: '2026-09-01T10:00:00Z', readMinutes: 4, seriesSlug: 'f1' } : null));
 vi.mock('@/lib/blog', () => ({ fetchHomeBlogLead: (slug?: string | null) => fetchHomeBlogLead(slug) }));
 vi.mock('./families/calendar', () => ({
@@ -107,6 +119,29 @@ describe('renderComponents', () => {
     // Not first in the Body: the result demotes to h2 and the compact size.
     const second = await renderComponents(doc([region('lead', 'home.lead'), region('result', 'home.result', {}, { seq: 20 })]), { path: '/' });
     expect(html(second.result)).toMatch(/<h2[^>]*>Andrea Kimi Antonelli wins/);
+  });
+
+  it('P2.1: a component’s Source picks standings · f1 · 2026 and the renderer reads it, telling the trace what it read; without a source the assembly’s table stands', async () => {
+    const reads: [string, string, string][] = [];
+    const out = await renderComponents(
+      doc([region('changed', 'home.changed', { rows: 5 }, { source: 'standings?series=f1&season=2026' } as Partial<Region>), region('plain', 'home.changed', { rows: 3 }, { seq: 20 })]),
+      { path: '/history/monza' },
+      { onSourceRead: (id, p) => reads.push([id, p.label, p.tier]) },
+    );
+    expect(readSource).toHaveBeenCalledWith({ source: 'standings', params: { series: 'f1', season: 2026 } });
+    const sourced = html(out.changed);
+    expect(sourced).toContain('Andrea Kimi Antonelli leads by 66 points');
+    expect(sourced).toContain('George Russell');
+    expect(sourced).toContain('Formula 1');
+    expect(sourced).not.toContain('Driver 1');
+    // The constructors' rows are not drivers: two rows in the table.
+    expect((sourced.match(/<li /g) ?? []).length).toBe(2);
+    expect(html(out.plain)).toContain('Driver 1');
+    expect(reads).toEqual([['changed', 'Standings · Formula 1 · 2026', 'rows']]);
+    // A source whose rows hold no driver draws nothing, as an empty assembly does.
+    readSource.mockResolvedValueOnce({ columns: [], total: 0, rows: [], provenance: { ref: { source: 'standings', params: { series: 'wec', season: 2026 } }, label: 'Standings · FIA WEC · 2026', tier: 'snapshot', keys: ['standings:wec'], rows: 0, ms: 1 } });
+    const empty = await renderComponents(doc([region('changed', 'home.changed', {}, { source: 'standings?series=wec&season=2026' } as Partial<Region>)]), { path: '/history/monza' });
+    expect(empty.changed).toBeNull();
   });
 
   it('a pin that does not resolve keeps the assembly’s lead; the race-weekend fact follows the live band', async () => {

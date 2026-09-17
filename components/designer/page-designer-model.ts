@@ -22,6 +22,7 @@ import {
   type TriggerEvent,
 } from '@/lib/design/page-document';
 import { COMPONENTS, SPLITS, componentDefaults, componentId, findComponent, recipeRegions, settingsSummary, type ComponentDefinition } from '@/lib/design/components';
+import { parseSourceRef, sourceLabel } from '@/lib/design/sources';
 import { adoptRecipe } from '@/lib/design/composed-page';
 import { DESTINATIONS, pageDest, resolveDestination, type PageDestinations } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
@@ -486,7 +487,11 @@ export function regionSummary(r: Region, assets: readonly EditableAsset[], lists
       return `“${r.label}”${r.dest ? ` → ${destinationLabel(r.dest, pages)}` : ' · fires dynamic actions only'}`;
     case 'component': {
       const spec = findComponent(r.component, components);
-      return spec ? settingsSummary(spec, r.settings) : `Unknown component ${r.component}`;
+      if (!spec) return `Unknown component ${r.component}`;
+      const summary = settingsSummary(spec, r.settings);
+      // The Source (P2.1) leads the tile's line while one is picked.
+      const ref = r.source ? parseSourceRef(r.source).value : null;
+      return ref ? `${sourceLabel(ref)} · ${summary}` : summary;
     }
   }
 }

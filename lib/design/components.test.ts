@@ -29,6 +29,11 @@ describe('the component catalogue', () => {
     expect(parseSettings(lead, { pinned: 'x'.repeat(121) }).problems).toEqual(['Pinned post must be text of at most 120 characters']);
   });
 
+  it('P2.1: What it changed declares the source it may read (standings); no other definition reads one', () => {
+    expect(findComponent('home.changed')?.sources).toEqual(['standings']);
+    for (const c of COMPONENTS) if (c.key !== 'home.changed') expect(c.sources, c.key).toBeUndefined();
+  });
+
   it('sums settings up in words, and the transitional component by what it holds', () => {
     const wire = findComponent('home.wire')!;
     expect(settingsSummary(wire, { items: 8 })).toBe('Items 8');
