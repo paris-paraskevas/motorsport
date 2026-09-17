@@ -419,7 +419,7 @@
    "defaults": "Today’s seven show rules map one to one (always, race weekend, between weekends, signed in, signed out, phones, desktop) and gain Never, Item = Value, Request = Value and Current page in; the Condition editor sits where Show sits (the Rules group); the Debug trace names the condition that hid a region; the parser reads both for one release, then show goes.",
    "needsWord": "none",
    "acceptance": "Every show rule maps to a condition; a region with condition never does not render; test.",
-   "status": "planned",
+   "status": "started",
    "scopeHash": "b3a4072c22d5"
   },
   {
