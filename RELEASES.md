@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.135 — 2026-09-17
+
+Internal only: the day's working records. Nothing changes for readers.
+
 ## 1.0.134 — 2026-09-17
 
 In the design tool, components can now read from a catalogue of the site's own data sources: a Source picker on a component, a Data Sources page under Shared Components showing what each source holds and where it is used, and an Object Browser in the Data workspace with the loader's work behind each source. Nothing changes for readers.
