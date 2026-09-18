@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.137 — 2026-09-17
+
+Internal only: the day’s working records. Nothing changes for readers.
+
 ## 1.0.136 — 2026-09-17
 
 In the design tool, when a region shows is now a Condition with a shared vocabulary: always, never, signed-in or signed-out visitors, during a race weekend or between them, phones or desktop, a part of the page address matching a value, or the page being one of a list. The seven show rules map onto it, and the debug view names the condition that hid a region. Nothing changes for readers.
