@@ -62,6 +62,7 @@ vi.mock('@/components/calendar/CalendarView', () => ({
 }));
 
 import { canRender, raceWeekendNow, renderComponents } from './component-render';
+import { PRESETS } from './presets';
 
 const region = (id: string, component: string, settings: Record<string, string | number | boolean> = {}, over: Partial<Region> = {}): Region =>
   ({ id, kind: 'component', component, settings, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, ...over }) as Region;
@@ -173,6 +174,36 @@ describe('renderComponents', () => {
     expect(two).toContain('−66');
     expect(two).toContain('width:75%');
     expect((two.match(/<tr/g) ?? []).length).toBe(3);
+  });
+
+  it('P2.2, the acceptance’s test per preset: every one of the twenty-six standings presets draws its table from a fixture of its shape, headed as the site heads it, the name column labelled as it says, its own class’s first row first', async () => {
+    const standings = PRESETS.filter(p => p.source === 'standings');
+    expect(standings).toHaveLength(26);
+    for (const preset of standings) {
+      const cls = preset.where.class ?? null;
+      const kind = preset.where.kind ?? 'driver';
+      const other = preset.shape === 'driver-rows' ? 'manufacturer' : 'driver';
+      // One fixture per shape, tagged with the preset's class, beside a row of another kind and, for a class family, of another class; neither shows.
+      const rows: Record<string, string | number | null>[] = [
+        { kind, position: 2, name: `${preset.key} second`, code: preset.shape === 'driver-rows' ? 'SEC' : null, team: preset.shape === 'driver-rows' ? 'Team B' : null, points: 80, wins: 1, class: cls },
+        { kind, position: 1, name: `${preset.key} leader`, code: preset.shape === 'driver-rows' ? 'LEA' : null, team: preset.shape === 'driver-rows' ? 'Team A' : null, points: 100, wins: 3, class: cls },
+        { kind: other, position: 1, name: 'Elsewhere', code: null, team: 'T', points: 999, wins: null, class: cls },
+        ...(cls ? [{ kind, position: 1, name: 'Another class', code: null, team: null, points: 500, wins: null, class: 'Other' }] : []),
+      ];
+      const series = preset.series[0];
+      readSource.mockResolvedValueOnce({ columns: [], total: rows.length, rows, provenance: { ref: { source: 'standings', params: { series, season: 2026 } }, label: `Standings · ${series} · 2026`, tier: 'snapshot', keys: [], rows: rows.length, ms: 1 } });
+      const out = await renderComponents(doc([region('r', 'data.region', { preset: preset.key, view: 'table', rows: 10, heading: '' }, { source: `standings?series=${series}&season=2026` } as Partial<Region>)]), { path: '/x' });
+      const table = html(out.r);
+      expect(table, preset.key).toContain(`<caption class="sr-only">${preset.name}</caption>`);
+      expect(table, preset.key).toMatch(new RegExp(`<th[^>]*>${preset.nameLabel}</th>`));
+      const first = table.indexOf(`${preset.key} leader`);
+      const second = table.indexOf(`${preset.key} second`);
+      expect(first, preset.key).toBeGreaterThan(-1);
+      expect(second, preset.key).toBeGreaterThan(first);
+      expect(table, preset.key).not.toContain('Elsewhere');
+      expect(table, preset.key).not.toContain('Another class');
+      expect(table, preset.key).toContain('−20');
+    }
   });
 
   it('P2.2: the same source flips to cards; a family preset filters its class; no Source draws nothing; a preset that waits for the Rounds view draws nothing', async () => {

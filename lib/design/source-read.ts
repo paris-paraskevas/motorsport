@@ -102,11 +102,27 @@ const driverRow = (d: { position: number; driverName: string; driverCode?: strin
 });
 const teamRow = (kind: 'team' | 'manufacturer' | 'constructor', position: number, name: string, points: number, wins: number | undefined, cls: string | null): SourceRow => ({ kind, position, name, code: null, team: null, points, wins: wins ?? null, class: cls });
 
-/** The standings of a series the rows tier cannot hold whole: GT World's three
- *  cups, IMSA's and WEC's classes (one row per class and kind, in the order the
- *  tabs draw them) and WRC's co-drivers and manufacturers; read from the
- *  snapshot each fetcher keeps (the loader warms every key). Null for the ten
- *  flat series, which read the rows tier; an empty snapshot is no rows. */
+/** WRC's tables beyond the drivers': the co-drivers and the manufacturers, which
+ *  the rows tier never held, from the snapshot the tab reads (`standings:wrc`,
+ *  warmed by the loader); the drivers' rows too, for a read with no rows tier. */
+async function wrcSnapshotRows(): Promise<{ drivers: SourceRow[]; extra: SourceRow[] }> {
+  const { fetchWRCStandings } = await import('@/lib/standings/wrc');
+  const s = await fetchWRCStandings();
+  if (!s) return { drivers: [], extra: [] };
+  return {
+    drivers: s.drivers.map(d => driverRow(d, null)),
+    extra: [
+      ...s.coDrivers.map(c => ({ kind: 'co-driver', position: c.position, name: c.coDriverName, code: null, team: c.team || null, points: c.points, wins: null, class: null }) as SourceRow),
+      ...s.manufacturers.map(m => teamRow('manufacturer', m.position, m.name, m.points, m.wins, null)),
+    ],
+  };
+}
+
+/** The standings of a class family, which the rows tier cannot hold: GT World's
+ *  three cups, IMSA's and WEC's classes, one row per class and kind in the order
+ *  the tabs draw them, from the snapshot each fetcher keeps (the loader warms
+ *  every key). Null for every other series, which read the rows tier; an empty
+ *  snapshot is no rows. */
 async function familyStandings(series: string, season: number): Promise<SourceRow[] | null> {
   if (series === 'gt-world') {
     const { fetchGtWorldStandings } = await import('@/lib/standings/gt-world');
@@ -139,16 +155,6 @@ async function familyStandings(series: string, season: number): Promise<SourceRo
       ...(s.manufacturers[cls] ?? []).map(m => teamRow('manufacturer', m.position, m.manufacturer, m.points, undefined, cls)),
     ]);
   }
-  if (series === 'wrc') {
-    const { fetchWRCStandings } = await import('@/lib/standings/wrc');
-    const s = await fetchWRCStandings();
-    if (!s) return [];
-    return [
-      ...s.drivers.map(d => driverRow(d, null)),
-      ...s.coDrivers.map(c => ({ kind: 'co-driver', position: c.position, name: c.coDriverName, code: null, team: c.team || null, points: c.points, wins: null, class: null }) as SourceRow),
-      ...s.manufacturers.map(m => teamRow('manufacturer', m.position, m.name, m.points, m.wins, null)),
-    ];
-  }
   return null;
 }
 
@@ -178,26 +184,26 @@ const READERS: Readonly<Record<string, Reader>> = {
   async standings(params, keys) {
     const series = String(params.series);
     const season = Number(params.season);
-    // The class families and WRC (P2.2) read the snapshot the tabs read: the rows tier holds drivers and constructors alone, no class, no co-drivers.
+    // The class families (P2.2: GT World's cups, IMSA's and WEC's classes) read the snapshot the tabs read: the rows tier holds no class.
     const family = await familyStandings(series, season);
     if (family) return { tier: 'snapshot', rows: family, run: null, meta: await metaFor(keys) };
     const { readCurrentStandingsWithRun } = await import('@/lib/standing-rows');
     const current = await readCurrentStandingsWithRun(series, season);
+    // WRC's co-drivers and manufacturers (P2.2) are not in the rows tier (lib/standing-rows.ts maps drivers alone): they join
+    // from the snapshot the tab reads, beside the drivers' rows and their run; without the rows tier the snapshot answers whole.
+    const wrc = series === 'wrc' ? await wrcSnapshotRows() : null;
     if (current) {
       const rows: SourceRow[] = [
-        ...current.standings.drivers.map(d => ({ kind: 'driver', position: d.position, name: d.driverName, code: d.driverCode ?? null, team: d.team || null, points: d.points, wins: d.wins ?? null, class: null })),
-        ...current.standings.constructors.map(c => ({ kind: 'constructor', position: c.position, name: c.name, code: null, team: null, points: c.points, wins: c.wins ?? null, class: null })),
+        ...current.standings.drivers.map(d => driverRow(d, null)),
+        ...current.standings.constructors.map(c => teamRow('constructor', c.position, c.name, c.points, c.wins, null)),
+        ...(wrc?.extra ?? []),
       ];
-      return { tier: 'rows', rows, run: await readRun(current.runId) };
+      return { tier: 'rows', rows, run: await readRun(current.runId), ...(wrc ? { meta: await metaFor(keys) } : {}) };
     }
+    if (wrc) return { tier: 'snapshot', rows: [...wrc.drivers, ...wrc.extra], run: null, meta: await metaFor(keys) };
     const { fetchFullDriverStandings } = await import('@/lib/standings/brief');
     const drivers = await fetchFullDriverStandings(series, season);
-    return {
-      tier: 'snapshot',
-      rows: (drivers ?? []).map(d => ({ kind: 'driver', position: d.position, name: d.driverName, code: d.driverCode ?? null, team: d.team || null, points: d.points, wins: d.wins ?? null, class: null })),
-      run: null,
-      meta: await metaFor(keys),
-    };
+    return { tier: 'snapshot', rows: (drivers ?? []).map(d => driverRow(d, null)), run: null, meta: await metaFor(keys) };
   },
   async results(params, keys) {
     // The season parameter offers the one the loader warms, which is the one the dispatch reads; when the archive brings earlier seasons, the dispatch takes it.

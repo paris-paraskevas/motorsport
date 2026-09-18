@@ -183,16 +183,29 @@ describe('readSource', () => {
       coDrivers: [{ position: 1, coDriverName: 'Halttunen', team: 'Toyota', points: 200 }],
       manufacturers: [{ position: 1, name: 'Toyota Gazoo Racing', points: 412, wins: 7 }],
     });
+    // WRC without a rows tier: the snapshot answers whole.
     const wrc = await readSource({ source: 'standings', params: { series: 'wrc', season: 2026 } });
     expect(wrc.provenance.tier).toBe('snapshot');
     expect(wrc.rows.map(r => `${r.kind} · ${r.name} · ${r.points}`)).toEqual(['driver · Rovanperä · 200', 'co-driver · Halttunen · 200', 'manufacturer · Toyota Gazoo Racing · 412']);
     expect(wrc.rows.every(r => r.class === null)).toBe(true);
     expect(wrc.rows[1]).toMatchObject({ team: 'Toyota', code: null, wins: null });
+    // WRC with its rows tier (the drivers, as the loader writes them): the rows tier first, its run kept, the
+    // co-drivers and manufacturers joining from the snapshot (the reviewer's finding: the Drivers preset keeps its run).
+    readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers: [{ position: 1, driverName: 'Rovanperä', team: 'Toyota', points: 200, wins: 5 }], constructors: [] }, runId: 'run-1' });
+    const wrcRows = await readSource({ source: 'standings', params: { series: 'wrc', season: 2026 } });
+    expect(wrcRows.provenance.tier).toBe('rows');
+    expect(wrcRows.provenance.run).toMatchObject({ id: 'run-1', status: 'ok' });
+    expect(wrcRows.rows.map(r => `${r.kind} · ${r.name}`)).toEqual(['driver · Rovanperä', 'co-driver · Halttunen', 'manufacturer · Toyota Gazoo Racing']);
+    expect(wrcRows.rows[0].wins).toBe(5);
+    readCurrentStandingsWithRun.mockReset();
     fetchWecStandings.mockResolvedValue(null);
     expect((await readSource({ source: 'standings', params: { series: 'wec', season: 2026 } })).rows).toEqual([]);
-    // The ten flat series still read the rows tier first.
+    // The ten flat series still read the rows tier first, and never the family or WRC fetchers.
     readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: 'run-1' });
-    expect((await readSource({ source: 'standings', params: { series: 'dtm', season: 2026 } })).provenance.tier).toBe('rows');
+    const dtm = await readSource({ source: 'standings', params: { series: 'dtm', season: 2026 } });
+    expect(dtm.provenance.tier).toBe('rows');
+    expect(dtm.provenance.meta).toBeUndefined();
+    expect(fetchWRCStandings).toHaveBeenCalledTimes(2);
   });
 
   it('never throws: a reader that fails answers no rows and the reason in words; a limit cuts the rows and keeps the total', async () => {
