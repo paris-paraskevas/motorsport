@@ -34,6 +34,15 @@ const readCurrentStandingsWithRun = vi.fn();
 vi.mock('@/lib/standing-rows', () => ({ readCurrentStandingsWithRun: (...a: unknown[]) => readCurrentStandingsWithRun(...a) }));
 const fetchFullDriverStandings = vi.fn();
 vi.mock('@/lib/standings/brief', () => ({ fetchFullDriverStandings: (...a: unknown[]) => fetchFullDriverStandings(...a) }));
+// The class families and WRC (P2.2) read the snapshot tier the tabs read.
+const fetchGtWorldStandings = vi.fn();
+vi.mock('@/lib/standings/gt-world', () => ({ fetchGtWorldStandings: (...a: unknown[]) => fetchGtWorldStandings(...a) }));
+const fetchImsaStandings = vi.fn();
+vi.mock('@/lib/standings/imsa', () => ({ fetchImsaStandings: () => fetchImsaStandings(), IMSA_CLASSES: ['GTP', 'LMP2', 'GTD Pro', 'GTD'] }));
+const fetchWecStandings = vi.fn();
+vi.mock('@/lib/standings/wec', () => ({ fetchWecStandings: () => fetchWecStandings(), WEC_CLASSES: ['Hypercar', 'LMGT3'] }));
+const fetchWRCStandings = vi.fn();
+vi.mock('@/lib/standings/wrc', () => ({ fetchWRCStandings: () => fetchWRCStandings() }));
 vi.mock('@/components/weekend/WeekendStandingsSnapshot', () => ({
   loadSnapshotSource: async () => ({
     races: [{ round: 1, raceName: 'Australian Grand Prix', date: new Date('2026-03-08T05:00:00Z'), circuit: 'Albert Park', results: [{ position: 1, driverName: 'Kimi Antonelli', driverCode: 'ANT', team: 'Mercedes', status: 'Finished', time: '1:30:12.345', points: 25 }] }],
@@ -135,6 +144,55 @@ describe('readSource', () => {
     expect(empty.rows).toEqual([]);
     expect(empty.provenance.error).toBeUndefined();
     expect(empty.provenance.keys).toEqual(['standings:wec']);
+  });
+
+  it('P2.2: the class families read the snapshot tier the tabs read, one row per class and kind (GT World’s cups, IMSA’s and WEC’s classes, in the site’s order); WRC reads its drivers, co-drivers and manufacturers the same way; an empty snapshot is no rows', async () => {
+    fetchGtWorldStandings.mockResolvedValue({
+      season: 2026,
+      overall: { championship: 'overall', drivers: [{ position: 1, driverName: 'Marciello', team: 'WRT', points: 98 }], teams: [{ position: 1, name: 'WRT', points: 120 }] },
+      sprint: { championship: 'sprint', drivers: [{ position: 1, driverName: 'Engel', team: 'GetSpeed', points: 50, wins: 2 }], teams: [] },
+      endurance: { championship: 'endurance', drivers: [], teams: [{ position: 1, name: 'AF Corse', points: 60 }] },
+    });
+    const gt = await readSource({ source: 'standings', params: { series: 'gt-world', season: 2026 } });
+    expect(fetchGtWorldStandings).toHaveBeenCalledWith(2026);
+    expect(readCurrentStandingsWithRun).not.toHaveBeenCalled();
+    expect(gt.provenance.tier).toBe('snapshot');
+    expect(gt.provenance.keys).toEqual(['standings:gt-world:2026']);
+    expect(gt.rows.map(r => `${r.class} · ${r.kind} · ${r.name} · ${r.points}`)).toEqual(['Overall · driver · Marciello · 98', 'Overall · team · WRT · 120', 'Sprint Cup · driver · Engel · 50', 'Endurance Cup · team · AF Corse · 60']);
+    expect(gt.rows[0]).toEqual({ kind: 'driver', position: 1, name: 'Marciello', code: null, team: 'WRT', points: 98, wins: null, class: 'Overall' });
+    expect(gt.rows[2].wins).toBe(2);
+    fetchImsaStandings.mockResolvedValue({
+      drivers: { GTP: [{ position: 1, driverName: 'Nasr Tandy', points: 2412 }], LMP2: [], 'GTD Pro': [], GTD: [] },
+      teams: { GTP: [{ position: 1, team: '#7 Porsche Penske Motorsport', points: 2412 }], LMP2: [], 'GTD Pro': [], GTD: [{ position: 1, team: '#1 Paul Miller Racing', points: 2000 }] },
+      manufacturers: { GTP: [{ position: 1, manufacturer: 'Porsche', points: 2500 }] },
+    });
+    const imsa = await readSource({ source: 'standings', params: { series: 'imsa', season: 2026 } });
+    expect(imsa.rows.map(r => `${r.class} · ${r.kind} · ${r.name}`)).toEqual(['GTP · driver · Nasr Tandy', 'GTP · team · #7 Porsche Penske Motorsport', 'GTP · manufacturer · Porsche', 'GTD · team · #1 Paul Miller Racing']);
+    expect(imsa.rows[0]).toMatchObject({ position: 1, points: 2412, code: null, team: null, wins: null });
+    expect(imsa.provenance.keys).toEqual(['standings:imsa']);
+    fetchWecStandings.mockResolvedValue({
+      drivers: { Hypercar: [{ position: 1, driverName: 'Estre Campbell Vanthoor', team: 'Porsche #6', points: 121 }], LMGT3: [] },
+      teams: { LMGT3: [{ position: 1, team: 'IRON LYNX #50', points: 80 }] },
+      manufacturers: { Hypercar: [{ position: 1, manufacturer: 'Porsche', points: 150 }] },
+    });
+    const wec = await readSource({ source: 'standings', params: { series: 'wec', season: 2026 } });
+    expect(wec.rows.map(r => `${r.class} · ${r.kind} · ${r.name}`)).toEqual(['Hypercar · driver · Estre Campbell Vanthoor', 'Hypercar · manufacturer · Porsche', 'LMGT3 · team · IRON LYNX #50']);
+    expect(wec.rows[0].team).toBe('Porsche #6');
+    fetchWRCStandings.mockResolvedValue({
+      drivers: [{ position: 1, driverName: 'Rovanperä', team: 'Toyota', points: 200, wins: 5 }],
+      coDrivers: [{ position: 1, coDriverName: 'Halttunen', team: 'Toyota', points: 200 }],
+      manufacturers: [{ position: 1, name: 'Toyota Gazoo Racing', points: 412, wins: 7 }],
+    });
+    const wrc = await readSource({ source: 'standings', params: { series: 'wrc', season: 2026 } });
+    expect(wrc.provenance.tier).toBe('snapshot');
+    expect(wrc.rows.map(r => `${r.kind} · ${r.name} · ${r.points}`)).toEqual(['driver · Rovanperä · 200', 'co-driver · Halttunen · 200', 'manufacturer · Toyota Gazoo Racing · 412']);
+    expect(wrc.rows.every(r => r.class === null)).toBe(true);
+    expect(wrc.rows[1]).toMatchObject({ team: 'Toyota', code: null, wins: null });
+    fetchWecStandings.mockResolvedValue(null);
+    expect((await readSource({ source: 'standings', params: { series: 'wec', season: 2026 } })).rows).toEqual([]);
+    // The ten flat series still read the rows tier first.
+    readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: 'run-1' });
+    expect((await readSource({ source: 'standings', params: { series: 'dtm', season: 2026 } })).provenance.tier).toBe('rows');
   });
 
   it('never throws: a reader that fails answers no rows and the reason in words; a limit cuts the rows and keeps the total', async () => {

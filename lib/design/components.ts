@@ -12,6 +12,8 @@
 // key or a setting outside its spec is a problem the writer refuses; the reader
 // keeps the usable part and falls back to the defaults.
 
+import { PRESETS, PRESET_GROUPS } from './presets';
+
 export type SettingValue = string | number | boolean;
 
 // THE COMPONENT DEFINITION MODEL (the components programme, P2.0; APEX:
@@ -27,12 +29,25 @@ export type AttributeScope = 'application' | 'component' | 'report';
 /** APEX: Select List · Number · Yes/No · Text · Color · Icon · Link to Target Page. */
 export type AttributeKind = 'choice' | 'number' | 'boolean' | 'text' | 'colour' | 'icon' | 'link';
 
+/** An option of a choice. `group` draws the choice as a select with its groups
+ *  (APEX: Select List); `only` binds the option to a region whose Source names
+ *  that source and one of those series (the editor hides the rest, the parser
+ *  refuses a stored one); `later` marks one not yet pickable, and why (drawn
+ *  disabled, refused by the parser). P2.2's Preset carries all three. */
+export interface ChoiceOption {
+  key: string;
+  label: string;
+  group?: string;
+  only?: { source: string; series: readonly string[] };
+  later?: string;
+}
+
 export interface AttributeDefinition {
   key: string;
   label: string;
   kind: AttributeKind;
   /** For a choice. */
-  options?: readonly { key: string; label: string }[];
+  options?: readonly ChoiceOption[];
   /** For a number. */
   min?: number;
   max?: number;
@@ -195,6 +210,49 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     group: 'Home',
     holds: 'the newest headlines reported elsewhere, each linked out with its source',
     settings: [{ key: 'items', label: 'Items', kind: 'number', default: 5, min: 3, max: 20, help: 'How many headlines.' }],
+  },
+  // The Data region (P2.2; ours by name: APEX has Classic Report, Cards, Content
+  // Row, Media List and Timeline as region types, and the operator chose one
+  // region with a View setting, 2026-09-10). One region over a source from the
+  // catalogue, drawn in one of the site's own named shapes (lib/design/presets.ts).
+  // Its attributes are of report scope: one value per multi-row region.
+  {
+    key: 'data.region',
+    name: 'Data region',
+    group: 'Data',
+    holds: 'a table or cards over a source from the catalogue, in one of the site’s named shapes',
+    settings: [
+      {
+        key: 'preset',
+        label: 'Preset',
+        kind: 'choice',
+        scope: 'report',
+        default: 'drivers',
+        options: PRESETS.map(p => ({
+          key: p.key,
+          label: p.name,
+          group: PRESET_GROUPS.find(g => g.key === p.group)?.name ?? p.group,
+          only: { source: p.source, series: p.series },
+          ...(p.later ? { later: p.later } : {}),
+        })),
+        help: 'Which of the site’s tables this region draws (APEX: a report’s template and its columns; ours: the fifteen shapes as named presets). The list follows the Source: its presets, grouped as the site groups them.',
+      },
+      {
+        key: 'view',
+        label: 'View',
+        kind: 'choice',
+        scope: 'report',
+        default: 'table',
+        options: [
+          { key: 'table', label: 'Table' },
+          { key: 'cards', label: 'Cards' },
+        ],
+        help: 'How the rows are drawn (APEX: a Classic Report or a Cards region; ours: one region with a View setting). List, Timeline and Detail arrive with PR B.',
+      },
+      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table.' },
+      { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name.' },
+    ],
+    sources: ['standings', 'results'],
   },
 ];
 

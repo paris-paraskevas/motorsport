@@ -39,7 +39,7 @@
 
 import { pageIdOf, resolveDestination } from './destinations';
 import { COMPONENTS, findComponent, parseSettings, type ComponentDefinition, type SettingValue } from './components';
-import { encodeSourceRef, parseSourceRef } from './sources';
+import { SERIES_OPTIONS, encodeSourceRef, findSource, parseSourceRef, type SourceRef } from './sources';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
 import { parseRegionTemplate, parseTemplateOptions, type RegionTemplateKey } from './template-options';
 
@@ -483,12 +483,29 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
         }
         // The Source (P2.1): read against the sources the definition declares, stored canonically; a component that declares none takes none.
         let source: string | undefined;
+        let sourceRef: SourceRef | undefined;
         if (r.source !== undefined && r.source !== null && r.source !== '') {
           if (!spec.sources?.length) parsed.problems.push(`${spec.name} reads no source`);
           else {
             const ref = parseSourceRef(r.source, spec.sources);
             if (ref.problems.length) parsed.problems.push(...ref.problems);
-            else if (ref.value) source = encodeSourceRef(ref.value);
+            else if (ref.value) {
+              source = encodeSourceRef(ref.value);
+              sourceRef = ref.value;
+            }
+          }
+        }
+        // A choice bound to a source (P2.2: the Data region's Preset): the option holds for this region's Source alone,
+        // and one not yet pickable is refused with its reason. Without a Source the region parses and draws nothing.
+        for (const s of spec.settings) {
+          if (s.kind !== 'choice') continue;
+          const opt = s.options?.find(o => o.key === parsed.settings[s.key]);
+          if (!opt) continue;
+          if (opt.later) parsed.problems.push(`${opt.label} ${opt.later}`);
+          else if (opt.only && sourceRef) {
+            const series = sourceRef.params.series;
+            if (sourceRef.source !== opt.only.source) parsed.problems.push(`${opt.label} is a ${findSource(opt.only.source)?.name ?? opt.only.source} preset; this region reads ${findSource(sourceRef.source)?.name ?? sourceRef.source}`);
+            else if (typeof series === 'string' && !opt.only.series.includes(series)) parsed.problems.push(`${opt.label} is not a preset of ${SERIES_OPTIONS.find(o => o.key === series)?.label ?? series}`);
           }
         }
         if (parsed.problems.length) problems.push(...parsed.problems.map(p => `${who}: ${p}`));

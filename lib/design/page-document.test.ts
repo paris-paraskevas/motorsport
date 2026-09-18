@@ -238,6 +238,17 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'home.changed', source: 42 })])).problems).toEqual(['region r: Source must be text']);
   });
 
+  it('P2.2: a Data region’s preset is bound to its Source: another source’s preset, a series the preset lacks, or one not yet pickable is the writer’s refusal in words; a preset with no Source parses', () => {
+    const ok = parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'constructors', view: 'cards' }, source: 'standings?series=f1&season=2026' })]));
+    expect(ok.problems).toEqual([]);
+    expect(ok.value.regions[0]).toMatchObject({ component: 'data.region', settings: { preset: 'constructors', view: 'cards', rows: 10, heading: '' }, source: 'standings?series=f1&season=2026' });
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers' } })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: Drivers is a Standings preset; this region reads Results']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'imsa-gtp-drivers' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: GTP — Drivers is not a preset of Formula 1']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: Season results arrives with the Rounds view (PR B)']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'wec-lmgt3-teams' }, source: 'standings?series=wec&season=2026' })])).problems).toEqual([]);
+  });
+
   // The Conditions vocabulary (P2.6; APEX: Server-side Condition, Appendix E).
   const LABELS =
     'Never, User is authenticated (not public), User is the public user (user has not authenticated), Race weekend, Between weekends, Phones, Desktop and laptop, Request = Value, Current Page is in comma delimited list, Item = Value';

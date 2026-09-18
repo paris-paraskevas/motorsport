@@ -29,9 +29,37 @@ describe('the component catalogue', () => {
     expect(parseSettings(lead, { pinned: 'x'.repeat(121) }).problems).toEqual(['Pinned post must be text of at most 120 characters']);
   });
 
-  it('P2.1: What it changed declares the source it may read (standings); no other definition reads one', () => {
+  it('P2.1: What it changed declares the source it may read (standings); the Data region reads standings and results (P2.2); no other definition reads one', () => {
     expect(findComponent('home.changed')?.sources).toEqual(['standings']);
-    for (const c of COMPONENTS) if (c.key !== 'home.changed') expect(c.sources, c.key).toBeUndefined();
+    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results']);
+    for (const c of COMPONENTS) if (c.key !== 'home.changed' && c.key !== 'data.region') expect(c.sources, c.key).toBeUndefined();
+  });
+
+  it('P2.2: the Data region’s attributes are per multi-row region: Preset (the thirty-three, grouped by the fifteen, each bound to a source and its series, the results ones waiting), View (Table · Cards), Rows, Heading', () => {
+    const region = findComponent('data.region')!;
+    expect(region).toMatchObject({ name: 'Data region', group: 'Data' });
+    expect(region.settings.map(s => [s.key, s.kind, s.scope])).toEqual([
+      ['preset', 'choice', 'report'],
+      ['view', 'choice', 'report'],
+      ['rows', 'number', 'report'],
+      ['heading', 'text', 'report'],
+    ]);
+    const preset = region.settings[0];
+    expect(preset.options).toHaveLength(33);
+    expect(preset.options![0]).toEqual({
+      key: 'drivers',
+      label: 'Drivers',
+      group: 'Drivers',
+      only: { source: 'standings', series: ['f1', 'f2', 'f3', 'indycar', 'formula-e', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm'] },
+    });
+    expect(preset.options!.find(o => o.key === 'imsa-gtp-drivers')).toEqual({ key: 'imsa-gtp-drivers', label: 'GTP — Drivers', group: 'IMSA classes', only: { source: 'standings', series: ['imsa'] } });
+    expect(preset.options!.find(o => o.key === 'season-results')).toMatchObject({ label: 'Season results', group: 'Season results', later: 'arrives with the Rounds view (PR B)' });
+    expect(region.settings[1].options!.map(o => o.key)).toEqual(['table', 'cards']);
+    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '' });
+    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '' });
+    expect(parseSettings(region, { preset: 'nope' }).problems[0]).toMatch(/^Preset must be one of Drivers, Constructors, Teams/);
+    expect(parseSettings(region, { rows: 0 }).problems).toEqual(['Rows must be a number from 1 to 50']);
+    expect(settingsSummary(region, { preset: 'constructors', view: 'cards', rows: 8, heading: '' })).toMatch(/^Preset Constructors · View Cards · Rows 8/);
   });
 
   it('sums settings up in words, and the transitional component by what it holds', () => {

@@ -22,6 +22,14 @@ describe('changedFromStandings', () => {
     expect(changedFromStandings([driver(1, 10)], 'X')).toMatchObject({ leader: { name: 'Driver 1', points: 10 }, gapToSecond: null });
     expect(changedFromStandings([driver(1, 10), { kind: 'driver', position: 'x', name: 'Broken', points: 1 }], 'X')!.top).toHaveLength(1);
   });
+  it('P2.2: a source that carries several classes (a family series) is read for its first class only, never three tables merged; teams and manufacturers are left aside', () => {
+    const at = (cls: string, position: number, points: number) => ({ kind: 'driver', position, name: `${cls} ${position}`, points, code: null, team: 'T', wins: null, class: cls });
+    const rows = [at('Overall', 1, 98), { kind: 'team', position: 1, name: 'WRT', points: 120, class: 'Overall' }, at('Overall', 2, 91), at('Sprint Cup', 1, 50), at('Endurance Cup', 1, 60), at('Endurance Cup', 2, 55)];
+    const c = changedFromStandings(rows, 'GT World Challenge')!;
+    expect(c.leader).toEqual({ name: 'Overall 1', points: 98 });
+    expect(c.gapToSecond).toBe(7);
+    expect(c.top.map(r => r.name)).toEqual(['Overall 1', 'Overall 2']);
+  });
 });
 
 // Home-page precedence. Before 2026-09-04 this was purely temporal and on

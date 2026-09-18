@@ -54,7 +54,8 @@ describe('PluginsEditor', () => {
     render(<PluginsEditor definitions={list} readOnly={false} onSaved={vi.fn()} onOpenPage={onOpenPage} />);
     expect(screen.getByRole('heading', { name: 'Plug-ins' })).toBeTruthy();
     const rows = screen.getAllByRole('row').slice(1);
-    expect(rows).toHaveLength(13);
+    // The four region kinds and the ten components (the Data region since P2.2).
+    expect(rows).toHaveLength(14);
     expect(within(rows[0]).getByText('Static Content')).toBeTruthy();
     expect(within(rows[0]).getByText('Region')).toBeTruthy();
     const headingRow = rows.find(r => within(r).queryByText('Page heading'))!;

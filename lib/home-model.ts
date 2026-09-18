@@ -154,8 +154,12 @@ export const loadSeriesMeta = cache(async (): Promise<Map<string, { name: string
  * a row missing its numbers is skipped.
  */
 export function changedFromStandings(rows: readonly Record<string, unknown>[], seriesName: string): HomeLeadChanged | null {
-  const drivers = rows
-    .filter(r => r.kind === 'driver' && typeof r.position === 'number' && Number.isFinite(r.position) && typeof r.points === 'number' && Number.isFinite(r.points) && typeof r.name === 'string' && r.name)
+  const every = rows.filter(r => r.kind === 'driver' && typeof r.position === 'number' && Number.isFinite(r.position) && typeof r.points === 'number' && Number.isFinite(r.points) && typeof r.name === 'string' && r.name);
+  // A source that carries several classes (a family series, P2.2: GT World's cups, IMSA's and WEC's classes) is read for
+  // the first class its rows carry, so one table is read and never three merged into one position order.
+  const firstClass = typeof every[0]?.class === 'string' ? every[0].class : null;
+  const drivers = every
+    .filter(r => (typeof r.class === 'string' ? r.class : null) === firstClass)
     .map(r => ({ position: r.position as number, name: r.name as string, points: r.points as number }))
     .sort((a, b) => a.position - b.position);
   if (drivers.length === 0) return null;

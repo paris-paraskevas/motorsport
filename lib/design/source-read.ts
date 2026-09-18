@@ -90,6 +90,68 @@ async function readRun(runId: string | null): Promise<SourceRun | null> {
   return { id: String(row.id), status: String(row.status), finished: row.finished_at == null ? null : String(row.finished_at), rows: Number(row.rows_written) || 0, runner: row.runner == null ? null : String(row.runner) };
 }
 
+const driverRow = (d: { position: number; driverName: string; driverCode?: string; team?: string; points: number; wins?: number }, cls: string | null, kind: 'driver' | 'co-driver' = 'driver'): SourceRow => ({
+  kind,
+  position: d.position,
+  name: d.driverName,
+  code: d.driverCode ?? null,
+  team: d.team || null,
+  points: d.points,
+  wins: d.wins ?? null,
+  class: cls,
+});
+const teamRow = (kind: 'team' | 'manufacturer' | 'constructor', position: number, name: string, points: number, wins: number | undefined, cls: string | null): SourceRow => ({ kind, position, name, code: null, team: null, points, wins: wins ?? null, class: cls });
+
+/** The standings of a series the rows tier cannot hold whole: GT World's three
+ *  cups, IMSA's and WEC's classes (one row per class and kind, in the order the
+ *  tabs draw them) and WRC's co-drivers and manufacturers; read from the
+ *  snapshot each fetcher keeps (the loader warms every key). Null for the ten
+ *  flat series, which read the rows tier; an empty snapshot is no rows. */
+async function familyStandings(series: string, season: number): Promise<SourceRow[] | null> {
+  if (series === 'gt-world') {
+    const { fetchGtWorldStandings } = await import('@/lib/standings/gt-world');
+    const s = await fetchGtWorldStandings(season);
+    if (!s) return [];
+    const cups = [
+      ['Overall', s.overall],
+      ['Sprint Cup', s.sprint],
+      ['Endurance Cup', s.endurance],
+    ] as const;
+    return cups.flatMap(([cls, sec]) => [...sec.drivers.map(d => driverRow(d, cls)), ...sec.teams.map(t => teamRow('team', t.position, t.name, t.points, t.wins, cls))]);
+  }
+  if (series === 'imsa') {
+    const { fetchImsaStandings, IMSA_CLASSES } = await import('@/lib/standings/imsa');
+    const s = await fetchImsaStandings();
+    if (!s) return [];
+    return IMSA_CLASSES.flatMap(cls => [
+      ...(s.drivers[cls] ?? []).map(d => driverRow({ position: d.position, driverName: d.driverName, points: d.points }, cls)),
+      ...(s.teams[cls] ?? []).map(t => teamRow('team', t.position, t.team, t.points, undefined, cls)),
+      ...(s.manufacturers[cls] ?? []).map(m => teamRow('manufacturer', m.position, m.manufacturer, m.points, undefined, cls)),
+    ]);
+  }
+  if (series === 'wec') {
+    const { fetchWecStandings, WEC_CLASSES } = await import('@/lib/standings/wec');
+    const s = await fetchWecStandings();
+    if (!s) return [];
+    return WEC_CLASSES.flatMap(cls => [
+      ...(s.drivers[cls] ?? []).map(d => driverRow(d, cls)),
+      ...(s.teams[cls] ?? []).map(t => teamRow('team', t.position, t.team, t.points, undefined, cls)),
+      ...(s.manufacturers[cls] ?? []).map(m => teamRow('manufacturer', m.position, m.manufacturer, m.points, undefined, cls)),
+    ]);
+  }
+  if (series === 'wrc') {
+    const { fetchWRCStandings } = await import('@/lib/standings/wrc');
+    const s = await fetchWRCStandings();
+    if (!s) return [];
+    return [
+      ...s.drivers.map(d => driverRow(d, null)),
+      ...s.coDrivers.map(c => ({ kind: 'co-driver', position: c.position, name: c.coDriverName, code: null, team: c.team || null, points: c.points, wins: null, class: null }) as SourceRow),
+      ...s.manufacturers.map(m => teamRow('manufacturer', m.position, m.name, m.points, m.wins, null)),
+    ];
+  }
+  return null;
+}
+
 const READERS: Readonly<Record<string, Reader>> = {
   async series() {
     const { loadAllSeriesMeta } = await import('@/lib/series');
@@ -116,6 +178,9 @@ const READERS: Readonly<Record<string, Reader>> = {
   async standings(params, keys) {
     const series = String(params.series);
     const season = Number(params.season);
+    // The class families and WRC (P2.2) read the snapshot the tabs read: the rows tier holds drivers and constructors alone, no class, no co-drivers.
+    const family = await familyStandings(series, season);
+    if (family) return { tier: 'snapshot', rows: family, run: null, meta: await metaFor(keys) };
     const { readCurrentStandingsWithRun } = await import('@/lib/standing-rows');
     const current = await readCurrentStandingsWithRun(series, season);
     if (current) {

@@ -546,6 +546,13 @@ export function designerMessages(doc: PageDocument, page: PageRow, components: r
     }
     // Comment Out (P1.11): a note, so Messages lists what the running page leaves out.
     if (r.commentedOut) out.push({ level: 'info', text: `${regionName(r)} is commented out and leaves the page when it runs.`, sel: { kind: 'region', id: r.id }, group: 'Configuration' });
+    // A component whose choice is bound to a Source (P2.2: the Data region's Preset) draws nothing without one.
+    if (r.kind === 'component' && !r.source) {
+      const spec = findComponent(r.component, components);
+      if (spec?.sources?.length && spec.settings.some(s => s.options?.some(o => o.only))) {
+        out.push({ level: 'warn', text: `${regionName(r)} has no Source; it draws nothing until one is picked.`, sel: { kind: 'region', id: r.id }, group: 'Source' });
+      }
+    }
   }
   // Two regions declared on one row cannot share a column (R5, the operator's
   // walkthrough of 2026-09-10): the page wraps the later one; the document says

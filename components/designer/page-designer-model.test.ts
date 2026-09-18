@@ -144,6 +144,17 @@ describe('messages', () => {
     expect(designerMessages({ version: 1, regions: [region({ id: 'aside', position: 'right' })], actions: [] }, composed)).toEqual([]);
   });
 
+  it('P2.2: a Data region with no Source draws nothing and Messages say so under Source; with a Source, a preset the Source does not offer is the parser’s refusal', () => {
+    const data = (over: Partial<Region> = {}): Region => ({ ...region({ id: 'table', title: 'Table' }), kind: 'component', component: 'data.region', settings: { preset: 'drivers', view: 'table', rows: 10, heading: '' }, ...over }) as Region;
+    const none = designerMessages({ version: 2, regions: [data()], actions: [] }, page);
+    expect(none.map(m => `${m.level}: ${m.text}`)).toEqual(['warn: Table has no Source; it draws nothing until one is picked.']);
+    expect(none[0]).toMatchObject({ sel: { kind: 'region', id: 'table' }, group: 'Source' });
+    expect(designerMessages({ version: 2, regions: [data({ source: 'standings?series=f1&season=2026' } as Partial<Region>)], actions: [] }, page)).toEqual([]);
+    expect(designerMessages({ version: 2, regions: [data({ source: 'results?series=f1&season=2026' } as Partial<Region>)], actions: [] }, page).map(m => `${m.level}: ${m.text}`)).toEqual([
+      'err: region table: Drivers is a Standings preset; this region reads Results',
+    ]);
+  });
+
   it('a commented-out region (P1.11): the Body warning counts it as not showing, Messages notes it under Configuration, Page Search finds it', () => {
     const only: PageDocument = { version: 2, regions: [region({ id: 'intro', title: 'Intro', commentedOut: true })], actions: [] };
     expect(designerMessages(only, page).map(m => `${m.level}: ${m.text}`)).toEqual([

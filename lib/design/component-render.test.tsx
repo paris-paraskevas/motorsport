@@ -144,6 +144,65 @@ describe('renderComponents', () => {
     expect(empty.changed).toBeNull();
   });
 
+  it('P2.2: the Data region draws a preset’s table from its Source: F1’s Constructors and MotoGP’s Drivers from one region kind, the heading the preset’s or the region’s own, the first in the Body with the h1, the columns by type', async () => {
+    const reads: string[] = [];
+    const out = await renderComponents(
+      doc([
+        region('teams', 'data.region', { preset: 'constructors', view: 'table', rows: 10, heading: '' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>),
+        region('riders', 'data.region', { preset: 'drivers', view: 'table', rows: 1, heading: 'Riders' }, { seq: 20, source: 'standings?series=motogp&season=2026' } as Partial<Region>),
+      ]),
+      { path: '/history/monza' },
+      { onSourceRead: (id, p) => reads.push(`${id}:${p.tier}`) },
+    );
+    const teams = html(out.teams);
+    expect(teams).toMatch(/<h1[^>]*>Constructors<\/h1>/);
+    expect(teams).toContain('<caption class="sr-only">Constructors</caption>');
+    expect(teams).toMatch(/<th[^>]*>Constructor<\/th>/);
+    expect(teams).toContain('Mercedes');
+    expect(teams).toContain('468');
+    expect(teams).not.toContain('Andrea Kimi Antonelli');
+    const riders = html(out.riders);
+    expect(riders).toMatch(/<h2[^>]*>Riders<\/h2>/);
+    expect(riders).toMatch(/<th[^>]*>Driver<\/th>/);
+    expect(riders).toContain('Andrea Kimi Antonelli');
+    expect(riders).toContain('ANT');
+    expect(riders).not.toContain('George Russell');
+    expect(reads).toEqual(['teams:rows', 'riders:rows']);
+    // The gap and the share columns against the leader: the leader dashes, the rest count down; the bar's width is the share.
+    const two = html((await renderComponents(doc([region('d', 'data.region', { preset: 'drivers', view: 'table', rows: 10, heading: '' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).d);
+    expect(two).toContain('−66');
+    expect(two).toContain('width:75%');
+    expect((two.match(/<tr/g) ?? []).length).toBe(3);
+  });
+
+  it('P2.2: the same source flips to cards; a family preset filters its class; no Source draws nothing; a preset that waits for the Rounds view draws nothing', async () => {
+    const cards = html((await renderComponents(doc([region('c', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).c);
+    expect(cards).not.toContain('<table');
+    expect(cards).toContain('Andrea Kimi Antonelli');
+    expect(cards).toContain('Mercedes');
+    expect(cards).toContain('267');
+    expect((cards.match(/<li /g) ?? []).length).toBe(2);
+    readSource.mockResolvedValueOnce({
+      columns: [],
+      total: 3,
+      rows: [
+        { kind: 'driver', position: 1, name: 'Estre Campbell Vanthoor', code: null, team: 'Porsche #6', points: 121, wins: null, class: 'Hypercar' },
+        { kind: 'manufacturer', position: 1, name: 'Porsche', code: null, team: null, points: 150, wins: null, class: 'Hypercar' },
+        { kind: 'driver', position: 1, name: 'Pier Guidi', code: null, team: 'AF Corse #51', points: 100, wins: null, class: 'LMGT3' },
+      ],
+      provenance: { ref: { source: 'standings', params: { series: 'wec', season: 2026 } }, label: 'Standings · FIA WEC · 2026', tier: 'snapshot', keys: ['standings:wec'], rows: 3, ms: 2 },
+    });
+    const wec = html((await renderComponents(doc([region('w', 'data.region', { preset: 'wec-hypercar-drivers', view: 'table', rows: 10, heading: '' }, { source: 'standings?series=wec&season=2026' } as Partial<Region>)]), { path: '/x' })).w);
+    expect(wec).toContain('Hypercar — Drivers');
+    expect(wec).toContain('Estre Campbell Vanthoor');
+    expect(wec).not.toContain('Pier Guidi');
+    expect(wec).not.toContain('>Porsche<');
+    const none = await renderComponents(doc([region('n', 'data.region', { preset: 'drivers', view: 'table', rows: 10, heading: '' })]), { path: '/x' });
+    expect(none.n).toBeNull();
+    const later = await renderComponents(doc([region('l', 'data.region', { preset: 'season-results', view: 'table', rows: 10, heading: '' }, { source: 'results?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' });
+    expect(later.l).toBeNull();
+  });
+
   it('a pin that does not resolve keeps the assembly’s lead; the race-weekend fact follows the live band', async () => {
     const out = await renderComponents(doc([region('lead', 'home.lead', { pinned: 'gone' })]), { path: '/' });
     expect(html(out.lead)).toContain('Monza, a history');

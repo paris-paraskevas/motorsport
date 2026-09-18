@@ -107,6 +107,7 @@ describe('the source catalogue', () => {
   it('reads the loader’s keys in the new vocabulary: standings and results per series, the F1 slots, the news aggregate; an unknown key is nothing', () => {
     expect(describeLoaderKey('standings:f1')).toEqual({ ref: { source: 'standings', params: { series: 'f1', season: 2026 } }, label: 'Standings · Formula 1 · 2026' });
     expect(describeLoaderKey('standings:gt-world')?.label).toBe('Standings · GT World Challenge · 2026');
+    expect(describeLoaderKey('standings:gt-world:2026')).toEqual({ ref: { source: 'standings', params: { series: 'gt-world', season: 2026 } }, label: 'Standings · GT World Challenge · 2026' });
     expect(describeLoaderKey('results:wrc')).toEqual({ ref: { source: 'results', params: { series: 'wrc', season: 2026 } }, label: 'Results · WRC · 2026' });
     expect(describeLoaderKey('results:wrc-chart')?.label).toBe('Results · WRC · 2026 · chart');
     expect(describeLoaderKey('f1:standings')?.label).toBe('Standings · Formula 1 · 2026');
@@ -123,6 +124,8 @@ describe('the source catalogue', () => {
     const standings = findSource('standings')!;
     expect(standings.loaderKeys!({ series: 'f1', season: 2026 })).toEqual(['standings:f1', 'f1:standings']);
     expect(standings.loaderKeys!({ series: 'wec', season: 2026 })).toEqual(['standings:wec']);
+    // GT World's snapshot is season-scoped (lib/standings/gt-world.ts), the one such key (P2.2; the plan critic's point).
+    expect(standings.loaderKeys!({ series: 'gt-world', season: 2026 })).toEqual(['standings:gt-world:2026']);
     expect(standings.hosts?.f1).toBe('jolpica');
     const results = findSource('results')!;
     expect(results.loaderKeys!({ series: 'f1', season: 2026 })).toEqual(['f1:results', 'f1:sprints', 'f1:last-race']);
