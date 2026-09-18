@@ -385,10 +385,11 @@ export function parseSettings(spec: ComponentDefinition, raw: unknown): { settin
   return { settings, problems };
 }
 
-/** One line about an instance's attributes, for its tile: `Items 8 · Series All`. */
+/** One line about an instance's attributes, for its tile: `Items 8 · Series All`; an empty text says nothing. */
 export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Record<string, SettingValue>>): string {
-  const parts = instanceAttributes(spec).map(s => {
+  const parts = instanceAttributes(spec).flatMap(s => {
     const v = settings[s.key] ?? s.default;
+    if (s.kind === 'text' && String(v).trim() === '') return [];
     const shown =
       s.kind === 'boolean'
         ? v

@@ -856,13 +856,8 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
         ) : (
           <input type="text" value={String(value)} maxLength={s.maxLength ?? 200} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)} />
         ),
-        note: waiting.length
-          ? `Not yet pickable, ${[...new Set(waiting.map(o => o.later))].join('; ')}: ${waiting.map(o => o.label).join(', ')}.`
-          : grouped && !regionSource
-            ? 'Pick a Source first: the list then follows it.'
-            : s.scope === 'report'
-              ? 'One value per multi-row region (APEX: an attribute of report scope).'
-              : undefined,
+        // A report-scope attribute (one value per multi-row region) reads as any other here; its help says so.
+        note: waiting.length ? `Not yet pickable, ${[...new Set(waiting.map(o => o.later))].join('; ')}: ${waiting.map(o => o.label).join(', ')}.` : grouped && !regionSource ? 'Pick a Source first: the list then follows it.' : undefined,
         help: application
           ? `${s.help ? `${s.help} ` : ''}One value for the whole application (APEX: an attribute of Application scope), set under Shared Components › Component Settings.`
           : s.kind === 'link'

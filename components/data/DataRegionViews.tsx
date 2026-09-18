@@ -88,7 +88,7 @@ export function DataRegionTable({ heading, level, shape, preset, rows }: DataReg
           <thead>
             <tr className="border-b border-border font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
               {columns.map(c => (
-                <th key={c.key} scope="col" className={`py-2 font-normal ${RIGHT.has(c.type) ? 'pl-3 text-right' : 'pr-3 text-left'}${c.type === 'position' ? ' w-10' : c.type === 'percent' ? ' w-24' : ''}`}>
+                <th key={c.key} scope="col" className={`py-2 font-normal ${c.type === 'position' ? 'w-10 pr-3 text-right' : RIGHT.has(c.type) ? 'pl-3 text-right' : 'pr-3 text-left'}${c.type === 'percent' ? ' w-24' : ''}`}>
                   {c.type === 'percent' ? <span className="sr-only">{c.label}</span> : c.label}
                 </th>
               ))}
