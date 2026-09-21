@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.139 — 2026-09-21
+
+Internal only: the day’s working records. Nothing changes for readers.
+
 ## 1.0.138 — 2026-09-18
 
 In the design tool, a new Data region draws a table or cards straight from a data source, in one of the site’s own named shapes: the drivers’, constructors’, teams’, manufacturers’ and co-drivers’ standings, and every class and cup table of GT World Challenge, IMSA and the World Endurance Championship. The results shapes follow in the next step. Nothing changes for readers.
