@@ -196,6 +196,14 @@ The ingest exists as of 0.334.103: `npm run upgrades:draft` does discovery, fetc
 - (2026-09-21, session 53 continued) The harness stopped the local dev server twice for low memory during the P2.6 and P2.2 runs (after the browser work was done); run cf:build only with the dev server stopped, and expect to restart it before a browser run.
 - (2026-09-21, session 53 continued) The local Monza page holds three P2.2 drafts (1ce2c296 Drivers as a table, 62f66ed7 as cards, 3e192611 Hypercar — Drivers) above P2.6’s live revision; production is untouched. Clear them from the local database when the page is next seeded.
 
+- (2026-09-21, session 54) An unmapped GT World race's chip draws "·" where the site's tab draws the championship letter E or S; a championship column on the results source would carry the letter (B2 or later, the operator's call).
+- (2026-09-21, session 54) The Rows attribute counts races on a results shape and rows on a standings shape (the help says both); one label for two meanings; a label per shape ("Races") when the Attributes tab is next touched.
+- (2026-09-21, session 54) F2's Feature and Sprint races are two presets as the site's tabs are; a combined F2 preset with both sessions, Feature first within a round, is one line of data if wanted.
+- (2026-09-21, session 54) The dry run rose 1052.64 KiB with B1 (40111.38 KiB) and this prerender logged no upstream fetch failures where the previous two logged four and five, so the 1.0.138 drop is not the fetch failures; still unexplained.
+- (2026-09-21, session 54) The reviewer's inert fidelity nits on the Rounds layout's cup rows: the driver-or-team fallback and the conditional #car chip (the site draws both unconditionally), the winners-only flat rule applying to every shape (the site applies it to the flat series only); align when the List view is next touched.
+- (2026-09-21, session 54) The Debug trace's source line (label · tier · rows) lives in the entry's `run` field, not its `text`; a review-page recipe or a test reading the trace must read `run`.
+- (2026-09-21, session 54) The local Monza page holds six B1 drafts (1a9f4981 F1 as the Rounds layout, b7a633a4 F2 Feature races, 3aa7c95d WEC, 559855dd GT World, 27daff4a F1 as a table, 85ecfb5b as cards) above A's three and P2.6's live revision; production untouched.
+
 ## A "connection is secure" interstitial — operator ask, 2026-08-22, RECOMMEND AGAINST as asked
 
 **The ask:** the Cloudflare page some sites show on click-through that says your connection is being checked or is secure, "it shows that we are legit".

@@ -2002,6 +2002,22 @@ Won't touch this session: P2.2 B beyond its place in the handoff; any other slot
 Active: ~3h from 2026-09-18 ~02:15Z to ~05:15Z, plus ~20 min on 2026-09-21 from ~17:35Z (the operator present at the words; the words came 2026-09-18 ~02:19Z, ~02:27Z, ~03:00Z and 2026-09-21 ~17:40Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
 
+### Mon 2026-09-21 — session 54 (the operator present at the words) — P2.2 B1 The data region's results side
+
+Order fixed by the words: "do whats next" (~18:05Z, the slot's next PR), the plan approved (~18:20Z, ExitPlanMode), "merge" (~19:13Z).
+
+1. **The reads and the scan** (~15 min, from ~17:50Z): the site's results panels (ResultsTab.tsx's four accordions), the weekend dispatch, the four class-family fetchers and their snapshot keys, the loader's warm list; the decision scan with no word needed and the plan's one question (B as two PRs) → done.
+2. **The plan and its critic** (~25 min): the plan file; a fresh-context Sonnet plan critic (336,107 tokens against the ~250k said): SOUND WITH FIXES, three blocking folded (WRC and DTM through the real fetchers; the race's first appearance as the middle sort key; a preset's default view through `sets`), four non-blocking folded; approved ~18:20Z → done.
+3. **Tests first and the build** (~40 min): eleven red across seven files; sources.ts, source-read.ts, presets.ts, components.ts, the choice setter, DataRegionViews.tsx's Rounds layout, the renderer; green; tsc 0 · lint 0 errors · vitest 223 files, 2251 tests · hooks 31/31 · dry run 40105.22 KiB; PR #1021; the reviewer launched → done.
+4. **The browser run and the review page** (~30 min): Docker Desktop started from PowerShell, the local Supabase, the dev server, the sign-in helper; Monza's Data region on Results · Formula 1 (Season results flips View to List; ten whole rounds after the Rows fix), Formula 2 Feature races, WEC per class, GT World per cup, F1 as a table and as cards; seven screenshots into the review page fe46a804-cae9-4066-bac0-194a91cc17d1 → done.
+5. **The reviewer and the fixes** (~15 min): PASS, nothing blocking, six non-blocking; the two test gaps taken with the Rows fix in 4d68e679; the gates re-run (tsc 0 · lint 0 errors · vitest 2251 · hooks 31/31); cf:build and the dry run again after the dev server was stopped by PID, 40111.38 KiB / gzip 8810.55 KiB, the CHANGELOG's figure in f413b76b; the PR body with the review page and the reviewer's section → done.
+6. **Merge and prod**: "merge" → #1021 squash-merged 19:14:09Z as 09eec0c9 → main forward by fast-forward → prod /changelog 1.0.140 at 2026-09-21T19:20:06Z → done.
+7. **Close**: the ledger (P2.2 started with B1's evidence; the dated line with the build's defaults), the handoff and the session-55 prompt (P2.2 B2 first, its three likely questions), this block, seven Inbox lines, the board; the records PR 1.0.141 on the word.
+
+Won't touch this session: P2.2 B2 beyond its place in the handoff; any other slot; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~1h 45m from ~17:50Z to ~19:35Z (the operator present at the words; the words came ~18:05Z, ~18:20Z and ~19:13Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
