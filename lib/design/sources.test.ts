@@ -110,6 +110,7 @@ describe('the source catalogue', () => {
     expect(describeLoaderKey('standings:gt-world:2026')).toEqual({ ref: { source: 'standings', params: { series: 'gt-world', season: 2026 } }, label: 'Standings · GT World Challenge · 2026' });
     expect(describeLoaderKey('results:wrc')).toEqual({ ref: { source: 'results', params: { series: 'wrc', season: 2026 } }, label: 'Results · WRC · 2026' });
     expect(describeLoaderKey('results:wrc-chart')?.label).toBe('Results · WRC · 2026 · chart');
+    expect(describeLoaderKey('results:imsa')?.label).toBe('Results · IMSA · 2026');
     expect(describeLoaderKey('f1:standings')?.label).toBe('Standings · Formula 1 · 2026');
     expect(describeLoaderKey('f1:results')?.label).toBe('Results · Formula 1 · 2026');
     expect(describeLoaderKey('f1:sprints')?.label).toBe('Results · Formula 1 · 2026 · sprints');
@@ -130,6 +131,14 @@ describe('the source catalogue', () => {
     const results = findSource('results')!;
     expect(results.loaderKeys!({ series: 'f1', season: 2026 })).toEqual(['f1:results', 'f1:sprints', 'f1:last-race']);
     expect(results.loaderKeys!({ series: 'wrc', season: 2026 })).toEqual(['results:wrc', 'results:wrc-chart']);
+    expect(results.loaderKeys!({ series: 'gt-world', season: 2026 })).toEqual(['results:gt-world']);
+    // P2.2 B1: the results source reads fourteen series (NLS, IMSA, WEC and GT World joined), each with its remote server, over twenty columns.
+    const resultsSeries = results.parameters[0].options!.map(o => o.key);
+    expect(resultsSeries).toEqual(['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world']);
+    for (const slug of resultsSeries) expect(results.hosts?.[slug], slug).toBeDefined();
+    expect(results.hosts).toMatchObject({ nls: 'vln', imsa: 'alkamel', wec: 'fiawec', 'gt-world': 'gt-world-challenge' });
+    expect(results.columns.map(c => c.key)).toEqual(['round', 'race', 'raceId', 'date', 'circuit', 'class', 'session', 'position', 'driver', 'code', 'car', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'time', 'gap', 'points', 'weekend']);
+    expect(results.columns.find(c => c.key === 'weekend')?.type).toBe('link');
     expect(findSource('news')!.loaderKeys!({ per: 5 })).toEqual(['news:aggregate:5']);
     expect(findSource('authors')!.loaderKeys).toBeUndefined();
     for (const r of REMOTE_SERVERS) expect(r.baseUrl).toMatch(/^https:\/\/[a-z0-9.-]+$/);

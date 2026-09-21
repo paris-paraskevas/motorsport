@@ -128,18 +128,18 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     return <HomeWire wire={wire} />;
   },
   // The Data region (P2.2): one of the site's named shapes over the region's Source. Nothing without a Source
-  // (APEX: a report without one renders nothing; the designer's Messages say so), nothing for a preset that waits.
+  // (APEX: a report without one renders nothing; the designer's Messages say so).
   async 'data.region'(settings, ctx) {
     if (!ctx.source) return null;
     const preset = findPreset(str(settings.preset));
-    if (!preset || preset.later) return null;
+    if (!preset) return null;
     const shape = SHAPES[preset.shape];
     const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
     const read = await readSource(ctx.source);
     ctx.onSourceRead?.(read.provenance);
     const rows = presetRows(read.rows, preset, num(settings.rows, 10));
     const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows };
-    return settings.view === 'cards' ? <views.DataRegionCards {...props} /> : <views.DataRegionTable {...props} />;
+    return settings.view === 'cards' ? <views.DataRegionCards {...props} /> : settings.view === 'list' ? <views.DataRegionList {...props} /> : <views.DataRegionTable {...props} />;
   },
 };
 
@@ -164,8 +164,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'home.changed': ['snapshot:standings:', 'snapshot:f1:'],
   'home.next': ['content:series'],
   'home.wire': ['snapshot:news:aggregate:'],
-  // The Data region reads its Source: the standings' two tiers today (the results presets arrive with PR B).
-  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:f1:'],
+  // The Data region reads its Source: the standings' two tiers, the results' snapshots.
+  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:'],
 };
 
 /** What the Debug trace asks of a render (P1.9): each component's timing and outcome. */

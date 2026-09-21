@@ -40,6 +40,9 @@ export interface ChoiceOption {
   group?: string;
   only?: { source: string; series: readonly string[] };
   later?: string;
+  /** Other attributes the option sets when picked (P2.2 B1: a preset brings its view). Ours; APEX picks a report's
+   *  template by hand. The stored values are left alone; the editor applies them with the pick. */
+  sets?: Readonly<Record<string, SettingValue>>;
 }
 
 export interface AttributeDefinition {
@@ -233,7 +236,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           label: p.name,
           group: PRESET_GROUPS.find(g => g.key === p.group)?.name ?? p.group,
           only: { source: p.source, series: p.series },
-          ...(p.later ? { later: p.later } : {}),
+          sets: { view: p.view },
         })),
         help: 'Which of the site’s tables this region draws (APEX: a report’s template and its columns; ours: the fifteen shapes as named presets). The list follows the Source: its presets, grouped as the site groups them.',
       },
@@ -246,10 +249,11 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
         options: [
           { key: 'table', label: 'Table' },
           { key: 'cards', label: 'Cards' },
+          { key: 'list', label: 'List' },
         ],
-        help: 'How the rows are drawn (APEX: a Classic Report or a Cards region; ours: one region with a View setting). List, Timeline and Detail arrive with PR B.',
+        help: 'How the rows are drawn (APEX: a Classic Report or a Cards region; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings; a preset brings its own view when picked. Timeline and Detail arrive with PR B2.',
       },
-      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table.' },
+      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole.' },
       { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name.' },
     ],
     sources: ['standings', 'results'],

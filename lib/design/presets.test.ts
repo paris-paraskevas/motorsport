@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { LATER_ROUNDS, PRESETS, PRESET_GROUPS, SHAPES, findPreset, presetRows, presetsFor } from './presets';
+import { PRESETS, PRESET_GROUPS, SHAPES, findPreset, presetRows, presetsFor } from './presets';
 import { SERIES_OPTIONS } from './sources';
 
 // The preset catalogue (P2.2): the fifteen groups as the operator saw them
@@ -9,7 +9,7 @@ import { SERIES_OPTIONS } from './sources';
 // results presets declared and waiting for the Rounds view (PR B).
 
 describe('the preset catalogue', () => {
-  it('holds the fifteen groups in the drawn order and thirty-three presets: twenty-six standings over two shapes, seven results that wait for the Rounds view', () => {
+  it('holds the fifteen groups in the drawn order and thirty-three presets: twenty-six standings over two shapes, seven results over three, drawn as the Rounds layout by default (P2.2 B1)', () => {
     expect(PRESET_GROUPS.map(g => g.name)).toEqual([
       'Drivers',
       'Constructors',
@@ -33,8 +33,26 @@ describe('the preset catalogue', () => {
     expect(new Set(standings.map(p => p.shape))).toEqual(new Set(['driver-rows', 'team-rows']));
     const results = PRESETS.filter(p => p.source === 'results');
     expect(results).toHaveLength(7);
-    for (const p of results) expect(p.later, p.key).toBe(LATER_ROUNDS);
-    for (const p of standings) expect(p.later, p.key).toBeUndefined();
+    for (const p of PRESETS) expect(Object.keys(p), p.key).not.toContain('later');
+    for (const p of results) expect(p.view, p.key).toBe('list');
+    for (const p of standings) expect(p.view, p.key).toBe('table');
+    expect(results.map(p => [p.key, p.shape, p.where])).toEqual([
+      ['season-results', 'race-rows', { session: 'race' }],
+      ['feature-races', 'race-rows', { session: 'feature' }],
+      ['sprint-races', 'race-rows', { session: 'sprint' }],
+      ['overall-winners', 'race-rows', {}],
+      ['season-results-imsa', 'car-rows', {}],
+      ['season-results-wec', 'car-rows', {}],
+      ['season-results-gt-world', 'cup-rows', {}],
+    ]);
+    expect(findPreset('season-results')?.series).toEqual(['f1', 'f3', 'indycar', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm', 'formula-e']);
+    // The results shapes: the race title links to the round's weekend page; the sportscar shapes carry the car, its vehicle and the gap, no points.
+    expect(SHAPES['race-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'date', 'circuit', 'session', 'position', 'driver', 'code', 'team', 'status', 'time', 'points']);
+    expect(SHAPES['race-rows'].columns.find(c => c.key === 'race')).toEqual({ key: 'race', label: 'Race', type: 'link', href: 'weekend' });
+    expect(SHAPES['race-rows'].columns.find(c => c.key === 'date')?.type).toBe('date');
+    expect(SHAPES['car-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'date', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'gap']);
+    expect(SHAPES['cup-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'laps', 'gap']);
+    expect(SHAPES['car-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'gap', badge: 'car' });
     expect(new Set(PRESETS.map(p => p.key)).size).toBe(33);
     const groups = new Set(PRESET_GROUPS.map(g => g.key));
     const slugs = new Set(SERIES_OPTIONS.map(o => o.key));
@@ -83,21 +101,20 @@ describe('the preset catalogue', () => {
     expect(findPreset('constructors')).toMatchObject({ shape: 'team-rows', nameLabel: 'Constructor', where: { kind: 'constructor' } });
     expect(findPreset('teams')).toMatchObject({ shape: 'team-rows', nameLabel: 'Team', where: { kind: 'constructor' }, series: ['dtm'] });
     expect(findPreset('manufacturers')).toMatchObject({ shape: 'team-rows', nameLabel: 'Manufacturer', where: { kind: 'manufacturer' }, series: ['wrc'] });
-    expect(findPreset('overall-winners')).toMatchObject({ source: 'results', series: ['nls'], later: LATER_ROUNDS });
+    expect(findPreset('overall-winners')).toMatchObject({ source: 'results', series: ['nls'], shape: 'race-rows', view: 'list' });
     expect(findPreset('nope')).toBeNull();
   });
 
-  it('offers the presets of a source and a series: F1 its Drivers and Constructors, MotoGP its Drivers, WRC its three, WEC its four classes, F2’s results its two (waiting), NLS no standings', () => {
+  it('offers the presets of a source and a series: F1 its Drivers and Constructors, MotoGP its Drivers, WRC its three, WEC its four classes, F2’s results its two, NLS no standings', () => {
     expect(presetsFor('standings', 'f1').map(p => p.key)).toEqual(['drivers', 'constructors']);
     expect(presetsFor('standings', 'motogp').map(p => p.key)).toEqual(['drivers']);
     expect(presetsFor('standings', 'wrc').map(p => p.key)).toEqual(['drivers', 'manufacturers', 'co-drivers']);
     expect(presetsFor('standings', 'dtm').map(p => p.key)).toEqual(['drivers', 'teams']);
     expect(presetsFor('standings', 'wec').map(p => p.key)).toEqual(['wec-hypercar-drivers', 'wec-hypercar-manufacturers', 'wec-lmgt3-drivers', 'wec-lmgt3-teams']);
     expect(presetsFor('standings', 'imsa')).toHaveLength(11);
-    expect(presetsFor('results', 'f2').map(p => [p.key, p.later])).toEqual([
-      ['feature-races', LATER_ROUNDS],
-      ['sprint-races', LATER_ROUNDS],
-    ]);
+    expect(presetsFor('results', 'f2').map(p => p.key)).toEqual(['feature-races', 'sprint-races']);
+    expect(presetsFor('results', 'f1').map(p => p.key)).toEqual(['season-results']);
+    expect(presetsFor('results', 'wec').map(p => p.key)).toEqual(['season-results-wec']);
     expect(presetsFor('standings', 'nls')).toEqual([]);
     expect(presetsFor('results', 'nls').map(p => p.key)).toEqual(['overall-winners']);
   });
@@ -121,6 +138,43 @@ describe('the preset catalogue', () => {
     ];
     expect(presetRows(flat, findPreset('constructors')!, 10).map(r => r.name)).toEqual(['Mercedes', 'McLaren']);
     expect(presetRows(flat, findPreset('drivers')!, 10).map(r => r.name)).toEqual(['Antonelli']);
+  });
+
+  it('P2.2 B1: a results preset’s rows are its session’s, newest round first, a weekend’s races kept together in the order the fetcher gave them (R1 · Superpole · R2), each by position', () => {
+    const at = (round: number, race: string, position: number, session = 'race') => ({ round, race, raceId: null, position, driver: `${race} P${position}`, session, points: 25 - position, class: null });
+    const rows = [
+      at(1, 'Australia Race 1', 1),
+      at(1, 'Australia Race 1', 2),
+      at(2, 'Assen Race 1', 2),
+      at(2, 'Assen Race 1', 1),
+      at(2, 'Assen Superpole Race', 1),
+      at(2, 'Assen Superpole Race', 2),
+      at(2, 'Assen Race 2', 1),
+      at(2, 'Assen Race 2', 2),
+      at(2, 'Assen Sprint', 1, 'sprint'),
+    ];
+    expect(presetRows(rows, findPreset('season-results')!, 50).map(r => r.driver)).toEqual([
+      'Assen Race 1 P1',
+      'Assen Race 1 P2',
+      'Assen Superpole Race P1',
+      'Assen Superpole Race P2',
+      'Assen Race 2 P1',
+      'Assen Race 2 P2',
+      'Australia Race 1 P1',
+      'Australia Race 1 P2',
+    ]);
+    expect(presetRows(rows, findPreset('sprint-races')!, 50).map(r => r.driver)).toEqual(['Assen Sprint P1']);
+    // The count is of races, each whole: two races, four rows, never half a classification.
+    expect(presetRows(rows, findPreset('season-results')!, 2).map(r => r.driver)).toEqual(['Assen Race 1 P1', 'Assen Race 1 P2', 'Assen Superpole Race P1', 'Assen Superpole Race P2']);
+    expect(presetRows(rows, findPreset('season-results')!, 0)).toEqual([]);
+    // A GT World race without a round sorts last, its rows kept together by the race id.
+    const cups = [
+      { round: null, raceId: 777, race: 'Spa Race', class: 'Pro Cup', position: 1, driver: 'Spa P1' },
+      { round: 2, raceId: 501, race: 'Brands Hatch Race 1', class: 'Gold Cup', position: 1, driver: 'Gold P1' },
+      { round: 2, raceId: 501, race: 'Brands Hatch Race 1', class: 'Pro Cup', position: 2, driver: 'Pro P2' },
+      { round: 2, raceId: 501, race: 'Brands Hatch Race 1', class: 'Pro Cup', position: 1, driver: 'Pro P1' },
+    ];
+    expect(presetRows(cups, findPreset('season-results-gt-world')!, 50).map(r => r.driver)).toEqual(['Gold P1', 'Pro P1', 'Pro P2', 'Spa P1']);
   });
 
   it('imports nothing at runtime: the catalogue reaches every route’s chunk through the parser, so it stays declarations', () => {

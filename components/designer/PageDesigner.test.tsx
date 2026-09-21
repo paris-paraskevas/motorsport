@@ -1128,7 +1128,7 @@ describe('PageDesigner', () => {
     expect(within(pe).getByLabelText('Region text')).toBeTruthy();
   });
 
-  it('P2.2: the Data region from the Gallery: its Source first, then the Attributes tab’s Preset grouped by the fifteen and filtered to the Source, View and Rows; Save carries the settings and the tile names the preset; a results Source shows its presets disabled with their reason', async () => {
+  it('P2.2: the Data region from the Gallery: its Source first, then the Attributes tab’s Preset grouped by the fifteen and filtered to the Source, View and Rows; Save carries the settings and the tile names the preset; a results Source offers its presets, and picking one brings the Rounds layout (List) with it', async () => {
     const { onSaved } = mount(detail, false, null, null, undefined, [
       { slug: 'f1', name: 'Formula 1' },
       { slug: 'wec', name: 'FIA WEC' },
@@ -1154,16 +1154,31 @@ describe('PageDesigner', () => {
     const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
     const saved = posted.document.regions.find(r => r.kind === 'component' && r.component === 'data.region')!;
     expect(saved).toMatchObject({ settings: { preset: 'constructors', view: 'cards', rows: 8, heading: '' }, source: 'standings?series=f1&season=2026' });
-    // A results Source: its presets wait for the Rounds view, disabled with the reason in the note.
+    // A results Source (P2.2 B1): Formula 1 offers Season results; the stored Constructors stays visible until another is picked.
     fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
     fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'results' } });
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
     const results = within(pe).getByLabelText('Preset') as HTMLSelectElement;
     const season = [...results.options].find(o => o.textContent === 'Season results')!;
-    expect(season.disabled).toBe(true);
-    expect(within(pe).getByText(/arrives with the Rounds view \(PR B\)/)).toBeTruthy();
-    // The stored preset stays visible, and Messages carry the parser's refusal.
-    expect([...results.options].map(o => o.textContent)).toContain('Constructors');
+    expect(season.disabled).toBe(false);
+    expect(within(pe).queryByText(/Not yet pickable/)).toBeNull();
+    expect([...results.options].map(o => o.textContent)).toEqual(['Constructors', 'Season results']);
+    // Picking a results preset brings its view: the Rounds layout, the List pill pressed by itself.
+    fireEvent.change(results, { target: { value: 'season-results' } });
+    expect(status()).toMatch(/Preset set/);
+    const view = () => within(pe).getByRole('group', { name: 'View' });
+    expect(within(view()).getByRole('button', { name: 'List' }).getAttribute('aria-pressed')).toBe('true');
+    expect(tile('Component: Data region').textContent).toMatch(/Preset Season results · View List · Rows 8/);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(calls.filter(c => c.method === 'POST')).toHaveLength(2));
+    const second = calls.filter(c => c.method === 'POST')[1].body as { document: PageDocument };
+    expect(second.document.regions.find(r => r.kind === 'component' && r.component === 'data.region')).toMatchObject({ settings: { preset: 'season-results', view: 'list', rows: 8, heading: '' }, source: 'results?series=f1&season=2026' });
+    // Back to a standings preset: its view is the table again.
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'drivers' } });
+    expect(within(view()).getByRole('button', { name: 'Table' }).getAttribute('aria-pressed')).toBe('true');
   });
 
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {

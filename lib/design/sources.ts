@@ -108,7 +108,8 @@ const seriesOptions = (slugs: readonly string[]) => slugs.map(slug => SERIES_OPT
 /** The series the standings registry (lib/standings-health.ts) checks and the loader writes rows for. */
 const STANDINGS_SERIES = ['f1', 'f2', 'f3', 'motogp', 'wsbk', 'indycar', 'formula-e', 'dtm', 'wrc', 'nascar-cup', 'gt-world', 'imsa', 'wec'];
 /** The series the season results dispatch handles (components/weekend/WeekendStandingsSnapshot.tsx). */
-const RESULTS_SERIES = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm'];
+/** The ten the weekend dispatch handles, plus the four the tab reads through their own fetchers (P2.2 B1): NLS, IMSA, WEC, GT World. */
+const RESULTS_SERIES = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world'];
 
 const seriesParam = (options: readonly string[], required = true): SourceParameter => ({
   key: 'series',
@@ -141,6 +142,8 @@ export const REMOTE_SERVERS: readonly RemoteServer[] = [
   { key: 'gt-world-challenge', name: 'gt-world-challenge-europe.com', baseUrl: 'https://www.gt-world-challenge-europe.com' },
   { key: 'fiawec', name: 'fiawec.com', baseUrl: 'https://www.fiawec.com' },
   { key: 'wrc-com', name: 'wrc.com', baseUrl: 'https://www.wrc.com' },
+  { key: 'vln', name: 'teilnehmer.vln.de', baseUrl: 'https://teilnehmer.vln.de' },
+  { key: 'alkamel', name: 'Al Kamel timing · IMSA', baseUrl: 'https://imsa.results.alkamelcloud.com' },
 ];
 
 const STANDINGS_HOSTS: Readonly<Record<string, string>> = {
@@ -169,6 +172,10 @@ const RESULTS_HOSTS: Readonly<Record<string, string>> = {
   'nascar-cup': 'wikipedia',
   wrc: 'wikipedia',
   dtm: 'motorsport-com',
+  nls: 'vln',
+  imsa: 'alkamel',
+  wec: 'fiawec',
+  'gt-world': 'gt-world-challenge',
 };
 
 const col = (key: string, label: string, type: SourceColumnType): SourceColumn => ({ key, label, type });
@@ -214,9 +221,9 @@ export const SOURCES: readonly SourceDefinition[] = [
   {
     key: 'results',
     name: 'Results',
-    holds: 'the season’s race results, one row per classified entry',
+    holds: 'the season’s race results, one row per classified entry: the flat series’ races by session, the sportscar series’ by class or cup, NLS’s winners',
     parameters: [seriesParam(RESULTS_SERIES), seasonParam],
-    columns: [col('round', 'Round', 'number'), col('race', 'Race', 'text'), col('date', 'Date', 'date'), col('circuit', 'Circuit', 'text'), col('position', 'Position', 'number'), col('driver', 'Driver', 'text'), col('code', 'Code', 'text'), col('team', 'Team', 'text'), col('status', 'Status', 'text'), col('time', 'Time', 'text'), col('points', 'Points', 'number')],
+    columns: [col('round', 'Round', 'number'), col('race', 'Race', 'text'), col('raceId', 'Race id', 'number'), col('date', 'Date', 'date'), col('circuit', 'Circuit', 'text'), col('class', 'Class', 'text'), col('session', 'Session', 'text'), col('position', 'Position', 'number'), col('driver', 'Driver', 'text'), col('code', 'Code', 'text'), col('car', 'Car', 'text'), col('team', 'Team', 'text'), col('vehicle', 'Vehicle', 'text'), col('manufacturer', 'Manufacturer', 'text'), col('laps', 'Laps', 'number'), col('status', 'Status', 'text'), col('time', 'Time', 'text'), col('gap', 'Gap', 'text'), col('points', 'Points', 'number'), col('weekend', 'Weekend page', 'link')],
     fresh: 'loader',
     load: 'replace',
     pagination: 'none',
