@@ -1986,6 +1986,22 @@ Won't touch this session: any slot beyond P2.6 except P2.2's decision scan; the 
 Active: ~2h 45m from ~17:15Z to ~20:00Z (the operator present; the words came ~17:40Z (the board), ~18:05Z (the plan approved) and ~19:31Z ("merge"); no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
 
+### Fri 2026-09-18 and Mon 2026-09-21 — session 53, continued (the operator present at the words) — the records PR merged, P2.2's word, P2.2 A The data region
+
+Order fixed by the words: "merge" for the records PR #1018 (~02:19Z on 2026-09-18), the word on P2.2's preset names (~02:27Z: "a fifteen as drawn, ditto standings, results too, now B every class heading its own preset and C same column names merged", read as A the list with B and C underneath on one clarifying question), plan mode with a Sonnet plan critic, the plan approved (~03:00Z), tests first, build, gates, the browser run, the review page, the PR, the reviewer, "merge" (2026-09-21 ~17:40Z). Every subagent on Sonnet, one at a time; no agent builds; merge on the word.
+
+1. **The records PR and the word** (~15 min, 2026-09-18 ~02:15Z–02:30Z): #1018 squash-merged 02:19:47Z as 2256e1d0, prod /changelog 1.0.137 at 02:24:54Z; the operator's word on the fifteen shapes, one clarifying question with three drawn pickers, the dated changes line written → done.
+2. **The reads and the plan** (~45 min): the source catalogue and its reader, the definition model, the standings and results tabs, the class-family fetchers and their snapshot keys, the loader's warm list; the plan file (two PRs; presets a code catalogue; `only`/`group`/`later` on a choice's options); a fresh-context Sonnet plan critic (269,779 tokens against the ~250k said; SOUND WITH FIXES: three blocking, all real, the results panels being accordions not tables, What it changed merging three classes, GT World's season-scoped key; seven non-blocking); approved ~03:00Z → done.
+3. **Tests first and the build** (~50 min): twelve red across ten files; presets.ts, the data.region definition, the widened standings reader, the guard, DataRegionViews.tsx, the renderer, the parser, the grouped select, the Messages line; green; tsc 0 · lint 0 errors · vitest 223 files, 2245 tests · hooks 31/31; cf:build alone, the dry run 39058.74 KiB (the drop from 41618.19 KiB unexplained, flagged) → done.
+4. **The browser run and the review page** (~25 min): the Data region from the Gallery, Standings · Formula 1 · Drivers as a table and as cards, FIA WEC · Hypercar — Drivers filtering its class from the snapshot, a Results source showing Season results disabled with its reason; six screenshots into the review page 5b5d6075-4483-4283-a366-4074eb899c85; two small fixes (the Pos header's padding, an empty text left out of the tile's summary) → done.
+5. **PR, reviewer, the fixes** (~40 min): PR #1019; a fresh-context Sonnet reviewer (187,798 tokens against the ~250k said): FAIL on two blocking findings, both taken in 460fa690 with the tests it named (WRC's rows tier kept, its co-drivers and manufacturers joining from the snapshot; a test rendering every one of the twenty-six standings presets); the gates re-run (vitest 223 files, 2246 tests) → done.
+6. **Merge and prod** (2026-09-21): "merge" → #1019 squash-merged 17:40:36Z as bf3215b4 → main forward by fast-forward → prod /changelog 1.0.138 at 2026-09-21T17:45:22Z → done.
+7. **Close**: the ledger (P2.2 started with A's evidence; the dated line with the plan's defaults), the handoff and the session-54 prompt (P2.2 B first), this block, seven Inbox lines, the board; the records PR 1.0.139 on the word.
+
+Won't touch this session: P2.2 B beyond its place in the handoff; any other slot; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~3h from 2026-09-18 ~02:15Z to ~05:15Z, plus ~20 min on 2026-09-21 from ~17:35Z (the operator present at the words; the words came 2026-09-18 ~02:19Z, ~02:27Z, ~03:00Z and 2026-09-21 ~17:40Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

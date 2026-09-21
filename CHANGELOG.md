@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.139 — 2026-09-21
+
+### Records — P2.2 A merged and written under the slot, the session-54 handoff with P2.2 B first
+
+Records only. `docs/plan/ledger.json`: P2.2 stays `started` (done when PR B merges) and carries PR A’s evidence (#1019, 1.0.138, merged 2026-09-21 17:40:36Z as bf3215b4; the plan critic’s and the reviewer’s figures; the review page 5b5d6075-4483-4283-a366-4074eb899c85; the unexplained dry-run drop flagged), and one dated changes line carrying the plan’s approval (2026-09-18) and the defaults it took (one Data region with report-scope attributes; the presets a code catalogue, the owned deviation from “presets are definitions of P2.0”; A the standings side whole with Table and Cards, B the results side whole with the round-grouped layout the site draws; the first-class guard on What it changed; GT World’s season-scoped key; WRC’s rows tier kept); `docs/plan/components-programme.md` regenerated. `docs/HANDOFF.md`: the close of session 53’s continuation (2026-09-18 and 2026-09-21) with the session-54 prompt (P2.2 B first: plan mode with a Sonnet plan critic, no word needed). `SCHEDULE.md`: the two days. `IDEAS.md`: seven Inbox lines. The progress board republished at its link.
+
 ## 1.0.138 — 2026-09-18
 
 ### Designer — [P2.2 A] The data region with views: one general Data region over a source, the twenty-six standings presets as the site names them, Table and Cards
