@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.141 — 2026-09-21
+
+### Records — P2.2 B1 merged and written under the slot, the session-55 handoff with P2.2 B2 first
+
+Records only. `docs/plan/ledger.json`: P2.2 stays `started` (done when B2 merges) and carries PR B1's evidence (#1021, 1.0.140, merged 2026-09-21 19:14:09Z as 09eec0c9, prod 2026-09-21T19:20:06Z; the plan critic's and the reviewer's figures; the review page fe46a804-cae9-4066-bac0-194a91cc17d1; the dry run 40111.38 KiB with the 1.0.138 drop now known not to be the upstream fetch failures), and one dated changes line carrying the merge and the defaults taken during B1's build and browser run (Rows counts races whole on a results shape; an unmapped GT World race's chip "·" owned with its reason; the reviewer's two test gaps taken and its four inert nits noted). `docs/HANDOFF.md`: the session-54 close as LATEST with the session-55 prompt (P2.2 B2 first: its scope from B1's plan, the three likely questions of its scan with their defaults, the state, the rules, the browser-run recipe with the Debug trace's `run` field and the Docker Desktop start, this run's landmines, the agenda). `SCHEDULE.md`: the day. `IDEAS.md`: seven Inbox lines. The progress board republished from the ledger. `package.json` 1.0.141. No code.
+
 ## 1.0.140 — 2026-09-21
 
 ### Designer — [P2.2 B1] The data region's results side: the results source widened to fourteen series, the seven results presets, the Rounds layout as the List view
