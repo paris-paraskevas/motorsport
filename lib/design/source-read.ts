@@ -2,6 +2,7 @@ import 'server-only';
 import path from 'path';
 import { SERIES_OPTIONS, findSource, sourceLabel, type SourceColumn, type SourceFresh, type SourceParams, type SourceRef } from './sources';
 import type { SnapshotMeta } from '@/lib/source-snapshot';
+import type { RaceResult, RaceResultEntry, Series } from '@/lib/types';
 
 // The reader behind the catalogue (the components programme, P2.1): one
 // readSource for the thirteen, each through the loader the code already has,
@@ -158,6 +159,129 @@ async function familyStandings(series: string, season: number): Promise<SourceRo
   return null;
 }
 
+type WeekendOf = (round: number | null) => string | null;
+type CarEntry = { position: number; carNumber: string; team: string; drivers: string; vehicle: string; manufacturer: string; laps: number; status: string; gap: string };
+
+/** A flat series' classified entry as a results row (RaceResult, lib/types.ts): the session the dispatch's arrays name. */
+const raceRow = (r: RaceResult, e: RaceResultEntry, session: string, weekend: WeekendOf): SourceRow => ({
+  round: r.round,
+  race: r.raceName,
+  raceId: null,
+  date: iso(r.date),
+  circuit: str(r.circuit),
+  class: null,
+  session,
+  position: e.position,
+  driver: e.driverName,
+  code: e.driverCode ?? null,
+  car: null,
+  team: str(e.team),
+  vehicle: null,
+  manufacturer: null,
+  laps: null,
+  status: str(e.status),
+  time: e.time ?? null,
+  gap: null,
+  points: e.points,
+  weekend: weekend(r.round),
+});
+/** A sportscar entry (IMSA's and WEC's timing exports carry no points): the car, its crew, its vehicle and the gap. */
+const carRow = (round: number, race: string, date: string | null, circuit: string | null, cls: string, e: CarEntry, gap: string, weekend: WeekendOf): SourceRow => ({
+  round,
+  race,
+  raceId: null,
+  date,
+  circuit,
+  class: cls,
+  session: 'race',
+  position: e.position,
+  driver: e.drivers || null,
+  code: null,
+  car: e.carNumber,
+  team: e.team,
+  vehicle: e.vehicle || null,
+  manufacturer: e.manufacturer || null,
+  laps: e.laps,
+  status: str(e.status),
+  time: null,
+  gap: gap || null,
+  points: null,
+  weekend: weekend(round),
+});
+/** GT World's cups in the order the tab draws them (ResultsTab.tsx GT_WORLD_CUP_ORDER), and the label it gives each (its gtWorldCupLabel, not exported). */
+const GT_WORLD_CUPS = ['pro', 'gold', 'silver', 'bronze'] as const;
+const cupLabel = (cup: string) => (cup === 'pro' ? 'Pro Cup' : cup === 'gold' ? 'Gold Cup' : cup === 'silver' ? 'Silver Cup' : cup === 'bronze' ? 'Bronze Cup' : 'Unclassified');
+
+/** The results rows of a series (P2.2 B1). Eight series come through the weekend snapshot's dispatch, whose arrays name
+ *  the session: `extras` are sprints (F1's, F2's), F2's races are its feature races, and every other race is "race",
+ *  MotoGP's and WSBK's sprint and Superpole races included, as the tab lists them under Season results (a compromise: the
+ *  column is exact for F1 and F2 and "race" for the other series' sessions). WRC and DTM read the real fetchers the tab
+ *  uses: the dispatch answers those two from the chart-points fetchers, whose rows are synthetic. NLS answers one winner
+ *  per round; IMSA and WEC one row per round, class and entry (the WEC class leader's empty gap is its race time, the
+ *  tab's rule); GT World one per race, cup and entry. Every snapshot is one the loader warms. */
+async function resultRows(slug: string, season: number, series: Series, weekend: WeekendOf): Promise<SourceRow[]> {
+  const flat = (races: readonly RaceResult[], session: string) => races.flatMap(r => r.results.map(e => raceRow(r, e, session, weekend)));
+  if (slug === 'wrc') {
+    const { fetchWRCSeasonResults } = await import('@/lib/results/wrc');
+    return flat(await fetchWRCSeasonResults(season), 'race');
+  }
+  if (slug === 'dtm') {
+    const { fetchDTMSeasonResults } = await import('@/lib/results/dtm');
+    return flat(await fetchDTMSeasonResults(season, series.rounds?.rounds), 'race');
+  }
+  if (slug === 'nls') {
+    const { fetchNlsSeasonResults } = await import('@/lib/results/nls');
+    return flat(await fetchNlsSeasonResults(season), 'race');
+  }
+  if (slug === 'imsa') {
+    const [{ fetchImsaSeasonResults }, { IMSA_CLASSES }] = await Promise.all([import('@/lib/results/imsa'), import('@/lib/standings/imsa')]);
+    const rounds = await fetchImsaSeasonResults();
+    return rounds.flatMap(r => IMSA_CLASSES.flatMap(cls => (r.perClass[cls] ?? []).map(e => carRow(r.round, r.eventName, iso(r.date), str(r.circuit), cls, e, e.gap, weekend))));
+  }
+  if (slug === 'wec') {
+    const { fetchWecSeasonResults, WEC_RESULT_CLASSES } = await import('@/lib/results/wec');
+    const rounds = await fetchWecSeasonResults();
+    return rounds.flatMap(r => WEC_RESULT_CLASSES.flatMap(cls => (r.perClass[cls] ?? []).map(e => carRow(r.round, r.eventName, iso(r.dateEnd), null, cls, e, e.position === 1 && !e.gap ? e.elapsedTime : e.gap, weekend))));
+  }
+  if (slug === 'gt-world') {
+    const { fetchAllGtWorldSeasonRaces } = await import('@/lib/results/gt-world');
+    const races = await fetchAllGtWorldSeasonRaces(season);
+    return races.flatMap(race =>
+      GT_WORLD_CUPS.flatMap(cup =>
+        race.entries
+          .filter(e => e.cup === cup)
+          .map(
+            (e): SourceRow => ({
+              round: race.round ?? null,
+              race: `${race.eventName} ${race.raceName}`,
+              raceId: race.raceId,
+              date: null,
+              circuit: null,
+              class: cupLabel(cup),
+              session: 'race',
+              position: e.position,
+              driver: e.drivers.join(' · '),
+              code: null,
+              car: e.carNumber,
+              team: e.team,
+              vehicle: e.car || null,
+              manufacturer: null,
+              laps: e.laps ?? null,
+              status: null,
+              time: e.time ?? null,
+              gap: e.gap || e.time || null,
+              points: null,
+              weekend: weekend(race.round ?? null),
+            }),
+          ),
+      ),
+    );
+  }
+  const { loadSnapshotSource } = await import('@/components/weekend/WeekendStandingsSnapshot');
+  const snapshot = await loadSnapshotSource(series);
+  return [...flat(snapshot?.races ?? [], slug === 'f2' ? 'feature' : 'race'), ...flat(snapshot?.extras ?? [], 'sprint')];
+}
+
 const READERS: Readonly<Record<string, Reader>> = {
   async series() {
     const { loadAllSeriesMeta } = await import('@/lib/series');
@@ -206,14 +330,15 @@ const READERS: Readonly<Record<string, Reader>> = {
     return { tier: 'snapshot', rows: (drivers ?? []).map(d => driverRow(d, null)), run: null, meta: await metaFor(keys) };
   },
   async results(params, keys) {
-    // The season parameter offers the one the loader warms, which is the one the dispatch reads; when the archive brings earlier seasons, the dispatch takes it.
-    const [{ loadSeries }, { loadSnapshotSource }] = await Promise.all([import('@/lib/series'), import('@/components/weekend/WeekendStandingsSnapshot')]);
-    const series = await loadSeries(String(params.series));
-    const snapshot = await loadSnapshotSource(series);
-    const races = [...(snapshot?.races ?? []), ...(snapshot?.extras ?? [])];
-    const rows: SourceRow[] = races.flatMap(r =>
-      r.results.map(e => ({ round: r.round, race: r.raceName, date: iso(r.date), circuit: str(r.circuit), position: e.position, driver: e.driverName, code: e.driverCode ?? null, team: str(e.team), status: str(e.status), time: e.time ?? null, points: e.points })),
-    );
+    // The season parameter offers the one the loader warms, which is the one the fetchers read; when the archive brings earlier seasons, they take it.
+    const slug = String(params.series);
+    const season = Number(params.season);
+    const [{ loadSeries }, { groupByWeekend }] = await Promise.all([import('@/lib/series'), import('@/lib/group')]);
+    const series = await loadSeries(slug);
+    // The round's weekend page, where the sessions group one for that round (the Results tab's rule); a link column, never a typed address.
+    const weekends = new Set(groupByWeekend(series.sessions, new Date(), series.rounds).map(w => w.round));
+    const weekend = (round: number | null) => (round !== null && weekends.has(round) ? `/series/${slug}/weekend/${round}` : null);
+    const rows = await resultRows(slug, season, series, weekend);
     return { tier: 'snapshot', rows, run: null, meta: await metaFor(keys) };
   },
   async rounds(params) {

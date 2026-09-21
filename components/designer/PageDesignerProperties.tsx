@@ -811,7 +811,13 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       const value = r.settings[s.key] ?? s.default;
       const grouped = s.kind === 'choice' && (s.options ?? []).some(o => o.group) ? groupedOptions(s.options ?? [], regionSource, String(value)) : null;
       const waiting = grouped ? [...new Set(grouped.flatMap(([, options]) => options.filter(o => o.later)))] : [];
-      const set = (v: SettingValue) => p(`${s.label} set.`, x => (x.kind === 'component' ? { ...x, settings: { ...x.settings, [s.key]: v } } : x));
+      // A choice option may set other attributes with it (P2.2 B1: a preset brings its view), in the same patch.
+      const set = (v: SettingValue) =>
+        p(`${s.label} set.`, x => {
+          if (x.kind !== 'component') return x;
+          const also = s.kind === 'choice' ? (s.options?.find(o => o.key === v)?.sets ?? {}) : {};
+          return { ...x, settings: { ...x.settings, ...also, [s.key]: v } };
+        });
       const row: PropRow = {
         label: s.label,
         common: true,

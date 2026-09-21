@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.140 — 2026-09-21
+
+In the design tool, the Data region now draws race results too: a season’s results round by round, as the results pages show them, for every championship, including the endurance series class by class and GT World Challenge cup by cup. Picking a results shape brings that round-by-round layout with it. Nothing changes for readers.
+
 ## 1.0.139 — 2026-09-21
 
 Internal only: the day’s working records. Nothing changes for readers.

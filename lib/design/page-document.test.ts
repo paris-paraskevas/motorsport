@@ -245,8 +245,27 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers' } })])).problems).toEqual([]);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: Drivers is a Standings preset; this region reads Results']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'imsa-gtp-drivers' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: GTP — Drivers is not a preset of Formula 1']);
-    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: Season results arrives with the Rounds view (PR B)']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'wec-lmgt3-teams' }, source: 'standings?series=wec&season=2026' })])).problems).toEqual([]);
+    // P2.2 B1: the results presets parse against a Results source, stored with the List view they bring.
+    const rounds = parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results', view: 'list' }, source: 'results?series=f1&season=2026' })]));
+    expect(rounds.problems).toEqual([]);
+    expect(rounds.value.regions[0]).toMatchObject({ settings: { preset: 'season-results', view: 'list', rows: 10, heading: '' }, source: 'results?series=f1&season=2026' });
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'feature-races' }, source: 'results?series=f2&season=2026' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'feature-races' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: Feature races is not a preset of Formula 1']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results-wec' }, source: 'results?series=wec&season=2026' })])).problems).toEqual([]);
+  });
+
+  it('P2.2: a choice option not yet pickable (`later`) is the writer’s refusal with its reason, on any definition that carries one', () => {
+    const later: ComponentDefinition = {
+      key: 'test.later',
+      name: 'Later',
+      group: 'Data',
+      holds: 'a test',
+      settings: [{ key: 'mode', label: 'Mode', kind: 'choice', default: 'now', options: [{ key: 'now', label: 'Now' }, { key: 'soon', label: 'Soon', later: 'arrives with a later step' }] }],
+    };
+    const components = [...COMPONENTS, later];
+    expect(parsePageDocument(doc([region({ component: 'test.later', settings: { mode: 'now' } })]), components).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'test.later', settings: { mode: 'soon' } })]), components).problems).toEqual(['region r: Soon arrives with a later step']);
   });
 
   // The Conditions vocabulary (P2.6; APEX: Server-side Condition, Appendix E).

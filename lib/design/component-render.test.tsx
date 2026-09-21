@@ -230,8 +230,115 @@ describe('renderComponents', () => {
     expect(wec).not.toContain('>Porsche<');
     const none = await renderComponents(doc([region('n', 'data.region', { preset: 'drivers', view: 'table', rows: 10, heading: '' })]), { path: '/x' });
     expect(none.n).toBeNull();
-    const later = await renderComponents(doc([region('l', 'data.region', { preset: 'season-results', view: 'table', rows: 10, heading: '' }, { source: 'results?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' });
-    expect(later.l).toBeNull();
+    // The List view on a standings preset is the compact list: position, name, points; no table.
+    const list = html((await renderComponents(doc([region('s', 'data.region', { preset: 'drivers', view: 'list', rows: 10, heading: '' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).s);
+    expect(list).not.toContain('<table');
+    expect(list).not.toContain('<details');
+    expect((list.match(/<li /g) ?? []).length).toBe(2);
+    expect(list).toContain('Andrea Kimi Antonelli');
+    expect(list).toContain('267');
+  });
+
+  // P2.2 B1: the results side. A fixture per results shape; the seven presets each draw the Rounds layout the site draws.
+  const raceRow = (over: Record<string, string | number | null>) => ({ round: 1, race: 'Australian Grand Prix', raceId: null, date: '2026-03-08T05:00:00.000Z', circuit: 'Albert Park', class: null, session: 'race', position: 1, driver: 'Andrea Kimi Antonelli', code: 'ANT', car: null, team: 'Mercedes', vehicle: null, manufacturer: null, laps: null, status: 'Finished', time: '1:31:04.2', gap: null, points: 25, weekend: '/series/f1/weekend/1', ...over });
+  const carRow = (over: Record<string, string | number | null>) => ({ round: 1, race: 'Rolex 24 at Daytona', raceId: null, date: '2026-01-25T00:00:00.000Z', circuit: 'Daytona', class: 'GTP', session: 'race', position: 1, driver: 'Nasr Tandy', code: null, car: '7', team: 'Porsche Penske Motorsport', vehicle: 'Porsche 963', manufacturer: 'Porsche', laps: 781, status: 'Classified', time: null, gap: null, points: null, weekend: null, ...over });
+  const cupRow = (over: Record<string, string | number | null>) => ({ round: 2, race: 'Brands Hatch Race 1', raceId: 501, date: null, circuit: null, class: 'Pro Cup', session: 'race', position: 1, driver: 'Vanthoor · Weerts', code: null, car: '32', team: 'Team WRT', vehicle: 'BMW M4 GT3', manufacturer: null, laps: 40, status: 'Classified', time: '1:00:01.234', gap: null, points: null, weekend: '/series/gt-world/weekend/2', ...over });
+  const results = (series: string, rows: Record<string, string | number | null>[]) => {
+    readSource.mockResolvedValueOnce({ columns: [], total: rows.length, rows, provenance: { ref: { source: 'results', params: { series, season: 2026 } }, label: `Results · ${series} · 2026`, tier: 'snapshot', keys: [`results:${series}`], rows: rows.length, ms: 2 } });
+  };
+
+  it('P2.2 B1, the test per preset: every one of the seven results presets draws the Rounds layout from a fixture of its shape: a round or class per fold with its chip, its title linked to the weekend page, the winner in the meta line, the entries as the site draws them; a winners-only round flat', async () => {
+    const draw = async (preset: string, series: string, rows: Record<string, string | number | null>[]) => {
+      results(series, rows);
+      const out = await renderComponents(doc([region('r', 'data.region', { preset, view: 'list', rows: 50, heading: '' }, { source: `results?series=${series}&season=2026` } as Partial<Region>)]), { path: '/x' });
+      return html(out.r);
+    };
+    // Season results (F1): two rounds, the newer first; round 2's race has no weekend page.
+    const f1 = await draw('season-results', 'f1', [
+      raceRow({}),
+      raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }),
+      raceRow({ round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null }),
+      raceRow({ round: 2, race: 'Chinese Grand Prix Sprint', session: 'sprint', driver: 'Oscar Piastri', code: 'PIA', team: 'McLaren', weekend: null }),
+    ]);
+    expect(f1).toMatch(/<h1[^>]*>Season results<\/h1>/);
+    expect((f1.match(/<details/g) ?? []).length).toBe(2);
+    expect(f1.indexOf('Chinese Grand Prix')).toBeLessThan(f1.indexOf('Australian Grand Prix'));
+    expect(f1).not.toContain('Oscar Piastri');
+    expect(f1).toContain('R2');
+    expect(f1).toContain('href="/series/f1/weekend/1"');
+    expect(f1).not.toContain('href="/series/f1/weekend/2"');
+    expect(f1).toContain('WIN');
+    expect(f1).toContain('Andrea Kimi Antonelli — Mercedes');
+    expect(f1).toContain('8 Mar 2026');
+    expect(f1).toContain('ANT');
+    expect(f1).toContain('+4.1s');
+    expect(f1).toContain('>18<');
+    // Feature and Sprint races (F2): each preset its session only.
+    const f2rows = [raceRow({ race: 'Melbourne Feature Race', session: 'feature', driver: 'Nikola Tsolov', code: 'TSO', team: 'Campos Racing', weekend: null }), raceRow({ race: 'Melbourne Sprint Race', session: 'sprint', driver: 'Leonardo Fornaroli', code: 'FOR', team: 'Invicta Racing', points: 10, weekend: null })];
+    const feature = await draw('feature-races', 'f2', f2rows);
+    expect(feature).toContain('Feature races');
+    expect(feature).toContain('Nikola Tsolov');
+    expect(feature).not.toContain('Fornaroli');
+    const sprint = await draw('sprint-races', 'f2', f2rows);
+    expect(sprint).toContain('Sprint races');
+    expect(sprint).toContain('Leonardo Fornaroli');
+    expect(sprint).not.toContain('Tsolov');
+    // Overall winners (NLS): one winner per round, drawn flat.
+    const nls = await draw('overall-winners', 'nls', [raceRow({ race: 'NLS 1', circuit: 'Nürburgring', driver: 'Crew One', code: null, team: 'Team One', status: 'Winner', time: null, points: 0, weekend: null })]);
+    expect(nls).toContain('Overall winners');
+    expect(nls).not.toContain('<details');
+    expect(nls).toContain('NLS 1');
+    expect(nls).toContain('Crew One — Team One');
+    // Season results · IMSA and · WEC: a fold per round and class, the car rows.
+    const imsa = await draw('season-results-imsa', 'imsa', [carRow({}), carRow({ position: 2, car: '6', driver: 'Campbell Jaminet', gap: '+2.5', laps: 780 }), carRow({ class: 'GTD', car: '1', driver: null, team: 'Paul Miller Racing', vehicle: 'BMW M4 GT3 EVO', manufacturer: 'BMW', laps: 700 })]);
+    expect(imsa).toContain('Season results · IMSA');
+    expect((imsa.match(/<details/g) ?? []).length).toBe(2);
+    expect(imsa).toContain('Rolex 24 at Daytona — GTP');
+    expect(imsa).toContain('Rolex 24 at Daytona — GTD');
+    expect(imsa).toContain('#7');
+    expect(imsa).toContain('+2.5');
+    expect(imsa).toContain('Porsche Penske Motorsport · Porsche 963');
+    expect(imsa).toContain('Nasr Tandy — Porsche Penske Motorsport');
+    // A GTD entry without a crew names its team alone in the row and the meta line, as the site does.
+    expect(imsa).toContain('Paul Miller Racing');
+    expect(imsa).not.toContain('Paul Miller Racing — Paul Miller Racing');
+    const wec = await draw('season-results-wec', 'wec', [carRow({ round: 3, race: '24 Hours of Le Mans', circuit: null, class: 'Hypercar', car: '6', driver: 'Estre Campbell Vanthoor', gap: '24:00:12.345', laps: 387, date: '2026-06-14T00:00:00.000Z' })]);
+    expect(wec).toContain('Season results · WEC');
+    expect(wec).toContain('24 Hours of Le Mans — Hypercar');
+    expect(wec).toContain('24:00:12.345');
+    expect(wec).toContain('14 Jun 2026');
+    // Season results · GT World: a fold per race and cup; a race without a round shows the dot chip and no link.
+    const gt = await draw('season-results-gt-world', 'gt-world', [cupRow({}), cupRow({ class: 'Gold Cup', car: '99', driver: 'A · B', team: 'Gold Team', vehicle: 'Audi R8', gap: '+10.0', time: null }), cupRow({ round: null, raceId: 777, race: 'Spa Race', driver: 'C · D · E', car: '51', team: 'AF Corse', vehicle: 'Ferrari 296', laps: 540, time: null, weekend: null })]);
+    expect(gt).toContain('Season results · GT World');
+    expect((gt.match(/<details/g) ?? []).length).toBe(3);
+    expect(gt).toContain('Brands Hatch Race 1 — Pro Cup');
+    expect(gt).toContain('Brands Hatch Race 1 — Gold Cup');
+    expect(gt).toContain('Spa Race — Pro Cup');
+    expect(gt).toContain('href="/series/gt-world/weekend/2"');
+    expect(gt).toContain('#32');
+    expect(gt).toContain('Team WRT · BMW M4 GT3');
+    expect(gt).toContain('1:00:01.234');
+    expect(gt).toContain('+10.0');
+    expect(gt).toContain('Vanthoor · Weerts — Team WRT');
+  });
+
+  it('P2.2 B1: the same results source draws as a flat table with the race linked to its weekend page and the date as the site formats it, and as cards', async () => {
+    const rows = [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 })];
+    results('f1', rows);
+    const table = html((await renderComponents(doc([region('t', 'data.region', { preset: 'season-results', view: 'table', rows: 10, heading: 'Results' }, { source: 'results?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).t);
+    expect(table).toContain('<caption class="sr-only">Results</caption>');
+    expect(table).toMatch(/<th[^>]*>Race<\/th>/);
+    expect(table).toMatch(/<th[^>]*>Driver<\/th>/);
+    expect(table).toContain('<a href="/series/f1/weekend/1"');
+    expect(table).toContain('8 Mar 2026');
+    expect((table.match(/<tr/g) ?? []).length).toBe(3);
+    expect(table).not.toContain('<details');
+    results('f1', rows);
+    const cards = html((await renderComponents(doc([region('c', 'data.region', { preset: 'season-results', view: 'cards', rows: 10, heading: '' }, { source: 'results?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).c);
+    expect(cards).not.toContain('<table');
+    expect((cards.match(/<li /g) ?? []).length).toBe(2);
+    expect(cards).toContain('George Russell');
+    expect(cards).toContain('Mercedes');
   });
 
   it('a pin that does not resolve keeps the assembly’s lead; the race-weekend fact follows the live band', async () => {

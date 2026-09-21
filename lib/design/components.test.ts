@@ -51,10 +51,18 @@ describe('the component catalogue', () => {
       label: 'Drivers',
       group: 'Drivers',
       only: { source: 'standings', series: ['f1', 'f2', 'f3', 'indycar', 'formula-e', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm'] },
+      sets: { view: 'table' },
     });
-    expect(preset.options!.find(o => o.key === 'imsa-gtp-drivers')).toEqual({ key: 'imsa-gtp-drivers', label: 'GTP — Drivers', group: 'IMSA classes', only: { source: 'standings', series: ['imsa'] } });
-    expect(preset.options!.find(o => o.key === 'season-results')).toMatchObject({ label: 'Season results', group: 'Season results', later: 'arrives with the Rounds view (PR B)' });
-    expect(region.settings[1].options!.map(o => o.key)).toEqual(['table', 'cards']);
+    expect(preset.options!.find(o => o.key === 'imsa-gtp-drivers')).toEqual({ key: 'imsa-gtp-drivers', label: 'GTP — Drivers', group: 'IMSA classes', only: { source: 'standings', series: ['imsa'] }, sets: { view: 'table' } });
+    // P2.2 B1: the results presets are pickable and bring the Rounds layout (the List view) with them; every option sets its preset's view.
+    expect(preset.options!.find(o => o.key === 'season-results')).toEqual({ key: 'season-results', label: 'Season results', group: 'Season results', only: { source: 'results', series: ['f1', 'f3', 'indycar', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm', 'formula-e'] }, sets: { view: 'list' } });
+    expect(preset.options![0].sets).toEqual({ view: 'table' });
+    for (const o of preset.options!) expect(o.later, o.key).toBeUndefined();
+    expect(region.settings[1].options!.map(o => [o.key, o.label])).toEqual([
+      ['table', 'Table'],
+      ['cards', 'Cards'],
+      ['list', 'List'],
+    ]);
     expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '' });
     expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '' });
     expect(parseSettings(region, { preset: 'nope' }).problems[0]).toMatch(/^Preset must be one of Drivers, Constructors, Teams/);
