@@ -30,7 +30,7 @@ import {
   type TriggerEvent,
 } from '@/lib/design/page-document';
 import { SITE_URL } from '@/lib/site';
-import { findComponent, type ComponentDefinition, type SettingValue } from '@/lib/design/components';
+import { findComponent, type ChoiceOption, type ComponentDefinition, type SettingValue } from '@/lib/design/components';
 import { SERIES_OPTIONS, defaultSourceRef, encodeSourceRef, findSource, parseSourceRef, type SourceDefinition, type SourceParameter, type SourceRef } from '@/lib/design/sources';
 import { normaliseHex } from '@/lib/design/contrast';
 import { BAR_ICON_NAMES } from '@/components/BottomBar';
@@ -179,6 +179,17 @@ function patchMany(ctx: PropsContext, ids: readonly string[], label: string, fn:
 }
 /** The value the targets share, or null when they differ (drawn as no pill
  *  pressed, with the note Mixed). The picks return no null of their own. */
+/** A grouped choice's options for one region (P2.2): those bound to a source kept when the region's Source names
+ *  that source and one of their series (every one while no Source is picked), the stored value kept whatever it is,
+ *  grouped in the order the options declare their groups. */
+function groupedOptions(options: readonly ChoiceOption[], source: SourceRef | null, current: string): [string, ChoiceOption[]][] {
+  const series = source && typeof source.params.series === 'string' ? source.params.series : null;
+  const shown = options.filter(o => o.key === current || !o.only || !source || (o.only.source === source.source && (series === null || o.only.series.includes(series))));
+  const groups = new Map<string, ChoiceOption[]>();
+  for (const o of shown) groups.set(o.group ?? '', [...(groups.get(o.group ?? '') ?? []), o]);
+  return [...groups.entries()];
+}
+
 function commonOf(targets: readonly Region[]) {
   return <T,>(pick: (r: Region) => T): T | null => {
     const first = pick(targets[0]);
@@ -793,9 +804,13 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
     // P2.0: the definition's attributes, each in its group (ungrouped under Settings), drawn by its editor: the four of R2b,
     // then colour (the picker and the hex), icon (the bar's icon names) and link (the Button's Target, a destination key,
     // never a typed URL). An application-scope attribute is set once, under Component Settings, and only reads here.
+    // The region's Source, parsed, for the choices bound to one (P2.2: the Data region's Preset).
+    const regionSource = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
     for (const s of spec?.settings ?? []) {
       const application = s.scope === 'application';
       const value = r.settings[s.key] ?? s.default;
+      const grouped = s.kind === 'choice' && (s.options ?? []).some(o => o.group) ? groupedOptions(s.options ?? [], regionSource, String(value)) : null;
+      const waiting = grouped ? [...new Set(grouped.flatMap(([, options]) => options.filter(o => o.later)))] : [];
       const set = (v: SettingValue) => p(`${s.label} set.`, x => (x.kind === 'component' ? { ...x, settings: { ...x.settings, [s.key]: v } } : x));
       const row: PropRow = {
         label: s.label,
@@ -805,6 +820,19 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           <Ro dim>Set under Shared Components › Component Settings</Ro>
         ) : s.kind === 'boolean' ? (
           <YesNo label={s.label} value={Boolean(value)} disabled={readOnly} onPick={set} />
+        ) : grouped ? (
+          // A grouped choice (APEX: Select List): the options bound to a source filtered to this region's Source, those not yet pickable disabled with the reason in the note.
+          <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
+            {grouped.map(([group, options]) => (
+              <optgroup key={group} label={group}>
+                {options.map(o => (
+                  <option key={o.key} value={o.key} disabled={o.later !== undefined}>
+                    {o.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
         ) : s.kind === 'choice' ? (
           <Pills label={s.label} items={(s.options ?? []).map(o => ({ key: o.key, label: o.label }))} current={String(value)} disabled={readOnly} onPick={set} />
         ) : s.kind === 'number' ? (
@@ -828,7 +856,8 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
         ) : (
           <input type="text" value={String(value)} maxLength={s.maxLength ?? 200} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)} />
         ),
-        note: s.scope === 'report' ? 'Per multi-row region; drawn as the region’s own until the data region arrives.' : undefined,
+        // A report-scope attribute (one value per multi-row region) reads as any other here; its help says so.
+        note: waiting.length ? `Not yet pickable, ${[...new Set(waiting.map(o => o.later))].join('; ')}: ${waiting.map(o => o.label).join(', ')}.` : grouped && !regionSource ? 'Pick a Source first: the list then follows it.' : undefined,
         help: application
           ? `${s.help ? `${s.help} ` : ''}One value for the whole application (APEX: an attribute of Application scope), set under Shared Components › Component Settings.`
           : s.kind === 'link'

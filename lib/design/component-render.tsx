@@ -3,6 +3,7 @@ import { cache, type ReactNode } from 'react';
 import { firstBodyRegion, isLegacyBody, type ComponentRegion, type PageDocument } from './page-document';
 import { findComponent, type SettingValue } from './components';
 import { parseSourceRef, type SourceRef } from './sources';
+import { SHAPES, findPreset, presetRows } from './presets';
 import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 
@@ -32,6 +33,7 @@ const blog = () => import('@/lib/blog');
 const calendar = () => import('./families/calendar');
 const calendarView = () => import('@/components/calendar/CalendarView');
 const sourceRead = () => import('./source-read');
+const dataViews = () => import('@/components/data/DataRegionViews');
 
 export interface RenderContext {
   /** The registry pattern or literal path of the page. */
@@ -125,6 +127,20 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const wire = model.wire.length >= count ? model.wire.slice(0, count) : await buildWire(count, await loadSeriesMeta());
     return <HomeWire wire={wire} />;
   },
+  // The Data region (P2.2): one of the site's named shapes over the region's Source. Nothing without a Source
+  // (APEX: a report without one renders nothing; the designer's Messages say so), nothing for a preset that waits.
+  async 'data.region'(settings, ctx) {
+    if (!ctx.source) return null;
+    const preset = findPreset(str(settings.preset));
+    if (!preset || preset.later) return null;
+    const shape = SHAPES[preset.shape];
+    const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
+    const read = await readSource(ctx.source);
+    ctx.onSourceRead?.(read.provenance);
+    const rows = presetRows(read.rows, preset, num(settings.rows, 10));
+    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows };
+    return settings.view === 'cards' ? <views.DataRegionCards {...props} /> : <views.DataRegionTable {...props} />;
+  },
 };
 
 /** Whether a component key has a renderer here. */
@@ -148,6 +164,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'home.changed': ['snapshot:standings:', 'snapshot:f1:'],
   'home.next': ['content:series'],
   'home.wire': ['snapshot:news:aggregate:'],
+  // The Data region reads its Source: the standings' two tiers today (the results presets arrive with PR B).
+  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:f1:'],
 };
 
 /** What the Debug trace asks of a render (P1.9): each component's timing and outcome. */

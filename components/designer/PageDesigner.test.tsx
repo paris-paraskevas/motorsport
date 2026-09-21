@@ -1128,6 +1128,44 @@ describe('PageDesigner', () => {
     expect(within(pe).getByLabelText('Region text')).toBeTruthy();
   });
 
+  it('P2.2: the Data region from the Gallery: its Source first, then the Attributes tab’s Preset grouped by the fifteen and filtered to the Source, View and Rows; Save carries the settings and the tile names the preset; a results Source shows its presets disabled with their reason', async () => {
+    const { onSaved } = mount(detail, false, null, null, undefined, [
+      { slug: 'f1', name: 'Formula 1' },
+      { slug: 'wec', name: 'FIA WEC' },
+    ]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Data region' }));
+    fireEvent.click(tile('Component: Data region'));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const preset = within(pe).getByLabelText('Preset') as HTMLSelectElement;
+    expect(preset.value).toBe('drivers');
+    // Grouped by the fifteen, only the presets of Standings · Formula 1.
+    expect([...preset.querySelectorAll('optgroup')].map(g => g.label)).toEqual(['Drivers', 'Constructors']);
+    expect([...preset.options].map(o => o.textContent)).toEqual(['Drivers', 'Constructors']);
+    fireEvent.change(preset, { target: { value: 'constructors' } });
+    expect(status()).toMatch(/Preset set/);
+    fireEvent.click(within(within(pe).getByRole('group', { name: 'View' })).getByRole('button', { name: 'Cards' }));
+    fireEvent.change(within(pe).getByLabelText('Rows'), { target: { value: '8' } });
+    expect(tile('Component: Data region').textContent).toMatch(/Preset Constructors · View Cards · Rows 8/);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    const saved = posted.document.regions.find(r => r.kind === 'component' && r.component === 'data.region')!;
+    expect(saved).toMatchObject({ settings: { preset: 'constructors', view: 'cards', rows: 8, heading: '' }, source: 'standings?series=f1&season=2026' });
+    // A results Source: its presets wait for the Rounds view, disabled with the reason in the note.
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'results' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const results = within(pe).getByLabelText('Preset') as HTMLSelectElement;
+    const season = [...results.options].find(o => o.textContent === 'Season results')!;
+    expect(season.disabled).toBe(true);
+    expect(within(pe).getByText(/arrives with the Rounds view \(PR B\)/)).toBeTruthy();
+    // The stored preset stays visible, and Messages carry the parser's refusal.
+    expect([...results.options].map(o => o.textContent)).toContain('Constructors');
+  });
+
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {
     const home: PageRow = { ...codePage, id: 'c0de0001-0000-4000-8000-000000000001', path: '/', name: 'Home', group: 'home' };
     const { onSaved } = mount({ page: home, live: null, newest: null, revisions: [], namedBy: { lists: [], pages: [] } });

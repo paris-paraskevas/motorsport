@@ -200,14 +200,15 @@ export const SOURCES: readonly SourceDefinition[] = [
   {
     key: 'standings',
     name: 'Standings',
-    holds: 'the championship tables: drivers and constructors, position, points, wins',
+    holds: 'the championship tables: drivers, constructors, teams, manufacturers and co-drivers, by class where a series has them; position, points, wins',
     parameters: [seriesParam(STANDINGS_SERIES), seasonParam],
     columns: [col('kind', 'Kind', 'text'), col('position', 'Position', 'number'), col('name', 'Name', 'text'), col('code', 'Code', 'text'), col('team', 'Team', 'text'), col('points', 'Points', 'number'), col('wins', 'Wins', 'number'), col('class', 'Class', 'text')],
     fresh: 'loader',
     load: 'replace',
     pagination: 'none',
     reads: ['db:standing_current', 'snapshot:standings:', 'snapshot:f1:'],
-    loaderKeys: p => [`standings:${p.series}`, ...(p.series === 'f1' ? ['f1:standings'] : [])],
+    // GT World's snapshot is season-scoped (lib/standings/gt-world.ts), the one such key; F1 keeps its own slot too.
+    loaderKeys: p => [p.series === 'gt-world' ? `standings:gt-world:${p.season}` : `standings:${p.series}`, ...(p.series === 'f1' ? ['f1:standings'] : [])],
     hosts: STANDINGS_HOSTS,
   },
   {
@@ -458,7 +459,8 @@ function withSeries(source: 'standings' | 'results', slug: string, suffix?: stri
  * a key the vocabulary does not cover, so the raw key stands.
  */
 export function describeLoaderKey(key: string): { ref: SourceRef; label: string } | null {
-  let m = /^standings:([a-z0-9-]+)$/.exec(key);
+  // `standings:<slug>`, or GT World's season-scoped `standings:gt-world:<season>`; the season described is the loader's either way.
+  let m = /^standings:([a-z0-9-]+?)(?::\d{4})?$/.exec(key);
   if (m) return withSeries('standings', m[1]);
   m = /^results:([a-z0-9-]+?)(-chart)?$/.exec(key);
   if (m) return withSeries('results', m[1], m[2] ? 'chart' : undefined);
