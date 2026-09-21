@@ -322,21 +322,24 @@ describe('renderComponents', () => {
     expect(gt).toContain('Vanthoor · Weerts — Team WRT');
   });
 
-  it('P2.2 B1: the same results source draws as a flat table with the race linked to its weekend page and the date as the site formats it, and as cards', async () => {
-    const rows = [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 })];
+  it('P2.2 B1: the same results source draws as a flat table with the race linked to its weekend page (plain text where none exists) and the date as the site formats it, and as cards', async () => {
+    const rows = [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }), raceRow({ round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null })];
     results('f1', rows);
     const table = html((await renderComponents(doc([region('t', 'data.region', { preset: 'season-results', view: 'table', rows: 10, heading: 'Results' }, { source: 'results?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).t);
     expect(table).toContain('<caption class="sr-only">Results</caption>');
     expect(table).toMatch(/<th[^>]*>Race<\/th>/);
     expect(table).toMatch(/<th[^>]*>Driver<\/th>/);
     expect(table).toContain('<a href="/series/f1/weekend/1"');
+    // A round without a weekend page draws its race as plain text: the link column's other branch.
+    expect(table).toMatch(/<td[^>]*>Chinese Grand Prix<\/td>/);
+    expect(table).not.toContain('/series/f1/weekend/2');
     expect(table).toContain('8 Mar 2026');
-    expect((table.match(/<tr/g) ?? []).length).toBe(3);
+    expect((table.match(/<tr/g) ?? []).length).toBe(4);
     expect(table).not.toContain('<details');
     results('f1', rows);
     const cards = html((await renderComponents(doc([region('c', 'data.region', { preset: 'season-results', view: 'cards', rows: 10, heading: '' }, { source: 'results?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).c);
     expect(cards).not.toContain('<table');
-    expect((cards.match(/<li /g) ?? []).length).toBe(2);
+    expect((cards.match(/<li /g) ?? []).length).toBe(3);
     expect(cards).toContain('George Russell');
     expect(cards).toContain('Mercedes');
   });

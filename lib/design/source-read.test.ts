@@ -45,7 +45,7 @@ const fetchWRCStandings = vi.fn();
 vi.mock('@/lib/standings/wrc', () => ({ fetchWRCStandings: () => fetchWRCStandings() }));
 // The results dispatch (eight series; P2.2 B1 reads WRC and DTM through their real fetchers, never this).
 const loadSnapshotSource = vi.fn(async () => snapshotAnswer());
-vi.mock('@/components/weekend/WeekendStandingsSnapshot', () => ({ loadSnapshotSource: (s: unknown) => loadSnapshotSource(s) }));
+vi.mock('@/components/weekend/WeekendStandingsSnapshot', () => ({ loadSnapshotSource: () => loadSnapshotSource() }));
 const snapshotAnswer = () => ({
     races: [{ round: 1, raceName: 'Australian Grand Prix', date: new Date('2026-03-08T05:00:00Z'), circuit: 'Albert Park', results: [{ position: 1, driverName: 'Kimi Antonelli', driverCode: 'ANT', team: 'Mercedes', status: 'Finished', time: '1:30:12.345', points: 25 }] }],
     extras: [{ round: 2, raceName: 'Chinese Grand Prix Sprint', date: new Date('2026-03-14T03:00:00Z'), circuit: 'Shanghai', results: [{ position: 1, driverName: 'George Russell', team: 'Mercedes', status: 'Finished', points: 8 }] }],
@@ -278,6 +278,9 @@ describe('readSource', () => {
     expect(f2.rows.map(r => r.session)).toEqual(['feature', 'sprint']);
     const motogp = await readSource({ source: 'results', params: { series: 'motogp', season: 2026 } });
     expect(motogp.rows.map(r => r.session)).toEqual(['race', 'sprint']);
+    // F3's one merged Feature-and-Sprint array stays 'race', as the tab lists both under Season results; only F2's races are 'feature'.
+    const f3 = await readSource({ source: 'results', params: { series: 'f3', season: 2026 } });
+    expect(f3.rows.map(r => r.session)).toEqual(['race', 'sprint']);
     loadSnapshotSource.mockClear();
     const wrc = await readSource({ source: 'results', params: { series: 'wrc', season: 2026 } });
     expect(fetchWRCSeasonResults).toHaveBeenCalledWith(2026);

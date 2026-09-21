@@ -253,7 +253,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
         ],
         help: 'How the rows are drawn (APEX: a Classic Report or a Cards region; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings; a preset brings its own view when picked. Timeline and Detail arrive with PR B2.',
       },
-      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table.' },
+      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole.' },
       { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name.' },
     ],
     sources: ['standings', 'results'],

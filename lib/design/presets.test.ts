@@ -164,7 +164,9 @@ describe('the preset catalogue', () => {
       'Australia Race 1 P2',
     ]);
     expect(presetRows(rows, findPreset('sprint-races')!, 50).map(r => r.driver)).toEqual(['Assen Sprint P1']);
-    expect(presetRows(rows, findPreset('season-results')!, 3).map(r => r.driver)).toEqual(['Assen Race 1 P1', 'Assen Race 1 P2', 'Assen Superpole Race P1']);
+    // The count is of races, each whole: two races, four rows, never half a classification.
+    expect(presetRows(rows, findPreset('season-results')!, 2).map(r => r.driver)).toEqual(['Assen Race 1 P1', 'Assen Race 1 P2', 'Assen Superpole Race P1', 'Assen Superpole Race P2']);
+    expect(presetRows(rows, findPreset('season-results')!, 0)).toEqual([]);
     // A GT World race without a round sorts last, its rows kept together by the race id.
     const cups = [
       { round: null, raceId: 777, race: 'Spa Race', class: 'Pro Cup', position: 1, driver: 'Spa P1' },

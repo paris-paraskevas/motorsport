@@ -191,9 +191,10 @@ export function presetsFor(source: string, series: string): Preset[] {
 
 export type PresetRow = Record<string, string | number | boolean | null | undefined>;
 
-/** The rows a preset shows from a source's rows, the first `count`: a standings shape's by position; a results shape's
+/** The rows a preset shows from a source's rows: a standings shape's by position, the first `count`; a results shape's
  *  newest round first (a race without a round last), a weekend's races kept together in the order the fetcher gave them
- *  (R1 · Superpole · R2, Feature before Sprint), each by position. */
+ *  (R1 · Superpole · R2, Feature before Sprint), each by position, the first `count` RACES whole (a row of the Rounds
+ *  layout is a race, and a classification cut in half would mislead). */
 export function presetRows(rows: readonly PresetRow[], preset: Preset, count: number): PresetRow[] {
   const w = preset.where;
   const pos = (r: PresetRow) => (typeof r.position === 'number' && Number.isFinite(r.position) ? r.position : Number.MAX_SAFE_INTEGER);
@@ -205,5 +206,10 @@ export function presetRows(rows: readonly PresetRow[], preset: Preset, count: nu
     if (!firstAt.has(raceKey(r))) firstAt.set(raceKey(r), i);
   });
   const round = (r: PresetRow) => (typeof r.round === 'number' && Number.isFinite(r.round) ? r.round : Number.NEGATIVE_INFINITY);
-  return kept.sort((a, b) => round(b) - round(a) || firstAt.get(raceKey(a))! - firstAt.get(raceKey(b))! || pos(a) - pos(b)).slice(0, Math.max(0, count));
+  const sorted = kept.sort((a, b) => round(b) - round(a) || firstAt.get(raceKey(a))! - firstAt.get(raceKey(b))! || pos(a) - pos(b));
+  const races = new Set<string>();
+  return sorted.filter(r => {
+    races.add(raceKey(r));
+    return races.size <= Math.max(0, count);
+  });
 }
