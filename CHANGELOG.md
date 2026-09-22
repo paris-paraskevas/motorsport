@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.143 — 2026-09-22
+
+### Records — P2.2 B2 merged and written under the slot, the session-55 handoff with P2.2 B3 first
+
+Records only. `docs/plan/ledger.json`: P2.2 stays `started` (done when B3 merges) and carries PR B2's evidence (#1023, 1.0.142, merged 2026-09-22 12:17:53Z as eeb30520, prod 2026-09-22T12:22:09Z; the plan critic's and the reviewer's figures; the review page 9e291aef-6477-4317-b5a4-309270e6f4cb; the gates and the dry run 40110.37 KiB), and one dated changes line carrying the merge and the one default taken during the browser run (a Timeline entry whose winner has no name keeps an empty avatar box so the entries share one left edge) with the reviewer's five non-blocking left as noted. `docs/HANDOFF.md`: the session-54 continuation's close as LATEST with the session-55 prompt (P2.2 B3 first: its scope from B2's plan, the three likely questions of its scan with their defaults, Order step 0 for the show-rule count the rail refused, item 9's check of the build's DATA_SOURCE, the state, the rules with the harness's token figure as the one to record, the browser-run recipe with the viewport landmine, the agenda). `SCHEDULE.md`: the day. `IDEAS.md`: eight Inbox lines. The progress board republished from the ledger. `package.json` 1.0.143. No code.
+
 ## 1.0.142 — 2026-09-22
 
 ### Designer — [P2.2 B2] The data region's Timeline and Detail views, the row templates named, the Rounds layout aligned with the site's rows
