@@ -2018,6 +2018,22 @@ Won't touch this session: P2.2 B2 beyond its place in the handoff; any other slo
 Active: ~1h 45m from ~17:50Z to ~19:35Z (the operator present at the words; the words came ~18:05Z, ~18:20Z and ~19:13Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
 
+### Mon 2026-09-21 evening and Tue 2026-09-22 — session 54, continued (the operator present at the words) — the open list, P2.2 B2 The data region's Timeline and Detail views
+
+Order fixed by the words: "merge" for the records PR #1022 (~19:27Z on 2026-09-21), "now give me whats open for my turn, then line up the next task" (~19:40Z), the ten defaults and "proceed first with p2.2 b2 my word on it -> default" (~19:50Z), the plan approved (2026-09-22 ~01:34Z, ExitPlanMode), "merge do whatever is next then pick up next task" (~12:17Z).
+
+1. **The records PR and the open list** (~20 min, 2026-09-21 ~19:27Z–19:50Z): #1022 squash-merged 19:27:09Z as 7a1caaec, prod /changelog 1.0.141 at 19:31:34Z; the ten open items presented plainly with defaults and two drawn choices; B2's decision scan with its one question (the deferral) → done.
+2. **The reads and the plan** (~40 min, to ~20:30Z): the views, the presets, the definition model, the parser's binding, the Attributes tab, the site's results renderers, the destinations model, the APEX notes and Oracle's docs (Timeline and Value Attribute Pairs verified); the plan file (B2 the views, B3 the slots and zones; three items for the word with defaults); a fresh-context Sonnet plan critic (235,400 tokens against the ~300k said): SOUND WITH FIXES, six blocking and nine non-blocking folded or owned → done; approved 2026-09-22 ~01:34Z.
+3. **Tests first and the build** (~25 min, from ~01:35Z): seven red across five files; components.ts, page-document.ts, presets.ts, PageDesignerProperties.tsx, DataRegionViews.tsx (cellValue, whoOf, winnerOf, initials, ContentRow, Timeline, Detail, the alignments), component-render.tsx; green; tsc 0 · lint 0 errors · vitest 223 files, 2254 tests · hooks 31/31 → done.
+4. **The browser run and the review page** (~20 min): the dev server and the helper again; the F1 and WEC Timelines, the greyed Timeline pill on Standings with its note, Drivers and Season results as Detail, the GT World Timeline; one default taken (the empty avatar box) and the WEC screenshot retaken; seven screenshots into the review page 9e291aef-6477-4317-b5a4-309270e6f4cb → done.
+5. **Gates, PR, reviewer** (~25 min): the dev server stopped by PID; tsc, lint, vitest, hooks, cf:build (1189 pages, no upstream fetch failures) and the dry run 40110.37 KiB / gzip 8811.35 KiB; the records (CHANGELOG 1.0.142, RELEASES, the version, the ledger's two dated lines, the plan page re-rendered); one commit 204beeb4; PR #1023; a fresh-context Sonnet reviewer (230,860 tokens against the ~200k said): PASS, nothing blocking, five non-blocking noted → done.
+6. **Merge and prod** (2026-09-22 ~12:17Z): "merge do whatever is next then pick up next task" → #1023 squash-merged 12:17:53Z as eeb30520 → main forward by fast-forward → prod /changelog 1.0.142 at 2026-09-22T12:22:09Z → done.
+7. **Close**: the ledger (P2.2 started with B2's evidence; the dated line with the run's default), the handoff and the session-55 prompt (P2.2 B3 first, its three likely questions, Order step 0 and item 9 for the word), this block, eight Inbox lines, the board; the records PR 1.0.143 under the same word.
+
+Won't touch this session: P2.2 B3 beyond its place in the handoff; any other slot; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~2h 15m in three stretches: 2026-09-21 ~19:27Z–20:30Z (the open list, the scan, the plan and its critic), 2026-09-22 ~01:34Z–02:20Z (the build, the browser run, the gates, the PR, the reviewer), ~12:17Z–12:50Z (merge, prod, the records); the operator present at the words (~19:27Z, ~19:40Z, ~19:50Z, ~01:34Z, ~12:17Z); no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts
+
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

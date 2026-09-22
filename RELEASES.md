@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.143 — 2026-09-22
+
+Internal only: the day’s working records. Nothing changes for readers.
+
 ## 1.0.142 — 2026-09-22
 
 In the design tool, the Data region gains two more ways to draw its rows: a timeline of a season’s races, newest first, each with its date, its winner and the winner’s initials; and a detail view, one block per row with every column as a label and its value. The round-by-round results now follow the results pages more closely: every car keeps its number box, a cup’s crews stand alone, and only a single-winner round of the flat series folds flat.
