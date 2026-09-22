@@ -206,7 +206,8 @@ describe('messages', () => {
   });
 
   it('splits Home: the transitional body gives way to its six components where it sat, What it changed and What’s next as two halves of one row; no recipe or no body, nothing', () => {
-    expect(splitRecipe('/')).toEqual(['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
+    // P2.9: This weekend is the Live band's instance in the recipe.
+    expect(splitRecipe('/')).toEqual(['home.lead', 'series.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
     expect(splitRecipe('/nowhere')).toBeNull();
     const home: PageRow = { ...page, path: '/', name: 'Home', kind: 'code' };
     const fresh = withImplicitBody({ version: 1, regions: [region({ id: 'welcome', position: 'header' })], actions: [] }, home);

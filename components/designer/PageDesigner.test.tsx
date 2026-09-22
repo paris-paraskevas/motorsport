@@ -1247,7 +1247,7 @@ describe('PageDesigner', () => {
     fireEvent.click(tile('Component: Body as the code draws it'));
     fireEvent.click(screen.getByRole('button', { name: 'Split into 6 components' }));
     expect(screen.queryByRole('button', { name: 'Component: Body as the code draws it' })).toBeNull();
-    for (const name of ['Lead story', 'This weekend', 'Latest result', 'What it changed', 'What’s next', 'The wire']) expect(tile(`Component: ${name}`)).toBeTruthy();
+    for (const name of ['Lead story', 'Live band', 'Latest result', 'What it changed', 'What’s next', 'The wire']) expect(tile(`Component: ${name}`)).toBeTruthy();
     expect(status()).toMatch(/Split into components/);
     // The wire's settings render as controls from its spec, under the Attributes tab (APEX: Region · Attributes, P1.6); a region without settings has no tabs.
     fireEvent.click(tile('Component: The wire'));
@@ -1255,14 +1255,25 @@ describe('PageDesigner', () => {
     expect(within(pe).queryByLabelText('Items')).toBeNull();
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
     expect((within(pe).getByLabelText('Items') as HTMLInputElement).value).toBe('5');
-    fireEvent.click(tile('Component: This weekend'));
+    // P2.9: This weekend is the Live band's instance, with its two attributes: the Series select (every series first, grouped, without the
+    // "Pick a Source first" note a source-bound choice carries) and the Also racing toggle.
+    fireEvent.click(tile('Component: Live band'));
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const series = within(pe).getByLabelText('Series') as HTMLSelectElement;
+    expect(series.value).toBe('');
+    expect([...series.options].map(o => o.textContent).slice(0, 2)).toEqual(['Every series', 'ADAC Ravenol 24h Nürburgring']);
+    expect(within(pe).queryByText(/Pick a Source first/)).toBeNull();
+    fireEvent.change(series, { target: { value: 'motogp' } });
+    expect(tile('Component: Live band').textContent).toMatch(/Series MotoGP · Also racing yes/);
+    fireEvent.click(tile('Component: Latest result'));
     expect(within(pe).queryByRole('tablist', { name: 'Property Editor tabs' })).toBeNull();
     fireEvent.click(tile('Component: The wire'));
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSaved).toHaveBeenCalled());
     const posted = calls.find(c => c.method === 'POST')!;
     const body = posted.body as { document: PageDocument };
-    expect(body.document.regions.map(r => (r.kind === 'component' ? r.component : r.kind))).toEqual(['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
+    expect(body.document.regions.map(r => (r.kind === 'component' ? r.component : r.kind))).toEqual(['home.lead', 'series.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
+    expect(body.document.regions.find(r => r.kind === 'component' && r.component === 'series.live')).toMatchObject({ id: 'live', settings: { series: 'motogp', also: true } });
   });
 
   it('is read-only on a preview Worker: nothing saves, the tiles still select', () => {

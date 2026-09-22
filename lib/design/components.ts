@@ -13,6 +13,7 @@
 // keeps the usable part and falls back to the defaults.
 
 import { PRESETS, PRESET_GROUPS, SHAPES, findPreset } from './presets';
+import { SERIES_OPTIONS } from './sources';
 
 export type SettingValue = string | number | boolean;
 
@@ -312,6 +313,27 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     ],
     sources: ['standings', 'results'],
   },
+  // The Live band (P2.9; ours by name: APEX has no live band, a domain piece the site draws on Home as This weekend, whose
+  // renderer is the band's first instance). It reads the content bundle through the home model as Home's pieces do, never
+  // a query: the band's data is nested (the next session, the same-day sessions), which the catalogue's flat rows cannot
+  // carry, and the home model is the one fact the race-weekend condition reads too.
+  {
+    key: 'series.live',
+    name: 'Live band',
+    group: 'Series',
+    holds: 'the weekends under way: a box for the lead series and the majors with the next session and its countdown, one row for the rest',
+    settings: [
+      {
+        key: 'series',
+        label: 'Series',
+        kind: 'choice',
+        default: '',
+        options: [{ key: '', label: 'Every series', group: 'Series' }, ...SERIES_OPTIONS.map(o => ({ key: o.key, label: o.label, group: 'Series' }))],
+        help: 'Every series, ranked as Home ranks them: the lead series first, then the majors, the rest in the Also racing row (the Application Settings home.lead_series and home.major_series); or one series’ weekend alone, boxed whether Home ranks it or not.',
+      },
+      { key: 'also', label: 'Also racing', kind: 'boolean', default: true, help: 'The row of the other weekends under way, beneath the boxes; nothing when one series is picked.' },
+    ],
+  },
 ];
 
 /** How a page not yet split becomes components: the keys that replace its
@@ -319,7 +341,8 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
  *  For a page whose route file has left the code, this is also its default
  *  composition when nothing is published. */
 export const SPLITS: Readonly<Record<string, readonly string[]>> = {
-  '/': ['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire'],
+  // This weekend is the Live band's instance (P2.9); the recipe's region id stays `live`, the key's last word.
+  '/': ['home.lead', 'series.live', 'home.result', 'home.changed', 'home.next', 'home.wire'],
   '/calendar': ['page.heading', 'calendar.month'],
 };
 

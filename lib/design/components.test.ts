@@ -132,6 +132,27 @@ describe('the component catalogue', () => {
     expect(settingsSummary(legacy, {})).toMatch(/exactly as its code writes it today/);
   });
 
+  it('P2.9: the Live band is a general component in the Series group with a Series choice (every series, or one) and an Also racing toggle, reading no catalogue source; Home’s recipe places it as This weekend’s instance', () => {
+    const band = findComponent('series.live')!;
+    expect(band).toMatchObject({ name: 'Live band', group: 'Series', holds: 'the weekends under way: a box for the lead series and the majors with the next session and its countdown, one row for the rest' });
+    expect(band.sources).toBeUndefined();
+    expect(band.settings.map(s => [s.key, s.kind])).toEqual([
+      ['series', 'choice'],
+      ['also', 'boolean'],
+    ]);
+    const series = band.settings[0];
+    expect(series.options![0]).toEqual({ key: '', label: 'Every series', group: 'Series' });
+    expect(series.options).toHaveLength(16);
+    expect(series.options!.find(o => o.key === 'f1')).toEqual({ key: 'f1', label: 'Formula 1', group: 'Series' });
+    for (const o of series.options!) expect(o.only, o.key).toBeUndefined();
+    expect(componentDefaults(band)).toEqual({ series: '', also: true });
+    expect(parseSettings(band, { series: 'motogp', also: false }).settings).toEqual({ series: 'motogp', also: false });
+    expect(parseSettings(band, { series: 'nope' }).problems[0]).toMatch(/^Series must be one of Every series, /);
+    expect(settingsSummary(band, { series: '', also: true })).toBe('Series Every series · Also racing yes');
+    expect(SPLITS['/']).toEqual(['home.lead', 'series.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
+    expect(recipeRegions('/').find(r => r.component === 'series.live')).toMatchObject({ id: 'live', settings: { series: '', also: true } });
+  });
+
   it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
     expect(SPLITS['/calendar']).toEqual(['page.heading', 'calendar.month']);
