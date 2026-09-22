@@ -151,7 +151,7 @@ describe('messages', () => {
     expect(none[0]).toMatchObject({ sel: { kind: 'region', id: 'table' }, group: 'Source' });
     expect(designerMessages({ version: 2, regions: [data({ source: 'standings?series=f1&season=2026' } as Partial<Region>)], actions: [] }, page)).toEqual([]);
     expect(designerMessages({ version: 2, regions: [data({ source: 'results?series=f1&season=2026' } as Partial<Region>)], actions: [] }, page).map(m => `${m.level}: ${m.text}`)).toEqual([
-      'err: region table: Drivers is a Standings preset; this region reads Results',
+      'err: region table: Drivers is for a Standings source; this region reads Results',
     ]);
   });
 

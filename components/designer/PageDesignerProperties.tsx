@@ -184,7 +184,7 @@ function patchMany(ctx: PropsContext, ids: readonly string[], label: string, fn:
  *  grouped in the order the options declare their groups. */
 function groupedOptions(options: readonly ChoiceOption[], source: SourceRef | null, current: string): [string, ChoiceOption[]][] {
   const series = source && typeof source.params.series === 'string' ? source.params.series : null;
-  const shown = options.filter(o => o.key === current || !o.only || !source || (o.only.source === source.source && (series === null || o.only.series.includes(series))));
+  const shown = options.filter(o => o.key === current || !o.only || !source || (o.only.source === source.source && (series === null || o.only.series === undefined || o.only.series.includes(series))));
   const groups = new Map<string, ChoiceOption[]>();
   for (const o of shown) groups.set(o.group ?? '', [...(groups.get(o.group ?? '') ?? []), o]);
   return [...groups.entries()];
@@ -811,6 +811,15 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       const value = r.settings[s.key] ?? s.default;
       const grouped = s.kind === 'choice' && (s.options ?? []).some(o => o.group) ? groupedOptions(s.options ?? [], regionSource, String(value)) : null;
       const waiting = grouped ? [...new Set(grouped.flatMap(([, options]) => options.filter(o => o.later)))] : [];
+      // An ungrouped choice's option bound to a Source this region lacks (P2.2 B2: the Timeline view, results only) is drawn
+      // greyed with the reason in the note, in the parser's own words; a grouped choice hides such options instead.
+      const regionSeries = regionSource && typeof regionSource.params.series === 'string' ? regionSource.params.series : null;
+      const bound =
+        !grouped && s.kind === 'choice' && regionSource
+          ? (s.options ?? []).filter(o => o.only !== undefined && (o.only.source !== regionSource.source || (o.only.series !== undefined && regionSeries !== null && !o.only.series.includes(regionSeries))))
+          : [];
+      const boundNote =
+        bound.length && regionSource ? `${bound.map(o => `${o.label} is for a ${findSource(o.only?.source ?? '')?.name ?? o.only?.source} source`).join('; ')}; this region reads ${findSource(regionSource.source)?.name ?? regionSource.source}.` : undefined;
       // A choice option may set other attributes with it (P2.2 B1: a preset brings its view), in the same patch.
       const set = (v: SettingValue) =>
         p(`${s.label} set.`, x => {
@@ -840,7 +849,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
             ))}
           </select>
         ) : s.kind === 'choice' ? (
-          <Pills label={s.label} items={(s.options ?? []).map(o => ({ key: o.key, label: o.label }))} current={String(value)} disabled={readOnly} onPick={set} />
+          <Pills label={s.label} items={(s.options ?? []).map(o => ({ key: o.key, label: o.label, disabled: bound.includes(o), title: bound.includes(o) ? boundNote : undefined }))} current={String(value)} disabled={readOnly} onPick={set} />
         ) : s.kind === 'number' ? (
           <input type="number" value={Number(value)} min={s.min} max={s.max} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(Number(e.target.value))} />
         ) : s.kind === 'colour' ? (
@@ -863,7 +872,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           <input type="text" value={String(value)} maxLength={s.maxLength ?? 200} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)} />
         ),
         // A report-scope attribute (one value per multi-row region) reads as any other here; its help says so.
-        note: waiting.length ? `Not yet pickable, ${[...new Set(waiting.map(o => o.later))].join('; ')}: ${waiting.map(o => o.label).join(', ')}.` : grouped && !regionSource ? 'Pick a Source first: the list then follows it.' : undefined,
+        note: waiting.length ? `Not yet pickable, ${[...new Set(waiting.map(o => o.later))].join('; ')}: ${waiting.map(o => o.label).join(', ')}.` : grouped && !regionSource ? 'Pick a Source first: the list then follows it.' : boundNote,
         help: application
           ? `${s.help ? `${s.help} ` : ''}One value for the whole application (APEX: an attribute of Application scope), set under Shared Components › Component Settings.`
           : s.kind === 'link'

@@ -247,12 +247,14 @@ describe('renderComponents', () => {
     readSource.mockResolvedValueOnce({ columns: [], total: rows.length, rows, provenance: { ref: { source: 'results', params: { series, season: 2026 } }, label: `Results · ${series} · 2026`, tier: 'snapshot', keys: [`results:${series}`], rows: rows.length, ms: 2 } });
   };
 
+  /** Draws a results preset from a fixture of its shape, in the List (the Rounds layout) unless another view is named, Rows 50 unless a count is. */
+  const draw = async (preset: string, series: string, rows: Record<string, string | number | null>[], view = 'list', count = 50) => {
+    results(series, rows);
+    const out = await renderComponents(doc([region('r', 'data.region', { preset, view, rows: count, heading: '' }, { source: `results?series=${series}&season=2026` } as Partial<Region>)]), { path: '/x' });
+    return html(out.r);
+  };
+
   it('P2.2 B1, the test per preset: every one of the seven results presets draws the Rounds layout from a fixture of its shape: a round or class per fold with its chip, its title linked to the weekend page, the winner in the meta line, the entries as the site draws them; a winners-only round flat', async () => {
-    const draw = async (preset: string, series: string, rows: Record<string, string | number | null>[]) => {
-      results(series, rows);
-      const out = await renderComponents(doc([region('r', 'data.region', { preset, view: 'list', rows: 50, heading: '' }, { source: `results?series=${series}&season=2026` } as Partial<Region>)]), { path: '/x' });
-      return html(out.r);
-    };
     // Season results (F1): two rounds, the newer first; round 2's race has no weekend page.
     const f1 = await draw('season-results', 'f1', [
       raceRow({}),
@@ -342,6 +344,100 @@ describe('renderComponents', () => {
     expect((cards.match(/<li /g) ?? []).length).toBe(3);
     expect(cards).toContain('George Russell');
     expect(cards).toContain('Mercedes');
+  });
+
+  it('P2.2 B2, the Timeline per results preset: every one of the seven draws one entry per race (or race and class), newest first, on a rail, with the date or the round chip, the title linked to the weekend page, the WIN line and the winner’s initials (APEX Timeline; Avatar); Rows counts races; a race without a position-1 row takes its first', async () => {
+    const f1 = await draw('season-results', 'f1', [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }), raceRow({ round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null })], 'timeline');
+    expect(f1).not.toContain('<table');
+    expect(f1).not.toContain('<details');
+    expect((f1.match(/<li /g) ?? []).length).toBe(2);
+    expect(f1.indexOf('Chinese Grand Prix')).toBeLessThan(f1.indexOf('Australian Grand Prix'));
+    expect(f1).toContain('15 Mar 2026');
+    expect(f1).toContain('8 Mar 2026');
+    expect(f1).toContain('<a href="/series/f1/weekend/1"');
+    expect(f1).toMatch(/WIN<\/span> <span[^>]*>Andrea Kimi Antonelli — Mercedes</);
+    expect(f1).toMatch(/WIN<\/span> <span[^>]*>Lando Norris — McLaren</);
+    expect(f1).toContain('>AA<');
+    expect(f1).toContain('>LN<');
+    // Rows counts races.
+    const one = await draw('season-results', 'f1', [raceRow({}), raceRow({ round: 2, race: 'Chinese Grand Prix', driver: 'Lando Norris', weekend: null })], 'timeline', 1);
+    expect((one.match(/<li /g) ?? []).length).toBe(1);
+    expect(one).toContain('Chinese Grand Prix');
+    // F2: the session filter holds on the Timeline too.
+    const f2 = await draw('feature-races', 'f2', [raceRow({ race: 'Melbourne Feature Race', session: 'feature', driver: 'Nikola Tsolov', code: 'TSO', team: 'Campos Racing', weekend: null }), raceRow({ race: 'Melbourne Sprint Race', session: 'sprint', driver: 'Leonardo Fornaroli', weekend: null })], 'timeline');
+    expect((f2.match(/<li /g) ?? []).length).toBe(1);
+    expect(f2).toContain('Melbourne Feature Race');
+    expect(f2).toContain('>NT<');
+    // NLS: a winners-only round is one entry, its crew the WIN line.
+    const nls = await draw('overall-winners', 'nls', [raceRow({ race: 'NLS 1', circuit: 'Nürburgring', driver: 'Crew One', code: null, team: 'Team One', status: 'Winner', time: null, points: 0, weekend: null })], 'timeline');
+    expect((nls.match(/<li /g) ?? []).length).toBe(1);
+    expect(nls).toMatch(/WIN<\/span> <span[^>]*>Crew One — Team One</);
+    // IMSA and WEC: an entry per round and class; a crew's initials are the first person's.
+    const imsa = await draw('season-results-imsa', 'imsa', [carRow({}), carRow({ position: 2, driver: 'Campbell Jaminet', car: '6', gap: '+2.5' }), carRow({ class: 'GTD', driver: 'Ward Ellis', car: '1', team: 'Team One' })], 'timeline');
+    expect((imsa.match(/<li /g) ?? []).length).toBe(2);
+    expect(imsa).toContain('Rolex 24 at Daytona — GTP');
+    expect(imsa).toContain('Rolex 24 at Daytona — GTD');
+    expect(imsa).toContain('25 Jan 2026');
+    expect(imsa).toContain('>NT<');
+    const wec = await draw('season-results-wec', 'wec', [carRow({ round: 3, race: '24 Hours of Le Mans', class: 'Hypercar', driver: 'ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN', car: '50', team: 'FERRARI AF CORSE', gap: '24:00:12.345', date: '2026-06-14T00:00:00.000Z' })], 'timeline');
+    expect(wec).toContain('24 Hours of Le Mans — Hypercar');
+    expect(wec).toContain('14 Jun 2026');
+    expect(wec).toContain('>AF<');
+    // GT World: no date, the round chip stands in ("·" without a round); a crew joined by the site's dot.
+    const gt = await draw('season-results-gt-world', 'gt-world', [cupRow({ driver: 'Thierry Vermeulen · Ben Green' }), cupRow({ class: 'Gold Cup', car: '99', driver: 'A · B', team: 'Gold Team', vehicle: 'Audi R8', gap: '+10.0', time: null }), cupRow({ round: null, raceId: 777, race: 'Spa Race', driver: 'C · D · E', car: '51', team: 'AF Corse', vehicle: 'Ferrari 296', laps: 540, time: null, weekend: null })], 'timeline');
+    expect((gt.match(/<li /g) ?? []).length).toBe(3);
+    expect(gt).toContain('Brands Hatch Race 1 — Pro Cup');
+    expect(gt).toContain('Brands Hatch Race 1 — Gold Cup');
+    expect(gt).toContain('>R2<');
+    expect(gt).toContain('>·<');
+    expect(gt).toContain('>TV<');
+    expect(gt).toContain('<a href="/series/gt-world/weekend/2"');
+    expect(gt).not.toMatch(/\d{1,2} \w{3} 20\d\d/);
+    // A race whose classification has no position-1 row: its first row leads.
+    const noWinner = await draw('season-results', 'f1', [raceRow({ position: 2, driver: 'George Russell', code: 'RUS' }), raceRow({ position: 3, driver: 'Lando Norris', code: 'NOR', team: 'McLaren' })], 'timeline');
+    expect(noWinner).toMatch(/WIN<\/span> <span[^>]*>George Russell — Mercedes</);
+    expect(noWinner).toContain('>GR<');
+  });
+
+  it('P2.2 B2, Detail (APEX Value Attribute Pairs - Column): one block per row headed by the position and the name, the shape’s other columns as label and value pairs drawn as the table draws them, the leader’s gap and share; a results row’s Race as a link and its date as the site’s; never a table cell', async () => {
+    const out = await renderComponents(doc([region('d', 'data.region', { preset: 'drivers', view: 'detail', rows: 10, heading: 'Drivers in detail' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' });
+    const detail = html(out.d);
+    expect(detail).toContain('Drivers in detail');
+    expect(detail).not.toContain('<td');
+    expect(detail).not.toContain('<table');
+    expect((detail.match(/<dl/g) ?? []).length).toBe(2);
+    expect(detail.indexOf('Andrea Kimi Antonelli')).toBeLessThan(detail.indexOf('George Russell'));
+    for (const label of ['Team', 'Pts', 'Wins', 'Gap', 'Share']) expect(detail, label).toMatch(new RegExp(`<dt[^>]*>${label}</dt>`));
+    expect(detail).not.toMatch(/<dt[^>]*>Pos<\/dt>/);
+    expect(detail).not.toMatch(/<dt[^>]*>Driver<\/dt>/);
+    expect(detail).toMatch(/<dt[^>]*>Team<\/dt><dd[^>]*>Mercedes<\/dd>/);
+    expect(detail).toMatch(/<dt[^>]*>Code<\/dt><dd[^>]*><span[^>]*>ANT<\/span><\/dd>/);
+    expect(detail).toMatch(/<dt[^>]*>Gap<\/dt><dd[^>]*>—<\/dd>/);
+    expect(detail).toMatch(/<dt[^>]*>Share<\/dt><dd[^>]*>100%<\/dd>/);
+    expect(detail).toMatch(/<dt[^>]*>Gap<\/dt><dd[^>]*>−66<\/dd>/);
+    expect(detail).toMatch(/<dt[^>]*>Share<\/dt><dd[^>]*>75%<\/dd>/);
+    const results = await draw('season-results', 'f1', [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 })], 'detail');
+    expect((results.match(/<dl/g) ?? []).length).toBe(2);
+    expect(results).toMatch(/<dt[^>]*>Race<\/dt><dd[^>]*><a href="\/series\/f1\/weekend\/1"/);
+    expect(results).toMatch(/<dt[^>]*>Date<\/dt><dd[^>]*>8 Mar 2026<\/dd>/);
+    expect(results).not.toMatch(/<dt[^>]*>Driver<\/dt>/);
+    expect(results).toContain('Andrea Kimi Antonelli');
+    expect(results).not.toContain('<td');
+  });
+
+  it('P2.2 B2, the Rounds layout aligned with the site’s rows: a cup row draws its drivers and never the team in their place; a car or cup row always draws the #car chip box; only a race-rows round with one winner is flat, a class fold stays a fold; a stored Timeline on a standings shape draws the table', async () => {
+    const cup = await draw('season-results-gt-world', 'gt-world', [cupRow({ driver: '' })]);
+    expect(cup).toContain('<span class="truncate font-condensed text-15 font-semibold text-text"></span>');
+    expect(cup).toContain('>#32</span>');
+    const car = await draw('season-results-imsa', 'imsa', [carRow({ car: '', driver: '' })]);
+    expect(car).toMatch(/>#<\/span>/);
+    expect(car).toContain('>Porsche Penske Motorsport</span>');
+    const fold = await draw('season-results-wec', 'wec', [carRow({ status: 'Winner' })]);
+    expect(fold).toContain('<details');
+    const flat = await draw('overall-winners', 'nls', [raceRow({ race: 'NLS 1', driver: 'Crew One', code: null, team: 'Team One', status: 'Winner', time: null, points: 0, weekend: null })]);
+    expect(flat).not.toContain('<details');
+    const stored = await renderComponents(doc([region('s', 'data.region', { preset: 'drivers', view: 'timeline', rows: 10, heading: '' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' });
+    expect(html(stored.s)).toContain('<table');
   });
 
   it('a pin that does not resolve keeps the assembly’s lead; the race-weekend fact follows the live band', async () => {
