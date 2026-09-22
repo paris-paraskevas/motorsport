@@ -11,6 +11,7 @@ import { fetchHomeBlogLead, publishedPosts } from '@/lib/blog';
 import { loadLiveHomeLayout, pinnedLeadSlug, visibleBlocks, type HomeLayout } from '@/lib/home-layout';
 import { loadSettings } from '@/lib/design/settings';
 import { DEFAULT_SETTINGS } from '@/lib/design/setting-defaults';
+import type { Series, Weekend } from '@/lib/types';
 import type {
   HomeLeadBlog,
   HomeLeadChanged,
@@ -38,6 +39,8 @@ export interface HomeModel {
   liveWeekends: HomeLeadLiveWeekend[];
   /** Live weekends that do not get a box, as one compact row. */
   alsoRacing: HomeLeadAlsoRacing[];
+  /** Every live weekend as a box, in the ranked order (P2.9: the Live band shows one series' weekend from here). */
+  liveAll: HomeLeadLiveWeekend[];
   result: HomeLeadResult | null;
   changed: HomeLeadChanged | null;
   next: HomeLeadNextItem[];
@@ -167,6 +170,112 @@ export function changedFromStandings(rows: readonly Record<string, unknown>[], s
   return { seriesName, leader: { name: leader.name, points: leader.points }, gapToSecond: second ? leader.points - second.points : null, top: drivers.slice(0, 10) };
 }
 
+/** A weekend under way, as the temporal step finds it: the series, the grouped weekend, its first session's start. */
+export interface LiveCandidate {
+  s: Series;
+  w: Weekend;
+  start: Date;
+}
+export interface LiveBoxes {
+  liveWeekends: HomeLeadLiveWeekend[];
+  alsoRacing: HomeLeadAlsoRacing[];
+  /** Every weekend under way as a box, in the ranked order (the featured first): the Live band draws one series' from here (P2.9). */
+  liveAll: HomeLeadLiveWeekend[];
+}
+
+/**
+ * The live band's data from the weekends under way (P2.9): every candidate as the box a featured weekend draws, ranked
+ * as Home ranks them (`rankLiveWeekends`: the lead first, then the majors, the rest); the featured boxes, the Also
+ * racing rows derived from the rest, and every box in ranked order. Pure over the candidates, so a test can hand it a
+ * fixture; `buildHomeModel` feeds it.
+ *
+ * A dateOnly session has no real hour (lib/types.ts, Session.dateOnly), so it can never be a timed "next up" or an
+ * "also today" row — both carry a clock time to the client. The next session is the earliest that has NOT finished —
+ * `end > now`, not `start > now`. A running session must stay selected, otherwise the band skips straight past it to the
+ * following one and the LIVE pill can never fire while a session is actually on track.
+ */
+export function liveBoxes(candidates: readonly LiveCandidate[], priority: HomePriority, now: Date): LiveBoxes {
+  const nextTimed = (cand: LiveCandidate) =>
+    cand.w.sessions
+      .filter(x => !x.dateOnly && x.end > now)
+      .sort((a, b) => a.start.getTime() - b.start.getTime())[0] ?? null;
+
+  const ranked = rankLiveWeekends(
+    candidates.map(c => ({
+      cand: c,
+      slug: c.s.meta.slug,
+      nextStartMs: nextTimed(c)?.start.getTime() ?? Number.POSITIVE_INFINITY,
+    })),
+    priority,
+  );
+
+  const asBox = (live: LiveCandidate): HomeLeadLiveWeekend => {
+    const timed = live.w.sessions.filter(x => !x.dateOnly);
+    const nextUp = nextTimed(live);
+    return {
+      seriesSlug: live.s.meta.slug,
+      seriesName: live.s.meta.name,
+      color: live.s.meta.color,
+      eventName: weekendLabel(live.w, live.w.round).title,
+      href: `/series/${live.s.meta.slug}/weekend/${live.w.round}`,
+      // Full session titles, not shortSessionLabel's FP1/SQ chips: that helper
+      // is built for the cramped session rail, and "SQ" is opaque in a hero
+      // band. The operator's reference build spells them out ("F1 - Sprint
+      // Qualifying"), and the ICS SUMMARY already reads that way.
+      nextSession: nextUp
+        ? {
+            name: nextUp.title,
+            startIso: nextUp.start.toISOString(),
+            // The client uses this to flip the countdown into a LIVE pill; the
+            // server never decides liveness, because ISR would bake it stale.
+            endIso: nextUp.end.toISOString(),
+          }
+        : null,
+      // Same session day as `nextUp`, by the same day-bucketing every other
+      // schedule surface uses (groupByDay; the repo has no per-venue timezone
+      // data — circuits.json carries lat/lon only and Open-Meteo resolves the
+      // zone itself at request time).
+      // Still to come only. Without the `start > now` guard a session that has
+      // already run stays listed as upcoming — once FP1 starts, it would sit
+      // beside Sprint Qualifying reading as though it were still to come.
+      //
+      // NOT "also today": this is `nextUp`'s day, and on a Friday evening that
+      // is Saturday. The heading is named by SessionDayNote from `alsoDayIso`,
+      // in the browser, because only the device knows what "today" is.
+      alsoSameDay: nextUp
+        ? (groupByDay(timed).find(d => d.sessions.some(x => x.uid === nextUp.uid))?.sessions ?? [])
+            .filter(x => x.uid !== nextUp.uid && x.start > now)
+            .map(x => ({ name: x.title, startIso: x.start.toISOString() }))
+        : [],
+      alsoDayIso: nextUp ? nextUp.start.toISOString().slice(0, 10) : null,
+    };
+  };
+
+  const liveWeekends = ranked.featured.map(({ cand }) => asBox(cand));
+  const rest = ranked.also.map(({ cand }) => cand);
+  // Everything else that is racing, already ordered by soonest session. A
+  // weekend with no timed session left to run is dropped rather than listed
+  // with no time beside it.
+  const alsoRacing: HomeLeadAlsoRacing[] = rest
+    .map(c => ({ c, up: nextTimed(c) }))
+    .flatMap(({ c, up }) =>
+      up
+        ? [
+            {
+              seriesSlug: c.s.meta.slug,
+              seriesName: c.s.meta.name,
+              color: c.s.meta.color,
+              eventName: weekendLabel(c.w, c.w.round).title,
+              href: `/series/${c.s.meta.slug}/weekend/${c.w.round}`,
+              sessionName: up.title,
+              startIso: up.start.toISOString(),
+            },
+          ]
+        : [],
+    );
+  return { liveWeekends, alsoRacing, liveAll: [...liveWeekends, ...rest.map(asBox)] };
+}
+
 export async function buildHomeModel(layout: HomeLayout, now = new Date()): Promise<HomeModel> {
   const all = await loadAllSeries();
   const metaBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
@@ -213,82 +322,7 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
   // running session must stay selected, otherwise the band skips straight past
   // it to the following one and the LIVE pill can never fire while a session is
   // actually on track.
-  const nextTimed = (cand: (typeof liveCandidates)[number]) =>
-    cand.w.sessions
-      .filter(x => !x.dateOnly && x.end > now)
-      .sort((a, b) => a.start.getTime() - b.start.getTime())[0] ?? null;
-
-  const ranked = rankLiveWeekends(
-    liveCandidates.map(c => ({
-      cand: c,
-      slug: c.s.meta.slug,
-      nextStartMs: nextTimed(c)?.start.getTime() ?? Number.POSITIVE_INFINITY,
-    })),
-    { lead: settings['home.lead_series'], majors: settings['home.major_series'] },
-  );
-
-  const liveWeekends: HomeLeadLiveWeekend[] = ranked.featured.map(({ cand: live }) => {
-    const timed = live.w.sessions.filter(x => !x.dateOnly);
-    const nextUp = nextTimed(live);
-    return {
-      seriesSlug: live.s.meta.slug,
-      seriesName: live.s.meta.name,
-      color: live.s.meta.color,
-      eventName: weekendLabel(live.w, live.w.round).title,
-      href: `/series/${live.s.meta.slug}/weekend/${live.w.round}`,
-      // Full session titles, not shortSessionLabel's FP1/SQ chips: that helper
-      // is built for the cramped session rail, and "SQ" is opaque in a hero
-      // band. The operator's reference build spells them out ("F1 - Sprint
-      // Qualifying"), and the ICS SUMMARY already reads that way.
-      nextSession: nextUp
-        ? {
-            name: nextUp.title,
-            startIso: nextUp.start.toISOString(),
-            // The client uses this to flip the countdown into a LIVE pill; the
-            // server never decides liveness, because ISR would bake it stale.
-            endIso: nextUp.end.toISOString(),
-          }
-        : null,
-      // Same session day as `nextUp`, by the same day-bucketing every other
-      // schedule surface uses (groupByDay; the repo has no per-venue timezone
-      // data — circuits.json carries lat/lon only and Open-Meteo resolves the
-      // zone itself at request time).
-      // Still to come only. Without the `start > now` guard a session that has
-      // already run stays listed as upcoming — once FP1 starts, it would sit
-      // beside Sprint Qualifying reading as though it were still to come.
-      //
-      // NOT "also today": this is `nextUp`'s day, and on a Friday evening that
-      // is Saturday. The heading is named by SessionDayNote from `alsoDayIso`,
-      // in the browser, because only the device knows what "today" is.
-      alsoSameDay: nextUp
-        ? (groupByDay(timed).find(d => d.sessions.some(x => x.uid === nextUp.uid))?.sessions ?? [])
-            .filter(x => x.uid !== nextUp.uid && x.start > now)
-            .map(x => ({ name: x.title, startIso: x.start.toISOString() }))
-        : [],
-      alsoDayIso: nextUp ? nextUp.start.toISOString().slice(0, 10) : null,
-    };
-  });
-
-  // Everything else that is racing, already ordered by soonest session. A
-  // weekend with no timed session left to run is dropped rather than listed
-  // with no time beside it.
-  const alsoRacing: HomeLeadAlsoRacing[] = ranked.also
-    .map(({ cand: c }) => ({ c, up: nextTimed(c) }))
-    .flatMap(({ c, up }) =>
-      up
-        ? [
-            {
-              seriesSlug: c.s.meta.slug,
-              seriesName: c.s.meta.name,
-              color: c.s.meta.color,
-              eventName: weekendLabel(c.w, c.w.round).title,
-              href: `/series/${c.s.meta.slug}/weekend/${c.w.round}`,
-              sessionName: up.title,
-              startIso: up.start.toISOString(),
-            },
-          ]
-        : [],
-    );
+  const { liveWeekends, alsoRacing, liveAll } = liveBoxes(liveCandidates, { lead: settings['home.lead_series'], majors: settings['home.major_series'] }, now);
 
   // ── 1. The result that just happened: newest finished race across every
   // covered series (KV-warmed feeds; fail-soft nulls just drop the band). ──
@@ -419,5 +453,5 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
     /* no blog lead this revalidation */
   }
 
-  return { blog, liveWeekends, alsoRacing, result, changed, next, wire, order: visibleBlocks(layout) };
+  return { blog, liveWeekends, alsoRacing, liveAll, result, changed, next, wire, order: visibleBlocks(layout) };
 }

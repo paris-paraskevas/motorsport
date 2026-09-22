@@ -60,6 +60,18 @@ type Renderer = (settings: Readonly<Record<string, SettingValue>>, ctx: RenderCo
 const num = (v: SettingValue | undefined, fallback: number): number => (typeof v === 'number' && Number.isFinite(v) ? v : fallback);
 const str = (v: SettingValue | undefined): string => (typeof v === 'string' ? v.trim() : '');
 
+/** The Live band (P2.9): every series as Home ranks them, with the Also racing row unless it is off; or one series' weekend
+ *  alone, its box from every live box whether Home features it or not; nothing when no weekend is under way. This weekend,
+ *  Home's piece, draws it at the defaults. */
+async function drawLiveBand(settings: Readonly<Record<string, SettingValue>>): Promise<ReactNode> {
+  const [{ loadHomeModel }, { HomeThisWeekend }] = await Promise.all([home(), pieces()]);
+  const model = await loadHomeModel();
+  const slug = str(settings.series);
+  if (!slug) return <HomeThisWeekend liveWeekends={model.liveWeekends} alsoRacing={settings.also === false ? [] : model.alsoRacing} />;
+  const box = model.liveAll.find(w => w.seriesSlug === slug);
+  return box ? <HomeThisWeekend liveWeekends={[box]} alsoRacing={[]} /> : null;
+}
+
 const RENDERERS: Readonly<Record<string, Renderer>> = {
   'page.heading'(settings, ctx) {
     const text = str(settings.text) || ctx.page.title || ctx.page.name;
@@ -92,11 +104,9 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     if (!lead) return null;
     return <HomeLeadStory blog={lead} suggested={num(settings.suggested, 3)} />;
   },
-  async 'home.live'() {
-    const [{ loadHomeModel }, { HomeThisWeekend }] = await Promise.all([home(), pieces()]);
-    const model = await loadHomeModel();
-    return <HomeThisWeekend liveWeekends={model.liveWeekends} alsoRacing={model.alsoRacing} />;
-  },
+  // This weekend is the Live band's first instance (P2.9): the same draw at the band's defaults.
+  'home.live': () => drawLiveBand({}),
+  'series.live': settings => drawLiveBand(settings),
   async 'home.result'(_settings, ctx) {
     const [{ loadHomeModel }, { HomeLatestResult }] = await Promise.all([home(), pieces()]);
     const model = await loadHomeModel();
@@ -193,6 +203,7 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'calendar.month': ['content:series'],
   'home.lead': ['db:post', 'content:series'],
   'home.live': ['content:series'],
+  'series.live': ['content:series'],
   'home.result': ['kv:paddock:home:podium:v2:'],
   // Every series through withSourceSnapshot under standings:<slug>; F1 through its own last-good wrapper under f1:<name>.
   'home.changed': ['snapshot:standings:', 'snapshot:f1:'],

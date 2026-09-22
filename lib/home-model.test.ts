@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { changedFromStandings, rankLiveWeekends } from './home-model';
+import { changedFromStandings, liveBoxes, rankLiveWeekends, type LiveCandidate } from './home-model';
 
 // P2.1: What it changed drawn from a Source's rows, the same shape the
 // assembly builds from the brief: the leader, the gap to second, the top ten;
@@ -41,6 +41,29 @@ describe('changedFromStandings', () => {
 
 const H = 3_600_000;
 const at = (slug: string, hours: number) => ({ slug, nextStartMs: hours * H });
+
+// P2.9: the live band's data from the weekends under way, pure over the candidates the temporal step finds.
+describe('liveBoxes', () => {
+  const now = new Date('2026-09-25T12:00:00Z');
+  const session = (slug: string, uid: string, title: string, startH: number, hours = 1) => ({ uid, seriesSlug: slug, title, start: new Date(now.getTime() + startH * H), end: new Date(now.getTime() + (startH + hours) * H) });
+  const cand = (slug: string, name: string, round: number, roundName: string, sessions: ReturnType<typeof session>[]): LiveCandidate =>
+    ({ s: { meta: { slug, name, color: '#123456' } }, w: { key: `${slug}-${round}`, dateRangeLabel: '', isPast: false, round, roundName, sessions }, start: sessions[0].start }) as unknown as LiveCandidate;
+  const f1 = cand('f1', 'Formula 1', 16, 'Italian Grand Prix', [session('f1', 'fp1', 'Practice 1', -2), session('f1', 'q', 'Qualifying', 2), session('f1', 'race', 'Race', 26, 2)]);
+  const dtm = cand('dtm', 'DTM', 7, 'Red Bull Ring', [session('dtm', 'r1', 'Race 1', 3)]);
+  const wsbk = cand('wsbk', 'WorldSBK', 9, 'Aragón', [session('wsbk', 'r2', 'Race 2', -3)]);
+
+  it('boxes the featured weekends with their next timed session, derives the Also racing rows from the rest and drops a weekend with no timed session left, and lists every box in ranked order', () => {
+    const boxes = liveBoxes([f1, dtm, wsbk], { lead: 'f1', majors: ['motogp'] }, now);
+    expect(boxes.liveWeekends.map(b => b.seriesSlug)).toEqual(['f1']);
+    expect(boxes.liveWeekends[0]).toMatchObject({ seriesName: 'Formula 1', color: '#123456', eventName: 'Italian Grand Prix', href: '/series/f1/weekend/16', nextSession: { name: 'Qualifying', startIso: '2026-09-25T14:00:00.000Z', endIso: '2026-09-25T15:00:00.000Z' }, alsoSameDay: [], alsoDayIso: '2026-09-25' });
+    expect(boxes.alsoRacing).toEqual([{ seriesSlug: 'dtm', seriesName: 'DTM', color: '#123456', eventName: 'Red Bull Ring', href: '/series/dtm/weekend/7', sessionName: 'Race 1', startIso: '2026-09-25T15:00:00.000Z' }]);
+    expect(boxes.liveAll.map(b => b.seriesSlug)).toEqual(['f1', 'dtm', 'wsbk']);
+    expect(boxes.liveAll[2]).toMatchObject({ eventName: 'Aragón', nextSession: null });
+  });
+  it('is empty when nothing is under way', () => {
+    expect(liveBoxes([], { lead: 'f1', majors: [] }, now)).toEqual({ liveWeekends: [], alsoRacing: [], liveAll: [] });
+  });
+});
 
 describe('rankLiveWeekends', () => {
   it('puts F1 first even when its session is the last of the day', () => {

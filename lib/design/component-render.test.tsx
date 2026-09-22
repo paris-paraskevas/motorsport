@@ -25,6 +25,11 @@ const model = {
   blog: { slug: 'monza-2026', title: 'Monza, a history', summary: 'A century of speed.', heroImage: null, publishedAtIso: '2026-09-08T10:00:00Z', readMinutes: 6, seriesName: 'Formula 1', seriesColor: '#e10600', ageLabel: '2h ago', suggested: [{ slug: 'a', title: 'A' }, { slug: 'b', title: 'B' }, { slug: 'c', title: 'C' }] },
   liveWeekends: [{ seriesSlug: 'f1', seriesName: 'Formula 1', color: '#e10600', eventName: 'Italian Grand Prix', href: '/series/f1/weekend/13', nextSession: null, alsoSameDay: [], alsoDayIso: null }],
   alsoRacing: [],
+  // P2.9: every weekend under way as a box, in Home's ranked order; MotoGP's is not featured on Home but a page may show it alone.
+  liveAll: [
+    { seriesSlug: 'f1', seriesName: 'Formula 1', color: '#e10600', eventName: 'Italian Grand Prix', href: '/series/f1/weekend/13', nextSession: null, alsoSameDay: [], alsoDayIso: null },
+    { seriesSlug: 'motogp', seriesName: 'MotoGP', color: '#cc0000', eventName: 'Japanese Grand Prix', href: '/series/motogp/weekend/15', nextSession: null, alsoSameDay: [], alsoDayIso: null },
+  ],
   result: { seriesSlug: 'f1', seriesName: 'Formula 1', color: '#e10600', raceName: 'Italian Grand Prix', round: 13, dateIso: '2026-09-06T13:00:00Z', podium: [{ position: 1, name: 'Andrea Kimi Antonelli', detail: 'Mercedes' }, { position: 2, name: 'George Russell', detail: 'Mercedes', time: '+3.857' }], margin: '+3.857', weekendHref: '/series/f1/weekend/13' },
   changed: { seriesName: 'Formula 1', leader: { name: 'Andrea Kimi Antonelli', points: 267 }, gapToSecond: 66, top: [1, 2, 3, 4, 5, 6, 7].map(i => ({ position: i, name: `Driver ${i}`, points: 300 - i * 20 })), winnerName: 'Driver 1' },
   next: [{ seriesSlug: 'f1', seriesName: 'Formula 1', color: '#e10600', title: 'Spanish Grand Prix (Madrid)', dateRangeLabel: '11–13 Sept', firstStartIso: null, href: '/series/f1/weekend/14' }],
@@ -480,6 +485,35 @@ describe('renderComponents', () => {
     const later = await run;
     expect(drawn).toEqual(['lead', 'p']);
     expect(html(later.p)).toMatch(/<a href="\/history\/monza"[^>]*>Open<\/a>/);
+  });
+
+  it('P2.9: the Live band draws the weekends under way as Home does (the featured boxes, the Also racing row), drops the row when asked, shows one series’ weekend alone from every live box, and nothing for a series not under way; This weekend is its first instance', async () => {
+    const band = async (settings: Record<string, string | number | boolean>) => html((await renderComponents(doc([region('b', 'series.live', settings)]), { path: '/x' })).b);
+    expect(canRender('series.live')).toBe(true);
+    const every = await band({ series: '', also: true });
+    expect(every).toContain('This weekend');
+    expect(every).toContain('Italian Grand Prix');
+    expect(every).not.toContain('Japanese Grand Prix');
+    expect(every).not.toContain('Also racing');
+    // The Also racing row follows the toggle.
+    const spy = vi.spyOn(homeModel, 'loadHomeModel');
+    const busy = { ...model, alsoRacing: [{ seriesSlug: 'dtm', seriesName: 'DTM', color: '#000000', eventName: 'Red Bull Ring', href: '/series/dtm/weekend/7', sessionName: 'Race 1', startIso: '2026-09-26T11:30:00Z' }] };
+    spy.mockResolvedValueOnce(busy as unknown as HomeModel);
+    const withRow = await band({ series: '', also: true });
+    expect(withRow).toContain('Also racing');
+    expect(withRow).toContain('DTM');
+    spy.mockResolvedValueOnce(busy as unknown as HomeModel);
+    const noRow = await band({ series: '', also: false });
+    expect(noRow).toContain('Italian Grand Prix');
+    expect(noRow).not.toContain('Also racing');
+    // One series: its box alone, whether Home features it or not; a series not under way draws nothing.
+    const one = await band({ series: 'motogp', also: true });
+    expect(one).toContain('Japanese Grand Prix');
+    expect(one).not.toContain('Italian Grand Prix');
+    expect(one).not.toContain('Also racing');
+    expect(await band({ series: 'wec', also: true })).toBe('');
+    // This weekend, Home's piece, is the band's first instance.
+    expect(html((await renderComponents(doc([region('live', 'home.live')]), { path: '/' })).live)).toContain('Italian Grand Prix');
   });
 
   it('a pin that does not resolve keeps the assembly’s lead; the race-weekend fact follows the live band', async () => {
