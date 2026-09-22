@@ -2050,6 +2050,22 @@ Won't touch this session: P2.9 beyond its place in the handoff; any other slot; 
 Active: ~2h 30m from ~12:17Z to ~14:45Z (the operator present at the words, ~12:17Z, ~12:53Z and ~14:06Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
 
+### Tue 2026-09-22, evening — session 54, closed at last (the operator present at the words) — P2.9 Live band
+
+Order fixed by the words: "keep going" (~14:17Z: the records PR #1026 merged, STEP 0 run, P2.9 opened), the plan approved (~14:59Z, ExitPlanMode), "merge do whats next" (~15:32Z).
+
+1. **The records and STEP 0** (~10 min, from ~14:17Z): #1026 squash-merged 14:17:30Z as 00ac8dda, prod /changelog 1.0.145 at 14:25:10Z; the dry run after B3's fix measured in the foreground with DATA_SOURCE=db: 40105.86 KiB / gzip 8812.34 KiB → done.
+2. **The reads, the scan and the plan** (~40 min): the site's band, the home model's live section and ranking, the race-weekend fact, the definitions and the recipe, the Attributes tab's grouped choice; the decision scan (no word needed); the plan file; a fresh-context Sonnet plan critic (262,677 tokens against the ~300k said): SOUND WITH FIXES, four blocking (three folded, one stood down with its provenance) and six non-blocking; approved ~14:59Z → done.
+3. **Tests first and the build** (~30 min): five red across four files; `liveBoxes` and `liveAll` in the home model, the series.live definition and the recipe, the renderer's draw, the note's gate; green; the Plug-ins editor's count → done.
+4. **The browser run and the review page** (~20 min): the Gallery tile, the Attributes tab (the Series select with no stray note, Also racing), two drafts saved, the preview drawing nothing on a Tuesday by design, the trace listing the render; three screenshots into the review page 2c3b6cc1-e1a0-46cb-914c-8f5b076f5ad3 → done.
+5. **Gates, PR, reviewer** (~25 min): the servers stopped by PID; tsc 0 · lint 0 errors · vitest 223 files, 2260 tests · hooks 31/31; `DATA_SOURCE=db npm run cf:build` in the foreground and the dry run 40113.28 KiB / gzip 8813.12 KiB; the records (CHANGELOG 1.0.146, RELEASES, the version, the ledger's dated line and P2.2's STEP 0 note); one commit db7f7d0f; PR #1027; a fresh-context Sonnet reviewer (184,461 tokens against the ~200k said): PASS, nothing blocking → done.
+6. **Merge and prod** (~15:32Z): "merge do whats next" → #1027 squash-merged 15:32:34Z as 4ce4c839 → main forward by fast-forward → prod /changelog 1.0.146 at 2026-09-22T15:37:13Z → done.
+7. **Close**: the ledger (P2.9 DONE with its evidence; the dated merge line), the handoff and the session-55 prompt (P2.24 first, its decision scan stopping for the word on parity and the split), this block, six Inbox lines, the board; the records PR 1.0.147 under the same word.
+
+Won't touch this session: P2.24 beyond its decision scan; any other slot; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~2h 15m from ~14:17Z to ~16:30Z (the operator present at the words, ~14:17Z, ~14:59Z and ~15:32Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.147 — 2026-09-22
+
+### Records — P2.9 Live band DONE, the session-55 handoff with P2.24's decision scan stopping for the word
+
+Records only. `docs/plan/ledger.json`: **P2.9 flips to `done`** and carries its evidence (#1027, 1.0.146, merged 2026-09-22 15:32:34Z as 4ce4c839, prod 2026-09-22T15:37:13Z; the plan critic's and the reviewer's figures; the review page 2c3b6cc1-e1a0-46cb-914c-8f5b076f5ad3; the gates and the dry run 40113.28 KiB from a foreground build with DATA_SOURCE=db; the browser run on a day with no weekend under way), and one dated changes line carrying the merge (no default taken during the run). `docs/HANDOFF.md`: the close as LATEST with the session-55 prompt: P2.24 Home's six become instances first, whose decision scan STOPS for the word (what "renders identically" means against the general components' views; the slot's split into PRs; a `weekends` source for What's next), then the state, the rules, the recipe (the trace's `render:<id>` phases), this run's landmines, the agenda; the show-rule count and item 9 still for the operator. `SCHEDULE.md`: the evening. `IDEAS.md`: six Inbox lines. The progress board republished from the ledger. `package.json` 1.0.147. No code.
+
 ## 1.0.146 — 2026-09-22
 
 ### Designer — [P2.9] The Live band: the general component behind Home's This weekend, for every series or one
