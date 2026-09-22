@@ -117,7 +117,9 @@ export default async function CatchAll({ params }: { params: Params }) {
   const where = r.kind === 'composed' ? { path: r.pattern, params: r.params, page: r.page } : { path, params: {}, page: r.page };
   // The templates' presets (P1.2) ride the appearance the layout already read (memoised).
   // The live row pages the buttons and go effects name (P1.12 B2) ride along; a page not live is drawn as nothing.
-  const [shortcuts, assets, nav, components, appearance, pages] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, where), loadAppearance(), loadNamedPages(refs.dests)]);
+  // One read of the pages, shared with the renderer for the cards' zones (P2.2 B3); the render stays parallel with it.
+  const namedPages = loadNamedPages(refs.dests);
+  const [shortcuts, assets, nav, components, appearance, pages] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, { ...where, pages: namedPages }), loadAppearance(), namedPages]);
   const lists = await loadDocumentLists(refs.lists, nav);
   const d = { page: r.page, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages };
   if (r.kind === 'row') return <RowPageView {...d} />;

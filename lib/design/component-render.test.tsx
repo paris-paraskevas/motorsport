@@ -14,8 +14,8 @@ import * as homeModel from '@/lib/home-model';
 import * as sourceRead from './source-read';
 
 vi.mock('next/link', () => ({
-  default: ({ href, children, className }: { href: unknown; children: ReactNode; className?: string }) => (
-    <a href={String(href)} className={className}>
+  default: ({ href, children, className, 'aria-label': ariaLabel }: { href: unknown; children: ReactNode; className?: string; 'aria-label'?: string }) => (
+    <a href={String(href)} className={className} aria-label={ariaLabel}>
       {children}
     </a>
   ),
@@ -247,10 +247,10 @@ describe('renderComponents', () => {
     readSource.mockResolvedValueOnce({ columns: [], total: rows.length, rows, provenance: { ref: { source: 'results', params: { series, season: 2026 } }, label: `Results · ${series} · 2026`, tier: 'snapshot', keys: [`results:${series}`], rows: rows.length, ms: 2 } });
   };
 
-  /** Draws a results preset from a fixture of its shape, in the List (the Rounds layout) unless another view is named, Rows 50 unless a count is. */
-  const draw = async (preset: string, series: string, rows: Record<string, string | number | null>[], view = 'list', count = 50) => {
+  /** Draws a results preset from a fixture of its shape, in the List (the Rounds layout) unless another view is named, Rows 50 unless a count is, with any other settings given. */
+  const draw = async (preset: string, series: string, rows: Record<string, string | number | null>[], view = 'list', count = 50, extra: Record<string, string | number | boolean> = {}) => {
     results(series, rows);
-    const out = await renderComponents(doc([region('r', 'data.region', { preset, view, rows: count, heading: '' }, { source: `results?series=${series}&season=2026` } as Partial<Region>)]), { path: '/x' });
+    const out = await renderComponents(doc([region('r', 'data.region', { preset, view, rows: count, heading: '', ...extra }, { source: `results?series=${series}&season=2026` } as Partial<Region>)]), { path: '/x' });
     return html(out.r);
   };
 
@@ -438,6 +438,48 @@ describe('renderComponents', () => {
     expect(flat).not.toContain('<details');
     const stored = await renderComponents(doc([region('s', 'data.region', { preset: 'drivers', view: 'timeline', rows: 10, heading: '' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' });
     expect(html(stored.s)).toContain('<table');
+  });
+
+  it('P2.2 B3, the Card slots and the action zones: a slot takes a column of the preset (the Title from the team, the Media as initials); Full Card wraps a card in one link to the row’s page, named after its title, and stands the other zones down, while a row without that page keeps its plain card and its other zones; a zone to the catalogue or a live page links its part, a page not given draws nothing, an external one opens in a new tab; the Button zone carries its label', async () => {
+    // The slots over the default standings rows: the Title from the team, the Subtitle from the name, the Media the driver's initials; no link anywhere.
+    const slots = html((await renderComponents(doc([region('c', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '', cardTitle: 'team', cardSubtitle: 'name', cardMedia: 'name' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).c);
+    expect(slots).toMatch(/<div class="[^"]*font-condensed[^"]*">Mercedes<\/div>/);
+    expect(slots).toMatch(/<div class="[^"]*text-text-muted[^"]*">Andrea Kimi Antonelli<\/div>/);
+    expect(slots).toContain('>AA<');
+    expect(slots).toContain('>GR<');
+    expect(slots).not.toContain('<a ');
+    // Full Card to the row's weekend page: one anchor around the Antonelli card (round 1 has a page) and no other zone inside it;
+    // the round-2 card has no page, so it stays plain and its Title zone links to the Calendar.
+    const full = await draw('season-results', 'f1', [raceRow({}), raceRow({ round: 2, race: 'Chinese Grand Prix', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null })], 'cards', 50, { actionFullCard: 'row:race', actionTitle: 'calendar' });
+    expect((full.match(/<a /g) ?? []).length).toBe(2);
+    expect(full).toContain('<a href="/series/f1/weekend/1" class="block');
+    expect(full).toContain('aria-label="Andrea Kimi Antonelli"');
+    expect(full).toMatch(/<a href="\/calendar"[^>]*>Lando Norris<\/a>/);
+    expect(full.split('/calendar').length - 1).toBe(1);
+    // With Full Card Nowhere: the Title zone to the catalogue's Calendar, the Button zone to a live page with its label, the Media zone external in a new tab.
+    const pages = { '11111111-1111-4111-8111-111111111111': { path: '/history/monza', name: 'Monza, a history' } };
+    const zoned = html((await renderComponents(doc([region('z', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '', cardMedia: 'name', actionTitle: 'calendar', actionMedia: 'external:support', actionButton: 'page:11111111-1111-4111-8111-111111111111', actionButtonLabel: 'Read' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x', pages })).z);
+    expect(zoned).toMatch(/<a href="\/calendar"[^>]*>Andrea Kimi Antonelli<\/a>/);
+    expect(zoned).toMatch(/<a href="\/history\/monza"[^>]*>Read<\/a>/);
+    // The avatar is hidden from assistive technology, so its link is named after the title.
+    expect(zoned).toMatch(/<a href="https:\/\/[^"]+" target="_blank" rel="noopener noreferrer"[^>]*aria-label="Andrea Kimi Antonelli"[^>]*><span[^>]*>AA<\/span><\/a>/);
+    // Without the pages map the page zone draws nothing; a row link stored on a standings shape (no link column) draws nothing.
+    const bare = html((await renderComponents(doc([region('b', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '', actionFullCard: 'row:race', actionButton: 'page:11111111-1111-4111-8111-111111111111' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).b);
+    expect(bare).not.toContain('<a ');
+    expect(bare).not.toContain('Open');
+    // The pages map may arrive as a promise: the cards wait for it, and a Home component beside them does not (it is drawn while the pages are still pending).
+    let release: (p: typeof pages) => void = () => {};
+    const pending = new Promise<typeof pages>(resolve => {
+      release = resolve;
+    });
+    const drawn: string[] = [];
+    const run = renderComponents(doc([region('lead', 'home.lead'), region('p', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '', actionButton: 'page:11111111-1111-4111-8111-111111111111' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x', pages: pending }, { onRendered: id => drawn.push(id) });
+    await new Promise(resolve => setTimeout(resolve, 60));
+    expect(drawn).toEqual(['lead']);
+    release(pages);
+    const later = await run;
+    expect(drawn).toEqual(['lead', 'p']);
+    expect(html(later.p)).toMatch(/<a href="\/history\/monza"[^>]*>Open<\/a>/);
   });
 
   it('a pin that does not resolve keeps the assembly’s lead; the race-weekend fact follows the live band', async () => {

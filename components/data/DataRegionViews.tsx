@@ -139,6 +139,31 @@ export function initials(who: string): string {
   return pick.map(w => w.charAt(0)).join('').toUpperCase();
 }
 
+/** The card's slots as the renderer resolves them (APEX Cards: Title, Subtitle, Body, Icon Initials, Badge): a column key per slot, media '' for none. */
+export interface CardSlots {
+  title: string;
+  subtitle?: string;
+  body: string;
+  media: string;
+  badge: string;
+}
+/** Where an action zone sends a row: an address and whether it leaves the site; null when it resolves to nothing for that row. */
+export type Zone = (row: PresetRow) => { href: string; external: boolean } | null;
+/** The five action zones (APEX Cards › Actions: Full Card, Title, Subtitle, Media, Button) and the button's words. */
+export interface CardActions {
+  fullCard: Zone;
+  title: Zone;
+  subtitle: Zone;
+  media: Zone;
+  button: Zone;
+  buttonLabel: string;
+}
+const NOWHERE: Zone = () => null;
+const NO_ACTIONS: CardActions = { fullCard: NOWHERE, title: NOWHERE, subtitle: NOWHERE, media: NOWHERE, button: NOWHERE, buttonLabel: 'Open' };
+/** The site's Button (components/page/RowPageView.tsx) at a card's size. */
+const CARD_BUTTON = 'inline-flex min-h-9 items-center bg-text px-4 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted';
+const ZONE_LINK = 'underline-offset-4 hover:text-tint hover:underline';
+
 export interface DataRegionViewProps {
   heading: string;
   /** h1 when the region is the first showing in the Body, as every component's heading is. */
@@ -146,6 +171,26 @@ export interface DataRegionViewProps {
   shape: Shape;
   preset: Preset;
   rows: readonly PresetRow[];
+  /** The Cards view's slots and zones (P2.2 B3); the shape's own mapping and no zone when absent. */
+  card?: CardSlots;
+  actions?: CardActions;
+}
+
+/** A zone's link around a part of the card, or the part alone; an external address leaves the site in a new tab, as the
+ *  Button region does. A part without words of its own (the avatar, hidden from assistive technology) names its link. */
+function Zoned({ to, className, label, children }: { to: ReturnType<Zone>; className?: string; label?: string; children: ReactNode }) {
+  if (!to) return <>{children}</>;
+  if (to.external)
+    return (
+      <a href={to.href} target="_blank" rel="noopener noreferrer" className={className} aria-label={label}>
+        {children}
+      </a>
+    );
+  return (
+    <Link href={to.href} className={className} aria-label={label}>
+      {children}
+    </Link>
+  );
 }
 
 export function DataRegionTable({ heading, level, shape, preset, rows }: DataRegionViewProps) {
@@ -182,23 +227,81 @@ export function DataRegionTable({ heading, level, shape, preset, rows }: DataReg
   );
 }
 
-export function DataRegionCards({ heading, level, shape, rows }: DataRegionViewProps) {
+/** APEX Cards' Grid layout: the slots the renderer resolved (the shape's own mapping by default), the Media as the initials
+ *  of its column's text (APEX Icon Initials), and the action zones. Full Card set and resolved for a row makes that card one
+ *  link named after its title, and its other zones stand down: no link inside a link. A zone that resolves to nothing for a
+ *  row draws that part plain. */
+export function DataRegionCards({ heading, level, shape, rows, card, actions }: DataRegionViewProps) {
   const H = level;
-  const slot = shape.card;
+  const slot: CardSlots = card ?? { ...shape.card, media: '' };
+  const act = actions ?? NO_ACTIONS;
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {rows.map((r, i) => (
-          <li key={`${text(r.position)}-${text(r[slot.title])}-${i}`} className="border border-border bg-surface/40 p-4">
-            <div className="flex items-baseline justify-between gap-3">
-              <span className={`font-mono text-11 tabular-nums ${r[slot.badge] === 1 ? 'text-brand font-bold' : 'text-text-faint'}`}>{text(r[slot.badge])}</span>
-              <span className="font-mono text-13 font-semibold tabular-nums text-numeral">{text(r[slot.body])}</span>
-            </div>
-            <div className="mt-1 font-condensed text-15 font-semibold text-text">{text(r[slot.title])}</div>
-            {slot.subtitle && text(r[slot.subtitle]) ? <div className="text-xs text-text-muted">{text(r[slot.subtitle])}</div> : null}
-          </li>
-        ))}
+        {rows.map((r, i) => {
+          const title = text(r[slot.title]);
+          const subtitle = slot.subtitle ? text(r[slot.subtitle]) : '';
+          const full = act.fullCard(r);
+          const zone = (z: Zone) => (full ? null : z(r));
+          const button = zone(act.button);
+          const body = (
+            <>
+              <div className="flex items-baseline justify-between gap-3">
+                {/* The leader's colour belongs to the position; a badge from another column (the wins, the car) is plain. */}
+                <span className={`font-mono text-11 tabular-nums ${slot.badge === 'position' && r.position === 1 ? 'text-brand font-bold' : 'text-text-faint'}`}>{text(r[slot.badge])}</span>
+                <span className="font-mono text-13 font-semibold tabular-nums text-numeral">{text(r[slot.body])}</span>
+              </div>
+              <div className="mt-1 flex items-start gap-3">
+                {slot.media ? (
+                  <Zoned to={zone(act.media)} label={title}>
+                    <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center bg-surface font-mono text-11 font-semibold tracking-[0.08em] text-text-muted">
+                      {initials(text(r[slot.media]))}
+                    </span>
+                  </Zoned>
+                ) : null}
+                <div className="min-w-0 flex-1">
+                  <div className="font-condensed text-15 font-semibold text-text">
+                    <Zoned to={zone(act.title)} className={ZONE_LINK}>
+                      {title}
+                    </Zoned>
+                  </div>
+                  {subtitle ? (
+                    <div className="text-xs text-text-muted">
+                      <Zoned to={zone(act.subtitle)} className={ZONE_LINK}>
+                        {subtitle}
+                      </Zoned>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+              {button ? (
+                <div className="mt-3">
+                  <Zoned to={button} className={CARD_BUTTON}>
+                    {act.buttonLabel}
+                  </Zoned>
+                </div>
+              ) : null}
+            </>
+          );
+          return (
+            <li key={`${text(r.position)}-${title}-${i}`} className="border border-border bg-surface/40 p-4">
+              {full ? (
+                full.external ? (
+                  <a href={full.href} target="_blank" rel="noopener noreferrer" className="block" aria-label={title}>
+                    {body}
+                  </a>
+                ) : (
+                  <Link href={full.href} className="block" aria-label={title}>
+                    {body}
+                  </Link>
+                )
+              ) : (
+                body
+              )}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

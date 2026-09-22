@@ -43,7 +43,20 @@ describe('the component catalogue', () => {
       ['view', 'choice', 'report'],
       ['rows', 'number', 'report'],
       ['heading', 'text', 'report'],
+      ['cardTitle', 'choice', 'report'],
+      ['cardSubtitle', 'choice', 'report'],
+      ['cardBody', 'choice', 'report'],
+      ['cardMedia', 'choice', 'report'],
+      ['cardBadge', 'choice', 'report'],
+      ['actionFullCard', 'link', 'report'],
+      ['actionTitle', 'link', 'report'],
+      ['actionSubtitle', 'link', 'report'],
+      ['actionMedia', 'link', 'report'],
+      ['actionButton', 'link', 'report'],
+      ['actionButtonLabel', 'text', 'report'],
     ]);
+    // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
+    const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
     const preset = region.settings[0];
     expect(preset.options).toHaveLength(33);
     expect(preset.options![0]).toEqual({
@@ -51,12 +64,13 @@ describe('the component catalogue', () => {
       label: 'Drivers',
       group: 'Drivers',
       only: { source: 'standings', series: ['f1', 'f2', 'f3', 'indycar', 'formula-e', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm'] },
-      sets: { view: 'table' },
+      sets: { view: 'table', ...RESET },
     });
-    expect(preset.options!.find(o => o.key === 'imsa-gtp-drivers')).toEqual({ key: 'imsa-gtp-drivers', label: 'GTP — Drivers', group: 'IMSA classes', only: { source: 'standings', series: ['imsa'] }, sets: { view: 'table' } });
+    expect(preset.options!.find(o => o.key === 'imsa-gtp-drivers')).toEqual({ key: 'imsa-gtp-drivers', label: 'GTP — Drivers', group: 'IMSA classes', only: { source: 'standings', series: ['imsa'] }, sets: { view: 'table', ...RESET } });
     // P2.2 B1: the results presets are pickable and bring the Rounds layout (the List view) with them; every option sets its preset's view.
-    expect(preset.options!.find(o => o.key === 'season-results')).toEqual({ key: 'season-results', label: 'Season results', group: 'Season results', only: { source: 'results', series: ['f1', 'f3', 'indycar', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm', 'formula-e'] }, sets: { view: 'list' } });
-    expect(preset.options![0].sets).toEqual({ view: 'table' });
+    expect(preset.options!.find(o => o.key === 'season-results')).toEqual({ key: 'season-results', label: 'Season results', group: 'Season results', only: { source: 'results', series: ['f1', 'f3', 'indycar', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm', 'formula-e'] }, sets: { view: 'list', ...RESET, actionFullCard: 'row:race' } });
+    expect(preset.options![0].sets).toEqual({ view: 'table', ...RESET });
+    for (const o of preset.options!) expect(o.sets?.actionFullCard, o.key).toBe(o.only?.source === 'results' ? 'row:race' : '');
     for (const o of preset.options!) expect(o.later, o.key).toBeUndefined();
     expect(region.settings[1].options!.map(o => [o.key, o.label])).toEqual([
       ['table', 'Table'],
@@ -70,11 +84,43 @@ describe('the component catalogue', () => {
     expect(region.settings[1].options!.find(o => o.key === 'detail')).toEqual({ key: 'detail', label: 'Detail' });
     expect(parseSettings(region, { preset: 'season-results', view: 'timeline' }).settings.view).toBe('timeline');
     expect(region.holds).toBe('a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes');
-    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '' });
-    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '' });
+    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', ...RESET });
+    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', ...RESET });
     expect(parseSettings(region, { preset: 'nope' }).problems[0]).toMatch(/^Preset must be one of Drivers, Constructors, Teams/);
     expect(parseSettings(region, { rows: 0 }).problems).toEqual(['Rows must be a number from 1 to 50']);
     expect(settingsSummary(region, { preset: 'constructors', view: 'cards', rows: 8, heading: '' })).toMatch(/^Preset Constructors · View Cards · Rows 8/);
+    // P2.2 B3: the Card slots and the action zones, under the Card and Actions groups, drawn while the View is Cards (APEX: Depending On).
+    expect(region.groups).toEqual([
+      { key: 'card', title: 'Card', seq: 10 },
+      { key: 'actions', title: 'Actions', seq: 20 },
+    ]);
+    const slots = region.settings.filter(s => s.group === 'card');
+    const zones = region.settings.filter(s => s.group === 'actions');
+    expect(slots.map(s => [s.key, s.label])).toEqual([
+      ['cardTitle', 'Title'],
+      ['cardSubtitle', 'Subtitle'],
+      ['cardBody', 'Body'],
+      ['cardMedia', 'Media'],
+      ['cardBadge', 'Badge'],
+    ]);
+    expect(zones.map(s => [s.key, s.label])).toEqual([
+      ['actionFullCard', 'Full Card'],
+      ['actionTitle', 'Title action'],
+      ['actionSubtitle', 'Subtitle action'],
+      ['actionMedia', 'Media action'],
+      ['actionButton', 'Button'],
+      ['actionButtonLabel', 'Button label'],
+    ]);
+    for (const s of [...slots, ...zones]) expect(s.dependingOn, s.key).toEqual({ key: 'view', values: ['cards'] });
+    for (const s of slots) expect([s.kind, s.optionsFrom, s.default], s.key).toEqual(['choice', 'columns', '']);
+    for (const s of zones.slice(0, 5)) expect([s.kind, s.rowLinks, s.default], s.key).toEqual(['link', true, '']);
+    expect(zones[5]).toMatchObject({ kind: 'text', default: 'Open', maxLength: 24 });
+    expect(parseSettings(region, { cardTitle: 'team', actionFullCard: 'row:race' }).settings).toMatchObject({ cardTitle: 'team', actionFullCard: 'row:race' });
+    expect(parseSettings(region, { cardTitle: 'x'.repeat(41) }).problems).toEqual(['Title must name a column of at most 40 characters']);
+    // The tile's line names a slot or a zone only while the view is Cards and the value is not the preset's own; a column by its label, a row link by its page.
+    expect(settingsSummary(region, { preset: 'drivers', view: 'cards', rows: 8, heading: '', cardTitle: 'team', actionFullCard: 'calendar' })).toBe('Preset Drivers · View Cards · Rows 8 · Title Team · Full Card calendar');
+    expect(settingsSummary(region, { preset: 'drivers', view: 'table', rows: 8, heading: '', cardTitle: 'team' })).toBe('Preset Drivers · View Table · Rows 8');
+    expect(settingsSummary(region, { preset: 'season-results', view: 'cards', rows: 8, heading: '', actionFullCard: 'row:race' })).toBe('Preset Season results · View Cards · Rows 8 · Full Card Race → its page');
   });
 
   it('sums settings up in words, and the transitional component by what it holds', () => {

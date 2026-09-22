@@ -12,7 +12,7 @@
 // key or a setting outside its spec is a problem the writer refuses; the reader
 // keeps the usable part and falls back to the defaults.
 
-import { PRESETS, PRESET_GROUPS } from './presets';
+import { PRESETS, PRESET_GROUPS, SHAPES, findPreset } from './presets';
 
 export type SettingValue = string | number | boolean;
 
@@ -68,6 +68,20 @@ export interface AttributeDefinition {
   /** A key of the definition's `groups`; absent falls under Settings (APEX:
    *  ungrouped attributes under a generic Settings heading). */
   group?: string;
+  /** APEX: Depending On. Drawn in the Attributes tab, and summed up for the
+   *  tile, only while the named attribute holds one of the values; a stored
+   *  value is read and kept regardless (P2.2 B3: the Card slots and the action
+   *  zones while the View is Cards). */
+  dependingOn?: { key: string; values: readonly string[] };
+  /** A choice whose options are the current preset's shape columns (ours by
+   *  name; APEX's Cards list the source's columns for Title Column … Icon
+   *  Initials Column). `options` stays empty; '' means the preset's own
+   *  mapping; the document parser checks a value against the shape. */
+  optionsFrom?: 'columns';
+  /** A link that may also follow a link column of the row, stored as
+   *  `row:<column>` (ours: APEX substitutes a column into a URL; a typed URL is
+   *  never allowed here, so the row's own link stands in). */
+  rowLinks?: true;
 }
 /** APEX: Attribute Groups, named and sequenced sections of the Attributes tab. */
 export interface AttributeGroup {
@@ -132,11 +146,17 @@ const HEX_COLOUR = /^#[0-9a-f]{6}$/i;
 /** An icon's name, as the bar's icons are named. */
 const ICON_NAME = /^[a-z][a-z0-9-]{0,39}$/;
 const LINK_MAX = 120;
+const COLUMN_KEY_MAX = 40;
 
 /** The attributes an instance carries: every scope but application. */
 export function instanceAttributes(spec: ComponentDefinition): AttributeDefinition[] {
   return spec.settings.filter(s => s.scope !== 'application');
 }
+
+/** The Card slots and the action zones show while the View is Cards (APEX: Depending On). */
+const CARDS_ONLY = { key: 'view', values: ['cards'] } as const;
+/** What a preset's pick sets the Card slots and zones to: its own mapping, nothing linked, the button's plain word. */
+const CARD_RESET: Readonly<Record<string, SettingValue>> = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
 
 export const COMPONENTS: readonly ComponentDefinition[] = [
   {
@@ -238,7 +258,9 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           label: p.name,
           group: PRESET_GROUPS.find(g => g.key === p.group)?.name ?? p.group,
           only: { source: p.source, series: p.series },
-          sets: { view: p.view },
+          // The pick brings the preset's view and its own card mapping (every slot and zone reset; a results preset aims
+          // Full Card at the row's race page, the one link column the results shapes carry).
+          sets: { view: p.view, ...CARD_RESET, ...(p.source === 'results' ? { actionFullCard: 'row:race' } : {}) },
         })),
         help: 'Which of the site’s tables this region draws (APEX: a report’s template and its columns; ours: the fifteen shapes as named presets). The list follows the Source: its presets, grouped as the site groups them.',
       },
@@ -260,6 +282,33 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       },
       { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole.' },
       { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name.' },
+      // The Card slots (P2.2 B3; APEX Cards: Title Column, Subtitle Column, Body Column, Icon Initials Column, Badge Column),
+      // drawn while the View is Cards; '' is the preset's own mapping.
+      ...(
+        [
+          ['cardTitle', 'Title', 'The column the card is headed by (APEX: Title Column); the preset’s own is the driver’s or team’s name.'],
+          ['cardSubtitle', 'Subtitle', 'The line under the title (APEX: Subtitle Column); the preset’s own is the team.'],
+          ['cardBody', 'Body', 'The figure at the top right (APEX: Body Column); the preset’s own is the points, or the gap on a timing export.'],
+          ['cardMedia', 'Media', 'The column whose text gives the avatar’s initials at the top left (APEX: Icon Initials Column; the Media source for a picture arrives with P2.24). A number column shows its first digit, which reads badly.'],
+          ['cardBadge', 'Badge', 'The small figure at the top left (APEX: Badge Column); the preset’s own is the position, or the car’s number.'],
+        ] as const
+      ).map(([key, label, help]) => ({ key, label, kind: 'choice' as const, scope: 'report' as const, group: 'card', dependingOn: CARDS_ONLY, optionsFrom: 'columns' as const, default: '', help })),
+      // The five action zones (APEX Cards › Actions: Full Card, Title, Subtitle, Media, Button): each a destination as a Button’s
+      // Target is, or a link column of the row (`row:<column>`, the race’s weekend page on a results shape).
+      ...(
+        [
+          ['actionFullCard', 'Full Card', 'Where the whole card goes (APEX: the Full Card action). Set, it is the card’s one link and the other zones stand down: no link inside a link.'],
+          ['actionTitle', 'Title action', 'Where the title goes (APEX: the Title action), while Full Card is Nowhere.'],
+          ['actionSubtitle', 'Subtitle action', 'Where the subtitle goes (APEX: the Subtitle action), while Full Card is Nowhere.'],
+          ['actionMedia', 'Media action', 'Where the avatar goes (APEX: the Media action), while Full Card is Nowhere and a Media column is picked.'],
+          ['actionButton', 'Button', 'A button at the card’s foot and where it goes (APEX: the Button action), while Full Card is Nowhere.'],
+        ] as const
+      ).map(([key, label, help]) => ({ key, label, kind: 'link' as const, scope: 'report' as const, group: 'actions', dependingOn: CARDS_ONLY, rowLinks: true as const, default: '', help })),
+      { key: 'actionButtonLabel', label: 'Button label', kind: 'text', scope: 'report', group: 'actions', dependingOn: CARDS_ONLY, default: 'Open', maxLength: 24, help: 'The words on the card’s button.' },
+    ],
+    groups: [
+      { key: 'card', title: 'Card', seq: 10 },
+      { key: 'actions', title: 'Actions', seq: 20 },
     ],
     sources: ['standings', 'results'],
   },
@@ -375,6 +424,10 @@ export function parseSettings(spec: ComponentDefinition, raw: unknown): { settin
     } else if (s.kind === 'number') {
       if (typeof v === 'number' && Number.isFinite(v) && (s.min === undefined || v >= s.min) && (s.max === undefined || v <= s.max)) settings[s.key] = v;
       else problems.push(`${s.label} must be a number${s.min !== undefined && s.max !== undefined ? ` from ${s.min} to ${s.max}` : ''}`);
+    } else if (s.kind === 'choice' && s.optionsFrom === 'columns') {
+      // The column's key alone here; whether the preset's shape has it is the document parser's rule (P2.2 B3).
+      if (typeof v === 'string' && v.length <= COLUMN_KEY_MAX) settings[s.key] = v;
+      else problems.push(`${s.label} must name a column of at most ${COLUMN_KEY_MAX} characters`);
     } else if (s.kind === 'choice') {
       if (typeof v === 'string' && s.options?.some(o => o.key === v)) settings[s.key] = v;
       else problems.push(`${s.label} must be one of ${(s.options ?? []).map(o => o.label).join(', ')}`);
@@ -394,22 +447,40 @@ export function parseSettings(spec: ComponentDefinition, raw: unknown): { settin
   return { settings, problems };
 }
 
-/** One line about an instance's attributes, for its tile: `Items 8 · Series All`; an empty text says nothing. */
+/** The preset's shape a region's settings name, for the words about its columns (P2.2 B3). */
+const shapeOf = (settings: Readonly<Record<string, SettingValue>>) => {
+  const preset = findPreset(String(settings.preset ?? ''));
+  return preset ? SHAPES[preset.shape] : null;
+};
+
+/** One line about an instance's attributes, for its tile: `Items 8 · Series All`; an empty text says nothing. An attribute
+ *  depending on another (P2.2 B3) is named only while its condition holds and its value is not its default; a column by its
+ *  label, a row link by its page. */
 export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Record<string, SettingValue>>): string {
+  const shape = shapeOf(settings);
   const parts = instanceAttributes(spec).flatMap(s => {
     const v = settings[s.key] ?? s.default;
     if (s.kind === 'text' && String(v).trim() === '') return [];
+    if (s.dependingOn) {
+      const on = settings[s.dependingOn.key] ?? spec.settings.find(x => x.key === s.dependingOn!.key)?.default;
+      if (!s.dependingOn.values.includes(String(on)) || v === '' || v === s.default) return [];
+    }
+    const column = (key: string) => shape?.columns.find(c => c.key === key)?.label ?? key;
     const shown =
       s.kind === 'boolean'
         ? v
           ? 'yes'
           : 'no'
         : s.kind === 'choice'
-          ? (s.options?.find(o => o.key === v)?.label ?? String(v))
+          ? s.optionsFrom === 'columns'
+            ? column(String(v))
+            : (s.options?.find(o => o.key === v)?.label ?? String(v))
           : s.kind === 'icon'
             ? String(v) || 'none'
             : s.kind === 'link'
-              ? String(v) || 'nowhere'
+              ? String(v).startsWith('row:')
+                ? `${column(String(v).slice(4))} → its page`
+                : String(v) || 'nowhere'
               : String(v);
     return `${s.label} ${shown}`;
   });

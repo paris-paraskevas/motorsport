@@ -39,6 +39,7 @@
 
 import { pageIdOf, resolveDestination } from './destinations';
 import { COMPONENTS, findComponent, parseSettings, type ComponentDefinition, type SettingValue } from './components';
+import { SHAPES, findPreset } from './presets';
 import { SERIES_OPTIONS, encodeSourceRef, findSource, parseSourceRef, type SourceRef } from './sources';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
 import { parseRegionTemplate, parseTemplateOptions, type RegionTemplateKey } from './template-options';
@@ -479,7 +480,7 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
         // A link attribute (P2.0) names a page or a catalogue link, as a Button's Target does; never a typed URL.
         for (const s of spec.settings) {
           const v = parsed.settings[s.key];
-          if (s.kind === 'link' && typeof v === 'string' && v && !isGoDestination(v)) parsed.problems.push(`${s.label} must be a page or a link from the catalogue`);
+          if (s.kind === 'link' && typeof v === 'string' && v && !(s.rowLinks && v.startsWith('row:')) && !isGoDestination(v)) parsed.problems.push(`${s.label} must be a page or a link from the catalogue`);
         }
         // The Source (P2.1): read against the sources the definition declares, stored canonically; a component that declares none takes none.
         let source: string | undefined;
@@ -507,6 +508,19 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
             // The same words the Attributes tab's note uses for a greyed option (P2.2 B2: a view bound to a source, no series list).
             if (sourceRef.source !== opt.only.source) parsed.problems.push(`${opt.label} is for a ${findSource(opt.only.source)?.name ?? opt.only.source} source; this region reads ${findSource(sourceRef.source)?.name ?? sourceRef.source}`);
             else if (opt.only.series !== undefined && typeof series === 'string' && !opt.only.series.includes(series)) parsed.problems.push(`${opt.label} is not a preset of ${SERIES_OPTIONS.find(o => o.key === series)?.label ?? series}`);
+          }
+        }
+        // The Card slots and the action zones (P2.2 B3): a slot names a column of the preset's shape; a zone may follow one of
+        // the shape's link columns (`row:<key>`). '' is the preset's own mapping and needs no check.
+        const preset = findPreset(String(parsed.settings.preset ?? ''));
+        const shape = preset ? SHAPES[preset.shape] : null;
+        for (const s of spec.settings) {
+          const v = parsed.settings[s.key];
+          if (typeof v !== 'string' || v === '' || !shape || !preset) continue;
+          if (s.kind === 'choice' && s.optionsFrom === 'columns' && !shape.columns.some(c => c.key === v)) parsed.problems.push(`${s.label} must be a column of the ${preset.name} preset: ${shape.columns.map(c => c.label).join(', ')}`);
+          if (s.kind === 'link' && s.rowLinks && v.startsWith('row:')) {
+            const links = shape.columns.filter(c => c.type === 'link');
+            if (!links.some(c => c.key === v.slice(4))) parsed.problems.push(`${s.label} can follow a link column of the ${preset.name} preset: ${links.length ? links.map(c => c.label).join(', ') : 'none'}`);
           }
         }
         if (parsed.problems.length) problems.push(...parsed.problems.map(p => `${who}: ${p}`));
@@ -739,7 +753,8 @@ export function documentRefs(doc: PageDocument, components: readonly ComponentDe
     if (r.kind === 'component') {
       for (const s of findComponent(r.component, components)?.settings ?? []) {
         const v = r.settings[s.key];
-        if (s.kind === 'link' && typeof v === 'string' && v) dests.add(v);
+        // A row link (`row:<column>`, P2.2 B3) is the row's own address, not a destination.
+        if (s.kind === 'link' && typeof v === 'string' && v && !v.startsWith('row:')) dests.add(v);
       }
     }
   }

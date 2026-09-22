@@ -32,6 +32,7 @@ import {
 import { SITE_URL } from '@/lib/site';
 import { findComponent, type ChoiceOption, type ComponentDefinition, type SettingValue } from '@/lib/design/components';
 import { SERIES_OPTIONS, defaultSourceRef, encodeSourceRef, findSource, parseSourceRef, type SourceDefinition, type SourceParameter, type SourceRef } from '@/lib/design/sources';
+import { SHAPES, findPreset, type Shape } from '@/lib/design/presets';
 import { normaliseHex } from '@/lib/design/contrast';
 import { BAR_ICON_NAMES } from '@/components/BottomBar';
 import { PAGE_COMMENTS_MAX, PAGE_GROUPS, PAGE_GROUP_LABELS, type PageGroup } from '@/lib/design/page-registry';
@@ -257,6 +258,14 @@ function MiniMap({ doc, id }: { doc: PageDocument; id: string }) {
 
 /** The options of a destination picker: the catalogue's, then the row pages
  *  under Pages, by name (P1.12 B2). Never a code page, never a typed address. */
+/** The column a preset's own card mapping gives a slot, by its label; "none" for the Media slot, which no preset fills (P2.2 B3). */
+const SLOT_OF: Readonly<Record<string, keyof Shape['card']>> = { cardTitle: 'title', cardSubtitle: 'subtitle', cardBody: 'body', cardBadge: 'badge' };
+function ownSlotLabel(shape: Shape, key: string): string {
+  const slot = SLOT_OF[key];
+  const column = slot ? shape.card[slot] : undefined;
+  return column ? (shape.columns.find(c => c.key === column)?.label ?? column) : 'none';
+}
+
 function DestinationOptions({ pages }: { pages: readonly PageRow[] }) {
   const options = goOptions(pages);
   const own = options.filter(o => o.group === 'Pages');
@@ -806,7 +815,12 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
     // never a typed URL). An application-scope attribute is set once, under Component Settings, and only reads here.
     // The region's Source, parsed, for the choices bound to one (P2.2: the Data region's Preset).
     const regionSource = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
+    // The preset's shape, for the Card slots' columns and the zones' row links (P2.2 B3).
+    const preset = findPreset(String(r.settings.preset ?? ''));
+    const shape = preset ? SHAPES[preset.shape] : null;
     for (const s of spec?.settings ?? []) {
+      // APEX: Depending On. An attribute drawn only while another holds one of its values (the Card slots while the View is Cards).
+      if (s.dependingOn && !s.dependingOn.values.includes(String(r.settings[s.dependingOn.key] ?? spec?.settings.find(x => x.key === s.dependingOn?.key)?.default ?? ''))) continue;
       const application = s.scope === 'application';
       const value = r.settings[s.key] ?? s.default;
       const grouped = s.kind === 'choice' && (s.options ?? []).some(o => o.group) ? groupedOptions(s.options ?? [], regionSource, String(value)) : null;
@@ -835,6 +849,18 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           <Ro dim>Set under Shared Components › Component Settings</Ro>
         ) : s.kind === 'boolean' ? (
           <YesNo label={s.label} value={Boolean(value)} disabled={readOnly} onPick={set} />
+        ) : s.kind === 'choice' && s.optionsFrom === 'columns' ? (
+          // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column): the preset's own mapping first, then the shape's columns; the share bar is no Media.
+          <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
+            <option value="">{`Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}`}</option>
+            {(shape?.columns ?? [])
+              .filter(c => !(s.key === 'cardMedia' && c.type === 'percent'))
+              .map(c => (
+                <option key={c.key} value={c.key}>
+                  {c.label}
+                </option>
+              ))}
+          </select>
         ) : grouped ? (
           // A grouped choice (APEX: Select List): the options bound to a source filtered to this region's Source, those not yet pickable disabled with the reason in the note.
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
@@ -866,6 +892,18 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
         ) : s.kind === 'link' ? (
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
             <option value="">Nowhere</option>
+            {s.rowLinks && shape && shape.columns.some(c => c.type === 'link') ? (
+              // A zone may follow a link column of the row (P2.2 B3): the race's weekend page on a results shape.
+              <optgroup label="This row">
+                {shape.columns
+                  .filter(c => c.type === 'link')
+                  .map(c => (
+                    <option key={c.key} value={`row:${c.key}`}>
+                      {`${c.label} → its page`}
+                    </option>
+                  ))}
+              </optgroup>
+            ) : null}
             <DestinationOptions pages={ctx.pages} />
           </select>
         ) : (
