@@ -48,8 +48,9 @@ export interface RenderContext {
   first: boolean;
   /** The Source the region picked (P2.1), read against the sources its definition declares; null when none. */
   source: SourceRef | null;
-  /** The live row pages a card's zone may name (P2.2 B3), as the frame reads them for Buttons; {} when the caller loads none. */
-  pages: PageDestinations;
+  /** The live row pages a card's zone may name (P2.2 B3), as the frame reads them for Buttons; {} when the caller loads
+   *  none. A promise, so only the renderer that reads it waits for it. */
+  pages: Promise<PageDestinations>;
   /** Tells the Debug trace what a source read answered (P2.1). */
   onSourceRead?: (p: SourceProvenance) => void;
 }
@@ -144,6 +145,8 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const rows = presetRows(read.rows, preset, num(settings.rows, 10));
     // The Card slots and the action zones (P2.2 B3): a slot names a column of the shape, else the preset's own; a zone follows
     // a link column of the row (`row:<key>`, the address the column's href names) or a destination, external ones leaving the site.
+    // The pages are awaited here alone, so the other regions never wait for them.
+    const pages = await ctx.pages;
     const card: CardSlots = {
       title: str(settings.cardTitle) || shape.card.title,
       subtitle: str(settings.cardSubtitle) || shape.card.subtitle,
@@ -161,7 +164,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
           return typeof href === 'string' && href ? { href, external: false } : null;
         };
       }
-      const d = resolveDestination(v, ctx.pages);
+      const d = resolveDestination(v, pages);
       const to = d && d.kind !== 'action' ? { href: d.href, external: d.kind === 'external' } : null;
       return () => to;
     };
@@ -228,6 +231,8 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   const firstInBody = firstBodyRegion(doc)?.id ?? null;
   const regions = doc.regions.filter((r): r is ComponentRegion => r.kind === 'component' && !isLegacyBody(r));
   const page = where.page ?? { path: where.path, name: '', title: null };
+  // The pages as one promise every region shares; a renderer that reads them awaits it inside its own try, the rest never wait.
+  const pages = Promise.resolve(where.pages ?? {});
   await Promise.all(
     regions.map(async r => {
       const render = RENDERERS[r.component];
@@ -241,7 +246,6 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
       const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
       const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        const pages = (await where.pages) ?? {};
         out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, onSourceRead });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {

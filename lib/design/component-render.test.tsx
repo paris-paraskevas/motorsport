@@ -461,14 +461,25 @@ describe('renderComponents', () => {
     const zoned = html((await renderComponents(doc([region('z', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '', cardMedia: 'name', actionTitle: 'calendar', actionMedia: 'external:support', actionButton: 'page:11111111-1111-4111-8111-111111111111', actionButtonLabel: 'Read' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x', pages })).z);
     expect(zoned).toMatch(/<a href="\/calendar"[^>]*>Andrea Kimi Antonelli<\/a>/);
     expect(zoned).toMatch(/<a href="\/history\/monza"[^>]*>Read<\/a>/);
-    expect(zoned).toMatch(/<a href="https:\/\/[^"]+" target="_blank" rel="noopener noreferrer"[^>]*><span[^>]*>AA<\/span><\/a>/);
+    // The avatar is hidden from assistive technology, so its link is named after the title.
+    expect(zoned).toMatch(/<a href="https:\/\/[^"]+" target="_blank" rel="noopener noreferrer"[^>]*aria-label="Andrea Kimi Antonelli"[^>]*><span[^>]*>AA<\/span><\/a>/);
     // Without the pages map the page zone draws nothing; a row link stored on a standings shape (no link column) draws nothing.
     const bare = html((await renderComponents(doc([region('b', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '', actionFullCard: 'row:race', actionButton: 'page:11111111-1111-4111-8111-111111111111' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).b);
     expect(bare).not.toContain('<a ');
     expect(bare).not.toContain('Open');
-    // The pages map may arrive as a promise: the cards wait for it, and a Home component beside them does not.
-    const later = html((await renderComponents(doc([region('p', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '', actionButton: 'page:11111111-1111-4111-8111-111111111111' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x', pages: Promise.resolve(pages) })).p);
-    expect(later).toMatch(/<a href="\/history\/monza"[^>]*>Open<\/a>/);
+    // The pages map may arrive as a promise: the cards wait for it, and a Home component beside them does not (it is drawn while the pages are still pending).
+    let release: (p: typeof pages) => void = () => {};
+    const pending = new Promise<typeof pages>(resolve => {
+      release = resolve;
+    });
+    const drawn: string[] = [];
+    const run = renderComponents(doc([region('lead', 'home.lead'), region('p', 'data.region', { preset: 'drivers', view: 'cards', rows: 10, heading: '', actionButton: 'page:11111111-1111-4111-8111-111111111111' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x', pages: pending }, { onRendered: id => drawn.push(id) });
+    await new Promise(resolve => setTimeout(resolve, 60));
+    expect(drawn).toEqual(['lead']);
+    release(pages);
+    const later = await run;
+    expect(drawn).toEqual(['lead', 'p']);
+    expect(html(later.p)).toMatch(/<a href="\/history\/monza"[^>]*>Open<\/a>/);
   });
 
   it('a pin that does not resolve keeps the assembly’s lead; the race-weekend fact follows the live band', async () => {

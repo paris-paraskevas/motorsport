@@ -176,17 +176,18 @@ export interface DataRegionViewProps {
   actions?: CardActions;
 }
 
-/** A zone's link around a part of the card, or the part alone; an external address leaves the site in a new tab, as the Button region does. */
-function Zoned({ to, className, children }: { to: ReturnType<Zone>; className?: string; children: ReactNode }) {
+/** A zone's link around a part of the card, or the part alone; an external address leaves the site in a new tab, as the
+ *  Button region does. A part without words of its own (the avatar, hidden from assistive technology) names its link. */
+function Zoned({ to, className, label, children }: { to: ReturnType<Zone>; className?: string; label?: string; children: ReactNode }) {
   if (!to) return <>{children}</>;
   if (to.external)
     return (
-      <a href={to.href} target="_blank" rel="noopener noreferrer" className={className}>
+      <a href={to.href} target="_blank" rel="noopener noreferrer" className={className} aria-label={label}>
         {children}
       </a>
     );
   return (
-    <Link href={to.href} className={className}>
+    <Link href={to.href} className={className} aria-label={label}>
       {children}
     </Link>
   );
@@ -253,7 +254,7 @@ export function DataRegionCards({ heading, level, shape, rows, card, actions }: 
               </div>
               <div className="mt-1 flex items-start gap-3">
                 {slot.media ? (
-                  <Zoned to={zone(act.media)}>
+                  <Zoned to={zone(act.media)} label={title}>
                     <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center bg-surface font-mono text-11 font-semibold tracking-[0.08em] text-text-muted">
                       {initials(text(r[slot.media]))}
                     </span>
