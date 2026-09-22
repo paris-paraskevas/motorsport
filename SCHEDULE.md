@@ -2034,6 +2034,22 @@ Won't touch this session: P2.2 B3 beyond its place in the handoff; any other slo
 Active: ~2h 15m in three stretches: 2026-09-21 ~19:27Z–20:30Z (the open list, the scan, the plan and its critic), 2026-09-22 ~01:34Z–02:20Z (the build, the browser run, the gates, the PR, the reviewer), ~12:17Z–12:50Z (merge, prod, the records); the operator present at the words (~19:27Z, ~19:40Z, ~19:50Z, ~01:34Z, ~12:17Z); no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts
 
 
+### Tue 2026-09-22, afternoon — session 54, continued again (the operator present at the words) — P2.2 B3 The data region's Card slots and action zones; P2.2 done
+
+Order fixed by the words: "merge do whatever is next then pick up next task" (~12:17Z), the plan approved (~12:53Z, ExitPlanMode), "merge" (~14:06Z).
+
+1. **The reads and the scan** (~20 min, from ~12:25Z, while the records PR #1024 went out): the cards, the definition model, the parser's link rule and refs, the Attributes tab's link select and groups, the pages map at the three render sites, the destinations, the APEX notes; the decision scan with four items for the word and their defaults → done.
+2. **The plan and its critic** (~30 min): the plan file; a fresh-context Sonnet plan critic (284,067 tokens against the ~300k said): SOUND WITH FIXES, two blocking and nine non-blocking, folded or owned; approved ~12:53Z → done.
+3. **Tests first and the build** (~35 min): four red across four files; components.ts (dependingOn, optionsFrom, rowLinks, the Card and Actions groups, CARD_RESET in every preset's sets, parseSettings, settingsSummary), page-document.ts (the shape checks, the refs), PageDesignerProperties.tsx (the skip, the slot select, "This row"), DataRegionViews.tsx (the cards' slots and zones), component-render.tsx and the three render sites (the pages promise); green; tsc 0 → done.
+4. **The browser run and the review page** (~20 min): the dev server and the helper again; Drivers as cards rearranged by team with initials and wins, Full Card to the Calendar; the Title zone and the Button zone; Season results as cards each to its weekend page after the preset's pick; the groups gone on a Table; one default taken (a badge from another column drawn plain) and the screenshot retaken; six screenshots into the review page dac662d3-b09e-4289-81a4-db6ca3e506e1 → done.
+5. **Gates, PR, reviewer, the fix** (~40 min): the servers stopped by PID; lint, vitest 223 files 2256 tests, hooks, `DATA_SOURCE=db npm run cf:build` (1189 pages, no upstream fetch failures) and the dry run 40105.78 KiB / gzip 8812.26 KiB; the records (CHANGELOG 1.0.144, RELEASES, the version, the ledger's dated line); one commit ace72af6; PR #1025; a fresh-context Sonnet reviewer (264,876 tokens against the ~200k said): FAIL on one blocking finding (the Media zone's link without an accessible name), taken in dc0e3142 with its test and the reviewer's non-blocking point (the pages promise awaited by the cards' renderer alone); tsc, lint, vitest and the hooks again; the build's re-run stopped by the harness for low memory, reported, not restarted → done.
+6. **Merge and prod** (~14:06Z): "merge" → #1025 squash-merged 14:06:41Z as cce4f3f2 → main forward by fast-forward → prod /changelog 1.0.144 at 2026-09-22T14:14:23Z → done.
+7. **Close**: the ledger (P2.2 DONE with B3's evidence; the dated line with the run's default and the reviewer's fix), the handoff and the session-55 prompt (STEP 0 the dry run re-measured, the count and item 9; P2.9 Live band first with its scan lined up), this block, six Inbox lines, the board; the records PR 1.0.145 on the word.
+
+Won't touch this session: P2.9 beyond its place in the handoff; any other slot; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~2h 30m from ~12:17Z to ~14:45Z (the operator present at the words, ~12:17Z, ~12:53Z and ~14:06Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
