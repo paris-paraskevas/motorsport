@@ -1194,6 +1194,53 @@ describe('PageDesigner', () => {
     expect(within(view()).getByRole('button', { name: 'Table' }).getAttribute('aria-pressed')).toBe('true');
   });
 
+  it('P2.2 B3: the Card and Actions groups appear under the Attributes tab only while the View is Cards; a slot lists the preset’s columns with the preset’s own first and the tile names the pick; a zone offers this row’s link columns on a results preset; Save carries them; a preset’s pick resets them', async () => {
+    const { onSaved } = mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Data region' }));
+    fireEvent.click(tile('Component: Data region'));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    // A Table: no slot, no zone.
+    expect(within(pe).queryByLabelText('Title')).toBeNull();
+    expect(within(pe).queryByLabelText('Full Card')).toBeNull();
+    const view = () => within(pe).getByRole('group', { name: 'View' });
+    fireEvent.click(within(view()).getByRole('button', { name: 'Cards' }));
+    const title = within(pe).getByLabelText('Title') as HTMLSelectElement;
+    expect([...title.options].map(o => o.textContent)).toEqual(['Preset’s own (Driver)', 'Pos', 'Driver', 'Code', 'Team', 'Pts', 'Wins', 'Gap', 'Share']);
+    expect(title.value).toBe('');
+    expect([...(within(pe).getByLabelText('Media') as HTMLSelectElement).options].map(o => o.textContent)).not.toContain('Share');
+    fireEvent.change(title, { target: { value: 'team' } });
+    expect(status()).toMatch(/Title set/);
+    expect(tile('Component: Data region').textContent).toMatch(/Preset Drivers · View Cards · Rows 10 · Title Team/);
+    // The zones: a standings shape has no link column, so no "This row"; the catalogue and Nowhere as a Button's Target has them.
+    const fullCard = within(pe).getByLabelText('Full Card') as HTMLSelectElement;
+    expect([...fullCard.querySelectorAll('optgroup')].map(g => g.label)).not.toContain('This row');
+    expect([...fullCard.options].map(o => o.textContent)).toContain('Nowhere');
+    fireEvent.change(fullCard, { target: { value: 'calendar' } });
+    expect(within(pe).getByLabelText('Button label')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    expect(posted.document.regions.find(r => r.kind === 'component' && r.component === 'data.region')).toMatchObject({ settings: { preset: 'drivers', view: 'cards', cardTitle: 'team', cardMedia: '', actionFullCard: 'calendar', actionButtonLabel: 'Open' } });
+    // A results preset's pick resets the slots and aims Full Card at this row's race page; the Table hides the groups again.
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'results' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'season-results' } });
+    expect(within(pe).queryByLabelText('Title')).toBeNull();
+    fireEvent.click(within(view()).getByRole('button', { name: 'Cards' }));
+    expect((within(pe).getByLabelText('Title') as HTMLSelectElement).value).toBe('');
+    const full = within(pe).getByLabelText('Full Card') as HTMLSelectElement;
+    expect([...full.querySelectorAll('optgroup')].map(g => g.label)).toContain('This row');
+    expect(full.value).toBe('row:race');
+    expect([...full.options].find(o => o.value === 'row:race')?.textContent).toBe('Race → its page');
+    expect(tile('Component: Data region').textContent).toMatch(/Preset Season results · View Cards · Rows 10 · Full Card Race → its page/);
+    fireEvent.click(within(view()).getByRole('button', { name: 'Table' }));
+    expect(within(pe).queryByLabelText('Full Card')).toBeNull();
+  });
+
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {
     const home: PageRow = { ...codePage, id: 'c0de0001-0000-4000-8000-000000000001', path: '/', name: 'Home', group: 'home' };
     const { onSaved } = mount({ page: home, live: null, newest: null, revisions: [], namedBy: { lists: [], pages: [] } });

@@ -171,7 +171,8 @@ async function framed(
     const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
     const messages: Record<string, string | null> = {};
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
-    const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path })]);
+    // The pages, read above for the Buttons, reach the cards' zones too (P2.2 B3).
+    const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path, pages })]);
     return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages } }, await body);
   } catch {
     return body;

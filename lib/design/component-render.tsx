@@ -6,6 +6,8 @@ import { parseSourceRef, type SourceRef } from './sources';
 import { SHAPES, findPreset, presetRows } from './presets';
 import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
+import { resolveDestination, type PageDestinations } from './destinations';
+import type { CardActions, CardSlots } from '@/components/data/DataRegionViews';
 
 // The server half of the component catalogue (lib/design/components.ts): how
 // each component is drawn. A renderer takes the region's settings and the
@@ -46,6 +48,8 @@ export interface RenderContext {
   first: boolean;
   /** The Source the region picked (P2.1), read against the sources its definition declares; null when none. */
   source: SourceRef | null;
+  /** The live row pages a card's zone may name (P2.2 B3), as the frame reads them for Buttons; {} when the caller loads none. */
+  pages: PageDestinations;
   /** Tells the Debug trace what a source read answered (P2.1). */
   onSourceRead?: (p: SourceProvenance) => void;
 }
@@ -138,7 +142,31 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const read = await readSource(ctx.source);
     ctx.onSourceRead?.(read.provenance);
     const rows = presetRows(read.rows, preset, num(settings.rows, 10));
-    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows };
+    // The Card slots and the action zones (P2.2 B3): a slot names a column of the shape, else the preset's own; a zone follows
+    // a link column of the row (`row:<key>`, the address the column's href names) or a destination, external ones leaving the site.
+    const card: CardSlots = {
+      title: str(settings.cardTitle) || shape.card.title,
+      subtitle: str(settings.cardSubtitle) || shape.card.subtitle,
+      body: str(settings.cardBody) || shape.card.body,
+      media: str(settings.cardMedia),
+      badge: str(settings.cardBadge) || shape.card.badge,
+    };
+    const zone = (key: string): CardActions['fullCard'] => {
+      const v = str(settings[key]);
+      if (!v) return () => null;
+      if (v.startsWith('row:')) {
+        const column = shape.columns.find(c => c.key === v.slice(4) && c.type === 'link');
+        return row => {
+          const href = column?.href ? row[column.href] : null;
+          return typeof href === 'string' && href ? { href, external: false } : null;
+        };
+      }
+      const d = resolveDestination(v, ctx.pages);
+      const to = d && d.kind !== 'action' ? { href: d.href, external: d.kind === 'external' } : null;
+      return () => to;
+    };
+    const actions: CardActions = { fullCard: zone('actionFullCard'), title: zone('actionTitle'), subtitle: zone('actionSubtitle'), media: zone('actionMedia'), button: zone('actionButton'), buttonLabel: str(settings.actionButtonLabel) || 'Open' };
+    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions };
     // Timeline stands on the results' dates (the parser refuses it elsewhere); a stored one on a standings shape draws the table.
     const View =
       settings.view === 'cards' ? views.DataRegionCards : settings.view === 'list' ? views.DataRegionList : settings.view === 'timeline' && shape.source === 'results' ? views.DataRegionTimeline : settings.view === 'detail' ? views.DataRegionDetail : views.DataRegionTable;
@@ -183,6 +211,9 @@ export interface RenderPage {
   path: string;
   params?: Readonly<Record<string, string>>;
   page?: Pick<PageRow, 'path' | 'name' | 'title'>;
+  /** The live row pages the document's buttons and zones name (P2.2 B3), as the frame loads them; a promise keeps the
+   *  render parallel, each region awaiting it inside its own try. */
+  pages?: PageDestinations | Promise<PageDestinations>;
 }
 
 /**
@@ -210,7 +241,8 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
       const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
       const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, onSourceRead });
+        const pages = (await where.pages) ?? {};
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, onSourceRead });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;

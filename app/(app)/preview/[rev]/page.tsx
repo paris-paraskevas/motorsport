@@ -66,18 +66,20 @@ async function RevisionPreviewPage({ params }: { params: Params }) {
   const document = applyBuildOptions(applyConditions(stored, conditions), await loadBuildOptions());
   const asked = schemesAsked(preview.page.authz, document);
   const refs = documentRefs(document, await loadComponents());
+  // One read of the pages, shared with the renderer for the cards' zones (P2.2 B3); the render stays parallel with it.
+  const namedPages = loadNamedPages(refs.dests);
   const [shortcuts, assets, nav, schemes, components, extras, appearance, pages] = await Promise.all([
     loadShortcuts(),
     loadAssetsById(refs.assets),
     loadNavLists(),
     asked.length > 0 ? loadAuthzSchemes() : Promise.resolve([]),
     // Every component the conditions kept draws in the preview too.
-    renderComponents(document, { path: preview.page.path, params: {}, page: preview.page }),
+    renderComponents(document, { path: preview.page.path, params: {}, page: preview.page, pages: namedPages }),
     composed ? familyExtras(preview.page.path, {}) : Promise.resolve(null),
     // The templates' presets (P1.2), as the catch-all reads them.
     loadAppearance(),
     // The live row pages the buttons and go effects name (P1.12 B2), as the catch-all reads them.
-    loadNamedPages(refs.dests),
+    namedPages,
   ]);
   const messages: Record<string, string | null> = {};
   for (const key of asked) messages[key] = schemes.find(s => s.key === key)?.message ?? null;

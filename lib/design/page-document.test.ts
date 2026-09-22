@@ -261,6 +261,20 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results', view: 'detail' }, source: 'results?series=f1&season=2026' })])).problems).toEqual([]);
     // Without a Source the binding has nothing to check against, as for a preset.
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'timeline' } })])).problems).toEqual([]);
+    // P2.2 B3: a Card slot names a column of the preset's shape; a zone follows a link column of the row (`row:<key>`) or a destination, never a typed URL.
+    const cards = (settings: Record<string, unknown>, preset = 'drivers', source = 'standings?series=f1&season=2026') => parsePageDocument(doc([region({ component: 'data.region', settings: { preset, view: 'cards', ...settings }, source })]));
+    expect(cards({ cardTitle: 'team' }).problems).toEqual([]);
+    expect(cards({ cardTitle: 'team' }).value.regions[0]).toMatchObject({ settings: { cardTitle: 'team', cardMedia: '', actionFullCard: '', actionButtonLabel: 'Open' } });
+    expect(cards({ cardTitle: 'race' }).problems).toEqual(['region r: Title must be a column of the Drivers preset: Pos, Driver, Code, Team, Pts, Wins, Gap, Share']);
+    expect(cards({ actionFullCard: 'row:name' }).problems).toEqual(['region r: Full Card can follow a link column of the Drivers preset: none']);
+    expect(cards({ actionTitle: 'calendar' }).problems).toEqual([]);
+    expect(cards({ actionButton: 'https://example.com' }).problems).toEqual(['region r: Button must be a page or a link from the catalogue']);
+    const zoned = cards({ actionFullCard: 'row:race', actionTitle: 'page:11111111-1111-4111-8111-111111111111' }, 'season-results', 'results?series=f1&season=2026');
+    expect(zoned.problems).toEqual([]);
+    expect(zoned.value.regions[0]).toMatchObject({ settings: { actionFullCard: 'row:race' } });
+    // A row link is not a destination: the refs carry the page key alone.
+    expect(documentRefs(zoned.value).dests).toEqual(['page:11111111-1111-4111-8111-111111111111']);
+    expect(cards({ actionFullCard: 'row:driver' }, 'season-results', 'results?series=f1&season=2026').problems).toEqual(['region r: Full Card can follow a link column of the Season results preset: Race']);
   });
 
   it('P2.2: a choice option not yet pickable (`later`) is the writer’s refusal with its reason, on any definition that carries one', () => {
