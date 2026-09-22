@@ -31,14 +31,16 @@ export type AttributeKind = 'choice' | 'number' | 'boolean' | 'text' | 'colour' 
 
 /** An option of a choice. `group` draws the choice as a select with its groups
  *  (APEX: Select List); `only` binds the option to a region whose Source names
- *  that source and one of those series (the editor hides the rest, the parser
- *  refuses a stored one); `later` marks one not yet pickable, and why (drawn
- *  disabled, refused by the parser). P2.2's Preset carries all three. */
+ *  that source and, when a series list is given, one of those series (a grouped
+ *  choice hides the rest, an ungrouped one greys them with the reason; the
+ *  parser refuses a stored one); `later` marks one not yet pickable, and why
+ *  (drawn disabled, refused by the parser). P2.2's Preset carries all three;
+ *  its Timeline view is bound to the results source alone (P2.2 B2). */
 export interface ChoiceOption {
   key: string;
   label: string;
   group?: string;
-  only?: { source: string; series: readonly string[] };
+  only?: { source: string; series?: readonly string[] };
   later?: string;
   /** Other attributes the option sets when picked (P2.2 B1: a preset brings its view). Ours; APEX picks a report's
    *  template by hand. The stored values are left alone; the editor applies them with the pick. */
@@ -223,7 +225,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     key: 'data.region',
     name: 'Data region',
     group: 'Data',
-    holds: 'a table or cards over a source from the catalogue, in one of the site’s named shapes',
+    holds: 'a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes',
     settings: [
       {
         key: 'preset',
@@ -250,8 +252,11 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           { key: 'table', label: 'Table' },
           { key: 'cards', label: 'Cards' },
           { key: 'list', label: 'List' },
+          // Timeline stands on a date: the results rows carry the race's, the standings rows none (P2.2 B2).
+          { key: 'timeline', label: 'Timeline', only: { source: 'results' } },
+          { key: 'detail', label: 'Detail' },
         ],
-        help: 'How the rows are drawn (APEX: a Classic Report or a Cards region; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings; a preset brings its own view when picked. Timeline and Detail arrive with PR B2.',
+        help: 'How the rows are drawn (APEX: a Classic Report or a Cards region; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. A preset brings its own view when picked. The media list and the image column arrive with P2.24.',
       },
       { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole.' },
       { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name.' },

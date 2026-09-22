@@ -504,8 +504,9 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
           if (opt.later) parsed.problems.push(`${opt.label} ${opt.later}`);
           else if (opt.only && sourceRef) {
             const series = sourceRef.params.series;
-            if (sourceRef.source !== opt.only.source) parsed.problems.push(`${opt.label} is a ${findSource(opt.only.source)?.name ?? opt.only.source} preset; this region reads ${findSource(sourceRef.source)?.name ?? sourceRef.source}`);
-            else if (typeof series === 'string' && !opt.only.series.includes(series)) parsed.problems.push(`${opt.label} is not a preset of ${SERIES_OPTIONS.find(o => o.key === series)?.label ?? series}`);
+            // The same words the Attributes tab's note uses for a greyed option (P2.2 B2: a view bound to a source, no series list).
+            if (sourceRef.source !== opt.only.source) parsed.problems.push(`${opt.label} is for a ${findSource(opt.only.source)?.name ?? opt.only.source} source; this region reads ${findSource(sourceRef.source)?.name ?? sourceRef.source}`);
+            else if (opt.only.series !== undefined && typeof series === 'string' && !opt.only.series.includes(series)) parsed.problems.push(`${opt.label} is not a preset of ${SERIES_OPTIONS.find(o => o.key === series)?.label ?? series}`);
           }
         }
         if (parsed.problems.length) problems.push(...parsed.problems.map(p => `${who}: ${p}`));

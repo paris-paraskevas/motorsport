@@ -243,7 +243,7 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(ok.problems).toEqual([]);
     expect(ok.value.regions[0]).toMatchObject({ component: 'data.region', settings: { preset: 'constructors', view: 'cards', rows: 10, heading: '' }, source: 'standings?series=f1&season=2026' });
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers' } })])).problems).toEqual([]);
-    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: Drivers is a Standings preset; this region reads Results']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: Drivers is for a Standings source; this region reads Results']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'imsa-gtp-drivers' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: GTP — Drivers is not a preset of Formula 1']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'wec-lmgt3-teams' }, source: 'standings?series=wec&season=2026' })])).problems).toEqual([]);
     // P2.2 B1: the results presets parse against a Results source, stored with the List view they bring.
@@ -253,6 +253,14 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'feature-races' }, source: 'results?series=f2&season=2026' })])).problems).toEqual([]);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'feature-races' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: Feature races is not a preset of Formula 1']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results-wec' }, source: 'results?series=wec&season=2026' })])).problems).toEqual([]);
+    // P2.2 B2: the Timeline view is bound to a Results source (every series of it); Detail is open to every shape.
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results', view: 'timeline' }, source: 'results?series=f1&season=2026' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results-wec', view: 'timeline' }, source: 'results?series=wec&season=2026' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'timeline' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Timeline is for a Results source; this region reads Standings']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'detail' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results', view: 'detail' }, source: 'results?series=f1&season=2026' })])).problems).toEqual([]);
+    // Without a Source the binding has nothing to check against, as for a preset.
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'timeline' } })])).problems).toEqual([]);
   });
 
   it('P2.2: a choice option not yet pickable (`later`) is the writer’s refusal with its reason, on any definition that carries one', () => {

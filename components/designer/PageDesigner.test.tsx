@@ -1144,6 +1144,11 @@ describe('PageDesigner', () => {
     // Grouped by the fifteen, only the presets of Standings · Formula 1.
     expect([...preset.querySelectorAll('optgroup')].map(g => g.label)).toEqual(['Drivers', 'Constructors']);
     expect([...preset.options].map(o => o.textContent)).toEqual(['Drivers', 'Constructors']);
+    // P2.2 B2: Timeline is bound to a Results source; on Standings its pill is disabled with the reason in the note; Detail is open to every shape.
+    const view = () => within(pe).getByRole('group', { name: 'View' });
+    expect((within(view()).getByRole('button', { name: 'Timeline' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(within(pe).getByText(/Timeline is for a Results source; this region reads Standings/)).toBeTruthy();
+    expect((within(view()).getByRole('button', { name: 'Detail' }) as HTMLButtonElement).disabled).toBe(false);
     fireEvent.change(preset, { target: { value: 'constructors' } });
     expect(status()).toMatch(/Preset set/);
     fireEvent.click(within(within(pe).getByRole('group', { name: 'View' })).getByRole('button', { name: 'Cards' }));
@@ -1166,13 +1171,21 @@ describe('PageDesigner', () => {
     // Picking a results preset brings its view: the Rounds layout, the List pill pressed by itself.
     fireEvent.change(results, { target: { value: 'season-results' } });
     expect(status()).toMatch(/Preset set/);
-    const view = () => within(pe).getByRole('group', { name: 'View' });
     expect(within(view()).getByRole('button', { name: 'List' }).getAttribute('aria-pressed')).toBe('true');
     expect(tile('Component: Data region').textContent).toMatch(/Preset Season results · View List · Rows 8/);
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(calls.filter(c => c.method === 'POST')).toHaveLength(2));
     const second = calls.filter(c => c.method === 'POST')[1].body as { document: PageDocument };
     expect(second.document.regions.find(r => r.kind === 'component' && r.component === 'data.region')).toMatchObject({ settings: { preset: 'season-results', view: 'list', rows: 8, heading: '' }, source: 'results?series=f1&season=2026' });
+    // P2.2 B2: on a Results source the Timeline pill is open and its note gone; pressed, Save carries it.
+    expect((within(view()).getByRole('button', { name: 'Timeline' }) as HTMLButtonElement).disabled).toBe(false);
+    expect(within(pe).queryByText(/Timeline is for a Results source/)).toBeNull();
+    fireEvent.click(within(view()).getByRole('button', { name: 'Timeline' }));
+    expect(tile('Component: Data region').textContent).toMatch(/Preset Season results · View Timeline · Rows 8/);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(calls.filter(c => c.method === 'POST')).toHaveLength(3));
+    const third = calls.filter(c => c.method === 'POST')[2].body as { document: PageDocument };
+    expect(third.document.regions.find(r => r.kind === 'component' && r.component === 'data.region')).toMatchObject({ settings: { preset: 'season-results', view: 'timeline', rows: 8, heading: '' } });
     // Back to a standings preset: its view is the table again.
     fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
     fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });

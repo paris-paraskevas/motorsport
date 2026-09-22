@@ -139,7 +139,10 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     ctx.onSourceRead?.(read.provenance);
     const rows = presetRows(read.rows, preset, num(settings.rows, 10));
     const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows };
-    return settings.view === 'cards' ? <views.DataRegionCards {...props} /> : settings.view === 'list' ? <views.DataRegionList {...props} /> : <views.DataRegionTable {...props} />;
+    // Timeline stands on the results' dates (the parser refuses it elsewhere); a stored one on a standings shape draws the table.
+    const View =
+      settings.view === 'cards' ? views.DataRegionCards : settings.view === 'list' ? views.DataRegionList : settings.view === 'timeline' && shape.source === 'results' ? views.DataRegionTimeline : settings.view === 'detail' ? views.DataRegionDetail : views.DataRegionTable;
+    return <View {...props} />;
   },
 };
 

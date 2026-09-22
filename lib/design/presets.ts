@@ -16,7 +16,9 @@
 export type PresetSource = 'standings' | 'results';
 /** The `kind` a standings row carries (lib/design/source-read.ts). */
 export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver';
-/** The column types a view draws (APEX: a report's column types); image arrives with PR B2. */
+/** The column types a view draws (APEX: a report's column types). The image column, and the media-list row template with it,
+ *  arrive with P2.24, where the posts source (the one with a picture column) meets the Data region; the other template
+ *  components (Content Row, Timeline, Avatar, Badge) are drawn by the views, not declared as column types no shape uses. */
 export type ColumnType = 'position' | 'text' | 'number' | 'gap' | 'badge' | 'percent' | 'link' | 'date';
 export interface PresetColumn {
   key: string;
@@ -125,8 +127,8 @@ export interface Preset {
   series: readonly string[];
   /** The name column's label: Driver · Co-Driver · Constructor · Team · Manufacturer. */
   nameLabel: string;
-  /** The view the preset brings when picked: the standings tables, the results' Rounds layout (List). */
-  view: 'table' | 'cards' | 'list';
+  /** The view the preset brings when picked: the standings tables, the results' Rounds layout (List); Timeline and Detail (P2.2 B2) are the operator's picks, no preset brings them. */
+  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail';
 }
 
 const DRIVER_SERIES = ['f1', 'f2', 'f3', 'indycar', 'formula-e', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm'];

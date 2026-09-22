@@ -62,7 +62,14 @@ describe('the component catalogue', () => {
       ['table', 'Table'],
       ['cards', 'Cards'],
       ['list', 'List'],
+      ['timeline', 'Timeline'],
+      ['detail', 'Detail'],
     ]);
+    // P2.2 B2: Timeline is bound to a Results source (a date to stand on), every series of it; Detail is open to every shape.
+    expect(region.settings[1].options!.find(o => o.key === 'timeline')).toEqual({ key: 'timeline', label: 'Timeline', only: { source: 'results' } });
+    expect(region.settings[1].options!.find(o => o.key === 'detail')).toEqual({ key: 'detail', label: 'Detail' });
+    expect(parseSettings(region, { preset: 'season-results', view: 'timeline' }).settings.view).toBe('timeline');
+    expect(region.holds).toBe('a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes');
     expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '' });
     expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '' });
     expect(parseSettings(region, { preset: 'nope' }).problems[0]).toMatch(/^Preset must be one of Drivers, Constructors, Teams/);
