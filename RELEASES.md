@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.145 — 2026-09-22
+
+Internal only: the day’s working records. Nothing changes for readers.
+
 ## 1.0.144 — 2026-09-22
 
 In the design tool, the Data region’s cards can now be arranged: which column heads each card, which sits beneath it, which figure it carries, and whose initials stand at its corner. A card, its title, its subtitle, its avatar or a small button on it can lead somewhere: to the row’s own page (a race’s weekend, say), to a page of the site, or to a place from the catalogue. That closes the Data region: one general region over any standings or results source, drawn as a table, cards, a list, a timeline or in detail.

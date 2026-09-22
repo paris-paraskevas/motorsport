@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.145 — 2026-09-22
+
+### Records — P2.2 The data region with views DONE, the session-55 handoff with the dry run's re-measure and P2.9 Live band first
+
+Records only. `docs/plan/ledger.json`: **P2.2 flips to `done`** and carries PR B3's evidence (#1025, 1.0.144, merged 2026-09-22 14:06:41Z as cce4f3f2, prod 2026-09-22T14:14:23Z; the plan critic's and the reviewer's figures; the review page dac662d3-b09e-4289-81a4-db6ca3e506e1; the gates and the dry run 40105.78 KiB measured before the reviewer's fix, whose build re-run the harness stopped for low memory), and one dated changes line carrying the merge, the one default taken during the browser run (a badge from a column other than the position drawn plain) and the reviewer's fix (the Media zone's link named after the card's title; the pages promise awaited by the cards' renderer alone). `docs/HANDOFF.md`: the close as LATEST with the session-55 prompt (STEP 0: the dry run re-measured, the show-rule count and item 9 for the word; P2.9 Live band first with its scan lined up from the ledger's slot; the state, the rules with the harness's low-memory rule, the browser-run recipe with Playwright's substring labels, this run's landmines, the agenda). `SCHEDULE.md`: the afternoon. `IDEAS.md`: six Inbox lines. The progress board republished from the ledger. `package.json` 1.0.145. No code.
+
 ## 1.0.144 — 2026-09-22
 
 ### Designer — [P2.2 B3] The data region's Card slots and action zones; P2.2 The data region with views is done
