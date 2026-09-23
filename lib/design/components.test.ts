@@ -29,9 +29,9 @@ describe('the component catalogue', () => {
     expect(parseSettings(lead, { pinned: 'x'.repeat(121) }).problems).toEqual(['Pinned post must be text of at most 120 characters']);
   });
 
-  it('P2.1: What it changed declares the source it may read (standings); the Data region reads standings and results (P2.2); no other definition reads one', () => {
+  it('P2.1: What it changed declares the source it may read (standings); the Data region reads standings and results (P2.2), posts and news (P2.24 A); no other definition reads one', () => {
     expect(findComponent('home.changed')?.sources).toEqual(['standings']);
-    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results']);
+    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news']);
     for (const c of COMPONENTS) if (c.key !== 'home.changed' && c.key !== 'data.region') expect(c.sources, c.key).toBeUndefined();
   });
 
@@ -43,6 +43,7 @@ describe('the component catalogue', () => {
       ['view', 'choice', 'report'],
       ['rows', 'number', 'report'],
       ['heading', 'text', 'report'],
+      ['pinned', 'text', 'report'],
       ['cardTitle', 'choice', 'report'],
       ['cardSubtitle', 'choice', 'report'],
       ['cardBody', 'choice', 'report'],
@@ -58,7 +59,7 @@ describe('the component catalogue', () => {
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
     const preset = region.settings[0];
-    expect(preset.options).toHaveLength(33);
+    expect(preset.options).toHaveLength(35);
     expect(preset.options![0]).toEqual({
       key: 'drivers',
       label: 'Drivers',
@@ -72,20 +73,37 @@ describe('the component catalogue', () => {
     expect(preset.options![0].sets).toEqual({ view: 'table', ...RESET });
     for (const o of preset.options!) expect(o.sets?.actionFullCard, o.key).toBe(o.only?.source === 'results' ? 'row:race' : '');
     for (const o of preset.options!) expect(o.later, o.key).toBeUndefined();
+    // P2.24 A: Home's two boxes as presets bring their template (a View option) and their rows: the lead and three further, five headlines.
+    expect(preset.options!.find(o => o.key === 'lead-story')).toMatchObject({ key: 'lead-story', label: 'Lead story', group: 'Lead story', only: { source: 'posts' }, sets: { view: 'lead-story', rows: 4, ...RESET } });
+    expect(preset.options!.find(o => o.key === 'lead-story')!.only!.series).toHaveLength(15);
+    expect(preset.options!.find(o => o.key === 'wire')).toMatchObject({ key: 'wire', label: 'The wire', group: 'The wire', only: { source: 'news' }, sets: { view: 'wire', rows: 5, ...RESET } });
+    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(o.key === 'lead-story' || o.key === 'wire');
     expect(region.settings[1].options!.map(o => [o.key, o.label])).toEqual([
       ['table', 'Table'],
       ['cards', 'Cards'],
       ['list', 'List'],
       ['timeline', 'Timeline'],
       ['detail', 'Detail'],
+      ['lead-story', 'Lead story'],
+      ['wire', 'The wire'],
     ]);
     // P2.2 B2: Timeline is bound to a Results source (a date to stand on), every series of it; Detail is open to every shape.
     expect(region.settings[1].options!.find(o => o.key === 'timeline')).toEqual({ key: 'timeline', label: 'Timeline', only: { source: 'results' } });
     expect(region.settings[1].options!.find(o => o.key === 'detail')).toEqual({ key: 'detail', label: 'Detail' });
     expect(parseSettings(region, { preset: 'season-results', view: 'timeline' }).settings.view).toBe('timeline');
-    expect(region.holds).toBe('a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes');
-    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', ...RESET });
-    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', ...RESET });
+    // P2.24 A: Home's boxes as templates are View options bound to their sources (APEX: the report templates list, a custom one joining it).
+    expect(region.settings[1].options!.find(o => o.key === 'lead-story')).toEqual({ key: 'lead-story', label: 'Lead story', only: { source: 'posts' } });
+    expect(region.settings[1].options!.find(o => o.key === 'wire')).toEqual({ key: 'wire', label: 'The wire', only: { source: 'news' } });
+    expect(parseSettings(region, { preset: 'lead-story', view: 'lead-story' }).settings.view).toBe('lead-story');
+    const pinned = region.settings[4];
+    expect(pinned).toMatchObject({ key: 'pinned', label: 'Pinned post', kind: 'text', scope: 'report', default: '', maxLength: 120, dependingOn: { key: 'view', values: ['lead-story'] } });
+    expect(region.holds).toBe('a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes, or one of Home’s boxes as a template');
+    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '', ...RESET });
+    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', pinned: '', ...RESET });
+    // The pinned post is named on the tile while the View is Lead story and a slug is set, silent otherwise.
+    expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: 'monza-2026' })).toBe('Preset Lead story · View Lead story · Rows 4 · Pinned post monza-2026');
+    expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' })).toBe('Preset Lead story · View Lead story · Rows 4');
+    expect(settingsSummary(region, { preset: 'lead-story', view: 'table', rows: 4, heading: '', pinned: 'monza-2026' })).toBe('Preset Lead story · View Table · Rows 4');
     expect(parseSettings(region, { preset: 'nope' }).problems[0]).toMatch(/^Preset must be one of Drivers, Constructors, Teams/);
     expect(parseSettings(region, { rows: 0 }).problems).toEqual(['Rows must be a number from 1 to 50']);
     expect(settingsSummary(region, { preset: 'constructors', view: 'cards', rows: 8, heading: '' })).toMatch(/^Preset Constructors · View Cards · Rows 8/);

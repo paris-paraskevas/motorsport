@@ -280,7 +280,9 @@ export const SOURCES: readonly SourceDefinition[] = [
     name: 'Posts',
     holds: 'the published blog posts, newest first',
     parameters: [seriesParam(ALL_SERIES, false), { key: 'count', label: 'Count', kind: 'number', min: 1, max: 50, default: 10, help: 'How many, newest first.' }],
-    columns: [col('slug', 'Slug', 'text'), col('title', 'Title', 'text'), col('summary', 'Summary', 'text'), col('series', 'Series', 'text'), col('author', 'Author', 'text'), col('published', 'Published', 'date'), col('hero', 'Cover', 'image'), col('link', 'Link', 'link')],
+    // The series' name and colour and the read time (P2.24 A): what Home's lead derives, carried by the rows so the Data
+    // region's Lead story template is a function of them; Published is the post's stamp, its creation when never stamped.
+    columns: [col('slug', 'Slug', 'text'), col('title', 'Title', 'text'), col('summary', 'Summary', 'text'), col('series', 'Series slug', 'text'), col('author', 'Author', 'text'), col('published', 'Published', 'date'), col('hero', 'Cover', 'image'), col('link', 'Link', 'link'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour'), col('minutes', 'Read time', 'number')],
     fresh: 'db',
     load: 'none',
     pagination: 'none',
@@ -305,7 +307,8 @@ export const SOURCES: readonly SourceDefinition[] = [
         help: 'The reader’s cap per series, not a total: one of the two counts the pages keep warm.',
       },
     ],
-    columns: [col('title', 'Title', 'text'), col('link', 'Link', 'link'), col('source', 'Source', 'text'), col('published', 'Published', 'date'), col('series', 'Series', 'text')],
+    // The series' name and colour (P2.24 A): what Home's wire derives, carried by the rows for The wire template.
+    columns: [col('title', 'Title', 'text'), col('link', 'Link', 'link'), col('source', 'Source', 'text'), col('published', 'Published', 'date'), col('series', 'Series slug', 'text'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour')],
     fresh: 'loader',
     load: 'append',
     pagination: 'none',

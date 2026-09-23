@@ -369,21 +369,44 @@ const READERS: Readonly<Record<string, Reader>> = {
     return { tier: 'content', rows: (file?.teams ?? []).map(t => ({ name: t.name, colour: t.color ?? null, drivers: t.drivers.map(d => d.name).join(', '), count: t.drivers.length })) };
   },
   async posts(params) {
-    const { publishedPosts } = await import('@/lib/blog');
-    const all = await publishedPosts();
+    const [{ publishedPosts, readMinutes }, { loadAllSeriesMeta }] = await Promise.all([import('@/lib/blog'), import('@/lib/series')]);
+    const [all, metas] = await Promise.all([publishedPosts(), loadAllSeriesMeta()]);
+    const byslug = new Map(metas.map(m => [m.slug, m]));
     const series = params.series ? String(params.series) : null;
     const count = num(params.count) ?? 10;
+    // The first row is Home's lead (P2.24 A): fetchHomeBlogLead's order, the stamped by their stamp, newest first, the never
+    // stamped last, the creation as the tie-break; the row's Published is that stamp, the creation when there is none.
+    const stamp = (p: { publishedAt: string | null }) => (p.publishedAt ? new Date(p.publishedAt).getTime() : null);
+    const created = (p: { createdAt: string }) => new Date(p.createdAt).getTime();
     const rows: SourceRow[] = all
       .filter(p => !series || p.seriesSlug === series || p.tags.includes(series))
+      .sort((a, b) => {
+        const sa = stamp(a);
+        const sb = stamp(b);
+        if (sa === null || sb === null) return sa === sb ? created(b) - created(a) : sa === null ? 1 : -1;
+        return sb - sa || created(b) - created(a);
+      })
       .slice(0, count)
-      .map(p => ({ slug: p.slug, title: p.title, summary: p.summary, series: p.seriesSlug, author: p.authorName, published: p.publishedAt, hero: p.heroImage, link: `/blog/${p.slug}` }));
+      .map(p => {
+        const m = p.seriesSlug ? byslug.get(p.seriesSlug) : undefined;
+        return { slug: p.slug, title: p.title, summary: p.summary, series: p.seriesSlug, author: p.authorName, published: p.publishedAt ?? p.createdAt, hero: p.heroImage, link: `/blog/${p.slug}`, seriesName: m?.name ?? null, colour: m?.color ?? null, minutes: readMinutes(p.body) };
+      });
     return { tier: 'db', rows };
   },
   async news(params, keys) {
-    const { fetchAggregatedNews } = await import('@/lib/news');
+    const [{ fetchAggregatedNews }, { loadAllSeriesMeta }] = await Promise.all([import('@/lib/news'), import('@/lib/series')]);
     const per = num(params.per) ?? 3;
-    const items = await fetchAggregatedNews(per);
-    return { tier: 'snapshot', rows: items.map(i => ({ title: i.title, link: i.link, source: hostOf(i.link), published: iso(i.pubDate), series: i.seriesSlug })), run: null, meta: await metaFor(keys) };
+    const [items, metas] = await Promise.all([fetchAggregatedNews(per), loadAllSeriesMeta()]);
+    const byslug = new Map(metas.map(m => [m.slug, m]));
+    // Newest first, as Home's wire orders them (P2.24 A); the series' name and colour as buildWire resolves them, nulls for a series it does not know.
+    const rows: SourceRow[] = items
+      .slice()
+      .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+      .map(i => {
+        const m = byslug.get(i.seriesSlug);
+        return { title: i.title, link: i.link, source: hostOf(i.link), published: iso(i.pubDate), series: i.seriesSlug, seriesName: m?.name ?? null, colour: m?.color ?? null };
+      });
+    return { tier: 'snapshot', rows, run: null, meta: await metaFor(keys) };
   },
   async authors() {
     const { listAuthors } = await import('@/lib/authors');

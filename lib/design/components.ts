@@ -246,7 +246,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     key: 'data.region',
     name: 'Data region',
     group: 'Data',
-    holds: 'a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes',
+    holds: 'a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes, or one of Home’s boxes as a template',
     settings: [
       {
         key: 'preset',
@@ -259,11 +259,12 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           label: p.name,
           group: PRESET_GROUPS.find(g => g.key === p.group)?.name ?? p.group,
           only: { source: p.source, series: p.series },
-          // The pick brings the preset's view and its own card mapping (every slot and zone reset; a results preset aims
-          // Full Card at the row's race page, the one link column the results shapes carry).
-          sets: { view: p.view, ...CARD_RESET, ...(p.source === 'results' ? { actionFullCard: 'row:race' } : {}) },
+          // The pick brings the preset's view, its own rows where the site's box has a count (P2.24 A) and its own card mapping
+          // (every slot and zone reset; a results preset aims Full Card at the row's race page, the one link column the results
+          // shapes carry).
+          sets: { view: p.view, ...(p.rows !== undefined ? { rows: p.rows } : {}), ...CARD_RESET, ...(p.source === 'results' ? { actionFullCard: 'row:race' } : {}) },
         })),
-        help: 'Which of the site’s tables this region draws (APEX: a report’s template and its columns; ours: the fifteen shapes as named presets). The list follows the Source: its presets, grouped as the site groups them.',
+        help: 'Which of the site’s tables this region draws (APEX: a report’s template and its columns; ours: the fifteen shapes as named presets, and Home’s boxes). The list follows the Source: its presets, grouped as the site groups them.',
       },
       {
         key: 'view',
@@ -278,11 +279,26 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           // Timeline stands on a date: the results rows carry the race's, the standings rows none (P2.2 B2).
           { key: 'timeline', label: 'Timeline', only: { source: 'results' } },
           { key: 'detail', label: 'Detail' },
+          // Home's boxes as templates (P2.24 A; APEX: a custom report template joins the theme's in the same list), each bound
+          // to the source whose rows it reads.
+          { key: 'lead-story', label: 'Lead story', only: { source: 'posts' } },
+          { key: 'wire', label: 'The wire', only: { source: 'news' } },
         ],
-        help: 'How the rows are drawn (APEX: a Classic Report or a Cards region; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. A preset brings its own view when picked. The media list and the image column arrive with P2.24.',
+        help: 'How the rows are drawn (APEX: a report’s Template; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. Lead story (posts) and The wire (news) are Home’s boxes as templates: the lead with its cover, its age and its further reading; the headlines linked out with their source and age; each brings its rows. A preset brings its own view when picked.',
       },
-      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole.' },
-      { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name.' },
+      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole; for the Lead story, the lead and its further reading.' },
+      { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name. The Lead story writes it in its eyebrow, The wire in its rule.' },
+      // The Lead story's pin (P2.24 A; the words of home.lead's), drawn while the View is Lead story.
+      {
+        key: 'pinned',
+        label: 'Pinned post',
+        kind: 'text',
+        scope: 'report',
+        default: '',
+        maxLength: 120,
+        dependingOn: { key: 'view', values: ['lead-story'] },
+        help: 'The slug of a post to lead with, from its address (/blog/<slug>), among the rows the Source reads (its Count; raise it for an older post). Empty leads with the newest.',
+      },
       // The Card slots (P2.2 B3; APEX Cards: Title Column, Subtitle Column, Body Column, Icon Initials Column, Badge Column),
       // drawn while the View is Cards; '' is the preset's own mapping.
       ...(
@@ -290,7 +306,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           ['cardTitle', 'Title', 'The column the card is headed by (APEX: Title Column); the preset’s own is the driver’s or team’s name.'],
           ['cardSubtitle', 'Subtitle', 'The line under the title (APEX: Subtitle Column); the preset’s own is the team.'],
           ['cardBody', 'Body', 'The figure at the top right (APEX: Body Column); the preset’s own is the points, or the gap on a timing export.'],
-          ['cardMedia', 'Media', 'The column whose text gives the avatar’s initials at the top left (APEX: Icon Initials Column; the Media source for a picture arrives with P2.24). A number column shows its first digit, which reads badly.'],
+          ['cardMedia', 'Media', 'The column at the top left (APEX: Icon Initials Column, or the Media source): a picture column draws the picture, any other the initials of its text. A number column shows its first digit, which reads badly.'],
           ['cardBadge', 'Badge', 'The small figure at the top left (APEX: Badge Column); the preset’s own is the position, or the car’s number.'],
         ] as const
       ).map(([key, label, help]) => ({ key, label, kind: 'choice' as const, scope: 'report' as const, group: 'card', dependingOn: CARDS_ONLY, optionsFrom: 'columns' as const, default: '', help })),
@@ -311,7 +327,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'card', title: 'Card', seq: 10 },
       { key: 'actions', title: 'Actions', seq: 20 },
     ],
-    sources: ['standings', 'results'],
+    sources: ['standings', 'results', 'posts', 'news'],
   },
   // The Live band (P2.9; ours by name: APEX has no live band, a domain piece the site draws on Home as This weekend, whose
   // renderer is the band's first instance). It reads the content bundle through the home model as Home's pieces do, never

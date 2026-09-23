@@ -2,6 +2,8 @@ import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 import type { Preset, PresetColumn, PresetRow, Shape } from '@/lib/design/presets';
+import { ageLabel } from '@/lib/date';
+import { seriesInk } from '@/lib/site';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -19,9 +21,13 @@ import type { Preset, PresetColumn, PresetRow, Shape } from '@/lib/design/preset
 // Pairs - Column: a block per row, the column headers as the labels. The
 // template components the views draw are named here (ContentRow, initials as
 // Avatar, the chips as Badge); none is a column type, since no shape draws one
-// as a table column. Server-rendered, imported dynamically from
-// component-render.tsx as the Home pieces are. Every value is text React
-// escapes (rule 4).
+// as a table column, save the image column (P2.24 A: a thumbnail in a cell,
+// the picture in a card's Media box). The Lead story and The wire (P2.24 A)
+// are Home's two boxes copied verbatim from components/HomeLead.tsx as
+// templates over the posts and news shapes, so the flip (PR C) serves the same
+// HTML; they become that markup's home when Home's pieces retire.
+// Server-rendered, imported dynamically from component-render.tsx as the Home
+// pieces are. Every value is text React escapes (rule 4).
 
 const HEADING = 'font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3';
 const RIGHT: ReadonlySet<PresetColumn['type']> = new Set(['position', 'number', 'gap']);
@@ -77,20 +83,41 @@ function cellValue(column: PresetColumn, row: PresetRow, leader: number): ReactN
     }
     case 'link': {
       const href = column.href ? text(row[column.href]) : '';
-      return href ? (
+      if (!href) return text(v);
+      // A column whose address leaves the site (the news title) opens in a new tab, as an external destination does.
+      if (column.external)
+        return (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-tint hover:underline">
+            {text(v)}
+          </a>
+        );
+      return (
         <Link href={href} className="underline-offset-4 hover:text-tint hover:underline">
           {text(v)}
         </Link>
-      ) : (
-        text(v)
       );
     }
     case 'date':
       return formatDate(v);
+    case 'image': {
+      // A thumbnail of the picture (P2.24 A); remote covers never went through next/image (HomeLead.tsx draws them the same way).
+      const src = text(v);
+      // eslint-disable-next-line @next/next/no-img-element
+      return src ? <img src={src} alt="" width={1200} height={750} className="h-10 w-16 shrink-0 border border-border bg-surface object-cover" /> : null;
+    }
     default:
       return text(v);
   }
 }
+
+/** A slot's value as text: a date column as the site's date, the rest as given (P2.24 A: a post's Published in a card's body). */
+const slotText = (shape: Shape, row: PresetRow, key: string): string => (shape.columns.find(c => c.key === key)?.type === 'date' ? formatDate(row[key]) : text(row[key]));
+
+/** A stamp's age at the render's instant, '' without a stamp. */
+const ageOf = (v: unknown, now: Date | undefined): string => {
+  const d = typeof v === 'string' && v ? new Date(v) : null;
+  return d && !Number.isNaN(d.getTime()) ? ageLabel(d, now ?? new Date()) : '';
+};
 
 /** The Table cell's classes per column type: the site's standings tables. */
 function tdClass(column: PresetColumn, row: PresetRow): string {
@@ -109,6 +136,8 @@ function tdClass(column: PresetColumn, row: PresetRow): string {
       return 'py-2 pr-3 align-baseline font-condensed text-15 font-semibold text-text';
     case 'date':
       return 'py-2 pr-3 align-baseline text-xs text-text-muted';
+    case 'image':
+      return 'py-2 pr-3 align-middle';
     default:
       return column.key === 'name' ? 'py-2 pr-3 align-baseline font-condensed text-15 font-semibold text-text' : 'py-2 pr-3 align-baseline text-xs text-text-muted';
   }
@@ -119,10 +148,12 @@ function Cell({ column, row, leader }: { column: PresetColumn; row: PresetRow; l
 }
 
 /** The row's who, as the site's rows name it: the standings' name; the drivers on race and cup rows (GtWorldResultRow
- *  never falls back); the drivers or, failing them, the team on car rows (ImsaResultRow). */
+ *  never falls back); the drivers or, failing them, the team on car rows (ImsaResultRow); the card's title on a shape
+ *  without a name or a driver (the posts, the headlines; P2.24 A). */
 function whoOf(shape: Shape, row: PresetRow): string {
-  if (shape.source !== 'results') return text(row.name);
-  return shape.key === 'car-rows' ? text(row.driver) || text(row.team) : text(row.driver);
+  if (shape.source === 'standings') return text(row.name);
+  if (shape.source === 'results') return shape.key === 'car-rows' ? text(row.driver) || text(row.team) : text(row.driver);
+  return text(row[shape.card.title]);
 }
 /** A classification's winner: the position-1 row, else the first row as it came. */
 const winnerOf = (entries: readonly PresetRow[]): PresetRow => entries.find(e => e.position === 1) ?? entries[0];
@@ -174,6 +205,8 @@ export interface DataRegionViewProps {
   /** The Cards view's slots and zones (P2.2 B3); the shape's own mapping and no zone when absent. */
   card?: CardSlots;
   actions?: CardActions;
+  /** The render's instant, for the age a stamp is given (P2.24 A); the clock when absent. */
+  now?: Date;
 }
 
 /** A zone's link around a part of the card, or the part alone; an external address leaves the site in a new tab, as the
@@ -227,36 +260,46 @@ export function DataRegionTable({ heading, level, shape, preset, rows }: DataReg
   );
 }
 
-/** APEX Cards' Grid layout: the slots the renderer resolved (the shape's own mapping by default), the Media as the initials
- *  of its column's text (APEX Icon Initials), and the action zones. Full Card set and resolved for a row makes that card one
- *  link named after its title, and its other zones stand down: no link inside a link. A zone that resolves to nothing for a
- *  row draws that part plain. */
+/** APEX Cards' Grid layout: the slots the renderer resolved (the shape's own mapping by default), the Media as the picture of
+ *  an image column (P2.24 A) or the initials of its column's text (APEX Icon Initials), and the action zones. Full Card set
+ *  and resolved for a row makes that card one link named after its title, and its other zones stand down: no link inside a
+ *  link. A zone that resolves to nothing for a row draws that part plain. */
 export function DataRegionCards({ heading, level, shape, rows, card, actions }: DataRegionViewProps) {
   const H = level;
-  const slot: CardSlots = card ?? { ...shape.card, media: '' };
+  const slot: CardSlots = card ?? { ...shape.card, media: shape.card.media ?? '' };
   const act = actions ?? NO_ACTIONS;
+  const picture = shape.columns.find(c => c.key === slot.media)?.type === 'image';
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((r, i) => {
-          const title = text(r[slot.title]);
-          const subtitle = slot.subtitle ? text(r[slot.subtitle]) : '';
+          const title = slotText(shape, r, slot.title);
+          const subtitle = slot.subtitle ? slotText(shape, r, slot.subtitle) : '';
           const full = act.fullCard(r);
           const zone = (z: Zone) => (full ? null : z(r));
           const button = zone(act.button);
+          const media = text(r[slot.media]);
           const body = (
             <>
               <div className="flex items-baseline justify-between gap-3">
                 {/* The leader's colour belongs to the position; a badge from another column (the wins, the car) is plain. */}
-                <span className={`font-mono text-11 tabular-nums ${slot.badge === 'position' && r.position === 1 ? 'text-brand font-bold' : 'text-text-faint'}`}>{text(r[slot.badge])}</span>
-                <span className="font-mono text-13 font-semibold tabular-nums text-numeral">{text(r[slot.body])}</span>
+                <span className={`font-mono text-11 tabular-nums ${slot.badge === 'position' && r.position === 1 ? 'text-brand font-bold' : 'text-text-faint'}`}>{slotText(shape, r, slot.badge)}</span>
+                <span className="font-mono text-13 font-semibold tabular-nums text-numeral">{slotText(shape, r, slot.body)}</span>
               </div>
               <div className="mt-1 flex items-start gap-3">
                 {slot.media ? (
                   <Zoned to={zone(act.media)} label={title}>
                     <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center bg-surface font-mono text-11 font-semibold tracking-[0.08em] text-text-muted">
-                      {initials(text(r[slot.media]))}
+                      {/* A picture column draws its picture, an empty box without one; any other column its initials. */}
+                      {picture ? (
+                        media ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={media} alt="" width={1200} height={750} className="h-9 w-9 object-cover" />
+                        ) : null
+                      ) : (
+                        initials(media)
+                      )}
                     </span>
                   </Zoned>
                 ) : null}
@@ -409,16 +452,18 @@ function RoundGroup({ shape, entries }: { shape: Shape; entries: readonly Preset
 export function DataRegionList({ heading, level, shape, rows }: DataRegionViewProps) {
   const H = level;
   if (shape.source !== 'results') {
-    // A standings shape's compact list: the position, the name, the points.
+    // A standings shape's compact list: the position, the name, the points; a shape without them (the posts, the headlines;
+    // P2.24 A) its card's badge, title and body, a date as the site's.
+    const { badge, title, body } = shape.card;
     return (
       <section className="border-y border-border py-4">
         <H className={HEADING}>{heading}</H>
         <ul className="divide-y divide-border/60">
           {rows.map((r, i) => (
-            <li key={`${text(r.position)}-${text(r.name)}-${i}`} className="flex items-baseline gap-3 py-2">
-              <span className={`w-6 text-right font-mono text-sm tabular-nums ${r.position === 1 ? 'text-brand font-bold' : 'text-text-faint'}`}>{text(r.position)}</span>
-              <span className="min-w-0 flex-1 truncate font-condensed text-15 font-semibold text-text">{text(r.name)}</span>
-              <span className="w-10 text-right font-mono text-13 font-semibold tabular-nums text-numeral">{text(r.points)}</span>
+            <li key={`${slotText(shape, r, badge)}-${slotText(shape, r, title)}-${i}`} className="flex items-baseline gap-3 py-2">
+              <span className={`w-6 text-right font-mono text-sm tabular-nums ${badge === 'position' && r.position === 1 ? 'text-brand font-bold' : 'text-text-faint'}`}>{slotText(shape, r, badge)}</span>
+              <span className="min-w-0 flex-1 truncate font-condensed text-15 font-semibold text-text">{slotText(shape, r, title)}</span>
+              <span className="w-10 text-right font-mono text-13 font-semibold tabular-nums text-numeral">{slotText(shape, r, body)}</span>
             </li>
           ))}
         </ul>
@@ -482,7 +527,8 @@ export function DataRegionTimeline({ heading, level, shape, rows }: DataRegionVi
  *  the Table draws them (the share as a figure). Rows applies as it does to the Table. */
 export function DataRegionDetail({ heading, level, shape, preset, rows }: DataRegionViewProps) {
   const H = level;
-  const whoKey = shape.source === 'results' ? 'driver' : 'name';
+  // The who heads the block, so its column leaves the pairs: the name, the driver, a post's title (the card's title column).
+  const whoKey = shape.card.title;
   const columns = tableColumns(shape, preset, rows).filter(c => c.type !== 'position' && c.key !== whoKey);
   const leader = leaderPoints(rows);
   return (
@@ -508,6 +554,132 @@ export function DataRegionDetail({ heading, level, shape, preset, rows }: DataRe
           </li>
         ))}
       </ol>
+    </section>
+  );
+}
+
+/** The site's section rule (components/HomeLead.tsx SectionRule, copied for The wire): the label, and words at the right. */
+function SectionRule({ label, right }: { label: string; right?: string }) {
+  return (
+    <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
+      <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</span>
+      {right !== undefined && <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{right}</span>}
+    </div>
+  );
+}
+
+/** Home's Lead story (components/HomeLead.tsx HomeLeadStory) as the template of the posts source (P2.24 A): the first row
+ *  leads, its cover a redundant link (the typographic panel with the series' name, or Paddock, without one), the eyebrow
+ *  (the region's heading, the age, the series' bar and name, the read time), the title at the region's heading level, the
+ *  summary, the button; the rows that follow are More reading, with a thumbnail where a cover exists. Nothing without rows.
+ *  Home's markup verbatim, so the flip (PR C) serves the same HTML; the links are the row's link column. */
+export function DataRegionLeadStory({ heading, level, rows, now }: DataRegionViewProps) {
+  const lead = rows[0];
+  if (!lead) return null;
+  const H = level;
+  const href = text(lead.link);
+  const cover = text(lead.hero);
+  const seriesName = text(lead.seriesName);
+  const colour = text(lead.colour);
+  const age = ageOf(lead.published, now);
+  const minutes = num(lead.minutes);
+  const more = rows.slice(1);
+  return (
+    <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated shadow-lg">
+      <div className="grid lg:grid-cols-[minmax(0,46%)_1fr]">
+        {/* Redundant link: aria-hidden + tabIndex -1 so the picture stays clickable for a mouse without announcing a duplicate
+            of the headline link beside it. */}
+        <Link href={href} aria-hidden="true" tabIndex={-1} className="block border-b-[1.5px] border-text lg:border-b-0 lg:border-r-[1.5px]">
+          {cover ? (
+            // 8/5 = 1.6:1, the operator's call: tall and dominant rather than a letterbox; width/height carry the same ratio so
+            // the reserved box matches the CSS one and nothing shifts before Tailwind lands; object-cover crops the source.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={cover} alt="" width={1200} height={750} fetchPriority="high" className="aspect-[8/5] h-full w-full object-cover" />
+          ) : (
+            // No cover: a typographic panel rather than a broken box.
+            <span className="flex aspect-[8/5] items-end bg-surface p-4">
+              <span className="font-mono text-28 font-bold uppercase leading-none tracking-[-0.02em] text-text-faint lg:text-38">{seriesName || 'Paddock'}</span>
+            </span>
+          )}
+        </Link>
+        {/* Vertically centred from lg up, where the grid is two columns and the image's 8/5 ratio drives the row height. */}
+        <div className="flex min-w-0 flex-col p-[18px] lg:justify-center lg:p-5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="font-mono text-10 font-bold uppercase tracking-[0.2em] text-brand">{heading}</span>
+            {age && <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">{age}</span>}
+            {seriesName && (
+              <>
+                <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: colour || undefined }} />
+                <span className="font-mono text-10 font-semibold uppercase tracking-[0.16em]" style={{ color: colour ? seriesInk(colour) : undefined }}>
+                  {seriesName}
+                </span>
+              </>
+            )}
+            {minutes !== null && <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">{minutes} min read</span>}
+          </div>
+          {/* Fluid type, not breakpoint steps: the page has no max width; the ch-based measure rides the font-size. */}
+          <H className="mt-3 font-serif text-[clamp(30px,2.7vw,72px)] font-semibold leading-[1.06] text-text lg:max-w-[20ch]">
+            <Link href={href} className="decoration-2 underline-offset-4 hover:underline">
+              {text(lead.title)}
+            </Link>
+          </H>
+          <p className="mt-3 line-clamp-3 font-serif text-[clamp(17px,0.85vw,22px)] leading-snug text-text-muted lg:max-w-[56ch]">{text(lead.summary)}</p>
+          <Link href={href} className="mt-5 inline-flex min-h-11 items-center self-start bg-text px-5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
+            Read the story →
+          </Link>
+          {/* Further reading fills the space the 8/5 cover leaves beside it; xl and up only, below that the column is full. */}
+          {more.length > 0 && (
+            <div className="mt-8 hidden border-t border-border pt-4 xl:block">
+              <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">More reading</span>
+              <ul className="mt-2">
+                {more.map((s, i) => (
+                  <li key={`${text(s.slug)}-${i}`}>
+                    {/* The thumbnail is deliberately small beside the band's own cover; no cover, no thumbnail and the title spans the row. */}
+                    <Link href={text(s.link)} className="flex items-center gap-3 border-b border-border py-2 font-serif text-16 font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text">
+                      {text(s.hero) && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={text(s.hero)} alt="" width={1200} height={630} className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover" />
+                      )}
+                      <span className="min-w-0 flex-1">{text(s.title)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Home's wire (components/HomeLead.tsx HomeWire) as the template of the news source (P2.24 A): the section named by the
+ *  region's heading, the rule with Home's words, each headline an external link with the series' colour bar, "Series · source"
+ *  (the source alone for a series the reader did not know) and its age. Nothing without rows. Home's markup verbatim, for the
+ *  flip's parity. */
+export function DataRegionWire({ heading, rows, now }: DataRegionViewProps) {
+  if (rows.length === 0) return null;
+  return (
+    <section aria-label={heading}>
+      <SectionRule label={heading} right="Reported elsewhere · linked out" />
+      <ul>
+        {rows.map((r, i) => {
+          const seriesName = text(r.seriesName);
+          const source = text(r.source);
+          return (
+            <li key={`${text(r.link)}-${i}`}>
+              <a href={text(r.link)} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-baseline gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface">
+                <span aria-hidden="true" className="relative top-[2px] h-3.5 w-[3px] shrink-0 self-start" style={{ backgroundColor: text(r.colour) || undefined }} />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-serif text-16 font-semibold leading-snug text-text">{text(r.title)}</span>
+                  <span className="block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{seriesName ? `${seriesName} · ${source}` : source}</span>
+                </span>
+                <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">{ageOf(r.published, now)}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }

@@ -9,7 +9,7 @@ import { SERIES_OPTIONS } from './sources';
 // results presets declared and waiting for the Rounds view (PR B).
 
 describe('the preset catalogue', () => {
-  it('holds the fifteen groups in the drawn order and thirty-three presets: twenty-six standings over two shapes, seven results over three, drawn as the Rounds layout by default (P2.2 B1)', () => {
+  it('holds the seventeen groups in the drawn order and thirty-five presets: twenty-six standings over two shapes, seven results over three, drawn as the Rounds layout by default (P2.2 B1), and Home’s two boxes over posts and news (P2.24 A)', () => {
     expect(PRESET_GROUPS.map(g => g.name)).toEqual([
       'Drivers',
       'Constructors',
@@ -26,13 +26,17 @@ describe('the preset catalogue', () => {
       'Season results · IMSA',
       'Season results · WEC',
       'Season results · GT World',
+      'Lead story',
+      'The wire',
     ]);
-    expect(PRESETS).toHaveLength(33);
+    expect(PRESETS).toHaveLength(35);
     const standings = PRESETS.filter(p => p.source === 'standings');
     expect(standings).toHaveLength(26);
     expect(new Set(standings.map(p => p.shape))).toEqual(new Set(['driver-rows', 'team-rows']));
     const results = PRESETS.filter(p => p.source === 'results');
     expect(results).toHaveLength(7);
+    expect(PRESETS.filter(p => p.source === 'posts').map(p => p.key)).toEqual(['lead-story']);
+    expect(PRESETS.filter(p => p.source === 'news').map(p => p.key)).toEqual(['wire']);
     for (const p of PRESETS) expect(Object.keys(p), p.key).not.toContain('later');
     for (const p of results) expect(p.view, p.key).toBe('list');
     for (const p of standings) expect(p.view, p.key).toBe('table');
@@ -53,7 +57,7 @@ describe('the preset catalogue', () => {
     expect(SHAPES['car-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'date', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'gap']);
     expect(SHAPES['cup-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'laps', 'gap']);
     expect(SHAPES['car-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'gap', badge: 'car' });
-    expect(new Set(PRESETS.map(p => p.key)).size).toBe(33);
+    expect(new Set(PRESETS.map(p => p.key)).size).toBe(35);
     const groups = new Set(PRESET_GROUPS.map(g => g.key));
     const slugs = new Set(SERIES_OPTIONS.map(o => o.key));
     for (const p of PRESETS) {
@@ -175,6 +179,49 @@ describe('the preset catalogue', () => {
       { round: 2, raceId: 501, race: 'Brands Hatch Race 1', class: 'Pro Cup', position: 1, driver: 'Pro P1' },
     ];
     expect(presetRows(cups, findPreset('season-results-gt-world')!, 50).map(r => r.driver)).toEqual(['Gold P1', 'Pro P1', 'Pro P2', 'Spa P1']);
+  });
+
+  it('P2.24 A: Home’s two boxes over the posts and news sources: the Lead story preset over post-rows (its view the Lead story template, four rows: the lead and three further) and The wire over news-rows (its view The wire, five rows), every series; the shapes carry the pieces’ facts, the cover as the image column, the news title as a link that leaves the site; a shape without a position keeps the source’s order', () => {
+    expect(PRESET_GROUPS.slice(-2)).toEqual([
+      { key: 'lead-story', name: 'Lead story', source: 'posts' },
+      { key: 'wire', name: 'The wire', source: 'news' },
+    ]);
+    expect(findPreset('lead-story')).toMatchObject({ name: 'Lead story', group: 'lead-story', source: 'posts', shape: 'post-rows', where: {}, view: 'lead-story', rows: 4, nameLabel: 'Title' });
+    expect(findPreset('wire')).toMatchObject({ name: 'The wire', group: 'wire', source: 'news', shape: 'news-rows', where: {}, view: 'wire', rows: 5 });
+    for (const key of ['lead-story', 'wire']) expect([...findPreset(key)!.series].sort(), key).toEqual(SERIES_OPTIONS.map(o => o.key).sort());
+    for (const key of ['drivers', 'season-results']) expect(findPreset(key)!.rows, key).toBeUndefined();
+    expect(SHAPES['post-rows']).toEqual({
+      key: 'post-rows',
+      source: 'posts',
+      columns: [
+        { key: 'hero', label: 'Cover', type: 'image' },
+        { key: 'title', label: 'Title', type: 'link', href: 'link' },
+        { key: 'summary', label: 'Summary', type: 'text' },
+        { key: 'seriesName', label: 'Series', type: 'text' },
+        { key: 'author', label: 'Author', type: 'text' },
+        { key: 'published', label: 'Published', type: 'date' },
+        { key: 'minutes', label: 'Read time', type: 'number' },
+      ],
+      card: { title: 'title', subtitle: 'author', body: 'published', badge: 'seriesName', media: 'hero' },
+    });
+    expect(SHAPES['news-rows']).toEqual({
+      key: 'news-rows',
+      source: 'news',
+      columns: [
+        { key: 'title', label: 'Title', type: 'link', href: 'link', external: true },
+        { key: 'source', label: 'Source', type: 'text' },
+        { key: 'seriesName', label: 'Series', type: 'text' },
+        { key: 'published', label: 'Published', type: 'date' },
+      ],
+      card: { title: 'title', subtitle: 'source', body: 'published', badge: 'seriesName' },
+    });
+    expect(presetsFor('posts', 'f1').map(p => p.key)).toEqual(['lead-story']);
+    expect(presetsFor('posts', 'wsbk').map(p => p.key)).toEqual(['lead-story']);
+    expect(presetsFor('news', 'nls').map(p => p.key)).toEqual(['wire']);
+    // No position on a post or a headline: the rows stay in the source's order (newest first), cut to the count.
+    const posts = [{ slug: 'a', title: 'A' }, { slug: 'b', title: 'B' }, { slug: 'c', title: 'C' }];
+    expect(presetRows(posts, findPreset('lead-story')!, 2).map(r => r.slug)).toEqual(['a', 'b']);
+    expect(presetRows(posts, findPreset('wire')!, 10).map(r => r.slug)).toEqual(['a', 'b', 'c']);
   });
 
   it('imports nothing at runtime: the catalogue reaches every route’s chunk through the parser, so it stays declarations', () => {

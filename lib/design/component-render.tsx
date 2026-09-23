@@ -51,6 +51,8 @@ export interface RenderContext {
   /** The live row pages a card's zone may name (P2.2 B3), as the frame reads them for Buttons; {} when the caller loads
    *  none. A promise, so only the renderer that reads it waits for it. */
   pages: Promise<PageDestinations>;
+  /** The render's instant, one for every region, so the age labels agree across them (P2.24 A); the tests fix it. */
+  now: Date;
   /** Tells the Debug trace what a source read answered (P2.1). */
   onSourceRead?: (p: SourceProvenance) => void;
 }
@@ -152,16 +154,21 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
     const read = await readSource(ctx.source);
     ctx.onSourceRead?.(read.provenance);
-    const rows = presetRows(read.rows, preset, num(settings.rows, 10));
+    // The Lead story's pin (P2.24 A): the post whose slug is named leads, from every row the Source read, the rest following
+    // it; none by that slug and the newest leads, as Home's pin falls back.
+    const pinned = str(settings.pinned);
+    const lead = pinned ? read.rows.find(r => r.slug === pinned) : undefined;
+    const ordered = lead ? [lead, ...read.rows.filter(r => r !== lead)] : read.rows;
+    const rows = presetRows(ordered, preset, num(settings.rows, 10));
     // The Card slots and the action zones (P2.2 B3): a slot names a column of the shape, else the preset's own; a zone follows
-    // a link column of the row (`row:<key>`, the address the column's href names) or a destination, external ones leaving the site.
-    // The pages are awaited here alone, so the other regions never wait for them.
+    // a link column of the row (`row:<key>`, the address the column's href names, leaving the site when the column does) or a
+    // destination, external ones leaving the site. The pages are awaited here alone, so the other regions never wait for them.
     const pages = await ctx.pages;
     const card: CardSlots = {
       title: str(settings.cardTitle) || shape.card.title,
       subtitle: str(settings.cardSubtitle) || shape.card.subtitle,
       body: str(settings.cardBody) || shape.card.body,
-      media: str(settings.cardMedia),
+      media: str(settings.cardMedia) || shape.card.media || '',
       badge: str(settings.cardBadge) || shape.card.badge,
     };
     const zone = (key: string): CardActions['fullCard'] => {
@@ -171,7 +178,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
         const column = shape.columns.find(c => c.key === v.slice(4) && c.type === 'link');
         return row => {
           const href = column?.href ? row[column.href] : null;
-          return typeof href === 'string' && href ? { href, external: false } : null;
+          return typeof href === 'string' && href ? { href, external: column?.external === true } : null;
         };
       }
       const d = resolveDestination(v, pages);
@@ -179,10 +186,23 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
       return () => to;
     };
     const actions: CardActions = { fullCard: zone('actionFullCard'), title: zone('actionTitle'), subtitle: zone('actionSubtitle'), media: zone('actionMedia'), button: zone('actionButton'), buttonLabel: str(settings.actionButtonLabel) || 'Open' };
-    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions };
+    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions, now: ctx.now };
     // Timeline stands on the results' dates (the parser refuses it elsewhere); a stored one on a standings shape draws the table.
+    // Home's boxes as templates (P2.24 A) stand on their own shapes the same way.
     const View =
-      settings.view === 'cards' ? views.DataRegionCards : settings.view === 'list' ? views.DataRegionList : settings.view === 'timeline' && shape.source === 'results' ? views.DataRegionTimeline : settings.view === 'detail' ? views.DataRegionDetail : views.DataRegionTable;
+      settings.view === 'cards'
+        ? views.DataRegionCards
+        : settings.view === 'list'
+          ? views.DataRegionList
+          : settings.view === 'timeline' && shape.source === 'results'
+            ? views.DataRegionTimeline
+            : settings.view === 'detail'
+              ? views.DataRegionDetail
+              : settings.view === 'lead-story' && shape.source === 'posts'
+                ? views.DataRegionLeadStory
+                : settings.view === 'wire' && shape.source === 'news'
+                  ? views.DataRegionWire
+                  : views.DataRegionTable;
     return <View {...props} />;
   },
 };
@@ -209,8 +229,9 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'home.changed': ['snapshot:standings:', 'snapshot:f1:'],
   'home.next': ['content:series'],
   'home.wire': ['snapshot:news:aggregate:'],
-  // The Data region reads its Source: the standings' two tiers, the results' snapshots.
-  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:'],
+  // The Data region reads its Source: the standings' two tiers, the results' snapshots, the posts table and the news aggregate
+  // (P2.24 A), and the series' names and colours from the bundle for the last two.
+  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series'],
 };
 
 /** What the Debug trace asks of a render (P1.9): each component's timing and outcome. */
@@ -228,6 +249,8 @@ export interface RenderPage {
   /** The live row pages the document's buttons and zones name (P2.2 B3), as the frame loads them; a promise keeps the
    *  render parallel, each region awaiting it inside its own try. */
   pages?: PageDestinations | Promise<PageDestinations>;
+  /** The render's instant (P2.24 A); the frame leaves it to the clock, the tests fix it. */
+  now?: Date;
 }
 
 /**
@@ -244,6 +267,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   const page = where.page ?? { path: where.path, name: '', title: null };
   // The pages as one promise every region shares; a renderer that reads them awaits it inside its own try, the rest never wait.
   const pages = Promise.resolve(where.pages ?? {});
+  const now = where.now ?? new Date();
   await Promise.all(
     regions.map(async r => {
       const render = RENDERERS[r.component];
@@ -257,7 +281,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
       const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
       const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, onSourceRead });
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;

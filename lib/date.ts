@@ -1,3 +1,13 @@
+/** How long ago something was published, as the home wire and the lead card stamp it (and, since P2.24 A, the Data region's
+ *  Lead story and The wire templates): minutes under ninety, hours under thirty-six, else days; never negative. */
+export function ageLabel(pubDate: Date, now: Date): string {
+  const mins = Math.max(0, Math.round((now.getTime() - pubDate.getTime()) / 60000));
+  if (mins < 90) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 36) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
+}
+
 export function formatRelative(date: Date, now: Date = new Date()): string {
   const diffMs = date.getTime() - now.getTime();
   if (diffMs < 0) return 'past';

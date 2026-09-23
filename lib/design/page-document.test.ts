@@ -259,6 +259,17 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'timeline' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Timeline is for a Results source; this region reads Standings']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'detail' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual([]);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results', view: 'detail' }, source: 'results?series=f1&season=2026' })])).problems).toEqual([]);
+    // P2.24 A: Home's boxes as templates are View options bound to their sources; the Lead story preset over a posts source with or without a
+    // Series parameter; a slot may name the cover; a zone may follow the news title's link; a pinned slug is read.
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'lead-story' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Lead story is for a Posts source; this region reads Standings']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results', view: 'wire' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: The wire is for a News source; this region reads Results']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'lead-story' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Lead story is for a Posts source; this region reads Standings']);
+    const lead = parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story', rows: 4, cardMedia: 'hero', pinned: 'monza-2026' }, source: 'posts?count=10' })]));
+    expect(lead.problems).toEqual([]);
+    expect(lead.value.regions[0]).toMatchObject({ settings: { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: 'monza-2026', cardMedia: 'hero' } });
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story' }, source: 'posts?series=f1&count=10' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story', cardTitle: 'race' }, source: 'posts?count=10' })])).problems).toEqual(['region r: Title must be a column of the Lead story preset: Cover, Title, Summary, Series, Author, Published, Read time']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'wire', view: 'wire', actionFullCard: 'row:title' }, source: 'news?per=3' })])).problems).toEqual([]);
     // Without a Source the binding has nothing to check against, as for a preset.
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'timeline' } })])).problems).toEqual([]);
     // P2.2 B3: a Card slot names a column of the preset's shape; a zone follows a link column of the row (`row:<key>`) or a destination, never a typed URL.
