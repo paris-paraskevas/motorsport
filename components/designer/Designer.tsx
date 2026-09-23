@@ -16,6 +16,7 @@ import type { EditableAuthzScheme } from '@/lib/design/authz';
 import type { EditableTheme } from '@/lib/design/themes';
 import type { EditableAppearance } from '@/lib/design/appearance';
 import type { EditableShortcut } from '@/lib/design/shortcuts';
+import type { EditableSavedView, ViewTarget } from '@/lib/design/views';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { EditableSearchHint } from '@/lib/design/search-hints';
 import type { EditableApplication } from '@/lib/design/application';
@@ -35,6 +36,7 @@ import { ThemesEditor } from './ThemesEditor';
 import { AppearanceEditor } from './AppearanceEditor';
 import { TemplatesEditor } from './TemplatesEditor';
 import { ShortcutsEditor } from './ShortcutsEditor';
+import { ViewsEditor } from './ViewsEditor';
 import { PluginsEditor } from './PluginsEditor';
 import { DataSourcesEditor } from './DataSourcesEditor';
 import { componentDefinitionsOf, type EditableDefinition } from '@/lib/design/component-definitions';
@@ -211,6 +213,20 @@ async function fetchShortcuts(): Promise<LoadedShortcuts> {
     return { state: 'ready', shortcuts: d.shortcuts };
   } catch {
     return { state: 'error', message: 'The shortcuts could not be loaded: network error.' };
+  }
+}
+
+// The saved views (P2.3 PR B) and the pages with Data regions they may belong to, one request; fetched when the designer opens.
+type LoadedViews = { state: 'loading' } | { state: 'error'; message: string } | { state: 'ready'; views: EditableSavedView[]; targets: ViewTarget[] };
+
+async function fetchViews(): Promise<LoadedViews> {
+  try {
+    const res = await fetch('/api/admin/design/views', { cache: 'no-store' });
+    if (!res.ok) return { state: 'error', message: `The saved views could not be loaded (HTTP ${res.status}).` };
+    const d = (await res.json()) as { views: EditableSavedView[]; targets: ViewTarget[] };
+    return { state: 'ready', views: d.views, targets: d.targets };
+  } catch {
+    return { state: 'error', message: 'The saved views could not be loaded: network error.' };
   }
 }
 
@@ -415,6 +431,7 @@ export function Designer({
   const [shortcuts, setShortcuts] = useState<LoadedShortcuts>(() =>
     initialShortcuts ? { state: 'ready', shortcuts: initialShortcuts } : { state: 'loading' },
   );
+  const [savedViews, setSavedViews] = useState<LoadedViews>({ state: 'loading' });
   const [definitions, setDefinitions] = useState<LoadedDefinitions>(() =>
     initialDefinitions ? { state: 'ready', definitions: initialDefinitions } : { state: 'loading' },
   );
@@ -506,6 +523,9 @@ export function Designer({
         if (!cancelled) setShortcuts(loaded);
       });
     }
+    void fetchViews().then(loaded => {
+      if (!cancelled) setSavedViews(loaded);
+    });
     if (!initialDefinitions) {
       void fetchDefinitions().then(loaded => {
         if (!cancelled) setDefinitions(loaded);
@@ -608,6 +628,7 @@ export function Designer({
   const authzCount = authz.state === 'ready' ? authz.schemes.length : null;
   const themesCount = themes.state === 'ready' ? themes.themes.length : null;
   const shortcutsCount = shortcuts.state === 'ready' ? shortcuts.shortcuts.length : null;
+  const viewsCount = savedViews.state === 'ready' ? savedViews.views.length : null;
   const assetsCount = assets.state === 'ready' ? assets.assets.length : null;
   const searchHintsCount = searchHints.state === 'ready' ? searchHints.hints.length : null;
   // The footer preview shows the strings as they are stored right now, and the
@@ -632,11 +653,13 @@ export function Designer({
                 ? themesCount
                 : it.editor === 'shortcuts'
                   ? shortcutsCount
-                  : it.editor === 'assets'
-                    ? assetsCount
-                    : it.editor === 'searchhints'
-                      ? searchHintsCount
-                      : null;
+                  : it.editor === 'views'
+                    ? viewsCount
+                    : it.editor === 'assets'
+                      ? assetsCount
+                      : it.editor === 'searchhints'
+                        ? searchHintsCount
+                        : null;
   const stored = (key: NavListKey) => {
     const l = lists[key];
     return l && l.state === 'ready' ? l.list.entries : [];
@@ -999,6 +1022,14 @@ export function Designer({
                 onSaved={next => setShortcuts({ state: 'ready', shortcuts: next })}
               />
             );
+          })()}
+
+          {item?.editor === 'views' && (() => {
+            if (savedViews.state === 'loading') {
+              return <p className="font-mono text-11 uppercase tracking-[0.16em] text-text-faint">Loading Saved Views…</p>;
+            }
+            if (savedViews.state === 'error') return <p className="text-12 text-negative">{savedViews.message}</p>;
+            return <ViewsEditor views={savedViews.views} targets={savedViews.targets} readOnly={readOnly} onSaved={next => setSavedViews({ state: 'ready', ...next })} />;
           })()}
 
           {item?.editor === 'plugins' && (() => {

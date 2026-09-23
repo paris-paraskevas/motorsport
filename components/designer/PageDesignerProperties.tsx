@@ -1157,6 +1157,22 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       ],
     },
   ];
+  // The saved views (P2.3 PR B) are rows under Shared Components: a Data region's Actions Menu group points there, since a
+  // view belongs to one region of one page and readers share it by link.
+  if (componentSpec?.key === 'data.region') {
+    groupedRows.set('menu', [
+      ...(groupedRows.get('menu') ?? []),
+      {
+        label: 'Saved views',
+        control: (
+          <button type="button" className={`${PBTN} justify-self-start`} onClick={() => ctx.openShared('views')}>
+            Edit in Shared Components
+          </button>
+        ),
+        help: 'The Alternatives of this region — the rows readers pick from its Views menu and share by link (?view=<key>) — are saved under Shared Components › Saved Views, by page and region.',
+      },
+    ]);
+  }
   // The capability flags (P2.0; APEX: a plug-in's Standard Attributes toggle sections of the editor):
   // a component whose definition draws its own frame offers no Appearance › Template, and one with
   // no Header and Footer none. Every shipped definition keeps both.

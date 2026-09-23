@@ -287,6 +287,9 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       // and the Cards. The tile names them only when on (a dependingOn attribute at its default is silent).
       { key: 'sortable', label: 'Sortable headings', kind: 'boolean', scope: 'report', group: 'menu', dependingOn: MENU_VIEWS, default: false, help: 'Each heading a link sorting the rows by its column: ascending, then descending, then as designed (APEX: the column heading menu’s Sort). Works on a page served from its rows; the address carries the sort.' },
       { key: 'actions', label: 'Actions menu', kind: 'boolean', scope: 'report', group: 'menu', dependingOn: MENU_VIEWS, default: false, help: 'The Actions menu above the rows (APEX: the Interactive Report’s Actions menu): Select Columns and Reset for a Table, Sort by and Reset for Cards; the saved views and the download join it later. Works on a page served from its rows.' },
+      // PR B: the saved views (APEX: the saved reports' tiers, the designer-authored ones) and the download from the source.
+      { key: 'views', label: 'Saved views', kind: 'boolean', scope: 'report', group: 'menu', dependingOn: MENU_VIEWS, default: false, help: 'A Views menu beside Actions listing Primary (the region as designed) and the Alternatives saved under Shared Components › Saved Views; a reader picks one and shares its link (?view=<key>). Works on a page served from its rows.' },
+      { key: 'download', label: 'Download CSV', kind: 'boolean', scope: 'report', group: 'menu', dependingOn: MENU_VIEWS, default: false, help: 'Download CSV in the Actions menu: the rows as sorted, filtered and columned, read from the source (never the screen), at most 5000. Works on a page served from its rows.' },
     ],
     groups: [
       { key: 'card', title: 'Card', seq: 10 },

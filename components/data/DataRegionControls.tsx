@@ -1,12 +1,12 @@
 import type { PresetColumn, Shape } from '@/lib/design/presets';
-import { encodeViewState, sortHref, sortable, stateEntries, type ViewState } from '@/lib/design/view-state';
+import { encodeViewState, sortHref, sortable, stateEntries, viewStateHref, type ViewState } from '@/lib/design/view-state';
 import type { RegionControls } from './DataRegionViews';
 
 // The Interactive Report's Actions menu (P2.3; APEX: the menu above the report with Select Columns, Sort, Reset and the
 // rest). APEX's is a JavaScript menu; ours is a disclosure, a GET form and plain links, so a page keeps its cache and ships
 // no client script for it: the address carries the state (lib/design/view-state.ts), the middleware serves the variant. The
-// Table gets Select Columns and Reset; the Cards, whose columns are slots, get Sort by and Reset. PR B adds Download CSV and
-// the saved views beside it.
+// Table gets Select Columns and Reset; the Cards, whose columns are slots, get Sort by and Reset; Download CSV joins when the
+// region has it on (PR B), and the Views menu stands beside Actions with the saved views.
 
 const LABEL = 'font-mono text-10 uppercase tracking-[0.14em] text-text-faint';
 const LINK = 'underline-offset-4 hover:text-tint hover:underline';
@@ -26,11 +26,43 @@ function Hidden({ controls, except }: { controls: RegionControls; except: 'cols'
   );
 }
 
-export function DataRegionControls({ controls, shape, shown, nameLabel, sortLinks }: { controls: RegionControls; shape: Shape; shown: readonly PresetColumn[]; nameLabel: string; sortLinks: boolean }) {
+/** The Views menu (P2.3 PR B; APEX: the saved reports' select list): Primary, the region as designed, then the Alternatives
+ *  the designer saved, each a link carrying `view=<key>` alone for this region (the other regions' states ride along); the
+ *  one the address names is marked. */
+function ViewsMenu({ controls }: { controls: RegionControls }) {
+  if (!controls.views) return null;
+  const to = (key: string | null) => viewStateHref(controls.href, key === null ? { filters: [] } : { filters: [], view: key }, controls.key, controls.others);
+  const item = (key: string | null, name: string) => (
+    <a key={key ?? ''} href={to(key)} rel="nofollow" className={`${LABEL} ${LINK} text-text-muted`} aria-current={controls.views!.current === key ? 'true' : undefined}>
+      {name}
+      {controls.views!.current === key ? ' ●' : ''}
+    </a>
+  );
+  return (
+    <details>
+      <summary className={`${LABEL} cursor-pointer select-none text-text-muted`}>Views</summary>
+      <div className="mt-2 flex flex-col gap-2 border border-border bg-surface p-3">
+        {item(null, 'Primary')}
+        {controls.views.list.map(v => item(v.key, v.name))}
+      </div>
+    </details>
+  );
+}
+
+export function DataRegionControls(props: { controls: RegionControls; shape: Shape; shown: readonly PresetColumn[]; nameLabel: string; sortLinks: boolean }) {
+  return (
+    <div className="mb-3 flex flex-wrap items-start gap-4">
+      {props.controls.actions && <ActionsMenu {...props} />}
+      <ViewsMenu controls={props.controls} />
+    </div>
+  );
+}
+
+function ActionsMenu({ controls, shape, shown, nameLabel, sortLinks }: { controls: RegionControls; shape: Shape; shown: readonly PresetColumn[]; nameLabel: string; sortLinks: boolean }) {
   const labelOf = (c: PresetColumn) => (c.key === 'name' ? nameLabel : c.label);
   const current = controls.state.sort;
   return (
-    <details className="mb-3">
+    <details>
       <summary className={`${LABEL} cursor-pointer select-none text-text-muted`}>Actions</summary>
       <div className="mt-2 flex flex-col gap-3 border border-border bg-surface p-3">
         {sortLinks ? (
@@ -63,6 +95,11 @@ export function DataRegionControls({ controls, shape, shown, nameLabel, sortLink
               </button>
             </div>
           </form>
+        )}
+        {controls.download && (
+          <a href={controls.download} rel="nofollow" className={`${LABEL} ${LINK} self-start text-text-muted`}>
+            Download CSV
+          </a>
         )}
         <a href={controls.href} rel="nofollow" className={`${LABEL} ${LINK} self-start text-text-muted`}>
           Reset

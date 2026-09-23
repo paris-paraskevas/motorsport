@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CANONICAL_MAX, COLS_MAX, EMPTY_VIEW, FILTERS_MAX, PREFIXES_MAX, VIEW_PREFIX, bindViewState, decodeSegment, encodeSegment, encodeViewState, isEmptyView, parseViewState, rewriteTarget, sortHref, viewStateHref, type ViewState } from './view-state';
+import { CANONICAL_MAX, COLS_MAX, EMPTY_VIEW, FILTERS_MAX, PREFIXES_MAX, VIEW_PREFIX, applySavedView, bindViewState, decodeSegment, definitionOf, encodeSegment, encodeViewState, isEmptyView, parseViewDefinition, parseViewState, rewriteTarget, sortHref, viewKeyProblem, viewNameProblem, viewStateHref, type ViewDefinition, type ViewState } from './view-state';
 import { SHAPES } from './presets';
 
 // The URL vocabulary of a Data region (P2.3; APEX: the Interactive Report's request syntax): what a reader's address may
@@ -112,5 +112,31 @@ describe('rewriteTarget — the middleware’s rule', () => {
     const target = rewriteTarget('/history/monza', '?filter=team.eq:A%26B%20%25')!;
     expect(target.startsWith(`${VIEW_PREFIX}/`)).toBe(true);
     expect(parseViewState(decodeSegment(target.slice(VIEW_PREFIX.length + 1).split('/')[0])!).value.filters).toEqual([{ column: 'team', op: 'eq', value: 'A&B %' }]);
+  });
+});
+
+describe('saved views (PR B): the rules, a stored definition, the address over it', () => {
+  it('a key is a slug of at most 40, a name at most 60; a definition is read field by field and refused whole when a field is wrong; the address’s own parameters replace the view’s', () => {
+    expect(viewKeyProblem('top-five')).toBeNull();
+    expect(viewKeyProblem('')).toBe('needs a key');
+    expect(viewKeyProblem('Top Five')).toMatch(/lower-case/);
+    expect(viewKeyProblem('a'.repeat(41))).toMatch(/at most 40/);
+    expect(viewNameProblem('Top five')).toBeNull();
+    expect(viewNameProblem(' ')).toBe('needs a name');
+    expect(viewNameProblem('n'.repeat(61))).toMatch(/at most 60/);
+    const def: ViewDefinition = { sort: { column: 'points', desc: true }, cols: ['name', 'points'], filters: [{ column: 'team', op: 'eq', value: 'Mercedes' }] };
+    expect(parseViewDefinition(def)).toEqual(def);
+    expect(parseViewDefinition({ filters: [] })).toEqual({ filters: [] });
+    expect(parseViewDefinition({})).toEqual({ filters: [] });
+    expect(parseViewDefinition(null)).toBeNull();
+    expect(parseViewDefinition([])).toBeNull();
+    expect(parseViewDefinition({ sort: { column: 'points' } })).toBeNull();
+    expect(parseViewDefinition({ cols: [] })).toBeNull();
+    expect(parseViewDefinition({ filters: [{ column: 'team', op: 'like', value: 'x' }] })).toBeNull();
+    expect(definitionOf({ sort: { column: 'name', desc: false }, filters: [], view: 'v' })).toEqual({ sort: { column: 'name', desc: false }, filters: [] });
+    const url: ViewState = { filters: [], view: 'top-five', cols: ['name'] };
+    expect(applySavedView(url, def)).toEqual({ sort: { column: 'points', desc: true }, cols: ['name'], filters: [{ column: 'team', op: 'eq', value: 'Mercedes' }], view: 'top-five' });
+    expect(applySavedView({ filters: [{ column: 'points', op: 'gte', value: '1' }] }, def)).toEqual({ sort: { column: 'points', desc: true }, cols: ['name', 'points'], filters: [{ column: 'points', op: 'gte', value: '1' }] });
+    expect(applySavedView(url, null)).toBe(url);
   });
 });

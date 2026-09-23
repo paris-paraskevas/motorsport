@@ -232,3 +232,64 @@ export function rewriteTarget(pathname: string, search: string): string | null {
   const canonical = canonicalQuery(search);
   return canonical && canonical.length <= CANONICAL_MAX ? `${VIEW_PREFIX}/${encodeSegment(canonical)}${pathname}` : null;
 }
+
+// Saved views (P2.3 PR B; APEX: the saved reports of an Interactive Report, the designer-authored tiers alone): an Alternative
+// of a region is one stored definition — the vocabulary's parameters, never a view key of its own — that a reader picks by
+// ?view=<key>; the address's own parameters override it. The rules the editor and the write routes share live here, so what
+// the editor lets through is what the route accepts.
+export const VIEW_KEY_MAX = 40;
+export const VIEW_NAME_MAX = 60;
+export function isViewKey(key: unknown): key is string {
+  return typeof key === 'string' && VIEW_KEY.test(key);
+}
+/** Why a saved view's key is refused, in plain words; null when it is fine. */
+export function viewKeyProblem(key: string): string | null {
+  if (!key.trim()) return 'needs a key';
+  if (key.length > VIEW_KEY_MAX) return `a key is at most ${VIEW_KEY_MAX} characters`;
+  if (!VIEW_KEY.test(key)) return 'a key is lower-case letters, digits and dashes, starting with a letter or digit';
+  return null;
+}
+/** Why a saved view's name is refused, in plain words; null when it is fine. */
+export function viewNameProblem(name: string): string | null {
+  if (!name.trim()) return 'needs a name';
+  if (name.length > VIEW_NAME_MAX) return `a name is at most ${VIEW_NAME_MAX} characters`;
+  return null;
+}
+/** A state as a saved view stores it: the sort, the columns and the filters alone. */
+export type ViewDefinition = Omit<ViewState, 'view'>;
+export function definitionOf(state: ViewState): ViewDefinition {
+  return { ...(state.sort ? { sort: state.sort } : {}), ...(state.cols && state.cols.length > 0 ? { cols: state.cols } : {}), filters: state.filters };
+}
+/** A stored definition read back, field by field; null for anything the vocabulary does not say (a row the parser cannot
+ *  use is left out, never guessed at). */
+export function parseViewDefinition(json: unknown): ViewDefinition | null {
+  if (!json || typeof json !== 'object' || Array.isArray(json)) return null;
+  const o = json as Record<string, unknown>;
+  const out: ViewDefinition = { filters: [] };
+  if (o.sort !== undefined) {
+    const s = o.sort as Record<string, unknown> | null;
+    if (!s || typeof s !== 'object' || typeof s.column !== 'string' || !COLUMN.test(s.column) || typeof s.desc !== 'boolean') return null;
+    out.sort = { column: s.column, desc: s.desc };
+  }
+  if (o.cols !== undefined) {
+    if (!Array.isArray(o.cols) || o.cols.length === 0 || o.cols.length > COLS_MAX || o.cols.some(c => typeof c !== 'string' || !COLUMN.test(c))) return null;
+    out.cols = [...new Set(o.cols as string[])];
+  }
+  if (o.filters !== undefined) {
+    if (!Array.isArray(o.filters) || o.filters.length > FILTERS_MAX) return null;
+    for (const f of o.filters) {
+      const x = f as Record<string, unknown> | null;
+      if (!x || typeof x !== 'object' || typeof x.column !== 'string' || !COLUMN.test(x.column) || typeof x.op !== 'string' || !(OPS as readonly string[]).includes(x.op) || typeof x.value !== 'string' || x.value === '' || x.value.length > VALUE_MAX) return null;
+      out.filters.push({ column: x.column, op: x.op as FilterOp, value: x.value });
+    }
+  }
+  return out;
+}
+/** The state a reader gets from a saved view: its definition, the address's own parameters over it (a sort, the columns or
+ *  any filter the address names replace the view's), the view key kept for the controls. */
+export function applySavedView(url: ViewState, saved: ViewDefinition | null): ViewState {
+  if (!saved) return url;
+  const sort = url.sort ?? saved.sort;
+  const cols = url.cols ?? saved.cols;
+  return { ...(sort ? { sort } : {}), ...(cols && cols.length > 0 ? { cols } : {}), filters: url.filters.length > 0 ? url.filters : saved.filters, ...(url.view !== undefined ? { view: url.view } : {}) };
+}

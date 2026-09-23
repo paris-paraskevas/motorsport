@@ -1155,6 +1155,8 @@ describe('PageDesigner', () => {
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
     const results = within(pe).getByLabelText('Preset') as HTMLSelectElement;
     expect(results.value).toBe('latest-result');
+    // P2.3 PR B: the Actions Menu group points at the saved views under Shared Components.
+    expect(within(pe).getByRole('button', { name: 'Edit in Shared Components' })).toBeTruthy();
     // Home's Latest result over any results series leads the list (P2.24 B2; R8); the stored Constructors is gone with the Source.
     expect([...results.options].map(o => o.textContent)).toEqual(['Latest result', 'Season results']);
     const season = [...results.options].find(o => o.textContent === 'Season results')!;
