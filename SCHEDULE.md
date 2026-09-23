@@ -2065,6 +2065,21 @@ Order fixed by the words: "keep going" (~14:17Z: the records PR #1026 merged, ST
 Won't touch this session: P2.24 beyond its decision scan; any other slot; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
 Active: ~2h 15m from ~14:17Z to ~16:30Z (the operator present at the words, ~14:17Z, ~14:59Z and ~15:32Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
+### Tue 2026-09-22 evening → Wed 2026-09-23 morning — session 55 (the operator present at the words) — P2.24 A Posts and news into the Data region
+
+Order fixed by the words: "all default" (2026-09-22 ~16:00Z, P2.24's three questions), the plan approved (~23:32Z, ExitPlanMode), "what are you on about, you have all permissions to get the work done. now do it" (2026-09-23 ~00:05Z, the dev server's production flag the permission classifier had refused), "merge" (~06:01Z).
+
+1. **The scan** (~15 min, from ~15:45Z): P2.24's decision scan drawn on a page (8db7e606…: Home's six boxes beside the general components that replace each), the three questions with defaults; the board republished under the new login (87eea43d…) → done.
+2. **The reads and the plan** (~50 min, from ~16:00Z): the word "all default"; Home's lead and wire, the home model, the blog's lead order and read time, the sources and their readers, the presets, the definition, the renderer, the views, the parser, the designer; the plan file; a fresh-context Sonnet plan critic (343,043 tokens: SOUND WITH FIXES, three blocking folded); the approval at ~23:32Z → done.
+3. **Tests first, the build, the gates, the PR** (~40 min, from ~23:32Z): 15 red across 9 files (the implementation stashed, the new tests run, the stash restored), then green; tsc 0 · lint 0 errors · vitest 223 files, 2268 tests · hooks 31/31; the foreground build with DATA_SOURCE=db (1189 pages; thirty-four first-attempt prerender timeouts on /information pages, each passing on retry, the machine busy after the suite) and the dry run 40213.42 KiB; the records (CHANGELOG 1.0.148, RELEASES, the version, the ledger's P2.24 started with the two dated lines); PR #1029; the reviewer launched → done.
+4. **The browser run** (~15 min, from ~00:05Z after the word on the flag): the dev server restarted with PADDOCK_ENV=production; an author row and three posts seeded into the local database; Source Posts and the Lead story preset, its preview; Source News and The wire, its preview; the Table and the Cards over posts; the greyed pills on a Standings source; seven screenshots into the review page a4edd962…; the find (the Media slot's own label "(none)") → done.
+5. **The second commit** (~25 min): SLOT_OF's media slot with its test; the reviewer's PASS WITH NOTES (262,171 tokens, nothing blocking, six notes); the gates again (tsc 0 · lint 0 errors · vitest 2268 · hooks 31/31; the build without retries; the dry run 40213.46 KiB / gzip 8839.70 KiB); the CHANGELOG and the PR body; pushed; the report → done.
+6. **Merge and prod** (~06:01Z): "merge" → #1029 squash-merged 06:01:26Z as 0b0f42a4 → prod /changelog 1.0.148 at 2026-09-23T06:07:35Z → done.
+7. **Close**: the ledger (the merge's dated line; P2.24's evidence, the slot STARTED until PR C), the handoff and the session-56 prompt (PR B first, its cross-series default stated), this block, eight Inbox lines, the board; the records PR 1.0.149 under the same word.
+
+Won't touch this session: PR B beyond its decision scan; PR C; any other slot; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~2h 40m across 2026-09-22 ~15:45Z–16:50Z, ~23:32Z–00:40Z (into 2026-09-23) and 2026-09-23 ~06:01Z–06:30Z (the operator present at the words; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
 
 ---
 
