@@ -35,6 +35,9 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 ## Inbox — merged and deduped 2026-08-28 (session 41)
 
+- (2026-09-23, session 56) The CSV route writes cells as they are: a value beginning with `=`, `+`, `-` or `@` is not prefixed against spreadsheet formulas, since the gaps begin with `+` and `−` and every cell is the site's own data (the PR B reviewer's nit, declined with the reason); revisit if a source ever carries reader-written text.
+- (2026-09-23, session 56) A saved view's `seq` has no editor control (the Alternatives list by name; the column exists for it) — a small control in the Saved Views editor when the order matters.
+- (2026-09-23, session 56) The Saved Views editor has no screenshot yet: the sign-in helper was stopped by the system for memory and is restarted only on the operator's word; open Shared Components › Saved Views once it runs, add a view for the local Monza table, and keep the picture.
 - (2026-09-23, session 56) Prod's Calendar (`/calendar`, the registry says cached) answers `Cache-Control: private, no-store` on every request, before and after P2.3 PR A: read why (the row's Rendering set to per visit, or a region asking for the visitor) — until a rows-served page is cached on prod, the cached-variant claim of P2.3 cannot be observed there.
 - (2026-09-23, session 56) The designer's preview draws no Interactive Report controls (no state can reach a preview page); consider handing the preview route an empty state with the preview's own path as `href`, so the toggles can be seen before a publish.
 - (2026-09-23, session 56) `lib/design/view-state.ts` parses filters past the fourth before dropping them (bounded, wasted work) and no integration test proves the base64url segment survives the Worker's routing — the reviewer's two nits on PR A.
