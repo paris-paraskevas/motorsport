@@ -256,7 +256,7 @@ export function DataRegionTable({ heading, level, shape, preset, rows, controls 
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
-      {controls && (controls.actions || controls.views) && <DataRegionControls controls={controls} shape={shape} shown={columns} nameLabel={preset.nameLabel} sortLinks={false} />}
+      {controls && (controls.actions || controls.views || controls.download) && <DataRegionControls controls={controls} shape={shape} shown={columns} nameLabel={preset.nameLabel} sortLinks={false} />}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">{heading}</caption>
@@ -309,7 +309,7 @@ export function DataRegionCards({ heading, level, shape, preset, rows, card, act
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
-      {controls && (controls.actions || controls.views) && <DataRegionControls controls={controls} shape={shape} shown={shape.columns} nameLabel={preset.nameLabel} sortLinks />}
+      {controls && (controls.actions || controls.views || controls.download) && <DataRegionControls controls={controls} shape={shape} shown={shape.columns} nameLabel={preset.nameLabel} sortLinks />}
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((r, i) => {
           const title = slotText(shape, r, slot.title);

@@ -894,5 +894,15 @@ describe('the saved views and the download (P2.3 PR B)', () => {
     expect(loadViewsFor).not.toHaveBeenCalled();
     expect(off).not.toContain('Views</summary>');
     expect(off).not.toContain('Download CSV');
+    // Saved views alone, or Download CSV alone, are controls of their own: the Views menu draws without Actions; the download
+    // stands where the Actions menu would (the reviewer's finding on PR B).
+    const viewsOnly = await draw({ ...ON, sortable: false, actions: false, download: false }, 'view=top-five');
+    expect(viewsOnly).toMatch(/<details><summary[^>]*>Views<\/summary>/);
+    expect(viewsOnly).not.toContain('Actions</summary>');
+    expect(viewsOnly).not.toContain('nofollow" class="underline-offset-4 hover:text-tint hover:underline">Pts');
+    expect(viewsOnly.indexOf('Andrea Kimi Antonelli')).toBeLessThan(viewsOnly.indexOf('George Russell'));
+    const downloadOnly = await draw({ ...ON, sortable: false, actions: false, views: false }, 'sort=points');
+    expect(downloadOnly).not.toContain('Actions</summary>');
+    expect(downloadOnly).toMatch(/<a href="\/api\/data\/csv\?page=%2Fhistory%2Fmonza&amp;region=t&amp;sort=points" rel="nofollow"[^>]*>Download CSV<\/a>/);
   });
 });

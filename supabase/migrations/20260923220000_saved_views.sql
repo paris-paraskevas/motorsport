@@ -4,6 +4,8 @@
 -- has no row. The shape of the other design tables: tenancy by application, row level security with nothing granted to the
 -- API roles (the service role writes), the stamp trigger the conditional updates rely on. A page's deletion takes its views
 -- with it (on delete cascade), as it takes the page's revisions. Writes go through app/api/admin/design/views/* only.
+begin;
+
 create table if not exists saved_view (
   application_key text not null default 'paddock' references application(key),
   key             text not null,
@@ -24,3 +26,5 @@ revoke all on table saved_view from anon, authenticated;
 
 create or replace trigger saved_view_updated_at before update on saved_view
   for each row execute function design_set_updated_at();
+
+commit;

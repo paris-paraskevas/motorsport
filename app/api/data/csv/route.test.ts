@@ -20,6 +20,10 @@ vi.mock('@/lib/design/authz', async () => {
   const d = await vi.importActual<typeof import('@/lib/design/authz-defaults')>('@/lib/design/authz-defaults');
   return { loadAuthzSchemes: async () => d.DEFAULT_AUTHZ_SCHEMES };
 });
+// The conditions' facts and the Build Options, as the catch-all reads them.
+vi.mock('@/lib/design/component-render', () => ({ raceWeekendNow: async () => false }));
+let buildOptions: Record<string, string> = {};
+vi.mock('@/lib/design/build-options', () => ({ loadBuildOptions: async () => buildOptions }));
 
 import { CSV_MAX, GET, csvOf } from './route';
 
@@ -42,6 +46,22 @@ describe('/api/data/csv', () => {
     loadViewsFor.mockResolvedValue([]);
     currentVisitor.mockReset();
     currentVisitor.mockResolvedValue(ANON);
+    buildOptions = {};
+  });
+
+  it('applies the conditions and the Build Options as the served page does: a region hidden from the visitor or excluded is not downloaded', async () => {
+    resolvePage.mockResolvedValue(resolved([region({ condition: { type: 'authenticated' } })]));
+    expect((await get('page=/history/monza&region=t')).status).toBe(404);
+    expect(currentVisitor).toHaveBeenCalled();
+    currentVisitor.mockResolvedValue({ signedIn: true, role: null, author: false, emails: [] });
+    expect((await get('page=/history/monza&region=t')).status).toBe(200);
+    resolvePage.mockResolvedValue(resolved([region({ condition: { type: 'never' } })]));
+    expect((await get('page=/history/monza&region=t')).status).toBe(404);
+    resolvePage.mockResolvedValue(resolved([region({ buildOption: 'weather' })]));
+    buildOptions = { weather: 'exclude' };
+    expect((await get('page=/history/monza&region=t')).status).toBe(404);
+    buildOptions = { weather: 'include' };
+    expect((await get('page=/history/monza&region=t')).status).toBe(200);
   });
 
   it('answers 404 for a path or a region outside the rules, an address with no page, a region that is not a Data region, or one without Download CSV on', async () => {

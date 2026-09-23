@@ -52,7 +52,16 @@ function ViewsMenu({ controls }: { controls: RegionControls }) {
 export function DataRegionControls(props: { controls: RegionControls; shape: Shape; shown: readonly PresetColumn[]; nameLabel: string; sortLinks: boolean }) {
   return (
     <div className="mb-3 flex flex-wrap items-start gap-4">
-      {props.controls.actions && <ActionsMenu {...props} />}
+      {props.controls.actions ? (
+        <ActionsMenu {...props} />
+      ) : (
+        // Download CSV on its own when the Actions menu is off: the link stands where the menu would.
+        props.controls.download && (
+          <a href={props.controls.download} rel="nofollow" className={`${LABEL} ${LINK} text-text-muted`}>
+            Download CSV
+          </a>
+        )
+      )}
       <ViewsMenu controls={props.controls} />
     </div>
   );

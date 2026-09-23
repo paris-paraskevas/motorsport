@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { SITE_URL } from '@/lib/site';
-import { ROW_PAGE_PATH, schemesAsked } from '@/lib/design/page-document';
+import { ROW_PAGE_PATH, applyBuildOptions, applyConditions, conditionAsks, schemesAsked } from '@/lib/design/page-document';
 import { resolvePage } from '@/lib/design/resolve-page';
+import { loadBuildOptions } from '@/lib/design/build-options';
+import { raceWeekendNow } from '@/lib/design/component-render';
 import { findComponent } from '@/lib/design/components';
 import { parseSourceRef } from '@/lib/design/sources';
 import { SHAPES, findPreset, presetRows, type PresetColumn, type PresetRow } from '@/lib/design/presets';
@@ -18,7 +20,7 @@ export const dynamic = 'force-dynamic';
 
 // GET /api/data/csv?page=<path>&region=<id>&<state> → the rows of one Data region as CSV (P2.3 PR B; APEX: the Interactive
 // Report's Download). The page is resolved as the catch-all resolves it, the region must be a Data region with Download CSV
-// on, the page's and the region's authorization schemes are checked as the served page checks them (a refused reader gets
+// on, the page's and the region's authorization schemes, conditions and Build Options are applied as the served page applies them (a refused reader or a hidden region gets
 // 404, so nothing leaks), the state (sort, cols, filter, view) is read and bound as the served table reads it, and the rows
 // come from the source, never the screen: as sorted, filtered and columned, at most CSV_MAX. RFC 4180 text, UTF-8 with a
 // byte-order mark for the spreadsheets that want one, CRLF, a header row of the columns' labels; a date as the source says
@@ -50,16 +52,25 @@ export async function GET(req: Request): Promise<Response> {
   if (!ROW_PAGE_PATH.test(path) || !REGION_ID.test(regionId)) return notFound();
   const r = await resolvePage(path);
   if (!r) return notFound();
-  const region = r.document.regions.find(x => x.kind === 'component' && x.component === 'data.region' && x.id === regionId);
-  if (!region || region.kind !== 'component' || region.settings.download !== true) return notFound();
 
+  // The schemes, the conditions and the Build Options as the served page applies them (app/(app)/[...catchall]/page.tsx): a
+  // region a visitor would not see on the page is not downloaded either.
   const asked = schemesAsked(r.page.authz, r.document);
-  if (asked.length > 0) {
-    const [visitor, schemes] = await Promise.all([currentVisitor(), loadAuthzSchemes()]);
-    const allowed = allowedKeys(asked, schemes, visitor);
+  const asks = conditionAsks(r.document);
+  let allowed = new Set<string>();
+  let signedIn: boolean | null = null;
+  if (asked.length > 0 || asks.visitor) {
+    const [visitor, schemes] = await Promise.all([currentVisitor(), asked.length > 0 ? loadAuthzSchemes() : Promise.resolve([])]);
+    signedIn = visitor.signedIn;
+    allowed = asked.length > 0 ? allowedKeys(asked, schemes, visitor) : allowed;
     const pageScheme = r.page.authz && r.page.authz !== 'public' ? r.page.authz : null;
-    if ((pageScheme && !allowed.has(pageScheme)) || (region.authz && !allowed.has(region.authz))) return notFound();
+    if (pageScheme && !allowed.has(pageScheme)) return notFound();
   }
+  const conditions = { signedIn, raceWeekend: asks.calendar ? await raceWeekendNow() : null, params: r.kind === 'composed' ? r.params : {}, path };
+  const document = applyBuildOptions(applyConditions(r.document, conditions), await loadBuildOptions());
+  const region = document.regions.find(x => x.kind === 'component' && x.component === 'data.region' && x.id === regionId);
+  if (!region || region.kind !== 'component' || region.settings.download !== true) return notFound();
+  if (region.authz && !allowed.has(region.authz)) return notFound();
 
   const spec = findComponent('data.region');
   const source = region.source && spec?.sources?.length ? parseSourceRef(region.source, spec.sources).value : null;

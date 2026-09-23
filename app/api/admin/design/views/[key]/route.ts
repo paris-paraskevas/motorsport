@@ -48,6 +48,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
   const current = await loadViewsForEditing();
   const stored = current?.find(v => v.key === key);
   if (!stored) return new Response('not found', { status: 404 });
+  // The region's live shape once: a definition binds to it, and the page's path is revalidated after the write.
+  const target = await loadRegionShape(stored.pageId, stored.regionId);
 
   const patch: { name?: string; definition?: ViewDefinition; seq?: number } = {};
   if (body.name !== undefined) {
@@ -59,7 +61,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
   if (body.definition !== undefined) {
     const parsed = parseViewState(typeof body.definition === 'string' ? body.definition.trim() : '');
     if (parsed.problems.length > 0) return refused(400, `definition: ${parsed.problems.join('; ')}`);
-    const target = await loadRegionShape(stored.pageId, stored.regionId);
     if (!target) return refused(400, `page and region: the page has no live Data region “${stored.regionId}” with a preset`);
     patch.definition = definitionOf(bindViewState(parsed.value, target.shape));
   }
@@ -80,8 +81,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
     const rows = (data ?? []) as { updated_at: string }[];
     if (rows.length === 0) return refused(409, 'This saved view was saved again after you loaded it.', { current: await loadViewsForEditing() });
     resetViewsMemo();
-    const path = (await loadRegionShape(stored.pageId, stored.regionId))?.path;
-    if (path) revalidatePath(path);
+    if (target) revalidatePath(target.path);
     const view: EditableSavedView = { ...stored, ...patch, updatedAt: String(rows[0].updated_at) };
     return NextResponse.json({ ok: true, view });
   } catch (err) {
@@ -103,6 +103,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ key: 
   }
   if (typeof body.updatedAt !== 'string' || !body.updatedAt) return refused(400, 'updatedAt must be the stamp you loaded');
   const stored = (await loadViewsForEditing())?.find(v => v.key === key);
+  if (!stored) return new Response('not found', { status: 404 });
+  const target = await loadRegionShape(stored.pageId, stored.regionId);
 
   try {
     const { data, error } = await betDb()
@@ -116,8 +118,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ key: 
     const rows = (data ?? []) as { key: string }[];
     if (rows.length === 0) return refused(409, 'This saved view was saved again after you loaded it.', { current: await loadViewsForEditing() });
     resetViewsMemo();
-    const path = stored ? (await loadRegionShape(stored.pageId, stored.regionId))?.path : undefined;
-    if (path) revalidatePath(path);
+    if (target) revalidatePath(target.path);
     return NextResponse.json({ ok: true, key });
   } catch (err) {
     return refused(500, err instanceof Error ? err.message : 'unknown');

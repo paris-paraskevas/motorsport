@@ -136,5 +136,6 @@ describe('/api/admin/design/views/[key]', () => {
     touched = [];
     expect((await call('DELETE', 'top-five', { updatedAt: 'old' })).status).toBe(409);
     expect((await call('DELETE', 'top-five', {})).status).toBe(400);
+    expect((await call('DELETE', 'unknown', { updatedAt: STAMP })).status).toBe(404);
   });
 });

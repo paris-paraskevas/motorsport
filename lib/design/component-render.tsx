@@ -251,7 +251,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   // The regions with the Interactive Report's controls on (P2.3), decided from the declared document — never from what a
   // condition shows — so a link addresses the same region for every visitor: one such region reads the bare keys, several
   // read their own under `r.<id>.`; nowhere a state can arrive, none draws a control.
-  const withControls = regions.filter(r => r.component === 'data.region' && (r.settings.sortable === true || r.settings.actions === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table'));
+  const withControls = regions.filter(r => r.component === 'data.region' && (r.settings.sortable === true || r.settings.actions === true || r.settings.views === true || r.settings.download === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table'));
   const controlsKey = (r: ComponentRegion): string | null => (where.view === undefined || !withControls.includes(r) ? null : withControls.length > 1 ? `r.${r.id}.` : '');
   await Promise.all(
     regions.map(async r => {
