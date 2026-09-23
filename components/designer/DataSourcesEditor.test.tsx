@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 //
 // Data Sources (P2.1; APEX: REST Data Sources, ours: the code's readers): the
-// thirteen in a table with their parameters, columns, how they are kept fresh,
+// fourteen in a table with their parameters, columns, how they are kept fresh,
 // Utilization and History; one opened below with its Data Profile, how it is
 // read, where it is used, and a Preview through the reader. The same browser
 // serves the Data workspace's Object Browser with the loader's work in two

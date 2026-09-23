@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// The reader behind the catalogue (P2.1): one readSource for the thirteen,
+// The reader behind the catalogue (P2.1): one readSource for the fourteen,
 // each through the code's own loader, answering rows shaped by the source's
 // columns and a provenance the Debug trace can print; the standings source
 // reads the rows tier with its run first and the snapshot tier after; a reader

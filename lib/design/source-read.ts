@@ -5,7 +5,7 @@ import type { SnapshotMeta } from '@/lib/source-snapshot';
 import type { RaceResult, RaceResultEntry, Series } from '@/lib/types';
 
 // The reader behind the catalogue (the components programme, P2.1): one
-// readSource for the thirteen, each through the loader the code already has,
+// readSource for the fourteen, each through the loader the code already has,
 // answering rows shaped by the source's columns and a provenance the Debug
 // trace prints (the tier, the loader keys, the run or the snapshot's meta).
 //
