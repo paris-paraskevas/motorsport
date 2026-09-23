@@ -2080,6 +2080,21 @@ Order fixed by the words: "all default" (2026-09-22 ~16:00Z, P2.24's three quest
 Won't touch this session: PR B beyond its decision scan; PR C; any other slot; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
 Active: ~2h 40m across 2026-09-22 ~15:45Z–16:50Z, ~23:32Z–00:40Z (into 2026-09-23) and 2026-09-23 ~06:01Z–06:30Z (the operator present at the words; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
+### Wed 2026-09-23, morning — session 55 continued (the operator present at the words) — P2.24 B1 The Weekends source, the progress report
+
+Order fixed by the words: "merge" (~06:01Z, PR A), the B1 plan approved (~06:42Z, ExitPlanMode), "merge and show me progress report. also list explicitly all items i must decide upon, and all items we didnt do, minor and major blockers…" (~07:41Z).
+
+1. **PR A's close** (~15 min, from ~06:01Z): #1029 squash-merged 06:01:26Z as 0b0f42a4, prod 1.0.148 at 06:07:35Z; the records PR #1030 (1.0.149) merged 06:10Z, prod 06:15:49Z; the board republished under the new login → done.
+2. **B1's scan and plan** (~30 min): the decision scan (no word needed; B split into B1 and B2 in the plan), the reads, the plan file, a fresh-context Sonnet plan critic (297,236 tokens: SOUND WITH FIXES, three blocking folded), the approval → done.
+3. **Tests first, the build, the gates** (~35 min): 13 red across 9 files (the stash recipe), the sources route test's fourteen at the full run; tsc 0 · lint 0 errors · vitest 223 files, 2272 tests · hooks 31/31; the foreground build and the dry run 40356.00 KiB → done.
+4. **The browser run** (~15 min): Source Weekends and the What's next preset, the preview drawing the same three weekends Home drew at the same moment (the countdown on the first), the Table (the Round column moved last after the spacing showed), Data Sources at fourteen; four screenshots into the review page 435d574c…; the build and the gates again after the column's move (40356.01 KiB) → done.
+5. **PR #1031, the reviewer, the second commit** (~20 min): the PR body; the reviewer (Sonnet, 237,688 tokens: PASS WITH NOTES, nothing blocking); the five stale "thirteen" comments reworded; pushed; the report → done.
+6. **Merge, prod, the progress report** (~07:41Z): "merge and show me progress report…" → #1031 squash-merged 07:41:42Z as d7b5ba45 → prod /changelog 1.0.150 at 2026-09-23T07:45:53Z → the Phase 2 progress report compiled from the ledger, the handoff, the Inbox and the CHANGELOG (the slots; the decisions that are the operator's, grouped; what was not done; the blockers, major and minor) and published (9b8b0a28-91e8-4fca-b08b-985ac612c267) → done.
+7. **Close**: the ledger (the merge's dated line; P2.24's evidence with B1's merge), the handoff and the session-56 prompt (the operator's decisions first, then B2), this block, the Inbox lines, the board; the records PR 1.0.151 under the same word.
+
+Won't touch this session: PR B2 beyond its decision scan; PR C; any other slot; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~2h 05m from ~06:01Z to ~08:10Z (the operator present at the words; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
 
 ---
 

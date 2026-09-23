@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.151 — 2026-09-23
+
+### Records — P2.24 B1 on prod, the Phase 2 progress report, the session-56 handoff
+
+Records only. `docs/plan/ledger.json`: **P2.24's evidence carries B1's merge** (#1031, 1.0.150, two commits, squash-merged 2026-09-23 07:41:42Z as d7b5ba45, prod 2026-09-23T07:45:53Z; the review page 435d574c-bfa9-4371-afca-2485e813744f; the critic's and the reviewer's figures; the gates and the dry run 40356.01 KiB) and the slot stays `started` (PR B2, the Podium and Leader templates; PR C, the flip); one dated changes line carrying the merge, the run's find (the Round column moved last), the reviewer's comment fixes and the operator's ask for the progress report. `docs/HANDOFF.md`: the close as LATEST with the session-56 prompt: the operator's answers to the progress report's first group first (B2's cross-series default, C's four questions, P2.3's dependency, P2.10's tabs, P2.18's items, P2.19's replies), then B2's decision scan and plan with the reads named; the state, the rules, the browser run recipe (the Data Sources page's address, the newest local draft), this run's landmines (the Table's number-before-left-column gap, the uncached series load, the fixture dates for a countdown, the mock patterns, the sources route test's count). `SCHEDULE.md`: the morning. `IDEAS.md`: five Inbox lines. **The Phase 2 progress report** published (artifact 9b8b0a28-91e8-4fca-b08b-985ac612c267) on the operator's word: the slots, every decision that is theirs in three groups, what was not done, the blockers major and minor. The progress board republished (87eea43d-b6f0-47fa-a1c4-b10dacb2ff01). `package.json` 1.0.151. No code.
+
 ## 1.0.150 — 2026-09-23
 
 ### Designer — [P2.24 B1] The Weekends source and the Coming weekends template: Home's What's next as a Data region
