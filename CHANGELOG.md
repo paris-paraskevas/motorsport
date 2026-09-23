@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.158 — 2026-09-23
+
+### Records — P2.24 C on prod, P2.24 DONE, the parity's two rules, the session-57 handoff
+
+Records, and four lines of the parity script. `docs/plan/ledger.json`: **P2.24 DONE** with PR C's evidence (#1038, 1.0.157, two commits 1d268839 + 389d43f0, squash-merged 2026-09-23 14:38:30Z as d340c4c1, prod /changelog 1.0.157 at 2026-09-23T14:43:58Z; the critic's 399,562 and the reviewer's 386,082 tokens; the gates; the browser run 1ce6f9ab-24e0-48a6-8f00-ea8219a62fde; the parity across the deploy) and the dated merge line. `scripts/parity-home.mts`: the normaliser's two rules learned from the deploy — the countdowns' big clock by its own typography, an empty class attribute — with which the before and after captures read identical across the seven regions (the first run's three honest differences, two clocks that ticked and the wire's `class=""`, are in the PR's comment). `docs/HANDOFF.md`: the LATEST header and the session-57 prompt (P2.3 first: the URL vocabulary and the saved views on the server, CSV from the source, no TanStack Table; then P2.4), the state at 1.0.157/1.0.158, this run's landmines (the Bash tool's command cap near 8 KB; Home without a preview or a trace while its route file stands). `SCHEDULE.md`: the block. `IDEAS.md`: ten Inbox lines. The progress board republished (87eea43d-b6f0-47fa-a1c4-b10dacb2ff01, P2.24 done, P2.3 next). `package.json` 1.0.158. No other code.
+
 ## 1.0.157 — 2026-09-23
 
 ### Designer — [P2.24 C] The flip: a stored Home component upgrades on read, the six retire

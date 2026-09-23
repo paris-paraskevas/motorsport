@@ -251,6 +251,17 @@ The ingest exists as of 0.334.103: `npm run upgrades:draft` does discovery, fetc
 - (2026-09-23, session 56) On prod the browser refuses stylesheet and script chunks that come back as HTML (404: `2xqjxvg7b5m9l.css`, `42yunp5zxiu2m.css`, `37-1ktct3lirx.js`), none of them referenced by the served page of `/`: the prefetched routes' payloads name a previous build's chunks, the served-as-HTML issue of 1.0.34 in another coat; look at the RSC prefetch caching across deploys.
 - (2026-09-23, session 56) The Application Settings editor lets the lead series (`home.lead_series`) be named among the featured series (`home.major_series`); the ranking now ignores the overlap (R6), but the editor could refuse or grey it.
 
+- (2026-09-23, session 56, PR C) Home has no preview and no trace while its route file stands: both answer only a row page or a page served from rows; P3.18 (the route leaves) brings them; until then the served page is the check.
+- (2026-09-23, session 56, PR C) The Bash tool's command input is cut somewhere above ~8 KB: two edit batches over ~9 KB failed to parse ("unexpected EOF while looking for matching quote") and passed once split; keep a heredoc-carrying command under ~6 KB.
+- (2026-09-23, session 56, PR C) Home's wire component wrote `class=""` on its section (its className prop at its default) where the template writes no attribute: the one markup difference across the flip, no effect on readers; HomeWire's default could drop the empty attribute when next touched.
+- (2026-09-23, session 56, PR C) scripts/parity-home.mts could serve any composed page (a path argument; the region wrappers are the same); a health script when the next route leaves (P3.x).
+- (2026-09-23, session 56, PR C, the reviewer's nits) DataRegionViews' What's next rows carry a `note` field nothing sets; `SettingValue` is two types of one name (components.ts and setting-defaults.ts); the template's "min read" span is unconditional where Home's was conditional (inert: every post has minutes); recipeRegions dedups an entry id it already made unique.
+- (2026-09-23, session 56, PR C) The Card-slots renderer test waited a fixed 60 ms for a beside-region to draw and raced under the full suite's load; now a vi.waitFor poll. Other fixed waits in the suite may hide the same race.
+- (2026-09-23, session 56, PR C) The local database now holds Home's fixture revision 986f4396 (prod's 74f46599, published locally) and the draft 0303b8b1 (the wire's Heading "The wire"); the local Home serves the fixture; clear or keep with the other local leftovers.
+- (2026-09-23, session 56, PR C) `fetchHomeBlogLead(pinnedSlug?)` keeps a parameter no caller passes; `layoutFromParams` serves the retired composer; hidden regions still render server-side (a hidden Live band costs its read): three small trims for a cost PR.
+- (2026-09-23, session 56, PR C) prod's `setting` table keeps the two retired count rows (home.wire_count 5, home.blog_suggested_count 6), unread; deleting them is an "apply".
+- (2026-09-23, session 56, PR C) A subagent's hand-back frame carries no usage figure; the figure arrives in the task notification (the reviewer: 386,082 tokens); read both before recording.
+
 ## A "connection is secure" interstitial — operator ask, 2026-08-22, RECOMMEND AGAINST as asked
 
 **The ask:** the Cloudflare page some sites show on click-through that says your connection is being checked or is secure, "it shows that we are legit".

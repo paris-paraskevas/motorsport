@@ -2112,6 +2112,21 @@ Order fixed by the words: the plan approved (~08:55Z, ExitPlanMode), "merge" (~1
 Won't touch this session: PR C's flip before its plan is approved; any other slot beyond its scan; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
 Active: ~3h 15m from ~08:15Z to ~11:35Z (the operator present at the words, ~08:55Z and ~11:27Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
+### Wed 2026-09-23, midday to afternoon — session 56 continued (the operator present at the words) — P2.24 PR C The flip
+
+Order fixed by the words: "Upgrade on read" and "None in PR C" (~12:40Z–12:45Z), the plan approved (~13:20Z, ExitPlanMode), "merge" (~14:38Z).
+
+1. **The finding, the correction, the two words** (~12:35Z–12:50Z): prod's served Home read: already a split document of the six old components in the operator's arrangement; the correction of the spacing premise (readers see the frame's 24 px gaps, not HomeLead's); "Upgrade on read" and "None in PR C" asked with a default each; the dated line on the branch → done.
+2. **The plan and its critic** (~35 min): prod read through the Management API (every revision of every page for old keys: Home only; the live document 74f46599; the layout row; the settings 6 and 5); the plan file; a fresh-context Sonnet critic on the general-purpose type (399,562 tokens against ~250k said): B1 dissolved by the settings read, B2/B3/S1/S2 folded, the flight-script stripping, two pre-mortem lines, N1 declined; approved ~13:20Z; the ledger's dated line → done.
+3. **Tests first and the build** (~55 min): 17 red across 10 files (the renderer test failing to load on loadLiveModel), the implementation in the plan's order, the SettingValue type widened (tsc's two errors), green; the Plug-ins editor test (it named What it changed by its name) and the Card-slots test's 60 ms race adjusted after the full run; tsc 0 · lint 0 errors · vitest 223 files, 2278 tests · hooks 31/31; the foreground build (196 s, 1189 pages) and the dry run 39409.56 KiB → done.
+4. **The parity script and the browser run** (~30 min): scripts/parity-home.mts calibrated on two prod captures 25 s apart (identical, 7 regions); prod's live document inserted verbatim into the local database as a published revision; the designer's seven tiles upgraded, the Property Editor, Save as draft 0303b8b1, the local /, the Gallery; five screenshots → the review page 1ce6f9ab-24e0-48a6-8f00-ea8219a62fde; Home has no preview or trace (a code page whose route stands) → done.
+5. **Commit, reviewer, PR** (~25 min): commit 1d268839; the reviewer (Sonnet, 386,082 tokens): PASS WITH NOTES, nothing blocking; S6 taken in 389d43f0 with the trio (CHANGELOG 1.0.157, RELEASES, the version); PR #1038 → done.
+6. **Merge, prod, the parity** (~14:38Z): the before-capture 14:38:16Z; "merge" → #1038 squash-merged 14:38:30Z as d340c4c1 → prod /changelog 1.0.157 at 14:43:58Z → the after-capture 14:44:04Z → four regions identical, three honest differences (two countdown clocks that ticked; the wire's empty class attribute) → the two normaliser rules → identical, 7 regions; the PR comment → done.
+7. **Close**: the ledger (P2.24 DONE, the merge's dated line, the evidence), the handoff and the session-57 prompt (P2.3 first), this block, ten Inbox lines, the board, the memory pointer; the records PR 1.0.158 under the same word.
+
+Won't touch this session: P2.3 beyond its place in the prompt; branch deletions; any prod Supabase write (the publish is the operator's); any push to `main`; any agent on Fable; any fan-out.
+Active: ~2h 15m from ~12:35Z to ~14:50Z (the operator present at the words, ~12:45Z, ~13:20Z and ~14:38Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
 
 ---
 

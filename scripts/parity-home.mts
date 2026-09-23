@@ -66,6 +66,10 @@ function normalise(html: string): string {
     // The countdowns (Time until …; the Live band's next session): their digits.
     .replace(/(aria-label="Time until [^"]*"[^>]*>)([\s\S]*?)(<\/[a-z]+>)/g, (_, a: string, b: string, c: string) => `${a}${b.replace(/\d/g, '#')}${c}`)
     .replace(/(\bin\s|\bLIVE\b|\bstarts\s)(\d+\s?(?:d|h|m|min|s)\b\s?)+/g, m => m.replace(/\d/g, '#'))
+    // The countdowns' big clock (the Live band's next session, What's next's first weekend): the span's own typography.
+    .replace(/(<span class="[^"]*\btabular-nums text-lg\b[^"]*">)([^<]*)(<\/span>)/g, (_, a: string, b: string, c: string) => `${a}${b.replace(/\d/g, '#')}${c}`)
+    // An empty class attribute draws nothing: Home's wire wrote one (its className prop at its default), the template none.
+    .replace(/ class=""/g, '')
     // The age labels.
     .replace(/\b(\d+|an?)\s?(min|mins|minute|minutes|h|hr|hrs|hour|hours|d|day|days|w|week|weeks)\s+ago\b/g, '#ago')
     .replace(/\bjust now\b/g, '#ago')
