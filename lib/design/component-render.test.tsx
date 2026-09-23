@@ -608,6 +608,42 @@ describe('renderComponents', () => {
     expect(newsCards).toMatch(/<a href="https:\/\/www\.example\.com\/1" target="_blank" rel="noopener noreferrer" class="block" aria-label="Headline 1">/);
   });
 
+  it('P2.24 B1, the Coming weekends template: Home’s What’s next over the weekends source, verbatim: the section named by the heading, the rule with “All series”, each weekend a link to its page with the series’ bar, the title and the series’ name, the first row still to start carrying the countdown and every other its dates; Rows cuts; a first row already under way shows its dates; the heading replaces the words; nothing without rows; the Table links the title to the weekend page', async () => {
+    // The starts lie in 2030: the countdown's initial state reads the real clock and draws nothing once its target has passed.
+    const weekendRow = (i: number, over: Record<string, string | number | null> = {}) => ({ series: 'f1', seriesName: 'Formula 1', colour: '#e10600', round: 16 + i, title: `Grand Prix ${i}`, start: `2030-0${i}-05T09:30:00.000Z`, end: `2030-0${i}-07T14:00:00.000Z`, dates: `${i}–${i + 2} Mar`, weekend: `/series/f1/weekend/${16 + i}`, ...over });
+    const WEEKENDS = [weekendRow(1, { dates: '25–27 Sept' }), weekendRow(2, { series: 'wec', seriesName: 'FIA WEC', colour: '#0b3d91', weekend: '/series/wec/weekend/7' }), weekendRow(3), weekendRow(4)];
+    const settings = { preset: 'whats-next', view: 'coming-weekends', rows: 3, heading: '' };
+    const next = await drawOver('weekends?count=10', WEEKENDS, settings);
+    expect(next).toMatch(/<section aria-label="What(&#x27;|')s next" class="min-w-0">/);
+    expect(next).toMatch(/>What(&#x27;|')s next</);
+    expect(next).toContain('>All series<');
+    expect((next.match(/<li>/g) ?? []).length).toBe(3);
+    expect(next).toMatch(/<a href="\/series\/f1\/weekend\/17" class="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border py-2 [^"]*">/);
+    expect(next).toContain('>Grand Prix 1<');
+    expect(next).toContain('>Formula 1<');
+    expect(next).toContain('>FIA WEC<');
+    expect(next).toContain('style="background-color:#0b3d91"');
+    expect(next).toContain('aria-label="Time until 25–27 Sept"');
+    expect(next).toContain('style="border-color:#e10600"');
+    expect((next.match(/aria-label="Time until/g) ?? []).length).toBe(1);
+    expect(next).toContain('>2–4 Mar<');
+    expect(next).not.toContain('Grand Prix 4');
+    // A first weekend already under way (its start before noon) shows its dates, no countdown.
+    const live = await drawOver('weekends?count=10', [weekendRow(1, { start: '2026-09-22T09:00:00.000Z', dates: 'Under way' }), WEEKENDS[1]], settings);
+    expect(live).not.toContain('Time until');
+    expect(live).toContain('>Under way<');
+    // The region's Heading replaces the section's name and the rule's words.
+    const headed = await drawOver('weekends?count=10', WEEKENDS, { ...settings, heading: 'Coming up' });
+    expect(headed).toContain('<section aria-label="Coming up"');
+    expect(headed).toContain('>Coming up<');
+    expect(await drawOver('weekends?count=10', [], settings)).toBe('');
+    const table = await drawOver('weekends?count=10', WEEKENDS.slice(0, 2), { ...settings, view: 'table', rows: 10 });
+    expect(table).toContain('<table');
+    expect(table).toMatch(/<a href="\/series\/f1\/weekend\/17" class="[^"]*">Grand Prix 1<\/a>/);
+    expect(table).toContain('>25–27 Sept<');
+    expect(table).toContain('>5 Jan 2030<');
+  });
+
   it('P2.9: the Live band draws the weekends under way as Home does (the featured boxes, the Also racing row), drops the row when asked, shows one series’ weekend alone from every live box, and nothing for a series not under way; This weekend is its first instance', async () => {
     const band = async (settings: Record<string, string | number | boolean>) => html((await renderComponents(doc([region('b', 'series.live', settings)]), { path: '/x' })).b);
     expect(canRender('series.live')).toBe(true);

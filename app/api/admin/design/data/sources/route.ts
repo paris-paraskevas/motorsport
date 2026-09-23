@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 // GET /api/admin/design/data/sources → { sources: [{ key, usedOn, runs, snapshots }] }
 //
 // The catalogue's side that needs the database (P2.1): for each of the
-// thirteen (lib/design/sources.ts, client-safe, so the definitions travel
+// fourteen (lib/design/sources.ts, client-safe, so the definitions travel
 // with the page), Utilization (the live pages whose newest or live revision
 // picks it, with the refs) and the loader's work behind it in its two tiers,
 // each key placed by describeLoaderKey: the rows tier's runs (source_run,

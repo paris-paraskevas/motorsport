@@ -270,6 +270,10 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story' }, source: 'posts?series=f1&count=10' })])).problems).toEqual([]);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story', cardTitle: 'race' }, source: 'posts?count=10' })])).problems).toEqual(['region r: Title must be a column of the Lead story preset: Cover, Title, Summary, Series, Author, Published, Read time']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'wire', view: 'wire', actionFullCard: 'row:title' }, source: 'news?per=3' })])).problems).toEqual([]);
+    // P2.24 B1: What's next is bound to the weekends source; its preset over a weekends region parses, with or without a series.
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'lead-story', view: 'coming-weekends' }, source: 'posts?count=10' })])).problems).toEqual(["region r: What's next is for a Weekends source; this region reads Posts"]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'whats-next', view: 'coming-weekends', rows: 3, actionFullCard: 'row:title' }, source: 'weekends?count=10' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'whats-next', view: 'coming-weekends' }, source: 'weekends?series=wec&count=5' })])).problems).toEqual([]);
     // Without a Source the binding has nothing to check against, as for a preset.
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'timeline' } })])).problems).toEqual([]);
     // P2.2 B3: a Card slot names a column of the preset's shape; a zone follows a link column of the row (`row:<key>`) or a destination, never a typed URL.

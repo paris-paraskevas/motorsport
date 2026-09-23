@@ -283,8 +283,9 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           // to the source whose rows it reads.
           { key: 'lead-story', label: 'Lead story', only: { source: 'posts' } },
           { key: 'wire', label: 'The wire', only: { source: 'news' } },
+          { key: 'coming-weekends', label: "What's next", only: { source: 'weekends' } },
         ],
-        help: 'How the rows are drawn (APEX: a report’s Template; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. Lead story (posts) and The wire (news) are Home’s boxes as templates: the lead with its cover, its age and its further reading; the headlines linked out with their source and age; each brings its rows. A preset brings its own view when picked.',
+        help: 'How the rows are drawn (APEX: a report’s Template; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. Lead story (posts), The wire (news) and What’s next (weekends) are Home’s boxes as templates: the lead with its cover, its age and its further reading; the headlines linked out with their source and age; the coming weekends, the nearest first with its countdown; each brings its rows. A preset brings its own view when picked.',
       },
       { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole; for the Lead story, the lead and its further reading.' },
       { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name. The Lead story writes it in its eyebrow, The wire in its rule.' },
@@ -327,7 +328,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'card', title: 'Card', seq: 10 },
       { key: 'actions', title: 'Actions', seq: 20 },
     ],
-    sources: ['standings', 'results', 'posts', 'news'],
+    sources: ['standings', 'results', 'posts', 'news', 'weekends'],
   },
   // The Live band (P2.9; ours by name: APEX has no live band, a domain piece the site draws on Home as This weekend, whose
   // renderer is the band's first instance). It reads the content bundle through the home model as Home's pieces do, never

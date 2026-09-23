@@ -5,7 +5,7 @@ import type { SnapshotMeta } from '@/lib/source-snapshot';
 import type { RaceResult, RaceResultEntry, Series } from '@/lib/types';
 
 // The reader behind the catalogue (the components programme, P2.1): one
-// readSource for the thirteen, each through the loader the code already has,
+// readSource for the fourteen, each through the loader the code already has,
 // answering rows shaped by the source's columns and a provenance the Debug
 // trace prints (the tier, the loader keys, the run or the snapshot's meta).
 //
@@ -357,6 +357,29 @@ const READERS: Readonly<Record<string, Reader>> = {
       tier: 'live',
       rows: series.sessions.map(s => ({ uid: s.uid, title: s.title, start: iso(s.start), end: iso(s.end), location: s.location ?? null, dateOnly: s.dateOnly === true, significance: s.significance?.note ?? null })),
     };
+  },
+  async weekends(params) {
+    const [{ loadAllSeries, loadSeries }, { groupByWeekend }, { weekendLabel, weekendStartEnd }] = await Promise.all([import('@/lib/series'), import('@/lib/group'), import('@/lib/weekend')]);
+    const slug = params.series ? String(params.series) : null;
+    const all = slug ? [await loadSeries(slug)] : await loadAllSeries();
+    const count = num(params.count) ?? 10;
+    const now = new Date();
+    // Home's What's next (lib/home-model.ts, P2.24 B1): every series' weekends not past with a session still to end, the
+    // nearest first session first; a series whose grouping throws yields none, as Home's does.
+    const coming = all.flatMap(s => {
+      try {
+        return groupByWeekend(s.sessions, now, s.rounds)
+          .filter(w => !w.isPast && w.sessions.some(x => x.end >= now))
+          .map(w => ({ s, w, ...weekendStartEnd(w) }));
+      } catch {
+        return [];
+      }
+    });
+    const rows: SourceRow[] = coming
+      .sort((a, b) => a.start.getTime() - b.start.getTime())
+      .slice(0, count)
+      .map(({ s, w, start, end }) => ({ series: s.meta.slug, seriesName: s.meta.name, colour: s.meta.color, round: w.round, title: weekendLabel(w, w.round).title, start: iso(start), end: iso(end), dates: w.dateRangeLabel, weekend: `/series/${s.meta.slug}/weekend/${w.round}` }));
+    return { tier: 'live', rows };
   },
   async drivers(params) {
     const { loadCuratedDrivers } = await import('@/lib/series-content');

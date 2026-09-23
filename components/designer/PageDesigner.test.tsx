@@ -1147,7 +1147,7 @@ describe('PageDesigner', () => {
     // P2.2 B2: Timeline is bound to a Results source; on Standings its pill is disabled with the reason in the note; Detail is open to every shape.
     const view = () => within(pe).getByRole('group', { name: 'View' });
     expect((within(view()).getByRole('button', { name: 'Timeline' }) as HTMLButtonElement).disabled).toBe(true);
-    expect(within(pe).getByText(/Timeline is for a Results source; Lead story is for a Posts source; The wire is for a News source; this region reads Standings/)).toBeTruthy();
+    expect(within(pe).getByText(/Timeline is for a Results source; Lead story is for a Posts source; The wire is for a News source; What's next is for a Weekends source; this region reads Standings/)).toBeTruthy();
     expect((within(view()).getByRole('button', { name: 'Detail' }) as HTMLButtonElement).disabled).toBe(false);
     fireEvent.change(preset, { target: { value: 'constructors' } });
     expect(status()).toMatch(/Preset set/);
@@ -1248,13 +1248,14 @@ describe('PageDesigner', () => {
     fireEvent.click(tile('Component: Data region'));
     const pe = screen.getByLabelText('Property Editor');
     const type = within(pe).getByLabelText('Source type') as HTMLSelectElement;
-    expect([...type.options].map(o => o.textContent)).toEqual(expect.arrayContaining(['Standings', 'Results', 'Posts', 'News']));
+    expect([...type.options].map(o => o.textContent)).toEqual(expect.arrayContaining(['Standings', 'Results', 'Posts', 'News', 'Weekends']));
     fireEvent.change(type, { target: { value: 'standings' } });
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
     const view = () => within(pe).getByRole('group', { name: 'View' });
     expect((within(view()).getByRole('button', { name: 'Lead story' }) as HTMLButtonElement).disabled).toBe(true);
     expect((within(view()).getByRole('button', { name: 'The wire' }) as HTMLButtonElement).disabled).toBe(true);
-    expect(within(pe).getByText(/Lead story is for a Posts source; The wire is for a News source; this region reads Standings/)).toBeTruthy();
+    expect((within(view()).getByRole('button', { name: "What's next" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(within(pe).getByText(/Lead story is for a Posts source; The wire is for a News source; What's next is for a Weekends source; this region reads Standings/)).toBeTruthy();
     // Posts: the Lead story preset under its group (the stored Drivers stays visible while it is the value); its pick brings the template and its rows.
     fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
     fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'posts' } });
@@ -1292,6 +1293,15 @@ describe('PageDesigner', () => {
     expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('5');
     expect(within(pe).queryByLabelText('Pinned post')).toBeNull();
     expect(tile('Component: Data region').textContent).toMatch(/Preset The wire · View The wire · Rows 5/);
+    // Weekends (P2.24 B1): What's next brings its template and three rows.
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'weekends' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    expect([...(within(pe).getByLabelText('Preset') as HTMLSelectElement).querySelectorAll('optgroup')].map(g => g.label)).toContain("What's next");
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'whats-next' } });
+    expect(within(view()).getByRole('button', { name: "What's next" }).getAttribute('aria-pressed')).toBe('true');
+    expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('3');
+    expect(tile('Component: Data region').textContent).toMatch(/Preset What's next · View What's next · Rows 3/);
   });
 
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {

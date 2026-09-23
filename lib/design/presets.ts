@@ -13,7 +13,7 @@
 // presets (P2.2 B1) bring the Rounds layout, the round-grouped list the site
 // draws for results, as their view.
 
-export type PresetSource = 'standings' | 'results' | 'posts' | 'news';
+export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends';
 /** The `kind` a standings row carries (lib/design/source-read.ts). */
 export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver';
 /** The column types a view draws (APEX: a report's column types). The image column arrived with P2.24 A, where the posts
@@ -30,7 +30,7 @@ export interface PresetColumn {
   /** For a link whose address leaves the site (the news headlines): drawn in a new tab, as an external destination is. */
   external?: true;
 }
-export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'post-rows' | 'news-rows';
+export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'post-rows' | 'news-rows' | 'weekend-rows';
 export interface Shape {
   key: ShapeKey;
   source: PresetSource;
@@ -119,6 +119,21 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     ],
     card: { title: 'title', subtitle: 'source', body: 'published', badge: 'seriesName' },
   },
+  // Home's What's next (P2.24 B1): the coming weekends as the weekends source reads them, the title linked to the weekend page;
+  // the round last, a right-aligned number before a left-aligned column having no gap in the Table.
+  'weekend-rows': {
+    key: 'weekend-rows',
+    source: 'weekends',
+    columns: [
+      { key: 'title', label: 'Title', type: 'link', href: 'weekend' },
+      { key: 'seriesName', label: 'Series', type: 'text' },
+      { key: 'dates', label: 'Dates', type: 'text' },
+      { key: 'start', label: 'First session', type: 'date' },
+      { key: 'end', label: 'Last session', type: 'date' },
+      { key: 'round', label: 'Round', type: 'number' },
+    ],
+    card: { title: 'title', subtitle: 'seriesName', body: 'dates', badge: 'round' },
+  },
 };
 
 export interface PresetGroup {
@@ -145,6 +160,8 @@ export const PRESET_GROUPS: readonly PresetGroup[] = [
   { key: 'season-results-gt-world', name: 'Season results · GT World', source: 'results' },
   { key: 'lead-story', name: 'Lead story', source: 'posts' },
   { key: 'wire', name: 'The wire', source: 'news' },
+  // Home's literal has the straight apostrophe (components/HomeLead.tsx HomeWhatsNext), and the heading must match it byte for byte.
+  { key: 'whats-next', name: "What's next", source: 'weekends' },
 ];
 
 export interface Preset {
@@ -163,7 +180,7 @@ export interface Preset {
   nameLabel: string;
   /** The view the preset brings when picked: the standings tables, the results' Rounds layout (List), Home's boxes their own
    *  template (P2.24 A: lead-story, wire); Timeline and Detail (P2.2 B2) are the operator's picks, no preset brings them. */
-  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire';
+  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire' | 'coming-weekends';
   /** The Rows the pick sets, where the site's box has a count of its own (P2.24 A: the lead and its three further posts, the
    *  wire's five); absent, the region's Rows stands. Ours: the counts were Application Settings of Home's pieces. */
   rows?: number;
@@ -226,6 +243,8 @@ export const PRESETS: readonly Preset[] = [
   // headlines (home.wire_count shipped five); `nameLabel` unused, the shapes carrying no name column.
   { key: 'lead-story', name: 'Lead story', group: 'lead-story', source: 'posts', shape: 'post-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'lead-story', rows: 4 },
   { key: 'wire', name: 'The wire', group: 'wire', source: 'news', shape: 'news-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'wire', rows: 5 },
+  // Home's What's next (P2.24 B1): the next three weekends across every series.
+  { key: 'whats-next', name: "What's next", group: 'whats-next', source: 'weekends', shape: 'weekend-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'coming-weekends', rows: 3 },
 ];
 
 export function findPreset(key: string): Preset | null {

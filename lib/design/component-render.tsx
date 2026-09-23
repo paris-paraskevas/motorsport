@@ -202,7 +202,9 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
                 ? views.DataRegionLeadStory
                 : settings.view === 'wire' && shape.source === 'news'
                   ? views.DataRegionWire
-                  : views.DataRegionTable;
+                  : settings.view === 'coming-weekends' && shape.source === 'weekends'
+                    ? views.DataRegionComingWeekends
+                    : views.DataRegionTable;
     return <View {...props} />;
   },
 };
@@ -230,8 +232,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'home.next': ['content:series'],
   'home.wire': ['snapshot:news:aggregate:'],
   // The Data region reads its Source: the standings' two tiers, the results' snapshots, the posts table and the news aggregate
-  // (P2.24 A), and the series' names and colours from the bundle for the last two.
-  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series'],
+  // (P2.24 A), the series' names and colours from the bundle, and the calendar feeds for the weekends (P2.24 B1).
+  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics'],
 };
 
 /** What the Debug trace asks of a render (P1.9): each component's timing and outcome. */

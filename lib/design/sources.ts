@@ -180,7 +180,7 @@ const RESULTS_HOSTS: Readonly<Record<string, string>> = {
 
 const col = (key: string, label: string, type: SourceColumnType): SourceColumn => ({ key, label, type });
 
-/** The thirteen, in the order the changes line of 2026-09-17 names them. */
+/** The thirteen, in the order the changes line of 2026-09-17 names them; then Weekends (P2.24 B1), the fourteenth. */
 export const SOURCES: readonly SourceDefinition[] = [
   {
     key: 'series',
@@ -347,6 +347,19 @@ export const SOURCES: readonly SourceDefinition[] = [
     load: 'none',
     pagination: 'none',
     reads: ['content:circuits'],
+  },
+  // The coming weekends (P2.24 B1): Home's What's next as rows, every series' weekends not past with a session still to end,
+  // the nearest first session first; read live from the feeds as Sessions is; Dates is the label Home draws.
+  {
+    key: 'weekends',
+    name: 'Weekends',
+    holds: 'the coming weekends across every series, or one, the nearest first: the round, its title, its dates, its first and last sessions, the weekend page',
+    parameters: [seriesParam(ALL_SERIES, false), { key: 'count', label: 'Count', kind: 'number', min: 1, max: 50, default: 10, help: 'How many, the nearest first.' }],
+    columns: [col('series', 'Series slug', 'text'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour'), col('round', 'Round', 'number'), col('title', 'Title', 'text'), col('start', 'First session', 'date'), col('end', 'Last session', 'date'), col('dates', 'Dates', 'text'), col('weekend', 'Weekend page', 'link')],
+    fresh: 'live',
+    load: 'none',
+    pagination: 'none',
+    reads: ['content:series', 'live:ics'],
   },
 ];
 

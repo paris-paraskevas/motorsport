@@ -6,7 +6,7 @@ import { FRESH_NOTE, REMOTE_SERVERS, SERIES_OPTIONS, SOURCES, defaultSourceRef, 
 
 // Data Sources (the components programme, P2.1; APEX: REST Data Sources, ours
 // by name: the sources are the code's readers, not endpoints): the catalogue's
-// thirteen in a table with their parameters, columns (APEX: the Data Profile),
+// fourteen in a table with their parameters, columns (APEX: the Data Profile),
 // how they are kept fresh, Utilization and History; one opened below with how
 // it is read (the tier, the loader keys, the remote server per series), its
 // loading method, where it is used, and a Preview through the reader. The same

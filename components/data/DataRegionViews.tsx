@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import type { Preset, PresetColumn, PresetRow, Shape } from '@/lib/design/presets';
 import { ageLabel } from '@/lib/date';
 import { seriesInk } from '@/lib/site';
+import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -676,6 +677,39 @@ export function DataRegionWire({ heading, rows, now }: DataRegionViewProps) {
                 </span>
                 <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">{ageOf(r.published, now)}</span>
               </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+/** Home's What's next (components/HomeLead.tsx HomeWhatsNext) as the template of the weekends source (P2.24 B1): the section
+ *  named by the region's heading, the rule with Home's words, each weekend a link to its page with the series' bar, the title
+ *  and the series' name; the first row still to start at the render's instant carries the countdown (the client component
+ *  Home's piece uses), every other its dates. Nothing without rows. Home's markup verbatim, for the flip's parity. */
+export function DataRegionComingWeekends({ heading, rows, now }: DataRegionViewProps) {
+  if (rows.length === 0) return null;
+  const at = (now ?? new Date()).getTime();
+  return (
+    <section aria-label={heading} className="min-w-0">
+      <SectionRule label={heading} right="All series" />
+      <ul>
+        {rows.map((r, i) => {
+          const start = typeof r.start === 'string' && r.start ? new Date(r.start) : null;
+          const target = i === 0 && start && !Number.isNaN(start.getTime()) && start.getTime() > at ? start.toISOString() : null;
+          const colour = text(r.colour) || undefined;
+          return (
+            <li key={`${text(r.series)}-${text(r.weekend)}`}>
+              <Link href={text(r.weekend)} className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface">
+                <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: colour }} />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">{text(r.title)}</span>
+                  <span className="block font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{text(r.seriesName)}</span>
+                </span>
+                {target ? <NextRaceCountdown target={target} label={text(r.dates)} color={colour} /> : <span className="shrink-0 font-mono text-11 uppercase tracking-[0.12em] text-text-muted">{text(r.dates)}</span>}
+              </Link>
             </li>
           );
         })}

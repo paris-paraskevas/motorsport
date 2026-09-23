@@ -29,9 +29,9 @@ describe('the component catalogue', () => {
     expect(parseSettings(lead, { pinned: 'x'.repeat(121) }).problems).toEqual(['Pinned post must be text of at most 120 characters']);
   });
 
-  it('P2.1: What it changed declares the source it may read (standings); the Data region reads standings and results (P2.2), posts and news (P2.24 A); no other definition reads one', () => {
+  it('P2.1: What it changed declares the source it may read (standings); the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1); no other definition reads one', () => {
     expect(findComponent('home.changed')?.sources).toEqual(['standings']);
-    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news']);
+    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends']);
     for (const c of COMPONENTS) if (c.key !== 'home.changed' && c.key !== 'data.region') expect(c.sources, c.key).toBeUndefined();
   });
 
@@ -59,7 +59,7 @@ describe('the component catalogue', () => {
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
     const preset = region.settings[0];
-    expect(preset.options).toHaveLength(35);
+    expect(preset.options).toHaveLength(36);
     expect(preset.options![0]).toEqual({
       key: 'drivers',
       label: 'Drivers',
@@ -77,7 +77,9 @@ describe('the component catalogue', () => {
     expect(preset.options!.find(o => o.key === 'lead-story')).toMatchObject({ key: 'lead-story', label: 'Lead story', group: 'Lead story', only: { source: 'posts' }, sets: { view: 'lead-story', rows: 4, ...RESET } });
     expect(preset.options!.find(o => o.key === 'lead-story')!.only!.series).toHaveLength(15);
     expect(preset.options!.find(o => o.key === 'wire')).toMatchObject({ key: 'wire', label: 'The wire', group: 'The wire', only: { source: 'news' }, sets: { view: 'wire', rows: 5, ...RESET } });
-    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(o.key === 'lead-story' || o.key === 'wire');
+    // P2.24 B1: What's next over the weekends source brings its template and three rows.
+    expect(preset.options!.find(o => o.key === 'whats-next')).toMatchObject({ key: 'whats-next', label: "What's next", group: "What's next", only: { source: 'weekends' }, sets: { view: 'coming-weekends', rows: 3, ...RESET } });
+    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(o.key === 'lead-story' || o.key === 'wire' || o.key === 'whats-next');
     expect(region.settings[1].options!.map(o => [o.key, o.label])).toEqual([
       ['table', 'Table'],
       ['cards', 'Cards'],
@@ -86,7 +88,10 @@ describe('the component catalogue', () => {
       ['detail', 'Detail'],
       ['lead-story', 'Lead story'],
       ['wire', 'The wire'],
+      ['coming-weekends', "What's next"],
     ]);
+    expect(region.settings[1].options!.find(o => o.key === 'coming-weekends')).toEqual({ key: 'coming-weekends', label: "What's next", only: { source: 'weekends' } });
+    expect(parseSettings(region, { preset: 'whats-next', view: 'coming-weekends' }).settings.view).toBe('coming-weekends');
     // P2.2 B2: Timeline is bound to a Results source (a date to stand on), every series of it; Detail is open to every shape.
     expect(region.settings[1].options!.find(o => o.key === 'timeline')).toEqual({ key: 'timeline', label: 'Timeline', only: { source: 'results' } });
     expect(region.settings[1].options!.find(o => o.key === 'detail')).toEqual({ key: 'detail', label: 'Detail' });
