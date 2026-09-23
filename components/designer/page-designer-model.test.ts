@@ -163,10 +163,10 @@ describe('messages', () => {
     const table = (settings: Record<string, string | number | boolean>, source?: string): ComponentRegion =>
       ({ ...region({ id: 'table', title: 'Table' }), kind: 'component', component: 'data.region', settings, ...(source ? { source } : {}) }) as ComponentRegion;
     const drivers = table({ preset: 'drivers', view: 'cards', rows: 10, heading: '', cardTitle: 'team', actionFullCard: 'calendar' }, 'standings?series=f1&season=2026');
-    // Standings → Results: the first results preset for Formula 1 (Season results) with its List view and the card reset; Rows stays.
+    // Standings → Results: the first results preset for Formula 1 (R8: the Latest result box) with its Podium view, its three rows and the card reset.
     const results = withSourceChanged(drivers, { source: 'results', params: { series: 'f1', season: 2026 } }, spec);
     expect(results.source).toBe('results?series=f1&season=2026');
-    expect(results.settings).toMatchObject({ preset: 'season-results', view: 'list', rows: 10, heading: '', cardTitle: '', actionFullCard: 'row:race' });
+    expect(results.settings).toMatchObject({ preset: 'latest-result', view: 'podium', rows: 3, heading: '', cardTitle: '', actionFullCard: 'row:race' });
     // Another series that offers the same preset: nothing but the Source moves.
     const f2 = withSourceChanged(drivers, { source: 'standings', params: { series: 'f2', season: 2026 } }, spec);
     expect(f2.source).toBe('standings?series=f2&season=2026');
@@ -174,9 +174,9 @@ describe('messages', () => {
     // A class family: its first preset (Hypercar — Drivers) with the Table view.
     const wec = withSourceChanged(drivers, { source: 'standings', params: { series: 'wec', season: 2026 } }, spec);
     expect(wec.settings).toMatchObject({ preset: 'wec-hypercar-drivers', view: 'table' });
-    // A View bound to the old source goes with the preset: What it changed over Standings → Results is Feature races, the List view.
+    // A View bound to the old source goes with the preset: What it changed over Standings → Results is the Latest result, the Podium view (R8).
     const changed = table({ preset: 'what-it-changed', view: 'leader', rows: 5, heading: '' }, 'standings?series=f2&season=2026');
-    expect(withSourceChanged(changed, { source: 'results', params: { series: 'f2', season: 2026 } }, spec).settings).toMatchObject({ preset: 'feature-races', view: 'list', rows: 5 });
+    expect(withSourceChanged(changed, { source: 'results', params: { series: 'f2', season: 2026 } }, spec).settings).toMatchObject({ preset: 'latest-result', view: 'podium', rows: 3 });
     // Home's series: the Latest result alone is offered, its Podium view and three rows.
     expect(withSourceChanged(drivers, { source: 'results', params: { series: 'home', season: 2026 } }, spec).settings).toMatchObject({ preset: 'latest-result', view: 'podium', rows: 3 });
     // None: the Source leaves, the settings stay.

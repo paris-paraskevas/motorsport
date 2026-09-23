@@ -249,6 +249,9 @@ export const PRESETS: readonly Preset[] = [
   // FIA WEC: Hypercar awards Drivers and Manufacturers, LMGT3 Drivers and Teams.
   ...family('wec', 'wec-classes', 'wec', 'Hypercar', ['driver', 'manufacturer']),
   ...family('wec', 'wec-classes', 'wec', 'LMGT3', ['driver', 'team']),
+  // Home's Latest result (P2.24 B2): the podium (three rows) of the newest race, for Home's series or any championship the Results
+  // source offers. First of the results presets (R8), so a Source moved to Results lands on the box (R7 picks the first offered).
+  { key: 'latest-result', name: 'Latest result', group: 'latest-result', source: 'results', shape: 'podium-rows', where: {}, series: PODIUM_SERIES, nameLabel: 'Driver', view: 'podium', rows: 3 },
   // The flat series' Season results are their races (F1's sprints sit apart, as the tab leaves them out); F2's two presets its two sessions.
   results('season-results', 'Season results', 'season-results', RESULT_SERIES, 'race-rows', { session: 'race' }),
   results('feature-races', 'Feature races', 'feature-races', ['f2'], 'race-rows', { session: 'feature' }),
@@ -265,10 +268,8 @@ export const PRESETS: readonly Preset[] = [
   { key: 'wire', name: 'The wire', group: 'wire', source: 'news', shape: 'news-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'wire', rows: 5 },
   // Home's What's next (P2.24 B1): the next three weekends across every series.
   { key: 'whats-next', name: "What's next", group: 'whats-next', source: 'weekends', shape: 'weekend-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'coming-weekends', rows: 3 },
-  // Home's Latest result and What it changed (P2.24 B2): the podium (three rows) of the newest race, for Home's series or any
-  // championship the Results source offers; the drivers' table (five rows, home.changed's default) after that race, for the
+  // Home's What it changed (P2.24 B2): the drivers' table (five rows, home.changed's default) after the newest race, for the
   // Latest result or any of the ten with a drivers' brief.
-  { key: 'latest-result', name: 'Latest result', group: 'latest-result', source: 'results', shape: 'podium-rows', where: {}, series: PODIUM_SERIES, nameLabel: 'Driver', view: 'podium', rows: 3 },
   { key: 'what-it-changed', name: 'What it changed', group: 'what-it-changed', source: 'standings', shape: 'driver-rows', where: { kind: 'driver' }, series: LEADER_SERIES, nameLabel: 'Driver', view: 'leader', rows: 5 },
 ];
 

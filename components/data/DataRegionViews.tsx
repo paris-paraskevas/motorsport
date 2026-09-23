@@ -208,6 +208,8 @@ export interface DataRegionViewProps {
   actions?: CardActions;
   /** The render's instant, for the age a stamp is given (P2.24 A); the clock when absent. */
   now?: Date;
+  /** The series the Source names (its `series` parameter, R8), for a template whose words follow it; none across every series. */
+  series?: string;
 }
 
 /** A zone's link around a part of the card, or the part alone; an external address leaves the site in a new tab, as the
@@ -686,15 +688,18 @@ export function DataRegionWire({ heading, rows, now }: DataRegionViewProps) {
 }
 
 /** Home's What's next (components/HomeLead.tsx HomeWhatsNext) as the template of the weekends source (P2.24 B1): the section
- *  named by the region's heading, the rule with Home's words, each weekend a link to its page with the series' bar, the title
- *  and the series' name; the first row still to start at the render's instant carries the countdown (the client component
- *  Home's piece uses), every other its dates. Nothing without rows. Home's markup verbatim, for the flip's parity. */
-export function DataRegionComingWeekends({ heading, rows, now }: DataRegionViewProps) {
+ *  named by the region's heading, the rule with Home's words (the series' name in place of All series when the Source names one,
+ *  R8), each weekend a link to its page with the series' bar, the title and the series' name; the first row still to start at the
+ *  render's instant carries the countdown (the client component Home's piece uses), every other its dates. Nothing without rows.
+ *  Home's markup verbatim, for the flip's parity. */
+export function DataRegionComingWeekends({ heading, rows, now, series }: DataRegionViewProps) {
   if (rows.length === 0) return null;
   const at = (now ?? new Date()).getTime();
+  // Every row a named Source read is that series', so the first row's name is the Source's.
+  const right = series ? text(rows[0].seriesName) || series : 'All series';
   return (
     <section aria-label={heading} className="min-w-0">
-      <SectionRule label={heading} right="All series" />
+      <SectionRule label={heading} right={right} />
       <ul>
         {rows.map((r, i) => {
           const start = typeof r.start === 'string' && r.start ? new Date(r.start) : null;

@@ -50,6 +50,7 @@ describe('the preset catalogue', () => {
     for (const p of results) expect(p.view, p.key).toBe(p.key === 'latest-result' ? 'podium' : 'list');
     for (const p of standings) expect(p.view, p.key).toBe(p.key === 'what-it-changed' ? 'leader' : 'table');
     expect(results.map(p => [p.key, p.shape, p.where])).toEqual([
+      ['latest-result', 'podium-rows', {}],
       ['season-results', 'race-rows', { session: 'race' }],
       ['feature-races', 'race-rows', { session: 'feature' }],
       ['sprint-races', 'race-rows', { session: 'sprint' }],
@@ -57,7 +58,6 @@ describe('the preset catalogue', () => {
       ['season-results-imsa', 'car-rows', {}],
       ['season-results-wec', 'car-rows', {}],
       ['season-results-gt-world', 'cup-rows', {}],
-      ['latest-result', 'podium-rows', {}],
     ]);
     expect(findPreset('season-results')?.series).toEqual(['f1', 'f3', 'indycar', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm', 'formula-e']);
     // The results shapes: the race title links to the round's weekend page; the sportscar shapes carry the car, its vehicle and the gap, no points.
@@ -127,11 +127,12 @@ describe('the preset catalogue', () => {
     expect(presetsFor('standings', 'dtm').map(p => p.key)).toEqual(['drivers', 'teams', 'what-it-changed']);
     expect(presetsFor('standings', 'wec').map(p => p.key)).toEqual(['wec-hypercar-drivers', 'wec-hypercar-manufacturers', 'wec-lmgt3-drivers', 'wec-lmgt3-teams']);
     expect(presetsFor('standings', 'imsa')).toHaveLength(11);
-    expect(presetsFor('results', 'f2').map(p => p.key)).toEqual(['feature-races', 'sprint-races', 'latest-result']);
-    expect(presetsFor('results', 'f1').map(p => p.key)).toEqual(['season-results', 'latest-result']);
-    expect(presetsFor('results', 'wec').map(p => p.key)).toEqual(['season-results-wec', 'latest-result']);
+    // R8: the Latest result box leads every results series' list, so a change of Source lands on it (R7 picks the first offered).
+    expect(presetsFor('results', 'f2').map(p => p.key)).toEqual(['latest-result', 'feature-races', 'sprint-races']);
+    expect(presetsFor('results', 'f1').map(p => p.key)).toEqual(['latest-result', 'season-results']);
+    expect(presetsFor('results', 'wec').map(p => p.key)).toEqual(['latest-result', 'season-results-wec']);
     expect(presetsFor('standings', 'nls')).toEqual([]);
-    expect(presetsFor('results', 'nls').map(p => p.key)).toEqual(['overall-winners', 'latest-result']);
+    expect(presetsFor('results', 'nls').map(p => p.key)).toEqual(['latest-result', 'overall-winners']);
   });
 
   it('selects a preset’s rows: the kind and the class, by position, cut to the count; a flat series’ rows carry no class and match a preset with none', () => {

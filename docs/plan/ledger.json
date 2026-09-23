@@ -264,6 +264,11 @@
    "date": "2026-09-23",
    "change": "R7 merged (#1040, 1.0.159, two commits 962cddbd + b8b51dad, squash-merged 16:53:19Z as 57b9d3d2, prod /changelog 1.0.159 at 2026-09-23T16:57:39Z); R7 DONE. A change of a Data region’s Source type or Series picks the first preset the new Source and Series offer, with what its pick brings, as picking it by hand does; the parser’s binding messages name the setting. Next: P2.3 PR A on the approved plan.",
    "word": "the operator, 2026-09-23 ~16:53Z: \"merge\""
+  },
+  {
+   "date": "2026-09-23",
+   "change": "R8 opened on the operator’s two reports (~17:05Z “i want \"results\" in source to have the \"home's series\" format, a box showing the last result of the series ive chosen in source”; ~17:10Z “bug: whats next ive chosen weekends as source and specifically f1 or f2 (2 different boxes) they both read all series top right (depending on source the headers should change)”) and the word “once finished merge then begin next task” (~17:25Z): the Latest result preset leads every results series’ list (a Source moved to Results draws the chosen championship’s last-result box, R7’s first-offered pick), and the Coming weekends rule names the Source’s series where Home reads All series. Two fixes, one slot, one PR (1.0.161); P2.3 PR A resumes after the merge.",
+   "word": "the operator, 2026-09-23 ~17:05Z: \"i want \"results\" in source to have the \"home's series\" format, a box showing the last result of the series ive chosen in source\"; ~17:10Z: \"bug: whats next ive chosen weekends as source and specifically f1 or f2 (2 different boxes) they both read all series top right (depending on source the headers should change)\"; ~17:25Z: \"once finished merge then begin next task\""
   }
  ],
  "phases": {
@@ -637,6 +642,19 @@
    "status": "done",
    "evidence": "#1040 · 1.0.159 · two commits 962cddbd + b8b51dad, squash-merged 2026-09-23 16:53:19Z as 57b9d3d2 · prod /changelog 1.0.159 at 2026-09-23T16:57:39Z · tests first: 6 red across 3 files (the model’s rule, the designer’s Type change to Results and to Posts, the parser’s thirteen messages), then green; the reviewer’s Series-change case added after (Season results on Home’s series → the Latest result, nothing refused) · tsc 0 · lint 0 errors (the two known warnings) · vitest 223 files, 2279 tests (the clean run; a first run beside the foreground build timed one long designer test out at 5 s) · hooks 31/31 · the foreground build exit 0, 1189 pages · dry run 39411.02 KiB / gzip 8625.26 KiB · the reviewer (Sonnet, 202,161 tokens against ~120k said): PASS WITH NOTES, nothing blocking, both notes taken in the second commit; after it the designer test 49/49 and tsc 0.",
    "scopeHash": "0285ddf1a2b5"
+  },
+  {
+   "id": "R8",
+   "phase": "P2",
+   "title": "A Data region follows its Source’s series: the Latest result box first for Results, the What’s next rule named",
+   "scope": "Two fixes on the operator’s reports of 2026-09-23 (~17:05Z and ~17:10Z): (1) the Latest result preset leads every results series’ list in the catalogue (lib/design/presets.ts), so a Data region whose Source becomes Results draws Home’s last-result box for the chosen championship by itself (R7 picks the first preset offered) and the Attributes tab’s Preset select lists it first; the season lists stay a pick away. (2) The Coming weekends template’s rule names the Source’s series (“Formula 1”) where Home reads “All series”, from the rows the named Source read; a Source across every series keeps Home’s words (Home’s own region names none, so the flip’s parity holds).",
+   "fixedBy": "the operator’s reports of 2026-09-23: ~17:05Z “i want \"results\" in source to have the \"home's series\" format, a box showing the last result of the series ive chosen in source”; ~17:10Z “bug: whats next ive chosen weekends as source and specifically f1 or f2 (2 different boxes) they both read all series top right (depending on source the headers should change)”; the Latest result preset sat last among the results presets (presetsFor’s order is PRESETS’ order, and withSourceChanged takes the first offered); components/data/DataRegionViews.tsx DataRegionComingWeekends carried Home’s literal “All series” and the renderer handed it no series",
+   "defaults": "the catalogue’s order carries the preference (no new flag; the Preset select follows the same order); the rule’s name is the first row’s series name (every row a named Source read is that series’), the slug if a row carries none; the podium template already names its series from the row; the wire’s and the lead story’s words do not depend on the series; PRESET_GROUPS keeps its order (names only)",
+   "needsWord": "",
+   "acceptance": "presetsFor('results', s) starts with latest-result for f1, f2, wec and nls; withSourceChanged over Standings f1 Drivers → Results f1 gives latest-result, the Podium view, Rows 3 and the card reset; the designer test’s Type change to Results reads “Preset Latest result · View Latest result · Rows 3” with Messages 0; the Coming weekends render over weekends?series=f1 puts “Formula 1” on the rule and no “All series”, over weekends?count=10 “All series” as before; the browser: the Monza draft’s preview draws the F2 box and the F1 What’s next rule; Home byte-identical on prod after the deploy (scripts/parity-home.mts)",
+   "status": "started",
+   "evidence": "",
+   "scopeHash": "885bbd6d2b05"
   },
   {
    "id": "P2.3",

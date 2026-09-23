@@ -579,7 +579,7 @@ describe('renderComponents', () => {
     expect(newsCards).toMatch(/<a href="https:\/\/www\.example\.com\/1" target="_blank" rel="noopener noreferrer" class="block" aria-label="Headline 1">/);
   });
 
-  it('P2.24 B1, the Coming weekends template: Home’s What’s next over the weekends source, verbatim: the section named by the heading, the rule with “All series”, each weekend a link to its page with the series’ bar, the title and the series’ name, the first row still to start carrying the countdown and every other its dates; Rows cuts; a first row already under way shows its dates; the heading replaces the words; nothing without rows; the Table links the title to the weekend page', async () => {
+  it('P2.24 B1, the Coming weekends template: Home’s What’s next over the weekends source, verbatim: the section named by the heading, the rule with “All series” (the series’ name when the Source names one, R8), each weekend a link to its page with the series’ bar, the title and the series’ name, the first row still to start carrying the countdown and every other its dates; Rows cuts; a first row already under way shows its dates; the heading replaces the words; nothing without rows; the Table links the title to the weekend page', async () => {
     // The starts lie in 2030: the countdown's initial state reads the real clock and draws nothing once its target has passed.
     const weekendRow = (i: number, over: Record<string, string | number | null> = {}) => ({ series: 'f1', seriesName: 'Formula 1', colour: '#e10600', round: 16 + i, title: `Grand Prix ${i}`, start: `2030-0${i}-05T09:30:00.000Z`, end: `2030-0${i}-07T14:00:00.000Z`, dates: `${i}–${i + 2} Mar`, weekend: `/series/f1/weekend/${16 + i}`, ...over });
     const WEEKENDS = [weekendRow(1, { dates: '25–27 Sept' }), weekendRow(2, { series: 'wec', seriesName: 'FIA WEC', colour: '#0b3d91', weekend: '/series/wec/weekend/7' }), weekendRow(3), weekendRow(4)];
@@ -608,6 +608,10 @@ describe('renderComponents', () => {
     expect(headed).toContain('<section aria-label="Coming up"');
     expect(headed).toContain('>Coming up<');
     expect(await drawOver('weekends?count=10', [], settings)).toBe('');
+    // R8: a Source naming a series puts its name on the rule where Home reads All series (the operator's report of 2026-09-23).
+    const f1 = await drawOver('weekends?series=f1&count=10', [WEEKENDS[0], WEEKENDS[2]], settings);
+    expect(f1).toContain('<span class="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">Formula 1</span>');
+    expect(f1).not.toContain('All series');
     const table = await drawOver('weekends?count=10', WEEKENDS.slice(0, 2), { ...settings, view: 'table', rows: 10 });
     expect(table).toContain('<table');
     expect(table).toMatch(/<a href="\/series\/f1\/weekend\/17" class="[^"]*">Grand Prix 1<\/a>/);

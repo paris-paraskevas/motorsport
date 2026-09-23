@@ -1144,21 +1144,25 @@ describe('PageDesigner', () => {
     const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
     const saved = posted.document.regions.find(r => r.kind === 'component' && r.component === 'data.region')!;
     expect(saved).toMatchObject({ settings: { preset: 'constructors', view: 'cards', rows: 8, heading: '' }, source: 'standings?series=f1&season=2026' });
-    // A results Source (P2.2 B1; R7): Formula 1 offers Season results, and the change of Source picks it by itself, since the stored
-    // Constructors is not a results preset — with the view its pick brings (the Rounds layout, the List pill pressed) and no Messages.
+    // A results Source (P2.2 B1; R7; R8): the change of Source picks the first preset Formula 1 offers by itself, since the stored
+    // Constructors is not a results preset — the Latest result box (R8 leads every results series with it), with what its pick
+    // brings (the Podium view, three rows) and no Messages; Season results picked by hand brings the Rounds layout (the List pill pressed).
     fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
     fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'results' } });
     expect(status()).toMatch(/Source set/);
     expect(screen.queryByText(/Not saved:/)).toBeNull();
-    expect(tile('Component: Data region').textContent).toMatch(/Results · Formula 1 · 2026 · Preset Season results · View List · Rows 8/);
+    expect(tile('Component: Data region').textContent).toMatch(/Results · Formula 1 · 2026 · Preset Latest result · View Latest result · Rows 3/);
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
     const results = within(pe).getByLabelText('Preset') as HTMLSelectElement;
-    expect(results.value).toBe('season-results');
+    expect(results.value).toBe('latest-result');
+    // Home's Latest result over any results series leads the list (P2.24 B2; R8); the stored Constructors is gone with the Source.
+    expect([...results.options].map(o => o.textContent)).toEqual(['Latest result', 'Season results']);
     const season = [...results.options].find(o => o.textContent === 'Season results')!;
     expect(season.disabled).toBe(false);
     expect(within(pe).queryByText(/Not yet pickable/)).toBeNull();
-    // Home's Latest result over any results series joins the list (P2.24 B2); the stored Constructors is gone with the Source.
-    expect([...results.options].map(o => o.textContent)).toEqual(['Season results', 'Latest result']);
+    fireEvent.change(results, { target: { value: 'season-results' } });
+    fireEvent.change(within(pe).getByLabelText('Rows'), { target: { value: '8' } });
+    expect(tile('Component: Data region').textContent).toMatch(/Results · Formula 1 · 2026 · Preset Season results · View List · Rows 8/);
     expect(within(view()).getByRole('button', { name: 'List' }).getAttribute('aria-pressed')).toBe('true');
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(calls.filter(c => c.method === 'POST')).toHaveLength(2));
@@ -1216,6 +1220,8 @@ describe('PageDesigner', () => {
     fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'results' } });
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
     fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'season-results' } });
+    // The Source change landed on the Latest result box first (R7; R8), whose pick brought Rows 3; back to the ten.
+    fireEvent.change(within(pe).getByLabelText('Rows'), { target: { value: '10' } });
     expect(within(pe).queryByLabelText('Title')).toBeNull();
     fireEvent.click(within(view()).getByRole('button', { name: 'Cards' }));
     expect((within(pe).getByLabelText('Title') as HTMLSelectElement).value).toBe('');
