@@ -337,7 +337,7 @@ describe('components (the components programme, R2a)', () => {
 
     // Body regions without the transitional component: the operator has split
     // the page, and the code's body is not drawn at all.
-    const split: PageDocument = { version: 1, actions: [], regions: [region('lead', { seq: 10, kind: 'component', component: 'home.lead', settings: {}, text: undefined }), region('after', { seq: 20 })] };
+    const split: PageDocument = { version: 1, actions: [], regions: [region('lead', { seq: 10, kind: 'component', component: 'data.region', settings: {}, text: undefined }), region('after', { seq: 20 })] };
     const composed = renderToStaticMarkup(
       <CodePageFrame d={{ ...data, document: split, components: { lead: <h1>THE LEAD</h1> } }}>
         <main>THE CODE BODY</main>

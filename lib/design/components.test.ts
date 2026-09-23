@@ -11,28 +11,29 @@ describe('the component catalogue', () => {
     expect(new Set(keys).size).toBe(keys.length);
     for (const c of COMPONENTS) expect(c.key).toMatch(COMPONENT_KEY);
     expect(COMPONENTS.filter(c => c.legacy).map(c => c.key)).toEqual(['page.body']);
-    expect(findComponent('home.wire')?.name).toBe('The wire');
+    expect(findComponent('series.live')?.name).toBe('Live band');
+    // P2.24 C: Home's six left the catalogue; a stored region naming one is upgraded on read (page-document.ts).
+    for (const key of ['home.lead', 'home.live', 'home.result', 'home.changed', 'home.next', 'home.wire']) expect(findComponent(key), key).toBeNull();
     expect(findComponent('nope')).toBeNull();
   });
 
   it('reads settings against the spec: defaults stand in, a wrong kind, a range miss or an unknown key is a problem', () => {
-    const wire = findComponent('home.wire')!;
-    expect(componentDefaults(wire)).toEqual({ items: 5 });
-    expect(parseSettings(wire, undefined)).toEqual({ settings: { items: 5 }, problems: [] });
-    expect(parseSettings(wire, { items: 12 })).toEqual({ settings: { items: 12 }, problems: [] });
-    expect(parseSettings(wire, { items: 40 })).toEqual({ settings: { items: 5 }, problems: ['Items must be a number from 3 to 20'] });
-    expect(parseSettings(wire, { items: 'many' }).problems).toEqual(['Items must be a number from 3 to 20']);
-    expect(parseSettings(wire, { colour: 'red' }).problems).toEqual(['The wire has no setting called colour']);
-    expect(parseSettings(wire, ['x']).problems).toEqual(['the settings must be an object']);
-    const lead = findComponent('home.lead')!;
-    expect(parseSettings(lead, { pinned: 'monza-2026', suggested: 2 })).toEqual({ settings: { pinned: 'monza-2026', suggested: 2 }, problems: [] });
-    expect(parseSettings(lead, { pinned: 'x'.repeat(121) }).problems).toEqual(['Pinned post must be text of at most 120 characters']);
+    const region = findComponent('data.region')!;
+    const defaults = componentDefaults(region);
+    expect(defaults).toMatchObject({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '' });
+    expect(parseSettings(region, undefined)).toEqual({ settings: defaults, problems: [] });
+    expect(parseSettings(region, { rows: 12 })).toEqual({ settings: { ...defaults, rows: 12 }, problems: [] });
+    expect(parseSettings(region, { rows: 60 })).toEqual({ settings: defaults, problems: ['Rows must be a number from 1 to 50'] });
+    expect(parseSettings(region, { rows: 'many' }).problems).toEqual(['Rows must be a number from 1 to 50']);
+    expect(parseSettings(region, { colour: 'red' }).problems).toEqual(['Data region has no setting called colour']);
+    expect(parseSettings(region, ['x']).problems).toEqual(['the settings must be an object']);
+    expect(parseSettings(region, { pinned: 'monza-2026', heading: 'Riders' })).toEqual({ settings: { ...defaults, pinned: 'monza-2026', heading: 'Riders' }, problems: [] });
+    expect(parseSettings(region, { pinned: 'x'.repeat(121) }).problems).toEqual(['Pinned post must be text of at most 120 characters']);
   });
 
-  it('P2.1: What it changed declares the source it may read (standings); the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1); no other definition reads one', () => {
-    expect(findComponent('home.changed')?.sources).toEqual(['standings']);
+  it('P2.1: the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1); no other definition reads one (What it changed left with Home’s six, P2.24 C)', () => {
     expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends']);
-    for (const c of COMPONENTS) if (c.key !== 'home.changed' && c.key !== 'data.region') expect(c.sources, c.key).toBeUndefined();
+    for (const c of COMPONENTS) if (c.key !== 'data.region') expect(c.sources, c.key).toBeUndefined();
   });
 
   it('P2.2: the Data region’s attributes are per multi-row region: Preset (the thirty-three, grouped by the fifteen, each bound to a source and its series, the results ones waiting), View (Table · Cards), Rows, Heading', () => {
@@ -169,10 +170,10 @@ describe('the component catalogue', () => {
   });
 
   it('sums settings up in words, and the transitional component by what it holds', () => {
-    const wire = findComponent('home.wire')!;
-    expect(settingsSummary(wire, { items: 8 })).toBe('Items 8');
-    const changed = findComponent('home.changed')!;
-    expect(settingsSummary(changed, {})).toBe('Rows 5');
+    const band = findComponent('series.live')!;
+    expect(settingsSummary(band, { series: 'motogp', also: false })).toBe('Series MotoGP · Also racing no');
+    const region = findComponent('data.region')!;
+    expect(settingsSummary(region, { ...componentDefaults(region), rows: 8 })).toMatch(/^Preset Drivers · View Table · Rows 8/);
     const legacy = findComponent('page.body')!;
     expect(settingsSummary(legacy, {})).toMatch(/exactly as its code writes it today/);
   });
@@ -194,14 +195,15 @@ describe('the component catalogue', () => {
     expect(parseSettings(band, { series: 'motogp', also: false }).settings).toEqual({ series: 'motogp', also: false });
     expect(parseSettings(band, { series: 'nope' }).problems[0]).toMatch(/^Series must be one of Every series, /);
     expect(settingsSummary(band, { series: '', also: true })).toBe('Series Every series · Also racing yes');
-    expect(SPLITS['/']).toEqual(['home.lead', 'series.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
+    expect(SPLITS['/'].map(e => (typeof e === 'string' ? e : `${e.id}:${e.component}`))).toEqual(['lead:data.region', 'live:series.live', 'result:data.region', 'changed:data.region', 'next:data.region', 'wire:data.region']);
     expect(recipeRegions('/').find(r => r.component === 'series.live')).toMatchObject({ id: 'live', settings: { series: '', also: true } });
+    expect(recipeRegions('/').find(r => r.component === 'series.live')).not.toHaveProperty('source');
   });
 
   it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
     expect(SPLITS['/calendar']).toEqual(['page.heading', 'calendar.month']);
-    for (const recipe of Object.values(SPLITS)) for (const key of recipe) expect(findComponent(key)).not.toBeNull();
+    for (const recipe of Object.values(SPLITS)) for (const entry of recipe) expect(findComponent(typeof entry === 'string' ? entry : entry.component)).not.toBeNull();
   });
 
   it('lays a recipe out as Body regions: full rows, the two Home halves sharing one, ids from the keys, and a default document from it', () => {
@@ -214,11 +216,19 @@ describe('the component catalogue', () => {
       'next:7/6 same row:50',
       'wire:1/12:60',
     ]);
-    expect(home.find(r => r.id === 'wire')?.settings).toEqual({ items: 5 });
+    // P2.24 C: Home's boxes are Data regions on their templates over the catalogue's sources; each entry names its id, settings and Source.
+    const at = (id: string) => home.find(r => r.id === id)!;
+    expect(at('lead')).toMatchObject({ component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: '' }, source: 'posts?count=10' });
+    expect(at('live')).toMatchObject({ component: 'series.live', settings: { series: '', also: true } });
+    expect(at('result')).toMatchObject({ component: 'data.region', settings: { preset: 'latest-result', view: 'podium', rows: 3 }, source: 'results?series=home&season=2026' });
+    expect(at('changed')).toMatchObject({ component: 'data.region', settings: { preset: 'what-it-changed', view: 'leader', rows: 5 }, source: 'standings?series=latest&season=2026' });
+    expect(at('next')).toMatchObject({ component: 'data.region', settings: { preset: 'whats-next', view: 'coming-weekends', rows: 3 }, source: 'weekends?count=10' });
+    expect(at('wire')).toMatchObject({ component: 'data.region', settings: { preset: 'wire', view: 'wire', rows: 5 }, source: 'news?per=3' });
+    expect(Object.keys(at('wire').settings).sort()).toEqual(Object.keys(componentDefaults(findComponent('data.region')!)).sort());
     expect(recipeRegions('/', ['wire'], 100).map(r => r.id)[5]).toBe('wire-2');
     expect(recipeRegions('/nowhere')).toEqual([]);
     expect(componentId('page.body', [])).toBe('code-body');
-    expect(componentId('home.wire', ['wire', 'wire-2'])).toBe('wire-3');
+    expect(componentId('data.region', ['region', 'region-2'])).toBe('region-3');
     expect(defaultDocument('/calendar').regions.map(r => r.component)).toEqual(['page.heading', 'calendar.month']);
   });
 

@@ -1,36 +1,14 @@
-import { describe, expect, it } from 'vitest';
-import { changedFromStandings, liveBoxes, rankLiveWeekends, type LiveCandidate } from './home-model';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { Series } from '@/lib/types';
+import { DEFAULT_SETTINGS } from '@/lib/design/setting-defaults';
 
-// P2.1: What it changed drawn from a Source's rows, the same shape the
-// assembly builds from the brief: the leader, the gap to second, the top ten;
-// no race context, so no winner's accent.
-describe('changedFromStandings', () => {
-  const driver = (position: number, points: number) => ({ kind: 'driver', position, name: `Driver ${position}`, points, code: null, team: 'T', wins: 0, class: null });
-  it('reads the leader, the gap and the top ten from the driver rows, whatever their order; constructors are left aside', () => {
-    const rows = [{ kind: 'constructor', position: 1, name: 'Mercedes', points: 468 }, ...Array.from({ length: 12 }, (_, i) => driver(12 - i, (12 - i) * -20 + 300))];
-    const c = changedFromStandings(rows, 'Formula 1');
-    expect(c).toMatchObject({ seriesName: 'Formula 1', leader: { name: 'Driver 1', points: 280 }, gapToSecond: 20 });
-    expect(c!.top).toHaveLength(10);
-    expect(c!.top[0]).toEqual({ position: 1, name: 'Driver 1', points: 280 });
-    expect(c!.top[9]).toEqual({ position: 10, name: 'Driver 10', points: 100 });
-    expect(c!.winnerName).toBeUndefined();
-    expect(c!.seasonComplete).toBeUndefined();
-  });
-  it('is nothing without driver rows; a lone leader has no gap; a row missing its numbers is skipped', () => {
-    expect(changedFromStandings([{ kind: 'constructor', position: 1, name: 'Mercedes', points: 468 }], 'Formula 1')).toBeNull();
-    expect(changedFromStandings([], 'Formula 1')).toBeNull();
-    expect(changedFromStandings([driver(1, 10)], 'X')).toMatchObject({ leader: { name: 'Driver 1', points: 10 }, gapToSecond: null });
-    expect(changedFromStandings([driver(1, 10), { kind: 'driver', position: 'x', name: 'Broken', points: 1 }], 'X')!.top).toHaveLength(1);
-  });
-  it('P2.2: a source that carries several classes (a family series) is read for its first class only, never three tables merged; teams and manufacturers are left aside', () => {
-    const at = (cls: string, position: number, points: number) => ({ kind: 'driver', position, name: `${cls} ${position}`, points, code: null, team: 'T', wins: null, class: cls });
-    const rows = [at('Overall', 1, 98), { kind: 'team', position: 1, name: 'WRT', points: 120, class: 'Overall' }, at('Overall', 2, 91), at('Sprint Cup', 1, 50), at('Endurance Cup', 1, 60), at('Endurance Cup', 2, 55)];
-    const c = changedFromStandings(rows, 'GT World Challenge')!;
-    expect(c.leader).toEqual({ name: 'Overall 1', points: 98 });
-    expect(c.gapToSecond).toBe(7);
-    expect(c.top.map(r => r.name)).toEqual(['Overall 1', 'Overall 2']);
-  });
-});
+// P2.24 C: the live model reads the loaded series and the settings' priority; both are stood in for here, the rest is pure.
+const loadAllSeries = vi.fn(async (): Promise<Series[]> => []);
+vi.mock('@/lib/series', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/series')>()), loadAllSeries: () => loadAllSeries() }));
+const loadSettings = vi.fn(async () => ({ ...DEFAULT_SETTINGS }));
+vi.mock('@/lib/design/settings', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/design/settings')>()), loadSettings: () => loadSettings() }));
+
+import { liveBoxes, liveStep, loadLiveModel, rankLiveWeekends, type LiveCandidate } from './home-model';
 
 // Home-page precedence. Before 2026-09-04 this was purely temporal and on
 // Italian Grand Prix Friday the page led with FORMULA 3, because F3's
@@ -62,6 +40,46 @@ describe('liveBoxes', () => {
   });
   it('is empty when nothing is under way', () => {
     expect(liveBoxes([], { lead: 'f1', majors: [] }, now)).toEqual({ liveWeekends: [], alsoRacing: [], liveAll: [] });
+  });
+});
+
+// P2.24 C: the live step, pure over the loaded series: every weekend whose window straddles now (a day's lookahead), fed
+// to liveBoxes; the live model reads it once per request for the Live band and the race-weekend conditions.
+describe('liveStep and loadLiveModel', () => {
+  const now = new Date('2026-09-25T12:00:00Z');
+  const series = (slug: string, name: string, sessions: { uid: string; title: string; startH: number; hours?: number }[]) =>
+    ({
+      meta: { slug, name, color: '#123456', season: 2026 },
+      sessions: sessions.map(s => ({ uid: s.uid, seriesSlug: slug, title: s.title, start: new Date(now.getTime() + s.startH * H), end: new Date(now.getTime() + (s.startH + (s.hours ?? 1)) * H) })),
+    }) as unknown as Series;
+  const f1 = series('f1', 'Formula 1', [{ uid: 'fp1', title: 'Practice 1', startH: -2 }, { uid: 'q', title: 'Qualifying', startH: 2 }, { uid: 'race', title: 'Race', startH: 26, hours: 2 }]);
+  const dtm = series('dtm', 'DTM', [{ uid: 'r1', title: 'Race 1', startH: 3 }]);
+  const wec = series('wec', 'FIA WEC', [{ uid: 'r', title: 'Race', startH: 24 * 9 }]);
+  const priority = { lead: 'f1', majors: ['motogp'] };
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('finds the weekends under way, boxes the featured ones and rows the rest; a weekend nine days out is not under way; nothing without series', () => {
+    const boxes = liveStep([wec, dtm, f1], priority, now);
+    expect(boxes.liveWeekends.map(b => b.seriesSlug)).toEqual(['f1']);
+    expect(boxes.liveWeekends[0]).toMatchObject({ seriesName: 'Formula 1', nextSession: { name: 'Qualifying' } });
+    expect(boxes.alsoRacing.map(r => r.seriesSlug)).toEqual(['dtm']);
+    expect(boxes.liveAll.map(b => b.seriesSlug)).toEqual(['f1', 'dtm']);
+    expect(liveStep([], priority, now)).toEqual({ liveWeekends: [], alsoRacing: [], liveAll: [] });
+  });
+
+  it('loadLiveModel reads the loaded series and the settings’ two series values once, at the clock’s now', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(now);
+    loadAllSeries.mockResolvedValueOnce([dtm, f1]);
+    loadSettings.mockResolvedValueOnce({ ...DEFAULT_SETTINGS, 'home.lead_series': 'dtm', 'home.major_series': ['f1'] });
+    const m = await loadLiveModel();
+    expect(m.liveWeekends.map(b => b.seriesSlug)).toEqual(['dtm', 'f1']);
+    expect(m).toEqual(liveStep([dtm, f1], { lead: 'dtm', majors: ['f1'] }, now));
+    expect(loadAllSeries).toHaveBeenCalledTimes(1);
+    expect(loadSettings).toHaveBeenCalledTimes(1);
   });
 });
 

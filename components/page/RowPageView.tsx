@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PAGE_WIDE } from '@/lib/site';
 import { pageIdOf, resolveDestination, resolveEntry, type NavEntry, type NavLists, type PageDestinations } from '@/lib/design/destinations';
-import { COLUMNS, NESTING_CAP, childrenOf, isLegacyBody, rowsAt, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
+import { COLUMNS, NESTING_CAP, childrenOf, isLegacyBody, rowsAt, splitsBody, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
 import { SHIPPED_PRESETS, regionTemplate, resolveTemplateOptions, templateOptionClasses, type TemplateOptionClasses, type TemplatePresets } from '@/lib/design/template-options';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
@@ -106,7 +106,8 @@ export function CodePageFrame({ d, children }: { d: RowPageData; children?: Reac
   const below = has('footer') || has('phonebar');
   const bodyRows = rowsAt(d.document, 'body');
   const at = bodyRows.findIndex(row => row.some(isLegacyBody));
-  const split = bodyRows.length > 0 && at < 0;
+  // The rule the frame shares (page-frame.tsx framed, P2.24 C): Body rows and no transitional component.
+  const split = splitsBody(d.document);
   const before = at < 0 ? [] : bodyRows.slice(0, at);
   const sameRow = at < 0 ? [] : bodyRows[at].filter(r => !isLegacyBody(r));
   const after = [...(sameRow.length ? [sameRow] : []), ...(at < 0 ? bodyRows : bodyRows.slice(at + 1))];

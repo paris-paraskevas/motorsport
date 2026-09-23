@@ -274,6 +274,44 @@ describe('withPageGate', () => {
     expect(raceWeekend).not.toHaveBeenCalled();
   });
 
+  it('P2.24 C: the code’s body is called lazily and once: never for a split live document (Body regions, no transitional component), once around a transitional body or when there is nothing to frame; its own failure propagates unchanged, never re-rendered by the fail-soft path', async () => {
+    const Page = vi.fn(async () => 'page body');
+    const gated = withPageGate('/calendar', Page);
+    const body = (id: string, over: Partial<Region> = {}): Region =>
+      ({ id, kind: 'component', component: 'data.region', settings: { preset: 'drivers', view: 'table', rows: 10, heading: '' }, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, source: 'standings?series=f1&season=2026', ...over }) as Region;
+    const legacy: Region = { id: 'code-body', kind: 'component', component: 'page.body', settings: {}, title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null };
+    // Split: the regions are the body (a hidden one counts); the code's page is never rendered.
+    loadLiveFrame.mockResolvedValue(live([body('d'), body('h', { hidden: true, seq: 20 })]));
+    const split = await gated(props);
+    expect(typeOf(split)).toBe(CodePageFrame);
+    expect(propsOf(split).children).toBeUndefined();
+    expect(dataOf(split).components).toEqual({ d: 'drawn d', h: 'drawn h' });
+    expect(Page).not.toHaveBeenCalled();
+    // A transitional body among the regions: the code's page once, placed where it sits.
+    loadLiveFrame.mockResolvedValue(live([body('d'), legacy]));
+    expect(propsOf(await gated(props)).children).toBe('page body');
+    expect(Page).toHaveBeenCalledTimes(1);
+    // Nothing to frame, or a frame that cannot be read: once each.
+    loadLiveFrame.mockResolvedValue(live([]));
+    expect(await gated(props)).toBe('page body');
+    loadLiveFrame.mockRejectedValue(new Error('down'));
+    expect(await gated(props)).toBe('page body');
+    expect(Page).toHaveBeenCalledTimes(3);
+    // Every Body region dropped by its condition: the served document has no Body, so the code's body is drawn, once.
+    loadLiveFrame.mockResolvedValue(live([body('d', { condition: { type: 'never' } } as Partial<Region>), welcome()]));
+    const emptied = await gated(props);
+    expect(propsOf(emptied).children).toBe('page body');
+    expect(dataOf(emptied).document.regions.map(r => r.id)).toEqual(['welcome']);
+    expect(Page).toHaveBeenCalledTimes(4);
+    // Its own failure propagates once, never re-rendered by the fail-soft path.
+    const NotThere = vi.fn(async () => {
+      throw new Error('NEXT_NOT_FOUND');
+    });
+    loadLiveFrame.mockResolvedValue(live([body('d'), legacy]));
+    await expect(withPageGate('/calendar', NotThere)(props)).rejects.toThrow('NEXT_NOT_FOUND');
+    expect(NotThere).toHaveBeenCalledTimes(1);
+  });
+
   it('P1.2: the templates’ presets ride the frame’s data from the appearance, the shipped ones when nothing is stored', async () => {
     loadLiveFrame.mockResolvedValue(live([welcome({ id: 'above', position: 'header', seq: 10 })]));
     const gated = withPageGate('/calendar', Page);

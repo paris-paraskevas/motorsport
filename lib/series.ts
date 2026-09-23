@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import fs from '@/lib/content-fs';
 import path from 'path';
 import { Series, SeriesMeta, Session, SignificanceMap } from './types';
@@ -105,10 +106,13 @@ export async function loadSeries(slug: string): Promise<Series> {
   return loadSeriesFromDir(path.join(SERIES_ROOT, slug));
 }
 
-export async function loadAllSeries(): Promise<Series[]> {
+/** Every series, loaded once per request on the server (React's cache; a passthrough in the scripts and the tests,
+ *  where no request is rendering), so the Live band, the race-weekend conditions and a page's own model share one read
+ *  (P2.24 C). */
+export const loadAllSeries = cache(async (): Promise<Series[]> => {
   const slugs = await listSeriesSlugs();
   return Promise.all(slugs.map(loadSeries));
-}
+});
 
 export async function loadSeriesMeta(slug: string): Promise<SeriesMeta> {
   return JSON.parse(
@@ -116,7 +120,8 @@ export async function loadSeriesMeta(slug: string): Promise<SeriesMeta> {
   );
 }
 
-export async function loadAllSeriesMeta(): Promise<SeriesMeta[]> {
+/** Every series' meta, once per request as loadAllSeries is. */
+export const loadAllSeriesMeta = cache(async (): Promise<SeriesMeta[]> => {
   const slugs = await listSeriesSlugs();
   return Promise.all(slugs.map(loadSeriesMeta));
-}
+});

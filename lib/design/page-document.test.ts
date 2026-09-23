@@ -12,7 +12,10 @@ import {
   isInside,
   parentOf,
   isLegacyBody,
+  LEGACY_UPGRADES,
   parsePageDocument,
+  splitsBody,
+  upgradedKey,
   passesCondition,
   patternMatches,
   refRows,
@@ -28,6 +31,7 @@ import {
   substituteShortcuts,
   type Condition,
   type PageDocument,
+  type Region,
 } from './page-document';
 import { COMPONENTS, type ComponentDefinition } from './components';
 
@@ -224,18 +228,76 @@ describe('components and show rules (the components programme, R2a)', () => {
   });
 
   it('P2.1: a component region carries a Source when its definition declares sources, stored canonically; a bad ref, or a source on a component that reads none, is the writer’s refusal naming the region', () => {
-    const ok = parsePageDocument(doc([region({ component: 'home.changed', source: 'standings?season=2026&series=f1' })]));
+    const drivers = { preset: 'drivers' };
+    const ok = parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?season=2026&series=f1' })]));
     expect(ok.problems).toEqual([]);
-    expect(ok.value.regions[0]).toMatchObject({ component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=f1&season=2026' });
-    const none = parsePageDocument(doc([region({ component: 'home.changed' })]));
+    expect(ok.value.regions[0]).toMatchObject({ component: 'data.region', settings: { preset: 'drivers', rows: 10 }, source: 'standings?series=f1&season=2026' });
+    const none = parsePageDocument(doc([region({ component: 'data.region', settings: drivers })]));
     expect(none.problems).toEqual([]);
     expect(none.value.regions[0]).not.toHaveProperty('source');
-    expect(parsePageDocument(doc([region({ component: 'home.changed', source: '' })])).value.regions[0]).not.toHaveProperty('source');
-    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 'standings?season=2026' })])).problems).toEqual(['region r: Standings needs a series']);
-    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 'posts?count=3' })])).problems).toEqual(['region r: Source must be one of Standings']);
-    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 'standings?series=f1&season=2025' })])).value.regions).toEqual([]);
-    expect(parsePageDocument(doc([region({ component: 'home.wire', source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: The wire reads no source']);
-    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 42 })])).problems).toEqual(['region r: Source must be text']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: '' })])).value.regions[0]).not.toHaveProperty('source');
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?season=2026' })])).problems).toEqual(['region r: Standings needs a series']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'rounds?series=f1' })])).problems).toEqual(['region r: Source must be one of Standings, Results, Posts, News, Weekends']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?series=f1&season=2025' })])).value.regions).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'series.live', source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Live band reads no source']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 42 })])).problems).toEqual(['region r: Source must be text']);
+  });
+
+  it('P2.24 C: a stored region naming one of Home’s six retired components is upgraded on read into its Data-region or Live-band equivalent, every other field kept and no problem pushed; the six are exactly the table’s keys', () => {
+    const stored = (over: Record<string, unknown>) => region({ id: 'lead', seq: 30, column: 7, span: 6, newRow: false, hidden: true, template: 'boxed', templateOptions: ['#DEFAULT#', 'SPACING_COMPACT'], authz: 'signed_in', condition: { type: 'authenticated' }, ...over });
+    const lead = parsePageDocument(doc([stored({ component: 'home.lead', settings: { pinned: 'monza-2026', suggested: 4 } })]));
+    expect(lead.problems).toEqual([]);
+    expect(lead.value.regions[0]).toMatchObject({
+      id: 'lead',
+      kind: 'component',
+      component: 'data.region',
+      settings: { preset: 'lead-story', view: 'lead-story', rows: 5, heading: '', pinned: 'monza-2026' },
+      source: 'posts?count=10',
+      seq: 30,
+      column: 7,
+      span: 6,
+      newRow: false,
+      hidden: true,
+      template: 'boxed',
+      templateOptions: ['#DEFAULT#', 'SPACING_COMPACT'],
+      authz: 'signed_in',
+      condition: { type: 'authenticated' },
+    });
+    // Home's shipped Further reading (three) when the stored settings say nothing; an empty pin stays empty.
+    expect(parsePageDocument(doc([region({ component: 'home.lead' })])).value.regions[0]).toMatchObject({ component: 'data.region', settings: { preset: 'lead-story', rows: 4, pinned: '' }, source: 'posts?count=10' });
+    const live = parsePageDocument(doc([region({ component: 'home.live' })]));
+    expect(live.problems).toEqual([]);
+    expect(live.value.regions[0]).toMatchObject({ component: 'series.live', settings: { series: '', also: true } });
+    expect(live.value.regions[0]).not.toHaveProperty('source');
+    expect(parsePageDocument(doc([region({ component: 'home.result' })])).value.regions[0]).toMatchObject({ component: 'data.region', settings: { preset: 'latest-result', view: 'podium', rows: 3, heading: '' }, source: 'results?series=home&season=2026' });
+    const pinned = parsePageDocument(doc([region({ component: 'home.changed', settings: { rows: 7 }, source: 'standings?season=2026&series=f2' })]));
+    expect(pinned.problems).toEqual([]);
+    expect(pinned.value.regions[0]).toMatchObject({ component: 'data.region', settings: { preset: 'what-it-changed', view: 'leader', rows: 7, heading: '' }, source: 'standings?series=f2&season=2026' });
+    expect(parsePageDocument(doc([region({ component: 'home.changed' })])).value.regions[0]).toMatchObject({ settings: { preset: 'what-it-changed', rows: 5 }, source: 'standings?series=latest&season=2026' });
+    expect(parsePageDocument(doc([region({ component: 'home.changed', source: '' })])).value.regions[0]).toMatchObject({ source: 'standings?series=latest&season=2026' });
+    expect(parsePageDocument(doc([region({ component: 'home.next' })])).value.regions[0]).toMatchObject({ component: 'data.region', settings: { preset: 'whats-next', view: 'coming-weekends', rows: 3, heading: '' }, source: 'weekends?count=10' });
+    expect(parsePageDocument(doc([region({ component: 'home.wire', settings: { items: 8 } })])).value.regions[0]).toMatchObject({ component: 'data.region', settings: { preset: 'wire', view: 'wire', rows: 8, heading: '' }, source: 'news?per=3' });
+    expect(parsePageDocument(doc([region({ component: 'home.wire' })])).value.regions[0]).toMatchObject({ settings: { rows: 5 } });
+    // A Source the Leader template lacks (a class family) meets the binding's refusal in the parser's own words.
+    expect(parsePageDocument(doc([region({ component: 'home.changed', source: 'standings?series=wec&season=2026' })])).problems).toEqual(['region r: What it changed is not a preset of FIA WEC']);
+    expect(Object.keys(LEGACY_UPGRADES).sort()).toEqual(['home.changed', 'home.lead', 'home.live', 'home.next', 'home.result', 'home.wire']);
+    expect(upgradedKey('home.wire')).toBe('data.region');
+    expect(upgradedKey('home.live')).toBe('series.live');
+    expect(upgradedKey('data.region')).toBe('data.region');
+    expect(upgradedKey('nope')).toBe('nope');
+  });
+
+  it('P2.24 C: splitsBody says whether the Body is the operator’s own composition (Body regions, none of them the transitional component), hidden ones counting', () => {
+    const own: Region = { id: 'own', kind: 'static', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'Words.' };
+    const legacy: Region = { id: 'code-body', kind: 'component', component: 'page.body', settings: {}, title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null };
+    const of = (regions: Region[]): PageDocument => ({ version: 1, actions: [], regions });
+    expect(splitsBody(of([]))).toBe(false);
+    expect(splitsBody(of([{ ...own, position: 'header' }]))).toBe(false);
+    expect(splitsBody(of([own]))).toBe(true);
+    expect(splitsBody(of([{ ...own, hidden: true }]))).toBe(true);
+    expect(splitsBody(of([own, legacy]))).toBe(false);
+    expect(splitsBody(of([legacy]))).toBe(false);
+    expect(splitsBody(DOC)).toBe(true);
   });
 
   it('P2.2: a Data region’s preset is bound to its Source: another source’s preset, a series the preset lacks, or one not yet pickable is the writer’s refusal in words; a preset with no Source parses', () => {

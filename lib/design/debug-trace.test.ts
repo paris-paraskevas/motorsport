@@ -30,12 +30,13 @@ const home: PageDocument = {
   version: 2,
   actions: [{ id: 'a1', name: 'Unfold', when: { event: 'click', region: 'lead' }, do: [{ action: 'toggle', region: 'wire' }] }],
   regions: [
-    component('lead', 'home.lead'),
-    component('live', 'home.live', { seq: 20 }),
-    component('result', 'home.result', { seq: 30 }),
-    component('changed', 'home.changed', { seq: 40, source: 'standings?series=f1&season=2026' }),
-    component('next', 'home.next', { seq: 50 }),
-    component('wire', 'home.wire', { seq: 60, settings: { items: 5 } }),
+    // P2.24 C: Home's boxes are Data regions on their templates and the Live band.
+    component('lead', 'data.region', { settings: { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' }, source: 'posts?count=10' }),
+    component('live', 'series.live', { seq: 20 }),
+    component('result', 'data.region', { seq: 30, settings: { preset: 'latest-result', view: 'podium', rows: 3, heading: '' }, source: 'results?series=home&season=2026' }),
+    component('changed', 'data.region', { seq: 40, settings: { preset: 'what-it-changed', view: 'leader', rows: 5, heading: '' }, source: 'standings?series=f1&season=2026' }),
+    component('next', 'data.region', { seq: 50, settings: { preset: 'whats-next', view: 'coming-weekends', rows: 3, heading: '' }, source: 'weekends?count=10' }),
+    component('wire', 'data.region', { seq: 60, settings: { preset: 'wire', view: 'wire', rows: 5, heading: '' }, source: 'news?per=3' }),
     text('members', 'Members', { seq: 70, authz: 'signed_in' }),
     text('join', 'Join', { seq: 80, condition: { type: 'authenticated' } }),
     // P2.6: a Never region leaves at the condition step; a part the address does not have is a fact not known, so F1 only stays.
@@ -86,6 +87,7 @@ vi.mock('@/lib/source-snapshot', () => ({
 }));
 
 import { tracePage } from './debug-trace';
+import { READS } from './component-render';
 
 describe('the Debug trace (P1.9)', () => {
   it('lists every component of Home with a source and a time, the rules that fired, and the loader runs behind the sources at App Trace', async () => {
@@ -97,14 +99,17 @@ describe('the Debug trace (P1.9)', () => {
     const renders = r!.entries.filter(e => e.phase.startsWith('render:'));
     expect(renders.map(e => e.phase)).toEqual(['render:lead', 'render:live', 'render:result', 'render:changed', 'render:next', 'render:wire']);
     expect(renders.every(e => e.ms !== undefined && e.src !== undefined && e.src.length > 0)).toBe(true);
-    expect(renders.find(e => e.phase === 'render:wire')).toMatchObject({ ms: 41.5, text: 'The wire', src: ['snapshot:news:aggregate:'] });
+    // P2.24 C: a Data region declares the region kind's reads; the loader's runs behind the ones the meta knows, then its Source's own line.
+    const RUNS = 'standings:f1 · warm-live-data#77 · 2026-09-10 11:20Z · F 812ms · W 40ms\nnews:aggregate:3 · warm-live-data#77 · 2026-09-10 11:21Z · F 1200ms · W 35ms';
+    // (The stand-in renderer reports every Source read as the standings' one.)
+    expect(renders.find(e => e.phase === 'render:wire')).toMatchObject({ ms: 41.5, text: 'Data region', src: READS['data.region'], run: `${RUNS}\nStandings · Formula 1 · 2026 · rows tier · 44 rows · run warm-live-data#77 · ok · 2026-09-10 11:20Z` });
     expect(renders.find(e => e.phase === 'render:result')!.text).toMatch(/failed/);
     // P2.1: the component's declared reads and the source's own; the KV meta line, then the source's run in the catalogue's words.
     const changed = renders.find(e => e.phase === 'render:changed')!;
-    expect(changed.src).toEqual(['snapshot:standings:', 'snapshot:f1:', 'db:standing_current']);
-    expect(changed.run).toBe('standings:f1 · warm-live-data#77 · 2026-09-10 11:20Z · F 812ms · W 40ms\nStandings · Formula 1 · 2026 · rows tier · 44 rows · run warm-live-data#77 · ok · 2026-09-10 11:20Z');
-    expect(renders.find(e => e.phase === 'render:result')!.run).toContain('paddock:home:podium:v2:f1:2026 · local');
-    expect(renders.find(e => e.phase === 'render:next')!.run).toBeUndefined();
+    expect(changed.src).toEqual(READS['data.region']);
+    expect(changed.run).toBe(`${RUNS}\nStandings · Formula 1 · 2026 · rows tier · 44 rows · run warm-live-data#77 · ok · 2026-09-10 11:20Z`);
+    expect(renders.find(e => e.phase === 'render:live')).toMatchObject({ text: 'Live band', src: ['content:series'] });
+    expect(renders.find(e => e.phase === 'render:live')!.run).toBeUndefined();
     expect(r!.entries.find(e => e.phase === 'authz:members')!.text).toBe('Members: scheme signed_in refused for you');
     // P2.6: the condition that hid a region, in APEX's words; a region whose condition passed has no line.
     expect(r!.entries.find(e => e.phase === 'condition:join')!.text).toBe('Join hidden by the condition User is authenticated (not public)');

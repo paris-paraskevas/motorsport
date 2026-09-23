@@ -12,7 +12,7 @@ import { allowedKeys, currentVisitor, type Visitor } from './authz-evaluate';
 import { loadAssetsById, loadLiveFrame } from './live-page';
 import { loadDocumentLists, loadNavLists } from './lists';
 import { loadShortcuts } from './shortcuts';
-import { applyBuildOptions, applyConditions, conditionAsks, documentRefs, schemesAsked } from './page-document';
+import { applyBuildOptions, applyConditions, conditionAsks, documentRefs, schemesAsked, splitsBody } from './page-document';
 import { loadBuildOptions } from './build-options';
 import { loadAppearance } from './appearance';
 import { raceWeekendNow, renderComponents } from './component-render';
@@ -125,7 +125,8 @@ type PageComponent<P> = (props: P) => ReactNode | Promise<ReactNode>;
 
 /** The code's page with the live revision's regions around it (the Page
  *  Designer plan, PR 3): Page Header and Breadcrumb Bar regions above, Footer
- *  and Phone Bar regions below, the Body untouched. No row, no live revision,
+ *  and Phone Bar regions below, the Body untouched; a split page's regions are
+ *  the body and the code's is never rendered (P2.24 C). No row, no live revision,
  *  a revision without regions, or a database that cannot be read: the page is
  *  returned exactly as the code rendered it. The visitor's session is read only
  *  when a region asks for a scheme (or was read already for the page's own),
@@ -133,18 +134,24 @@ type PageComponent<P> = (props: P) => ReactNode | Promise<ReactNode>;
 async function framed(
   path: string,
   frame: PageFrame | null,
-  body: ReactNode | Promise<ReactNode>,
+  render: () => ReactNode | Promise<ReactNode>,
   visitor?: Visitor,
   schemes?: readonly AuthzScheme[],
 ): Promise<ReactNode> {
-  if (!frame) return body;
+  // The code's body, rendered at most once and only when it is drawn (P2.24 C):
+  // never for a page the operator has split, whose regions are the body. One
+  // promise serves every return below, so a page's own notFound() or failure
+  // propagates once and the fail-soft catch never renders the page again.
+  let started: Promise<ReactNode> | undefined;
+  const body = (): Promise<ReactNode> => (started ??= (async () => render())());
+  if (!frame) return body();
   let live: Awaited<ReturnType<typeof loadLiveFrame>> = null;
   try {
     live = await loadLiveFrame(path);
   } catch {
-    return body;
+    return body();
   }
-  if (!live || live.document.regions.length === 0) return body;
+  if (!live || live.document.regions.length === 0) return body();
   try {
     const stored = live.document;
     const refs = documentRefs(stored);
@@ -173,9 +180,11 @@ async function framed(
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
     // The pages, read above for the Buttons, reach the cards' zones too (P2.2 B3).
     const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path, pages })]);
-    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages } }, await body);
+    // A split document draws its own Body (splitsBody, the rule CodePageFrame applies): the code's body is neither rendered nor placed.
+    const children = splitsBody(document) ? undefined : await body();
+    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages } }, children);
   } catch {
-    return body;
+    return body();
   }
 }
 
@@ -189,9 +198,9 @@ export function withPageGate<P extends object>(path: string, Page: PageComponent
   return async function GatedPage(props: P): Promise<ReactNode> {
     const frame = await loadPageFrame(path);
     const scheme = frame?.authz && frame.authz !== 'public' ? frame.authz : null;
-    if (!frame || !scheme) return framed(path, frame, Page(props));
+    if (!frame || !scheme) return framed(path, frame, () => Page(props));
     const [visitor, schemes] = await Promise.all([currentVisitor(), loadAuthzSchemes()]);
-    if (allowedKeys([scheme], schemes, visitor).has(scheme)) return framed(path, frame, Page(props), visitor, schemes);
+    if (allowedKeys([scheme], schemes, visitor).has(scheme)) return framed(path, frame, () => Page(props), visitor, schemes);
     const rule = schemes.find(s => s.key === scheme);
     if (!rule?.message) notFound();
     return createElement(RefusedPage, {

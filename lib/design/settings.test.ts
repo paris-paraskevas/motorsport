@@ -33,8 +33,6 @@ const STAMP = '2026-09-08T09:40:12.505502+00:00';
 
 describe('parseSettingValue — one rule for the loader and the write route', () => {
   it('accepts the column text and the typed value alike', () => {
-    expect(parseSettingValue('home.wire_count', '7')).toBe(7);
-    expect(parseSettingValue('home.wire_count', 7)).toBe(7);
     expect(parseSettingValue('home.major_series', '["wec","motogp"]')).toEqual(['wec', 'motogp']);
     expect(parseSettingValue('home.major_series', ['wec', 'motogp', 'wec'])).toEqual(['wec', 'motogp']);
     expect(parseSettingValue('home.lead_series', ' f1 ')).toBe('f1');
@@ -43,11 +41,6 @@ describe('parseSettingValue — one rule for the loader and the write route', ()
   });
 
   it('refuses what breaks the key’s rule', () => {
-    expect(parseSettingValue('home.wire_count', 0)).toBeUndefined();
-    expect(parseSettingValue('home.wire_count', 16)).toBeUndefined();
-    expect(parseSettingValue('home.wire_count', 2.5)).toBeUndefined();
-    expect(parseSettingValue('home.wire_count', 'five')).toBeUndefined();
-    expect(parseSettingValue('home.blog_suggested_count', -1)).toBeUndefined();
     expect(parseSettingValue('home.major_series', 'not json')).toBeUndefined();
     expect(parseSettingValue('home.major_series', ['wec', 42])).toBeUndefined();
     expect(parseSettingValue('home.major_series', ['a', 'b', 'c', 'd', 'e', 'f', 'g'])).toBeUndefined();
@@ -66,7 +59,6 @@ describe('parseSettingValue — one rule for the loader and the write route', ()
 
   it('serialises json settings as JSON text and the rest as plain text', () => {
     expect(serialiseSettingValue('home.major_series', ['wec', 'motogp'])).toBe('["wec","motogp"]');
-    expect(serialiseSettingValue('home.wire_count', 7)).toBe('7');
     expect(serialiseSettingValue('announcement.active_id', '')).toBe('');
   });
 });
@@ -74,18 +66,21 @@ describe('parseSettingValue — one rule for the loader and the write route', ()
 describe('settingsFromRows — the shipped value is the fallback', () => {
   it('takes usable rows and keeps the shipped value for the rest', () => {
     const out = settingsFromRows([
-      { key: 'home.wire_count', value: '9' },
       { key: 'home.major_series', value: '["wec"]' },
-      { key: 'home.blog_suggested_count', value: '99' },
+      { key: 'home.lead_series', value: 'F1!' },
       { key: 'announcement.active_id', value: 'v9.9' },
+      { key: 'region.button.label', value: 'Open' },
+      // P2.24 C: the two retired count rows, still seeded in the table, are skipped like any unknown key.
+      { key: 'home.wire_count', value: '9' },
+      { key: 'home.blog_suggested_count', value: '6' },
       { key: 'not.a.key', value: 'x' },
       null,
     ]);
-    expect(out['home.wire_count']).toBe(9);
     expect(out['home.major_series']).toEqual(['wec']);
-    expect(out['home.blog_suggested_count']).toBe(3);
+    expect(out['region.button.label']).toBe('Open');
     expect(out['announcement.active_id']).toBe('v1.0');
     expect(out['home.lead_series']).toBe('f1');
+    expect(Object.keys(out)).not.toContain('home.wire_count');
   });
 
   it('is the shipped set for anything that is not an array, and the shipped set matches the code', () => {
@@ -93,8 +88,6 @@ describe('settingsFromRows — the shipped value is the fallback', () => {
     expect(DEFAULT_SETTINGS).toEqual({
       'home.lead_series': 'f1',
       'home.major_series': ['motogp', 'wec', 'indycar', 'nascar-cup'],
-      'home.wire_count': 5,
-      'home.blog_suggested_count': 3,
       'announcement.active_id': 'v1.0',
       'region.image.show_caption': true,
       'region.list.style': 'links',
@@ -125,12 +118,12 @@ describe('loadSettings', () => {
   });
 
   it('reads rows, memoises for a minute, forgets on reset', async () => {
-    result = { data: [{ key: 'home.wire_count', value: '8' }], error: null };
-    expect((await loadSettings())['home.wire_count']).toBe(8);
-    result = { data: [{ key: 'home.wire_count', value: '2' }], error: null };
-    expect((await loadSettings())['home.wire_count']).toBe(8);
+    result = { data: [{ key: 'home.lead_series', value: 'motogp' }], error: null };
+    expect((await loadSettings())['home.lead_series']).toBe('motogp');
+    result = { data: [{ key: 'home.lead_series', value: 'wec' }], error: null };
+    expect((await loadSettings())['home.lead_series']).toBe('motogp');
     resetSettingsMemo();
-    expect((await loadSettings())['home.wire_count']).toBe(2);
+    expect((await loadSettings())['home.lead_series']).toBe('wec');
   });
 });
 
@@ -144,7 +137,7 @@ describe('loadSettingsForEditing', () => {
     result = {
       data: [
         { key: 'home.major_series', value: '["wec"]', description: 'Boxes.', updated_at: STAMP },
-        { key: 'home.wire_count', value: 'nine', description: null, updated_at: STAMP },
+        { key: 'announcement.active_id', value: 'v9.9', description: null, updated_at: STAMP },
       ],
       error: null,
     };
@@ -153,8 +146,6 @@ describe('loadSettingsForEditing', () => {
     expect(rows!.map(r => r.key)).toEqual([
       'home.lead_series',
       'home.major_series',
-      'home.wire_count',
-      'home.blog_suggested_count',
       'announcement.active_id',
       'region.image.show_caption',
       'region.list.style',
@@ -170,10 +161,10 @@ describe('loadSettingsForEditing', () => {
       description: 'Boxes.',
       updatedAt: STAMP,
     });
-    const wire = rows!.find(r => r.key === 'home.wire_count')!;
-    expect(wire.value).toBe(5); // an unusable row shows what the site reads
-    expect(wire.description).toContain('headlines');
-    expect(wire.updatedAt).toBe(STAMP);
+    const notice = rows!.find(r => r.key === 'announcement.active_id')!;
+    expect(notice.value).toBe('v1.0'); // an unusable row shows what the site reads
+    expect(notice.description).toContain('notice');
+    expect(notice.updatedAt).toBe(STAMP);
     const lead = rows!.find(r => r.key === 'home.lead_series')!;
     expect(lead).toEqual({
       key: 'home.lead_series',

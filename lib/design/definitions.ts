@@ -3,6 +3,7 @@ import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { COMPONENTS, type ComponentDefinition } from './components';
 import { DEFINITIONS, EMPTY_OVERLAY, isDefinitionKey, mergeDefinition, mergeDefinitions, parseOverlay, type DefinitionOverlay, type EditableDefinition } from './component-definitions';
 import { encodeSourceRef, parseSourceRef } from './sources';
+import { upgradedKey } from './page-document';
 
 // The component definitions as the site and the designer read them (the
 // components programme, P2.0, PR B; APEX: Plug-ins): the code's definitions
@@ -158,7 +159,8 @@ export function usageFromRows(pages: unknown, revisions: unknown): Record<string
     for (const item of regions) {
       if (!item || typeof item !== 'object') continue;
       const region = item as Record<string, unknown>;
-      const key = region.kind === 'component' && typeof region.component === 'string' ? region.component : typeof region.kind === 'string' && REGION_KINDS.has(region.kind) ? `region.${region.kind}` : null;
+      // A stored key of Home's six retired components counts under its upgrade (P2.24 C), as the parser reads it.
+      const key = region.kind === 'component' && typeof region.component === 'string' ? upgradedKey(region.component) : typeof region.kind === 'string' && REGION_KINDS.has(region.kind) ? `region.${region.kind}` : null;
       if (!key) continue;
       const usage = (out[key] ??= { usedOn: [], regions: 0 });
       let entry = usage.usedOn.find(p => p.id === page.id);
@@ -167,7 +169,8 @@ export function usageFromRows(pages: unknown, revisions: unknown): Record<string
         usage.usedOn.push(entry);
       }
       if (count) usage.regions += 1;
-      if (region.kind === 'component' && region.settings && typeof region.settings === 'object') {
+      // An upgraded region's stored attribute keys are the retired component's, not the upgrade's: they are not listed.
+      if (region.kind === 'component' && region.component === key && region.settings && typeof region.settings === 'object') {
         const perKey = keys.get(key) ?? new Map<string, Set<string>>();
         const set = perKey.get(page.id) ?? new Set<string>();
         for (const k of Object.keys(region.settings as Record<string, unknown>)) set.add(k);

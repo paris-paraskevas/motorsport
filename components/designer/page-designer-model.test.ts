@@ -187,11 +187,11 @@ describe('messages', () => {
     expect(withImplicitBody(opened, code)).toBe(opened);
     expect(withImplicitBody(doc, page)).toBe(doc);
     // Split: Body regions without the transitional body stay as they are, or the code's body would draw again.
-    const split: PageDocument = { version: 1, regions: [legacy('wire', { component: 'home.wire' } as Partial<Region>)], actions: [] };
+    const split: PageDocument = { version: 1, regions: [legacy('wire', { component: 'data.region' } as Partial<Region>)], actions: [] };
     expect(withImplicitBody(split, code)).toBe(split);
     expect(nextComponentId('page.body', ['code-body'])).toBe('code-body-2');
-    expect(nextComponentId('home.wire', [])).toBe('wire');
-    expect(nextComponentId('home.wire', ['wire', 'wire-2'])).toBe('wire-3');
+    expect(nextComponentId('data.region', [])).toBe('region');
+    expect(nextComponentId('data.region', ['region', 'region-2'])).toBe('region-3');
   });
 
   it('places a component from the catalogue with its settings at their defaults, names it and sums it up, and refuses a key the catalogue lacks', () => {
@@ -205,9 +205,9 @@ describe('messages', () => {
     expect(nextRegionId('component', [])).toBe('component-1');
   });
 
-  it('splits Home: the transitional body gives way to its six components where it sat, What it changed and What’s next as two halves of one row; no recipe or no body, nothing', () => {
-    // P2.9: This weekend is the Live band's instance in the recipe.
-    expect(splitRecipe('/')).toEqual(['home.lead', 'series.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
+  it('splits Home: the transitional body gives way to its six components where it sat (P2.24 C: five Data regions on Home’s templates and the Live band), What it changed and What’s next as two halves of one row; no recipe or no body, nothing', () => {
+    // P2.9: This weekend is the Live band's instance in the recipe; the recipe's component keys, one per entry.
+    expect(splitRecipe('/')).toEqual(['data.region', 'series.live', 'data.region', 'data.region', 'data.region', 'data.region']);
     expect(splitRecipe('/nowhere')).toBeNull();
     const home: PageRow = { ...page, path: '/', name: 'Home', kind: 'code' };
     const fresh = withImplicitBody({ version: 1, regions: [region({ id: 'welcome', position: 'header' })], actions: [] }, home);
@@ -224,7 +224,9 @@ describe('messages', () => {
       'body:outro:1/12',
     ]);
     expect(split.regions.filter(r => r.kind === 'component').every(r => r.kind === 'component' && r.component !== 'page.body')).toBe(true);
-    expect(split.regions.find(r => r.id === 'wire')).toMatchObject({ settings: { items: 5 } });
+    expect(split.regions.find(r => r.id === 'wire')).toMatchObject({ component: 'data.region', settings: { preset: 'wire', view: 'wire', rows: 5 }, source: 'news?per=3' });
+    expect(split.regions.find(r => r.id === 'lead')).toMatchObject({ component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story', rows: 4 }, source: 'posts?count=10' });
+    expect(split.regions.find(r => r.id === 'live')).toMatchObject({ component: 'series.live', settings: { series: '', also: true } });
     expect(splitBody(split, home.path)).toBeNull();
     expect(splitBody(opened, '/nowhere')).toBeNull();
   });

@@ -16,10 +16,12 @@ import type { CardActions, CardSlots } from '@/components/data/DataRegionViews';
 // renderer fails soft on its own: a component that throws draws nothing and
 // the page stands.
 //
-// The Home components read the same assembly the home route uses
-// (loadHomeModel, once per request) and apply their settings on top; the
-// Calendar component reads its family's assembly the same way; the fact the
-// race-weekend conditions need comes from the same place (raceWeekendNow).
+// The Live band reads the live model (loadLiveModel, once per request: the
+// weekends under way, ranked as Home ranks them); the Calendar component reads
+// its family's assembly the same way; the fact the race-weekend conditions
+// need comes from the same live model (raceWeekendNow). Home's six components
+// left in P2.24 C: the parser upgrades a stored one to its Data-region or
+// Live-band equivalent before anything is rendered.
 //
 // THE IMPORTS ARE DYNAMIC ON PURPOSE. This file is reached from
 // page-frame.tsx, which every code route imports; a static import of an
@@ -31,7 +33,6 @@ import type { CardActions, CardSlots } from '@/components/data/DataRegionViews';
 
 const home = () => import('@/lib/home-model');
 const pieces = () => import('@/components/HomeLead');
-const blog = () => import('@/lib/blog');
 const calendar = () => import('./families/calendar');
 const calendarView = () => import('@/components/calendar/CalendarView');
 const sourceRead = () => import('./source-read');
@@ -66,8 +67,8 @@ const str = (v: SettingValue | undefined): string => (typeof v === 'string' ? v.
  *  alone, its box from every live box whether Home features it or not; nothing when no weekend is under way. This weekend,
  *  Home's piece, draws it at the defaults. */
 async function drawLiveBand(settings: Readonly<Record<string, SettingValue>>): Promise<ReactNode> {
-  const [{ loadHomeModel }, { HomeThisWeekend }] = await Promise.all([home(), pieces()]);
-  const model = await loadHomeModel();
+  const [{ loadLiveModel }, { HomeThisWeekend }] = await Promise.all([home(), pieces()]);
+  const model = await loadLiveModel();
   const slug = str(settings.series);
   if (!slug) return <HomeThisWeekend liveWeekends={model.liveWeekends} alsoRacing={settings.also === false ? [] : model.alsoRacing} />;
   const box = model.liveAll.find(w => w.seriesSlug === slug);
@@ -89,63 +90,8 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const m = await loadCalendarModel();
     return <CalendarView items={m.items} roundByKey={m.roundByKey} roundNames={m.roundNames} serverNow={m.serverNow} />;
   },
-  async 'home.lead'(settings) {
-    const [{ loadHomeModel, loadSeriesMeta }, { HomeLeadStory }, { fetchHomeBlogLead }] = await Promise.all([home(), pieces(), blog()]);
-    const model = await loadHomeModel();
-    const pinned = str(settings.pinned);
-    let lead = model.blog;
-    // A pin of the component's own, when it names another post than the page's
-    // assembly chose; a pin that does not resolve keeps the assembly's lead.
-    if (pinned && pinned !== lead?.slug) {
-      const post = await fetchHomeBlogLead(pinned).catch(() => null);
-      if (post) {
-        const meta = post.seriesSlug ? (await loadSeriesMeta()).get(post.seriesSlug) : undefined;
-        lead = { ...post, seriesName: meta?.name ?? null, seriesColor: meta?.color ?? null, ageLabel: null, suggested: model.blog?.suggested ?? [] };
-      }
-    }
-    if (!lead) return null;
-    return <HomeLeadStory blog={lead} suggested={num(settings.suggested, 3)} />;
-  },
-  // This weekend is the Live band's first instance (P2.9): the same draw at the band's defaults.
-  'home.live': () => drawLiveBand({}),
+  // The Live band (P2.9); This weekend, Home's retired piece, upgrades to it on read (P2.24 C).
   'series.live': settings => drawLiveBand(settings),
-  async 'home.result'(_settings, ctx) {
-    const [{ loadHomeModel }, { HomeLatestResult }] = await Promise.all([home(), pieces()]);
-    const model = await loadHomeModel();
-    if (!model.result) return null;
-    return <HomeLatestResult result={model.result} changed={model.changed} heading={ctx.first ? 'h1' : 'h2'} compact={!ctx.first} />;
-  },
-  async 'home.changed'(settings, ctx) {
-    const [{ loadHomeModel, loadSeriesMeta, changedFromStandings }, { HomeWhatChanged }] = await Promise.all([home(), pieces()]);
-    // A Source pins the table to one championship (P2.1): the catalogue's reader, the same shape the assembly builds.
-    if (ctx.source) {
-      const { readSource } = await sourceRead();
-      const read = await readSource(ctx.source);
-      ctx.onSourceRead?.(read.provenance);
-      const slug = String(ctx.source.params.series ?? '');
-      // The series' name from the rows the reader annotated (P2.24 B2: a Source of the Latest result resolves its series when read), else the content's, else the key.
-      const named = read.rows[0]?.seriesName;
-      const changed = changedFromStandings(read.rows, (typeof named === 'string' && named) || (await loadSeriesMeta()).get(slug)?.name || slug);
-      if (!changed) return null;
-      return <HomeWhatChanged changed={changed} rows={num(settings.rows, 5)} />;
-    }
-    const model = await loadHomeModel();
-    if (!model.changed) return null;
-    return <HomeWhatChanged changed={model.changed} rows={num(settings.rows, 5)} />;
-  },
-  async 'home.next'() {
-    const [{ loadHomeModel }, { HomeWhatsNext }] = await Promise.all([home(), pieces()]);
-    const model = await loadHomeModel();
-    return <HomeWhatsNext next={model.next} />;
-  },
-  async 'home.wire'(settings) {
-    const [{ loadHomeModel, loadSeriesMeta, buildWire }, { HomeWire }] = await Promise.all([home(), pieces()]);
-    const count = num(settings.items, 5);
-    const model = await loadHomeModel();
-    // The page's assembly already holds the setting's count; more is one more read of the same warm feed.
-    const wire = model.wire.length >= count ? model.wire.slice(0, count) : await buildWire(count, await loadSeriesMeta());
-    return <HomeWire wire={wire} />;
-  },
   // The Data region (P2.2): one of the site's named shapes over the region's Source. Nothing without a Source
   // (APEX: a report without one renders nothing; the designer's Messages say so).
   async 'data.region'(settings, ctx) {
@@ -224,20 +170,13 @@ export function canRender(key: string): boolean {
 /** What each component reads, as the Debug panel names it (P1.9): `content:`
  *  the bundle deployed with the site, `db:` a table read live, `snapshot:<prefix>`
  *  and `kv:<prefix>` the loader's tiers, whose run and phases the panel joins by
- *  prefix (lib/source-snapshot's meta). Declared beside the renderers, since the
- *  six Home components share one per-request assembly and a read cannot be
- *  attributed to one of them at run time. */
+ *  prefix (lib/source-snapshot's meta). Declared beside the renderers, since a
+ *  read cannot be attributed to a component at run time; a Data region's Source
+ *  read is reported on top (P2.1). */
 export const READS: Readonly<Record<string, readonly string[]>> = {
   'page.heading': [],
   'calendar.month': ['content:series'],
-  'home.lead': ['db:post', 'content:series'],
-  'home.live': ['content:series'],
   'series.live': ['content:series'],
-  'home.result': ['kv:paddock:home:podium:v2:'],
-  // Every series through withSourceSnapshot under standings:<slug>; F1 through its own last-good wrapper under f1:<name>.
-  'home.changed': ['snapshot:standings:', 'snapshot:f1:'],
-  'home.next': ['content:series'],
-  'home.wire': ['snapshot:news:aggregate:'],
   // The Data region reads its Source: the standings' two tiers, the results' snapshots, the posts table and the news aggregate
   // (P2.24 A), the series' names and colours from the bundle, and the calendar feeds for the weekends (P2.24 B1).
   'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics'],
@@ -306,8 +245,8 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
  *  (ours, P2.6) decide on. Once per request. */
 export const raceWeekendNow = cache(async (): Promise<boolean> => {
   try {
-    const { loadHomeModel } = await home();
-    const model = await loadHomeModel();
+    const { loadLiveModel } = await home();
+    const model = await loadLiveModel();
     return model.liveWeekends.length > 0 || model.alsoRacing.length > 0;
   } catch {
     return false;
