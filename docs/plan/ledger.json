@@ -269,6 +269,11 @@
    "date": "2026-09-23",
    "change": "R8 opened on the operator’s two reports (~17:05Z “i want \"results\" in source to have the \"home's series\" format, a box showing the last result of the series ive chosen in source”; ~17:10Z “bug: whats next ive chosen weekends as source and specifically f1 or f2 (2 different boxes) they both read all series top right (depending on source the headers should change)”) and the word “once finished merge then begin next task” (~17:25Z): the Latest result preset leads every results series’ list (a Source moved to Results draws the chosen championship’s last-result box, R7’s first-offered pick), and the Coming weekends rule names the Source’s series where Home reads All series. Two fixes, one slot, one PR (1.0.161); P2.3 PR A resumes after the merge.",
    "word": "the operator, 2026-09-23 ~17:05Z: \"i want \"results\" in source to have the \"home's series\" format, a box showing the last result of the series ive chosen in source\"; ~17:10Z: \"bug: whats next ive chosen weekends as source and specifically f1 or f2 (2 different boxes) they both read all series top right (depending on source the headers should change)\"; ~17:25Z: \"once finished merge then begin next task\""
+  },
+  {
+   "date": "2026-09-23",
+   "change": "R8 merged (#1042, 1.0.161, 394f0377 squash-merged 17:50:58Z as 20b1eae7, prod /changelog 1.0.161 at 2026-09-23T17:57:23Z); R8 DONE. The Latest result preset leads every results series’ list; the Coming weekends rule names the Source’s series. Home’s parity after the deploy: identical but the operator’s two published What’s next boxes (Formula 1, Formula 2), whose rule now names them. Correction: RELEASES 1.0.161 said nothing changes on the pages read today; those two boxes on Home do, as asked (1.0.162 says so). Next: P2.3 PR A on feat/p2.3-a-view-state.",
+   "word": "the operator, 2026-09-23 ~17:25Z: \"once finished merge then begin next task\""
   }
  ],
  "phases": {
@@ -652,8 +657,8 @@
    "defaults": "the catalogue’s order carries the preference (no new flag; the Preset select follows the same order); the rule’s name is the first row’s series name (every row a named Source read is that series’), the slug if a row carries none; the podium template already names its series from the row; the wire’s and the lead story’s words do not depend on the series; PRESET_GROUPS keeps its order (names only)",
    "needsWord": "",
    "acceptance": "presetsFor('results', s) starts with latest-result for f1, f2, wec and nls; withSourceChanged over Standings f1 Drivers → Results f1 gives latest-result, the Podium view, Rows 3 and the card reset; the designer test’s Type change to Results reads “Preset Latest result · View Latest result · Rows 3” with Messages 0; the Coming weekends render over weekends?series=f1 puts “Formula 1” on the rule and no “All series”, over weekends?count=10 “All series” as before; the browser: the Monza draft’s preview draws the F2 box and the F1 What’s next rule; Home byte-identical on prod after the deploy (scripts/parity-home.mts)",
-   "status": "started",
-   "evidence": "",
+   "status": "done",
+   "evidence": "#1042 · 1.0.161 · 394f0377, squash-merged 2026-09-23 17:50:58Z as 20b1eae7 · prod /changelog 1.0.161 at 2026-09-23T17:57:23Z · tests first: 4 red across 4 files, then green with two order-dependent assertions following · gates after the last edit: tsc 0 (two corrupted generated files under .next/dev/types cleared and regenerated), lint 0 errors (the two known _encoding warnings), vitest 223 files / 2279 tests, the ledger test 6/6 · browser: the local designer on Monza — Type → Results with Series Formula 2 read “Preset Latest result · View Latest result · Rows 3” with Messages 0, a second region Type → Weekends with Series Formula 1 read “Preset What’s next · View What’s next · Rows 3”; the draft’s preview drew the F2 box (round 11) and the What’s next rule “Formula 1” (.playwright-mcp/r8-f2-latest-result.png, r8-whats-next-f1.png) · the reviewer (Sonnet, general-purpose): SOUND, one nit (the slug fallback on the rule is unreachable while the weekends reader names every row), 195,217 tokens against ~60k said · Home’s parity after the deploy (scripts/parity-home.mts, prod before vs after): every region identical but the two What’s next boxes the operator had published over Formula 1 and Formula 2, whose rule now names them — the fix itself",
    "scopeHash": "885bbd6d2b05"
   },
   {

@@ -2130,7 +2130,8 @@ Order fixed by the words: "Upgrade on read" and "None in PR C" (~12:40Z–12:45Z
 12. **Close of R7**: the ledger (R7 DONE, the merge's line, the P2.3 scan and plan lines), the handoff and the session-57 prompt (P2.3 PR A on the approved plan), this block, four Inbox lines, the board, the memory pointer; the records PR 1.0.160 under the same word.
 
 Won't touch this session: P2.3 PR B before PR A; the Filters UI (P2.5); Cache Components; branch deletions; any prod Supabase write (the publish is the operator's); any push to `main`; any agent on Fable; any fan-out.
-Active: ~4h 25m from ~12:35Z to ~17:00Z (the operator present at the words, ~12:45Z, ~13:20Z, ~14:38Z, ~15:20Z, ~15:45Z, ~16:35Z and ~16:53Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+13. **R8** (~17:05Z–18:05Z): two reports mid-turn (a Results region over a chosen series should draw Home's last-result box; two What's next boxes over Formula 1 and Formula 2 both read "All series") and the word "once finished merge then begin next task"; the causes at file:line (the Latest result preset last in the catalogue, R7 picking the first; the Coming weekends rule's literal); tests first (4 red across 4 files), the fix, gates (tsc after clearing two corrupted generated files under `.next/dev/types`, lint, the full suite), the browser (the Monza draft's preview: the F2 box, the F1 rule), the ledger's R8, PR #1042, the Sonnet reviewer SOUND (195,217 tokens against ~60k said), the merge 17:50:58Z, prod 17:57:23Z, Home's parity (identical but the two boxes, now named) → done; then these records (1.0.162) → P2.3 PR A.
+Active: ~5h 30m from ~12:35Z to ~18:05Z (the operator present at the words, ~12:45Z, ~13:20Z, ~14:38Z, ~15:20Z, ~15:45Z, ~16:35Z, ~16:53Z, ~17:05Z, ~17:10Z and ~17:25Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
 
 ---

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.162 — 2026-09-23
+
+### Records — R8 on prod, R8 DONE, the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: **R8 DONE** with its evidence (#1042, 1.0.161, 394f0377 squash-merged 2026-09-23 17:50:58Z as 20b1eae7, prod /changelog 1.0.161 at 17:57:23Z; the reviewer SOUND at 195,217 tokens against ~60k said; Home's parity after the deploy: every region identical but the two What's next boxes the operator had published over Formula 1 and Formula 2, whose rule now names them — the fix itself) and the merge's dated line with the word. **Correction**: 1.0.161's release note said nothing changes on the pages read today; on Home, those two boxes do, as asked. `docs/HANDOFF.md`: the session-57 prompt carries R8, the branch `feat/p2.3-a-view-state` for P2.3 PR A (fast-forward onto `origin/main` first; local `main` is two commits stale), and two landmines: a build beside the dev server can corrupt `.next/dev/types` (tsc trips on it; stop the server by its port PID, clear the folder, restart) and the Bash tool's ~8 KB command cap truncates a long heredoc (write test files in parts). `SCHEDULE.md` step 13 and the active time; `IDEAS.md` Inbox lines. Nothing changes for readers.
+
 ## 1.0.161 — 2026-09-23
 
 ### Designer — [R8] A Data region follows its Source's series: the Latest result box first for Results, the What's next rule named

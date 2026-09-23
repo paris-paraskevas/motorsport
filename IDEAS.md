@@ -35,6 +35,10 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 ## Inbox — merged and deduped 2026-08-28 (session 41)
 
+- (2026-09-23, session 56) The Coming weekends rule's slug fallback (`|| series`, components/data/DataRegionViews.tsx) is unreachable while the weekends reader names every row (the R8 reviewer's nit); drop it or give it a test.
+- (2026-09-23, session 56) Local `main` sits two commits behind `origin/main` after squash-merges done on GitHub; fast-forward it at session start or always diff against `origin/main` (the R8 reviewer diffed 19 files before noticing).
+- (2026-09-23, session 56) `scripts/parity-home.mts` prints a libuv assertion (`!(handle->flags & UV_HANDLE_CLOSING)`, src\win\async.c) after its result on Windows; harmless, worth a look at how it exits.
+- (2026-09-23, session 56) The F2 podium headline reads "Dino Beganovic wins the Spain Feature Race": the FOM feed names the round "Spain Feature Race" and Home's headline rule adds "the"; a race name that already carries the session's word wants its own rule.
 - (2026-09-10, session 47) Thread the Tooltips toggle through the Property Editor's header controls.
 - (2026-09-10, session 47) A push-guard that matches a push only at a command position, so a heredoc quoting the words is not denied (the operator let the strict form stand for now).
 - (2026-09-10, session 48) Dropping a tile onto another tile with a before/after gesture; today the drop targets are the yellow tiles between rows and columns only.
