@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.164 — 2026-09-23
+
+### Records — P2.3 PR A on prod, the slot STARTED, the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: P2.3's evidence so far (#1044, 1.0.163, two commits 81b6672d + d64afc19, squash-merged 2026-09-23 20:59:37Z as a42c6dd1, prod /changelog 1.0.163 at 21:06:13Z; the reviewer SOUND WITH FIXES at 236,555 tokens against ~100k said, both fixes taken) and the merge's dated line with the word; the slot stays STARTED until PR B. Two honest gaps recorded: Home's parity after the deploy is void — the operator published Home three times between the captures (21:02:09Z, 21:03:56Z, 21:07:02Z: a new region, the live band across the full width) and PR A changes no document; the plan's cached-variant check (a HIT on a second request) is UNVERIFIED on prod, since the Calendar, the one rows-served page live there, answers `Cache-Control: private, no-store` before and after PR A (its cause to read; the check waits for the first cached rows page on prod). A variant address on prod does answer 200 with `noindex, follow` and the plain canonical. `docs/HANDOFF.md`: the session-57 prompt carries PR B on the approved plan and two landmines (the router hands a catch-all segment percent-encoded — the variant is base64url; a build beside the dev server corrupts `.next/dev/types`). `SCHEDULE.md` step 14 and the active time; `IDEAS.md` Inbox lines. Nothing changes for readers.
+
 ## 1.0.163 — 2026-09-23
 
 ### Designer — [P2.3 PR A] The URL vocabulary, the cached variant and the table's controls (APEX: the Interactive Report)

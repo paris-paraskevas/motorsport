@@ -35,6 +35,9 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 ## Inbox — merged and deduped 2026-08-28 (session 41)
 
+- (2026-09-23, session 56) Prod's Calendar (`/calendar`, the registry says cached) answers `Cache-Control: private, no-store` on every request, before and after P2.3 PR A: read why (the row's Rendering set to per visit, or a region asking for the visitor) — until a rows-served page is cached on prod, the cached-variant claim of P2.3 cannot be observed there.
+- (2026-09-23, session 56) The designer's preview draws no Interactive Report controls (no state can reach a preview page); consider handing the preview route an empty state with the preview's own path as `href`, so the toggles can be seen before a publish.
+- (2026-09-23, session 56) `lib/design/view-state.ts` parses filters past the fourth before dropping them (bounded, wasted work) and no integration test proves the base64url segment survives the Worker's routing — the reviewer's two nits on PR A.
 - (2026-09-23, session 56) The Coming weekends rule's slug fallback (`|| series`, components/data/DataRegionViews.tsx) is unreachable while the weekends reader names every row (the R8 reviewer's nit); drop it or give it a test.
 - (2026-09-23, session 56) Local `main` sits two commits behind `origin/main` after squash-merges done on GitHub; fast-forward it at session start or always diff against `origin/main` (the R8 reviewer diffed 19 files before noticing).
 - (2026-09-23, session 56) `scripts/parity-home.mts` prints a libuv assertion (`!(handle->flags & UV_HANDLE_CLOSING)`, src\win\async.c) after its result on Windows; harmless, worth a look at how it exits.

@@ -279,6 +279,11 @@
    "date": "2026-09-23",
    "change": "P2.3 STARTED: PR A built on the approved plan (1.0.163, branch feat/p2.3-a-view-state): lib/design/view-state.ts (the vocabulary sort/cols/filter/view, parse, bind, the canonical encode, the hrefs, the region prefix r.<id>., the middleware’s rewriteTarget), the middleware rewrite to /__view/<segment>/<path>, the catch-all’s addressOf (canonical the plain path, noindex), the renderer’s href/view/controlsKey, presetRows(rows, preset, count, state), the Table’s sortable headings and the Actions menu (Select Columns as a GET form, Reset; Sort by for the Cards) with no client JavaScript, the Actions Menu group (Sortable headings, Actions menu; off by default). Tests first: 8 red across 6 files plus the missing module; the browser on a local Monza table (sort, Select Columns, the address kept plain). One deviation from the plan, on evidence: the variant segment is base64url, not percent-escaped — Next 16 hands a catch-all segment percent-encoded (a literal = came back as %3D), so no escaped form is safe to decode. PR B (saved views, CSV) follows; the slot stays STARTED until it merges.",
    "word": "the operator, 2026-09-23 ~16:35Z: the plan approved (ExitPlanMode); ~17:25Z: \"once finished merge then begin next task\" (the merge word was R8’s; PR A’s merge waits for its own)"
+  },
+  {
+   "date": "2026-09-23",
+   "change": "P2.3 PR A merged (#1044, 1.0.163, 81b6672d + d64afc19, squash-merged 20:59:37Z as a42c6dd1, prod /changelog 1.0.163 at 2026-09-23T21:06:13Z); the slot stays STARTED until PR B. Home’s parity after the deploy void: the operator published Home three times between the two captures (21:02:09Z, 21:03:56Z, 21:07:02Z — a new region, the live band across the full width), and PR A changes no document. The plan’s cached-variant check (x-nextjs-cache HIT on a second request) UNVERIFIED on prod: the Calendar, the only rows-served page live there, answers Cache-Control private, no-store before and after PR A (its cause to be read: the row’s rendering, or a region asking for the visitor); the check waits for the first cached rows page on prod. Next: PR B (the saved_view table and its migration — applied on prod only on “apply <id>” — lib/design/views.ts, the two admin routes, the Views control and ?view=, the CSV route, the Saved Views editor).",
+   "word": "the operator, 2026-09-23 ~20:58Z: \"merge and pick up next task\""
   }
  ],
  "phases": {
@@ -676,7 +681,8 @@
    "needsWord": "none",
    "acceptance": "Sort and CSV work on a served table; a saved view opens from its link; bundle delta quoted.",
    "status": "started",
-   "scopeHash": "73a102adca83"
+   "scopeHash": "73a102adca83",
+   "evidence": "PR A: #1044 · 1.0.163 · two commits 81b6672d + d64afc19 (the reviewer’s two fixes), squash-merged 2026-09-23 20:59:37Z as a42c6dd1 · prod /changelog 1.0.163 at 2026-09-23T21:06:13Z · tests first: 8 red across 6 files plus the missing module, then green · gates after the last edit: tsc 0, lint 0 errors, vitest 224 files / 2292 tests, cf:build 1189 pages, wrangler dry run 39442.76 KiB (R7: 39411.02) · browser: the local designer’s Actions Menu group on a Monza Drivers table, the served page’s sortable headings, ?sort=points and ?sort=-points&cols=… answered through the proxy, Select Columns and Apply · the reviewer (Sonnet): SOUND WITH FIXES, 236,555 tokens against ~100k said, both fixes taken · after the deploy: a variant address on prod answers 200 with noindex and the plain canonical (/calendar?sort=points); Home’s parity void — the operator published Home three times between the captures (21:02:09Z, 21:03:56Z, 21:07:02Z: a new region, the live band’s span), and PR A changes no document; the cached-variant claim UNVERIFIED on prod — the Calendar, the one rows-served page live there, renders per request before and after PR A (Cache-Control private, no-store), to be checked with the first cached rows page · PR B follows"
   },
   {
    "id": "P2.4",
