@@ -14,6 +14,7 @@ import { loadBuildOptions } from '@/lib/design/build-options';
 import { loadAppearance } from '@/lib/design/appearance';
 import { raceWeekendNow, renderComponents } from '@/lib/design/component-render';
 import { resolvePage } from '@/lib/design/resolve-page';
+import { VIEW_PREFIX, decodeSegment } from '@/lib/design/view-state';
 import { familyExtras, familyMetadata } from '@/lib/design/page-families';
 import { applyFrame } from '@/lib/design/page-frame';
 import { CodePageFrame, RowPageView } from '@/components/page/RowPageView';
@@ -47,8 +48,15 @@ export const revalidate = 300;
 
 type Params = Promise<{ catchall: string[] }>;
 
-function pathOf(parts: string[]): string {
-  return `/${parts.join('/')}`;
+const VIEW_SEGMENT = VIEW_PREFIX.slice(1);
+
+/** The address the router matched: a plain path, or a cached variant `/__view/<state>/<path>` the middleware rewrote a page
+ *  carrying a table's state to (P2.3). The state segment is base64url (the router hands a segment percent-encoded, so no
+ *  escaped form is safe); decoded, it travels to the renderer as the canonical query, each region reading its own keys. ''
+ *  for a plain address: a state may arrive here, so the controls draw. */
+function addressOf(parts: string[]): { path: string; view: string; variant: boolean } {
+  if (parts[0] === VIEW_SEGMENT) return { path: `/${parts.slice(2).join('/')}`, view: decodeSegment(parts[1] ?? '') ?? '', variant: true };
+  return { path: `/${parts.join('/')}`, view: '', variant: false };
 }
 
 // The resolver lives in lib/design/resolve-page.ts since P1.9, so the Debug
@@ -56,14 +64,15 @@ function pathOf(parts: string[]): string {
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { catchall } = await params;
-  const path = pathOf(catchall);
+  const { path, variant } = addressOf(catchall);
   const r = await resolvePage(path);
   if (!r) return {};
+  // A variant is never indexed; the plain address is its canonical.
   if (r.kind === 'composed') {
     // The family's own metadata with the row's title and index rule over it, as the route file had it through pageMetadata.
     const own = await familyMetadata(r.pattern, r.params);
     const meta = applyFrame(own, { name: r.page.name, title: r.page.title, indexable: r.page.indexable, authz: r.page.authz });
-    return { ...meta, alternates: meta.alternates ?? { canonical: `${SITE_URL}${path}` } };
+    return { ...meta, alternates: meta.alternates ?? { canonical: `${SITE_URL}${path}` }, ...(variant ? { robots: { index: false, follow: true } } : {}) };
   }
   const shortcuts = await loadShortcuts();
   const first = r.document.regions.find(x => x.kind === 'static' && x.text.trim());
@@ -76,13 +85,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: r.page.title ?? r.page.name,
     description,
     alternates: { canonical: `${SITE_URL}${r.page.path}` },
-    robots: r.page.indexable && isPublic ? { index: true, follow: true } : { index: false, follow: true },
+    robots: r.page.indexable && isPublic && !variant ? { index: true, follow: true } : { index: false, follow: true },
   };
 }
 
 export default async function CatchAll({ params }: { params: Params }) {
   const { catchall } = await params;
-  const path = pathOf(catchall);
+  const { path, view } = addressOf(catchall);
   const r = await resolvePage(path);
   if (!r) notFound();
   // A page the row says renders per visit opts this request out of the cache.
@@ -119,7 +128,7 @@ export default async function CatchAll({ params }: { params: Params }) {
   // The live row pages the buttons and go effects name (P1.12 B2) ride along; a page not live is drawn as nothing.
   // One read of the pages, shared with the renderer for the cards' zones (P2.2 B3); the render stays parallel with it.
   const namedPages = loadNamedPages(refs.dests);
-  const [shortcuts, assets, nav, components, appearance, pages] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, { ...where, pages: namedPages }), loadAppearance(), namedPages]);
+  const [shortcuts, assets, nav, components, appearance, pages] = await Promise.all([loadShortcuts(), loadAssetsById(refs.assets), loadNavLists(), renderComponents(document, { ...where, pages: namedPages, href: path, view }), loadAppearance(), namedPages]);
   const lists = await loadDocumentLists(refs.lists, nav);
   const d = { page: r.page, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages };
   if (r.kind === 'row') return <RowPageView {...d} />;

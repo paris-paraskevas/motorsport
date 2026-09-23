@@ -13,6 +13,8 @@
 // presets (P2.2 B1) bring the Rounds layout, the round-grouped list the site
 // draws for results, as their view.
 
+import type { ViewFilter, ViewState } from './view-state';
+
 export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends';
 /** The `kind` a standings row carries (lib/design/source-read.ts). */
 export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver';
@@ -291,11 +293,17 @@ export type PresetRow = Record<string, string | number | boolean | null | undefi
  *  round last), a weekend's races kept together in the order the fetcher gave them (R1 · Superpole · R2, Feature before
  *  Sprint), each by position, the first `count` RACES whole (a row of the Rounds layout is a race, and a classification cut
  *  in half would mislead). */
-export function presetRows(rows: readonly PresetRow[], preset: Preset, count: number): PresetRow[] {
+export function presetRows(rows: readonly PresetRow[], preset: Preset, count: number, state?: ViewState): PresetRow[] {
   const w = preset.where;
+  const shape = SHAPES[preset.shape];
+  const cut = Math.max(0, count);
   const pos = (r: PresetRow) => (typeof r.position === 'number' && Number.isFinite(r.position) ? r.position : Number.MAX_SAFE_INTEGER);
-  const kept = rows.filter(r => (w.kind === undefined || r.kind === w.kind) && (w.class === undefined || (r.class ?? null) === w.class) && (w.session === undefined || r.session === w.session));
-  if (SHAPES[preset.shape].source !== 'results') return kept.sort((a, b) => pos(a) - pos(b)).slice(0, Math.max(0, count));
+  let kept = rows.filter(r => (w.kind === undefined || r.kind === w.kind) && (w.class === undefined || (r.class ?? null) === w.class) && (w.session === undefined || r.session === w.session));
+  // The reader's state (P2.3): its filters after the preset's own rule; its sort over the preset's order, flat, then the count of
+  // rows — on a results shape too, where the count is of races only while the rows keep the preset's grouping.
+  if (state && state.filters.length > 0) kept = kept.filter(r => state.filters.every(f => passes(r, f, shape.columns)));
+  const sorted = (base: PresetRow[]) => (state?.sort ? sortBy(base, state.sort, shape.columns) : base);
+  if (shape.source !== 'results') return sorted(kept.sort((a, b) => pos(a) - pos(b))).slice(0, cut);
   if (preset.shape === 'podium-rows') {
     const at = (r: PresetRow) => (typeof r.date === 'string' ? Date.parse(r.date) : Number.NaN);
     const dated = kept.filter(r => Number.isFinite(at(r)));
@@ -304,10 +312,7 @@ export function presetRows(rows: readonly PresetRow[], preset: Preset, count: nu
     const key = (r: PresetRow) => `${r.round ?? ''}|${r.raceId ?? ''}|${r.race ?? ''}`;
     const race = dated.filter(r => key(r) === key(newest));
     const cls = race[0].class ?? null;
-    return race
-      .filter(r => (r.class ?? null) === cls)
-      .sort((a, b) => pos(a) - pos(b))
-      .slice(0, Math.max(0, count));
+    return sorted(race.filter(r => (r.class ?? null) === cls).sort((a, b) => pos(a) - pos(b))).slice(0, cut);
   }
   const raceKey = (r: PresetRow) => `${r.raceId ?? ''}|${r.race ?? ''}`;
   const firstAt = new Map<string, number>();
@@ -315,10 +320,57 @@ export function presetRows(rows: readonly PresetRow[], preset: Preset, count: nu
     if (!firstAt.has(raceKey(r))) firstAt.set(raceKey(r), i);
   });
   const round = (r: PresetRow) => (typeof r.round === 'number' && Number.isFinite(r.round) ? r.round : Number.NEGATIVE_INFINITY);
-  const sorted = kept.sort((a, b) => round(b) - round(a) || firstAt.get(raceKey(a))! - firstAt.get(raceKey(b))! || pos(a) - pos(b));
+  const ordered = kept.sort((a, b) => round(b) - round(a) || firstAt.get(raceKey(a))! - firstAt.get(raceKey(b))! || pos(a) - pos(b));
+  if (state?.sort) return sortBy(ordered, state.sort, shape.columns).slice(0, cut);
   const races = new Set<string>();
-  return sorted.filter(r => {
+  return ordered.filter(r => {
     races.add(raceKey(r));
-    return races.size <= Math.max(0, count);
+    return races.size <= cut;
   });
+}
+
+const NUMERIC_TYPES: ReadonlySet<ColumnType> = new Set(['number', 'position', 'percent', 'gap']);
+const cell = (v: PresetRow[string]): string => (v === null || v === undefined ? '' : String(v));
+/** A cell as a number: a number as it is, a string that reads as one ("+12" too), else null. */
+const numeric = (v: PresetRow[string]): number | null => (typeof v === 'number' ? (Number.isFinite(v) ? v : null) : typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v)) ? Number(v) : null);
+const columnType = (columns: readonly PresetColumn[], key: string): ColumnType => columns.find(c => c.key === key)?.type ?? 'text';
+
+/** Whether a row passes a reader's filter (P2.3), compared as the column's type reads: numbers as numbers (a missing one fails
+ *  every test but `ne`), a date by its day, text case-insensitively; `in` over a comma list. */
+function passes(row: PresetRow, f: ViewFilter, columns: readonly PresetColumn[]): boolean {
+  const type = columnType(columns, f.column);
+  const v = row[f.column];
+  if (f.op === 'in') {
+    const set = f.value.split(',').map(s => s.trim().toLowerCase()).filter(s => s !== '');
+    return set.includes(cell(v).toLowerCase());
+  }
+  if (NUMERIC_TYPES.has(type)) {
+    const a = numeric(v);
+    const b = numeric(f.value);
+    if (a === null || b === null) return f.op === 'ne';
+    return f.op === 'eq' ? a === b : f.op === 'ne' ? a !== b : f.op === 'lt' ? a < b : f.op === 'lte' ? a <= b : f.op === 'gt' ? a > b : a >= b;
+  }
+  const a = (type === 'date' ? cell(v).slice(0, 10) : cell(v)).toLowerCase();
+  const b = (type === 'date' ? f.value.slice(0, 10) : f.value).toLowerCase();
+  return f.op === 'eq' ? a === b : f.op === 'ne' ? a !== b : false;
+}
+
+/** The rows by a reader's column (P2.3), as its type orders — numbers as numbers, a date by its instant, text by locale —
+ *  an empty cell last either way, a tie in the order given (the preset's own). */
+function sortBy(base: readonly PresetRow[], sort: { column: string; desc: boolean }, columns: readonly PresetColumn[]): PresetRow[] {
+  const type = columnType(columns, sort.column);
+  const key = (r: PresetRow): number | string | null => {
+    const v = r[sort.column];
+    if (NUMERIC_TYPES.has(type)) return numeric(v);
+    if (type === 'date') return Number.isFinite(Date.parse(cell(v))) ? Date.parse(cell(v)) : null;
+    return cell(v) || null;
+  };
+  return base
+    .map((r, i) => ({ r, i, k: key(r) }))
+    .sort((a, b) => {
+      if (a.k === null || b.k === null) return a.k === b.k ? a.i - b.i : a.k === null ? 1 : -1;
+      const c = typeof a.k === 'number' && typeof b.k === 'number' ? a.k - b.k : String(a.k).localeCompare(String(b.k), 'en', { sensitivity: 'base' });
+      return (sort.desc ? -c : c) || a.i - b.i;
+    })
+    .map(x => x.r);
 }

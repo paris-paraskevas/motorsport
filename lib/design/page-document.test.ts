@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { RESERVED_PREFIXES } from './page-document';
 import {
   EMPTY_DOCUMENT,
   applyBuildOptions,
@@ -745,5 +746,11 @@ describe('row page paths', () => {
     expect(daysLeft('2026-08-01T10:00:00.000Z', Date.parse('2026-09-15T10:00:00.000Z'))).toBe(0);
     // Postgres's own stamp form reads too; the half second past the hour rounds the window up.
     expect(daysLeft('2026-09-13 10:00:00.5+00', Date.parse('2026-09-15T10:00:00.000Z'))).toBe(29);
+  });
+});
+
+describe('the reserved prefixes (P2.3)', () => {
+  it('reserve the cached variants’ prefix beside the API, media, admin, preview and auth paths', () => {
+    expect(RESERVED_PREFIXES).toContain('/__view');
   });
 });

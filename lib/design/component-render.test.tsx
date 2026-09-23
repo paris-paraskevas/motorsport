@@ -780,3 +780,81 @@ describe('renderComponents', () => {
     expect(html(own.heading)).toContain('>Every session<');
   });
 });
+
+describe('the table’s controls and the reader’s state (P2.3 PR A)', () => {
+  const NOON = new Date('2026-09-22T12:00:00.000Z');
+  const DRIVERS = { preset: 'drivers', view: 'table', rows: 10, heading: '' };
+  const ON = { ...DRIVERS, sortable: true, actions: true };
+  const F1 = { source: 'standings?series=f1&season=2026' } as Partial<Region>;
+  const page = { path: '/history/monza', name: 'Monza', title: null };
+  const draw = async (settings: Record<string, string | number | boolean>, where: { href?: string; view?: string }, regions?: Region[]) => {
+    const out = await renderComponents(doc(regions ?? [region('t', 'data.region', settings, F1)]), { path: '/history/monza', page, now: NOON, ...where });
+    return Object.fromEntries(Object.entries(out).map(([k, v]) => [k, html(v)]));
+  };
+
+  it('draws exactly today’s markup while the toggles are off, whether or not a state can arrive, and while they are on where no state can arrive (a framed code route)', async () => {
+    const plain = (await draw(DRIVERS, {})).t;
+    expect(plain).toContain('<table');
+    expect((await draw(DRIVERS, { href: '/history/monza', view: '' })).t).toBe(plain);
+    expect((await draw(DRIVERS, { href: '/history/monza', view: 'sort=name' })).t).toBe(plain);
+    expect((await draw(ON, {})).t).toBe(plain);
+    expect(plain).not.toContain('Actions');
+    expect(plain).not.toContain('nofollow');
+  });
+
+  it('with the toggles on and a state arriving: the rows sorted, the sorted heading marked and every sortable heading a link that toggles ascending → descending → none, the percent column plain; the Actions menu with Select Columns as a GET form carrying the rest of the state, and Reset to the plain path', async () => {
+    const t = (await draw(ON, { href: '/history/monza', view: 'sort=points' })).t;
+    expect(t.indexOf('George Russell')).toBeLessThan(t.indexOf('Andrea Kimi Antonelli'));
+    expect(t).toMatch(/<th scope="col" aria-sort="ascending" class="[^"]*"><a href="\/history\/monza\?sort=-points" rel="nofollow"[^>]*>Pts/);
+    expect(t).toMatch(/<a href="\/history\/monza\?sort=name" rel="nofollow"[^>]*>Driver/);
+    expect(t).not.toMatch(/sort=-?share/);
+    expect(t).toContain('<span class="sr-only">Share</span>');
+    expect(t).toMatch(/<details[^>]*><summary[^>]*>Actions<\/summary>/);
+    expect(t).toMatch(/<form [^>]*action="\/history\/monza"[^>]*>/);
+    expect(t).toMatch(/<form [^>]*method="get"[^>]*>/);
+    expect(t).toContain('<input type="hidden" name="sort" value="points"/>');
+    expect(t).toMatch(/<input type="checkbox"[^>]*name="cols" checked="" value="name"\/>/);
+    expect(t).toMatch(/<input type="checkbox"[^>]*name="cols" checked="" value="team"\/>/);
+    expect(t).toContain('>Select Columns<');
+    expect(t).toMatch(/<button type="submit"[^>]*>Apply<\/button>/);
+    expect(t).toMatch(/<a href="\/history\/monza"[^>]*>Reset<\/a>/);
+    // Descending toggles to none: the plain path.
+    const d = (await draw(ON, { href: '/history/monza', view: 'sort=-points' })).t;
+    expect(d.indexOf('Andrea Kimi Antonelli')).toBeLessThan(d.indexOf('George Russell'));
+    expect(d).toMatch(/<th scope="col" aria-sort="descending" class="[^"]*"><a href="\/history\/monza" rel="nofollow"/);
+  });
+
+  it('cols draws the reader’s columns alone, as an allow-list, the boxes ticked to match; a state the shape cannot honour is dropped silently', async () => {
+    const t = (await draw(ON, { href: '/history/monza', view: 'cols=name,points&sort=nope&filter=team.gt:M' })).t;
+    expect((t.match(/<th /g) ?? []).length).toBe(2);
+    expect(t).toMatch(/<th [^>]*>(<a [^>]*>)?Driver/);
+    expect(t).toMatch(/<th [^>]*>(<a [^>]*>)?Pts/);
+    expect(t).not.toMatch(/<th [^>]*>(<a [^>]*>)?Team/);
+    expect(t).toMatch(/<input type="checkbox"[^>]*name="cols" checked="" value="points"\/>/);
+    expect(t).toMatch(/<input type="checkbox"[^>]*name="cols" value="team"\/>/);
+    expect(t).not.toContain('aria-sort');
+    // The sort links keep the reader's columns.
+    expect(t).toContain('href="/history/monza?sort=points&amp;cols=name%2Cpoints"');
+  });
+
+  it('two regions with controls read their own keys under r.<id>.; a template view and the List ignore the state and draw no controls; the Cards draw Sort by links in the Actions menu', async () => {
+    const two = [region('a', 'data.region', ON, F1), region('b', 'data.region', ON, { ...F1, seq: 20 })];
+    const out = await draw(ON, { href: '/history/monza', view: 'r.a.sort=points' }, two);
+    expect(out.a).toContain('href="/history/monza?r.a.sort=-points"');
+    expect(out.a.indexOf('George Russell')).toBeLessThan(out.a.indexOf('Andrea Kimi Antonelli'));
+    // A link of one region carries the other's state along: sorting b never resets a.
+    expect(out.b).toContain('href="/history/monza?r.a.sort=points&amp;r.b.sort=points"');
+    expect(out.b.indexOf('Andrea Kimi Antonelli')).toBeLessThan(out.b.indexOf('George Russell'));
+    expect(out.b).toContain('<input type="hidden" name="r.a.sort" value="points"/>');
+    const list = (await draw({ ...ON, view: 'list' }, { href: '/history/monza', view: 'sort=points' })).t;
+    expect(list).not.toContain('Actions');
+    expect(list).not.toContain('nofollow');
+    const cards = (await draw({ ...ON, view: 'cards' }, { href: '/history/monza', view: 'sort=points' })).t;
+    expect(cards).toMatch(/<details[^>]*><summary[^>]*>Actions<\/summary>/);
+    expect(cards).toContain('>Sort by<');
+    expect(cards).toContain('<a href="/history/monza?sort=-points" rel="nofollow"');
+    expect(cards).toContain('<a href="/history/monza?sort=name" rel="nofollow"');
+    expect(cards).not.toContain('Select Columns');
+    expect(cards.indexOf('George Russell')).toBeLessThan(cards.indexOf('Andrea Kimi Antonelli'));
+  });
+});

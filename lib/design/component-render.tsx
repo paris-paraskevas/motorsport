@@ -7,7 +7,8 @@ import { SHAPES, findPreset, presetRows } from './presets';
 import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 import { resolveDestination, type PageDestinations } from './destinations';
-import type { CardActions, CardSlots } from '@/components/data/DataRegionViews';
+import type { CardActions, CardSlots, RegionControls } from '@/components/data/DataRegionViews';
+import { bindViewState, parseViewState } from './view-state';
 
 // The server half of the component catalogue (lib/design/components.ts): how
 // each component is drawn. A renderer takes the region's settings and the
@@ -56,6 +57,14 @@ export interface RenderContext {
   now: Date;
   /** Tells the Debug trace what a source read answered (P2.1). */
   onSourceRead?: (p: SourceProvenance) => void;
+  /** The visited address, for the links a component writes (P2.3); the path when the caller names none. */
+  href: string;
+  /** The reader's state as the address carries it (P2.3), every region reading its own keys; undefined where none can arrive
+   *  (a framed code route), so no control is drawn. */
+  view?: string;
+  /** This region's key prefix for the state: '' when it is the document's one region with controls, `r.<id>.` when there are
+   *  several; null when the region has no controls on or no state can arrive. */
+  controlsKey: string | null;
 }
 
 type Renderer = (settings: Readonly<Record<string, SettingValue>>, ctx: RenderContext) => Promise<ReactNode> | ReactNode;
@@ -99,6 +108,9 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const preset = findPreset(str(settings.preset));
     if (!preset) return null;
     const shape = SHAPES[preset.shape];
+    // The reader's state (P2.3): this region's keys, bound to the shape; none where no control is on or no state can arrive.
+    const state = ctx.controlsKey !== null && ctx.view !== undefined ? bindViewState(parseViewState(ctx.view, ctx.controlsKey).value, shape) : undefined;
+    const controls: RegionControls | undefined = state && ctx.controlsKey !== null && ctx.view !== undefined ? { href: ctx.href, key: ctx.controlsKey, others: ctx.view, state, sortable: settings.sortable === true, actions: settings.actions === true } : undefined;
     const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
     const read = await readSource(ctx.source);
     ctx.onSourceRead?.(read.provenance);
@@ -107,7 +119,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const pinned = str(settings.pinned);
     const lead = pinned ? read.rows.find(r => r.slug === pinned) : undefined;
     const ordered = lead ? [lead, ...read.rows.filter(r => r !== lead)] : read.rows;
-    const rows = presetRows(ordered, preset, num(settings.rows, 10));
+    const rows = presetRows(ordered, preset, num(settings.rows, 10), state);
     // The Card slots and the action zones (P2.2 B3): a slot names a column of the shape, else the preset's own; a zone follows
     // a link column of the row (`row:<key>`, the address the column's href names, leaving the site when the column does) or a
     // destination, external ones leaving the site. The pages are awaited here alone, so the other regions never wait for them.
@@ -135,7 +147,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     };
     const actions: CardActions = { fullCard: zone('actionFullCard'), title: zone('actionTitle'), subtitle: zone('actionSubtitle'), media: zone('actionMedia'), button: zone('actionButton'), buttonLabel: str(settings.actionButtonLabel) || 'Open' };
     const series = ctx.source.params.series;
-    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions, now: ctx.now, series: typeof series === 'string' && series ? series : undefined };
+    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions, now: ctx.now, series: typeof series === 'string' && series ? series : undefined, controls };
     // Timeline stands on the results' dates (the parser refuses it elsewhere); a stored one on a standings shape draws the table.
     // Home's boxes as templates (P2.24 A) stand on their own shapes the same way; the Podium and the Leader (P2.24 B2) on one
     // shape of their source each (the podium rows, the driver rows), since Results and Standings have several.
@@ -200,6 +212,11 @@ export interface RenderPage {
   pages?: PageDestinations | Promise<PageDestinations>;
   /** The render's instant (P2.24 A); the frame leaves it to the clock, the tests fix it. */
   now?: Date;
+  /** The visited address (P2.3), for the links the controls write; the path when absent. */
+  href?: string;
+  /** The reader's state as the address carries it (P2.3): '' for a plain address a state may reach; undefined where none can
+   *  (a framed code route), which keeps every control off the page. */
+  view?: string;
 }
 
 /**
@@ -217,6 +234,11 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   // The pages as one promise every region shares; a renderer that reads them awaits it inside its own try, the rest never wait.
   const pages = Promise.resolve(where.pages ?? {});
   const now = where.now ?? new Date();
+  // The regions with the Interactive Report's controls on (P2.3), decided from the declared document — never from what a
+  // condition shows — so a link addresses the same region for every visitor: one such region reads the bare keys, several
+  // read their own under `r.<id>.`; nowhere a state can arrive, none draws a control.
+  const withControls = regions.filter(r => r.component === 'data.region' && (r.settings.sortable === true || r.settings.actions === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table'));
+  const controlsKey = (r: ComponentRegion): string | null => (where.view === undefined || !withControls.includes(r) ? null : withControls.length > 1 ? `r.${r.id}.` : '');
   await Promise.all(
     regions.map(async r => {
       const render = RENDERERS[r.component];
@@ -230,7 +252,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
       const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
       const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead });
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r) });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;

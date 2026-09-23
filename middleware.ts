@@ -2,6 +2,7 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { TABS } from '@/lib/tabs';
 import { topicForSeries, aboutGuideForSeries } from '@/lib/information/topics';
+import { rewriteTarget } from '@/lib/design/view-state';
 
 // Public-with-account: everything is public by default. Only user-scoped
 // API routes require a signed-in user. The /settings PAGE went public in
@@ -107,6 +108,16 @@ export default clerkMiddleware(async (auth, req) => {
   //
   // Nothing replaces it. One home page for everyone, signed in or not, which is
   // also what keeps that page ISR-cacheable.
+
+  // P2.3: a page carrying a table's state (sort, cols, filter, view) is served from its cached variant under
+  // /__view/<state>/<path>; the address bar keeps the plain form. A route the code serves and the reserved parts of the site
+  // keep their own query strings (lib/design/view-state.ts rewriteTarget).
+  const target = rewriteTarget(url.pathname, url.search);
+  if (target) {
+    const dest = url.clone();
+    dest.pathname = target;
+    return NextResponse.rewrite(dest);
+  }
 
   if (isProtected(req)) {
     await auth.protect();

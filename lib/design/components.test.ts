@@ -56,6 +56,8 @@ describe('the component catalogue', () => {
       ['actionMedia', 'link', 'report'],
       ['actionButton', 'link', 'report'],
       ['actionButtonLabel', 'text', 'report'],
+      ['sortable', 'boolean', 'report'],
+      ['actions', 'boolean', 'report'],
     ]);
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
@@ -126,8 +128,8 @@ describe('the component catalogue', () => {
     const pinned = region.settings[4];
     expect(pinned).toMatchObject({ key: 'pinned', label: 'Pinned post', kind: 'text', scope: 'report', default: '', maxLength: 120, dependingOn: { key: 'view', values: ['lead-story'] } });
     expect(region.holds).toBe('a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes, or one of Home’s boxes as a template');
-    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '', ...RESET });
-    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', pinned: '', ...RESET });
+    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '', ...RESET, sortable: false, actions: false });
+    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', pinned: '', ...RESET, sortable: false, actions: false });
     // The pinned post is named on the tile while the View is Lead story and a slug is set, silent otherwise.
     expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: 'monza-2026' })).toBe('Preset Lead story · View Lead story · Rows 4 · Pinned post monza-2026');
     expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' })).toBe('Preset Lead story · View Lead story · Rows 4');
@@ -139,7 +141,18 @@ describe('the component catalogue', () => {
     expect(region.groups).toEqual([
       { key: 'card', title: 'Card', seq: 10 },
       { key: 'actions', title: 'Actions', seq: 20 },
+      { key: 'menu', title: 'Actions Menu', seq: 30 },
     ]);
+    // P2.3: the Interactive Report's controls (APEX: Attributes › Actions Menu), off by default, drawn while the View is Table or Cards;
+    // the tile names them only when on (a dependingOn attribute at its default is silent).
+    const menu = region.settings.filter(s => s.group === 'menu');
+    expect(menu.map(s => [s.key, s.label, s.kind, s.default])).toEqual([
+      ['sortable', 'Sortable headings', 'boolean', false],
+      ['actions', 'Actions menu', 'boolean', false],
+    ]);
+    for (const s of menu) expect(s.dependingOn, s.key).toEqual({ key: 'view', values: ['table', 'cards'] });
+    expect(settingsSummary(region, { preset: 'drivers', view: 'table', rows: 8, heading: '', sortable: true, actions: true })).toBe('Preset Drivers · View Table · Rows 8 · Sortable headings yes · Actions menu yes');
+    expect(settingsSummary(region, { preset: 'drivers', view: 'list', rows: 8, heading: '', sortable: true })).toBe('Preset Drivers · View List · Rows 8');
     const slots = region.settings.filter(s => s.group === 'card');
     const zones = region.settings.filter(s => s.group === 'actions');
     expect(slots.map(s => [s.key, s.label])).toEqual([

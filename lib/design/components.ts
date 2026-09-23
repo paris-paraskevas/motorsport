@@ -156,6 +156,8 @@ export function instanceAttributes(spec: ComponentDefinition): AttributeDefiniti
 
 /** The Card slots and the action zones show while the View is Cards (APEX: Depending On). */
 const CARDS_ONLY = { key: 'view', values: ['cards'] } as const;
+/** The views the Interactive Report's controls apply to (P2.3): the templates, the List, the Timeline and the Detail ignore a reader's state. */
+const MENU_VIEWS = { key: 'view', values: ['table', 'cards'] } as const;
 /** What a preset's pick sets the Card slots and zones to: its own mapping, nothing linked, the button's plain word. */
 const CARD_RESET: Readonly<Record<string, SettingValue>> = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
 
@@ -280,10 +282,16 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
         ] as const
       ).map(([key, label, help]) => ({ key, label, kind: 'link' as const, scope: 'report' as const, group: 'actions', dependingOn: CARDS_ONLY, rowLinks: true as const, default: '', help })),
       { key: 'actionButtonLabel', label: 'Button label', kind: 'text', scope: 'report', group: 'actions', dependingOn: CARDS_ONLY, default: 'Open', maxLength: 24, help: 'The words on the card’s button.' },
+      // P2.3: the Interactive Report's controls (APEX: Attributes › Actions Menu), off on every region until the designer turns
+      // them on; they work on a page the catch-all serves from its rows (a framed code route hands no state), for the Table
+      // and the Cards. The tile names them only when on (a dependingOn attribute at its default is silent).
+      { key: 'sortable', label: 'Sortable headings', kind: 'boolean', scope: 'report', group: 'menu', dependingOn: MENU_VIEWS, default: false, help: 'Each heading a link sorting the rows by its column: ascending, then descending, then as designed (APEX: the column heading menu’s Sort). Works on a page served from its rows; the address carries the sort.' },
+      { key: 'actions', label: 'Actions menu', kind: 'boolean', scope: 'report', group: 'menu', dependingOn: MENU_VIEWS, default: false, help: 'The Actions menu above the rows (APEX: the Interactive Report’s Actions menu): Select Columns and Reset for a Table, Sort by and Reset for Cards; the saved views and the download join it later. Works on a page served from its rows.' },
     ],
     groups: [
       { key: 'card', title: 'Card', seq: 10 },
       { key: 'actions', title: 'Actions', seq: 20 },
+      { key: 'menu', title: 'Actions Menu', seq: 30 },
     ],
     sources: ['standings', 'results', 'posts', 'news', 'weekends'],
   },

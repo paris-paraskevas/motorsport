@@ -5,6 +5,8 @@ import type { Preset, PresetColumn, PresetRow, Shape } from '@/lib/design/preset
 import { ageLabel } from '@/lib/date';
 import { seriesInk } from '@/lib/site';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
+import { sortHref, sortable, type ViewState } from '@/lib/design/view-state';
+import { DataRegionControls } from './DataRegionControls';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -47,10 +49,11 @@ const formatDate = (v: unknown): string => {
 /** The columns a table draws: the shape's, the name column labelled as the
  *  preset says, and a text, badge, number or date column whose every value is
  *  empty left out, as the site drops Team and Wins when a feed carries none. */
-export function tableColumns(shape: Shape, preset: Preset, rows: readonly PresetRow[]): PresetColumn[] {
-  return shape.columns
-    .map(c => (c.key === 'name' ? { ...c, label: preset.nameLabel } : c))
-    .filter(c => c.type === 'position' || c.type === 'gap' || c.type === 'percent' || c.type === 'link' || c.key === 'name' || rows.some(r => r[c.key] !== null && r[c.key] !== undefined && r[c.key] !== ''));
+export function tableColumns(shape: Shape, preset: Preset, rows: readonly PresetRow[], cols?: readonly string[]): PresetColumn[] {
+  const named = shape.columns.map(c => (c.key === 'name' ? { ...c, label: preset.nameLabel } : c));
+  // A reader's allow-list (P2.3) is drawn as given, an empty column included: the reader chose it.
+  if (cols) return named.filter(c => cols.includes(c.key));
+  return named.filter(c => c.type === 'position' || c.type === 'gap' || c.type === 'percent' || c.type === 'link' || c.key === 'name' || rows.some(r => r[c.key] !== null && r[c.key] !== undefined && r[c.key] !== ''));
 }
 
 /** The leader's points, the reference for the gap and the share columns. */
@@ -210,6 +213,19 @@ export interface DataRegionViewProps {
   now?: Date;
   /** The series the Source names (its `series` parameter, R8), for a template whose words follow it; none across every series. */
   series?: string;
+  /** The Interactive Report's controls (P2.3): present only where the region has them on and a state can arrive. */
+  controls?: RegionControls;
+}
+
+/** What the Table and the Cards need to write their links and forms (P2.3): the visited path, this region's key prefix, the
+ *  address's whole query (the other regions' states ride along), the bound state, and which controls are on. */
+export interface RegionControls {
+  href: string;
+  key: string;
+  others: string;
+  state: ViewState;
+  sortable: boolean;
+  actions: boolean;
 }
 
 /** A zone's link around a part of the card, or the part alone; an external address leaves the site in a new tab, as the
@@ -229,23 +245,37 @@ function Zoned({ to, className, label, children }: { to: ReturnType<Zone>; class
   );
 }
 
-export function DataRegionTable({ heading, level, shape, preset, rows }: DataRegionViewProps) {
+export function DataRegionTable({ heading, level, shape, preset, rows, controls }: DataRegionViewProps) {
   const H = level;
-  const columns = tableColumns(shape, preset, rows);
+  const columns = tableColumns(shape, preset, rows, controls?.state.cols);
   const leader = leaderPoints(rows);
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
+      {controls?.actions && <DataRegionControls controls={controls} shape={shape} shown={columns} nameLabel={preset.nameLabel} sortLinks={false} />}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">{heading}</caption>
           <thead>
             <tr className="border-b border-border font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
-              {columns.map(c => (
-                <th key={c.key} scope="col" className={`py-2 font-normal ${c.type === 'position' ? 'w-10 pr-3 text-right' : RIGHT.has(c.type) ? 'pl-3 text-right' : 'pr-3 text-left'}${c.type === 'percent' ? ' w-24' : ''}`}>
-                  {c.type === 'percent' ? <span className="sr-only">{c.label}</span> : c.label}
-                </th>
-              ))}
+              {columns.map(c => {
+                const label = c.type === 'percent' ? <span className="sr-only">{c.label}</span> : c.label;
+                // A sortable heading (P2.3) is a link toggling its column ascending → descending → as designed; the sorted one says so.
+                const sorted = controls?.state.sort?.column === c.key ? controls.state.sort : undefined;
+                const link = controls?.sortable === true && sortable(c);
+                return (
+                  <th key={c.key} scope="col" {...(sorted ? { 'aria-sort': sorted.desc ? ('descending' as const) : ('ascending' as const) } : {})} className={`py-2 font-normal ${c.type === 'position' ? 'w-10 pr-3 text-right' : RIGHT.has(c.type) ? 'pl-3 text-right' : 'pr-3 text-left'}${c.type === 'percent' ? ' w-24' : ''}`}>
+                    {link && controls ? (
+                      <a href={sortHref(controls.href, controls.state, c.key, controls.key, controls.others)} rel="nofollow" className="underline-offset-4 hover:text-tint hover:underline">
+                        {label}
+                        {sorted && <span aria-hidden="true">{sorted.desc ? ' ▼' : ' ▲'}</span>}
+                      </a>
+                    ) : (
+                      label
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody className="divide-y divide-border/60">
@@ -267,7 +297,7 @@ export function DataRegionTable({ heading, level, shape, preset, rows }: DataReg
  *  an image column (P2.24 A) or the initials of its column's text (APEX Icon Initials), and the action zones. Full Card set
  *  and resolved for a row makes that card one link named after its title, and its other zones stand down: no link inside a
  *  link. A zone that resolves to nothing for a row draws that part plain. */
-export function DataRegionCards({ heading, level, shape, rows, card, actions }: DataRegionViewProps) {
+export function DataRegionCards({ heading, level, shape, preset, rows, card, actions, controls }: DataRegionViewProps) {
   const H = level;
   const slot: CardSlots = card ?? { ...shape.card, media: shape.card.media ?? '' };
   const act = actions ?? NO_ACTIONS;
@@ -275,6 +305,7 @@ export function DataRegionCards({ heading, level, shape, rows, card, actions }: 
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
+      {controls?.actions && <DataRegionControls controls={controls} shape={shape} shown={shape.columns} nameLabel={preset.nameLabel} sortLinks />}
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((r, i) => {
           const title = slotText(shape, r, slot.title);
