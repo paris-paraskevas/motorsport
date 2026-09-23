@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.160 — 2026-09-23
+
+### Records — R7 on prod, R7 DONE, P2.3's scan and plan recorded, the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: **R7 DONE** with its evidence (#1040, 1.0.159, two commits 962cddbd + b8b51dad, squash-merged 2026-09-23 16:53:19Z as 57b9d3d2, prod /changelog 1.0.159 at 2026-09-23T16:57:39Z; the red-first tests, the gates, the reviewer's 202,161 tokens) and the dated merge line; the P2.3 lines: the decision scan's four words (~15:20Z: designer-authored views only, the query string with the pages cached, sortable headers and an Actions menu, a CSV route handler) and the plan's approval (~16:35Z: the terrain reader's 319,585 and the critic's 297,741 tokens, six blocking folded, the two PRs summarised). `docs/HANDOFF.md`: the LATEST header and the session-57 prompt (P2.3 PR A on the approved plan, its essentials in the prompt; then PR B; then P2.4), the state at 1.0.159/1.0.160, this run's landmines (a long designer test timing out at 5 s when the suite runs beside the foreground build; the middleware rewrite's placement). `SCHEDULE.md`: the afternoon's steps. `IDEAS.md`: four Inbox lines. The progress board republished (87eea43d-b6f0-47fa-a1c4-b10dacb2ff01: R7 done, P2.3 next). `package.json` 1.0.160. No code.
+
 ## 1.0.159 — 2026-09-23
 
 ### Designer — [R7] A change of Source picks the first preset it offers
