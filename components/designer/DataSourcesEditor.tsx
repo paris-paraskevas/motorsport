@@ -97,15 +97,21 @@ function hostsText(s: SourceDefinition, series: readonly SeriesName[]): string {
   return [...byHost].map(([host, names]) => `${REMOTE_SERVERS.find(r => r.key === host)?.name ?? host} (${names.join(', ')})`).join(' · ');
 }
 
-/** The series a parameter offers, by the names the designer holds (the catalogue's when it has none). */
+/** The series a parameter offers, by the names the designer holds (the catalogue's when it has none); a value the reader resolves
+ *  rather than a championship (P2.24 B2: Home's series, the Latest result) is not one of the fifteen and comes first, by its label. */
 function seriesChoices(param: SourceParameter, series: readonly SeriesName[]): SeriesName[] {
   const offered = param.options ?? SERIES_OPTIONS;
-  const names = series.length ? series : offered.map(o => ({ slug: o.key, name: o.label }));
-  return names.filter(n => offered.some(o => o.key === n.slug));
+  const special = offered.filter(o => !SERIES_OPTIONS.some(s => s.key === o.key)).map(o => ({ slug: o.key, name: o.label }));
+  const championships = offered.filter(o => SERIES_OPTIONS.some(s => s.key === o.key));
+  const names = series.length ? series : championships.map(o => ({ slug: o.key, name: o.label }));
+  return [...special, ...names.filter(n => championships.some(o => o.key === n.slug))];
 }
 
 function parameterWords(p: SourceParameter): string {
-  const range = p.kind === 'series' ? `one of ${p.options?.length ?? SERIES_OPTIONS.length} series` : p.kind === 'season' ? 'the season the loader warms' : p.kind === 'number' ? `a number from ${p.min ?? 0} to ${p.max ?? '∞'}` : p.kind === 'choice' ? (p.options ?? []).map(o => o.label).join(' · ') : 'text';
+  // The championships counted apart from a value the reader resolves (P2.24 B2), which is named: "one of 14 series, or Home's series".
+  const special = p.kind === 'series' ? (p.options ?? []).filter(o => !SERIES_OPTIONS.some(s => s.key === o.key)) : [];
+  const championships = (p.options ?? SERIES_OPTIONS).length - special.length;
+  const range = p.kind === 'series' ? `one of ${championships} series${special.length ? `, or ${special.map(o => o.label).join(' or ')}` : ''}` : p.kind === 'season' ? 'the season the loader warms' : p.kind === 'number' ? `a number from ${p.min ?? 0} to ${p.max ?? '∞'}` : p.kind === 'choice' ? (p.options ?? []).map(o => o.label).join(' · ') : 'text';
   return `${range} · default ${p.default === undefined ? 'none' : String(p.default)}${p.required ? '' : ' · optional'}`;
 }
 

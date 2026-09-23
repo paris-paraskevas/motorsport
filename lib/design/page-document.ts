@@ -507,7 +507,11 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
             const series = sourceRef.params.series;
             // The same words the Attributes tab's note uses for a greyed option (P2.2 B2: a view bound to a source, no series list).
             if (sourceRef.source !== opt.only.source) parsed.problems.push(`${opt.label} is for a ${findSource(opt.only.source)?.name ?? opt.only.source} source; this region reads ${findSource(sourceRef.source)?.name ?? sourceRef.source}`);
-            else if (opt.only.series !== undefined && typeof series === 'string' && !opt.only.series.includes(series)) parsed.problems.push(`${opt.label} is not a preset of ${SERIES_OPTIONS.find(o => o.key === series)?.label ?? series}`);
+            else if (opt.only.series !== undefined && typeof series === 'string' && !opt.only.series.includes(series)) {
+              // The value's own label (P2.24 B2: Home's series and the Latest result are values the readers resolve, not championships), else the catalogue's, else the key.
+              const label = findSource(sourceRef.source)?.parameters.find(p => p.key === 'series')?.options?.find(o => o.key === series)?.label ?? SERIES_OPTIONS.find(o => o.key === series)?.label ?? series;
+              parsed.problems.push(`${opt.label} is not a preset of ${label}`);
+            }
           }
         }
         // The Card slots and the action zones (P2.2 B3): a slot names a column of the preset's shape; a zone may follow one of

@@ -70,7 +70,8 @@ describe('DataSourcesEditor', () => {
     expect(rows).toHaveLength(14);
     const standingsRow = rows.find(r => within(r).queryByText('Standings'))!;
     expect(within(standingsRow).getByText('series · season')).toBeTruthy();
-    expect(within(standingsRow).getByText('8')).toBeTruthy();
+    // Twelve columns since P2.24 B2 (the series' name and colour, the race winner, the season's end).
+    expect(within(standingsRow).getByText('12')).toBeTruthy();
     expect(within(standingsRow).getByText('the loader, every 20 minutes')).toBeTruthy();
     expect(within(standingsRow).getByText('shipped')).toBeTruthy();
     const authorsRow = rows.find(r => within(r).queryByText('Authors'))!;
@@ -97,8 +98,13 @@ describe('DataSourcesEditor', () => {
     const seriesField = within(form).getByLabelText('Series') as HTMLSelectElement;
     expect(seriesField.value).toBe('f1');
     expect([...seriesField.options].map(o => o.textContent)).toContain('Formula 1');
-    // Only the series the source offers: the picker filters the list given by the catalogue's options.
-    expect([...seriesField.options].map(o => o.value)).toEqual(['f1', 'wec']);
+    // Only the series the source offers: the picker filters the list given by the catalogue's options; the value the reader resolves (P2.24 B2) comes first, with its label.
+    expect([...seriesField.options].map(o => [o.value, o.textContent])).toEqual([
+      ['latest', 'Latest result'],
+      ['f1', 'Formula 1'],
+      ['wec', 'FIA WEC'],
+    ]);
+    expect(screen.getByRole('region', { name: 'Data Source: Standings' }).textContent).toMatch(/one of 13 series, or Latest result/);
     expect((within(form).getByLabelText('Season') as HTMLSelectElement).value).toBe('2026');
     fireEvent.change(seriesField, { target: { value: 'wec' } });
     fireEvent.change(seriesField, { target: { value: 'f1' } });

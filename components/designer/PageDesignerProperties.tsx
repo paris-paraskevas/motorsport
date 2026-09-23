@@ -534,11 +534,14 @@ function HexField({ label, value, disabled, onPick }: { label: string; value: st
   );
 }
 
-/** The series a Source parameter offers, by the names the designer holds (the catalogue's when it has none). */
+/** The series a Source parameter offers, by the names the designer holds (the catalogue's when it has none); a value the reader
+ *  resolves rather than a championship (P2.24 B2: Home's series, the Latest result) is not one of the fifteen and comes first, by its label. */
 function seriesChoices(param: SourceParameter, series: readonly { slug: string; name: string }[] | undefined): { slug: string; name: string }[] {
   const offered = param.options ?? SERIES_OPTIONS;
-  const names = series && series.length ? series : offered.map(o => ({ slug: o.key, name: o.label }));
-  return names.filter(n => offered.some(o => o.key === n.slug));
+  const special = offered.filter(o => !SERIES_OPTIONS.some(s => s.key === o.key)).map(o => ({ slug: o.key, name: o.label }));
+  const championships = offered.filter(o => SERIES_OPTIONS.some(s => s.key === o.key));
+  const names = series && series.length ? series : championships.map(o => ({ slug: o.key, name: o.label }));
+  return [...special, ...names.filter(n => championships.some(o => o.key === n.slug))];
 }
 
 export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {

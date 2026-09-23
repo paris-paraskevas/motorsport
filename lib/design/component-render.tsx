@@ -123,7 +123,9 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
       const read = await readSource(ctx.source);
       ctx.onSourceRead?.(read.provenance);
       const slug = String(ctx.source.params.series ?? '');
-      const changed = changedFromStandings(read.rows, (await loadSeriesMeta()).get(slug)?.name ?? slug);
+      // The series' name from the rows the reader annotated (P2.24 B2: a Source of the Latest result resolves its series when read), else the content's, else the key.
+      const named = read.rows[0]?.seriesName;
+      const changed = changedFromStandings(read.rows, (typeof named === 'string' && named) || (await loadSeriesMeta()).get(slug)?.name || slug);
       if (!changed) return null;
       return <HomeWhatChanged changed={changed} rows={num(settings.rows, 5)} />;
     }
@@ -188,7 +190,8 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const actions: CardActions = { fullCard: zone('actionFullCard'), title: zone('actionTitle'), subtitle: zone('actionSubtitle'), media: zone('actionMedia'), button: zone('actionButton'), buttonLabel: str(settings.actionButtonLabel) || 'Open' };
     const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions, now: ctx.now };
     // Timeline stands on the results' dates (the parser refuses it elsewhere); a stored one on a standings shape draws the table.
-    // Home's boxes as templates (P2.24 A) stand on their own shapes the same way.
+    // Home's boxes as templates (P2.24 A) stand on their own shapes the same way; the Podium and the Leader (P2.24 B2) on one
+    // shape of their source each (the podium rows, the driver rows), since Results and Standings have several.
     const View =
       settings.view === 'cards'
         ? views.DataRegionCards
@@ -204,7 +207,11 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
                   ? views.DataRegionWire
                   : settings.view === 'coming-weekends' && shape.source === 'weekends'
                     ? views.DataRegionComingWeekends
-                    : views.DataRegionTable;
+                    : settings.view === 'podium' && shape.key === 'podium-rows'
+                      ? views.DataRegionPodium
+                      : settings.view === 'leader' && shape.key === 'driver-rows'
+                        ? views.DataRegionLeader
+                        : views.DataRegionTable;
     return <View {...props} />;
   },
 };

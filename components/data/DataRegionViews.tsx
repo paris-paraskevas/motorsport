@@ -717,3 +717,157 @@ export function DataRegionComingWeekends({ heading, rows, now }: DataRegionViewP
     </section>
   );
 }
+
+/** Home's headline for a result (components/HomeLead.tsx headlineFor, copied for the Podium): no article before a round or a rally. */
+function headlineFor(winner: string, raceName: string): string {
+  const article = /^(round|rally|rallye)\b/i.test(raceName) ? '' : 'the ';
+  return `${winner} wins ${article}${raceName}`;
+}
+
+/** A results row as Home's podium entry (lib/home-results.ts PodiumEntry): a sportscar entry (a car number) is named by its
+ *  team, its crew the detail and the timing gap its time; a flat entry by its driver, the team the detail, its time as the
+ *  feed carries it. */
+function podiumEntry(row: PresetRow): { name: string; detail?: string; time?: string } {
+  if (text(row.car)) return { name: text(row.team) || text(row.driver) || `Car #${text(row.car)}`, detail: text(row.driver) || `#${text(row.car)}`, time: text(row.gap) || undefined };
+  return { name: text(row.driver), detail: text(row.team) || undefined, time: text(row.time) || undefined };
+}
+
+/** Home's Latest result (components/HomeLead.tsx HomeLatestResult) as the template of the results source (P2.24 B2): the rows
+ *  are the newest race's podium (the preset's rule), the series' facts on each; the section is named by the region's heading;
+ *  the headline is the page's h1 when the region is first, an h2 a size down otherwise (Home's compact, a lead above); the
+ *  winning margin is second's time when it reads as a gap, else the winner's detail; champion mode when the season is complete
+ *  and the champion known. Nothing without a winner. Home's markup verbatim, for the flip's parity; the report link is the row's
+ *  weekend column, none when the round has no page (a link column, never a typed address). */
+export function DataRegionPodium({ heading, level, rows }: DataRegionViewProps) {
+  const winner = rows.find(r => r.position === 1);
+  const first = rows[0];
+  if (!winner || !first) return null;
+  const win = podiumEntry(winner);
+  const second = rows.find(r => r.position === 2);
+  const secondTime = second ? podiumEntry(second).time : undefined;
+  // Only a value that reads as a gap is a margin (winner rows carry total time; some feeds carry status strings instead).
+  const margin = secondTime && secondTime.startsWith('+') ? secondTime : undefined;
+  const seriesName = text(first.seriesName);
+  const colour = text(first.colour) || undefined;
+  const raceName = text(first.race);
+  const raceDate = typeof first.date === 'string' && first.date ? new Date(first.date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) : '';
+  const championName = first.final === true && text(first.champion) ? text(first.champion) : null;
+  const href = text(first.weekend);
+  const compact = level !== 'h1';
+  const ResultHeading = level;
+  return (
+    <section aria-label={heading} className="border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5">
+      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2.5">
+            <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: colour }} />
+            <span className="font-mono text-10 font-semibold uppercase tracking-[0.16em]" style={{ color: colour ? seriesInk(colour) : undefined }}>
+              {seriesName}
+            </span>
+            <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
+              Round {text(first.round)} · {raceDate}
+            </span>
+          </div>
+          {championName && <p className="mt-3 font-mono text-12 font-bold uppercase tracking-[0.2em] text-brand">Season complete</p>}
+          {/* Demoted to h2 and a size down when a lead is above it, so the two headlines do not compete for the same rank. */}
+          <ResultHeading className={`${championName ? 'mt-1.5' : 'mt-3'} font-serif font-semibold leading-[1.1] text-text ${compact ? 'text-24 lg:text-30' : 'text-30 lg:text-40'}`}>
+            {championName ? `${championName} is ${seriesName} champion` : headlineFor(win.name, raceName)}
+          </ResultHeading>
+          {championName ? (
+            <p className="mt-2 font-serif text-17 leading-snug text-text-muted">
+              {headlineFor(win.name, raceName)}
+              {margin ? ` — winning margin ${margin}` : ''}.
+            </p>
+          ) : (
+            <p className="mt-2 font-mono text-11 tabular-nums text-text-muted">
+              {margin ? (
+                <>
+                  Winning margin <span className="text-text">{margin}</span>
+                </>
+              ) : (
+                win.detail
+              )}
+            </p>
+          )}
+          {href && (
+            <Link href={href} className="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline">
+              Full weekend report →
+            </Link>
+          )}
+        </div>
+        <div>
+          <div className="flex items-baseline justify-between border-b border-text pb-1">
+            {/* In champion mode the h1 is about the title, so the podium must name its race itself (operator annotation, 2026-08-20). */}
+            <span className="min-w-0 truncate font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{championName ? `${raceName} · Classification` : 'Classification'}</span>
+          </div>
+          <ul>
+            {rows.map((r, i) => {
+              const entry = podiumEntry(r);
+              return (
+                <li key={`${text(r.position)}-${i}`} className="flex items-baseline gap-3 border-b border-border py-2">
+                  <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">{text(r.position)}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-serif text-16 font-semibold leading-tight text-text">{entry.name}</span>
+                    {entry.detail && <span className="block truncate font-mono text-10 uppercase tracking-[0.12em] text-text-faint">{entry.detail}</span>}
+                  </span>
+                  {entry.time && <span className="shrink-0 font-mono text-11 tabular-nums text-text-muted">{entry.time}</span>}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Home's What it changed (components/HomeLead.tsx HomeWhatChanged) as the template of the standings source (P2.24 B2): the
+ *  rows are the drivers by position (the preset's rule), the leader first; the rule names the region's heading and the series'
+ *  championship, final when the season is complete; the headline the leader's lead over the second row (none with one row);
+ *  the race winner's row bold with the brand bar, the leader's bar the text colour, the gap column from small screens up.
+ *  Nothing without rows. Home's markup verbatim, for the flip's parity; the headline stays an h2, as Home's is. */
+export function DataRegionLeader({ heading, rows }: DataRegionViewProps) {
+  const leader = rows[0];
+  if (!leader) return null;
+  const leaderPoints = num(leader.points) ?? 0;
+  const secondPoints = rows[1] ? num(rows[1].points) : null;
+  const gapToSecond = secondPoints === null ? null : leaderPoints - secondPoints;
+  const seasonComplete = leader.final === true;
+  const leaderName = text(leader.name);
+  return (
+    <section aria-label={heading} className="min-w-0">
+      <SectionRule label={heading} right={`${text(leader.seriesName)} · ${seasonComplete ? 'Final standings' : "Drivers' championship"}`} />
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,300px)_1fr]">
+        <div>
+          <h2 className="font-serif text-22 font-semibold leading-snug text-text lg:text-26">
+            {seasonComplete
+              ? gapToSecond !== null
+                ? `${leaderName} takes the title by ${gapToSecond} ${gapToSecond === 1 ? 'point' : 'points'}`
+                : `${leaderName} is champion`
+              : gapToSecond !== null
+                ? `${leaderName} leads by ${gapToSecond} ${gapToSecond === 1 ? 'point' : 'points'}`
+                : `${leaderName} leads the championship`}
+          </h2>
+        </div>
+        <ul>
+          {rows.map((row, i) => {
+            const points = num(row.points) ?? 0;
+            const isWinner = row.winner === true;
+            const width = leaderPoints > 0 ? Math.max(2, Math.round((points / leaderPoints) * 100)) : 0;
+            return (
+              <li key={`${text(row.position)}-${i}`} className="flex items-center gap-3 border-b border-border py-1.5">
+                <span className="w-4 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">{text(row.position)}</span>
+                <span className={`w-28 shrink-0 truncate text-sm sm:w-36 ${isWinner ? 'font-semibold text-text' : 'text-text-muted'}`}>{text(row.name)}</span>
+                <span aria-hidden="true" className="h-[6px] min-w-0 flex-1 bg-border">
+                  <span className={`block h-full ${isWinner ? 'bg-brand' : row.position === 1 ? 'bg-text' : 'bg-border-strong'}`} style={{ width: `${width}%` }} />
+                </span>
+                <span className="w-10 shrink-0 text-right font-mono text-12 font-semibold tabular-nums text-text">{text(row.points)}</span>
+                <span className="hidden w-10 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint sm:block">{row.position === 1 ? '—' : `−${leaderPoints - points}`}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}

@@ -274,6 +274,15 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'lead-story', view: 'coming-weekends' }, source: 'posts?count=10' })])).problems).toEqual(["region r: What's next is for a Weekends source; this region reads Posts"]);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'whats-next', view: 'coming-weekends', rows: 3, actionFullCard: 'row:title' }, source: 'weekends?count=10' })])).problems).toEqual([]);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'whats-next', view: 'coming-weekends' }, source: 'weekends?series=wec&count=5' })])).problems).toEqual([]);
+    // P2.24 B2: Latest result is bound to a Results source and What it changed to a Standings one; the Series values the readers resolve (Home's series,
+    // Latest result) parse with their presets; a preset the value lacks is refused by the value's own label, never its key.
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'podium' }, source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Latest result is for a Results source; this region reads Standings']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results', view: 'leader' }, source: 'results?series=f1&season=2026' })])).problems).toEqual(['region r: What it changed is for a Standings source; this region reads Results']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'latest-result', view: 'podium', rows: 3 }, source: 'results?series=home&season=2026' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'latest-result', view: 'podium' }, source: 'results?series=f1&season=2026' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'what-it-changed', view: 'leader', rows: 5 }, source: 'standings?series=latest&season=2026' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers' }, source: 'standings?series=latest&season=2026' })])).problems).toEqual(['region r: Drivers is not a preset of Latest result']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'season-results' }, source: 'results?series=home&season=2026' })])).problems).toEqual(["region r: Season results is not a preset of Home's series"]);
     // Without a Source the binding has nothing to check against, as for a preset.
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: { preset: 'drivers', view: 'timeline' } })])).problems).toEqual([]);
     // P2.2 B3: a Card slot names a column of the preset's shape; a zone follows a link column of the row (`row:<key>`) or a destination, never a typed URL.

@@ -182,9 +182,9 @@ describe('renderComponents', () => {
     expect((two.match(/<tr/g) ?? []).length).toBe(3);
   });
 
-  it('P2.2, the acceptance’s test per preset: every one of the twenty-six standings presets draws its table from a fixture of its shape, headed as the site heads it, the name column labelled as it says, its own class’s first row first', async () => {
+  it('P2.2, the acceptance’s test per preset: every one of the twenty-seven standings presets (the twenty-six tables and Home’s What it changed, P2.24 B2) draws its table from a fixture of its shape, headed as the site heads it, the name column labelled as it says, its own class’s first row first', async () => {
     const standings = PRESETS.filter(p => p.source === 'standings');
-    expect(standings).toHaveLength(26);
+    expect(standings).toHaveLength(27);
     for (const preset of standings) {
       const cls = preset.where.class ?? null;
       const kind = preset.where.kind ?? 'driver';
@@ -501,7 +501,7 @@ describe('renderComponents', () => {
   const newsRow = (i: number, over: Record<string, string | number | null> = {}) => ({ title: `Headline ${i}`, link: `https://www.example.com/${i}`, source: 'example.com', published: `2026-09-22T0${9 - i}:00:00.000Z`, series: 'f1', seriesName: 'Formula 1', colour: '#e10600', ...over });
   const NEWS = [newsRow(1), newsRow(2), newsRow(3, { seriesName: null, colour: null })];
   /** Draws a Data region over a posts or news fixture at noon; `first: false` puts a heading region before it. */
-  const drawOver = async (source: string, rows: Record<string, string | number | null>[], settings: Record<string, string | number | boolean>, first = true) => {
+  const drawOver = async (source: string, rows: Record<string, string | number | boolean | null>[], settings: Record<string, string | number | boolean>, first = true) => {
     readSource.mockResolvedValueOnce({ columns: [], total: rows.length, rows, provenance: { ref: { source: source.split('?')[0], params: {} }, label: source, tier: 'db', keys: [], rows: rows.length, ms: 1 } });
     const regions = first ? [region('t', 'data.region', settings, { source } as Partial<Region>)] : [region('h', 'page.heading'), region('t', 'data.region', settings, { source, seq: 20 } as Partial<Region>)];
     const out = await renderComponents(doc(regions), { path: '/x', page: { path: '/x', name: 'X', title: null }, now: NOON });
@@ -642,6 +642,126 @@ describe('renderComponents', () => {
     expect(table).toMatch(/<a href="\/series\/f1\/weekend\/17" class="[^"]*">Grand Prix 1<\/a>/);
     expect(table).toContain('>25–27 Sept<');
     expect(table).toContain('>5 Jan 2030<');
+  });
+
+  // P2.24 B2: Home's Latest result and What it changed as templates over the results and standings sources, the rows carrying the series' facts.
+  const podiumRow = (position: number, driver: string, team: string, time: string | null, over: Record<string, string | number | boolean | null> = {}) => ({
+    round: 13,
+    race: 'Italian Grand Prix',
+    raceId: null,
+    date: '2026-09-06T13:00:00.000Z',
+    circuit: 'Monza',
+    class: null,
+    session: 'race',
+    position,
+    driver,
+    code: null,
+    car: null,
+    team,
+    vehicle: null,
+    manufacturer: null,
+    laps: null,
+    status: 'Finished',
+    time,
+    gap: null,
+    points: 25,
+    weekend: '/series/f1/weekend/13',
+    seriesName: 'Formula 1',
+    colour: '#e10600',
+    final: false,
+    champion: null,
+    ...over,
+  });
+  const PODIUM = [podiumRow(1, 'Andrea Kimi Antonelli', 'Mercedes', '1:20:12.345'), podiumRow(2, 'George Russell', 'Mercedes', '+3.857'), podiumRow(3, 'Charles Leclerc', 'Ferrari', '+12.001')];
+  const PODIUM_SETTINGS = { preset: 'latest-result', view: 'podium', rows: 3, heading: '' };
+  const HOME = 'results?series=home&season=2026';
+
+  it('P2.24 B2, the Podium template: Home’s Latest result over the results source, verbatim: the section named by the heading, the series’ bar and name, the round and the day, the headline as the page’s h1 when first (an h2 a size down otherwise), the winning margin from second’s time or the winner’s detail, the report link to the weekend page, the classification of the podium rows; Rows cuts; champion mode when the season is complete; a sportscar race names the team with its crew and the gap; nothing without a winner or rows; the Table over the shape; a stored podium view over Season results draws the Table', async () => {
+    const podium = await drawOver(HOME, PODIUM, PODIUM_SETTINGS);
+    expect(podium).toContain('<section aria-label="Latest result" class="border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5">');
+    expect(podium).toContain('style="background-color:#e10600"');
+    expect(podium).toContain('>Formula 1<');
+    expect(podium).toContain('Round 13 · Sunday 6 September');
+    expect(podium).toMatch(/<h1 class="mt-3 font-serif font-semibold leading-\[1\.1\] text-text text-30 lg:text-40">Andrea Kimi Antonelli wins the Italian Grand Prix<\/h1>/);
+    expect(podium).toContain('Winning margin <span class="text-text">+3.857</span>');
+    expect(podium).toContain('<a href="/series/f1/weekend/13" class="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline">Full weekend report →</a>');
+    expect(podium).toContain('>Classification<');
+    expect((podium.match(/<li class="flex items-baseline gap-3 border-b border-border py-2">/g) ?? []).length).toBe(3);
+    expect(podium).toContain('>Charles Leclerc<');
+    expect(podium).toContain('>Ferrari<');
+    expect(podium).toContain('>+12.001<');
+    expect(podium).not.toContain('Season complete');
+    expect(((await drawOver(HOME, PODIUM, { ...PODIUM_SETTINGS, rows: 2 })).match(/<li class="flex items-baseline/g) ?? []).length).toBe(2);
+    const second = await drawOver(HOME, PODIUM, PODIUM_SETTINGS, false);
+    expect(second).toMatch(/<h2 class="mt-3 font-serif font-semibold leading-\[1\.1\] text-text text-24 lg:text-30">Andrea Kimi Antonelli wins the Italian Grand Prix<\/h2>/);
+    // Champion mode: the season complete and the champion known; the race takes the second line and the classification names it.
+    const crowned = await drawOver(HOME, PODIUM.map(r => ({ ...r, final: true, champion: 'Andrea Kimi Antonelli' })), PODIUM_SETTINGS);
+    expect(crowned).toContain('>Season complete<');
+    expect(crowned).toMatch(/<h1 class="mt-1\.5 [^"]*">Andrea Kimi Antonelli is Formula 1 champion<\/h1>/);
+    expect(crowned).toContain('Andrea Kimi Antonelli wins the Italian Grand Prix — winning margin +3.857.');
+    expect(crowned).toContain('>Italian Grand Prix · Classification<');
+    // Without a margin the winner's detail stands: second's time is a total, not a gap.
+    const total = await drawOver(HOME, [PODIUM[0], podiumRow(2, 'George Russell', 'Mercedes', '1:20:16.202')], PODIUM_SETTINGS);
+    expect(total).not.toContain('Winning margin');
+    expect(total).toContain('<p class="mt-2 font-mono text-11 tabular-nums text-text-muted">Mercedes</p>');
+    // A sportscar race (a car number on the row): the team is the name, the crew the detail, the gap the time; a gap as the margin.
+    const car = (position: number, team: string, crew: string, gap: string) => podiumRow(position, crew, team, null, { car: String(5 + position), gap, class: 'Hypercar', race: '6 Hours of Fuji', round: 6, seriesName: 'FIA WEC', colour: '#0b3d91', weekend: '/series/wec/weekend/6' });
+    const fuji = await drawOver(HOME, [car(1, 'Porsche Penske Motorsport', 'Estre Campbell Vanthoor', '6:00:12.345'), car(2, 'Ferrari AF Corse', 'Fuoco Molina Nielsen', '+1 Lap')], PODIUM_SETTINGS);
+    expect(fuji).toMatch(/<h1 [^>]*>Porsche Penske Motorsport wins the 6 Hours of Fuji<\/h1>/);
+    expect(fuji).toContain('>Estre Campbell Vanthoor<');
+    expect(fuji).toContain('>6:00:12.345<');
+    expect(fuji).toContain('Winning margin <span class="text-text">+1 Lap</span>');
+    expect(fuji).toContain('<a href="/series/wec/weekend/6"');
+    // No weekend page for the round: no report link, never a typed address.
+    expect(await drawOver(HOME, PODIUM.map(r => ({ ...r, weekend: null })), PODIUM_SETTINGS)).not.toContain('Full weekend report');
+    expect(await drawOver(HOME, PODIUM.slice(1), PODIUM_SETTINGS)).toBe('');
+    expect(await drawOver(HOME, [], PODIUM_SETTINGS)).toBe('');
+    const table = await drawOver(HOME, PODIUM, { ...PODIUM_SETTINGS, view: 'table' });
+    expect(table).toContain('<table');
+    expect(table).toMatch(/<a href="\/series\/f1\/weekend\/13" class="[^"]*">Italian Grand Prix<\/a>/);
+    expect(table).toContain('>Formula 1<');
+    // The gate (the critic's finding): the Podium stands on its own shape; a stored podium view over Season results draws the Table.
+    expect(await drawOver('results?series=f1&season=2026', PODIUM, { preset: 'season-results', view: 'podium', rows: 3, heading: '' })).toContain('<table');
+  });
+
+  const leaderRow = (position: number, name: string, points: number, over: Record<string, string | number | boolean | null> = {}) => ({ kind: 'driver', position, name, code: null, team: 'Team', points, wins: null, class: null, seriesName: 'Formula 1', colour: '#e10600', winner: false, final: false, ...over });
+  const LEADER = [leaderRow(1, 'Driver 1', 300), leaderRow(2, 'Driver 2', 280, { winner: true }), leaderRow(3, 'Driver 3', 260), leaderRow(4, 'Driver 4', 240), leaderRow(5, 'Driver 5', 220), leaderRow(6, 'Driver 6', 200)];
+  const LEADER_SETTINGS = { preset: 'what-it-changed', view: 'leader', rows: 5, heading: '' };
+  const LATEST = 'standings?series=latest&season=2026';
+
+  it('P2.24 B2, the Leader template: Home’s What it changed over the standings source, verbatim: the rule with the heading and “<series> · Drivers’ championship”, the headline (leads by N points, one point, leads the championship without a second row; takes the title by, is champion when the season is complete), the rows with the winner’s bold row and brand bar, the leader’s text bar and the gap column; Rows cuts; the heading replaces the label; nothing without rows; a stored leader view over Constructors draws the Table; What it changed with a Source names the series from its rows', async () => {
+    const leader = await drawOver(LATEST, LEADER, LEADER_SETTINGS);
+    expect(leader).toContain('<section aria-label="What it changed" class="min-w-0">');
+    expect(leader).toContain('>What it changed<');
+    expect(leader).toMatch(/>Formula 1 · Drivers(?:&#x27;|') championship</);
+    expect(leader).toContain('<h2 class="font-serif text-22 font-semibold leading-snug text-text lg:text-26">Driver 1 leads by 20 points</h2>');
+    expect((leader.match(/<li class="flex items-center gap-3 border-b border-border py-1\.5">/g) ?? []).length).toBe(5);
+    expect(leader).not.toContain('Driver 6');
+    expect(leader).toContain('<span class="w-28 shrink-0 truncate text-sm sm:w-36 font-semibold text-text">Driver 2</span>');
+    expect(leader).toContain('<span class="w-28 shrink-0 truncate text-sm sm:w-36 text-text-muted">Driver 1</span>');
+    expect(leader).toContain('<span class="block h-full bg-brand" style="width:93%"></span>');
+    expect(leader).toContain('<span class="block h-full bg-text" style="width:100%"></span>');
+    expect(leader).toContain('<span class="block h-full bg-border-strong" style="width:87%"></span>');
+    expect(leader).toContain('>—<');
+    expect(leader).toContain('>−20<');
+    expect(await drawOver(LATEST, [leaderRow(1, 'Driver 1', 300), leaderRow(2, 'Driver 2', 299)], LEADER_SETTINGS)).toContain('Driver 1 leads by 1 point</h2>');
+    expect(await drawOver(LATEST, [leaderRow(1, 'Driver 1', 300)], LEADER_SETTINGS)).toContain('Driver 1 leads the championship</h2>');
+    const final = await drawOver(LATEST, LEADER.map(r => ({ ...r, final: true })), LEADER_SETTINGS);
+    expect(final).toContain('>Formula 1 · Final standings<');
+    expect(final).toContain('Driver 1 takes the title by 20 points</h2>');
+    expect(await drawOver(LATEST, [leaderRow(1, 'Driver 1', 300, { final: true })], LEADER_SETTINGS)).toContain('Driver 1 is champion</h2>');
+    const headed = await drawOver(LATEST, LEADER, { ...LEADER_SETTINGS, heading: 'The championship', rows: 3 });
+    expect(headed).toContain('<section aria-label="The championship"');
+    expect(headed).toContain('>The championship<');
+    expect((headed.match(/<li class="flex items-center/g) ?? []).length).toBe(3);
+    expect(await drawOver(LATEST, [], LEADER_SETTINGS)).toBe('');
+    // The gate (the critic's finding): the Leader stands on the driver rows' shape; a stored leader view over Constructors draws the Table.
+    expect(await drawOver('standings?series=f1&season=2026', [{ ...leaderRow(1, 'Mercedes', 500), kind: 'constructor' }], { preset: 'constructors', view: 'leader', rows: 5, heading: '' })).toContain('<table');
+    // What it changed (Home's component) with a Source of the Latest result names the series from the rows it read, never the value's key.
+    readSource.mockResolvedValueOnce({ columns: [], total: LEADER.length, rows: LEADER, provenance: { ref: { source: 'standings', params: { series: 'latest', season: 2026 } }, label: 'Standings · Latest result · 2026', tier: 'rows', keys: [], rows: LEADER.length, ms: 1 } });
+    const changed = html((await renderComponents(doc([region('c', 'home.changed', { rows: 5 }, { source: 'standings?series=latest&season=2026' } as Partial<Region>)]), { path: '/x' })).c);
+    expect(changed).toMatch(/>Formula 1 · Drivers(?:&#x27;|') championship</);
+    expect(changed).not.toContain('latest');
   });
 
   it('P2.9: the Live band draws the weekends under way as Home does (the featured boxes, the Also racing row), drops the row when asked, shows one series’ weekend alone from every live box, and nothing for a series not under way; This weekend is its first instance', async () => {

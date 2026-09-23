@@ -59,7 +59,7 @@ describe('the component catalogue', () => {
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
     const preset = region.settings[0];
-    expect(preset.options).toHaveLength(36);
+    expect(preset.options).toHaveLength(38);
     expect(preset.options![0]).toEqual({
       key: 'drivers',
       label: 'Drivers',
@@ -79,7 +79,22 @@ describe('the component catalogue', () => {
     expect(preset.options!.find(o => o.key === 'wire')).toMatchObject({ key: 'wire', label: 'The wire', group: 'The wire', only: { source: 'news' }, sets: { view: 'wire', rows: 5, ...RESET } });
     // P2.24 B1: What's next over the weekends source brings its template and three rows.
     expect(preset.options!.find(o => o.key === 'whats-next')).toMatchObject({ key: 'whats-next', label: "What's next", group: "What's next", only: { source: 'weekends' }, sets: { view: 'coming-weekends', rows: 3, ...RESET } });
-    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(o.key === 'lead-story' || o.key === 'wire' || o.key === 'whats-next');
+    // P2.24 B2: Latest result over the results source (Home's series or one championship) brings the Podium template and three rows; What it changed over standings the Leader and five.
+    expect(preset.options!.find(o => o.key === 'latest-result')).toEqual({
+      key: 'latest-result',
+      label: 'Latest result',
+      group: 'Latest result',
+      only: { source: 'results', series: ['home', 'f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world'] },
+      sets: { view: 'podium', rows: 3, ...RESET, actionFullCard: 'row:race' },
+    });
+    expect(preset.options!.find(o => o.key === 'what-it-changed')).toEqual({
+      key: 'what-it-changed',
+      label: 'What it changed',
+      group: 'What it changed',
+      only: { source: 'standings', series: ['latest', 'f1', 'f2', 'f3', 'indycar', 'formula-e', 'motogp', 'nascar-cup', 'wsbk', 'wrc', 'dtm'] },
+      sets: { view: 'leader', rows: 5, ...RESET },
+    });
+    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(['lead-story', 'wire', 'whats-next', 'latest-result', 'what-it-changed'].includes(o.key));
     expect(region.settings[1].options!.map(o => [o.key, o.label])).toEqual([
       ['table', 'Table'],
       ['cards', 'Cards'],
@@ -89,9 +104,16 @@ describe('the component catalogue', () => {
       ['lead-story', 'Lead story'],
       ['wire', 'The wire'],
       ['coming-weekends', "What's next"],
+      ['podium', 'Latest result'],
+      ['leader', 'What it changed'],
     ]);
     expect(region.settings[1].options!.find(o => o.key === 'coming-weekends')).toEqual({ key: 'coming-weekends', label: "What's next", only: { source: 'weekends' } });
     expect(parseSettings(region, { preset: 'whats-next', view: 'coming-weekends' }).settings.view).toBe('coming-weekends');
+    // P2.24 B2: the two templates bound to their sources; the parser takes them.
+    expect(region.settings[1].options!.find(o => o.key === 'podium')).toEqual({ key: 'podium', label: 'Latest result', only: { source: 'results' } });
+    expect(region.settings[1].options!.find(o => o.key === 'leader')).toEqual({ key: 'leader', label: 'What it changed', only: { source: 'standings' } });
+    expect(parseSettings(region, { preset: 'latest-result', view: 'podium' }).settings.view).toBe('podium');
+    expect(parseSettings(region, { preset: 'what-it-changed', view: 'leader' }).settings.view).toBe('leader');
     // P2.2 B2: Timeline is bound to a Results source (a date to stand on), every series of it; Detail is open to every shape.
     expect(region.settings[1].options!.find(o => o.key === 'timeline')).toEqual({ key: 'timeline', label: 'Timeline', only: { source: 'results' } });
     expect(region.settings[1].options!.find(o => o.key === 'detail')).toEqual({ key: 'detail', label: 'Detail' });
