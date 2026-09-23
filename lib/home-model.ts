@@ -88,8 +88,11 @@ export function rankLiveWeekends<T extends { slug: string; nextStartMs: number }
   priority: HomePriority = SHIPPED_PRIORITY,
 ): { featured: T[]; also: T[] } {
   const lead = candidates.filter(c => c.slug === priority.lead);
+  // The lead is never a major as well: named among the featured series too (the
+  // settings let it be), it would be boxed twice (R6, the operator's report of
+  // 2026-09-23: the Azerbaijan Grand Prix twice in the band).
   const majors = candidates
-    .filter(c => priority.majors.includes(c.slug))
+    .filter(c => c.slug !== priority.lead && priority.majors.includes(c.slug))
     .sort((a, b) => a.nextStartMs - b.nextStartMs);
 
   let featured = [...lead, ...majors];
