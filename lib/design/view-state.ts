@@ -25,6 +25,14 @@ export const VIEW_KEYS = ['sort', 'cols', 'filter', 'view'] as const;
 export const VIEW_PREFIX = '/__view';
 export const FILTERS_MAX = 4;
 export const VALUE_MAX = 80;
+/** The columns an allow-list may name; the widest shape has thirteen. */
+export const COLS_MAX = 24;
+/** The regions one address may carry a state for; a document with more draws its extra regions plain. */
+export const PREFIXES_MAX = 6;
+/** The longest canonical query the middleware turns into a variant; a longer one serves the plain page (the reviewer's cap on
+ *  what a crafted address can mint into the cache). A full legitimate state — a sort, a dozen columns, four long filters, a
+ *  view key — stays under 700. */
+export const CANONICAL_MAX = 1024;
 const OPS: readonly FilterOp[] = ['eq', 'ne', 'lt', 'lte', 'gt', 'gte', 'in'];
 const COLUMN = /^[A-Za-z][A-Za-z0-9_]{0,39}$/;
 const VIEW_KEY = /^[a-z0-9][a-z0-9-]{0,39}$/;
@@ -68,7 +76,8 @@ export function parseViewState(query: string | URLSearchParams, prefix = ''): { 
   }
   if (q.has(`${prefix}cols`)) {
     const cols = [...new Set(q.getAll(`${prefix}cols`).flatMap(v => v.split(',')).map(v => v.trim()).filter(c => COLUMN.test(c)))];
-    if (cols.length > 0) value.cols = cols;
+    if (cols.length > COLS_MAX) problems.push(`cols beyond the ${COLS_MAX} allowed`);
+    if (cols.length > 0) value.cols = cols.slice(0, COLS_MAX);
     else problems.push('cols names no column');
   }
   for (const raw of q.getAll(`${prefix}filter`)) {
@@ -122,7 +131,8 @@ const canonicalFilters = (filters: readonly ViewFilter[]) => [...filters].sort((
 export function encodeViewState(state: ViewState, prefix = ''): string {
   const q = new URLSearchParams();
   if (state.sort) q.set(`${prefix}sort`, `${state.sort.desc ? '-' : ''}${state.sort.column}`);
-  if (state.cols && state.cols.length > 0) q.set(`${prefix}cols`, state.cols.join(','));
+  // The columns in one order whatever the address said: the shape's order draws them, so the order carries nothing.
+  if (state.cols && state.cols.length > 0) q.set(`${prefix}cols`, [...state.cols].sort().join(','));
   for (const f of canonicalFilters(state.filters)) q.append(`${prefix}filter`, `${f.column}.${f.op}:${f.value}`);
   if (state.view !== undefined) q.set(`${prefix}view`, state.view);
   return q.toString();
@@ -140,7 +150,7 @@ function groupsOf(search: string | URLSearchParams): Map<string, string> {
     }
   }
   const out = new Map<string, string>();
-  for (const p of [...prefixes].sort()) {
+  for (const p of [...prefixes].sort().slice(0, PREFIXES_MAX)) {
     const s = encodeViewState(parseViewState(q, p).value, p);
     if (s) out.set(p, s);
   }
@@ -220,5 +230,5 @@ export function rewriteTarget(pathname: string, search: string): string | null {
   if (EXCLUDED.some(p => pathname === p || pathname.startsWith(`${p}/`))) return null;
   if (isCodeServed(pathname)) return null;
   const canonical = canonicalQuery(search);
-  return canonical ? `${VIEW_PREFIX}/${encodeSegment(canonical)}${pathname}` : null;
+  return canonical && canonical.length <= CANONICAL_MAX ? `${VIEW_PREFIX}/${encodeSegment(canonical)}${pathname}` : null;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EMPTY_VIEW, FILTERS_MAX, VIEW_PREFIX, bindViewState, decodeSegment, encodeSegment, encodeViewState, isEmptyView, parseViewState, rewriteTarget, sortHref, viewStateHref, type ViewState } from './view-state';
+import { CANONICAL_MAX, COLS_MAX, EMPTY_VIEW, FILTERS_MAX, PREFIXES_MAX, VIEW_PREFIX, bindViewState, decodeSegment, encodeSegment, encodeViewState, isEmptyView, parseViewState, rewriteTarget, sortHref, viewStateHref, type ViewState } from './view-state';
 import { SHAPES } from './presets';
 
 // The URL vocabulary of a Data region (P2.3; APEX: the Interactive Report's request syntax): what a reader's address may
@@ -66,8 +66,9 @@ describe('encodeViewState and the hrefs', () => {
   it('writes one canonical string per state (sort, cols, filters sorted, view), empty for nothing; the href is the path alone or the path and the state; sort toggles none → ascending → descending → none', () => {
     const state: ViewState = { view: 'v', filters: [{ column: 'name', op: 'eq', value: 'A B' }, { column: 'points', op: 'gte', value: '10' }], cols: ['name', 'points'], sort: { column: 'points', desc: true } };
     expect(encodeViewState(state)).toBe('sort=-points&cols=name%2Cpoints&filter=name.eq%3AA+B&filter=points.gte%3A10&view=v');
-    // The filters in any order write the same string: one state, one cached variant.
+    // The filters and the columns in any order write the same string: one state, one cached variant (the shape's order draws the columns).
     expect(encodeViewState({ ...state, filters: [state.filters[1], state.filters[0]] })).toBe(encodeViewState(state));
+    expect(encodeViewState({ filters: [], cols: ['points', 'name'] })).toBe('cols=name%2Cpoints');
     expect(encodeViewState(EMPTY_VIEW)).toBe('');
     expect(encodeViewState({ sort: { column: 'name', desc: false }, filters: [] }, 'r.table.')).toBe('r.table.sort=name');
     expect(parseViewState(encodeViewState(state)).value).toEqual(state);
@@ -92,6 +93,15 @@ describe('rewriteTarget — the middleware’s rule', () => {
     expect(decodeSegment(encodeSegment('filter=team.eq%3AA%26B+%25&sort=-points'))).toBe('filter=team.eq%3AA%26B+%25&sort=-points');
     expect(decodeSegment('sort=points')).toBeNull();
     expect(decodeSegment('')).toBe('');
+    // What one address may mint into the cache is bounded: the columns named, the regions addressed, the canonical string's length.
+    const wide = parseViewState(`cols=${Array.from({ length: COLS_MAX + 3 }, (_, i) => `c${i}`).join(',')}`);
+    expect(wide.value.cols).toHaveLength(COLS_MAX);
+    expect(wide.problems).toEqual([`cols beyond the ${COLS_MAX} allowed`]);
+    const regions = Array.from({ length: PREFIXES_MAX + 2 }, (_, i) => `r.reg${i}.sort=points`).join('&');
+    expect(rewriteTarget('/history/monza', `?${regions}`)).toBe(`${VIEW_PREFIX}/${encodeSegment(Array.from({ length: PREFIXES_MAX }, (_, i) => `r.reg${i}.sort=points`).join('&'))}/history/monza`);
+    const long = Array.from({ length: PREFIXES_MAX }, (_, i) => Array.from({ length: FILTERS_MAX }, (_, j) => `r.reg${i}.filter=column${j}.eq:${'v'.repeat(80)}`).join('&')).join('&');
+    expect(long.length).toBeGreaterThan(CANONICAL_MAX);
+    expect(rewriteTarget('/history/monza', `?${long}`)).toBeNull();
     expect(rewriteTarget('/history/monza', '')).toBeNull();
     expect(rewriteTarget('/history/monza', '?foo=1')).toBeNull();
     expect(rewriteTarget('/history/monza', '?sort=-&filter=nope')).toBeNull();
