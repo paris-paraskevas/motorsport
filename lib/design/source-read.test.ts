@@ -69,8 +69,10 @@ vi.mock('@/lib/group', () => ({ groupByWeekend: () => [{ round: 1 }] }));
 vi.mock('@/lib/series-content', () => ({
   loadCuratedDrivers: async () => ({ teams: [{ name: 'Mercedes', color: '#00d2be', drivers: [{ name: 'Kimi Antonelli', code: 'ANT', number: 12 }, { name: 'George Russell', code: 'RUS', number: 63 }] }, { name: 'Ferrari', drivers: [{ name: 'Charles Leclerc' }] }] }),
 }));
-const post = (slug: string, seriesSlug: string | null, publishedAt: string) => ({ id: slug, slug, title: `Post ${slug}`, summary: 'Words.', body: '', seriesSlug, tags: seriesSlug ? [seriesSlug] : [], originalUrl: null, status: 'published', authorId: 'u', authorName: 'Paris', publishAt: null, publishedAt, heroImage: slug === 'a' ? 'https://example.com/a.jpg' : null, learnTopic: null, createdAt: publishedAt, updatedAt: null });
-vi.mock('@/lib/blog', () => ({ publishedPosts: async () => [post('a', 'f1', '2026-09-10T10:00:00Z'), post('b', null, '2026-09-09T10:00:00Z'), post('c', 'f2', '2026-09-08T10:00:00Z')] }));
+const post = (slug: string, seriesSlug: string | null, publishedAt: string | null, over: Record<string, unknown> = {}) => ({ id: slug, slug, title: `Post ${slug}`, summary: 'Words.', body: '', seriesSlug, tags: seriesSlug ? [seriesSlug] : [], originalUrl: null, status: 'published', authorId: 'u', authorName: 'Paris', publishAt: null, publishedAt, heroImage: slug === 'a' ? 'https://example.com/a.jpg' : null, learnTopic: null, createdAt: publishedAt ?? '2026-09-01T00:00:00Z', updatedAt: null, ...over });
+// The published posts the reader sees; a test may swap the list and put it back.
+let blogPosts = [post('a', 'f1', '2026-09-10T10:00:00Z'), post('b', null, '2026-09-09T10:00:00Z'), post('c', 'f2', '2026-09-08T10:00:00Z')];
+vi.mock('@/lib/blog', () => ({ publishedPosts: async () => blogPosts, readMinutes: (body: string) => Math.max(1, Math.round(body.trim().split(/\s+/).filter(w => w.length > 0).length / 220)) }));
 const fetchAggregatedNews = vi.fn(async (per: number) => [{ title: 'Headline', link: 'https://example.com/news/1', pubDate: new Date('2026-09-17T08:00:00Z'), seriesSlug: 'f1', description: `${per} per series` }]);
 vi.mock('@/lib/news', () => ({ fetchAggregatedNews: (per: number) => fetchAggregatedNews(per) }));
 vi.mock('@/lib/authors', () => ({ listAuthors: async () => [{ clerkUserId: 'u', slug: 'paris', displayName: 'Paris', roleTitle: 'Founder & Editor', bio: 'Writes.', links: [{ label: 'X', url: 'https://x.com/p' }] }] }));
@@ -311,6 +313,33 @@ describe('readSource', () => {
     expect((await readSource({ source: 'results', params: { series: 'wec', season: 2026 } })).rows).toEqual([]);
   });
 
+  it('P2.24 A: the posts reader orders as Home’s lead is chosen (published desc with nulls last, created desc as the tie-break), stamps an unstamped post by its creation, counts the read time from the body and resolves the series’ name and colour; the news reader sorts newest first and carries the series’ name and colour, nulls for a series it does not know', async () => {
+    const before = blogPosts;
+    blogPosts = [
+      post('old', 'f1', '2026-09-01T10:00:00Z', { createdAt: '2026-08-30T00:00:00Z' }),
+      post('tie-early', 'f1', '2026-09-10T10:00:00Z', { createdAt: '2026-09-09T08:00:00Z' }),
+      post('unstamped', null, null, { createdAt: '2026-09-20T00:00:00Z' }),
+      post('tie-late', 'f2', '2026-09-10T10:00:00Z', { createdAt: '2026-09-09T09:00:00Z', body: Array(440).fill('word').join(' ') }),
+    ];
+    try {
+      const read = await readSource({ source: 'posts', params: { count: 10 } });
+      expect(read.rows.map(r => r.slug)).toEqual(['tie-late', 'tie-early', 'old', 'unstamped']);
+      expect(read.rows[0]).toMatchObject({ seriesName: 'Formula 2', colour: '#e10600', minutes: 2, published: '2026-09-10T10:00:00Z' });
+      expect(read.rows[3]).toMatchObject({ published: '2026-09-20T00:00:00Z', seriesName: null, colour: null, minutes: 1 });
+    } finally {
+      blogPosts = before;
+    }
+    fetchAggregatedNews.mockResolvedValueOnce([
+      { title: 'Older', link: 'https://www.example.com/older', pubDate: new Date('2026-09-17T06:00:00Z'), seriesSlug: 'f1', description: '' },
+      { title: 'Newer', link: 'https://example.com/newer', pubDate: new Date('2026-09-17T09:00:00Z'), seriesSlug: 'nope', description: '' },
+    ]);
+    const news = await readSource({ source: 'news', params: { per: 3 } });
+    expect(news.rows.map(r => [r.title, r.source, r.seriesName, r.colour])).toEqual([
+      ['Newer', 'example.com', null, null],
+      ['Older', 'example.com', 'Formula 1', '#e10600'],
+    ]);
+  });
+
   it('every one of the thirteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
     readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: null });
     const results = SOURCES.find(s => s.key === 'results')!;
@@ -343,10 +372,10 @@ describe('readSource', () => {
     ]);
     const posts = await readSource({ source: 'posts', params: { series: 'f2', count: 10 } });
     expect(posts.rows.map(x => x.slug)).toEqual(['c']);
-    expect(posts.rows[0]).toMatchObject({ title: 'Post c', series: 'f2', author: 'Paris', published: '2026-09-08T10:00:00Z', link: '/blog/c', hero: null });
+    expect(posts.rows[0]).toMatchObject({ title: 'Post c', series: 'f2', author: 'Paris', published: '2026-09-08T10:00:00Z', link: '/blog/c', hero: null, seriesName: 'Formula 2', colour: '#e10600', minutes: 1 });
     const news = await readSource({ source: 'news', params: { per: 3 } });
     expect(fetchAggregatedNews).toHaveBeenCalledWith(3);
-    expect(news.rows[0]).toMatchObject({ title: 'Headline', link: 'https://example.com/news/1', source: 'example.com', published: '2026-09-17T08:00:00.000Z', series: 'f1' });
+    expect(news.rows[0]).toMatchObject({ title: 'Headline', link: 'https://example.com/news/1', source: 'example.com', published: '2026-09-17T08:00:00.000Z', series: 'f1', seriesName: 'Formula 1', colour: '#e10600' });
     expect(news.provenance.keys).toEqual(['news:aggregate:3']);
     const season = await readSource({ source: 'season', params: {} });
     expect(season.rows[0]).toMatchObject({ series: 'f1', season: 2026, rounds: 2, first: '2026-03-06', last: '2026-03-15' });

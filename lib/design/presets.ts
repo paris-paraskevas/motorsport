@@ -13,27 +13,31 @@
 // presets (P2.2 B1) bring the Rounds layout, the round-grouped list the site
 // draws for results, as their view.
 
-export type PresetSource = 'standings' | 'results';
+export type PresetSource = 'standings' | 'results' | 'posts' | 'news';
 /** The `kind` a standings row carries (lib/design/source-read.ts). */
 export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver';
-/** The column types a view draws (APEX: a report's column types). The image column, and the media-list row template with it,
- *  arrive with P2.24, where the posts source (the one with a picture column) meets the Data region; the other template
- *  components (Content Row, Timeline, Avatar, Badge) are drawn by the views, not declared as column types no shape uses. */
-export type ColumnType = 'position' | 'text' | 'number' | 'gap' | 'badge' | 'percent' | 'link' | 'date';
+/** The column types a view draws (APEX: a report's column types). The image column arrived with P2.24 A, where the posts
+ *  source (the one with a picture column) met the Data region: a thumbnail in a table cell, the picture in a card's Media
+ *  box; the other template components (Content Row, Timeline, Avatar, Badge) are drawn by the views, not declared as
+ *  column types no shape uses. */
+export type ColumnType = 'position' | 'text' | 'number' | 'gap' | 'badge' | 'percent' | 'link' | 'date' | 'image';
 export interface PresetColumn {
   key: string;
   label: string;
   type: ColumnType;
-  /** For a link: the row's column carrying the address (a site path), never a typed one. */
+  /** For a link: the row's column carrying the address, never a typed one; a site path unless the column is `external`. */
   href?: string;
+  /** For a link whose address leaves the site (the news headlines): drawn in a new tab, as an external destination is. */
+  external?: true;
 }
-export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows';
+export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'post-rows' | 'news-rows';
 export interface Shape {
   key: ShapeKey;
   source: PresetSource;
   columns: readonly PresetColumn[];
-  /** APEX Cards: the column that fills each slot; the presets' defaults until the slots are editable (PR B). */
-  card: { title: string; subtitle?: string; body: string; badge: string };
+  /** APEX Cards: the column that fills each slot by default, the operator's slots (P2.2 B3) over it; `media` the picture
+   *  column a shape carries (P2.24 A), none for the shapes without one. */
+  card: { title: string; subtitle?: string; body: string; badge: string; media?: string };
 }
 
 const position: PresetColumn = { key: 'position', label: 'Pos', type: 'position' };
@@ -87,6 +91,34 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     columns: [round, race, cls, position, car, { key: 'driver', label: 'Drivers', type: 'text' }, team, vehicle, laps, gapText],
     card: { title: 'driver', subtitle: 'team', body: 'gap', badge: 'car' },
   },
+  // Home's two boxes (P2.24 A): the posts as the Lead story reads them (the cover as the image column, the title linked to
+  // the post, the series' name, the stamp and the read time the source carries), the headlines as The wire reads them (the
+  // title a link that leaves the site, the source's host, the series' name, the stamp). No position: the source's order stands.
+  'post-rows': {
+    key: 'post-rows',
+    source: 'posts',
+    columns: [
+      { key: 'hero', label: 'Cover', type: 'image' },
+      { key: 'title', label: 'Title', type: 'link', href: 'link' },
+      { key: 'summary', label: 'Summary', type: 'text' },
+      { key: 'seriesName', label: 'Series', type: 'text' },
+      { key: 'author', label: 'Author', type: 'text' },
+      { key: 'published', label: 'Published', type: 'date' },
+      { key: 'minutes', label: 'Read time', type: 'number' },
+    ],
+    card: { title: 'title', subtitle: 'author', body: 'published', badge: 'seriesName', media: 'hero' },
+  },
+  'news-rows': {
+    key: 'news-rows',
+    source: 'news',
+    columns: [
+      { key: 'title', label: 'Title', type: 'link', href: 'link', external: true },
+      { key: 'source', label: 'Source', type: 'text' },
+      { key: 'seriesName', label: 'Series', type: 'text' },
+      { key: 'published', label: 'Published', type: 'date' },
+    ],
+    card: { title: 'title', subtitle: 'source', body: 'published', badge: 'seriesName' },
+  },
 };
 
 export interface PresetGroup {
@@ -94,7 +126,7 @@ export interface PresetGroup {
   name: string;
   source: PresetSource;
 }
-/** The fifteen, in the order the operator saw them drawn. */
+/** The fifteen, in the order the operator saw them drawn; then Home's two boxes (P2.24 A). */
 export const PRESET_GROUPS: readonly PresetGroup[] = [
   { key: 'drivers', name: 'Drivers', source: 'standings' },
   { key: 'constructors', name: 'Constructors', source: 'standings' },
@@ -111,6 +143,8 @@ export const PRESET_GROUPS: readonly PresetGroup[] = [
   { key: 'season-results-imsa', name: 'Season results · IMSA', source: 'results' },
   { key: 'season-results-wec', name: 'Season results · WEC', source: 'results' },
   { key: 'season-results-gt-world', name: 'Season results · GT World', source: 'results' },
+  { key: 'lead-story', name: 'Lead story', source: 'posts' },
+  { key: 'wire', name: 'The wire', source: 'news' },
 ];
 
 export interface Preset {
@@ -127,13 +161,20 @@ export interface Preset {
   series: readonly string[];
   /** The name column's label: Driver · Co-Driver · Constructor · Team · Manufacturer. */
   nameLabel: string;
-  /** The view the preset brings when picked: the standings tables, the results' Rounds layout (List); Timeline and Detail (P2.2 B2) are the operator's picks, no preset brings them. */
-  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail';
+  /** The view the preset brings when picked: the standings tables, the results' Rounds layout (List), Home's boxes their own
+   *  template (P2.24 A: lead-story, wire); Timeline and Detail (P2.2 B2) are the operator's picks, no preset brings them. */
+  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire';
+  /** The Rows the pick sets, where the site's box has a count of its own (P2.24 A: the lead and its three further posts, the
+   *  wire's five); absent, the region's Rows stands. Ours: the counts were Application Settings of Home's pieces. */
+  rows?: number;
 }
 
 const DRIVER_SERIES = ['f1', 'f2', 'f3', 'indycar', 'formula-e', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm'];
 const CONSTRUCTOR_SERIES = ['f1', 'f2', 'f3', 'formula-e', 'nascar-cup', 'wsbk'];
 const RESULT_SERIES = ['f1', 'f3', 'indycar', 'nascar-cup', 'wrc', 'motogp', 'wsbk', 'dtm', 'formula-e'];
+/** The fifteen the site covers (lib/design/sources.ts SERIES_OPTIONS, listed here since this file imports nothing): the posts
+ *  and the headlines belong to any of them, or to none. */
+const EVERY_SERIES = ['adac-ravenol-24h', 'dtm', 'f1', 'f2', 'f3', 'formula-e', 'gt-world', 'imsa', 'indycar', 'motogp', 'nascar-cup', 'nls', 'wec', 'wrc', 'wsbk'];
 
 const standings = (key: string, name: string, group: string, shape: ShapeKey, where: Preset['where'], series: readonly string[], nameLabel: string): Preset => ({ key, name, group, source: 'standings', shape, where, series, nameLabel, view: 'table' });
 const family = (prefix: string, group: string, series: string, cls: string, kinds: readonly RowKind[]): Preset[] =>
@@ -150,7 +191,8 @@ const family = (prefix: string, group: string, series: string, cls: string, kind
   );
 const results = (key: string, name: string, group: string, series: readonly string[], shape: ShapeKey = 'race-rows', where: Preset['where'] = {}): Preset => ({ key, name, group, source: 'results', shape, where, series, nameLabel: 'Driver', view: 'list' });
 
-/** The thirty-three: twenty-six standings (the fifteen groups' first eight), seven results (the other seven), each the site's own table. */
+/** The thirty-five: twenty-six standings (the fifteen groups' first eight), seven results (the other seven), each the site's own
+ *  table; then Home's two boxes over the posts and the news (P2.24 A), each a template of its own. */
 export const PRESETS: readonly Preset[] = [
   standings('drivers', 'Drivers', 'drivers', 'driver-rows', { kind: 'driver' }, DRIVER_SERIES, 'Driver'),
   standings('constructors', 'Constructors', 'constructors', 'team-rows', { kind: 'constructor' }, CONSTRUCTOR_SERIES, 'Constructor'),
@@ -180,6 +222,10 @@ export const PRESETS: readonly Preset[] = [
   results('season-results-imsa', 'Season results · IMSA', 'season-results-imsa', ['imsa'], 'car-rows'),
   results('season-results-wec', 'Season results · WEC', 'season-results-wec', ['wec'], 'car-rows'),
   results('season-results-gt-world', 'Season results · GT World', 'season-results-gt-world', ['gt-world'], 'cup-rows'),
+  // Home's boxes (P2.24 A): the lead with its three further posts (home.blog_suggested_count shipped three), the wire's five
+  // headlines (home.wire_count shipped five); `nameLabel` unused, the shapes carrying no name column.
+  { key: 'lead-story', name: 'Lead story', group: 'lead-story', source: 'posts', shape: 'post-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'lead-story', rows: 4 },
+  { key: 'wire', name: 'The wire', group: 'wire', source: 'news', shape: 'news-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'wire', rows: 5 },
 ];
 
 export function findPreset(key: string): Preset | null {

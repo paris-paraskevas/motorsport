@@ -1147,7 +1147,7 @@ describe('PageDesigner', () => {
     // P2.2 B2: Timeline is bound to a Results source; on Standings its pill is disabled with the reason in the note; Detail is open to every shape.
     const view = () => within(pe).getByRole('group', { name: 'View' });
     expect((within(view()).getByRole('button', { name: 'Timeline' }) as HTMLButtonElement).disabled).toBe(true);
-    expect(within(pe).getByText(/Timeline is for a Results source; this region reads Standings/)).toBeTruthy();
+    expect(within(pe).getByText(/Timeline is for a Results source; Lead story is for a Posts source; The wire is for a News source; this region reads Standings/)).toBeTruthy();
     expect((within(view()).getByRole('button', { name: 'Detail' }) as HTMLButtonElement).disabled).toBe(false);
     fireEvent.change(preset, { target: { value: 'constructors' } });
     expect(status()).toMatch(/Preset set/);
@@ -1239,6 +1239,59 @@ describe('PageDesigner', () => {
     expect(tile('Component: Data region').textContent).toMatch(/Preset Season results · View Cards · Rows 10 · Full Card Race → its page/);
     fireEvent.click(within(view()).getByRole('button', { name: 'Table' }));
     expect(within(pe).queryByLabelText('Full Card')).toBeNull();
+  });
+
+  it('P2.24 A: the Data region’s Source offers Posts and News; with Posts the Preset select offers Lead story under its group, whose pick brings the View Lead story with Rows 4, hides the Card and Actions groups and shows Pinned post; the tile names it and Save carries it; with News, The wire and Rows 5; on a Standings region the two template pills are disabled with the note naming their sources', async () => {
+    const { onSaved } = mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Data region' }));
+    fireEvent.click(tile('Component: Data region'));
+    const pe = screen.getByLabelText('Property Editor');
+    const type = within(pe).getByLabelText('Source type') as HTMLSelectElement;
+    expect([...type.options].map(o => o.textContent)).toEqual(expect.arrayContaining(['Standings', 'Results', 'Posts', 'News']));
+    fireEvent.change(type, { target: { value: 'standings' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const view = () => within(pe).getByRole('group', { name: 'View' });
+    expect((within(view()).getByRole('button', { name: 'Lead story' }) as HTMLButtonElement).disabled).toBe(true);
+    expect((within(view()).getByRole('button', { name: 'The wire' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(within(pe).getByText(/Lead story is for a Posts source; The wire is for a News source; this region reads Standings/)).toBeTruthy();
+    // Posts: the Lead story preset under its group (the stored Drivers stays visible while it is the value); its pick brings the template and its rows.
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'posts' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const preset = within(pe).getByLabelText('Preset') as HTMLSelectElement;
+    expect([...preset.querySelectorAll('optgroup')].map(g => g.label)).toEqual(['Drivers', 'Lead story']);
+    fireEvent.change(preset, { target: { value: 'lead-story' } });
+    expect(status()).toMatch(/Preset set/);
+    expect(within(view()).getByRole('button', { name: 'Lead story' }).getAttribute('aria-pressed')).toBe('true');
+    expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('4');
+    expect(within(pe).queryByLabelText('Title')).toBeNull();
+    expect(within(pe).queryByLabelText('Full Card')).toBeNull();
+    expect((within(pe).getByLabelText('Pinned post') as HTMLInputElement).value).toBe('');
+    expect(tile('Component: Data region').textContent).toMatch(/Preset Lead story · View Lead story · Rows 4/);
+    // The Standard cards over posts: the Media slot's own column is the shape's picture column (the browser run's find).
+    fireEvent.click(within(view()).getByRole('button', { name: 'Cards' }));
+    expect([...(within(pe).getByLabelText('Media') as HTMLSelectElement).options][0].textContent).toBe('Preset’s own (Cover)');
+    expect(within(pe).queryByLabelText('Pinned post')).toBeNull();
+    fireEvent.click(within(view()).getByRole('button', { name: 'Lead story' }));
+    expect(within(pe).queryByLabelText('Media')).toBeNull();
+    fireEvent.change(within(pe).getByLabelText('Pinned post'), { target: { value: 'monza-2026' } });
+    expect(tile('Component: Data region').textContent).toMatch(/Rows 4 · Pinned post monza-2026/);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    const saved = posted.document.regions.find(r => r.kind === 'component' && r.component === 'data.region')!;
+    expect(saved).toMatchObject({ settings: { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: 'monza-2026' } });
+    expect((saved as { source?: string }).source).toMatch(/^posts/);
+    // News: The wire brings its template and five rows; the Pinned post leaves the tab with the Lead story.
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'news' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'wire' } });
+    expect(within(view()).getByRole('button', { name: 'The wire' }).getAttribute('aria-pressed')).toBe('true');
+    expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('5');
+    expect(within(pe).queryByLabelText('Pinned post')).toBeNull();
+    expect(tile('Component: Data region').textContent).toMatch(/Preset The wire · View The wire · Rows 5/);
   });
 
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {

@@ -14,8 +14,9 @@ import * as homeModel from '@/lib/home-model';
 import * as sourceRead from './source-read';
 
 vi.mock('next/link', () => ({
-  default: ({ href, children, className, 'aria-label': ariaLabel }: { href: unknown; children: ReactNode; className?: string; 'aria-label'?: string }) => (
-    <a href={String(href)} className={className} aria-label={ariaLabel}>
+  // The anchor as given: the class, an aria-label, and the lead's redundant cover link's aria-hidden and tabIndex (P2.24 A).
+  default: ({ href, children, ...rest }: { href: unknown; children: ReactNode; className?: string; 'aria-label'?: string; 'aria-hidden'?: 'true'; tabIndex?: number }) => (
+    <a href={String(href)} {...rest}>
       {children}
     </a>
   ),
@@ -485,6 +486,126 @@ describe('renderComponents', () => {
     const later = await run;
     expect(drawn).toEqual(['lead', 'p']);
     expect(html(later.p)).toMatch(/<a href="\/history\/monza"[^>]*>Open<\/a>/);
+  });
+
+  // P2.24 A: Home's Lead story and The wire as the Data region's templates over the posts and news sources; the clock fixed at noon.
+  const NOON = new Date('2026-09-22T12:00:00Z');
+  const postRow = (over: Record<string, string | number | null>) => ({ slug: 'monza-2026', title: 'Monza, a history', summary: 'A century of speed.', series: 'f1', author: 'Paris', published: '2026-09-22T10:00:00.000Z', hero: 'https://img.example/monza.jpg', link: '/blog/monza-2026', seriesName: 'Formula 1', colour: '#e10600', minutes: 6, ...over });
+  const POSTS = [
+    postRow({}),
+    postRow({ slug: 'second', title: 'Second story', summary: 'Two.', series: null, hero: null, link: '/blog/second', seriesName: null, colour: null, minutes: 3, published: '2026-09-21T10:00:00.000Z' }),
+    postRow({ slug: 'third', title: 'Third story', summary: 'Three.', hero: 'https://img.example/third.jpg', link: '/blog/third', published: '2026-09-20T10:00:00.000Z' }),
+    postRow({ slug: 'fourth', title: 'Fourth story', hero: null, link: '/blog/fourth', published: '2026-09-19T10:00:00.000Z' }),
+    postRow({ slug: 'fifth', title: 'Fifth story', hero: null, link: '/blog/fifth', published: '2026-09-18T10:00:00.000Z' }),
+  ];
+  const newsRow = (i: number, over: Record<string, string | number | null> = {}) => ({ title: `Headline ${i}`, link: `https://www.example.com/${i}`, source: 'example.com', published: `2026-09-22T0${9 - i}:00:00.000Z`, series: 'f1', seriesName: 'Formula 1', colour: '#e10600', ...over });
+  const NEWS = [newsRow(1), newsRow(2), newsRow(3, { seriesName: null, colour: null })];
+  /** Draws a Data region over a posts or news fixture at noon; `first: false` puts a heading region before it. */
+  const drawOver = async (source: string, rows: Record<string, string | number | null>[], settings: Record<string, string | number | boolean>, first = true) => {
+    readSource.mockResolvedValueOnce({ columns: [], total: rows.length, rows, provenance: { ref: { source: source.split('?')[0], params: {} }, label: source, tier: 'db', keys: [], rows: rows.length, ms: 1 } });
+    const regions = first ? [region('t', 'data.region', settings, { source } as Partial<Region>)] : [region('h', 'page.heading'), region('t', 'data.region', settings, { source, seq: 20 } as Partial<Region>)];
+    const out = await renderComponents(doc(regions), { path: '/x', page: { path: '/x', name: 'X', title: null }, now: NOON });
+    return html(out.t);
+  };
+
+  it('P2.24 A, the Lead story template: Home’s lead box over the posts source, verbatim: the cover as a redundant link (the series’ name in the panel without one, Paddock without a series), the eyebrow with the region’s heading, the age, the series’ bar and name, the read time, the title linked as the page’s h1 when first, the summary, the button, and More reading over the rows that follow with their thumbnails; Rows counts the lead and its further reading; a pinned slug leads, an unknown one leaves the newest; nothing without rows; an h2 when not first', async () => {
+    const lead = await drawOver('posts?count=10', POSTS, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' });
+    expect(lead).toContain('<section aria-label="Latest from the blog"');
+    expect(lead).toMatch(/<a href="\/blog\/monza-2026" aria-hidden="true" tabindex="-1"[^>]*><img src="https:\/\/img\.example\/monza\.jpg" alt="" width="1200" height="750" fetchpriority="high"/i);
+    expect(lead).toContain('>Lead story<');
+    expect(lead).toContain('>2h ago<');
+    expect(lead).toContain('style="background-color:#e10600"');
+    expect(lead).toContain('>Formula 1<');
+    expect(lead).toContain('>6 min read<');
+    expect(lead).toMatch(/<h1 class="[^"]*font-serif[^"]*"><a href="\/blog\/monza-2026"[^>]*>Monza, a history<\/a><\/h1>/);
+    expect(lead).toContain('>A century of speed.<');
+    expect(lead).toContain('Read the story →');
+    expect(lead).toContain('>More reading<');
+    expect(lead).toContain('>Second story<');
+    expect(lead).toContain('>Third story<');
+    expect(lead).toContain('>Fourth story<');
+    expect(lead).not.toContain('Fifth story');
+    expect(lead).toMatch(/<a href="\/blog\/third"[^>]*><img src="https:\/\/img\.example\/third\.jpg" alt="" width="1200" height="630"/);
+    expect(lead).not.toContain('Two.');
+    // No cover on the lead: the typographic panel with the series' name, or Paddock; no series, no bar; the age from the stamp.
+    const bare = await drawOver('posts?count=10', [POSTS[1], POSTS[0]], { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' });
+    expect(bare).toMatch(/<span class="[^"]*font-mono text-28[^"]*">Paddock<\/span>/);
+    expect(bare).toContain('>26h ago<');
+    expect(bare).not.toContain('background-color');
+    expect(bare).toContain('>3 min read<');
+    const named = await drawOver('posts?count=10', [POSTS[3]], { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' });
+    expect(named).toMatch(/<span class="[^"]*font-mono text-28[^"]*">Formula 1<\/span>/);
+    expect(named).not.toContain('More reading');
+    // The pin: a matching slug leads and the rest follow it, cut to Rows; an unknown slug leaves the newest; Rows 1 is the lead alone.
+    const pinned = await drawOver('posts?count=10', POSTS, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: 'third' });
+    expect(pinned).toMatch(/<h1[^>]*><a href="\/blog\/third"[^>]*>Third story<\/a><\/h1>/);
+    expect(pinned).toContain('>Monza, a history<');
+    expect(pinned).toContain('>Second story<');
+    expect(pinned).toContain('>Fourth story<');
+    expect(pinned).not.toContain('Fifth story');
+    const unknown = await drawOver('posts?count=10', POSTS, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: 'nope' });
+    expect(unknown).toMatch(/<h1[^>]*><a href="\/blog\/monza-2026"/);
+    const one = await drawOver('posts?count=10', POSTS, { preset: 'lead-story', view: 'lead-story', rows: 1, heading: '' });
+    expect(one).toContain('Monza, a history');
+    expect(one).not.toContain('More reading');
+    expect(await drawOver('posts?count=10', [], { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' })).toBe('');
+    // The region's Heading replaces the eyebrow's words; not first in the Body, the title is an h2.
+    const headed = await drawOver('posts?count=10', POSTS, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: 'From the paddock' });
+    expect(headed).toContain('>From the paddock<');
+    expect(headed).not.toContain('>Lead story<');
+    const second = await drawOver('posts?count=10', POSTS, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' }, false);
+    expect(second).toMatch(/<h2[^>]*><a href="\/blog\/monza-2026"/);
+    expect(second).not.toContain('<h1');
+  });
+
+  it('P2.24 A, The wire template: Home’s wire over the news source, verbatim: the section named by the heading, the rule with its right-hand words, each headline an external link with the series’ bar, “Series · source” (the source alone for a series the reader did not know) and its age; Rows cuts; nothing without rows; a stored template on another shape draws the table', async () => {
+    const wire = await drawOver('news?per=3', NEWS, { preset: 'wire', view: 'wire', rows: 5, heading: '' });
+    expect(wire).toContain('<section aria-label="The wire"');
+    expect(wire).toContain('>The wire<');
+    expect(wire).toContain('Reported elsewhere · linked out');
+    expect((wire.match(/<a href="https:\/\/www\.example\.com\/\d" target="_blank" rel="noopener noreferrer"/g) ?? []).length).toBe(3);
+    expect(wire).toContain('>Headline 1<');
+    expect(wire).toContain('Formula 1 · example.com');
+    expect(wire).toContain('>4h ago<');
+    expect(wire).toContain('>6h ago<');
+    expect(wire).toMatch(/>example\.com<\/span>/);
+    expect((wire.match(/background-color:#e10600/g) ?? []).length).toBe(2);
+    const cut = await drawOver('news?per=3', NEWS, { preset: 'wire', view: 'wire', rows: 2, heading: 'Elsewhere' });
+    expect((cut.match(/<li>/g) ?? []).length).toBe(2);
+    expect(cut).toContain('<section aria-label="Elsewhere"');
+    expect(await drawOver('news?per=3', [], { preset: 'wire', view: 'wire', rows: 5, heading: '' })).toBe('');
+    // A stored template view on a standings shape draws the table, as a stored Timeline does.
+    const table = html((await renderComponents(doc([region('s', 'data.region', { preset: 'drivers', view: 'wire', rows: 10, heading: '' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).s);
+    expect(table).toContain('<table');
+  });
+
+  it('P2.24 A, the image column and the shapes without a position: the Table over posts draws the cover as a thumbnail and the title linked to the post; the Standard cards draw the picture in the Media box (an empty box without one) and format a date slot; the compact List and Detail head their rows by the title and format the date; over news the title leaves the site in a new tab from the Table cell and from a Full Card zone', async () => {
+    const table = await drawOver('posts?count=10', POSTS.slice(0, 2), { preset: 'lead-story', view: 'table', rows: 10, heading: '' });
+    expect(table).toContain('<table');
+    expect(table).toMatch(/<th[^>]*>Cover<\/th>/);
+    expect(table).toMatch(/<td[^>]*><img src="https:\/\/img\.example\/monza\.jpg" alt=""/);
+    expect(table).toMatch(/<a href="\/blog\/monza-2026" class="[^"]*">Monza, a history<\/a>/);
+    expect(table).toContain('>22 Sept 2026<');
+    expect(table).toMatch(/<th[^>]*>Read time<\/th>/);
+    expect(table).toContain('>6<');
+    const cards = await drawOver('posts?count=10', POSTS.slice(0, 2), { preset: 'lead-story', view: 'cards', rows: 10, heading: '' });
+    expect(cards).toMatch(/<span aria-hidden="true" class="[^"]*h-9 w-9[^"]*"><img src="https:\/\/img\.example\/monza\.jpg"/);
+    expect((cards.match(/<img /g) ?? []).length).toBe(1);
+    expect(cards).toContain('>22 Sept 2026<');
+    expect(cards).toContain('>Formula 1<');
+    expect(cards).toContain('>Paris<');
+    const list = await drawOver('posts?count=10', POSTS.slice(0, 2), { preset: 'lead-story', view: 'list', rows: 10, heading: '' });
+    expect(list).not.toContain('<table');
+    expect(list).toContain('>Monza, a history<');
+    expect(list).toContain('>22 Sept 2026<');
+    const detail = await drawOver('posts?count=10', POSTS.slice(0, 1), { preset: 'lead-story', view: 'detail', rows: 10, heading: '' });
+    expect(detail).toContain('>Monza, a history<');
+    expect(detail).toContain('<dt');
+    expect(detail).toContain('>22 Sept 2026<');
+    const newsTable = await drawOver('news?per=3', NEWS.slice(0, 1), { preset: 'wire', view: 'table', rows: 10, heading: '' });
+    expect(newsTable).toMatch(/<td[^>]*><a href="https:\/\/www\.example\.com\/1" target="_blank" rel="noopener noreferrer" class="[^"]*">Headline 1<\/a><\/td>/);
+    const newsCards = await drawOver('news?per=3', NEWS.slice(0, 1), { preset: 'wire', view: 'cards', rows: 10, heading: '', actionFullCard: 'row:title' });
+    expect(newsCards).toMatch(/<a href="https:\/\/www\.example\.com\/1" target="_blank" rel="noopener noreferrer" class="block" aria-label="Headline 1">/);
   });
 
   it('P2.9: the Live band draws the weekends under way as Home does (the featured boxes, the Also racing row), drops the row when asked, shows one series’ weekend alone from every live box, and nothing for a series not under way; This weekend is its first instance', async () => {

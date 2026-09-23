@@ -1,5 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { formatRelative, isThisWeekend, isWithinNextNDays, formatLocal, weekdayOf, dayNoteLabel } from './date';
+import { ageLabel, formatRelative, isThisWeekend, isWithinNextNDays, formatLocal, weekdayOf, dayNoteLabel } from './date';
+
+describe('ageLabel', () => {
+  const now = new Date('2026-09-22T12:00:00Z');
+  const ago = (minutes: number) => new Date(now.getTime() - minutes * 60_000);
+  it('the home model’s stamp, here for the Data region’s templates too (P2.24 A): minutes under ninety, hours under thirty-six, else days; never negative', () => {
+    expect(ageLabel(ago(30), now)).toBe('30m ago');
+    expect(ageLabel(ago(89), now)).toBe('89m ago');
+    expect(ageLabel(ago(90), now)).toBe('2h ago');
+    expect(ageLabel(ago(180), now)).toBe('3h ago');
+    expect(ageLabel(ago(2880), now)).toBe('2d ago');
+    expect(ageLabel(ago(-5), now)).toBe('0m ago');
+  });
+});
 
 const NOW = new Date('2026-05-13T12:00:00Z');  // Wed
 const FRI = new Date('2026-05-15T15:00:00Z');

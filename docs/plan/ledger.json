@@ -174,6 +174,16 @@
    "date": "2026-09-22",
    "change": "P2.9 merged (#1027, 1.0.146, squash-merged 15:32:34Z as 4ce4c839); P2.9 Live band is DONE. No default taken during the run beyond the plan’s. The reviewer’s three notes were informational (two test files updated as mechanical consequences the plan did not enumerate; the gates it did not re-run). Next slot: P2.24 Home’s six become instances, whose decision scan stops for the word: what \"renders identically\" means against the general components’ views, the split into PRs, a weekends catalogue source for What’s next.",
    "word": "the operator, 2026-09-22 ~15:32Z: \"merge do whats next\""
+  },
+  {
+   "date": "2026-09-22",
+   "change": "P2.24 decision scan answered \"all default\": (1) to the letter — each Home box becomes a named template of the Data region, the served HTML identical, readers see no change; (2) three PRs — A posts and news into the Data region (the image column, the Lead story and The wire templates), B the Weekends source with Coming weekends plus the Podium and Leader templates, C the recipe flipped whole with the served-HTML parity pasted, the home.* specs retired, the Home revision published by the operator; (3) a Weekends catalogue source, yes. The Latest result’s cross-series question (Home picks the newest race across the ranked series; a Results region reads one series) goes to PR B’s plan with a default.",
+   "word": "the operator, 2026-09-22 ~16:00Z: \"all default\""
+  },
+  {
+   "date": "2026-09-22",
+   "change": "P2.24 PR A plan approved (posts and news into the Data region). One correction to the scan’s default, taken and flagged: the templates are options of the View choice, not a second Template attribute (the View list is APEX’s report Template list — Table, Cards, Content Row, Timeline, Value Attribute Pairs — and a second select would double the control and leave the Card and Actions groups showing under a template that ignores them). The other defaults: two shapes and two presets over every series, with Preset.rows setting the boxes’ counts (4, 5); the posts and news sources carry the derived facts (Series, Series colour, Read time) and order as Home’s pieces do; ageLabel promoted to lib/date; readMinutes exported from lib/blog; the Lead story and The wire copied verbatim from Home as templates, with a Pinned post attribute; the image column and the card-mapping generalisations; one now per render. The plan critic (fresh-context Sonnet, said ~250k tokens, actual 343,043): SOUND WITH FIXES, three blocking folded (Preset.view widened; PresetColumn.external consumed by the link cell and the row zones, with tests; the fifteen listed as EVERY_SERIES), six non-blocking folded or noted. No migration, no dependency, no new file, no prod write; Home untouched until PR C.",
+   "word": "the operator, 2026-09-22 ~23:35Z: plan approved (ExitPlanMode)"
   }
  ],
  "phases": {
@@ -518,8 +528,9 @@
    "defaults": "Parity output (the served HTML compared before and after) pasted in the PR; you publish the Home revision; the home.* specs leave the catalogue in the same PR.",
    "needsWord": "none",
    "acceptance": "Home renders identically from general components; parity output.",
-   "status": "planned",
-   "scopeHash": "3c2153316b73"
+   "status": "started",
+   "scopeHash": "3c2153316b73",
+   "evidence": "PR A #1029 (feat/p2.24-a-posts-news, 1.0.148, opened 2026-09-22, two commits): posts and news into the Data region, the Lead story and The wire as View templates, the image column, the sources carrying the pieces’ facts. Tests first (15 red across 9 files), then green. The browser run on the local server (review page a4edd962-5678-40c3-8b06-048322339d20, seven screenshots): both templates drawn verbatim from the seeded local posts and the news aggregate, the Table and the Cards over posts, the greyed pills; its find (the Media slot’s own label) fixed in the second commit. Reviewer (Sonnet, 262,171 tokens): PASS WITH NOTES, nothing blocking. Gates after the last edit: tsc 0 · lint 0 errors · vitest 223 files, 2268 tests · hooks 31/31 · dry run 40213.46 KiB / gzip 8839.70 KiB (61.4%). PR B (the Weekends source, Coming weekends, Podium, Leader) and PR C (the flip, the parity, the home.* retirement, the operator’s publish) follow."
   },
   {
    "id": "P2.3",

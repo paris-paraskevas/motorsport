@@ -105,7 +105,17 @@ import {
   setLearnTopic,
   TITLE_MAX,
   BODY_MAX,
+  readMinutes,
 } from './blog';
+
+describe('readMinutes', () => {
+  it('the lead card’s read time, 220 words a minute and never under one; the posts source carries it too (P2.24 A)', () => {
+    expect(readMinutes('')).toBe(1);
+    expect(readMinutes('   \n ')).toBe(1);
+    expect(readMinutes(Array(440).fill('word').join(' '))).toBe(2);
+    expect(readMinutes(Array(330).fill('w').join('\n'))).toBe(2);
+  });
+});
 
 beforeEach(() => {
   updateMock.mockClear();

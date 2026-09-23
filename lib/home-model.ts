@@ -8,6 +8,7 @@ import { fetchAggregatedNews } from '@/lib/news';
 import { fetchLatestPodium, HOME_RESULTS_SLUGS, type LatestRace } from '@/lib/home-results';
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
 import { fetchHomeBlogLead, publishedPosts } from '@/lib/blog';
+import { ageLabel } from '@/lib/date';
 import { loadLiveHomeLayout, pinnedLeadSlug, visibleBlocks, type HomeLayout } from '@/lib/home-layout';
 import { loadSettings } from '@/lib/design/settings';
 import { DEFAULT_SETTINGS } from '@/lib/design/setting-defaults';
@@ -100,14 +101,6 @@ export function rankLiveWeekends<T extends { slug: string; nextStartMs: number }
   const chosen = new Set<T>(featured);
   const also = candidates.filter(c => !chosen.has(c)).sort((a, b) => a.nextStartMs - b.nextStartMs);
   return { featured, also };
-}
-
-function ageLabel(pubDate: Date, now: Date): string {
-  const mins = Math.max(0, Math.round((now.getTime() - pubDate.getTime()) / 60000));
-  if (mins < 90) return `${mins}m ago`;
-  const hours = Math.round(mins / 60);
-  if (hours < 36) return `${hours}h ago`;
-  return `${Math.round(hours / 24)}d ago`;
 }
 
 /** The wire's rows: the newest `count` aggregated headlines, source named, the

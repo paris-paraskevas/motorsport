@@ -139,6 +139,30 @@ describe('the source catalogue', () => {
     expect(results.hosts).toMatchObject({ nls: 'vln', imsa: 'alkamel', wec: 'fiawec', 'gt-world': 'gt-world-challenge' });
     expect(results.columns.map(c => c.key)).toEqual(['round', 'race', 'raceId', 'date', 'circuit', 'class', 'session', 'position', 'driver', 'code', 'car', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'time', 'gap', 'points', 'weekend']);
     expect(results.columns.find(c => c.key === 'weekend')?.type).toBe('link');
+    // P2.24 A: the posts and news sources carry what Home's pieces derived (the series' name and colour, the read time), so the Data
+    // region's templates are functions of their rows; the slug column is named as such.
+    expect(findSource('posts')!.columns.map(c => [c.key, c.label, c.type])).toEqual([
+      ['slug', 'Slug', 'text'],
+      ['title', 'Title', 'text'],
+      ['summary', 'Summary', 'text'],
+      ['series', 'Series slug', 'text'],
+      ['author', 'Author', 'text'],
+      ['published', 'Published', 'date'],
+      ['hero', 'Cover', 'image'],
+      ['link', 'Link', 'link'],
+      ['seriesName', 'Series', 'text'],
+      ['colour', 'Series colour', 'colour'],
+      ['minutes', 'Read time', 'number'],
+    ]);
+    expect(findSource('news')!.columns.map(c => [c.key, c.label, c.type])).toEqual([
+      ['title', 'Title', 'text'],
+      ['link', 'Link', 'link'],
+      ['source', 'Source', 'text'],
+      ['published', 'Published', 'date'],
+      ['series', 'Series slug', 'text'],
+      ['seriesName', 'Series', 'text'],
+      ['colour', 'Series colour', 'colour'],
+    ]);
     expect(findSource('news')!.loaderKeys!({ per: 5 })).toEqual(['news:aggregate:5']);
     expect(findSource('authors')!.loaderKeys).toBeUndefined();
     for (const r of REMOTE_SERVERS) expect(r.baseUrl).toMatch(/^https:\/\/[a-z0-9.-]+$/);

@@ -341,15 +341,6 @@ export async function fetchHomeBlogLead(pinnedSlug?: string | null): Promise<Hom
     const when = stamp ? new Date(stamp) : null;
     if (!when || Number.isNaN(when.getTime())) return null;
 
-    // 220 words/minute, matching the post page's own eyebrow verbatim
-    // (app/(app)/blog/[slug]/page.tsx:252). It must be the same divisor: at 200
-    // the Dutch GP preview reads "10 min" in this card and "9 min" on the post
-    // itself, for the same body. Change one, change both.
-    const words = ((data.body as string | null) ?? '')
-      .trim()
-      .split(/\s+/)
-      .filter(w => w.length > 0).length;
-
     return {
       slug: data.slug as string,
       title: data.title as string,
@@ -357,11 +348,19 @@ export async function fetchHomeBlogLead(pinnedSlug?: string | null): Promise<Hom
       heroImage: (data.hero_image as string | null) ?? null,
       seriesSlug: (data.series_slug as string | null) ?? null,
       publishedAtIso: when.toISOString(),
-      readMinutes: Math.max(1, Math.round(words / 220)),
+      readMinutes: readMinutes((data.body as string | null) ?? ''),
     };
   } catch {
     return null;
   }
+}
+
+/** The read time the lead card states, and the posts source since P2.24 A: 220 words a minute, never under one, matching
+ *  the post page's own eyebrow verbatim (app/(app)/blog/[slug]/page.tsx). It must be the same divisor: at 200 the Dutch GP
+ *  preview read "10 min" in the card and "9 min" on the post itself, for the same body. Change one, change both. */
+export function readMinutes(body: string): number {
+  const words = body.trim().split(/\s+/).filter(w => w.length > 0).length;
+  return Math.max(1, Math.round(words / 220));
 }
 
 /** One author's published posts, newest first — the /authors/<slug> page. Posts the
