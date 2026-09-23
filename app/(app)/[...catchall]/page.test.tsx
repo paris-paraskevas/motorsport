@@ -29,12 +29,20 @@ vi.mock('@/lib/design/component-render', () => ({
   raceWeekendNow: async () => false,
   renderComponents: async (
     doc: { regions: { id: string; kind: string; component?: string }[] },
-    where: { path: string; params?: Record<string, string>; page?: { title: string | null; name: string } },
+    where: { path: string; params?: Record<string, string>; page?: { title: string | null; name: string }; href?: string; view?: string },
   ) =>
     Object.fromEntries(
       doc.regions
         .filter(r => r.kind === 'component' && r.component !== 'page.body')
-        .map(r => [r.id, r.component === 'page.heading' ? <h1>{where.page?.title ?? where.page?.name}</h1> : <div data-component={r.component}>{`${where.path} ${JSON.stringify(where.params ?? {})}`}</div>]),
+        .map(r => [
+          r.id,
+          r.component === 'page.heading' ? (
+            <h1>{where.page?.title ?? where.page?.name}</h1>
+          ) : (
+            // The state and the visited path (P2.3) shown when the route hands them.
+            <div data-component={r.component}>{`${where.path} ${JSON.stringify(where.params ?? {})}${where.view !== undefined ? ` view=${JSON.stringify(where.view)} href=${where.href}` : ''}`}</div>
+          ),
+        ]),
     ),
 }));
 vi.mock('@/lib/design/page-families', () => ({
@@ -67,6 +75,7 @@ import CatchAll, { generateMetadata, revalidate } from './page';
 import type { PageRow } from '@/lib/design/pages';
 import { SHIPPED_APPEARANCE } from '@/lib/design/appearance-defaults';
 import { SHIPPED_PRESETS } from '@/lib/design/template-options';
+import { encodeSegment } from '@/lib/design/view-state';
 
 const ANON = { signedIn: false, role: null, author: false, emails: [] };
 const page: PageRow = { id: 'p', path: '/history/monza', name: 'Monza, a history', kind: 'row', group: 'editorial', template: 'paddock-standard', authz: 'public', title: null, rendering: 'cached', indexable: false, comments: null, updatedAt: 'x' };
@@ -251,5 +260,33 @@ describe('the catch-all serving a page from rows (R4.1)', () => {
   it('renders the 404 for an address under the pattern that is not the page', async () => {
     await expect(CatchAll({ params: Promise.resolve({ catchall: ['calendar', 'extra'] }) })).rejects.toBe(NOT_FOUND);
     expect(loadLiveComposed).not.toHaveBeenCalled();
+  });
+});
+
+describe('the catch-all serving a cached variant (P2.3)', () => {
+  const table = { id: 't', kind: 'component', component: 'data.region', settings: { preset: 'drivers', view: 'table', rows: 10, heading: '', sortable: true }, source: 'standings?series=f1&season=2026', title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null };
+  beforeEach(() => {
+    loadLivePage.mockReset();
+    currentVisitor.mockReset();
+    currentVisitor.mockResolvedValue(ANON);
+  });
+
+  it('reads the state from the /__view segment (decoded once by the router), serves the plain address’s page with the state and the visited path handed to the renderer, its canonical the plain path and noindex; a plain address hands an empty state', async () => {
+    loadLivePage.mockResolvedValue(live({ indexable: true }, [table]));
+    const vparams = Promise.resolve({ catchall: ['__view', encodeSegment('sort=-points&cols=name%2Cpoints'), 'history', 'monza'] });
+    const html = renderToStaticMarkup(await CatchAll({ params: vparams }));
+    expect(loadLivePage).toHaveBeenCalledWith('/history/monza');
+    expect(html).toContain('data-component="data.region"');
+    expect(html).toContain('/history/monza {} view=&quot;sort=-points&amp;cols=name%2Cpoints&quot; href=/history/monza');
+    const meta = await generateMetadata({ params: vparams });
+    expect(meta.alternates).toEqual({ canonical: 'https://paddock-tracker.com/history/monza' });
+    expect(meta.robots).toEqual({ index: false, follow: true });
+    const plain = renderToStaticMarkup(await CatchAll({ params }));
+    expect(plain).toContain('/history/monza {} view=&quot;&quot; href=/history/monza');
+    expect((await generateMetadata({ params })).robots).toEqual({ index: true, follow: true });
+    // A variant segment that is not one (a hand-typed address) serves the plain page's document with no state, noindex still.
+    const junk = Promise.resolve({ catchall: ['__view', 'sort=points', 'history', 'monza'] });
+    expect(renderToStaticMarkup(await CatchAll({ params: junk }))).toContain('/history/monza {} view=&quot;&quot; href=/history/monza');
+    expect((await generateMetadata({ params: junk })).robots).toEqual({ index: false, follow: true });
   });
 });

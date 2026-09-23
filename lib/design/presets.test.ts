@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { ViewState } from './view-state';
 import { readFileSync } from 'node:fs';
 import { PRESETS, PRESET_GROUPS, SHAPES, findPreset, presetRows, presetsFor } from './presets';
 import { SERIES_OPTIONS } from './sources';
@@ -320,5 +321,39 @@ describe('the preset catalogue', () => {
   it('imports nothing at runtime: the catalogue reaches every route’s chunk through the parser, so it stays declarations', () => {
     const src = readFileSync(new URL('./presets.ts', import.meta.url), 'utf8');
     for (const m of src.matchAll(/^import\s+(type\s+)?[^;]*?from\s+'([^']+)'/gm)) expect(m[1], `${m[2]} is imported at runtime`).toBe('type ');
+  });
+});
+
+describe('presetRows with a reader’s state (P2.3)', () => {
+  const drivers = findPreset('drivers')!;
+  const row = (position: number, name: string, team: string | null, points: number | null, wins: number) => ({ kind: 'driver', position, name, team, points, wins, class: null });
+  const ROWS = [row(3, 'Norris', 'McLaren', 180, 2), row(1, 'Antonelli', 'Mercedes', 267, 7), row(2, 'Russell', 'Mercedes', 201, 2), row(4, 'Leclerc', null, null, 0)];
+  const state = (over: Partial<ViewState>): ViewState => ({ filters: [], ...over });
+
+  it('filters by the column’s type (eq, ne and in on text, case-insensitive; the comparisons on numbers), sorts by the column as its type orders (nulls last, a tie in the preset’s own order), then counts; an empty state is today’s rows', () => {
+    expect(presetRows(ROWS, drivers, 10, state({ filters: [{ column: 'team', op: 'eq', value: 'mercedes' }] })).map(r => r.name)).toEqual(['Antonelli', 'Russell']);
+    expect(presetRows(ROWS, drivers, 10, state({ filters: [{ column: 'team', op: 'ne', value: 'Mercedes' }] })).map(r => r.name)).toEqual(['Norris', 'Leclerc']);
+    expect(presetRows(ROWS, drivers, 10, state({ filters: [{ column: 'name', op: 'in', value: 'Norris, Leclerc' }] })).map(r => r.name)).toEqual(['Norris', 'Leclerc']);
+    expect(presetRows(ROWS, drivers, 10, state({ filters: [{ column: 'points', op: 'gte', value: '201' }] })).map(r => r.name)).toEqual(['Antonelli', 'Russell']);
+    expect(presetRows(ROWS, drivers, 10, state({ filters: [{ column: 'points', op: 'lt', value: '201' }] })).map(r => r.name)).toEqual(['Norris']);
+    expect(presetRows(ROWS, drivers, 10, state({ filters: [{ column: 'wins', op: 'gt', value: '1' }, { column: 'team', op: 'eq', value: 'McLaren' }] })).map(r => r.name)).toEqual(['Norris']);
+    expect(presetRows(ROWS, drivers, 10, state({ sort: { column: 'points', desc: false } })).map(r => r.name)).toEqual(['Norris', 'Russell', 'Antonelli', 'Leclerc']);
+    expect(presetRows(ROWS, drivers, 10, state({ sort: { column: 'points', desc: true } })).map(r => r.name)).toEqual(['Antonelli', 'Russell', 'Norris', 'Leclerc']);
+    expect(presetRows(ROWS, drivers, 10, state({ sort: { column: 'name', desc: false } })).map(r => r.name)).toEqual(['Antonelli', 'Leclerc', 'Norris', 'Russell']);
+    // Two wins each: Russell (P2) before Norris (P3), the preset's order.
+    expect(presetRows(ROWS, drivers, 10, state({ sort: { column: 'wins', desc: true } })).map(r => r.name)).toEqual(['Antonelli', 'Russell', 'Norris', 'Leclerc']);
+    expect(presetRows(ROWS, drivers, 2, state({ sort: { column: 'points', desc: false } })).map(r => r.name)).toEqual(['Norris', 'Russell']);
+    expect(presetRows(ROWS, drivers, 10, state({}))).toEqual(presetRows(ROWS, drivers, 10));
+  });
+
+  it('a results shape under a reader’s sort lists its rows flat, the count counting rows; a filter alone keeps the races whole and the count counting races', () => {
+    const at = (round: number, race: string, position: number, points: number) => ({ round, race, raceId: null, position, driver: `${race} P${position}`, session: 'race', points, class: null, date: `2026-0${round}-10` });
+    const rows = [at(1, 'Australia', 1, 25), at(1, 'Australia', 2, 18), at(2, 'China', 1, 25), at(2, 'China', 2, 18), at(2, 'China', 3, 15)];
+    const season = findPreset('season-results')!;
+    // Twenty-five points twice: the newer round first, the preset's order.
+    expect(presetRows(rows, season, 2, state({ sort: { column: 'points', desc: true } })).map(r => r.driver)).toEqual(['China P1', 'Australia P1']);
+    expect(presetRows(rows, season, 10, state({ sort: { column: 'position', desc: false } })).map(r => r.driver)).toEqual(['China P1', 'Australia P1', 'China P2', 'Australia P2', 'China P3']);
+    expect(presetRows(rows, season, 10, state({ filters: [{ column: 'position', op: 'eq', value: '1' }] })).map(r => r.driver)).toEqual(['China P1', 'Australia P1']);
+    expect(presetRows(rows, season, 1, state({ filters: [{ column: 'round', op: 'eq', value: '1' }] })).map(r => r.driver)).toEqual(['Australia P1', 'Australia P2']);
   });
 });

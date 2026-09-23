@@ -274,6 +274,11 @@
    "date": "2026-09-23",
    "change": "R8 merged (#1042, 1.0.161, 394f0377 squash-merged 17:50:58Z as 20b1eae7, prod /changelog 1.0.161 at 2026-09-23T17:57:23Z); R8 DONE. The Latest result preset leads every results series’ list; the Coming weekends rule names the Source’s series. Home’s parity after the deploy: identical but the operator’s two published What’s next boxes (Formula 1, Formula 2), whose rule now names them. Correction: RELEASES 1.0.161 said nothing changes on the pages read today; those two boxes on Home do, as asked (1.0.162 says so). Next: P2.3 PR A on feat/p2.3-a-view-state.",
    "word": "the operator, 2026-09-23 ~17:25Z: \"once finished merge then begin next task\""
+  },
+  {
+   "date": "2026-09-23",
+   "change": "P2.3 STARTED: PR A built on the approved plan (1.0.163, branch feat/p2.3-a-view-state): lib/design/view-state.ts (the vocabulary sort/cols/filter/view, parse, bind, the canonical encode, the hrefs, the region prefix r.<id>., the middleware’s rewriteTarget), the middleware rewrite to /__view/<segment>/<path>, the catch-all’s addressOf (canonical the plain path, noindex), the renderer’s href/view/controlsKey, presetRows(rows, preset, count, state), the Table’s sortable headings and the Actions menu (Select Columns as a GET form, Reset; Sort by for the Cards) with no client JavaScript, the Actions Menu group (Sortable headings, Actions menu; off by default). Tests first: 8 red across 6 files plus the missing module; the browser on a local Monza table (sort, Select Columns, the address kept plain). One deviation from the plan, on evidence: the variant segment is base64url, not percent-escaped — Next 16 hands a catch-all segment percent-encoded (a literal = came back as %3D), so no escaped form is safe to decode. PR B (saved views, CSV) follows; the slot stays STARTED until it merges.",
+   "word": "the operator, 2026-09-23 ~16:35Z: the plan approved (ExitPlanMode); ~17:25Z: \"once finished merge then begin next task\" (the merge word was R8’s; PR A’s merge waits for its own)"
   }
  ],
  "phases": {
@@ -670,7 +675,7 @@
    "defaults": "The URL vocabulary first (it serves Filters too); sort, filter and column hiding applied on the server through the reader and presetRows; saved views as rows of a shared component; CSV from the source, not the DOM; no client table dependency (decided 2026-09-23).",
    "needsWord": "none",
    "acceptance": "Sort and CSV work on a served table; a saved view opens from its link; bundle delta quoted.",
-   "status": "planned",
+   "status": "started",
    "scopeHash": "73a102adca83"
   },
   {

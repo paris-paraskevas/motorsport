@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.163 — 2026-09-23
+
+Groundwork for sortable tables in the design tool: a data region can now be given sortable column headings and an Actions menu (choose the columns you see, reset), all carried in the page address so a sorted view can be shared by its link. Every such control is off until an editor turns it on, so nothing changes on the pages you read today.
+
 ## 1.0.162 — 2026-09-23
 
 Internal only: the day's working records. One correction to the previous note: on the home page, the two "What's next" boxes set to Formula 1 and Formula 2 now name them in their corner instead of "All series".
