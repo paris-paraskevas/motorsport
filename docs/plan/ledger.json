@@ -219,6 +219,11 @@
    "date": "2026-09-23",
    "change": "R6 quick fix opened on the operator’s report (~11:45Z, two screenshots): with everything but the live bands hidden, Home showed the band twice with the Azerbaijan Grand Prix boxed twice in each. Two causes: the Home document carries both a Live band and a This weekend region (the operator hides or deletes one; PR C retires home.live); and rankLiveWeekends features the lead series twice when it is also named among Home’s featured series (the second box without its Also row is the second featured box by design). The word: fix the ranking now, before PR C — the lead excluded from the majors, with a test for the overlap. Prod at the time of the reply served the opposite state (the two live regions hidden, the rest shown); the browser on prod also refused stylesheet and script chunks of prefetched routes returned as HTML (the served-as-HTML issue of 1.0.34, an Inbox line).",
    "word": "the operator, 2026-09-23 ~12:05Z: \"Fix the ranking now (Recommended)\" (AskUserQuestion)"
+  },
+  {
+   "date": "2026-09-23",
+   "change": "R6 merged (#1036, 1.0.155, one commit dd7b2d4d, squash-merged 12:27:31Z as 74fd112d); R6 DONE. The lead series is excluded from the majors in rankLiveWeekends, with the overlap test and the reviewer’s case; the other cause of the operator’s screenshots (two band components on the Home document) is theirs to hide or delete, and PR C retires home.live. PR C’s branch rebuilt over this merge with the dated line of the two words on the flip’s look.",
+   "word": "the operator, 2026-09-23 ~12:27Z: \"merge\""
   }
  ],
  "phases": {
@@ -576,9 +581,9 @@
    "defaults": "the exclusion in the ranking, not in the settings editor (a setting that names the lead among the featured series stays valid and harmless); the other cause of the screenshot, two band components on the Home document (Live band and This weekend), is the operator’s to hide or delete, and PR C retires home.live",
    "needsWord": "",
    "acceptance": "rankLiveWeekends with lead f1 and majors [f1, motogp] features f1 once then motogp; the suite green",
-   "status": "started",
+   "status": "done",
    "scopeHash": "b51fecc0b6dc",
-   "evidence": ""
+   "evidence": "#1036 · 1.0.155 · one commit dd7b2d4d, squash-merged 2026-09-23 12:27:31Z as 74fd112d · prod /changelog 1.0.155 at 2026-09-23T12:32:25Z · tests first: the overlap test red before the change (1 of 14), green after; the reviewer’s case (the lead named but not racing) asserted in the same test · tsc 0 · lint 0 errors · vitest 223 files, 2280 tests · hooks 31/31 · DATA_SOURCE=db npm run cf:build in the foreground, exit 0, 1189 pages · dry run 39427.18 KiB / gzip 8630.11 KiB · reviewer (fresh-context Sonnet, 116,961 tokens): PASS WITH NOTES, nothing blocking · not proven in a browser: the duplicate needs the setting with the lead among the featured series, the unit test carries the case · the operator’s own two actions named in the PR: hide or delete the This weekend region beside the Live band; remove Formula 1 from Home: featured series."
   },
   {
    "id": "P2.3",
