@@ -562,7 +562,7 @@
    "needsWord": "none",
    "acceptance": "Sort and CSV work on a served table; a saved view opens from its link; bundle delta quoted.",
    "status": "planned",
-   "scopeHash": "f009308b8861"
+   "scopeHash": "73a102adca83"
   },
   {
    "id": "P2.4",
@@ -622,7 +622,7 @@
    "needsWord": "none",
    "acceptance": "Weekend Preview and Report as Tabs; test.",
    "status": "planned",
-   "scopeHash": "0ee56619ee63"
+   "scopeHash": "4c4cfcf533b6"
   },
   {
    "id": "P2.11",
