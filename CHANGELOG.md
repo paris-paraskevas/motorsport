@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.156 — 2026-09-23
+
+### Records — R6 on prod, PR C's two words, the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: **R6 DONE** with its evidence (#1036, 1.0.155, one commit dd7b2d4d, squash-merged 2026-09-23 12:27:31Z as 74fd112d, prod /changelog 1.0.155 at 2026-09-23T12:32:25Z; the red-first test, the gates, the dry run 39427.18 KiB, the reviewer's figure, the browser caveat) and the dated merge line. `docs/HANDOFF.md`: the LATEST header and the session-57 prompt carry R6 and PR C's answered scan (the two words of 2026-09-23 ~11:50Z, recorded on the branch `feat/p2.24-c-flip`, rebuilt over R6's merge as c7c56d24: APEX margins in the Spacing group so the flipped Home matches to the pixel; the half kept when one half is empty), the state at 1.0.155/1.0.156. `SCHEDULE.md`: the step. The progress board republished (87eea43d-b6f0-47fa-a1c4-b10dacb2ff01, R6 in Phase 2). `package.json` 1.0.156. No code.
+
 ## 1.0.155 — 2026-09-23
 
 ### Home — [R6] The live band features the lead series once
