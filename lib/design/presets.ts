@@ -227,8 +227,9 @@ const family = (prefix: string, group: string, series: string, cls: string, kind
   );
 const results = (key: string, name: string, group: string, series: readonly string[], shape: ShapeKey = 'race-rows', where: Preset['where'] = {}): Preset => ({ key, name, group, source: 'results', shape, where, series, nameLabel: 'Driver', view: 'list' });
 
-/** The thirty-five: twenty-six standings (the fifteen groups' first eight), seven results (the other seven), each the site's own
- *  table; then Home's two boxes over the posts and the news (P2.24 A), each a template of its own. */
+/** The thirty-eight: twenty-six standings (the fifteen groups' first eight), seven results (the other seven), each the site's own
+ *  table; then Home's five boxes as templates of their own: the Lead story and The wire over the posts and the news (P2.24 A),
+ *  What's next over the weekends (B1), Latest result over the results and What it changed over the standings (B2). */
 export const PRESETS: readonly Preset[] = [
   standings('drivers', 'Drivers', 'drivers', 'driver-rows', { kind: 'driver' }, DRIVER_SERIES, 'Driver'),
   standings('constructors', 'Constructors', 'constructors', 'team-rows', { kind: 'constructor' }, CONSTRUCTOR_SERIES, 'Constructor'),
