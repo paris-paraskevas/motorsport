@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.166 — 2026-09-23
+
+### Records — P2.3 PR B on prod, the slot STARTED until the prod apply, the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: P2.3's evidence for PR B (#1046, 1.0.165, two commits 7ba6dacf + f9461b1f, squash-merged 2026-09-23 22:17:00Z as f2f2fe79, prod /changelog 1.0.165 at 22:23:27Z; the reviewer SOUND WITH FIXES at 262,957 tokens against ~120k said, three fixes taken; Home's parity identical, 18 regions; prod's CSV route refuses a page without the toggle) and the merge's dated line with the word. **The slot stays STARTED**: the `saved_view` migration `20260923220000` is applied to the local database only and waits for the operator's explicit "apply 20260923220000" on prod, rehearsed inside begin…rollback through the Management API first; until then prod's Shared Components › Saved Views answers an error and the Views menus list nothing. `docs/HANDOFF.md`: the session-57 prompt carries the pending apply, P2.4's decision scan as the first task, and this run's landmines. `SCHEDULE.md` step 15 and the active time; `IDEAS.md` Inbox lines. Nothing changes for readers.
+
 ## 1.0.165 — 2026-09-23
 
 ### Designer — [P2.3 PR B] Saved views, the Views menu, Download CSV (APEX: the Interactive Report's saved reports and Download)
