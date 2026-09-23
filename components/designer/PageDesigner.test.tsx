@@ -1103,8 +1103,9 @@ describe('PageDesigner', () => {
     expect(status()).toMatch(/Source set/);
     const series = within(pe).getByLabelText('Series') as HTMLSelectElement;
     expect(series.value).toBe('f1');
-    // Only the series the source offers, by the names the designer holds: NLS has no standings.
+    // Only the series the source offers, by the names the designer holds: NLS has no standings; the Latest result (P2.24 B2), the value the reader resolves, comes first.
     expect([...series.options].map(o => [o.value, o.textContent])).toEqual([
+      ['latest', 'Latest result'],
       ['f1', 'Formula 1'],
       ['wec', 'FIA WEC'],
     ]);
@@ -1141,13 +1142,13 @@ describe('PageDesigner', () => {
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
     const preset = within(pe).getByLabelText('Preset') as HTMLSelectElement;
     expect(preset.value).toBe('drivers');
-    // Grouped by the fifteen, only the presets of Standings · Formula 1.
-    expect([...preset.querySelectorAll('optgroup')].map(g => g.label)).toEqual(['Drivers', 'Constructors']);
-    expect([...preset.options].map(o => o.textContent)).toEqual(['Drivers', 'Constructors']);
+    // Grouped by the fifteen, only the presets of Standings · Formula 1 (and Home's What it changed over them, P2.24 B2).
+    expect([...preset.querySelectorAll('optgroup')].map(g => g.label)).toEqual(['Drivers', 'Constructors', 'What it changed']);
+    expect([...preset.options].map(o => o.textContent)).toEqual(['Drivers', 'Constructors', 'What it changed']);
     // P2.2 B2: Timeline is bound to a Results source; on Standings its pill is disabled with the reason in the note; Detail is open to every shape.
     const view = () => within(pe).getByRole('group', { name: 'View' });
     expect((within(view()).getByRole('button', { name: 'Timeline' }) as HTMLButtonElement).disabled).toBe(true);
-    expect(within(pe).getByText(/Timeline is for a Results source; Lead story is for a Posts source; The wire is for a News source; What's next is for a Weekends source; this region reads Standings/)).toBeTruthy();
+    expect(within(pe).getByText(/Timeline is for a Results source; Lead story is for a Posts source; The wire is for a News source; What's next is for a Weekends source; Latest result is for a Results source; this region reads Standings/)).toBeTruthy();
     expect((within(view()).getByRole('button', { name: 'Detail' }) as HTMLButtonElement).disabled).toBe(false);
     fireEvent.change(preset, { target: { value: 'constructors' } });
     expect(status()).toMatch(/Preset set/);
@@ -1167,7 +1168,8 @@ describe('PageDesigner', () => {
     const season = [...results.options].find(o => o.textContent === 'Season results')!;
     expect(season.disabled).toBe(false);
     expect(within(pe).queryByText(/Not yet pickable/)).toBeNull();
-    expect([...results.options].map(o => o.textContent)).toEqual(['Constructors', 'Season results']);
+    // Home's Latest result over any results series joins the list (P2.24 B2).
+    expect([...results.options].map(o => o.textContent)).toEqual(['Constructors', 'Season results', 'Latest result']);
     // Picking a results preset brings its view: the Rounds layout, the List pill pressed by itself.
     fireEvent.change(results, { target: { value: 'season-results' } });
     expect(status()).toMatch(/Preset set/);
@@ -1255,7 +1257,7 @@ describe('PageDesigner', () => {
     expect((within(view()).getByRole('button', { name: 'Lead story' }) as HTMLButtonElement).disabled).toBe(true);
     expect((within(view()).getByRole('button', { name: 'The wire' }) as HTMLButtonElement).disabled).toBe(true);
     expect((within(view()).getByRole('button', { name: "What's next" }) as HTMLButtonElement).disabled).toBe(true);
-    expect(within(pe).getByText(/Lead story is for a Posts source; The wire is for a News source; What's next is for a Weekends source; this region reads Standings/)).toBeTruthy();
+    expect(within(pe).getByText(/Lead story is for a Posts source; The wire is for a News source; What's next is for a Weekends source; Latest result is for a Results source; this region reads Standings/)).toBeTruthy();
     // Posts: the Lead story preset under its group (the stored Drivers stays visible while it is the value); its pick brings the template and its rows.
     fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
     fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'posts' } });
@@ -1302,6 +1304,41 @@ describe('PageDesigner', () => {
     expect(within(view()).getByRole('button', { name: "What's next" }).getAttribute('aria-pressed')).toBe('true');
     expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('3');
     expect(tile('Component: Data region').textContent).toMatch(/Preset What's next · View What's next · Rows 3/);
+    // P2.24 B2: on Results the Series select offers Home's series first, and under it the Latest result preset (the site's results presets hide);
+    // its pick brings the Podium template and three rows. On Standings, Latest result first and What it changed with five rows.
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'results' } });
+    const resultsSeries = within(pe).getByLabelText('Series') as HTMLSelectElement;
+    expect([...resultsSeries.options].map(o => [o.value, o.textContent])).toEqual([
+      ['home', "Home's series"],
+      ['f1', 'Formula 1'],
+    ]);
+    fireEvent.change(resultsSeries, { target: { value: 'home' } });
+    expect(tile('Component: Data region').textContent).toMatch(/Results · Home's series · 2026/);
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const homeGroups = [...(within(pe).getByLabelText('Preset') as HTMLSelectElement).querySelectorAll('optgroup')].map(g => g.label);
+    expect(homeGroups).toContain('Latest result');
+    expect(homeGroups).not.toContain('Season results');
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'latest-result' } });
+    expect(within(view()).getByRole('button', { name: 'Latest result' }).getAttribute('aria-pressed')).toBe('true');
+    expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('3');
+    expect(tile('Component: Data region').textContent).toMatch(/Preset Latest result · View Latest result · Rows 3/);
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
+    const standingsSeries = within(pe).getByLabelText('Series') as HTMLSelectElement;
+    expect([...standingsSeries.options].map(o => [o.value, o.textContent])).toEqual([
+      ['latest', 'Latest result'],
+      ['f1', 'Formula 1'],
+    ]);
+    fireEvent.change(standingsSeries, { target: { value: 'latest' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const latestGroups = [...(within(pe).getByLabelText('Preset') as HTMLSelectElement).querySelectorAll('optgroup')].map(g => g.label);
+    expect(latestGroups).toContain('What it changed');
+    expect(latestGroups).not.toContain('Drivers');
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'what-it-changed' } });
+    expect(within(view()).getByRole('button', { name: 'What it changed' }).getAttribute('aria-pressed')).toBe('true');
+    expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('5');
+    expect(tile('Component: Data region').textContent).toMatch(/Preset What it changed · View What it changed · Rows 5/);
   });
 
   it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {

@@ -30,7 +30,7 @@ export interface PresetColumn {
   /** For a link whose address leaves the site (the news headlines): drawn in a new tab, as an external destination is. */
   external?: true;
 }
-export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'post-rows' | 'news-rows' | 'weekend-rows';
+export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows';
 export interface Shape {
   key: ShapeKey;
   source: PresetSource;
@@ -134,6 +134,14 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     ],
     card: { title: 'title', subtitle: 'seriesName', body: 'dates', badge: 'round' },
   },
+  // Home's Latest result (P2.24 B2): the newest race's classification as the results source reads it, with the series' name;
+  // the flat series' rows carry a driver, a team and a time, the sportscar series' a car, a crew and a gap; the numbers last.
+  'podium-rows': {
+    key: 'podium-rows',
+    source: 'results',
+    columns: [race, { key: 'seriesName', label: 'Series', type: 'text' }, date, position, { key: 'driver', label: 'Driver', type: 'text' }, team, car, { key: 'time', label: 'Time', type: 'text' }, gapText, points, round],
+    card: { title: 'driver', subtitle: 'team', body: 'time', badge: 'position' },
+  },
 };
 
 export interface PresetGroup {
@@ -162,6 +170,9 @@ export const PRESET_GROUPS: readonly PresetGroup[] = [
   { key: 'wire', name: 'The wire', source: 'news' },
   // Home's literal has the straight apostrophe (components/HomeLead.tsx HomeWhatsNext), and the heading must match it byte for byte.
   { key: 'whats-next', name: "What's next", source: 'weekends' },
+  // Home's Latest result and What it changed (P2.24 B2), Home's literals (HomeLatestResult's aria-label, HomeWhatChanged's rule).
+  { key: 'latest-result', name: 'Latest result', source: 'results' },
+  { key: 'what-it-changed', name: 'What it changed', source: 'standings' },
 ];
 
 export interface Preset {
@@ -179,8 +190,9 @@ export interface Preset {
   /** The name column's label: Driver · Co-Driver · Constructor · Team · Manufacturer. */
   nameLabel: string;
   /** The view the preset brings when picked: the standings tables, the results' Rounds layout (List), Home's boxes their own
-   *  template (P2.24 A: lead-story, wire); Timeline and Detail (P2.2 B2) are the operator's picks, no preset brings them. */
-  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire' | 'coming-weekends';
+   *  template (P2.24 A: lead-story, wire; B1: coming-weekends; B2: podium, leader); Timeline and Detail (P2.2 B2) are the
+   *  operator's picks, no preset brings them. */
+  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire' | 'coming-weekends' | 'podium' | 'leader';
   /** The Rows the pick sets, where the site's box has a count of its own (P2.24 A: the lead and its three further posts, the
    *  wire's five); absent, the region's Rows stands. Ours: the counts were Application Settings of Home's pieces. */
   rows?: number;
@@ -192,6 +204,13 @@ const RESULT_SERIES = ['f1', 'f3', 'indycar', 'nascar-cup', 'wrc', 'motogp', 'ws
 /** The fifteen the site covers (lib/design/sources.ts SERIES_OPTIONS, listed here since this file imports nothing): the posts
  *  and the headlines belong to any of them, or to none. */
 const EVERY_SERIES = ['adac-ravenol-24h', 'dtm', 'f1', 'f2', 'f3', 'formula-e', 'gt-world', 'imsa', 'indycar', 'motogp', 'nascar-cup', 'nls', 'wec', 'wrc', 'wsbk'];
+/** The Latest result's series (P2.24 B2): Home's series (the Results source's value the reader resolves, lib/design/sources.ts
+ *  HOME_SERIES_OPTION) first, then the fourteen the Results source offers (its RESULTS_SERIES, listed here since this file
+ *  imports nothing). */
+const PODIUM_SERIES = ['home', 'f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world'];
+/** What it changed's series (P2.24 B2): the Latest result (the Standings source's value the reader resolves) first, then the
+ *  ten with a drivers' brief (lib/standings/brief.ts ELIGIBLE_STANDINGS_SLUGS), the only ones Home draws the box for. */
+const LEADER_SERIES = ['latest', 'f1', 'f2', 'f3', 'indycar', 'formula-e', 'motogp', 'nascar-cup', 'wsbk', 'wrc', 'dtm'];
 
 const standings = (key: string, name: string, group: string, shape: ShapeKey, where: Preset['where'], series: readonly string[], nameLabel: string): Preset => ({ key, name, group, source: 'standings', shape, where, series, nameLabel, view: 'table' });
 const family = (prefix: string, group: string, series: string, cls: string, kinds: readonly RowKind[]): Preset[] =>
@@ -245,6 +264,11 @@ export const PRESETS: readonly Preset[] = [
   { key: 'wire', name: 'The wire', group: 'wire', source: 'news', shape: 'news-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'wire', rows: 5 },
   // Home's What's next (P2.24 B1): the next three weekends across every series.
   { key: 'whats-next', name: "What's next", group: 'whats-next', source: 'weekends', shape: 'weekend-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'coming-weekends', rows: 3 },
+  // Home's Latest result and What it changed (P2.24 B2): the podium (three rows) of the newest race, for Home's series or any
+  // championship the Results source offers; the drivers' table (five rows, home.changed's default) after that race, for the
+  // Latest result or any of the ten with a drivers' brief.
+  { key: 'latest-result', name: 'Latest result', group: 'latest-result', source: 'results', shape: 'podium-rows', where: {}, series: PODIUM_SERIES, nameLabel: 'Driver', view: 'podium', rows: 3 },
+  { key: 'what-it-changed', name: 'What it changed', group: 'what-it-changed', source: 'standings', shape: 'driver-rows', where: { kind: 'driver' }, series: LEADER_SERIES, nameLabel: 'Driver', view: 'leader', rows: 5 },
 ];
 
 export function findPreset(key: string): Preset | null {
@@ -258,15 +282,31 @@ export function presetsFor(source: string, series: string): Preset[] {
 
 export type PresetRow = Record<string, string | number | boolean | null | undefined>;
 
-/** The rows a preset shows from a source's rows: a standings shape's by position, the first `count`; a results shape's
- *  newest round first (a race without a round last), a weekend's races kept together in the order the fetcher gave them
- *  (R1 · Superpole · R2, Feature before Sprint), each by position, the first `count` RACES whole (a row of the Rounds
- *  layout is a race, and a classification cut in half would mislead). */
+/** The rows a preset shows from a source's rows: a standings shape's by position, the first `count`; the podium shape's the
+ *  newest race by date (P2.24 B2: across series a round number says nothing; a tie keeps the first race in row order, Home's
+ *  series order; a race without a date is never the newest), its first class alone (WEC's Hypercar, IMSA's GTP, the class
+ *  Home's podium reads), by position, the first `count` rows; any other results shape's newest round first (a race without a
+ *  round last), a weekend's races kept together in the order the fetcher gave them (R1 · Superpole · R2, Feature before
+ *  Sprint), each by position, the first `count` RACES whole (a row of the Rounds layout is a race, and a classification cut
+ *  in half would mislead). */
 export function presetRows(rows: readonly PresetRow[], preset: Preset, count: number): PresetRow[] {
   const w = preset.where;
   const pos = (r: PresetRow) => (typeof r.position === 'number' && Number.isFinite(r.position) ? r.position : Number.MAX_SAFE_INTEGER);
   const kept = rows.filter(r => (w.kind === undefined || r.kind === w.kind) && (w.class === undefined || (r.class ?? null) === w.class) && (w.session === undefined || r.session === w.session));
   if (SHAPES[preset.shape].source !== 'results') return kept.sort((a, b) => pos(a) - pos(b)).slice(0, Math.max(0, count));
+  if (preset.shape === 'podium-rows') {
+    const at = (r: PresetRow) => (typeof r.date === 'string' ? Date.parse(r.date) : Number.NaN);
+    const dated = kept.filter(r => Number.isFinite(at(r)));
+    const newest = dated.reduce<PresetRow | null>((m, r) => (m === null || at(r) > at(m) ? r : m), null);
+    if (!newest) return [];
+    const key = (r: PresetRow) => `${r.round ?? ''}|${r.raceId ?? ''}|${r.race ?? ''}`;
+    const race = dated.filter(r => key(r) === key(newest));
+    const cls = race[0].class ?? null;
+    return race
+      .filter(r => (r.class ?? null) === cls)
+      .sort((a, b) => pos(a) - pos(b))
+      .slice(0, Math.max(0, count));
+  }
   const raceKey = (r: PresetRow) => `${r.raceId ?? ''}|${r.race ?? ''}`;
   const firstAt = new Map<string, number>();
   kept.forEach((r, i) => {

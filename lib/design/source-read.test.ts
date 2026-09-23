@@ -18,7 +18,7 @@ const rounds = {
 vi.mock('@/lib/series', () => {
   // Two past sessions and one far ahead (2030), so the weekends reader (P2.24 B1) finds a coming weekend whatever the clock says.
   const loadSeries = async (slug: string) => ({
-    meta: meta(slug, slug === 'f1' ? 'Formula 1' : 'Formula 2'),
+    meta: meta(slug, slug === 'f1' ? 'Formula 1' : slug === 'f2' ? 'Formula 2' : slug === 'wec' ? 'FIA WEC' : slug),
     sessions: [
       { uid: 'u1', seriesSlug: slug, title: 'Race', start: new Date('2026-09-20T13:00:00Z'), end: new Date('2026-09-20T15:00:00Z'), location: 'Baku', significance: { tier: 'marquee', note: 'Season finale' } },
       { uid: 'u2', seriesSlug: slug, title: 'Practice', start: new Date('2026-09-18T00:00:00Z'), end: new Date('2026-09-18T01:00:00Z'), dateOnly: true },
@@ -42,7 +42,11 @@ vi.mock('@/lib/rounds-loader', () => ({ loadRounds: async () => rounds }));
 const readCurrentStandingsWithRun = vi.fn();
 vi.mock('@/lib/standing-rows', () => ({ readCurrentStandingsWithRun: (...a: unknown[]) => readCurrentStandingsWithRun(...a) }));
 const fetchFullDriverStandings = vi.fn();
-vi.mock('@/lib/standings/brief', () => ({ fetchFullDriverStandings: (...a: unknown[]) => fetchFullDriverStandings(...a) }));
+vi.mock('@/lib/standings/brief', () => ({
+  fetchFullDriverStandings: (...a: unknown[]) => fetchFullDriverStandings(...a),
+  // The ten with a drivers' brief (lib/standings/brief.ts ELIGIBLE_STANDINGS_SLUGS); the Latest result reads none other (P2.24 B2).
+  isEligibleStandingsSeries: (slug: string) => ['f1', 'f2', 'f3', 'indycar', 'formula-e', 'motogp', 'nascar-cup', 'wsbk', 'wrc', 'dtm'].includes(slug),
+}));
 // The class families and WRC (P2.2) read the snapshot tier the tabs read.
 const fetchGtWorldStandings = vi.fn();
 vi.mock('@/lib/standings/gt-world', () => ({ fetchGtWorldStandings: (...a: unknown[]) => fetchGtWorldStandings(...a) }));
@@ -53,8 +57,9 @@ vi.mock('@/lib/standings/wec', () => ({ fetchWecStandings: () => fetchWecStandin
 const fetchWRCStandings = vi.fn();
 vi.mock('@/lib/standings/wrc', () => ({ fetchWRCStandings: () => fetchWRCStandings() }));
 // The results dispatch (eight series; P2.2 B1 reads WRC and DTM through their real fetchers, never this).
-const loadSnapshotSource = vi.fn(async () => snapshotAnswer());
-vi.mock('@/components/weekend/WeekendStandingsSnapshot', () => ({ loadSnapshotSource: () => loadSnapshotSource() }));
+// The mock reads the series handed in, so a test may answer per series (P2.24 B2: the newest race across Home's series).
+const loadSnapshotSource = vi.fn<(series: { meta: { slug: string } }) => Promise<unknown>>(async () => snapshotAnswer());
+vi.mock('@/components/weekend/WeekendStandingsSnapshot', () => ({ loadSnapshotSource: (s: { meta: { slug: string } }) => loadSnapshotSource(s) }));
 const snapshotAnswer = () => ({
     races: [{ round: 1, raceName: 'Australian Grand Prix', date: new Date('2026-03-08T05:00:00Z'), circuit: 'Albert Park', results: [{ position: 1, driverName: 'Kimi Antonelli', driverCode: 'ANT', team: 'Mercedes', status: 'Finished', time: '1:30:12.345', points: 25 }] }],
     extras: [{ round: 2, raceName: 'Chinese Grand Prix Sprint', date: new Date('2026-03-14T03:00:00Z'), circuit: 'Shanghai', results: [{ position: 1, driverName: 'George Russell', team: 'Mercedes', status: 'Finished', points: 8 }] }],
@@ -75,7 +80,8 @@ vi.mock('@/lib/results/wrc', () => ({ fetchWRCSeasonResults: (...a: unknown[]) =
 const fetchDTMSeasonResults = vi.fn();
 vi.mock('@/lib/results/dtm', () => ({ fetchDTMSeasonResults: (...a: unknown[]) => fetchDTMSeasonResults(...a) }));
 // One weekend of every session handed in, coming (P2.24 B1); the results reader reads its round alone. A test may re-point it.
-const groupByWeekend = vi.fn((sessions: { start: Date; end: Date }[]) => [{ round: 1, key: 'w1', isPast: false, dateRangeLabel: '5–7 Mar', sessions }]);
+const comingWeekend = (sessions: { start: Date; end: Date }[]) => [{ round: 1, key: 'w1', isPast: false, dateRangeLabel: '5–7 Mar', sessions }];
+const groupByWeekend = vi.fn(comingWeekend);
 vi.mock('@/lib/group', () => ({ groupByWeekend: (...a: Parameters<typeof groupByWeekend>) => groupByWeekend(...a) }));
 vi.mock('@/lib/series-content', () => ({
   loadCuratedDrivers: async () => ({ teams: [{ name: 'Mercedes', color: '#00d2be', drivers: [{ name: 'Kimi Antonelli', code: 'ANT', number: 12 }, { name: 'George Russell', code: 'RUS', number: 63 }] }, { name: 'Ferrari', drivers: [{ name: 'Charles Leclerc' }] }] }),
@@ -134,7 +140,11 @@ const imsaEntry = (position: number, carNumber: string, drivers: string, gap: st
 beforeEach(() => {
   readCurrentStandingsWithRun.mockReset();
   fetchFullDriverStandings.mockReset();
-  loadSnapshotSource.mockClear();
+  // A test may re-point these two per series or per weekend; every test starts from the defaults.
+  loadSnapshotSource.mockReset();
+  loadSnapshotSource.mockImplementation(async () => snapshotAnswer());
+  groupByWeekend.mockReset();
+  groupByWeekend.mockImplementation(comingWeekend);
   fetchNlsSeasonResults.mockReset();
   fetchNlsSeasonResults.mockResolvedValue([race(1, 'NLS 1', { results: [{ position: 1, driverName: 'Crew One', team: 'Team One', status: 'Winner', points: 0 }] })]);
   fetchImsaSeasonResults.mockReset();
@@ -168,13 +178,14 @@ describe('readSource', () => {
     const read = await readSource({ source: 'standings', params: { series: 'f1', season: 2026 } });
     expect(readCurrentStandingsWithRun).toHaveBeenCalledWith('f1', 2026);
     expect(fetchFullDriverStandings).not.toHaveBeenCalled();
+    // P2.24 B2: every row carries the series' name and colour; the race winner and the season's end are the Latest result's facts, null for one championship.
     expect(read.rows).toEqual([
-      { kind: 'driver', position: 1, name: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', points: 267, wins: 7, class: null },
-      { kind: 'driver', position: 2, name: 'George Russell', code: 'RUS', team: 'Mercedes', points: 201, wins: 2, class: null },
-      { kind: 'constructor', position: 1, name: 'Mercedes', code: null, team: null, points: 468, wins: 9, class: null },
+      { kind: 'driver', position: 1, name: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', points: 267, wins: 7, class: null, seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
+      { kind: 'driver', position: 2, name: 'George Russell', code: 'RUS', team: 'Mercedes', points: 201, wins: 2, class: null, seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
+      { kind: 'constructor', position: 1, name: 'Mercedes', code: null, team: null, points: 468, wins: 9, class: null, seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
     ]);
     expect(read.total).toBe(3);
-    expect(read.columns.map(c => c.key)).toEqual(['kind', 'position', 'name', 'code', 'team', 'points', 'wins', 'class']);
+    expect(read.columns.map(c => c.key)).toEqual(['kind', 'position', 'name', 'code', 'team', 'points', 'wins', 'class', 'seriesName', 'colour', 'winner', 'final']);
     expect(read.provenance).toMatchObject({
       ref: { source: 'standings', params: { series: 'f1', season: 2026 } },
       label: 'Standings · Formula 1 · 2026',
@@ -215,7 +226,7 @@ describe('readSource', () => {
     expect(gt.provenance.tier).toBe('snapshot');
     expect(gt.provenance.keys).toEqual(['standings:gt-world:2026']);
     expect(gt.rows.map(r => `${r.class} · ${r.kind} · ${r.name} · ${r.points}`)).toEqual(['Overall · driver · Marciello · 98', 'Overall · team · WRT · 120', 'Sprint Cup · driver · Engel · 50', 'Endurance Cup · team · AF Corse · 60']);
-    expect(gt.rows[0]).toEqual({ kind: 'driver', position: 1, name: 'Marciello', code: null, team: 'WRT', points: 98, wins: null, class: 'Overall' });
+    expect(gt.rows[0]).toEqual({ kind: 'driver', position: 1, name: 'Marciello', code: null, team: 'WRT', points: 98, wins: null, class: 'Overall', seriesName: null, colour: null, winner: null, final: null });
     expect(gt.rows[2].wins).toBe(2);
     fetchImsaStandings.mockResolvedValue({
       drivers: { GTP: [{ position: 1, driverName: 'Nasr Tandy', points: 2412 }], LMP2: [], 'GTD Pro': [], GTD: [] },
@@ -379,6 +390,105 @@ describe('readSource', () => {
     const partial = await readSource({ source: 'weekends', params: { count: 10 } });
     expect(partial.rows.map(r => r.series)).toEqual(['f2']);
     expect(partial.provenance.error).toBeUndefined();
+  });
+
+  it('P2.24 B2: every Results read carries the series’ facts: its name and colour, whether the season is complete (no weekend still to run) and, then, its champion from the drivers’ standings (none for a series without a drivers’ championship); a plain Standings read carries the name and colour with no race context', async () => {
+    const f1 = await readSource({ source: 'results', params: { series: 'f1', season: 2026 } });
+    expect(f1.rows[0]).toMatchObject({ seriesName: 'Formula 1', colour: '#e10600', final: false, champion: null });
+    expect(f1.columns.map(c => c.key).slice(-4)).toEqual(['seriesName', 'colour', 'final', 'champion']);
+    expect(fetchFullDriverStandings).not.toHaveBeenCalled();
+    // Every weekend past: the season is complete and the champion is the standings' leader; the brief answers null for a series without a drivers' table.
+    groupByWeekend.mockImplementation(() => [{ round: 1, key: 'w1', isPast: true, dateRangeLabel: '6–8 Mar', sessions: [] }]);
+    fetchFullDriverStandings.mockResolvedValue(drivers);
+    const done = await readSource({ source: 'results', params: { series: 'f1', season: 2026 } });
+    expect(done.rows[0]).toMatchObject({ final: true, champion: 'Kimi Antonelli' });
+    expect(fetchFullDriverStandings).toHaveBeenCalledWith('f1', 2026);
+    fetchFullDriverStandings.mockResolvedValue(null);
+    const wec = await readSource({ source: 'results', params: { series: 'wec', season: 2026 } });
+    expect(wec.rows[0]).toMatchObject({ seriesName: 'FIA WEC', final: true, champion: null });
+    // A plain Standings read: the series' name and colour from the content, no race context.
+    readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: 'run-1' });
+    const standings = await readSource({ source: 'standings', params: { series: 'f2', season: 2026 } });
+    expect(standings.rows[0]).toMatchObject({ name: 'Kimi Antonelli', seriesName: 'Formula 2', colour: '#e10600', winner: null, final: null });
+  });
+
+  it('P2.24 B2: Results with the Series “Home’s series” answers the newest finished race across the series Home ranks, that race’s rows alone: the flat series’ race sessions (never a sprint), WEC’s Hypercar class, by date with a tie kept in Home’s order, a future race and a failing series left out; the rows carry the series’ facts and the provenance the resolved series’ keys; nothing when no series has a finished race', async () => {
+    const home = { source: 'results', params: { series: 'home', season: 2026 } };
+    // Le Mans (14 June) is newer than every flat series' Australian Grand Prix (8 March): WEC's Hypercar rows, LMGT3 left out.
+    const wec = await readSource(home);
+    expect(wec.provenance).toMatchObject({ label: "Results · Home's series · 2026", tier: 'snapshot', keys: ['results:wec'], rows: 2 });
+    expect(wec.provenance.error).toBeUndefined();
+    expect(wec.rows.map(r => [r.class, r.position, r.driver, r.gap])).toEqual([
+      ['Hypercar', 1, 'Estre Campbell Vanthoor', '24:00:12.345'],
+      ['Hypercar', 2, 'Fuoco Molina Nielsen', '+1 Lap'],
+    ]);
+    expect(wec.rows[0]).toMatchObject({ round: 3, race: '24 Hours of Le Mans', date: '2026-06-14T00:00:00.000Z', seriesName: 'FIA WEC', colour: '#e10600', final: false, champion: null, weekend: null });
+    // F1's Italian Grand Prix (6 September) newer than Le Mans: F1's race, its sprint of a week later never a candidate, a race dated 2030 not finished; F3's race on the same day loses the tie to F1, Home's first.
+    const gp = (round: number, name: string, iso: string, driver: string) =>
+      race(round, name, {
+        date: new Date(iso),
+        results: [
+          { position: 1, driverName: driver, driverCode: 'WIN', team: 'Team A', status: 'Finished', time: '1:20:00.0', points: 25 },
+          { position: 2, driverName: `${driver} II`, driverCode: 'SEC', team: 'Team B', status: 'Finished', time: '+3.857', points: 18 },
+        ],
+      });
+    const bySlug: Record<string, unknown> = {
+      f1: { ...snapshotAnswer(), races: [gp(9, 'Italian Grand Prix', '2026-09-06T13:00:00Z', 'Kimi Antonelli'), gp(24, 'Future Grand Prix', '2030-12-01T13:00:00Z', 'Nobody')], extras: [gp(10, 'Sprint', '2026-09-12T13:00:00Z', 'Sprinter')] },
+      f3: { ...snapshotAnswer(), races: [gp(8, 'Monza Feature', '2026-09-06T13:00:00Z', 'F3 Winner')] },
+    };
+    loadSnapshotSource.mockImplementation(async s => bySlug[s.meta.slug] ?? snapshotAnswer());
+    const f1 = await readSource(home);
+    expect(f1.provenance.keys).toEqual(['f1:results', 'f1:sprints', 'f1:last-race']);
+    expect(f1.rows.map(r => [r.round, r.race, r.session, r.position, r.driver, r.time])).toEqual([
+      [9, 'Italian Grand Prix', 'race', 1, 'Kimi Antonelli', '1:20:00.0'],
+      [9, 'Italian Grand Prix', 'race', 2, 'Kimi Antonelli II', '+3.857'],
+    ]);
+    expect(f1.rows[0]).toMatchObject({ seriesName: 'Formula 1', colour: '#e10600', final: false, champion: null, date: '2026-09-06T13:00:00.000Z' });
+    // A series whose read throws is skipped, as Home's per-series lookup fails soft: F3's race of the same day stands.
+    loadSnapshotSource.mockImplementation(async s => {
+      if (s.meta.slug === 'f1') throw new Error('boom');
+      return bySlug[s.meta.slug] ?? snapshotAnswer();
+    });
+    const without = await readSource(home);
+    expect(without.provenance.error).toBeUndefined();
+    expect(without.rows.map(r => r.driver)).toEqual(['F3 Winner', 'F3 Winner II']);
+    // No finished race anywhere: no rows, no error, the declared keys.
+    loadSnapshotSource.mockImplementation(async () => ({ ...snapshotAnswer(), races: [], extras: [] }));
+    fetchWecSeasonResults.mockResolvedValue([]);
+    const none = await readSource(home);
+    expect(none.rows).toEqual([]);
+    expect(none.provenance.error).toBeUndefined();
+    expect(none.provenance.keys).toEqual(['f1:results', 'f1:sprints', 'f1:last-race', 'results:f3', 'results:formula-e', 'results:indycar', 'results:motogp', 'results:wec']);
+  });
+
+  it('P2.24 B2: Standings with the Series “Latest result” reads the championship of the newest race across Home’s series through the standings path, every row carrying the series’ name and colour, the race winner’s flag on the winner’s driver row and whether the season is complete, the provenance that series’ keys and run; nothing for a series without a drivers’ championship (WEC) or when no race has finished', async () => {
+    const latest = { source: 'standings', params: { series: 'latest', season: 2026 } };
+    // Le Mans is the newest race by default, and WEC has no drivers' brief: no rows, no error.
+    const wec = await readSource(latest);
+    expect(wec.rows).toEqual([]);
+    expect(wec.provenance).toMatchObject({ label: 'Standings · Latest result · 2026', keys: [] });
+    expect(wec.provenance.error).toBeUndefined();
+    expect(readCurrentStandingsWithRun).not.toHaveBeenCalled();
+    // F1's race the newest: F1's rows tier, Antonelli's row flagged as the race winner.
+    loadSnapshotSource.mockImplementation(async s =>
+      s.meta.slug === 'f1'
+        ? { ...snapshotAnswer(), races: [race(9, 'Italian Grand Prix', { date: new Date('2026-09-06T13:00:00Z'), results: [{ position: 1, driverName: 'Kimi Antonelli', driverCode: 'ANT', team: 'Mercedes', status: 'Finished', time: '1:20:00.0', points: 25 }] })] }
+        : snapshotAnswer(),
+    );
+    readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: 'run-1' });
+    const f1 = await readSource(latest);
+    expect(readCurrentStandingsWithRun).toHaveBeenCalledWith('f1', 2026);
+    expect(f1.rows.map(r => [r.kind, r.name, r.seriesName, r.winner, r.final])).toEqual([
+      ['driver', 'Kimi Antonelli', 'Formula 1', true, false],
+      ['driver', 'George Russell', 'Formula 1', false, false],
+      ['constructor', 'Mercedes', 'Formula 1', false, false],
+    ]);
+    expect(f1.rows[0].colour).toBe('#e10600');
+    expect(f1.provenance).toMatchObject({ tier: 'rows', keys: ['standings:f1', 'f1:standings'], run: { id: 'run-1' } });
+    // No race finished anywhere: no rows.
+    loadSnapshotSource.mockImplementation(async () => ({ ...snapshotAnswer(), races: [], extras: [] }));
+    fetchWecSeasonResults.mockResolvedValue([]);
+    expect((await readSource(latest)).rows).toEqual([]);
   });
 
   it('every one of the fourteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {

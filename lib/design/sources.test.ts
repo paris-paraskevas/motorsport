@@ -1,7 +1,8 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CURRENT_SEASON, REMOTE_SERVERS, SERIES_OPTIONS, SOURCES, defaultSourceRef, describeLoaderKey, encodeSourceRef, findSource, parseSourceRef, sourceLabel } from './sources';
+import { CURRENT_SEASON, HOME_RESULTS_SERIES, REMOTE_SERVERS, SERIES_OPTIONS, SOURCES, defaultSourceRef, describeLoaderKey, encodeSourceRef, findSource, parseSourceRef, sourceLabel } from './sources';
+import { HOME_RESULTS_SLUGS } from '@/lib/home-results';
 import { HEALTH_SEASON } from '@/lib/standings-health';
 import { RESULTS_HEALTH_SEASON } from '@/lib/results-health';
 import { SESSIONS_HEALTH_SEASON } from '@/lib/sessions-health';
@@ -16,6 +17,8 @@ import { MAX_PER_SERIES_AGGREGATE } from '@/lib/news';
 const FOURTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends'];
 const PARAMETER_KINDS = ['series', 'season', 'number', 'choice', 'text'];
 const COLUMN_TYPES = ['text', 'number', 'date', 'boolean', 'link', 'image', 'colour'];
+/** P2.24 B2: the two Series values the readers resolve rather than read (Home's series, the Latest result), each on its source alone. */
+const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home'], standings: ['latest'] };
 
 describe('the source catalogue', () => {
   it('holds the fourteen in the changes line’s order (Weekends last, P2.24 B1), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
@@ -40,7 +43,9 @@ describe('the source catalogue', () => {
       for (const p of s.parameters) {
         expect(PARAMETER_KINDS, `${s.key}.${p.key}`).toContain(p.kind);
         if (p.required) expect(p.default, `${s.key}.${p.key} needs a default`).toBeDefined();
-        if (p.kind === 'series') for (const o of p.options ?? []) expect(contentSlugs, `${s.key}.${p.key}: ${o.key}`).toContain(o.key);
+        // Every series option is a content slug, save the two declared values the readers resolve (P2.24 B2), which only their source offers.
+        if (p.kind === 'series') for (const o of p.options ?? []) if (!(SPECIAL[s.key] ?? []).includes(o.key)) expect(contentSlugs, `${s.key}.${p.key}: ${o.key}`).toContain(o.key);
+        if (p.kind === 'series') for (const k of ['home', 'latest']) expect((p.options ?? []).some(o => o.key === k), `${s.key}.${p.key}: ${k}`).toBe((SPECIAL[s.key] ?? []).includes(k));
       }
       // The defaults the picker writes pass the source's own rule.
       expect(parseSourceRef(encodeSourceRef(defaultSourceRef(s))).problems, s.key).toEqual([]);
@@ -122,6 +127,37 @@ describe('the source catalogue', () => {
     expect(defaultSourceRef(weekends)).toEqual({ source: 'weekends', params: { count: 10 } });
   });
 
+  it('P2.24 B2: the Series values the readers resolve: Results offers “Home’s series” (key home) first and Standings “Latest result” (key latest) first, each parsing on its source alone and reading back by its label; the loader keys behind Home’s series are the six series’ own, none behind Latest result until it is read; Home’s set is Home’s; both sources carry the series’ facts as columns', () => {
+    const results = findSource('results')!;
+    const standings = findSource('standings')!;
+    expect(results.parameters[0].options![0]).toEqual({ key: 'home', label: "Home's series" });
+    expect(standings.parameters[0].options![0]).toEqual({ key: 'latest', label: 'Latest result' });
+    expect(HOME_RESULTS_SERIES).toEqual(HOME_RESULTS_SLUGS);
+    expect(parseSourceRef('results?series=home&season=2026')).toEqual({ value: { source: 'results', params: { series: 'home', season: 2026 } }, problems: [] });
+    expect(parseSourceRef('standings?series=latest&season=2026')).toEqual({ value: { source: 'standings', params: { series: 'latest', season: 2026 } }, problems: [] });
+    expect(parseSourceRef('results?series=latest&season=2026').problems).toEqual(['Series must be one of the series Results offers']);
+    expect(parseSourceRef('standings?series=home&season=2026').problems).toEqual(['Series must be one of the series Standings offers']);
+    for (const ref of ['rounds?series=home', 'sessions?series=latest', 'weekends?series=home&count=3', 'posts?series=latest&count=3', 'season?series=home']) expect(parseSourceRef(ref).value, ref).toBeNull();
+    expect(sourceLabel({ source: 'results', params: { series: 'home', season: 2026 } })).toBe("Results · Home's series · 2026");
+    expect(sourceLabel({ source: 'standings', params: { series: 'latest', season: 2026 } }, [{ slug: 'f1', name: 'Formula One' }])).toBe('Standings · Latest result · 2026');
+    // The picker's default stays the first championship, never the special value.
+    expect(defaultSourceRef(results)).toEqual({ source: 'results', params: { series: 'f1', season: 2026 } });
+    expect(results.loaderKeys!({ series: 'home', season: 2026 })).toEqual(['f1:results', 'f1:sprints', 'f1:last-race', 'results:f3', 'results:formula-e', 'results:indycar', 'results:motogp', 'results:wec']);
+    expect(standings.loaderKeys!({ series: 'latest', season: 2026 })).toEqual([]);
+    expect(results.columns.slice(-4).map(c => [c.key, c.label, c.type])).toEqual([
+      ['seriesName', 'Series', 'text'],
+      ['colour', 'Series colour', 'colour'],
+      ['final', 'Season complete', 'boolean'],
+      ['champion', 'Champion', 'text'],
+    ]);
+    expect(standings.columns.slice(-4).map(c => [c.key, c.label, c.type])).toEqual([
+      ['seriesName', 'Series', 'text'],
+      ['colour', 'Series colour', 'colour'],
+      ['winner', 'Race winner', 'boolean'],
+      ['final', 'Season complete', 'boolean'],
+    ]);
+  });
+
   it('labels a ref in the catalogue’s words, the series by name from the list given or the catalogue’s', () => {
     const ref = { source: 'standings', params: { series: 'f1', season: 2026 } };
     expect(sourceLabel(ref)).toBe('Standings · Formula 1 · 2026');
@@ -161,10 +197,11 @@ describe('the source catalogue', () => {
     expect(results.loaderKeys!({ series: 'gt-world', season: 2026 })).toEqual(['results:gt-world']);
     // P2.2 B1: the results source reads fourteen series (NLS, IMSA, WEC and GT World joined), each with its remote server, over twenty columns.
     const resultsSeries = results.parameters[0].options!.map(o => o.key);
-    expect(resultsSeries).toEqual(['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world']);
-    for (const slug of resultsSeries) expect(results.hosts?.[slug], slug).toBeDefined();
+    // P2.24 B2: Home's series first, resolved server-side (no remote server behind it), then the fourteen.
+    expect(resultsSeries).toEqual(['home', 'f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world']);
+    for (const slug of resultsSeries.filter(s => s !== 'home')) expect(results.hosts?.[slug], slug).toBeDefined();
     expect(results.hosts).toMatchObject({ nls: 'vln', imsa: 'alkamel', wec: 'fiawec', 'gt-world': 'gt-world-challenge' });
-    expect(results.columns.map(c => c.key)).toEqual(['round', 'race', 'raceId', 'date', 'circuit', 'class', 'session', 'position', 'driver', 'code', 'car', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'time', 'gap', 'points', 'weekend']);
+    expect(results.columns.map(c => c.key)).toEqual(['round', 'race', 'raceId', 'date', 'circuit', 'class', 'session', 'position', 'driver', 'code', 'car', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'time', 'gap', 'points', 'weekend', 'seriesName', 'colour', 'final', 'champion']);
     expect(results.columns.find(c => c.key === 'weekend')?.type).toBe('link');
     // P2.24 A: the posts and news sources carry what Home's pieces derived (the series' name and colour, the read time), so the Data
     // region's templates are functions of their rows; the slug column is named as such.

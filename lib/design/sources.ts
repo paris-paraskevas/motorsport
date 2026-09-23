@@ -110,6 +110,17 @@ const STANDINGS_SERIES = ['f1', 'f2', 'f3', 'motogp', 'wsbk', 'indycar', 'formul
 /** The series the season results dispatch handles (components/weekend/WeekendStandingsSnapshot.tsx). */
 /** The ten the weekend dispatch handles, plus the four the tab reads through their own fetchers (P2.2 B1): NLS, IMSA, WEC, GT World. */
 const RESULTS_SERIES = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world'];
+/** The series Home ranks for its Latest result (lib/home-results.ts HOME_RESULTS_SLUGS, in Home's order; a test holds the two
+ *  equal, since this file imports nothing at runtime): the Series value "Home's series" resolves to the newest finished race
+ *  across them (P2.24 B2). */
+export const HOME_RESULTS_SERIES: readonly string[] = ['f1', 'f3', 'formula-e', 'indycar', 'motogp', 'wec'];
+/** The two Series values the readers resolve rather than read (P2.24 B2), each offered by one source and first in its list: the
+ *  Results source's "Home's series" (the newest finished race across the series Home ranks) and the Standings source's "Latest
+ *  result" (that race's championship). Not championships: the designer draws them first, the parser takes them for their source alone. */
+export const HOME_SERIES_OPTION = { key: 'home', label: "Home's series" } as const;
+export const LATEST_RESULT_OPTION = { key: 'latest', label: 'Latest result' } as const;
+/** The results keys the loader writes for one series: F1's three slots, else `results:<slug>` (and WRC's chart). */
+const resultsKeys = (series: string | number | undefined): string[] => (series === 'f1' ? ['f1:results', 'f1:sprints', 'f1:last-race'] : [`results:${series}`, ...(series === 'wrc' ? ['results:wrc-chart'] : [])]);
 
 const seriesParam = (options: readonly string[], required = true): SourceParameter => ({
   key: 'series',
@@ -207,28 +218,32 @@ export const SOURCES: readonly SourceDefinition[] = [
   {
     key: 'standings',
     name: 'Standings',
-    holds: 'the championship tables: drivers, constructors, teams, manufacturers and co-drivers, by class where a series has them; position, points, wins',
-    parameters: [seriesParam(STANDINGS_SERIES), seasonParam],
-    columns: [col('kind', 'Kind', 'text'), col('position', 'Position', 'number'), col('name', 'Name', 'text'), col('code', 'Code', 'text'), col('team', 'Team', 'text'), col('points', 'Points', 'number'), col('wins', 'Wins', 'number'), col('class', 'Class', 'text')],
+    holds: 'the championship tables: drivers, constructors, teams, manufacturers and co-drivers, by class where a series has them; position, points, wins; the Latest result is the championship of the newest race across the series Home ranks',
+    parameters: [{ ...seriesParam(STANDINGS_SERIES), options: [LATEST_RESULT_OPTION, ...seriesOptions(STANDINGS_SERIES)], help: 'Which championship; the Latest result is the championship of the newest race across the series Home ranks.' }, seasonParam],
+    // The series' facts on every row (P2.24 B2): its name and colour; the race winner and the season's end are the Latest result's, null for one championship.
+    columns: [col('kind', 'Kind', 'text'), col('position', 'Position', 'number'), col('name', 'Name', 'text'), col('code', 'Code', 'text'), col('team', 'Team', 'text'), col('points', 'Points', 'number'), col('wins', 'Wins', 'number'), col('class', 'Class', 'text'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour'), col('winner', 'Race winner', 'boolean'), col('final', 'Season complete', 'boolean')],
     fresh: 'loader',
     load: 'replace',
     pagination: 'none',
     reads: ['db:standing_current', 'snapshot:standings:', 'snapshot:f1:'],
-    // GT World's snapshot is season-scoped (lib/standings/gt-world.ts), the one such key; F1 keeps its own slot too.
-    loaderKeys: p => [p.series === 'gt-world' ? `standings:gt-world:${p.season}` : `standings:${p.series}`, ...(p.series === 'f1' ? ['f1:standings'] : [])],
+    // GT World's snapshot is season-scoped (lib/standings/gt-world.ts), the one such key; F1 keeps its own slot too. The Latest
+    // result's series is known only when read: the reader names the resolved series' keys in the provenance.
+    loaderKeys: p => (p.series === LATEST_RESULT_OPTION.key ? [] : [p.series === 'gt-world' ? `standings:gt-world:${p.season}` : `standings:${p.series}`, ...(p.series === 'f1' ? ['f1:standings'] : [])]),
     hosts: STANDINGS_HOSTS,
   },
   {
     key: 'results',
     name: 'Results',
-    holds: 'the season’s race results, one row per classified entry: the flat series’ races by session, the sportscar series’ by class or cup, NLS’s winners',
-    parameters: [seriesParam(RESULTS_SERIES), seasonParam],
-    columns: [col('round', 'Round', 'number'), col('race', 'Race', 'text'), col('raceId', 'Race id', 'number'), col('date', 'Date', 'date'), col('circuit', 'Circuit', 'text'), col('class', 'Class', 'text'), col('session', 'Session', 'text'), col('position', 'Position', 'number'), col('driver', 'Driver', 'text'), col('code', 'Code', 'text'), col('car', 'Car', 'text'), col('team', 'Team', 'text'), col('vehicle', 'Vehicle', 'text'), col('manufacturer', 'Manufacturer', 'text'), col('laps', 'Laps', 'number'), col('status', 'Status', 'text'), col('time', 'Time', 'text'), col('gap', 'Gap', 'text'), col('points', 'Points', 'number'), col('weekend', 'Weekend page', 'link')],
+    holds: 'the season’s race results, one row per classified entry: the flat series’ races by session, the sportscar series’ by class or cup, NLS’s winners; Home’s series is the newest finished race across the series Home ranks',
+    parameters: [{ ...seriesParam(RESULTS_SERIES), options: [HOME_SERIES_OPTION, ...seriesOptions(RESULTS_SERIES)], help: 'Which championship; Home’s series is the newest finished race across the series Home ranks, its classification alone.' }, seasonParam],
+    // The series' facts on every row (P2.24 B2): its name and colour, whether its season is complete and, then, its champion.
+    columns: [col('round', 'Round', 'number'), col('race', 'Race', 'text'), col('raceId', 'Race id', 'number'), col('date', 'Date', 'date'), col('circuit', 'Circuit', 'text'), col('class', 'Class', 'text'), col('session', 'Session', 'text'), col('position', 'Position', 'number'), col('driver', 'Driver', 'text'), col('code', 'Code', 'text'), col('car', 'Car', 'text'), col('team', 'Team', 'text'), col('vehicle', 'Vehicle', 'text'), col('manufacturer', 'Manufacturer', 'text'), col('laps', 'Laps', 'number'), col('status', 'Status', 'text'), col('time', 'Time', 'text'), col('gap', 'Gap', 'text'), col('points', 'Points', 'number'), col('weekend', 'Weekend page', 'link'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour'), col('final', 'Season complete', 'boolean'), col('champion', 'Champion', 'text')],
     fresh: 'loader',
     load: 'replace',
     pagination: 'none',
     reads: ['snapshot:results:', 'snapshot:f1:'],
-    loaderKeys: p => (p.series === 'f1' ? ['f1:results', 'f1:sprints', 'f1:last-race'] : [`results:${p.series}`, ...(p.series === 'wrc' ? ['results:wrc-chart'] : [])]),
+    // Home's series reads every one of Home's six; the reader names the resolved series' keys in the provenance.
+    loaderKeys: p => (p.series === HOME_SERIES_OPTION.key ? HOME_RESULTS_SERIES.flatMap(resultsKeys) : resultsKeys(p.series)),
     hosts: RESULTS_HOSTS,
   },
   {
@@ -446,7 +461,8 @@ export function parseSourceRef(raw: unknown, allowed?: readonly string[]): { val
   return problems.length ? { value: null, problems } : { value: { source: key, params }, problems: [] };
 }
 
-/** `Standings · Formula 1 · 2026`: the source's name, then its parameters; a series by the name the list given holds, else the catalogue's. */
+/** `Standings · Formula 1 · 2026`: the source's name, then its parameters; a series by the name the list given holds, else the
+ *  parameter's own option label (the values the readers resolve, P2.24 B2), else the catalogue's. */
 export function sourceLabel(ref: SourceRef, series?: readonly { slug: string; name: string }[]): string {
   const source = findSource(ref.source);
   if (!source) return ref.source;
@@ -454,7 +470,7 @@ export function sourceLabel(ref: SourceRef, series?: readonly { slug: string; na
   for (const p of source.parameters) {
     const v = ref.params[p.key];
     if (v === undefined) continue;
-    if (p.kind === 'series') parts.push(series?.find(s => s.slug === v)?.name ?? SERIES_OPTIONS.find(o => o.key === v)?.label ?? String(v));
+    if (p.kind === 'series') parts.push(series?.find(s => s.slug === v)?.name ?? p.options?.find(o => o.key === v)?.label ?? SERIES_OPTIONS.find(o => o.key === v)?.label ?? String(v));
     else if (p.kind === 'season') parts.push(String(v));
     else if (p.kind === 'choice') parts.push(p.options?.find(o => o.key === v)?.label ?? String(v));
     else parts.push(`${p.label} ${v}`);
