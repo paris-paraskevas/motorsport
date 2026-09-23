@@ -261,6 +261,10 @@ The ingest exists as of 0.334.103: `npm run upgrades:draft` does discovery, fetc
 - (2026-09-23, session 56, PR C) `fetchHomeBlogLead(pinnedSlug?)` keeps a parameter no caller passes; `layoutFromParams` serves the retired composer; hidden regions still render server-side (a hidden Live band costs its read): three small trims for a cost PR.
 - (2026-09-23, session 56, PR C) prod's `setting` table keeps the two retired count rows (home.wire_count 5, home.blog_suggested_count 6), unread; deleting them is an "apply".
 - (2026-09-23, session 56, PR C) A subagent's hand-back frame carries no usage figure; the figure arrives in the task notification (the reviewer: 386,082 tokens); read both before recording.
+- (2026-09-23, session 56, R7, the reviewer's nit) The parser's refusal for a `later` option (page-document.ts, "<option> <later reason>") stays unprefixed by its setting's label, the ambiguity R7 fixed for the source-bound options; unreachable today (no component combines `later` with a label another setting shares).
+- (2026-09-23, session 56, R7) A long designer test (PageDesigner.test.tsx, the P2.24 A case) timed out at vitest's 5 s when the suite ran beside the foreground `cf:build`; the clean run passed. A `testTimeout` for the designer file, or the rule "the suite alone, then the build", for the recipe.
+- (2026-09-23, session 56, P2.3) The APEX study has no end-user click map of a running Interactive Report (ux-map.jsonl is the Page Designer's own paths, README:19); P2.3's controls follow the notes' words (the Actions menu toggles, the column heading menu, the four tiers) and the browser run stands in for the click map.
+- (2026-09-23, session 56, P2.3) The site does not use Cache Components; the day a route needs `searchParams` on the server without going dynamic, the flip to `cacheComponents: true` is a slot of its own (every route's caching semantics change; `dynamicParams`, `revalidate` and `dynamic` exports leave) — the URL state travels as a rewritten path variant until then.
 
 ## A "connection is secure" interstitial — operator ask, 2026-08-22, RECOMMEND AGAINST as asked
 

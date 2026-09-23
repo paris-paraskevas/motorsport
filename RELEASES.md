@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.160 — 2026-09-23
+
+Internal only: the day’s working records. Nothing changes for readers.
+
 ## 1.0.159 — 2026-09-23
 
 In the design tool, changing what a data region reads (its source or its series) now picks the first table that source offers, with the look that table brings, instead of refusing to save until one is chosen by hand. Nothing changes for readers.
