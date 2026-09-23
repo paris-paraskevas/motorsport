@@ -31,7 +31,7 @@ import {
 } from '@/lib/design/page-document';
 import { SITE_URL } from '@/lib/site';
 import { findComponent, type ChoiceOption, type ComponentDefinition, type SettingValue } from '@/lib/design/components';
-import { SERIES_OPTIONS, defaultSourceRef, encodeSourceRef, findSource, parseSourceRef, type SourceDefinition, type SourceParameter, type SourceRef } from '@/lib/design/sources';
+import { SERIES_OPTIONS, defaultSourceRef, findSource, parseSourceRef, type SourceDefinition, type SourceParameter, type SourceRef } from '@/lib/design/sources';
 import { SHAPES, findPreset, type Shape } from '@/lib/design/presets';
 import { normaliseHex } from '@/lib/design/contrast';
 import { BAR_ICON_NAMES } from '@/components/BottomBar';
@@ -58,6 +58,7 @@ import {
   sharedOf,
   spanName,
   splitRecipe,
+  withSourceChanged,
   STEP_POINTS,
   systemSteps,
   triggerFor,
@@ -733,13 +734,9 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       const allowed = spec.sources.map(k => findSource(k)).filter((s): s is SourceDefinition => s !== null);
       const picked = r.source ? parseSourceRef(r.source, spec.sources).value : null;
       const def = picked ? findSource(picked.source) : null;
-      const setSource = (next: SourceRef | null) =>
-        p('Source set.', x => {
-          if (x.kind !== 'component') return x;
-          const rest = { ...x };
-          delete rest.source;
-          return next ? { ...rest, source: encodeSourceRef(next) } : rest;
-        });
+      // R7: a change of Source moves a preset (or a template view) the new Source and Series do not offer to the first they do,
+      // with what its pick brings, so the Messages never refuse a Source the operator has just picked.
+      const setSource = (next: SourceRef | null) => p('Source set.', x => (x.kind !== 'component' ? x : withSourceChanged(x, next, spec)));
       source.push({
         label: 'Location',
         common: true,

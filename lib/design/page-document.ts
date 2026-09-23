@@ -537,11 +537,12 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
           else if (opt.only && sourceRef) {
             const series = sourceRef.params.series;
             // The same words the Attributes tab's note uses for a greyed option (P2.2 B2: a view bound to a source, no series list).
-            if (sourceRef.source !== opt.only.source) parsed.problems.push(`${opt.label} is for a ${findSource(opt.only.source)?.name ?? opt.only.source} source; this region reads ${findSource(sourceRef.source)?.name ?? sourceRef.source}`);
+            // The message names the setting (R7): the Preset "What it changed" and the View "What it changed" once read alike.
+            if (sourceRef.source !== opt.only.source) parsed.problems.push(`${s.label} ${opt.label} is for a ${findSource(opt.only.source)?.name ?? opt.only.source} source; this region reads ${findSource(sourceRef.source)?.name ?? sourceRef.source}`);
             else if (opt.only.series !== undefined && typeof series === 'string' && !opt.only.series.includes(series)) {
               // The value's own label (P2.24 B2: Home's series and the Latest result are values the readers resolve, not championships), else the catalogue's, else the key.
               const label = findSource(sourceRef.source)?.parameters.find(p => p.key === 'series')?.options?.find(o => o.key === series)?.label ?? SERIES_OPTIONS.find(o => o.key === series)?.label ?? series;
-              parsed.problems.push(`${opt.label} is not a preset of ${label}`);
+              parsed.problems.push(`${s.label} ${opt.label} is not a preset of ${label}`);
             }
           }
         }

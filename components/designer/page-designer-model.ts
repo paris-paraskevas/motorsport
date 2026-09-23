@@ -22,7 +22,7 @@ import {
   type TriggerEvent,
 } from '@/lib/design/page-document';
 import { COMPONENTS, SPLITS, componentDefaults, componentId, findComponent, recipeRegions, settingsSummary, type ComponentDefinition } from '@/lib/design/components';
-import { parseSourceRef, sourceLabel } from '@/lib/design/sources';
+import { encodeSourceRef, parseSourceRef, sourceLabel, type SourceRef } from '@/lib/design/sources';
 import { adoptRecipe } from '@/lib/design/composed-page';
 import { DESTINATIONS, pageDest, resolveDestination, type PageDestinations } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
@@ -246,6 +246,35 @@ export function splitBody(doc: PageDocument, path: string): PageDocument | null 
   const recipe = recipeRegions(path, rest.map(r => r.id)).map((r, i, all) => ({ ...r, position: legacy.position, seq: legacy.seq + (i + 1) / (all.length + 1), authz: legacy.authz }) as ComponentRegion);
   if (recipe.length === 0) return null;
   return { ...doc, regions: renumber([...rest, ...recipe]) };
+}
+
+/**
+ * The region with its Source changed (P2.2's Source group; R7, the operator's report of 2026-09-23: changing a What it
+ * changed region's Type to Results left its preset and view behind and Save refused twice). The ref is stored canonically
+ * or removed; then every choice whose current option is bound to another source or series (the Data region's Preset, a
+ * View that is a template) moves to the first option the new Source and Series offer, with what that pick brings (its
+ * `sets`: the view, the rows, the card slots and zones) — the same rule as picking it by hand in the Attributes tab. The
+ * Preset comes before the View in the definition, so the preset's own view lands before the View is checked. An option
+ * still offered, a Source with nothing to offer, or a definition without a bound choice leave the settings as they are.
+ */
+export function withSourceChanged(region: ComponentRegion, next: SourceRef | null, spec: ComponentDefinition | null): ComponentRegion {
+  const rest = { ...region };
+  delete rest.source;
+  const out: ComponentRegion = next ? { ...rest, source: encodeSourceRef(next) } : rest;
+  if (!next || !spec) return out;
+  const series = typeof next.params.series === 'string' ? next.params.series : null;
+  const offered = (o: { only?: { source: string; series?: readonly string[] }; later?: string }) =>
+    !o.later && (o.only === undefined || (o.only.source === next.source && (o.only.series === undefined || series === null || o.only.series.includes(series))));
+  let settings = out.settings;
+  for (const s of spec.settings) {
+    if (s.kind !== 'choice' || !s.options?.some(o => o.only)) continue;
+    const current = s.options.find(o => o.key === String(settings[s.key] ?? s.default));
+    if (!current || offered(current)) continue;
+    const first = s.options.find(offered);
+    if (!first) continue;
+    settings = { ...settings, ...(first.sets ?? {}), [s.key]: first.key };
+  }
+  return settings === out.settings ? out : { ...out, settings };
 }
 
 /** Where a dropped or created region lands. */
