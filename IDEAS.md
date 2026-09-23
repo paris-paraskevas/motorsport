@@ -248,6 +248,8 @@ The ingest exists as of 0.334.103: `npm run upgrades:draft` does discovery, fetc
 - (2026-09-23, session 56) The podium shape's Cards mapping (title driver, subtitle team) reads oddly for a WEC crew name in `driver` (the critic's note); the Cards over the Latest result preset are unused by Home and untested.
 - (2026-09-23, session 56) The Plan agent type carries no Write tool: a plan critic launched as `Plan` returns its report inline (the general-purpose type writes files); the recipe for the next critic.
 - (2026-09-23, session 56) The local Monza page holds twenty-seven drafts above the live revision (the twenty-five before, then eacb0041 with the Podium and the Leader and 1adbbe21 with the podium as a Table); production untouched.
+- (2026-09-23, session 56) On prod the browser refuses stylesheet and script chunks that come back as HTML (404: `2xqjxvg7b5m9l.css`, `42yunp5zxiu2m.css`, `37-1ktct3lirx.js`), none of them referenced by the served page of `/`: the prefetched routes' payloads name a previous build's chunks, the served-as-HTML issue of 1.0.34 in another coat; look at the RSC prefetch caching across deploys.
+- (2026-09-23, session 56) The Application Settings editor lets the lead series (`home.lead_series`) be named among the featured series (`home.major_series`); the ranking now ignores the overlap (R6), but the editor could refuse or grey it.
 
 ## A "connection is secure" interstitial — operator ask, 2026-08-22, RECOMMEND AGAINST as asked
 

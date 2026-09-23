@@ -90,6 +90,16 @@ describe('rankLiveWeekends', () => {
     expect(featured.map(f => f.slug)).toEqual(['f1', 'nascar-cup', 'motogp', 'indycar']);
   });
 
+  it('features the lead once when it is also named among the majors (the operator’s report of 2026-09-23: the Azerbaijan Grand Prix boxed twice in the band, the second box without its Also row)', () => {
+    const { featured, also } = rankLiveWeekends([at('f1', 14), at('motogp', 19), at('f2', 13)], { lead: 'f1', majors: ['f1', 'motogp'] });
+    expect(featured.map(f => f.slug)).toEqual(['f1', 'motogp']);
+    expect(also.map(f => f.slug)).toEqual(['f2']);
+    // The lead named among the majors but not racing: the majors feature on their own, as before (the reviewer's note).
+    const absent = rankLiveWeekends([at('motogp', 19), at('f2', 13)], { lead: 'f1', majors: ['f1', 'motogp'] });
+    expect(absent.featured.map(f => f.slug)).toEqual(['motogp']);
+    expect(absent.also.map(f => f.slug)).toEqual(['f2']);
+  });
+
   it('features the majors on their own when F1 is not racing', () => {
     const { featured, also } = rankLiveWeekends([at('dtm', 9), at('motogp', 11), at('f2', 13)]);
     expect(featured.map(f => f.slug)).toEqual(['motogp']);

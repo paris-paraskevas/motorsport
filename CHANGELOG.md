@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.155 — 2026-09-23
+
+### Home — [R6] The live band features the lead series once
+
+A quick fix on the operator's report (2026-09-23 ~11:45Z, two screenshots): with every other region hidden, Home showed the live band twice and, in each band, the Azerbaijan Grand Prix boxed twice, the second box without its "Also Thursday" row. Two causes. The Home document carries both a **Live band** region (`series.live`, P2.9) and a **This weekend** region (`home.live`): two components, one band each; the operator hides or deletes one, and PR C retires `home.live`. And `rankLiveWeekends` (`lib/home-model.ts`) built its featured list as the lead series then the majors with no exclusion, so a lead also named in the Application Setting `home.major_series` (the settings editor lets it be) was featured twice; `HomeThisWeekend` gives the Also row to the first box only, which is why the second lacked it.
+
+- **The fix**: the lead is excluded from the majors in the ranking (one line); a test first, seen red, for the overlap (lead f1, majors [f1, motogp] → featured f1 then motogp, f2 in Also racing). The setting stays valid and harmless.
+- **Records**: the ledger gains slot **R6** (started; done at the merge) and a dated line with the operator's word ("Fix the ranking now"); `RELEASES.md` 1.0.155; two Inbox lines (prod's prefetched routes referencing a previous build's chunks, returned as HTML; the settings editor allowing the lead among the featured series).
+- **The reviewer** (fresh-context Sonnet, said ~60k tokens, actual 116,961): PASS WITH NOTES, nothing blocking; its one note, the lead named among the majors while not racing, is asserted in the same test (the majors feature on their own, as before).
+- **Gates after the last edit**: tsc 0 · lint 0 errors (the two known `_encoding` warnings) · vitest 223 files, 2280 tests · hooks 31/31 · `DATA_SOURCE=db npm run cf:build` in the foreground, exit 0, 1189 pages (52 first-attempt prerender retries, each passing) · `wrangler deploy --dry-run` Total Upload **39427.18 KiB** / gzip 8630.11 KiB (B2: 39427.05 KiB); the reviewer's assertion joined after these ran, a test line alone, the home model test green.
+
 ## 1.0.154 — 2026-09-23
 
 ### Records — P2.24 B2 on prod, the session-57 handoff
