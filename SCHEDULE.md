@@ -2096,6 +2096,21 @@ Order fixed by the words: "merge" (~06:01Z, PR A), the B1 plan approved (~06:42Z
 Won't touch this session: PR B2 beyond its decision scan; PR C; any other slot; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
 Active: ~2h 20m from ~06:01Z to ~08:20Z (the operator present at the words; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
+### Wed 2026-09-23, morning to midday — session 56 (the operator present at the words) — P2.24 B2 The Podium and Leader templates
+
+Order fixed by the words: the plan approved (~08:55Z, ExitPlanMode), "merge" (~11:27Z).
+
+1. **The reads and the scan** (~35 min, from ~08:20Z): the rules, the ledger, the handoff, the Inbox, SCHEDULE, the twenty-five feedback memories; Home's two boxes, the home model and home-results, the readers, the catalogue, the presets, the renderer, the views, the designer's Series selects, B1's nine test diffs; the time plan and the won't-touch line; B2's decision scan (no word needed; three refinements flagged for the critic) → done.
+2. **The plan and its critic** (~35 min): the plan file; a fresh-context Sonnet plan critic (293,409 tokens against the ~250k said; the Plan agent type has no Write tool, the report came back inline): SOUND WITH FIXES, four blocking folded (the shape-gated dispatch, home.changed's name from the rows, the standings view-rule exception, the hosts loop skipping home), five non-blocking owned; approved ~08:55Z → done.
+3. **Tests first and the build** (~60 min): 19 red across 8 files, then the implementation; the find (concurrent dynamic imports inside the six-series fan-out read the real WEC feed in the test; vitest's module runner's own comment) → the results reader as a graph step and a read step; green: tsc 0 · lint 0 errors · vitest 223 files, 2279 tests · hooks 31/31 → done.
+4. **The browser run** (~25 min): PADDOCK_ENV=production npm run dev and the helper; the Podium region (Results · Home's series · Latest result) and the Leader region (Standings · Latest result · What it changed) on Monza, saved as eacb0041; the preview beside Home's boxes at the same moment (the very text for the Podium, Home's first five rows for the Leader); the trace; Data Sources' Preview over Home's series (22 of 22 rows); the Table over the podium shape (1adbbe21); eight screenshots → the review page bb8c0ea0-002d-4502-917e-52a6bec1cfbc → done.
+5. **Gates, PR, reviewer** (~30 min): the servers stopped by PID; DATA_SOURCE=db npm run cf:build in the foreground (exit 0, 1189 pages, 55 first-attempt retries) and the dry run 39427.05 KiB / gzip 8629.93 KiB; the trio (CHANGELOG 1.0.153, RELEASES, the version), the ledger's dated approval line; commit 1be38143, PR #1034; the reviewer (Sonnet, 305,410 tokens): PASS WITH NOTES, nothing blocking; the stale preset-count comment taken in the second commit 679d182c → done.
+6. **Merge and prod** (~11:27Z): "merge" → #1034 squash-merged 11:27:37Z as dde6c4b6 → main forward by fast-forward → prod /changelog 1.0.153 at 2026-09-23T11:31:39Z → done.
+7. **Close of the slot's PR**: the ledger (the merge's dated line; P2.24's evidence with B2), the handoff and the session-57 prompt (PR C first, its four defaults recorded and B2's two notes), this block, ten Inbox lines, the board, the memory pointer; the records PR 1.0.154 under the same word; then PR C's decision scan in this session.
+
+Won't touch this session: PR C's flip before its plan is approved; any other slot beyond its scan; the cost PR; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
+Active: ~3h 15m from ~08:15Z to ~11:35Z (the operator present at the words, ~08:55Z and ~11:27Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
 
 ---
 
