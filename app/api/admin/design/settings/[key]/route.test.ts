@@ -81,7 +81,7 @@ describe('PUT /api/admin/design/settings/[key]', () => {
 
   it('is 404 for a non-admin and for a key outside the catalogue', async () => {
     currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
-    expect((await put('home.wire_count', { value: 7, updatedAt: STAMP })).status).toBe(404);
+    expect((await put('home.lead_series', { value: 'motogp', updatedAt: STAMP })).status).toBe(404);
     currentUser.mockResolvedValue(admin);
     expect((await put('home.nothing', { value: 7, updatedAt: STAMP })).status).toBe(404);
     expect(update).not.toHaveBeenCalled();
@@ -89,15 +89,15 @@ describe('PUT /api/admin/design/settings/[key]', () => {
 
   it('refuses off production, writing nothing', async () => {
     delete process.env.PADDOCK_ENV;
-    expect((await put('home.wire_count', { value: 7, updatedAt: STAMP })).status).toBe(403);
+    expect((await put('home.lead_series', { value: 'motogp', updatedAt: STAMP })).status).toBe(403);
     expect(update).not.toHaveBeenCalled();
   });
 
   it('refuses a value outside its rule, and a missing stamp, before the database, naming the rule', async () => {
-    expect((await put('home.wire_count', { value: 7 })).status).toBe(400);
-    expect((await put('home.wire_count', { value: 0, updatedAt: STAMP })).status).toBe(400);
-    expect((await put('home.wire_count', { value: 'seven', updatedAt: STAMP })).status).toBe(400);
-    expect((await put('home.blog_suggested_count', { value: 7, updatedAt: STAMP })).status).toBe(400);
+    expect((await put('home.lead_series', { value: 'motogp' })).status).toBe(400);
+    expect((await put('home.major_series', { value: 'not json', updatedAt: STAMP })).status).toBe(400);
+    expect((await put('region.button.label', { value: 'x'.repeat(41), updatedAt: STAMP })).status).toBe(400);
+    expect((await put('region.button.label', { value: 7, updatedAt: STAMP })).status).toBe(400);
     expect((await put('home.lead_series', { value: 'dtm', updatedAt: STAMP })).status).toBe(400);
     const res = await put('home.major_series', { value: ['wec', 'no-such-series'], updatedAt: STAMP });
     expect(res.status).toBe(400);
@@ -124,9 +124,9 @@ describe('PUT /api/admin/design/settings/[key]', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/', 'layout');
   });
 
-  it('stores a number as its text, and an empty announcement as an empty string', async () => {
-    expect((await put('home.wire_count', { value: 7, updatedAt: STAMP })).status).toBe(200);
-    expect(update).toHaveBeenLastCalledWith({ value: '7', updated_by: 'user_admin' });
+  it('stores a text as it is, and an empty announcement as an empty string', async () => {
+    expect((await put('region.button.label', { value: 'Open', updatedAt: STAMP })).status).toBe(200);
+    expect(update).toHaveBeenLastCalledWith({ value: 'Open', updated_by: 'user_admin' });
     expect((await put('announcement.active_id', { value: '', updatedAt: STAMP })).status).toBe(200);
     expect(update).toHaveBeenLastCalledWith({ value: '', updated_by: 'user_admin' });
   });

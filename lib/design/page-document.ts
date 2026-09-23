@@ -40,7 +40,7 @@
 import { pageIdOf, resolveDestination } from './destinations';
 import { COMPONENTS, findComponent, parseSettings, type ComponentDefinition, type SettingValue } from './components';
 import { SHAPES, findPreset } from './presets';
-import { SERIES_OPTIONS, encodeSourceRef, findSource, parseSourceRef, type SourceRef } from './sources';
+import { CURRENT_SEASON, SERIES_OPTIONS, encodeSourceRef, findSource, parseSourceRef, type SourceRef } from './sources';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
 import { parseRegionTemplate, parseTemplateOptions, type RegionTemplateKey } from './template-options';
 
@@ -390,6 +390,31 @@ export const SHORTCUT_TOKEN = /\{shortcut:([a-z0-9][a-z0-9._-]{0,59})\}/g;
 
 const POSITION_ORDER: Record<string, number> = Object.fromEntries(POSITIONS.map((p, i) => [p, i]));
 
+/** What a stored region naming one of Home's six retired components becomes when it is read (P2.24 C; the operator's
+ *  word of 2026-09-23: "upgrade on read"): the same box as a Data region on its template over the catalogue's source
+ *  (the Live band for This weekend), its own settings carried over — the pin, Further reading as Rows (the lead and
+ *  its further posts), Items as Rows, a What it changed's own Source kept, the Latest result standing in where it had
+ *  none. Every other field of the region (its id, look, place, rule, hidden flag) goes through the parser untouched, no
+ *  problem is pushed, and the next Save stores the upgraded form; the served page, the preview, the designer and the
+ *  writer all read through here, so the stored document survives as the operator left it. */
+type LegacyUpgrade = (settings: Readonly<Record<string, unknown>>, source: string | undefined) => { component: string; settings: Record<string, unknown>; source?: string };
+const numberOr = (v: unknown, fallback: number): number => (typeof v === 'number' && Number.isFinite(v) ? v : fallback);
+const dataRegion = (preset: string, view: string, rows: number, source: string, extra: Record<string, unknown> = {}) => ({ component: 'data.region', settings: { preset, view, rows, heading: '', ...extra }, source });
+export const LEGACY_UPGRADES: Readonly<Record<string, LegacyUpgrade>> = {
+  'home.lead': s => dataRegion('lead-story', 'lead-story', 1 + numberOr(s.suggested, 3), 'posts?count=10', { pinned: typeof s.pinned === 'string' ? s.pinned : '' }),
+  'home.live': () => ({ component: 'series.live', settings: { series: '', also: true } }),
+  'home.result': () => dataRegion('latest-result', 'podium', 3, `results?series=home&season=${CURRENT_SEASON}`),
+  'home.changed': (s, source) => dataRegion('what-it-changed', 'leader', numberOr(s.rows, 5), source || `standings?series=latest&season=${CURRENT_SEASON}`),
+  'home.next': () => dataRegion('whats-next', 'coming-weekends', 3, 'weekends?count=10'),
+  'home.wire': s => dataRegion('wire', 'wire', numberOr(s.items, 5), 'news?per=3'),
+};
+
+/** A component key as the catalogue knows it now: a retired one's upgrade, any other as it is (the Utilization count reads stored keys through this). */
+export function upgradedKey(key: string): string {
+  const up = LEGACY_UPGRADES[key];
+  return up ? up({}, undefined).component : key;
+}
+
 function parseRegion(raw: unknown, index: number, seen: Set<string>, components: readonly ComponentDefinition[]): { region: Region | null; problems: string[] } {
   const problems: string[] = [];
   if (!raw || typeof raw !== 'object') return { region: null, problems: [`region ${index + 1}: not an object`] };
@@ -472,11 +497,17 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
       ...(commentedOut ? { commentedOut: true as const } : {}),
     };
     if (kind === 'component') {
-      const key = typeof r.component === 'string' ? r.component : '';
+      const stored = typeof r.component === 'string' ? r.component : '';
+      // One of Home's six retired components (P2.24 C): the region reads as its Data-region or Live-band equivalent.
+      const upgrade = LEGACY_UPGRADES[stored];
+      const up = upgrade ? upgrade(r.settings && typeof r.settings === 'object' && !Array.isArray(r.settings) ? (r.settings as Record<string, unknown>) : {}, typeof r.source === 'string' ? r.source : undefined) : null;
+      const key = up ? up.component : stored;
+      const rawSettings = up ? up.settings : r.settings;
+      const rawSource = up ? up.source : r.source;
       const spec = key ? findComponent(key, components) : null;
       if (!spec) problems.push(`${who}: names a component the code does not have (${key || 'none'})`);
       else {
-        const parsed = parseSettings(spec, r.settings);
+        const parsed = parseSettings(spec, rawSettings);
         // A link attribute (P2.0) names a page or a catalogue link, as a Button's Target does; never a typed URL.
         for (const s of spec.settings) {
           const v = parsed.settings[s.key];
@@ -485,10 +516,10 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
         // The Source (P2.1): read against the sources the definition declares, stored canonically; a component that declares none takes none.
         let source: string | undefined;
         let sourceRef: SourceRef | undefined;
-        if (r.source !== undefined && r.source !== null && r.source !== '') {
+        if (rawSource !== undefined && rawSource !== null && rawSource !== '') {
           if (!spec.sources?.length) parsed.problems.push(`${spec.name} reads no source`);
           else {
-            const ref = parseSourceRef(r.source, spec.sources);
+            const ref = parseSourceRef(rawSource, spec.sources);
             if (ref.problems.length) parsed.problems.push(...ref.problems);
             else if (ref.value) {
               source = encodeSourceRef(ref.value);
@@ -838,6 +869,14 @@ export function isInside(doc: PageDocument, id: string, ancestor: string): boole
  *  place in the document. Kept here so the rule has a test of its own. */
 export function firstBodyRegion(doc: PageDocument): Region | undefined {
   return doc.regions.find(r => r.position === 'body' && !r.hidden && !r.parent);
+}
+
+/** Whether the Body is the operator's own composition (the components programme, R2b; P2.24 C): page-level Body rows
+ *  and none of them the transitional component. Then the code's body is neither drawn (CodePageFrame) nor rendered
+ *  (page-frame.tsx's framed). A hidden region counts: it is on the page, hidden. */
+export function splitsBody(doc: PageDocument): boolean {
+  const rows = rowsAt(doc, 'body');
+  return rows.length > 0 && !rows.some(row => row.some(isLegacyBody));
 }
 
 /** The regions of one group: a position at the page level, or inside one parent. */

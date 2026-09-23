@@ -63,7 +63,7 @@ afterEach(() => {
 
 describe('the definitions loader', () => {
   it('reads the overlay rows against their shipped definitions, leaving out a row it cannot use', () => {
-    const out = overlaysFromRows([overlayRow, { key: 'nope.x', overlay: {} }, { key: 'home.wire', overlay: { attributes: [{ key: 'items', label: 'Items', kind: 'number', default: 1 }] } }, 'junk']);
+    const out = overlaysFromRows([overlayRow, { key: 'nope.x', overlay: {} }, { key: 'data.region', overlay: { attributes: [{ key: 'rows', label: 'Rows', kind: 'number', default: 1 }] } }, 'junk']);
     expect(Object.keys(out)).toEqual(['page.heading']);
     expect(out['page.heading'].attributes[0].key).toBe('accent');
   });
@@ -72,7 +72,7 @@ describe('the definitions loader', () => {
     const all = await loadDefinitions();
     expect(all).toHaveLength(DEFINITIONS.length);
     expect(all.find(d => d.key === 'page.heading')?.settings.map(s => s.key)).toEqual(['text', 'accent']);
-    expect(all.find(d => d.key === 'home.wire')).toBe(COMPONENTS.find(c => c.key === 'home.wire'));
+    expect(all.find(d => d.key === 'series.live')).toBe(COMPONENTS.find(c => c.key === 'series.live'));
     const components = await loadComponents();
     expect(components.map(d => d.key)).toEqual(COMPONENTS.map(c => c.key));
     expect(components.find(d => d.key === 'page.heading')?.settings).toHaveLength(2);
@@ -84,7 +84,15 @@ describe('the definitions loader', () => {
     expect(usage['calendar.month']).toEqual({ usedOn: [{ id: CAL, path: '/calendar', name: 'Calendar', attributes: [] }], regions: 1 });
     expect(usage['region.static']).toEqual({ usedOn: [{ id: MONZA, path: '/history/monza', name: 'Monza, a history', attributes: [] }], regions: 2 });
     expect(usage['region.list']?.regions).toBe(1);
-    expect(usage['home.wire']).toBeUndefined();
+    expect(usage['data.region']).toBeUndefined();
+    // P2.24 C: a stored region naming one of Home's retired components counts under the component it upgrades to on read.
+    const old = usageFromRows(pages, [
+      { page_id: MONZA, created_at: '2026-09-18T12:00:00Z', published_at: null, document: { version: 2, actions: [], regions: [region('wire', 'component', { component: 'home.wire', settings: { items: 5 } }), region('band', 'component', { component: 'home.live', settings: {} })] } },
+    ]);
+    expect(old['data.region']).toMatchObject({ usedOn: [{ id: MONZA, path: '/history/monza', name: 'Monza, a history' }], regions: 1 });
+    expect(old['series.live']).toMatchObject({ usedOn: [{ id: MONZA }], regions: 1 });
+    expect(old['home.wire']).toBeUndefined();
+    expect(old['home.live']).toBeUndefined();
   });
 
   it('P2.1: Utilization of a source: the pages whose newest or live revision carries a Source of it, with the refs; a bad ref and a region without one are ignored; the same newest-and-live rule as the definitions’', async () => {
@@ -98,14 +106,14 @@ describe('the definitions loader', () => {
           version: 2,
           actions: [],
           regions: [
-            region('changed', 'component', { component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=f1&season=2026' }),
-            region('bad', 'component', { component: 'home.changed', settings: { rows: 5 }, source: 'nope?x=1' }),
-            region('wire', 'component', { component: 'home.wire', settings: { items: 5 } }),
+            region('changed', 'component', { component: 'data.region', settings: { preset: 'what-it-changed', view: 'leader', rows: 5, heading: '' }, source: 'standings?series=f1&season=2026' }),
+            region('bad', 'component', { component: 'data.region', settings: { preset: 'what-it-changed', view: 'leader', rows: 5, heading: '' }, source: 'nope?x=1' }),
+            region('wire', 'component', { component: 'series.live', settings: { series: '', also: true } }),
           ],
         },
       },
       // The Calendar's LIVE revision (the newest published one, 12:00 on the 16th) carries a source its newer draft dropped: the live one still counts (the guard's rule).
-      { page_id: CAL, created_at: '2026-09-16T12:00:00Z', published_at: '2026-09-16T12:00:00Z', document: { version: 2, actions: [], regions: [region('changed', 'component', { component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=wec&season=2026' })] } },
+      { page_id: CAL, created_at: '2026-09-16T12:00:00Z', published_at: '2026-09-16T12:00:00Z', document: { version: 2, actions: [], regions: [region('changed', 'component', { component: 'data.region', settings: { preset: 'wec-hypercar-drivers', view: 'table', rows: 10, heading: '' }, source: 'standings?series=wec&season=2026' })] } },
     ];
     const usage = sourceUsageFromRows(pages, revs);
     expect(usage).toEqual({
@@ -132,10 +140,10 @@ describe('the definitions loader', () => {
     expect(heading.definition.settings).toHaveLength(2);
     expect(heading.usedOn.map(p => p.name)).toEqual(['Calendar']);
     expect(heading.regions).toBe(1);
-    const wire = list!.find(d => d.key === 'home.wire')!;
-    expect(wire.updatedAt).toBeNull();
-    expect(wire.overlay).toEqual({ attributes: [], groups: [] });
-    expect(wire.usedOn).toEqual([]);
+    const band = list!.find(d => d.key === 'series.live')!;
+    expect(band.updatedAt).toBeNull();
+    expect(band.overlay).toEqual({ attributes: [], groups: [] });
+    expect(band.usedOn).toEqual([]);
   });
 
   it('never throws: a failing read is the code’s definitions, and the editable list is null', async () => {

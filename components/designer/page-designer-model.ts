@@ -226,9 +226,9 @@ export function addComponent(doc: PageDocument, key: string, where: Placement, c
   return { doc: placeRegion(doc, region, { ...where, newRow: where.newRow ?? true }), id };
 }
 
-/** The components that replace a page's transitional body, when the catalogue has them. */
+/** The components that replace a page's transitional body, when the catalogue has them: one key per recipe entry. */
 export function splitRecipe(path: string): readonly string[] | null {
-  return SPLITS[path] ?? null;
+  return SPLITS[path]?.map(e => (typeof e === 'string' ? e : e.component)) ?? null;
 }
 
 /**

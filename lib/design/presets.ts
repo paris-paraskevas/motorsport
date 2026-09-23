@@ -259,8 +259,8 @@ export const PRESETS: readonly Preset[] = [
   results('season-results-imsa', 'Season results · IMSA', 'season-results-imsa', ['imsa'], 'car-rows'),
   results('season-results-wec', 'Season results · WEC', 'season-results-wec', ['wec'], 'car-rows'),
   results('season-results-gt-world', 'Season results · GT World', 'season-results-gt-world', ['gt-world'], 'cup-rows'),
-  // Home's boxes (P2.24 A): the lead with its three further posts (home.blog_suggested_count shipped three), the wire's five
-  // headlines (home.wire_count shipped five); `nameLabel` unused, the shapes carrying no name column.
+  // Home's boxes (P2.24 A): the lead with its three further posts, the wire's five headlines (the counts Home shipped; the two
+  // Application Settings that once set them left in P2.24 C); `nameLabel` unused, the shapes carrying no name column.
   { key: 'lead-story', name: 'Lead story', group: 'lead-story', source: 'posts', shape: 'post-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'lead-story', rows: 4 },
   { key: 'wire', name: 'The wire', group: 'wire', source: 'news', shape: 'news-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'wire', rows: 5 },
   // Home's What's next (P2.24 B1): the next three weekends across every series.

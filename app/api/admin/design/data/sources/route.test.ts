@@ -62,7 +62,7 @@ describe('GET /api/admin/design/data/sources', () => {
     tables = {
       page: { data: [{ id: MONZA, path: '/history/monza', name: 'Monza, a history' }], error: null },
       page_revision: {
-        data: [{ page_id: MONZA, created_at: '2026-09-17T12:00:00Z', published_at: null, document: { version: 2, actions: [], regions: [region('changed', 'component', { component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=f1&season=2026' })] } }],
+        data: [{ page_id: MONZA, created_at: '2026-09-17T12:00:00Z', published_at: null, document: { version: 2, actions: [], regions: [region('changed', 'component', { component: 'data.region', settings: { preset: 'what-it-changed', view: 'leader', rows: 5, heading: '' }, source: 'standings?series=f1&season=2026' })] } }],
         error: null,
       },
     };

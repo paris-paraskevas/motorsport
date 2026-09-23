@@ -11,8 +11,6 @@ import { componentSettingSpecs } from './component-definitions';
 export const SETTING_KEYS = [
   'home.lead_series',
   'home.major_series',
-  'home.wire_count',
-  'home.blog_suggested_count',
   'announcement.active_id',
   'region.image.show_caption',
   'region.list.style',
@@ -54,8 +52,6 @@ export type SettingType = 'text' | 'number' | 'boolean' | 'json';
 export interface SettingValues {
   'home.lead_series': string;
   'home.major_series': string[];
-  'home.wire_count': number;
-  'home.blog_suggested_count': number;
   'announcement.active_id': string;
   'region.image.show_caption': boolean;
   'region.list.style': 'links' | 'cards';
@@ -65,7 +61,9 @@ export interface SettingValues {
   'region.list.template': RegionTemplateKey;
   'region.button.template': RegionTemplateKey;
 }
-export type SettingValue = SettingValues[SettingKey];
+/** What a setting may hold, by its controls: text and choices, a series set, an integer, a yes/no. Wider than the
+ *  keys' own union: no shipped key is an integer since P2.24 C, a component's application-scope number attribute is. */
+export type SettingValue = string | number | boolean | string[];
 
 export type SettingControl =
   | { kind: 'series' }
@@ -110,20 +108,8 @@ export const SETTING_SPECS: { [K in SettingKey]: SettingSpec<K> } = {
     control: { kind: 'series-set', max: 6 },
     shipped: ['motogp', 'wec', 'indycar', 'nascar-cup'],
   },
-  'home.wire_count': {
-    type: 'number',
-    label: 'Home: wire headlines',
-    description: 'How many headlines the home page wire band shows, 1 to 15.',
-    control: { kind: 'integer', min: 1, max: 15 },
-    shipped: 5,
-  },
-  'home.blog_suggested_count': {
-    type: 'number',
-    label: 'Home: further reading',
-    description: 'How many further posts are listed beside the lead post on the home page, 0 to 6.',
-    control: { kind: 'integer', min: 0, max: 6 },
-    shipped: 3,
-  },
+  // home.wire_count and home.blog_suggested_count left in P2.24 C: the counts are
+  // the Rows of Home's Data regions now (their seeded rows stay in the table, unread).
   'announcement.active_id': {
     type: 'text',
     label: 'Announcement in force',

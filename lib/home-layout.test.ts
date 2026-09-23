@@ -29,7 +29,6 @@ vi.mock('./betting/client', () => ({
 
 import {
   parseHomeLayout,
-  pinnedLeadSlug,
   visibleBlocks,
   layoutFromParams,
   loadHomeLayoutState,
@@ -72,11 +71,11 @@ describe('parseHomeLayout — fail-soft matrix', () => {
 
   it('keeps the first of a duplicated id', () => {
     const out = parseHomeLayout([
-      { id: 'blog', pinnedSlug: 'first' },
-      { id: 'blog', pinnedSlug: 'second' },
+      { id: 'blog', hidden: true },
+      { id: 'blog' },
     ]);
     expect(ids(out).filter(i => i === 'blog')).toHaveLength(1);
-    expect(pinnedLeadSlug(out)).toBe('first');
+    expect(out.blocks.find(b => b.id === 'blog')?.hidden).toBe(true);
   });
 
   it('appends any block the operator never mentioned, so a new block needs no rewrite', () => {
@@ -102,23 +101,10 @@ describe('parseHomeLayout — fail-soft matrix', () => {
   });
 });
 
-describe('pinnedLeadSlug', () => {
-  it('is null when nothing is pinned', () => {
-    expect(pinnedLeadSlug(DEFAULT_HOME_LAYOUT)).toBeNull();
-  });
-
-  it('reads the pin off the blog block', () => {
-    expect(pinnedLeadSlug(parseHomeLayout([{ id: 'blog', pinnedSlug: 'a-post' }]))).toBe('a-post');
-  });
-
-  it('trims, and treats a blank or non-string pin as no pin', () => {
-    expect(pinnedLeadSlug(parseHomeLayout([{ id: 'blog', pinnedSlug: '  a-post  ' }]))).toBe('a-post');
-    expect(pinnedLeadSlug(parseHomeLayout([{ id: 'blog', pinnedSlug: '   ' }]))).toBeNull();
-    expect(pinnedLeadSlug(parseHomeLayout([{ id: 'blog', pinnedSlug: 123 }]))).toBeNull();
-  });
-
-  it('ignores a pin set on a block that is not the lead', () => {
-    expect(pinnedLeadSlug(parseHomeLayout([{ id: 'wire', pinnedSlug: 'a-post' }]))).toBeNull();
+describe('the retired pin (P2.24 C)', () => {
+  it('a stored pinnedSlug is ignored: the lead post is the Lead story region’s business now', () => {
+    expect(parseHomeLayout([{ id: 'blog', pinnedSlug: 'a-post' }]).blocks.find(b => b.id === 'blog')).toEqual({ id: 'blog', hidden: false });
+    expect(parseHomeLayout([{ id: 'blog', pinnedSlug: 'a-post' }])).toEqual(parseHomeLayout([{ id: 'blog' }]));
   });
 });
 
@@ -145,11 +131,10 @@ describe('visibleBlocks', () => {
 });
 
 describe('layoutFromParams', () => {
-  it('reads order, hidden and lead out of the URL', () => {
-    const l = layoutFromParams({ order: 'wire,blog,result,live', hidden: 'result', lead: 'a-post' });
+  it('reads order and hidden out of the URL', () => {
+    const l = layoutFromParams({ order: 'wire,blog,result,live', hidden: 'result' });
     expect(l.blocks.map(b => b.id)).toEqual(['wire', 'blog', 'result', 'live']);
     expect(visibleBlocks(l)).toEqual(['wire', 'blog', 'live']);
-    expect(pinnedLeadSlug(l)).toBe('a-post');
   });
 
   it('is the default layout when nothing is supplied', () => {

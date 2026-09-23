@@ -168,7 +168,7 @@ describe('a definition’s overlay (P2.0, PR B): what the operator adds to a shi
     const all = mergeDefinitions(DEFINITIONS, { 'page.heading': parseOverlay(overlay, heading).value });
     expect(all).toHaveLength(DEFINITIONS.length);
     expect(all.find(d => d.key === 'page.heading')?.settings).toHaveLength(3);
-    expect(all.find(d => d.key === 'home.wire')).toBe(DEFINITIONS.find(d => d.key === 'home.wire'));
+    expect(all.find(d => d.key === 'series.live')).toBe(DEFINITIONS.find(d => d.key === 'series.live'));
   });
 
   it('the component kinds of an editable list, merged, are what the Page Designer takes', () => {

@@ -9,7 +9,7 @@ import { fetchLatestPodium, HOME_RESULTS_SLUGS, type LatestRace } from '@/lib/ho
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
 import { fetchHomeBlogLead, publishedPosts } from '@/lib/blog';
 import { ageLabel } from '@/lib/date';
-import { loadLiveHomeLayout, pinnedLeadSlug, visibleBlocks, type HomeLayout } from '@/lib/home-layout';
+import { loadLiveHomeLayout, visibleBlocks, type HomeLayout } from '@/lib/home-layout';
 import { loadSettings } from '@/lib/design/settings';
 import { DEFAULT_SETTINGS } from '@/lib/design/setting-defaults';
 import type { Series, Weekend } from '@/lib/types';
@@ -145,27 +145,6 @@ export const loadSeriesMeta = cache(async (): Promise<Map<string, { name: string
   return new Map(all.map(s => [s.meta.slug, { name: s.meta.name, color: s.meta.color }]));
 });
 
-/**
- * What it changed from a Source's standings rows (P2.1): the driver rows by
- * position, the leader, the gap to second and the top ten, the shape the
- * assembly builds from the brief. A pinned championship has no race context,
- * so no winner's accent and no champion's headline. Null without a driver row;
- * a row missing its numbers is skipped.
- */
-export function changedFromStandings(rows: readonly Record<string, unknown>[], seriesName: string): HomeLeadChanged | null {
-  const every = rows.filter(r => r.kind === 'driver' && typeof r.position === 'number' && Number.isFinite(r.position) && typeof r.points === 'number' && Number.isFinite(r.points) && typeof r.name === 'string' && r.name);
-  // A source that carries several classes (a family series, P2.2: GT World's cups, IMSA's and WEC's classes) is read for
-  // the first class its rows carry, so one table is read and never three merged into one position order.
-  const firstClass = typeof every[0]?.class === 'string' ? every[0].class : null;
-  const drivers = every
-    .filter(r => (typeof r.class === 'string' ? r.class : null) === firstClass)
-    .map(r => ({ position: r.position as number, name: r.name as string, points: r.points as number }))
-    .sort((a, b) => a.position - b.position);
-  if (drivers.length === 0) return null;
-  const [leader, second] = drivers;
-  return { seriesName, leader: { name: leader.name, points: leader.points }, gapToSecond: second ? leader.points - second.points : null, top: drivers.slice(0, 10) };
-}
-
 /** A weekend under way, as the temporal step finds it: the series, the grouped weekend, its first session's start. */
 export interface LiveCandidate {
   s: Series;
@@ -272,26 +251,23 @@ export function liveBoxes(candidates: readonly LiveCandidate[], priority: HomePr
   return { liveWeekends, alsoRacing, liveAll: [...liveWeekends, ...rest.map(asBox)] };
 }
 
-export async function buildHomeModel(layout: HomeLayout, now = new Date()): Promise<HomeModel> {
-  const all = await loadAllSeries();
-  const metaBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
-  // The operator's named values (the designer's Application Settings), the
-  // shipped ones on any failure: which series lead, and how long two bands are.
-  const settings = await loadSettings();
-
-  // ── 0. Happening now: the weekend whose session window straddles `now`. This
-  // outranks the finished-result lead below — on Dutch GP Sunday the page led
-  // with a Formula E finale that ended five days earlier, because "newest race
-  // with a podium" has no concept of a weekend being underway. Live = not past,
-  // AND first session already started or starting inside 24h, AND the last
-  // session not yet over. This step is purely temporal and finds EVERY live
-  // weekend; which of them earn a box, and in what order, is decided in 0a
-  // below and is now editorial (it was not before 2026-09-04 — see there).
-  // NOT lib/weekend.ts weekendIsLive(): that is `start <= now <= end` on a
-  // single session, i.e. "a session is running this second". This band must also
-  // catch the Friday morning before FP1 has turned a wheel, hence the DAY_MS
-  // lookahead. Do not "simplify" one into the other — they answer different
-  // questions, and the band would go dark between sessions.
+/** The live step (P2.24 C; pure over the loaded series): every weekend whose window straddles `now`, fed to liveBoxes
+ *  under the priority. Home's assembly and the live model both read it, so the Live band on a composed page and the
+ *  route's own band agree.
+ *
+ *  Happening now: the weekend whose session window straddles `now`. On Home this
+ *  outranks the finished-result lead — on Dutch GP Sunday the page led with a
+ *  Formula E finale that ended five days earlier, because "newest race with a
+ *  podium" has no concept of a weekend being underway. Live = not past, AND first
+ *  session already started or starting inside 24h, AND the last session not yet
+ *  over. The step is purely temporal and finds EVERY live weekend; which of them
+ *  earn a box, and in what order, is editorial (`rankLiveWeekends`, since
+ *  2026-09-04). NOT lib/weekend.ts weekendIsLive(): that is `start <= now <= end`
+ *  on a single session, i.e. "a session is running this second". This band must
+ *  also catch the Friday morning before FP1 has turned a wheel, hence the DAY_MS
+ *  lookahead. Do not "simplify" one into the other — they answer different
+ *  questions, and the band would go dark between sessions. */
+export function liveStep(all: readonly Series[], priority: HomePriority, now: Date): LiveBoxes {
   const liveCandidates = all
     .flatMap(s => {
       try {
@@ -306,19 +282,32 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
       }
     })
     .sort((a, b) => a.start.getTime() - b.start.getTime());
+  // Which live weekends get a box, and in what order: `rankLiveWeekends` through
+  // liveBoxes, pure and tested. A dateOnly session has no real hour (lib/types.ts,
+  // Session.dateOnly), so it can never be a timed "next up" or an "also today"
+  // row — both carry a clock time to the client; the next session is the earliest
+  // that has NOT finished — `end > now`, not `start > now` — so a running session
+  // stays selected and the LIVE pill can fire while a session is on track.
+  return liveBoxes(liveCandidates, priority, now);
+}
 
-  // ── 0a. Which live weekends get a box, and in what order. The ranking itself
-  // lives in `rankLiveWeekends` above, pure and tested; this only feeds it.
-  //
-  // A dateOnly session has no real hour (lib/types.ts, Session.dateOnly), so it
-  // can never be a timed "next up" or an "also today" row — both carry a clock
-  // time to the client.
-  //
-  // Earliest session that has NOT finished — `end > now`, not `start > now`. A
-  // running session must stay selected, otherwise the band skips straight past
-  // it to the following one and the LIVE pill can never fire while a session is
-  // actually on track.
-  const { liveWeekends, alsoRacing, liveAll } = liveBoxes(liveCandidates, { lead: settings['home.lead_series'], majors: settings['home.major_series'] }, now);
+/** The live model once per request (React's cache): what the Live band draws and the race-weekend conditions read,
+ *  without the rest of Home's assembly (P2.24 C). The settings' two series values name the priority (loadSettings
+ *  falls back to the shipped ones itself). No argument, so one call serves every reader of a request. */
+export const loadLiveModel = cache(async (): Promise<LiveBoxes> => {
+  const [all, settings] = await Promise.all([loadAllSeries(), loadSettings()]);
+  return liveStep(all, { lead: settings['home.lead_series'], majors: settings['home.major_series'] }, new Date());
+});
+
+export async function buildHomeModel(layout: HomeLayout, now = new Date()): Promise<HomeModel> {
+  const all = await loadAllSeries();
+  const metaBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
+  // The operator's named values (the designer's Application Settings), the
+  // shipped ones on any failure: which series lead the live band.
+  const settings = await loadSettings();
+
+  // ── 0. Happening now, ranked (liveStep above). ──
+  const { liveWeekends, alsoRacing, liveAll } = liveStep(all, { lead: settings['home.lead_series'], majors: settings['home.major_series'] }, now);
 
   // ── 1. The result that just happened: newest finished race across every
   // covered series (KV-warmed feeds; fail-soft nulls just drop the band). ──
@@ -410,31 +399,30 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
     href: `/series/${s.meta.slug}/weekend/${w.round}`,
   }));
 
-  // ── 4. The wire: the newest aggregated headlines, source named; how many is
-  // the `home.wire_count` setting (five shipped). ──
-  const wire = await buildWire(settings['home.wire_count'], metaBySlug, now);
+  // ── 4. The wire: the newest five aggregated headlines, source named (the count
+  // Home's wire has always shown; its setting left in P2.24 C, the Data region's
+  // Rows in its place). ──
+  const wire = await buildWire(5, metaBySlug, now);
 
-  // ── 5. Our own writing: the pinned post if the operator chose one, else the
-  // newest. The fetcher returns a series SLUG and only this layer holds the
-  // series metadata, so the name and colour for the card's chip are resolved
-  // here. Fail-soft — a Supabase outage drops the band, it never blanks the
-  // page — and a pin that no longer resolves falls back to the automatic lead
-  // rather than leaving a hole.
+  // ── 5. Our own writing: the newest post (the layout's pin left in P2.24 C; a
+  // pin is the Lead story region's own now). The fetcher returns a series SLUG
+  // and only this layer holds the series metadata, so the name and colour for
+  // the card's chip are resolved here. Fail-soft — a Supabase outage drops the
+  // band, it never blanks the page.
   let blog: HomeLeadBlog | null = null;
   try {
-    const pinned = pinnedLeadSlug(layout);
-    const lead = (pinned ? await fetchHomeBlogLead(pinned) : null) ?? (await fetchHomeBlogLead());
+    const lead = await fetchHomeBlogLead();
     if (lead) {
       const meta = lead.seriesSlug ? metaBySlug.get(lead.seriesSlug) : undefined;
       const stamp = new Date(lead.publishedAtIso);
-      // Further reading beside the cover, as many as the
-      // `home.blog_suggested_count` setting says (three shipped). A second read
-      // of the same table, but publishedPosts() is the warm path /blog and the
-      // feed already use and the table is a couple of dozen rows; the
-      // alternative was duplicating fetchHomeBlogLead's ordering rules here.
+      // Further reading beside the cover, three as Home has always shown (its
+      // setting left in P2.24 C). A second read of the same table, but
+      // publishedPosts() is the warm path /blog and the feed already use and the
+      // table is a couple of dozen rows; the alternative was duplicating
+      // fetchHomeBlogLead's ordering rules here.
       const suggested = (await publishedPosts())
         .filter(p => p.slug !== lead.slug)
-        .slice(0, settings['home.blog_suggested_count'])
+        .slice(0, 3)
         .map(p => ({ slug: p.slug, title: p.title, heroImage: p.heroImage ?? null }));
       blog = {
         ...lead,

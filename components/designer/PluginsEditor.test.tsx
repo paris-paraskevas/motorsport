@@ -54,8 +54,8 @@ describe('PluginsEditor', () => {
     render(<PluginsEditor definitions={list} readOnly={false} onSaved={vi.fn()} onOpenPage={onOpenPage} />);
     expect(screen.getByRole('heading', { name: 'Plug-ins' })).toBeTruthy();
     const rows = screen.getAllByRole('row').slice(1);
-    // The four region kinds and the eleven components (the Data region since P2.2, the Live band since P2.9).
-    expect(rows).toHaveLength(15);
+    // The four region kinds and the five components (the Data region since P2.2, the Live band since P2.9; Home's six left in P2.24 C).
+    expect(rows).toHaveLength(9);
     expect(within(rows[0]).getByText('Static Content')).toBeTruthy();
     expect(within(rows[0]).getByText('Region')).toBeTruthy();
     const headingRow = rows.find(r => within(r).queryByText('Page heading'))!;
@@ -73,11 +73,11 @@ describe('PluginsEditor', () => {
     expect(within(open).getByText(/Events/)).toBeTruthy();
   });
 
-  it('P2.1: the opened definition names the sources it may read: Standings for What it changed, none for the heading', () => {
+  it('P2.1: the opened definition names the sources it may read: the five for the Data region, none for the heading', () => {
     render(<PluginsEditor definitions={list} readOnly={false} onSaved={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Open What it changed' }));
-    const changed = screen.getByRole('region', { name: 'Plug-in: What it changed' });
-    expect(within(changed).getByText('Sources').nextElementSibling?.textContent).toBe('Standings');
+    fireEvent.click(screen.getByRole('button', { name: 'Open Data region' }));
+    const region = screen.getByRole('region', { name: 'Plug-in: Data region' });
+    expect(within(region).getByText('Sources').nextElementSibling?.textContent).toMatch(/^Standings.*Results.*Posts.*News.*Weekends$/);
     fireEvent.click(screen.getByRole('button', { name: 'Open Page heading' }));
     const heading = screen.getByRole('region', { name: 'Plug-in: Page heading' });
     expect(within(heading).getByText('Sources').nextElementSibling?.textContent).toMatch(/^none/);

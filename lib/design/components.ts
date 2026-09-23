@@ -13,7 +13,7 @@
 // keeps the usable part and falls back to the defaults.
 
 import { PRESETS, PRESET_GROUPS, SHAPES, findPreset } from './presets';
-import { SERIES_OPTIONS } from './sources';
+import { CURRENT_SEASON, SERIES_OPTIONS } from './sources';
 
 export type SettingValue = string | number | boolean;
 
@@ -115,7 +115,7 @@ export interface ComponentSlot {
 }
 
 export interface ComponentDefinition {
-  /** Dotted, lower-case: `page.body`, `home.wire`, `region.image`. */
+  /** Dotted, lower-case: `page.body`, `data.region`, `region.image`. */
   key: string;
   name: string;
   group: 'Page' | 'Home' | 'Series' | 'Editorial' | 'Data' | 'Region';
@@ -187,56 +187,9 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     holds: 'every session of every series, month by month, in the reader’s local time; the weekend under way on top',
     settings: [],
   },
-  // Home's six (R2b), cut along the sections Home shows today; each draws from
-  // the same assembly the page used (lib/home-model.ts) and applies its own
-  // settings on top. They may sit on any page.
-  {
-    key: 'home.lead',
-    name: 'Lead story',
-    group: 'Home',
-    holds: 'the newest post from the blog, or the one you pin, with its cover and further reading',
-    settings: [
-      { key: 'pinned', label: 'Pinned post', kind: 'text', default: '', maxLength: 120, help: 'The slug of a post to lead with, from its address (/blog/<slug>). Empty leads with the newest.' },
-      { key: 'suggested', label: 'Further reading', kind: 'number', default: 3, min: 0, max: 6, help: 'How many more posts are listed beside the cover on wide screens.' },
-    ],
-  },
-  {
-    key: 'home.live',
-    name: 'This weekend',
-    group: 'Home',
-    holds: 'the weekends under way, one box for the lead series and the majors, one row for the rest',
-    settings: [],
-  },
-  {
-    key: 'home.result',
-    name: 'Latest result',
-    group: 'Home',
-    holds: 'the last race that finished: the headline, the margin, the podium',
-    settings: [],
-  },
-  {
-    key: 'home.changed',
-    name: 'What it changed',
-    group: 'Home',
-    holds: 'the championship read after the race: the leader, the gap, the table',
-    settings: [{ key: 'rows', label: 'Rows', kind: 'number', default: 5, min: 1, max: 10, help: 'How many standings rows the table shows.' }],
-    // P2.1: a Source pins the table to one championship; none reads the page's assembly (the race that just finished).
-    sources: ['standings'],
-  },
-  {
-    key: 'home.next',
-    name: 'What’s next',
-    group: 'Home',
-    holds: 'the coming weekends across every series, the first with its countdown',
-    settings: [],
-  },
-  {
-    key: 'home.wire',
-    name: 'The wire',
-    group: 'Home',
-    holds: 'the newest headlines reported elsewhere, each linked out with its source',
-    settings: [{ key: 'items', label: 'Items', kind: 'number', default: 5, min: 3, max: 20, help: 'How many headlines.' }],
-  },
+  // Home's six (R2b) left in P2.24 C: each box is a Data region on its template
+  // (lib/design/presets.ts), This weekend the Live band; a stored region naming
+  // one is upgraded on read (page-document.ts LEGACY_UPGRADES).
   // The Data region (P2.2; ours by name: APEX has Classic Report, Cards, Content
   // Row, Media List and Timeline as region types, and the operator chose one
   // region with a View setting, 2026-09-10). One region over a source from the
@@ -357,18 +310,36 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
   },
 ];
 
-/** How a page not yet split becomes components: the keys that replace its
+/** One entry of a page's recipe (P2.24 C): the component, the region's id, the settings that differ from the
+ *  component's defaults, its Source, and whether it is one of two halves sharing a row. A bare key is the shorthand
+ *  for a component at its defaults, its id the key's last word. */
+export interface RecipeEntry {
+  id: string;
+  component: string;
+  settings?: Readonly<Record<string, SettingValue>>;
+  source?: string;
+  /** Two consecutive halves share one row, the second at column 7. */
+  half?: true;
+}
+
+/** How a page not yet split becomes components: the entries that replace its
  *  transitional body, in order. Only pages whose components exist appear here.
  *  For a page whose route file has left the code, this is also its default
- *  composition when nothing is published. */
-export const SPLITS: Readonly<Record<string, readonly string[]>> = {
-  // This weekend is the Live band's instance (P2.9); the recipe's region id stays `live`, the key's last word.
-  '/': ['home.lead', 'series.live', 'home.result', 'home.changed', 'home.next', 'home.wire'],
+ *  composition when nothing is published. Home's (P2.24 C): its boxes as Data
+ *  regions on their templates over the catalogue's sources (Home's own counts as
+ *  their Rows), and the Live band as This weekend's instance (P2.9); the region
+ *  ids are the words the site used. */
+export const SPLITS: Readonly<Record<string, readonly (string | RecipeEntry)[]>> = {
+  '/': [
+    { id: 'lead', component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story', rows: 4 }, source: 'posts?count=10' },
+    { id: 'live', component: 'series.live' },
+    { id: 'result', component: 'data.region', settings: { preset: 'latest-result', view: 'podium', rows: 3 }, source: `results?series=home&season=${CURRENT_SEASON}` },
+    { id: 'changed', component: 'data.region', settings: { preset: 'what-it-changed', view: 'leader', rows: 5 }, source: `standings?series=latest&season=${CURRENT_SEASON}`, half: true },
+    { id: 'next', component: 'data.region', settings: { preset: 'whats-next', view: 'coming-weekends', rows: 3 }, source: 'weekends?count=10', half: true },
+    { id: 'wire', component: 'data.region', settings: { preset: 'wire', view: 'wire', rows: 5 }, source: 'news?per=3' },
+  ],
   '/calendar': ['page.heading', 'calendar.month'],
 };
-
-/** Components that share a row as two halves, in the order the recipe names them. */
-const HALVES: ReadonlySet<string> = new Set(['home.changed', 'home.next']);
 
 /** A region of the document model for a component, as the recipes lay them out. */
 export interface RecipeRegion {
@@ -376,6 +347,7 @@ export interface RecipeRegion {
   kind: 'component';
   component: string;
   settings: Record<string, SettingValue>;
+  source?: string;
   title: string;
   position: 'body';
   seq: number;
@@ -386,37 +358,44 @@ export interface RecipeRegion {
   hidden: boolean;
 }
 
-/** A fresh id for a component: the key's last word (`home.wire` → `wire`, then `wire-2`); `code-body` for the transitional one. */
-export function componentId(key: string, taken: readonly string[]): string {
-  const base = key === 'page.body' ? 'code-body' : (key.split('.').pop() ?? 'component').replace(/[^a-z0-9-]/g, '-');
+/** `base`, or the first of `base-2`, `base-3`… not yet taken. */
+function uniqueId(base: string, taken: readonly string[]): string {
   if (!taken.includes(base)) return base;
   let n = 2;
   while (taken.includes(`${base}-${n}`)) n++;
   return `${base}-${n}`;
 }
 
+/** A fresh id for a component: the key's last word (`data.region` → `region`, then `region-2`); `code-body` for the transitional one. */
+export function componentId(key: string, taken: readonly string[]): string {
+  return uniqueId(key === 'page.body' ? 'code-body' : (key.split('.').pop() ?? 'component').replace(/[^a-z0-9-]/g, '-'), taken);
+}
+
 /** The recipe's components as Body regions, in order, renumbered by tens from
- *  `seqFrom`; the halves share one row. Empty for a path without a recipe. */
+ *  `seqFrom`; two consecutive halves share one row. Empty for a path without a recipe. */
 export function recipeRegions(path: string, taken: readonly string[] = [], seqFrom = 10, components: readonly ComponentDefinition[] = COMPONENTS): RecipeRegion[] {
   const recipe = SPLITS[path];
   if (!recipe) return [];
   const out: RecipeRegion[] = [];
   let seq = seqFrom;
-  for (const key of recipe) {
-    const spec = findComponent(key, components);
+  let halves = 0;
+  for (const item of recipe) {
+    const entry: RecipeEntry = typeof item === 'string' ? { id: componentId(item, []), component: item } : item;
+    const spec = findComponent(entry.component, components);
     if (!spec) continue;
-    const half = HALVES.has(key);
-    const second = half && out.some(r => HALVES.has(r.component));
+    const second = entry.half === true && halves % 2 === 1;
+    if (entry.half) halves++;
     out.push({
-      id: componentId(key, [...taken, ...out.map(r => r.id)]),
+      id: uniqueId(entry.id, [...taken, ...out.map(r => r.id)]),
       kind: 'component',
-      component: key,
-      settings: componentDefaults(spec),
+      component: entry.component,
+      settings: { ...componentDefaults(spec), ...entry.settings },
+      ...(entry.source ? { source: entry.source } : {}),
       title: '',
       position: 'body',
       seq,
       column: second ? 7 : 1,
-      span: half ? 6 : 12,
+      span: entry.half ? 6 : 12,
       newRow: !second,
       authz: null,
       hidden: false,

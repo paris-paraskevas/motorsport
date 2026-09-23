@@ -25,8 +25,6 @@ export type HomeBlockId = (typeof HOME_BLOCK_IDS)[number];
 export interface HomeBlock {
   id: HomeBlockId;
   hidden?: boolean;
-  /** `blog` only: publish this exact post as the lead instead of the newest. */
-  pinnedSlug?: string;
 }
 
 export interface HomeLayout {
@@ -66,15 +64,11 @@ export function parseHomeLayout(raw: unknown): HomeLayout {
   const blocks: HomeBlock[] = [];
   for (const entry of raw) {
     if (!entry || typeof entry !== 'object') continue;
-    const { id, hidden, pinnedSlug } = entry as Record<string, unknown>;
+    const { id, hidden } = entry as Record<string, unknown>;
     if (!isBlockId(id) || seen.has(id)) continue;
     seen.add(id);
-    blocks.push({
-      id,
-      hidden: hidden === true,
-      // A blank or non-string pin is no pin, not an empty-slug lookup.
-      pinnedSlug: typeof pinnedSlug === 'string' && pinnedSlug.trim() !== '' ? pinnedSlug.trim() : undefined,
-    });
+    // A stored `pinnedSlug` (the retired console's pin) is ignored since P2.24 C: the lead is the Lead story region's business.
+    blocks.push({ id, hidden: hidden === true });
   }
 
   // Nothing recognisable in the column → the operator has no usable layout.
@@ -82,11 +76,6 @@ export function parseHomeLayout(raw: unknown): HomeLayout {
 
   for (const id of HOME_BLOCK_IDS) if (!seen.has(id)) blocks.push({ id });
   return { blocks };
-}
-
-/** The post slug the operator pinned as the lead, if any. */
-export function pinnedLeadSlug(layout: HomeLayout): string | null {
-  return layout.blocks.find(b => b.id === 'blog')?.pinnedSlug ?? null;
 }
 
 /** Block ids to render, in the operator's order, hidden ones removed.
@@ -103,21 +92,11 @@ export function visibleBlocks(layout: HomeLayout): HomeBlockId[] {
 /** Build a layout from URL parameters, for the admin composer's draft preview.
  *  Unrecognised values are dropped by parseHomeLayout, so a hand-edited URL is
  *  as safe as a hand-edited row. */
-export function layoutFromParams(params: {
-  order?: string;
-  hidden?: string;
-  lead?: string;
-}): HomeLayout {
+export function layoutFromParams(params: { order?: string; hidden?: string }): HomeLayout {
   const hidden = new Set((params.hidden ?? '').split(',').filter(Boolean));
   const ordered = (params.order ?? '').split(',').filter(Boolean);
   const ids = ordered.length > 0 ? ordered : [...HOME_BLOCK_IDS];
-  return parseHomeLayout(
-    ids.map(id => ({
-      id,
-      hidden: hidden.has(id),
-      ...(id === 'blog' && params.lead ? { pinnedSlug: params.lead } : {}),
-    })),
-  );
+  return parseHomeLayout(ids.map(id => ({ id, hidden: hidden.has(id) })));
 }
 
 /** One stored revision of the home layout, as the composer and the API see it.

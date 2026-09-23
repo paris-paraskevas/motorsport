@@ -13,7 +13,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PageDesigner } from './PageDesigner';
 import type { PageDetail } from '@/lib/design/page-revisions';
-import type { PageDocument, Region } from '@/lib/design/page-document';
+import { parsePageDocument, type PageDocument, type Region } from '@/lib/design/page-document';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import { COMPONENTS, type ComponentDefinition } from '@/lib/design/components';
@@ -990,9 +990,11 @@ describe('PageDesigner', () => {
     const where = screen.getByRole('group', { name: 'Region position' });
     expect(within(where).getByRole('button', { name: 'Body' }).getAttribute('aria-pressed')).toBe('true');
     expect(within(where).queryByRole('button', { name: 'Right Side Column' })).toBeNull();
-    // The Components gallery offers Home's pieces to any page, and not the transitional body a second time.
+    // The Components gallery offers the Live band and the Data region to any page (Home's six left in P2.24 C), and not the transitional body a second time.
     fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
-    expect(screen.getByRole('button', { name: 'Gallery: The wire' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Gallery: Live band' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Gallery: Data region' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Gallery: The wire' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Gallery: Body as the code draws it' })).toBeNull();
     fireEvent.click(tile('Component: Body as the code draws it'));
     expect(within(screen.getByLabelText('Property Editor')).getByText(/The page’s body as its code writes it today/)).toBeTruthy();
@@ -1078,55 +1080,37 @@ describe('PageDesigner', () => {
     expect(saved.kind === 'component' && saved.settings).toEqual({ note: '', rows: 3, accent: '#123456', icon: chosenIcon, more: `page:${page.id}` });
   });
 
-  it('P2.1: What it changed offers a Source in the Source group: Location, Type (None · Standings); Standings shows Series and Season with the defaults and writes the ref; another series rewrites it; Save carries it; None removes it; a static region’s Source group holds its text alone', async () => {
+  it('P2.24 C: a stored region naming one of Home’s retired components opens upgraded (What it changed over Formula 2 → a Data region on the What it changed preset, its Source kept), its Source group reads Standings · Formula 2, and Save writes the upgraded form', async () => {
     const changedDoc: PageDocument = {
       version: 2,
       actions: [],
       regions: [
-        { id: 'changed', kind: 'component', component: 'home.changed', settings: { rows: 5 }, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null },
+        { id: 'changed', kind: 'component', component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=f2&season=2026', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null } as Region,
         { ...doc.regions[0], seq: 20 },
       ],
     };
-    const { onSaved } = mount({ ...detail, newest: { ...detail.newest!, document: changedDoc } }, false, null, null, undefined, [
+    // The detail's document arrives parsed, as the server's read hands it over (page-revisions.ts): the upgrade happens there.
+    const { onSaved } = mount({ ...detail, newest: { ...detail.newest!, document: parsePageDocument(changedDoc).value } }, false, null, null, undefined, [
       { slug: 'f1', name: 'Formula 1' },
+      { slug: 'f2', name: 'Formula 2' },
       { slug: 'wec', name: 'FIA WEC' },
-      { slug: 'nls', name: 'NLS Nürburgring' },
     ]);
-    fireEvent.click(tile('Component: What it changed'));
+    expect(screen.queryByRole('button', { name: 'Component: What it changed' })).toBeNull();
+    fireEvent.click(tile('Component: Data region'));
+    expect(tile('Component: Data region').textContent).toMatch(/Preset What it changed/);
+    expect(tile('Component: Data region').textContent).toMatch(/Standings · Formula 2 · 2026/);
     const pe = screen.getByLabelText('Property Editor');
-    expect(within(pe).getByText('Catalogue · the site’s own readers')).toBeTruthy();
-    const type = within(pe).getByLabelText('Source type') as HTMLSelectElement;
-    expect(type.value).toBe('');
-    expect([...type.options].map(o => o.textContent)).toEqual(['None · the page’s assembly', 'Standings']);
-    expect(within(pe).queryByLabelText('Series')).toBeNull();
-    fireEvent.change(type, { target: { value: 'standings' } });
-    expect(status()).toMatch(/Source set/);
-    const series = within(pe).getByLabelText('Series') as HTMLSelectElement;
-    expect(series.value).toBe('f1');
-    // Only the series the source offers, by the names the designer holds: NLS has no standings; the Latest result (P2.24 B2), the value the reader resolves, comes first.
-    expect([...series.options].map(o => [o.value, o.textContent])).toEqual([
-      ['latest', 'Latest result'],
-      ['f1', 'Formula 1'],
-      ['wec', 'FIA WEC'],
-    ]);
-    const season = within(pe).getByLabelText('Season') as HTMLSelectElement;
-    expect(season.value).toBe('2026');
-    expect(season.options).toHaveLength(1);
-    fireEvent.change(series, { target: { value: 'wec' } });
+    expect((within(pe).getByLabelText('Source type') as HTMLSelectElement).value).toBe('standings');
+    expect((within(pe).getByLabelText('Series') as HTMLSelectElement).value).toBe('f2');
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    expect((within(pe).getByLabelText('Preset') as HTMLSelectElement).value).toBe('what-it-changed');
+    const rows = within(pe).getByLabelText('Rows') as HTMLInputElement;
+    expect(rows.value).toBe('5');
+    fireEvent.change(rows, { target: { value: '6' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSaved).toHaveBeenCalled());
     const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
-    expect(posted.document.regions[0]).toMatchObject({ component: 'home.changed', settings: { rows: 5 }, source: 'standings?series=wec&season=2026' });
-    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: '' } });
-    expect(within(pe).queryByLabelText('Series')).toBeNull();
-    expect((within(pe).getByLabelText('Source type') as HTMLSelectElement).value).toBe('');
-    // The tile summary names the source while one is set.
-    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
-    expect(tile('Component: What it changed').textContent).toMatch(/Standings · Formula 1 · 2026/);
-    // A static region's Source group is its text alone.
-    fireEvent.click(tile('Static Content: A century of speed'));
-    expect(within(pe).queryByLabelText('Source type')).toBeNull();
-    expect(within(pe).getByLabelText('Region text')).toBeTruthy();
+    expect(posted.document.regions[0]).toMatchObject({ id: 'changed', component: 'data.region', settings: { preset: 'what-it-changed', view: 'leader', rows: 6, heading: '' }, source: 'standings?series=f2&season=2026' });
   });
 
   it('P2.2: the Data region from the Gallery: its Source first, then the Attributes tab’s Preset grouped by the fifteen and filtered to the Source, View and Rows; Save carries the settings and the tile names the preset; a results Source offers its presets, and picking one brings the Rounds layout (List) with it', async () => {
@@ -1341,20 +1325,24 @@ describe('PageDesigner', () => {
     expect(tile('Component: Data region').textContent).toMatch(/Preset What it changed · View What it changed · Rows 5/);
   });
 
-  it('Home splits into its six components from the transitional body’s Until split, and the draft is written with them', async () => {
+  it('Home splits into its six components from the transitional body’s Until split (P2.24 C: five Data regions on Home’s templates over the catalogue’s sources, and the Live band), and the draft is written with them', async () => {
     const home: PageRow = { ...codePage, id: 'c0de0001-0000-4000-8000-000000000001', path: '/', name: 'Home', group: 'home' };
     const { onSaved } = mount({ page: home, live: null, newest: null, revisions: [], namedBy: { lists: [], pages: [] } });
     fireEvent.click(tile('Component: Body as the code draws it'));
     fireEvent.click(screen.getByRole('button', { name: 'Split into 6 components' }));
     expect(screen.queryByRole('button', { name: 'Component: Body as the code draws it' })).toBeNull();
-    for (const name of ['Lead story', 'Live band', 'Latest result', 'What it changed', 'What’s next', 'The wire']) expect(tile(`Component: ${name}`)).toBeTruthy();
+    const regions = screen.getAllByRole('button', { name: 'Component: Data region' });
+    expect(regions).toHaveLength(5);
+    expect(tile('Component: Live band')).toBeTruthy();
     expect(status()).toMatch(/Split into components/);
-    // The wire's settings render as controls from its spec, under the Attributes tab (APEX: Region · Attributes, P1.6); a region without settings has no tabs.
-    fireEvent.click(tile('Component: The wire'));
+    // The wire's tile sums its preset and Source up; its Rows render as a control from the Data region's spec, under the Attributes tab (APEX: Region · Attributes, P1.6).
+    const wire = regions.find(b => /Preset The wire/.test(b.textContent ?? ''))!;
+    expect(wire.textContent).toMatch(/News · Per series 3/);
+    fireEvent.click(wire);
     const pe = screen.getByLabelText('Property Editor');
-    expect(within(pe).queryByLabelText('Items')).toBeNull();
+    expect(within(pe).queryByLabelText('Rows')).toBeNull();
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
-    expect((within(pe).getByLabelText('Items') as HTMLInputElement).value).toBe('5');
+    expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('5');
     // P2.9: This weekend is the Live band's instance, with its two attributes: the Series select (every series first, grouped, without the
     // "Pick a Source first" note a source-bound choice carries) and the Also racing toggle.
     fireEvent.click(tile('Component: Live band'));
@@ -1365,14 +1353,14 @@ describe('PageDesigner', () => {
     expect(within(pe).queryByText(/Pick a Source first/)).toBeNull();
     fireEvent.change(series, { target: { value: 'motogp' } });
     expect(tile('Component: Live band').textContent).toMatch(/Series MotoGP · Also racing yes/);
-    fireEvent.click(tile('Component: Latest result'));
-    expect(within(pe).queryByRole('tablist', { name: 'Property Editor tabs' })).toBeNull();
-    fireEvent.click(tile('Component: The wire'));
+    fireEvent.click(wire);
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSaved).toHaveBeenCalled());
     const posted = calls.find(c => c.method === 'POST')!;
     const body = posted.body as { document: PageDocument };
-    expect(body.document.regions.map(r => (r.kind === 'component' ? r.component : r.kind))).toEqual(['home.lead', 'series.live', 'home.result', 'home.changed', 'home.next', 'home.wire']);
+    expect(body.document.regions.map(r => (r.kind === 'component' ? r.component : r.kind))).toEqual(['data.region', 'series.live', 'data.region', 'data.region', 'data.region', 'data.region']);
+    expect(body.document.regions.map(r => (r.kind === 'component' ? (r.source ?? null) : null))).toEqual(['posts?count=10', null, 'results?series=home&season=2026', 'standings?series=latest&season=2026', 'weekends?count=10', 'news?per=3']);
+    expect(body.document.regions.map(r => (r.kind === 'component' ? r.settings.preset ?? null : null))).toEqual(['lead-story', null, 'latest-result', 'what-it-changed', 'whats-next', 'wire']);
     expect(body.document.regions.find(r => r.kind === 'component' && r.component === 'series.live')).toMatchObject({ id: 'live', settings: { series: 'motogp', also: true } });
   });
 
