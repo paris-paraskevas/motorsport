@@ -28,8 +28,9 @@ describe('the preset catalogue', () => {
       'Season results · GT World',
       'Lead story',
       'The wire',
+      "What's next",
     ]);
-    expect(PRESETS).toHaveLength(35);
+    expect(PRESETS).toHaveLength(36);
     const standings = PRESETS.filter(p => p.source === 'standings');
     expect(standings).toHaveLength(26);
     expect(new Set(standings.map(p => p.shape))).toEqual(new Set(['driver-rows', 'team-rows']));
@@ -37,6 +38,7 @@ describe('the preset catalogue', () => {
     expect(results).toHaveLength(7);
     expect(PRESETS.filter(p => p.source === 'posts').map(p => p.key)).toEqual(['lead-story']);
     expect(PRESETS.filter(p => p.source === 'news').map(p => p.key)).toEqual(['wire']);
+    expect(PRESETS.filter(p => p.source === 'weekends').map(p => p.key)).toEqual(['whats-next']);
     for (const p of PRESETS) expect(Object.keys(p), p.key).not.toContain('later');
     for (const p of results) expect(p.view, p.key).toBe('list');
     for (const p of standings) expect(p.view, p.key).toBe('table');
@@ -57,7 +59,7 @@ describe('the preset catalogue', () => {
     expect(SHAPES['car-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'date', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'gap']);
     expect(SHAPES['cup-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'laps', 'gap']);
     expect(SHAPES['car-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'gap', badge: 'car' });
-    expect(new Set(PRESETS.map(p => p.key)).size).toBe(35);
+    expect(new Set(PRESETS.map(p => p.key)).size).toBe(36);
     const groups = new Set(PRESET_GROUPS.map(g => g.key));
     const slugs = new Set(SERIES_OPTIONS.map(o => o.key));
     for (const p of PRESETS) {
@@ -182,7 +184,7 @@ describe('the preset catalogue', () => {
   });
 
   it('P2.24 A: Home’s two boxes over the posts and news sources: the Lead story preset over post-rows (its view the Lead story template, four rows: the lead and three further) and The wire over news-rows (its view The wire, five rows), every series; the shapes carry the pieces’ facts, the cover as the image column, the news title as a link that leaves the site; a shape without a position keeps the source’s order', () => {
-    expect(PRESET_GROUPS.slice(-2)).toEqual([
+    expect(PRESET_GROUPS.slice(15, 17)).toEqual([
       { key: 'lead-story', name: 'Lead story', source: 'posts' },
       { key: 'wire', name: 'The wire', source: 'news' },
     ]);
@@ -222,6 +224,28 @@ describe('the preset catalogue', () => {
     const posts = [{ slug: 'a', title: 'A' }, { slug: 'b', title: 'B' }, { slug: 'c', title: 'C' }];
     expect(presetRows(posts, findPreset('lead-story')!, 2).map(r => r.slug)).toEqual(['a', 'b']);
     expect(presetRows(posts, findPreset('wire')!, 10).map(r => r.slug)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('P2.24 B1: Home’s What’s next over the weekends source: the preset over weekend-rows (its view the Coming weekends template, three rows, every series), named with Home’s straight apostrophe; the shape links the title to the weekend page; the rows keep the source’s order', () => {
+    expect(PRESET_GROUPS.at(-1)).toEqual({ key: 'whats-next', name: "What's next", source: 'weekends' });
+    expect(findPreset('whats-next')).toMatchObject({ name: "What's next", group: 'whats-next', source: 'weekends', shape: 'weekend-rows', where: {}, view: 'coming-weekends', rows: 3, nameLabel: 'Title' });
+    expect([...findPreset('whats-next')!.series].sort()).toEqual(SERIES_OPTIONS.map(o => o.key).sort());
+    expect(SHAPES['weekend-rows']).toEqual({
+      key: 'weekend-rows',
+      source: 'weekends',
+      columns: [
+        { key: 'title', label: 'Title', type: 'link', href: 'weekend' },
+        { key: 'seriesName', label: 'Series', type: 'text' },
+        { key: 'dates', label: 'Dates', type: 'text' },
+        { key: 'start', label: 'First session', type: 'date' },
+        { key: 'end', label: 'Last session', type: 'date' },
+        { key: 'round', label: 'Round', type: 'number' },
+      ],
+      card: { title: 'title', subtitle: 'seriesName', body: 'dates', badge: 'round' },
+    });
+    expect(presetsFor('weekends', 'wec').map(p => p.key)).toEqual(['whats-next']);
+    const weekends = [{ round: 17, title: 'A' }, { round: 7, title: 'B' }, { round: 5, title: 'C' }];
+    expect(presetRows(weekends, findPreset('whats-next')!, 2).map(r => r.title)).toEqual(['A', 'B']);
   });
 
   it('imports nothing at runtime: the catalogue reaches every route’s chunk through the parser, so it stays declarations', () => {

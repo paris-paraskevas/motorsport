@@ -15,11 +15,15 @@ const rounds = {
   ],
   cancelledRounds: [{ originalRound: 4, name: 'Bahrain Grand Prix', originalStartDate: '2026-04-10', originalEndDate: '2026-04-12', reason: 'conflict' }],
 };
-vi.mock('@/lib/series', () => ({
-  loadAllSeriesMeta: async () => [meta('f1', 'Formula 1'), meta('f2', 'Formula 2')],
-  loadSeries: async (slug: string) => ({
+vi.mock('@/lib/series', () => {
+  // Two past sessions and one far ahead (2030), so the weekends reader (P2.24 B1) finds a coming weekend whatever the clock says.
+  const loadSeries = async (slug: string) => ({
     meta: meta(slug, slug === 'f1' ? 'Formula 1' : 'Formula 2'),
-    sessions: [{ uid: 'u1', seriesSlug: slug, title: 'Race', start: new Date('2026-09-20T13:00:00Z'), end: new Date('2026-09-20T15:00:00Z'), location: 'Baku', significance: { tier: 'marquee', note: 'Season finale' } }, { uid: 'u2', seriesSlug: slug, title: 'Practice', start: new Date('2026-09-18T00:00:00Z'), end: new Date('2026-09-18T01:00:00Z'), dateOnly: true }],
+    sessions: [
+      { uid: 'u1', seriesSlug: slug, title: 'Race', start: new Date('2026-09-20T13:00:00Z'), end: new Date('2026-09-20T15:00:00Z'), location: 'Baku', significance: { tier: 'marquee', note: 'Season finale' } },
+      { uid: 'u2', seriesSlug: slug, title: 'Practice', start: new Date('2026-09-18T00:00:00Z'), end: new Date('2026-09-18T01:00:00Z'), dateOnly: true },
+      { uid: 'u3', seriesSlug: slug, title: 'Race', start: new Date('2030-03-07T13:00:00Z'), end: new Date('2030-03-07T15:00:00Z'), location: 'Melbourne' },
+    ],
     rounds,
     overview: '',
     drivers: '',
@@ -27,8 +31,13 @@ vi.mock('@/lib/series', () => ({
     fetchedAt: new Date('2026-09-17T12:00:00Z'),
     stale: false,
     configured: true,
-  }),
-}));
+  });
+  return {
+    loadAllSeriesMeta: async () => [meta('f1', 'Formula 1'), meta('f2', 'Formula 2')],
+    loadSeries,
+    loadAllSeries: async () => [await loadSeries('f1'), await loadSeries('f2')],
+  };
+});
 vi.mock('@/lib/rounds-loader', () => ({ loadRounds: async () => rounds }));
 const readCurrentStandingsWithRun = vi.fn();
 vi.mock('@/lib/standing-rows', () => ({ readCurrentStandingsWithRun: (...a: unknown[]) => readCurrentStandingsWithRun(...a) }));
@@ -65,7 +74,9 @@ const fetchWRCSeasonResults = vi.fn();
 vi.mock('@/lib/results/wrc', () => ({ fetchWRCSeasonResults: (...a: unknown[]) => fetchWRCSeasonResults(...a) }));
 const fetchDTMSeasonResults = vi.fn();
 vi.mock('@/lib/results/dtm', () => ({ fetchDTMSeasonResults: (...a: unknown[]) => fetchDTMSeasonResults(...a) }));
-vi.mock('@/lib/group', () => ({ groupByWeekend: () => [{ round: 1 }] }));
+// One weekend of every session handed in, coming (P2.24 B1); the results reader reads its round alone. A test may re-point it.
+const groupByWeekend = vi.fn((sessions: { start: Date; end: Date }[]) => [{ round: 1, key: 'w1', isPast: false, dateRangeLabel: '5–7 Mar', sessions }]);
+vi.mock('@/lib/group', () => ({ groupByWeekend: (...a: Parameters<typeof groupByWeekend>) => groupByWeekend(...a) }));
 vi.mock('@/lib/series-content', () => ({
   loadCuratedDrivers: async () => ({ teams: [{ name: 'Mercedes', color: '#00d2be', drivers: [{ name: 'Kimi Antonelli', code: 'ANT', number: 12 }, { name: 'George Russell', code: 'RUS', number: 63 }] }, { name: 'Ferrari', drivers: [{ name: 'Charles Leclerc' }] }] }),
 }));
@@ -340,7 +351,37 @@ describe('readSource', () => {
     ]);
   });
 
-  it('every one of the thirteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
+  it('P2.24 B1: the weekends reader answers the coming weekends across every series or one, the nearest first, cut to the count, each with the series’ name and colour, the round, the title, the first and last sessions, the dates label and the weekend page; a weekend that is past is left out; a series whose grouping throws yields none, as Home’s does', async () => {
+    const every = await readSource({ source: 'weekends', params: { count: 10 } });
+    expect(every.provenance.tier).toBe('live');
+    expect(every.rows.map(r => [r.series, r.seriesName, r.colour, r.round, r.dates, r.weekend])).toEqual([
+      ['f1', 'Formula 1', '#e10600', 1, '5–7 Mar', '/series/f1/weekend/1'],
+      ['f2', 'Formula 2', '#e10600', 1, '5–7 Mar', '/series/f2/weekend/1'],
+    ]);
+    expect(every.rows[0]).toMatchObject({ start: '2026-09-18T00:00:00.000Z', end: '2030-03-07T15:00:00.000Z' });
+    expect(typeof every.rows[0].title).toBe('string');
+    expect(String(every.rows[0].title).length).toBeGreaterThan(0);
+    const one = await readSource({ source: 'weekends', params: { series: 'f2', count: 10 } });
+    expect(one.rows.map(r => r.series)).toEqual(['f2']);
+    // Three weekends for one series: the past one left out, the two coming ones by their first session, the count cutting the later.
+    const at = (round: number, iso: string, isPast = false) => ({ round, key: `w${round}`, isPast, dateRangeLabel: `w${round}`, sessions: [{ start: new Date(iso), end: new Date(new Date(iso).getTime() + 7_200_000) }] });
+    groupByWeekend.mockImplementationOnce(() => [at(3, '2031-01-10T10:00:00Z'), at(2, '2030-06-01T10:00:00Z'), at(1, '2020-01-01T10:00:00Z', true)]);
+    const ordered = await readSource({ source: 'weekends', params: { series: 'f1', count: 10 } });
+    expect(ordered.rows.map(r => [r.round, r.start])).toEqual([
+      [2, '2030-06-01T10:00:00.000Z'],
+      [3, '2031-01-10T10:00:00.000Z'],
+    ]);
+    groupByWeekend.mockImplementationOnce(() => [at(3, '2031-01-10T10:00:00Z'), at(2, '2030-06-01T10:00:00Z')]);
+    expect((await readSource({ source: 'weekends', params: { series: 'f1', count: 1 } })).rows.map(r => r.round)).toEqual([2]);
+    groupByWeekend.mockImplementationOnce(() => {
+      throw new Error('no calendar');
+    });
+    const partial = await readSource({ source: 'weekends', params: { count: 10 } });
+    expect(partial.rows.map(r => r.series)).toEqual(['f2']);
+    expect(partial.provenance.error).toBeUndefined();
+  });
+
+  it('every one of the fourteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
     readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: null });
     const results = SOURCES.find(s => s.key === 'results')!;
     const refs = [...SOURCES.map(s => defaultSourceRef(s)), ...results.parameters[0].options!.map(o => ({ source: 'results', params: { series: o.key, season: 2026 } }))];

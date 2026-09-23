@@ -9,16 +9,17 @@ import { MAX_PER_SERIES_AGGREGATE } from '@/lib/news';
 
 // The source catalogue (the components programme, P2.1; APEX: REST Data
 // Sources, Data Profile, Remote Servers): the thirteen the changes line of
-// 2026-09-17 names, each a name, parameters, columns and a reader; a ref is one
-// string a region carries; the loader's keys read back in the catalogue's words.
+// 2026-09-17 names and Weekends (P2.24 B1), each a name, parameters, columns
+// and a reader; a ref is one string a region carries; the loader's keys read
+// back in the catalogue's words.
 
-const THIRTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks'];
+const FOURTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends'];
 const PARAMETER_KINDS = ['series', 'season', 'number', 'choice', 'text'];
 const COLUMN_TYPES = ['text', 'number', 'date', 'boolean', 'link', 'image', 'colour'];
 
 describe('the source catalogue', () => {
-  it('holds the thirteen in the changes line’s order, each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
-    expect(SOURCES.map(s => s.key)).toEqual(THIRTEEN);
+  it('holds the fourteen in the changes line’s order (Weekends last, P2.24 B1), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
+    expect(SOURCES.map(s => s.key)).toEqual(FOURTEEN);
     const contentSlugs = readdirSync(path.join(process.cwd(), 'content', 'series'), { withFileTypes: true })
       .filter(e => e.isDirectory())
       .map(e => e.name)
@@ -93,6 +94,32 @@ describe('the source catalogue', () => {
     expect(parseSourceRef('posts?count=many').problems).toEqual(['Count must be a number from 1 to 50']);
     // A refused ref has no value: the writer refuses, nothing is guessed.
     expect(parseSourceRef('standings?season=2026').value).toBeNull();
+  });
+
+  it('P2.24 B1: the Weekends source, the fourteenth: the coming weekends across every series or one, the nearest first, read live from the feeds; a Count; the columns Home’s What’s next draws from; a ref with or without a series parses and reads back in words', () => {
+    const weekends = findSource('weekends')!;
+    expect(weekends).toMatchObject({ name: 'Weekends', fresh: 'live', load: 'none', pagination: 'none', reads: ['content:series', 'live:ics'] });
+    expect(weekends.parameters.map(p => [p.key, p.kind, p.required, p.default])).toEqual([
+      ['series', 'series', false, undefined],
+      ['count', 'number', undefined, 10],
+    ]);
+    expect(weekends.columns.map(c => [c.key, c.label, c.type])).toEqual([
+      ['series', 'Series slug', 'text'],
+      ['seriesName', 'Series', 'text'],
+      ['colour', 'Series colour', 'colour'],
+      ['round', 'Round', 'number'],
+      ['title', 'Title', 'text'],
+      ['start', 'First session', 'date'],
+      ['end', 'Last session', 'date'],
+      ['dates', 'Dates', 'text'],
+      ['weekend', 'Weekend page', 'link'],
+    ]);
+    expect(parseSourceRef('weekends?count=3')).toEqual({ value: { source: 'weekends', params: { count: 3 } }, problems: [] });
+    expect(parseSourceRef('weekends?series=f1&count=3').value).toEqual({ source: 'weekends', params: { series: 'f1', count: 3 } });
+    expect(parseSourceRef('weekends?count=0').problems).toEqual(['Count must be a number from 1 to 50']);
+    expect(sourceLabel({ source: 'weekends', params: { count: 3 } })).toBe('Weekends · Count 3');
+    expect(sourceLabel({ source: 'weekends', params: { series: 'f1', count: 3 } })).toBe('Weekends · Formula 1 · Count 3');
+    expect(defaultSourceRef(weekends)).toEqual({ source: 'weekends', params: { count: 10 } });
   });
 
   it('labels a ref in the catalogue’s words, the series by name from the list given or the catalogue’s', () => {
