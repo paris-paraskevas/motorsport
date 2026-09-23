@@ -244,6 +244,11 @@
    "date": "2026-09-23",
    "change": "P2.24 PR C merged (#1038, 1.0.157, two commits 1d268839 + 389d43f0, squash-merged 14:38:30Z as d340c4c1, prod /changelog 1.0.157 at 2026-09-23T14:43:58Z); P2.24 DONE. The flip: a stored region naming one of Home’s six retired components is upgraded on read to its Data-region template or the Live band, every other field untouched; the six definitions, renderers and READS left; Home’s recipe carries ids, settings and sources; the Live band and the race-weekend conditions read a cached live model with the series loaded once per request; the frame renders a code page’s body lazily and never for a split document; the layout’s pin and the two count settings retired; scripts/parity-home.mts (the one new file). The parity of prod’s served Home across the deploy (before 14:38:16Z, after 14:44:04Z): four regions identical at once, three differing for reasons not the flip’s — two countdown clocks that ticked, and the wire’s empty class attribute, which the old component wrote and the template does not, no visible effect; with those two normaliser rules, identical: 7 regions (the rules ship in the records PR 1.0.158). The operator’s publish of Home from the designer remains theirs; nothing changes until then either. Left for the operator: home.major_series still naming f1 beside the lead; the two seeded count rows in prod’s setting table (a later apply).",
    "word": "the operator, 2026-09-23 ~14:38Z: \"merge\""
+  },
+  {
+   "date": "2026-09-23",
+   "change": "R7 quick fix opened on the operator’s report (~15:40Z, two screenshots of prod’s designer on Home): changing the What it changed region’s Source type from Standings to Results showed “region changed: What it changed is for a Standings source; this region reads Results” twice and blocked Save. Cause: the Property Editor’s Source change rewrites the region’s Source alone; the Preset (what-it-changed) and the View (leader) keep their values and the parser’s binding rule refuses them, twice because the Preset and the View option share the label. The fix (R7, its own PR before P2.3): the designer’s model gains withSourceChanged — a change of Type or Series moves a preset or template view the new Source and Series do not offer to the first they do, with what its pick brings, as picking it by hand does — and the parser’s messages name the setting. Presented with the options drawn (fix now as R7 · fold into P2.3 PR A · leave it and name the fix in the message).",
+   "word": "the operator, 2026-09-23 ~15:45Z: \"Fix now as R7 (Recommended)\" (AskUserQuestion)"
   }
  ],
  "phases": {
@@ -604,6 +609,19 @@
    "status": "done",
    "scopeHash": "b51fecc0b6dc",
    "evidence": "#1036 · 1.0.155 · one commit dd7b2d4d, squash-merged 2026-09-23 12:27:31Z as 74fd112d · prod /changelog 1.0.155 at 2026-09-23T12:32:25Z · tests first: the overlap test red before the change (1 of 14), green after; the reviewer’s case (the lead named but not racing) asserted in the same test · tsc 0 · lint 0 errors · vitest 223 files, 2280 tests · hooks 31/31 · DATA_SOURCE=db npm run cf:build in the foreground, exit 0, 1189 pages · dry run 39427.18 KiB / gzip 8630.11 KiB · reviewer (fresh-context Sonnet, 116,961 tokens): PASS WITH NOTES, nothing blocking · not proven in a browser: the duplicate needs the setting with the lead among the featured series, the unit test carries the case · the operator’s own two actions named in the PR: hide or delete the This weekend region beside the Live band; remove Formula 1 from Home: featured series."
+  },
+  {
+   "id": "R7",
+   "phase": "P2",
+   "title": "A change of Source picks the first preset it offers",
+   "scope": "In the Property Editor a change of a Data region’s Source type or Series moves a preset (or a template view) the new Source and Series do not offer to the first they do, with what that pick brings (view, rows, card slots and zones), as picking it by hand does; the parser’s binding messages name the setting (“Preset What it changed is for a Standings source…”, “View …”).",
+   "fixedBy": "the operator’s report of 2026-09-23 ~15:40Z (prod’s designer, Home: changing the What it changed region’s Type to Results showed “What it changed is for a Standings source; this region reads Results” twice and refused Save); components/designer/PageDesignerProperties.tsx setSource rewrote the Source alone, lib/design/page-document.ts’s binding rule refused the stale Preset and View, the two sharing a label",
+   "defaults": "the rule lives in the designer’s model (withSourceChanged, pure and tested) and the Property Editor calls it for the Type select and every parameter; the first offered preset is the catalogue’s order for that source and series; a preset still offered, a Source with nothing to offer, or a component without a bound choice keep their settings; the Attributes tab’s own greyed-option note keeps its words",
+   "needsWord": "",
+   "acceptance": "withSourceChanged over Standings f1 Drivers → Results f1 gives Season results with the List view and the card reset; the designer test’s Type change to Results shows the tile with Season results and no Messages; the parser’s messages name the setting; the suite green",
+   "status": "started",
+   "evidence": "",
+   "scopeHash": "0285ddf1a2b5"
   },
   {
    "id": "P2.3",

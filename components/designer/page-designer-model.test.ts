@@ -31,8 +31,11 @@ import {
   splitRecipe,
   toggleRegion,
   withImplicitBody,
+  withSourceChanged,
   type Selection,
 } from './page-designer-model';
+import { findComponent } from '@/lib/design/components';
+import type { ComponentRegion } from '@/lib/design/page-document';
 
 // The Page Designer's model: where a region lands, what a removal takes with
 // it, what the designer says about a page, what Page Search finds.
@@ -151,8 +154,39 @@ describe('messages', () => {
     expect(none[0]).toMatchObject({ sel: { kind: 'region', id: 'table' }, group: 'Source' });
     expect(designerMessages({ version: 2, regions: [data({ source: 'standings?series=f1&season=2026' } as Partial<Region>)], actions: [] }, page)).toEqual([]);
     expect(designerMessages({ version: 2, regions: [data({ source: 'results?series=f1&season=2026' } as Partial<Region>)], actions: [] }, page).map(m => `${m.level}: ${m.text}`)).toEqual([
-      'err: region table: Drivers is for a Standings source; this region reads Results',
+      'err: region table: Preset Drivers is for a Standings source; this region reads Results',
     ]);
+  });
+
+  it('R7: changing a region’s Source moves a preset the new Source and Series do not offer to the first they do, with what that pick brings; a preset still offered, no Source, or a component without a bound choice leave the settings alone', () => {
+    const spec = findComponent('data.region')!;
+    const table = (settings: Record<string, string | number | boolean>, source?: string): ComponentRegion =>
+      ({ ...region({ id: 'table', title: 'Table' }), kind: 'component', component: 'data.region', settings, ...(source ? { source } : {}) }) as ComponentRegion;
+    const drivers = table({ preset: 'drivers', view: 'cards', rows: 10, heading: '', cardTitle: 'team', actionFullCard: 'calendar' }, 'standings?series=f1&season=2026');
+    // Standings → Results: the first results preset for Formula 1 (Season results) with its List view and the card reset; Rows stays.
+    const results = withSourceChanged(drivers, { source: 'results', params: { series: 'f1', season: 2026 } }, spec);
+    expect(results.source).toBe('results?series=f1&season=2026');
+    expect(results.settings).toMatchObject({ preset: 'season-results', view: 'list', rows: 10, heading: '', cardTitle: '', actionFullCard: 'row:race' });
+    // Another series that offers the same preset: nothing but the Source moves.
+    const f2 = withSourceChanged(drivers, { source: 'standings', params: { series: 'f2', season: 2026 } }, spec);
+    expect(f2.source).toBe('standings?series=f2&season=2026');
+    expect(f2.settings).toEqual(drivers.settings);
+    // A class family: its first preset (Hypercar — Drivers) with the Table view.
+    const wec = withSourceChanged(drivers, { source: 'standings', params: { series: 'wec', season: 2026 } }, spec);
+    expect(wec.settings).toMatchObject({ preset: 'wec-hypercar-drivers', view: 'table' });
+    // A View bound to the old source goes with the preset: What it changed over Standings → Results is Feature races, the List view.
+    const changed = table({ preset: 'what-it-changed', view: 'leader', rows: 5, heading: '' }, 'standings?series=f2&season=2026');
+    expect(withSourceChanged(changed, { source: 'results', params: { series: 'f2', season: 2026 } }, spec).settings).toMatchObject({ preset: 'feature-races', view: 'list', rows: 5 });
+    // Home's series: the Latest result alone is offered, its Podium view and three rows.
+    expect(withSourceChanged(drivers, { source: 'results', params: { series: 'home', season: 2026 } }, spec).settings).toMatchObject({ preset: 'latest-result', view: 'podium', rows: 3 });
+    // None: the Source leaves, the settings stay.
+    const none = withSourceChanged(drivers, null, spec);
+    expect(none).not.toHaveProperty('source');
+    expect(none.settings).toEqual(drivers.settings);
+    // A component without a bound choice (the Live band): the Source alone.
+    const band = { ...region({ id: 'live' }), kind: 'component', component: 'series.live', settings: { series: '', also: true } } as ComponentRegion;
+    expect(withSourceChanged(band, { source: 'posts', params: { count: 10 } }, findComponent('series.live')).settings).toEqual({ series: '', also: true });
+    expect(withSourceChanged(band, { source: 'posts', params: { count: 10 } }, null).source).toBe('posts?count=10');
   });
 
   it('a commented-out region (P1.11): the Body warning counts it as not showing, Messages notes it under Configuration, Page Search finds it', () => {
