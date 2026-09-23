@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.152 — 2026-09-23
+
+### Records — the operator’s answers to the Phase 2 progress report, the session-56 handoff
+
+Records only. `docs/plan/ledger.json`: one dated changes line carrying the operator’s six answers (B2’s cross-series default and C’s four defaults stand; P2.3 without TanStack Table — the URL vocabulary and saved views on the server, CSV from the source; P2.10 one page per tab, the operator’s own call for indexing; P2.18 and P2.19 elaborated, their words at their turn); **P2.3 and P2.10 no longer carry a question** (their scope and defaults say what was decided). `docs/HANDOFF.md`: the close as LATEST with the session-56 prompt: P2.24 B2 first (the Podium and Leader templates: the readers’ shared latest-race resolution, the Series values "Home’s series" and "Latest result", the templates copied verbatim, the presets latest-result and what-it-changed), then PR C’s scan with its four defaults recorded, then P2.3 with its answer; the state, the rules, the recipe, the landmines. `SCHEDULE.md`: the step. `package.json` 1.0.152. No code.
+
 ## 1.0.151 — 2026-09-23
 
 ### Records — P2.24 B1 on prod, the Phase 2 progress report, the session-56 handoff
