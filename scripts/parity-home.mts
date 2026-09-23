@@ -89,7 +89,9 @@ async function main(): Promise<void> {
     console.error('usage: npx tsx scripts/parity-home.mts <before> <after>');
     process.exit(2);
   }
-  const [a, b] = await Promise.all([capture(before), capture(after)]);
+  // The flight <script> tags go before anything is counted: their payloads may carry markup-like text.
+  const scriptless = (html: string) => html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
+  const [a, b] = (await Promise.all([capture(before), capture(after)])).map(scriptless);
   const ra = regions(bodyBlock(a));
   const rb = regions(bodyBlock(b));
   let differences = 0;
