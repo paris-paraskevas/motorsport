@@ -2092,8 +2092,9 @@ Order fixed by the words: "merge" (~06:01Z, PR A), the B1 plan approved (~06:42Z
 6. **Merge, prod, the progress report** (~07:41Z): "merge and show me progress report…" → #1031 squash-merged 07:41:42Z as d7b5ba45 → prod /changelog 1.0.150 at 2026-09-23T07:45:53Z → the Phase 2 progress report compiled from the ledger, the handoff, the Inbox and the CHANGELOG (the slots; the decisions that are the operator's, grouped; what was not done; the blockers, major and minor) and published (9b8b0a28-91e8-4fca-b08b-985ac612c267) → done.
 7. **Close**: the ledger (the merge's dated line; P2.24's evidence with B1's merge), the handoff and the session-56 prompt (the operator's decisions first, then B2), this block, the Inbox lines, the board; the records PR 1.0.151 under the same word.
 
+8. **The answers** (~08:05Z): "decisions: 1. default, 2. default, 3. whats the difference and what do you recommend, 4. … one page per tab …, 5. elaborate, 6. what does this mean" → the six answered in one message (P2.3 without a table dependency on the recommendation; P2.10 one page per tab), the ledger’s dated line, P2.3 and P2.10 decided, the session-56 handoff and its prompt; the records PR 1.0.152 → done.
 Won't touch this session: PR B2 beyond its decision scan; PR C; any other slot; branch deletions; any prod Supabase write; any push to `main`; any agent on Fable; any fan-out.
-Active: ~2h 05m from ~06:01Z to ~08:10Z (the operator present at the words; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+Active: ~2h 20m from ~06:01Z to ~08:20Z (the operator present at the words; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
 
 ---

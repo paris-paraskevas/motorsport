@@ -199,6 +199,11 @@
    "date": "2026-09-23",
    "change": "P2.24 PR B1 merged (#1031, 1.0.150, two commits 809035d5 + 08639f7d, squash-merged 07:41:42Z as d7b5ba45); P2.24 stays STARTED until PR C. The browser run’s find (the Round column touching the date in the Table) taken before the PR by moving the column last in the weekend shape; the reviewer’s four notes informational, the five stale \"thirteen\" comments taken in the second commit. On the same word the Phase 2 progress report was published (artifact 9b8b0a28-91e8-4fca-b08b-985ac612c267): the slots, every decision that is the operator’s in three groups, what was not done, the blockers major and minor; the next session records the operator’s answers to its first group before B2’s scan.",
    "word": "the operator, 2026-09-23 ~07:41Z: \"merge and show me progress report. also list explicitly all items i must decide upon, and all items we didnt do, minor and major blockers that may have arised throughout the process of phase 2.\""
+  },
+  {
+   "date": "2026-09-23",
+   "change": "The operator’s answers to the Phase 2 progress report’s first group (artifact 9b8b0a28-91e8-4fca-b08b-985ac612c267): (1) P2.24 B2’s cross-series default stands — the Results source’s Series value \"Home’s series\" and the Standings source’s \"Latest result\", resolved in the readers to the newest race across the series Home ranks (the results rows carrying the series’ name and colour and the champion facts, the standings rows the winner and season-complete flags); (2) P2.24 C’s four defaults stand — the layout’s pinned post carried into the Lead story region’s Pinned post and retired; home.wire_count and home.blog_suggested_count into the regions’ Rows, home.lead_series and home.major_series staying for the Live band; one load of every series per request (React’s cache around loadAllSeries, or the reader reading the home model’s series); the operator publishes the Home revision after the served-HTML parity is pasted; (3) P2.3 goes without TanStack Table — the URL vocabulary and saved views applied on the server, CSV from the source, no client table dependency (Claude’s recommendation, taken on \"what do you recommend\"); (4) P2.10 keeps one page per tab, the operator’s own call for indexing; the Tabs region is APEX’s Region Display Selector over one page’s regions and a navigation strip over sibling pages; (5) P2.18’s item set and (6) P2.19’s replies elaborated in the answer; their words come at their turn. P2.3 and P2.10 no longer carry a question.",
+   "word": "the operator, 2026-09-23 ~08:05Z: \"decisions: 1. default, 2. default, 3. whats the difference and what do you recommend, 4. what do you recommend, i believe one page per tab is much better for indexing and i stick to it, 5. elaborate, 6. what does this mean. now handle these answers as you want then give me handoff and handoff prompt and lets fire up next session.\""
   }
  ],
  "phases": {
@@ -551,10 +556,10 @@
    "id": "P2.3",
    "phase": "P2",
    "title": "Saved views, sort options, URL filters",
-   "scope": "Users may sort, filter, hide columns, download CSV (TanStack Table on the word); saved views in four tiers with share links; a sort-options list for card views; a URL filter vocabulary.",
+   "scope": "Users may sort, filter, hide columns, download CSV; saved views in four tiers with share links; a sort-options list for card views; a URL filter vocabulary. No table library: the operator’s word of 2026-09-23.",
    "fixedBy": "Interactive Report (runs 7–8)",
-   "defaults": "The URL vocabulary first (it serves Filters too), the client table second; saved views as rows of a shared component; CSV from the source, not the DOM.",
-   "needsWord": "TanStack Table as a dependency",
+   "defaults": "The URL vocabulary first (it serves Filters too); sort, filter and column hiding applied on the server through the reader and presetRows; saved views as rows of a shared component; CSV from the source, not the DOM; no client table dependency (decided 2026-09-23).",
+   "needsWord": "none",
    "acceptance": "Sort and CSV work on a served table; a saved view opens from its link; bundle delta quoted.",
    "status": "planned",
    "scopeHash": "f009308b8861"
@@ -611,10 +616,10 @@
    "id": "P2.10",
    "phase": "P2",
    "title": "Tabs",
-   "scope": "Region Display Selector: view single / scroll; remember last; icons; over regions or child pages.",
+   "scope": "Region Display Selector: view single / scroll; remember last; icons; over the regions of one page, or a navigation strip over sibling pages. The series tabs stay one page per tab (the operator’s word of 2026-09-23, for indexing).",
    "fixedBy": "APEX Region Display Selector",
-   "defaults": "A Tabs region lists sibling regions; the remembered tab per browser; child pages when P3 has them.",
-   "needsWord": "series tabs as one page with Tabs or one page per tab (asked at P3.4)",
+   "defaults": "A Tabs region lists sibling regions; the remembered tab per browser; over pages a strip of links to the siblings, never one page folding the others in (decided 2026-09-23).",
+   "needsWord": "none",
    "acceptance": "Weekend Preview and Report as Tabs; test.",
    "status": "planned",
    "scopeHash": "0ee56619ee63"
