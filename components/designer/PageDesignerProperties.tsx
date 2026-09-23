@@ -736,7 +736,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
       const def = picked ? findSource(picked.source) : null;
       // R7: a change of Source moves a preset (or a template view) the new Source and Series do not offer to the first they do,
       // with what its pick brings, so the Messages never refuse a Source the operator has just picked.
-      const setSource = (next: SourceRef | null) => p('Source set.', x => (x.kind !== 'component' ? x : withSourceChanged(x, next, spec ?? null)));
+      const setSource = (next: SourceRef | null) => p('Source set.', x => (x.kind !== 'component' ? x : withSourceChanged(x, next, spec)));
       source.push({
         label: 'Location',
         common: true,

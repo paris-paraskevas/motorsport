@@ -1250,8 +1250,8 @@ describe('PageDesigner', () => {
     const preset = within(pe).getByLabelText('Preset') as HTMLSelectElement;
     expect(preset.value).toBe('lead-story');
     expect([...preset.querySelectorAll('optgroup')].map(g => g.label)).toEqual(['Lead story']);
-    fireEvent.change(preset, { target: { value: 'lead-story' } });
-    expect(status()).toMatch(/Preset set/);
+    expect(status()).toMatch(/Source set/);
+    expect(screen.queryByText(/Not saved:/)).toBeNull();
     expect(within(view()).getByRole('button', { name: 'Lead story' }).getAttribute('aria-pressed')).toBe('true');
     expect((within(pe).getByLabelText('Rows') as HTMLInputElement).value).toBe('4');
     expect(within(pe).queryByLabelText('Title')).toBeNull();
@@ -1300,7 +1300,9 @@ describe('PageDesigner', () => {
       ['f1', 'Formula 1'],
     ]);
     fireEvent.change(resultsSeries, { target: { value: 'home' } });
-    expect(tile('Component: Data region').textContent).toMatch(/Results · Home's series · 2026/);
+    // R7: a Series change with a preset the new series does not offer (Season results is no preset of Home's series) picks the first it does — the Latest result with its template and three rows — and nothing is refused.
+    expect(tile('Component: Data region').textContent).toMatch(/Results · Home's series · 2026 · Preset Latest result · View Latest result · Rows 3/);
+    expect(screen.queryByText(/Not saved:/)).toBeNull();
     fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
     const homeGroups = [...(within(pe).getByLabelText('Preset') as HTMLSelectElement).querySelectorAll('optgroup')].map(g => g.label);
     expect(homeGroups).toContain('Latest result');
