@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.162 — 2026-09-23
+
+Internal only: the day's working records. One correction to the previous note: on the home page, the two "What's next" boxes set to Formula 1 and Formula 2 now name them in their corner instead of "All series".
+
 ## 1.0.161 — 2026-09-23
 
 In the design tool, a data region switched to results now opens on that championship's latest-result box, the way the home page shows one, with the season tables a pick away. The "What's next" box names the championship it follows in its top-right corner instead of "All series" when it is set to one. Nothing changes on the pages you read today.
