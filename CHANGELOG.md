@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.149 — 2026-09-23
+
+### Records — P2.24 A on prod, the session-56 handoff with PR B first
+
+Records only. `docs/plan/ledger.json`: **P2.24's evidence carries the merge** (#1029, 1.0.148, two commits, squash-merged 2026-09-23 06:01:26Z as 0b0f42a4, prod 2026-09-23T06:07:35Z; the browser run's review page a4edd962-5678-40c3-8b06-048322339d20; the critic's and the reviewer's figures; the gates and the dry run 40213.46 KiB) and the slot stays `started` (PR B, the Weekends source with Coming weekends, Podium and Leader; PR C, the flip); one dated changes line carrying the merge, the run's find (the Media slot's own-column label, fixed in the second commit) and the dev server's production flag the permission classifier had refused until the operator's word. `docs/HANDOFF.md`: the close as LATEST with the session-56 prompt: PR B first with its decision scan's three defaults stated (the Results source accepting Series "Every series" for the Podium template; the Leader's champion line from Season; the Coming weekends' countdown), then the state, the rules (the stash-then-test recipe for seeing new tests red), the browser run recipe (the production flag, the Save locator, the seeded local posts, the viewport screenshot for a ticking box), this run's landmines (the login switch's artifact links, the build's retries under load, the plan-mode agent's write path), the agenda; the show-rule count and item 9 still for the operator. `SCHEDULE.md`: the session. `IDEAS.md`: eight Inbox lines. The progress board republished under the new login (87eea43d-b6f0-47fa-a1c4-b10dacb2ff01). `package.json` 1.0.149. No code.
+
 ## 1.0.148 — 2026-09-22
 
 ### Designer — [P2.24 A] Posts and news into the Data region: the Lead story and The wire as templates, the image column
