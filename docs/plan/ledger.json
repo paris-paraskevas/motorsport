@@ -530,7 +530,7 @@
    "acceptance": "Home renders identically from general components; parity output.",
    "status": "started",
    "scopeHash": "3c2153316b73",
-   "evidence": "PR A (feat/p2.24-a-posts-news, 1.0.148, opened 2026-09-22): posts and news into the Data region, the Lead story and The wire as View templates, the image column; tests first (15 red across 9 files), gates tsc 0 · lint 0 errors · vitest 223 files, 2268 tests · hooks 31/31 · dry run 40213.42 KiB / gzip 8839.76 KiB (61.4%). PR B (the Weekends source, Coming weekends, Podium, Leader) and PR C (the flip, the parity, the home.* retirement, the operator’s publish) follow."
+   "evidence": "PR A #1029 (feat/p2.24-a-posts-news, 1.0.148, opened 2026-09-22, two commits): posts and news into the Data region, the Lead story and The wire as View templates, the image column, the sources carrying the pieces’ facts. Tests first (15 red across 9 files), then green. The browser run on the local server (review page a4edd962-5678-40c3-8b06-048322339d20, seven screenshots): both templates drawn verbatim from the seeded local posts and the news aggregate, the Table and the Cards over posts, the greyed pills; its find (the Media slot’s own label) fixed in the second commit. Reviewer (Sonnet, 262,171 tokens): PASS WITH NOTES, nothing blocking. Gates after the last edit: tsc 0 · lint 0 errors · vitest 223 files, 2268 tests · hooks 31/31 · dry run 40213.46 KiB / gzip 8839.70 KiB (61.4%). PR B (the Weekends source, Coming weekends, Podium, Leader) and PR C (the flip, the parity, the home.* retirement, the operator’s publish) follow."
   },
   {
    "id": "P2.3",

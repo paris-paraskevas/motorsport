@@ -258,8 +258,9 @@ function MiniMap({ doc, id }: { doc: PageDocument; id: string }) {
 
 /** The options of a destination picker: the catalogue's, then the row pages
  *  under Pages, by name (P1.12 B2). Never a code page, never a typed address. */
-/** The column a preset's own card mapping gives a slot, by its label; "none" for the Media slot, which no preset fills (P2.2 B3). */
-const SLOT_OF: Readonly<Record<string, keyof Shape['card']>> = { cardTitle: 'title', cardSubtitle: 'subtitle', cardBody: 'body', cardBadge: 'badge' };
+/** The column a preset's own card mapping gives a slot, by its label; "none" for the Media slot on a shape without a picture
+ *  column (P2.2 B3; the posts' Cover fills it since P2.24 A). */
+const SLOT_OF: Readonly<Record<string, keyof Shape['card']>> = { cardTitle: 'title', cardSubtitle: 'subtitle', cardBody: 'body', cardMedia: 'media', cardBadge: 'badge' };
 function ownSlotLabel(shape: Shape, key: string): string {
   const slot = SLOT_OF[key];
   const column = slot ? shape.card[slot] : undefined;

@@ -1269,6 +1269,12 @@ describe('PageDesigner', () => {
     expect(within(pe).queryByLabelText('Full Card')).toBeNull();
     expect((within(pe).getByLabelText('Pinned post') as HTMLInputElement).value).toBe('');
     expect(tile('Component: Data region').textContent).toMatch(/Preset Lead story · View Lead story · Rows 4/);
+    // The Standard cards over posts: the Media slot's own column is the shape's picture column (the browser run's find).
+    fireEvent.click(within(view()).getByRole('button', { name: 'Cards' }));
+    expect([...(within(pe).getByLabelText('Media') as HTMLSelectElement).options][0].textContent).toBe('Preset’s own (Cover)');
+    expect(within(pe).queryByLabelText('Pinned post')).toBeNull();
+    fireEvent.click(within(view()).getByRole('button', { name: 'Lead story' }));
+    expect(within(pe).queryByLabelText('Media')).toBeNull();
     fireEvent.change(within(pe).getByLabelText('Pinned post'), { target: { value: 'monza-2026' } });
     expect(tile('Component: Data region').textContent).toMatch(/Rows 4 · Pinned post monza-2026/);
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
