@@ -8,7 +8,7 @@ import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 import { resolveDestination, type PageDestinations } from './destinations';
 import type { CardActions, CardSlots, RegionControls } from '@/components/data/DataRegionViews';
-import { bindViewState, parseViewState } from './view-state';
+import { applySavedView, bindViewState, encodeViewState, parseViewState } from './view-state';
 
 // The server half of the component catalogue (lib/design/components.ts): how
 // each component is drawn. A renderer takes the region's settings and the
@@ -38,14 +38,17 @@ const calendar = () => import('./families/calendar');
 const calendarView = () => import('@/components/calendar/CalendarView');
 const sourceRead = () => import('./source-read');
 const dataViews = () => import('@/components/data/DataRegionViews');
+const savedViews = () => import('./views');
 
 export interface RenderContext {
   /** The registry pattern or literal path of the page. */
   path: string;
   /** The address's parts for a pattern page (`slug`, `round`); empty for a literal one. */
   params: Readonly<Record<string, string>>;
-  /** The page itself, for components that draw its name or title. */
-  page: Pick<PageRow, 'path' | 'name' | 'title'>;
+  /** The page itself, for components that draw its name or title; its id when the caller has one (the saved views belong to a page, P2.3 PR B). */
+  page: Pick<PageRow, 'path' | 'name' | 'title'> & { id?: string | null };
+  /** The region's id (P2.3 PR B): what a saved view names. */
+  region: string;
   /** This component is the first region showing in the Body: it carries the page's h1. */
   first: boolean;
   /** The Source the region picked (P2.1), read against the sources its definition declares; null when none. */
@@ -109,8 +112,19 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     if (!preset) return null;
     const shape = SHAPES[preset.shape];
     // The reader's state (P2.3): this region's keys, bound to the shape; none where no control is on or no state can arrive.
-    const state = ctx.controlsKey !== null && ctx.view !== undefined ? bindViewState(parseViewState(ctx.view, ctx.controlsKey).value, shape) : undefined;
-    const controls: RegionControls | undefined = state && ctx.controlsKey !== null && ctx.view !== undefined ? { href: ctx.href, key: ctx.controlsKey, others: ctx.view, state, sortable: settings.sortable === true, actions: settings.actions === true } : undefined;
+    let state = ctx.controlsKey !== null && ctx.view !== undefined ? bindViewState(parseViewState(ctx.view, ctx.controlsKey).value, shape) : undefined;
+    // The saved views (P2.3 PR B): ?view=<key> names one of this region's Alternatives, whose definition becomes the state under
+    // the address's own parameters; an unknown key is the Primary. The list is read only when a key arrives or the Views menu is on.
+    let viewsMenu: RegionControls['views'];
+    if (state && ctx.page.id && (state.view !== undefined || settings.views === true)) {
+      const list = await (await savedViews()).loadViewsFor(ctx.page.id, ctx.region);
+      const saved = state.view !== undefined ? list.find(v => v.key === state!.view) : undefined;
+      const { view: asked, ...merged } = applySavedView(state, saved ? saved.definition : null);
+      state = bindViewState(saved ? { ...merged, view: asked } : merged, shape);
+      if (settings.views === true) viewsMenu = { current: saved?.key ?? null, list: list.map(v => ({ key: v.key, name: v.name })) };
+    }
+    const download = state && settings.download === true ? `/api/data/csv?page=${encodeURIComponent(ctx.href)}&region=${encodeURIComponent(ctx.region)}${(s => (s ? `&${s}` : ''))(encodeViewState({ ...state, view: undefined }))}` : undefined;
+    const controls: RegionControls | undefined = state && ctx.controlsKey !== null && ctx.view !== undefined ? { href: ctx.href, key: ctx.controlsKey, others: ctx.view, state, sortable: settings.sortable === true, actions: settings.actions === true, views: viewsMenu, download } : undefined;
     const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
     const read = await readSource(ctx.source);
     ctx.onSourceRead?.(read.provenance);
@@ -206,7 +220,7 @@ export interface RenderHooks {
 export interface RenderPage {
   path: string;
   params?: Readonly<Record<string, string>>;
-  page?: Pick<PageRow, 'path' | 'name' | 'title'>;
+  page?: Pick<PageRow, 'path' | 'name' | 'title'> & { id?: string | null };
   /** The live row pages the document's buttons and zones name (P2.2 B3), as the frame loads them; a promise keeps the
    *  render parallel, each region awaiting it inside its own try. */
   pages?: PageDestinations | Promise<PageDestinations>;
@@ -237,7 +251,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   // The regions with the Interactive Report's controls on (P2.3), decided from the declared document — never from what a
   // condition shows — so a link addresses the same region for every visitor: one such region reads the bare keys, several
   // read their own under `r.<id>.`; nowhere a state can arrive, none draws a control.
-  const withControls = regions.filter(r => r.component === 'data.region' && (r.settings.sortable === true || r.settings.actions === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table'));
+  const withControls = regions.filter(r => r.component === 'data.region' && (r.settings.sortable === true || r.settings.actions === true || r.settings.views === true || r.settings.download === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table'));
   const controlsKey = (r: ComponentRegion): string | null => (where.view === undefined || !withControls.includes(r) ? null : withControls.length > 1 ? `r.${r.id}.` : '');
   await Promise.all(
     regions.map(async r => {
@@ -252,7 +266,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
       const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
       const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r) });
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r), region: r.id });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;

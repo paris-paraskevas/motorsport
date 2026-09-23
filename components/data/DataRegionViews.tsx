@@ -226,6 +226,10 @@ export interface RegionControls {
   state: ViewState;
   sortable: boolean;
   actions: boolean;
+  /** The saved views (P2.3 PR B), when the Views menu is on: the Alternatives of this region and the one the address names. */
+  views?: { current: string | null; list: { key: string; name: string }[] };
+  /** The CSV route's address for the rows as shown (P2.3 PR B), when Download CSV is on. */
+  download?: string;
 }
 
 /** A zone's link around a part of the card, or the part alone; an external address leaves the site in a new tab, as the
@@ -252,7 +256,7 @@ export function DataRegionTable({ heading, level, shape, preset, rows, controls 
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
-      {controls?.actions && <DataRegionControls controls={controls} shape={shape} shown={columns} nameLabel={preset.nameLabel} sortLinks={false} />}
+      {controls && (controls.actions || controls.views || controls.download) && <DataRegionControls controls={controls} shape={shape} shown={columns} nameLabel={preset.nameLabel} sortLinks={false} />}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">{heading}</caption>
@@ -305,7 +309,7 @@ export function DataRegionCards({ heading, level, shape, preset, rows, card, act
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
-      {controls?.actions && <DataRegionControls controls={controls} shape={shape} shown={shape.columns} nameLabel={preset.nameLabel} sortLinks />}
+      {controls && (controls.actions || controls.views || controls.download) && <DataRegionControls controls={controls} shape={shape} shown={shape.columns} nameLabel={preset.nameLabel} sortLinks />}
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((r, i) => {
           const title = slotText(shape, r, slot.title);

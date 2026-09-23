@@ -111,7 +111,7 @@ export interface Usage {
 
 const REGION_KINDS = new Set(['static', 'image', 'list', 'button']);
 
-interface PageLatest {
+export interface PageLatest {
   page: { id: string; path: string; name: string };
   /** The newest revision's regions, and the live one's; the same array when the newest is live. */
   newest: unknown[] | null;
@@ -121,7 +121,7 @@ interface PageLatest {
 /** The pages with their newest and their live revision's regions (the rule
  *  every Utilization scan shares: a page carries what its newest revision
  *  holds, and what its live one still shows). A raw read of the rows. */
-function latestRevisions(pages: unknown, revisions: unknown): PageLatest[] {
+export function latestRevisions(pages: unknown, revisions: unknown): PageLatest[] {
   if (!Array.isArray(pages) || !Array.isArray(revisions)) return [];
   const byPage = new Map<string, { created: string; published: boolean; regions: unknown[] }[]>();
   for (const item of revisions) {
@@ -225,7 +225,7 @@ export function sourceUsageFromRows(pages: unknown, revisions: unknown): Record<
   return out;
 }
 
-async function readUsageRows(): Promise<{ pages: unknown; revisions: unknown } | null> {
+export async function readUsageRows(): Promise<{ pages: unknown; revisions: unknown } | null> {
   const [pagesRes, revRes] = await Promise.all([
     betDb().from('page').select('id, path, name').eq('application_key', APPLICATION_KEY).is('deleted_at', null).order('name'),
     betDb().from('page_revision').select('page_id, document, published_at, created_at').order('created_at', { ascending: false }),

@@ -16,7 +16,7 @@ export interface CatalogueItem {
   /** Set when the item is one of the navigation lists the editor can open. */
   listKey?: NavListKey;
   /** Set when the item opens another editor of its own. */
-  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'templates' | 'shortcuts' | 'assets' | 'searchhints' | 'appdef' | 'lists' | 'compsettings' | 'computations' | 'plugins' | 'datasources';
+  editor?: 'text' | 'build' | 'settings' | 'authz' | 'themes' | 'appearance' | 'templates' | 'shortcuts' | 'views' | 'assets' | 'searchhints' | 'appdef' | 'lists' | 'compsettings' | 'computations' | 'plugins' | 'datasources';
   /** When an item is not editable yet: the phase that brings it, or why it never will be. */
   later?: string;
 }
@@ -56,6 +56,8 @@ export const CATALOGUE: CatalogueGroup[] = [
       { key: 'plugins', label: 'Plug-ins', editor: 'plugins' },
       { key: 'compsettings', label: 'Component Settings', editor: 'compsettings' },
       { key: 'shortcuts', label: 'Shortcuts', editor: 'shortcuts' },
+      // The saved views (P2.3 PR B; APEX: the saved reports of an Interactive Report): the Alternatives of the Data regions.
+      { key: 'views', label: 'Saved Views', editor: 'views' },
       { key: 'dataload', label: 'Data Load Definitions', later: 'read-only, later' },
     ],
   },

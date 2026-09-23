@@ -13,6 +13,7 @@ import type { ReactNode } from 'react';
 import type { PageDocument, Region } from './page-document';
 import * as homeModel from '@/lib/home-model';
 import * as sourceRead from './source-read';
+import * as savedViews from './views';
 
 vi.mock('next/link', () => ({
   // The anchor as given: the class, an aria-label, and the lead's redundant cover link's aria-hidden and tabIndex (P2.24 A).
@@ -856,5 +857,52 @@ describe('the table’s controls and the reader’s state (P2.3 PR A)', () => {
     expect(cards).toContain('<a href="/history/monza?sort=name" rel="nofollow"');
     expect(cards).not.toContain('Select Columns');
     expect(cards.indexOf('George Russell')).toBeLessThan(cards.indexOf('Andrea Kimi Antonelli'));
+  });
+});
+
+describe('the saved views and the download (P2.3 PR B)', () => {
+  const NOON = new Date('2026-09-22T12:00:00.000Z');
+  const ON = { preset: 'drivers', view: 'table', rows: 10, heading: '', sortable: true, actions: true, views: true, download: true };
+  const F1 = { source: 'standings?series=f1&season=2026' } as Partial<Region>;
+  const page = { id: 'p1', path: '/history/monza', name: 'Monza', title: null };
+  const TOP = { key: 'top-five', pageId: 'p1', regionId: 't', name: 'Top five', definition: { sort: { column: 'points', desc: true }, cols: ['name', 'points'], filters: [] }, seq: 10 };
+  const loadViewsFor = vi.spyOn(savedViews, 'loadViewsFor').mockResolvedValue([TOP]);
+  const draw = async (settings: Record<string, string | number | boolean>, view: string) =>
+    html((await renderComponents(doc([region('t', 'data.region', settings, F1)]), { path: '/history/monza', page, now: NOON, href: '/history/monza', view })).t);
+
+  it('?view=<key> draws the Alternative’s definition under the address’s own parameters, lists the views with the current one marked and links the CSV route with the state as shown; an unknown key is the Primary; nothing is read while the menu is off and no key arrives', async () => {
+    const t = await draw(ON, 'view=top-five');
+    expect(loadViewsFor).toHaveBeenCalledWith('p1', 't');
+    expect((t.match(/<th /g) ?? []).length).toBe(2);
+    expect(t.indexOf('Andrea Kimi Antonelli')).toBeLessThan(t.indexOf('George Russell'));
+    expect(t).toMatch(/<details><summary[^>]*>Views<\/summary>/);
+    expect(t).toMatch(/<a href="\/history\/monza" rel="nofollow" class="[^"]*">Primary<\/a>/);
+    expect(t).toMatch(/<a href="\/history\/monza\?view=top-five" rel="nofollow" class="[^"]*" aria-current="true">Top five ●<\/a>/);
+    expect(t).toContain('href="/api/data/csv?page=%2Fhistory%2Fmonza&amp;region=t&amp;sort=-points&amp;cols=name%2Cpoints"');
+    expect(t).toMatch(/>Download CSV<\/a>/);
+    // The address's own sort wins over the view's; its columns stay.
+    const over = await draw(ON, 'view=top-five&sort=-name');
+    expect(over.indexOf('George Russell')).toBeLessThan(over.indexOf('Andrea Kimi Antonelli'));
+    expect((over.match(/<th /g) ?? []).length).toBe(2);
+    // An unknown key is the Primary: every column, the designed order, Primary marked.
+    const primary = await draw(ON, 'view=nope');
+    expect((primary.match(/<th /g) ?? []).length).toBeGreaterThan(2);
+    expect(primary).toMatch(/href="\/history\/monza" rel="nofollow" class="[^"]*" aria-current="true">Primary/);
+    expect(primary).not.toContain('aria-current="true">Top five');
+    loadViewsFor.mockClear();
+    const off = await draw({ ...ON, views: false, download: false }, 'sort=points');
+    expect(loadViewsFor).not.toHaveBeenCalled();
+    expect(off).not.toContain('Views</summary>');
+    expect(off).not.toContain('Download CSV');
+    // Saved views alone, or Download CSV alone, are controls of their own: the Views menu draws without Actions; the download
+    // stands where the Actions menu would (the reviewer's finding on PR B).
+    const viewsOnly = await draw({ ...ON, sortable: false, actions: false, download: false }, 'view=top-five');
+    expect(viewsOnly).toMatch(/<details><summary[^>]*>Views<\/summary>/);
+    expect(viewsOnly).not.toContain('Actions</summary>');
+    expect(viewsOnly).not.toContain('nofollow" class="underline-offset-4 hover:text-tint hover:underline">Pts');
+    expect(viewsOnly.indexOf('Andrea Kimi Antonelli')).toBeLessThan(viewsOnly.indexOf('George Russell'));
+    const downloadOnly = await draw({ ...ON, sortable: false, actions: false, views: false }, 'sort=points');
+    expect(downloadOnly).not.toContain('Actions</summary>');
+    expect(downloadOnly).toMatch(/<a href="\/api\/data\/csv\?page=%2Fhistory%2Fmonza&amp;region=t&amp;sort=points" rel="nofollow"[^>]*>Download CSV<\/a>/);
   });
 });
