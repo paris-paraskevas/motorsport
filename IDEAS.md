@@ -35,6 +35,7 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 ## Inbox — merged and deduped 2026-08-28 (session 41)
 
+- (2026-09-24, session 56) The Property Editor's card pickers and link zones name a column by the shape's own label, never the preset's nameLabel, so a Cards region on the co-drivers preset offers "Driver → its page" and a Title of "Driver" (PageDesignerProperties.tsx:911–917 and the slot selects; page-document.ts:560's refusal message the same). One fix for them all: the preset's nameLabel for the name column (the PR B reviewer's nit).
 - (2026-09-24, session 56) Nineteen team slugs are shared across series (F2 and F3 teams such as Campos Racing, Hitech and ART Grand Prix; NLS and ADAC entries), and findTeamBySlug answers the first listed, so an F3 driver's page links its team to F2's team page (app/(app)/drivers/[slug]/page.tsx:417 and :526 link /teams/<teamSlug>). The Data regions' links (P2.4 PR B) leave such a team as text; a disambiguated team slug, as the drivers have (disambiguateDriverSlugs), would fix both.
 - (2026-09-24, session 56) The CSV's Gap and Share cells are empty: the Table computes them from the points at render (DataRegionViews cellValue), and the rows never carry them (app/api/data/csv/route.ts csvOf).
 - (2026-09-24, session 56) The people index rides in each of the fifteen server chunks that carry lib/people.ts (PR B's dry run +66.8 KiB over 1.0.168); a module of its own, read only by the readers, would take it out of fourteen. A new file, so the operator's word first.
