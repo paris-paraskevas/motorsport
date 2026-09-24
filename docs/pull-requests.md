@@ -14,6 +14,49 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1059 · 1.0.178 · PA A1b · merged Thu 24 Sep 22:19 (19:19Z)
+**The account seam, browser: every browser file reads the signed-in person through lib/auth/client.** The second PR of slot A1 (phase PA): the seam’s browser half in three modules, the 18 browser files and the two layouts moved onto it, so that the switch to Supabase Auth (A3) touches the seam alone.
+- **Readers see:** nothing; Clerk stays the provider, and the pages answer as before signed out and signed in.
+- **Editors get:** nothing.
+- **Files (34):**
+  - `CHANGELOG.md` · the release trio: the engineering note (1.0.178), with the Worker’s growth measured against a clean build of main.
+  - `IDEAS.md` · records: the 1571 KiB the seam’s browser half added to the Worker, to be measured again at A3.
+  - `RELEASES.md` · the release trio: the public note (1.0.178).
+  - `app/(admin)/layout.tsx` · renders `AuthProvider look="console"` where Clerk’s provider was.
+  - `app/(app)/layout.tsx` · renders `AuthProvider look="site"` where Clerk’s provider was.
+  - `components/AccountIdentity.tsx` · the identity strip and R9’s Sign out row read the seam: `useAccount`, `AccountButton`, `SignInLink`, `SignOutButton`.
+  - `components/AccountStaffLinks.tsx` · the staff rows read `account.role`.
+  - `components/AppShell.tsx` · the header’s account menu reads `useAccount` (the name, the address, the avatar the provider shows, the role) and the seam’s `SignOutButton`.
+  - `components/BottomBar.tsx` · the Account cell’s avatar from `useAccount().avatarUrl`.
+  - `components/ContactModal.tsx` · the prefilled address from `account.email`.
+  - `components/EnableNotifications.tsx` · reads `useAccount()` for the two flags where Clerk’s `useAuth` was.
+  - `components/NavGating.test.tsx` · the mocks moved to `@/lib/auth/client` and `client-pieces`, the fixtures to account shapes.
+  - `components/NotifPrefsSection.tsx` · reads `useAccount()` for the two flags where Clerk’s `useAuth` was.
+  - `components/OnboardingWizard.tsx` · reads `useAccount()` for the two flags where Clerk’s `useAuth` was.
+  - `components/SettingsClient.tsx` · reads `useAccount()` for the two flags where Clerk’s `useAuth` was.
+  - `components/SupportPrompt.tsx` · the opt-out flag read and written through `useAccountFlags`.
+  - `components/YourDevices.tsx` · reads `useAccount()` for the two flags where Clerk’s `useAuth` was.
+  - `components/assistant/AssistantWidget.tsx` · reads `useAccount()` for the two flags where Clerk’s `useAuth` was.
+  - `components/authors/WriteForUsForm.tsx` · the application form reads `account.role` and opens sign-in through `SignInLink`.
+  - `components/blog/StudioLink.tsx` · the Studio pill reads `canAuthor(account)`.
+  - `components/designer/Designer.test.tsx` · the mock moved to `@/lib/auth/client`.
+  - `components/page/DeveloperToolbar.test.tsx` · the mock moved to `@/lib/auth/client`, the fixture to an account shape.
+  - `components/page/DeveloperToolbar.tsx` · the admin flag from `account.role`.
+  - `components/useVisitor.ts` · the browser’s visitor from `visitorFromAccount(account)`.
+  - `components/whats-new/WhatsNewModal.tsx` · the dismissed announcement read and written through `useAccountFlags`.
+  - `lib/auth/boundary.test.ts` · the allow-list down to four files: the middleware, the sign-in and sign-up pages, the webhook.
+  - `lib/auth/client-pieces.tsx` · new: `SignInLink`, `SignOutButton`, `AccountButton` over Clerk’s pieces; the strip, the header and the form import it.
+  - `lib/auth/client-provider.tsx` · new: `AuthProvider` over Clerk’s provider with the two layouts’ props and looks; the layouts alone import it.
+  - `lib/auth/client.test.tsx` · new: the tests for the mapping (equal to the server’s), the hook’s four states, the flags and the provider’s two looks, written first.
+  - `lib/auth/client.tsx` · the hooks (`useAccount`, `useAccountFlags`) and the browser mapping `accountFromBrowserUser` beside the `Account` type; imports Clerk’s `useUser` alone.
+  - `lib/design/authz-check.test.ts` · the removed function’s test leaves with it.
+  - `lib/design/authz-check.ts` · `visitorFromClerkUser` and `ClerkUserLike` leave; both hosts read `visitorFromAccount`.
+  - `lib/useFollowedSeries.ts` · reads `useAccount()` for the two flags where Clerk’s `useAuth` was.
+  - `package.json` · the release trio: the version bump (1.0.178).
+- **Verified:** tests first, seen red (the seam’s own test), then green; the three client tests re-pointed with account fixtures. Gates: tsc 0 · lint 0 errors (2 known warnings) · vitest 233 files, 2340 of 2342 tests (the two longest designer tests time out at 5 s on the operator’s machine this evening, on main too; the limit untouched, the question asked) · cf:build exit 0 · wrangler deploy --dry-run Total Upload 41151.08 KiB / gzip 9087.62 KiB (+1571 KiB against a clean build of main, 63.0% of the ceiling: a one-module version cost 2012 KiB, the split into three took 441 KiB back, the rest is Turbopack’s cutting of the server’s shared chunks around a new module many client components import). Browser, local server: signed in, the Account page’s strip, the staff rows and Sign out, the header’s menu and Sign out through the seam (`.playwright-mcp/a1b-settings-signed-in.png`, `a1b-header-menu.png`); signed out, the page gate and Clerk’s modal through `SignInLink` (`a1b-sign-in-modal.png`).
+- **Review:** SOUND WITH FIXES, no behaviour change found, nothing blocking (~250k tokens said, 200,689 measured, 34 tool uses). Folded: the count of moved files, a stray bold marker, the toolbar’s stale comment, a blank line. Left: two subscriptions to Clerk’s hook in the prompt and the announcement (negligible).
+- **Corrections:** the edits began on `main` before a branch was made (nothing was pushed; moved onto the branch as found).
+
 ## #1058 · 1.0.177 · records · merged Thu 24 Sep 14:17 (14:17Z)
 Records R9's merge (#1057, squash-merged 14:01:37Z as 64a5c6f5): R9 DONE with its evidence, the session-57 handoff with PA A1b first, and the schedule's step 23.
 - **Files (8):**
