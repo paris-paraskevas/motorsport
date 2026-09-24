@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.175 — 2026-09-24
+
+### Records — PA A1a on prod, A1 STARTED, the signed-in run's finding (R9 proposed)
+
+Records only. `docs/plan/ledger.json`: A1 STARTED with A1a's evidence (#1055 squash-merged 2026-09-24 13:26:16Z as 21a5c518 on the operator's word "helper go and merge" ~13:18Z; prod `/changelog` 1.0.174 at 13:30:33Z; Home across the deploy: 28 regions, 24 identical byte for byte, four differing by the countdown clocks and the footer's version at identical lengths) and one dated line. The signed-in browser run (the sign-in helper on the word "helper go", stopped after it): the header's account menu, the studio and the designer as before; its finding, outside the slot: `/settings` answers 500 when signed in, on main as on the branch (a Server Component hands a `<button>` child to Clerk's `<SignOutButton>`, and Clerk's single-child check refuses what arrives across the boundary), signed out 200; proposed as R9 once prod's own answer is confirmed. `docs/pull-requests.md`: #1055's entry and this PR's. `docs/HANDOFF.md`: the LATEST block for session 57 (R9 on the word, then A1b). `SCHEDULE.md`: step 22.
+
 ## 1.0.174 — 2026-09-24
 
 ### Accounts — [PA A1a] The account seam, server side

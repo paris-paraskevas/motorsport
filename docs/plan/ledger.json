@@ -359,6 +359,11 @@
    "date": "2026-09-24",
    "change": "The order between D1 and PA A1a: A1a (the account seam, server) starts now; D1 (the Designer documentation) is done after all phases finish, the last slot of the ledger. D1 carries no question any more.",
    "word": "the operator, 2026-09-24 ~12:45Z: \"pa a1a, let the documentation be done after all phases finish\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "PA A1a merged (#1055, 1.0.174; a8a60a7d, e57f8715, ff247cab; squash-merged 13:26:16Z as 21a5c518; prod /changelog 1.0.174 at 13:30:33Z). A1 STARTED (A1b follows). The reviewer SOUND WITH FIXES (222,762 tokens against ~250k said): the server’s visitor carries the account’s one address where Clerk’s user carried every address, a default the plan’s scan had taken, stated in the record (prod holds four schemes, none email_domain, read ~13:15Z). The signed-in browser run, on the word “helper go”: the header’s account menu, the studio and the designer as before. Its finding, outside the slot: /settings answers 500 when signed in, on main as on the branch (a Server Component hands a <button> child to Clerk’s SignOutButton, whose single-child check refuses what arrives across the boundary); signed out 200; proposed as R9 with prod’s own answer to be confirmed first.",
+   "word": "the operator, 2026-09-24 ~13:18Z: \"helper go and merge\""
   }
  ],
  "phases": {
@@ -993,8 +998,9 @@
    "defaults": "Account = { id, email, name, username, imageUrl, role, donor }; two PRs, the server first, then the browser; the tests re-pointed to the seam’s mocks, never an assertion changed; a boundary test: no file outside lib/auth imports @clerk/ but a named allow-list that shrinks with each PR.",
    "needsWord": "none (answered 2026-09-24 ~08:20Z)",
    "acceptance": "No file outside lib/auth and the allow-list imports @clerk/ (test); every test green; the local site signed in behaves as before (browser).",
-   "status": "planned",
-   "scopeHash": "3967f9263e00"
+   "status": "started",
+   "scopeHash": "3967f9263e00",
+   "evidence": "A1a: #1055 · 1.0.174 · three commits (a8a60a7d the operator’s order recorded; e57f8715 the seam; ff247cab the reviewer’s record), squash-merged 2026-09-24 13:26:16Z as 21a5c518 · prod /changelog 1.0.174 at 13:30:33Z · Home across the deploy: 28 regions, 24 identical byte for byte, four differing by the countdown clocks and the footer’s version at identical lengths · the reviewer (Sonnet) SOUND WITH FIXES, 222,762 tokens against ~250k said: the one-address visitor stated (prod holds no email_domain scheme), the greeting’s first word disclosed · tests first, seen red: the mapping and the boundary (84 offenders before the move) · tsc 0, lint 0 errors, vitest 232 files / 2338 tests, the dry run 39581.68 KiB (+331.9 KiB, the chunk groups re-cut) · signed out on the local server: the pages and the gated routes answer as before · signed in through the helper on the word “helper go”: the header’s account menu, /studio and /admin/designer as before (.playwright-mcp/a1a-header-menu.png, a1a-designer.png) · FINDING outside the slot: /settings answers 500 signed in on main and on the branch alike (Clerk’s SignOutButton refuses the Server Component’s child), proposed as R9 · A1b next"
   },
   {
    "id": "A2",
