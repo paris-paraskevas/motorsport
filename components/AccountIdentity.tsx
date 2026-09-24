@@ -1,6 +1,6 @@
 'use client';
-import { LogIn } from 'lucide-react';
-import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import { LogIn, LogOut } from 'lucide-react';
+import { SignInButton, SignOutButton, UserButton, useUser } from '@clerk/nextjs';
 
 // Identity strip at the top of /settings (the bottom bar calls it Account —
 // PR 2d makes the page keep that promise). Signed in: avatar + name/email,
@@ -54,5 +54,26 @@ export function AccountIdentity() {
         </p>
       </div>
     </div>
+  );
+}
+
+/** The Account page's Sign out row (R9), created here in the browser: Clerk's SignOutButton is a Client Component whose
+ *  single-child check refuses a child handed across from the page, a Server Component (React 19 hands it over as a lazy
+ *  reference), and /settings answered 500 for every signed-in reader while the page held this markup itself. */
+export function SignOutRow() {
+  return (
+    <SignOutButton>
+      <button
+        type="button"
+        data-heatmap-id="account:sign-out"
+        className="group flex w-full items-center gap-3 border-b border-border py-4 text-left transition-colors duration-(--duration-fast) hover:bg-surface"
+      >
+        <LogOut size={18} className="shrink-0 text-brand" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-text text-base font-semibold">Sign out</span>
+          <span className="block text-text-faint text-xs">End this session on this device</span>
+        </span>
+      </button>
+    </SignOutButton>
   );
 }

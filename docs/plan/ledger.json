@@ -364,6 +364,11 @@
    "date": "2026-09-24",
    "change": "PA A1a merged (#1055, 1.0.174; a8a60a7d, e57f8715, ff247cab; squash-merged 13:26:16Z as 21a5c518; prod /changelog 1.0.174 at 13:30:33Z). A1 STARTED (A1b follows). The reviewer SOUND WITH FIXES (222,762 tokens against ~250k said): the server’s visitor carries the account’s one address where Clerk’s user carried every address, a default the plan’s scan had taken, stated in the record (prod holds four schemes, none email_domain, read ~13:15Z). The signed-in browser run, on the word “helper go”: the header’s account menu, the studio and the designer as before. Its finding, outside the slot: /settings answers 500 when signed in, on main as on the branch (a Server Component hands a <button> child to Clerk’s SignOutButton, whose single-child check refuses what arrives across the boundary); signed out 200; proposed as R9 with prod’s own answer to be confirmed first.",
    "word": "the operator, 2026-09-24 ~13:18Z: \"helper go and merge\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "R9 opened and started: the Account page’s Sign out row moves into a Client Component (components/AccountIdentity.tsx SignOutRow) so that Clerk’s SignOutButton receives its child from the same runtime; found by A1a’s signed-in browser run (the dev server answers 500 on main as on the branch; signed out 200).",
+   "word": "the operator, 2026-09-24 ~13:50Z: \"R9 go\""
   }
  ],
  "phases": {
@@ -1049,6 +1054,18 @@
    "acceptance": "Ten chapters under docs/designer/, each with its Sonnet reading recorded and its file:line citations resolving; the operator reads chapter 01 and can name every concept without the code.",
    "status": "planned",
    "scopeHash": "3359e43f775d"
+  },
+  {
+   "id": "R9",
+   "phase": "PA",
+   "title": "The Account page’s Sign out row drawn in the browser",
+   "scope": "The Account page (/settings) answers 500 when signed in: the page, a Server Component, hands a <button> child to Clerk’s SignOutButton, a Client Component, and Clerk’s single-child check (React.Children.only) refuses what arrives across the boundary in React 19. The Sign out row moves into a Client Component of the page’s own identity strip (components/AccountIdentity.tsx SignOutRow), the same markup and heatmap id, so the button and its child are created in one runtime; the page renders it inside {userId && …} and drops its Clerk import; lib/auth/boundary.test.ts’s allow-list loses the page.",
+   "fixedBy": "the operator’s word of 2026-09-24 ~13:50Z: “R9 go”, after A1a’s signed-in browser run found /settings answering 500 on the dev server, on main and on the branch alike (signed out 200); the header’s Sign out, created inside a Client Component (components/AppShell.tsx), works",
+   "defaults": "The row lives in components/AccountIdentity.tsx (a client file of the same page, already importing Clerk) rather than a file of its own; the test sits beside NavGating’s, whose mock renders SignOutButton as its child; the CHANGELOG names the cause; prod’s own answer is read after the deploy.",
+   "needsWord": "none",
+   "acceptance": "/settings answers 200 signed in on the local server with the row drawn (browser); the row’s test; the allow-list shorter by one; the whole suite green.",
+   "status": "started",
+   "scopeHash": "1a2ee15cf389"
   }
  ]
 }

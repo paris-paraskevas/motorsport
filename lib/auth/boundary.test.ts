@@ -5,13 +5,13 @@ import { fileURLToPath } from 'node:url';
 
 // Who may import Clerk (PA A1): lib/auth/ and a named allow-list that shrinks with each PR of the phase, so the files that
 // read the provider move behind the seam once and stay there. After A1a the server files are behind it; the browser's files
-// and the two layouts wait for A1b, the middleware, the sign-in pages and the webhook for A3.
+// and the two layouts wait for A1b, the middleware, the sign-in pages and the webhook for A3. R9 took the Account page off
+// the list: its Sign out row is drawn by components/AccountIdentity.tsx now.
 const ALLOWED = new Set([
   'middleware.ts',
   'app/api/webhooks/clerk/route.ts',
   'app/(admin)/layout.tsx',
   'app/(app)/layout.tsx',
-  'app/(app)/settings/page.tsx',
   'app/(app)/sign-in/[[...sign-in]]/page.tsx',
   'app/(app)/sign-up/[[...sign-up]]/page.tsx',
   'components/AccountIdentity.tsx',

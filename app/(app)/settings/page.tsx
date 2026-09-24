@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Bell, Download, LogOut, Palette } from 'lucide-react';
+import { ArrowUpRight, Bell, Download, Palette } from 'lucide-react';
 import { accountId } from '@/lib/auth/server';
-import { SignOutButton } from '@clerk/nextjs';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
-import { AccountIdentity } from '@/components/AccountIdentity';
+import { AccountIdentity, SignOutRow } from '@/components/AccountIdentity';
 import { ChampionshipsRow, TimezoneRow } from '@/components/FollowedChips';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { AccountStats } from '@/components/AccountStats';
@@ -94,21 +93,7 @@ async function AccountPage() {
           </span>
           <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
         </Link>
-        {userId && (
-          <SignOutButton>
-            <button
-              type="button"
-              data-heatmap-id="account:sign-out"
-              className="group flex w-full items-center gap-3 border-b border-border py-4 text-left transition-colors duration-(--duration-fast) hover:bg-surface"
-            >
-              <LogOut size={18} className="shrink-0 text-brand" />
-              <span className="min-w-0 flex-1">
-                <span className="block text-text text-base font-semibold">Sign out</span>
-                <span className="block text-text-faint text-xs">End this session on this device</span>
-              </span>
-            </button>
-          </SignOutButton>
-        )}
+        {userId && <SignOutRow />}
       </nav>
     </div>
   );
