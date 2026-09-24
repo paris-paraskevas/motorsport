@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.177 — 2026-09-24
+
+### Records — R9 on prod and DONE, the session-57 handoff (A1b next)
+
+Records only. `docs/plan/ledger.json`: R9 DONE with its evidence (#1057 squash-merged 2026-09-24 14:01:37Z as 64a5c6f5 on the operator's word "merge" ~14:01Z; prod `/changelog` 1.0.176 at 14:16:12Z on the footer (the deployment created 14:08:58Z; the pages timed out 14:10–14:14Z during Cloudflare’s open network incident, the static files answering); Home unchanged across the deploy; the reviewer SOUND at 129,313 tokens against ~80k said) and the dated line. `docs/pull-requests.md`: #1057's entry and this PR's. `docs/HANDOFF.md`: the LATEST block for session 57 (PA A1b first, with its plan essentials and decision scan). `SCHEDULE.md`: step 23.
+
 ## 1.0.176 — 2026-09-24
 
 ### Account — [R9] The Sign out row of the Account page is drawn in the browser (the page answered 500 when signed in)
