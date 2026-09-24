@@ -10,6 +10,7 @@ export default defineConfig({
       'tests/**/*.test.ts',
       'app/**/*.test.{ts,tsx}',
       'components/**/*.test.{ts,tsx}',
+      'scripts/**/*.test.ts',
     ],
     // `node` stays the default because almost everything here is pure logic and
     // a DOM per file is not free. A component or hook test opts in per file with
