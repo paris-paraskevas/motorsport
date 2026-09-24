@@ -324,6 +324,27 @@ describe('renderComponents', () => {
     expect(cards).toContain('Mercedes');
   });
 
+  it('P2.4 PR A: the results’ round groups take the highlight rules and, with Followed series on, each entry’s series slug; with neither, today’s markup byte for byte', async () => {
+    const chinese = { round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z' };
+    const rows = [
+      raceRow({ series: 'f1' }),
+      raceRow({ series: 'f1', position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }),
+      raceRow({ series: 'f1', ...chinese, driver: 'Lando Norris', code: 'NOR', team: 'McLaren' }),
+      raceRow({ series: 'f1', ...chinese, position: 2, driver: 'Oscar Piastri', code: 'PIA', team: 'McLaren', time: '+2.0s', points: 18 }),
+    ];
+    const ENTRY = '<li class="flex items-baseline gap-3 py-2 break-inside-avoid"';
+    const count = (s: string, part: string) => s.split(part).length - 1;
+    const plain = await draw('season-results', 'f1', rows);
+    expect(plain).toContain('<details');
+    expect(count(plain, `${ENTRY}>`)).toBe(4);
+    expect(plain).not.toContain('data-series');
+    const styled = await draw('season-results', 'f1', rows, 'list', 50, { highlight1: 'position.eq:1' });
+    expect(count(styled, '<li class="flex items-baseline gap-3 py-2 break-inside-avoid text-brand font-bold">')).toBe(2);
+    expect(count(styled, `${ENTRY}>`)).toBe(2);
+    const followed = await draw('season-results', 'f1', rows, 'list', 50, { highlightFollowed: true });
+    expect(count(followed, `${ENTRY} data-series="f1">`)).toBe(4);
+  });
+
   it('P2.2 B2, the Timeline per results preset: every one of the seven draws one entry per race (or race and class), newest first, on a rail, with the date or the round chip, the title linked to the weekend page, the WIN line and the winner’s initials (APEX Timeline; Avatar); Rows counts races; a race without a position-1 row takes its first', async () => {
     const f1 = await draw('season-results', 'f1', [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }), raceRow({ round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null })], 'timeline');
     expect(f1).not.toContain('<table');
@@ -906,3 +927,51 @@ describe('the saved views and the download (P2.3 PR B)', () => {
     expect(downloadOnly).toMatch(/<a href="\/api\/data\/csv\?page=%2Fhistory%2Fmonza&amp;region=t&amp;sort=points" rel="nofollow"[^>]*>Download CSV<\/a>/);
   });
 });
+
+describe('the highlight rules and the followed-series tint (P2.4 PR A)', () => {
+  const NOON = new Date('2026-09-22T12:00:00.000Z');
+  const F1 = { source: 'standings?series=f1&season=2026' } as Partial<Region>;
+  const page = { id: 'p1', path: '/history/monza', name: 'Monza', title: null };
+  const draw = async (settings: Record<string, string | number | boolean>, over: Partial<Region> = F1) => html((await renderComponents(doc([region('t', 'data.region', settings, over)]), { path: '/history/monza', page, now: NOON })).t);
+
+  it('styles a row by the first rule it meets — the Table’s row, the Cards’ card, the List’s row — and draws today’s markup byte for byte when no rule is set; a rule the shape cannot read is ignored', async () => {
+    const base = { preset: 'drivers', view: 'table', rows: 10, heading: '' };
+    const plain = await draw(base);
+    expect(plain).toMatch(/<tbody[^>]*><tr><td/);
+    expect(plain).not.toMatch(/<tr class="(text-brand|bg-surface-elevated|text-text-faint)/);
+    expect(await draw({ ...base, highlight1: '', highlight1Style: 'brand', highlight2: '', highlight2Style: 'brand', highlight3: '', highlight3Style: 'brand', highlightFollowed: false })).toBe(plain);
+    const styled = await draw({ ...base, highlight1: 'position.eq:1', highlight2: 'position.lte:3', highlight2Style: 'emphasis', highlight3: 'nope' });
+    expect(styled).toMatch(/<tr class="text-brand font-bold"><td[^>]*>1<\/td>/);
+    expect(styled).toMatch(/<tr class="bg-surface-elevated font-semibold"><td[^>]*>2<\/td>/);
+    expect((styled.match(/<tr class="(text-brand|bg-surface-elevated|text-text-faint)/g) ?? []).length).toBe(2);
+    const muted = await draw({ ...base, highlight1: 'team.eq:mercedes', highlight1Style: 'muted' });
+    expect((muted.match(/<tr class="text-text-faint">/g) ?? []).length).toBe(2);
+    const cards = await draw({ ...base, view: 'cards', highlight1: 'position.eq:1' });
+    expect(cards).toContain('<li class="border border-border bg-surface/40 p-4 text-brand font-bold">');
+    expect(cards).toContain('<li class="border border-border bg-surface/40 p-4">');
+    expect(await draw({ ...base, view: 'cards' })).not.toContain('text-brand font-bold">\n');
+    const list = await draw({ ...base, view: 'list', highlight1: 'position.eq:1' });
+    expect(list).toContain('<li class="flex items-baseline gap-3 py-2 text-brand font-bold">');
+    expect(list).toContain('<li class="flex items-baseline gap-3 py-2">');
+    // A template ignores the rules.
+    const leader = await draw({ preset: 'what-it-changed', view: 'leader', rows: 5, heading: '', highlight1: 'position.eq:1' }, { source: 'standings?series=latest&season=2026' } as Partial<Region>);
+    expect(leader).not.toContain('text-brand font-bold"><td');
+  });
+
+  it('with Followed series on, every row carries its series slug for the tint the browser adds; nothing is marked without the toggle', async () => {
+    const weekendRow = (i: number, series: string) => ({ series, seriesName: series === 'f1' ? 'Formula 1' : 'FIA WEC', colour: '#e10600', round: 16 + i, title: `Round ${i}`, start: `2030-0${i}-05T09:30:00.000Z`, end: `2030-0${i}-07T14:00:00.000Z`, dates: `${i}–${i + 2} Mar`, weekend: `/series/${series}/weekend/${16 + i}` });
+    const rows = [weekendRow(1, 'f1'), weekendRow(2, 'wec')];
+    const provenance = { ref: { source: 'weekends', params: {} }, label: 'Weekends', tier: 'live' as const, keys: [], rows: 2, ms: 1 };
+    readSource.mockResolvedValueOnce({ columns: [], total: 2, rows, provenance });
+    const on = await draw({ preset: 'whats-next', view: 'table', rows: 10, heading: '', highlightFollowed: true }, { source: 'weekends?count=10' } as Partial<Region>);
+    expect(on).toContain('<tr data-series="f1">');
+    expect(on).toContain('<tr data-series="wec">');
+    readSource.mockResolvedValueOnce({ columns: [], total: 2, rows, provenance });
+    const off = await draw({ preset: 'whats-next', view: 'table', rows: 10, heading: '' }, { source: 'weekends?count=10' } as Partial<Region>);
+    expect(off).not.toContain('data-series');
+  });
+});
+
+// The followed-series tint's client component reads the reader's followed series through Clerk's hook; the render tests stand
+// outside a ClerkProvider, so the hook answers nothing here (the component's own test drives it).
+vi.mock('@/lib/useFollowedSeries', () => ({ useFollowedSeries: () => ({ followed: null, hydrated: false, setFollowed: () => {}, clearFollowed: () => {} }) }));

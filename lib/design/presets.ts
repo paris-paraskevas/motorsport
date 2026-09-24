@@ -301,7 +301,7 @@ export function presetRows(rows: readonly PresetRow[], preset: Preset, count: nu
   let kept = rows.filter(r => (w.kind === undefined || r.kind === w.kind) && (w.class === undefined || (r.class ?? null) === w.class) && (w.session === undefined || r.session === w.session));
   // The reader's state (P2.3): its filters after the preset's own rule; its sort over the preset's order, flat, then the count of
   // rows — on a results shape too, where the count is of races only while the rows keep the preset's grouping.
-  if (state && state.filters.length > 0) kept = kept.filter(r => state.filters.every(f => passes(r, f, shape.columns)));
+  if (state && state.filters.length > 0) kept = kept.filter(r => state.filters.every(f => rowPasses(r, f, shape.columns)));
   const sorted = (base: PresetRow[]) => (state?.sort ? sortBy(base, state.sort, shape.columns) : base);
   if (shape.source !== 'results') return sorted(kept.sort((a, b) => pos(a) - pos(b))).slice(0, cut);
   if (preset.shape === 'podium-rows') {
@@ -337,7 +337,7 @@ const columnType = (columns: readonly PresetColumn[], key: string): ColumnType =
 
 /** Whether a row passes a reader's filter (P2.3), compared as the column's type reads: numbers as numbers (a missing one fails
  *  every test but `ne`), a date by its day, text case-insensitively; `in` over a comma list. */
-function passes(row: PresetRow, f: ViewFilter, columns: readonly PresetColumn[]): boolean {
+export function rowPasses(row: PresetRow, f: ViewFilter, columns: readonly PresetColumn[]): boolean {
   const type = columnType(columns, f.column);
   const v = row[f.column];
   if (f.op === 'in') {

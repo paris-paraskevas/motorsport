@@ -735,3 +735,9 @@ body {
     outline-offset: 2px;
   }
 }
+
+/* The followed-series tint of a Data region (P2.4): the browser marks the rows of the series the reader follows after the
+   page loads (components/data/FollowedRows.tsx); the brand paint at low alpha, so the row's own text keeps its colour. */
+[data-followed] {
+  background-color: color-mix(in srgb, var(--brand-fill) 14%, transparent);
+}

@@ -304,6 +304,21 @@
    "date": "2026-09-24",
    "change": "P2.3 DONE: the saved_view migration 20260923220000 applied on prod at 06:25:34Z — rehearsed inside begin…rollback through the Management API (no error; the table absent before and after), applied, read back (0 rows, RLS on, the index and the trigger present, the nine columns), idempotent. Prod’s Shared Components › Saved Views now loads empty and every Views menu lists what the designer saves. Both P2.3 PRs (A #1044 1.0.163, B #1046 1.0.165) were on prod already. Next: P2.4’s plan in plan mode with a Sonnet critic, on the scan’s answers.",
    "word": "the operator, 2026-09-24 ~06:20Z: \"apply 20260923220000\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PLANNED and APPROVED (ExitPlanMode): three PRs, one slot — PR A Highlight rules (three row conditions in the filter vocabulary with a style each under a new group Highlight; leader and podium on the server; the followed series as a client repaint that only adds a tint after load, nothing for the site’s null), PR B Links from the readers (the standings and results rows carry the person’s page from lib/people’s rosters matched by namesMatch — “Andrea Kimi Antonelli” is the roster’s “Kimi Antonelli”, /drivers/kimi-antonelli — the name and driver columns become link columns, the CSV writes a link’s text and its address), PR C Master-detail (Detail region and Detail key on the master; a select link per row writing r.<detail>.filter under the detail’s own state, the detail counted as a controlled region whatever its view, “Showing <value> · Show all”). A Sonnet critic (290,233 tokens against ~150k said) SOUND WITH FIXES, four blockers folded; the terrain reader 230,208 against ~120k. The plan file ~/.claude/plans/mossy-whistling-balloon.md holds the text; P2.4 STARTED.",
+   "word": "the operator, 2026-09-24 ~07:00Z: the plan approved (ExitPlanMode)"
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PR A built on the approved plan (1.0.168, branch feat/p2.4-rules-links): the Highlight group with three rules in the address’s words and a style each, the Followed series toggle; parseRule and rowPasses exported; the parser binds a rule to the preset’s shape; the Table’s, Cards’ and both List paths’ rows take the first rule’s class (today’s markup byte for byte with none); FollowedRows marks the followed rows after the page loads, the stylesheet tints them; the Property Editor notes a rule that does not read. Tests first, 7 red across 7 files, then green; tsc 0, lint 0 errors, vitest 230 files / 2322 tests; the browser on the local Monza page (the leader tinted, the podium raised, the F1 rows tinted once followed). The PR and its reviewer follow the operator’s new planning task (a full migration to Supabase Auth, asked ~07:20Z), which takes the next agent slot.",
+   "word": "the operator, 2026-09-24 ~07:00Z: the plan approved (ExitPlanMode); ~07:20Z: \"plan a full migration to Supabase Auth\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "PA PLANNED and APPROVED (ExitPlanMode): a new phase, Accounts move to Supabase Auth, four slots planned. A1, the account seam (two PRs; readers see no change). A2, the import (bcrypt hashes, roles and flags carried; each account keeps its Clerk id as app_metadata.legacy_id, so no table, column, function, stamp or env var changes). A3, Supabase Auth inside the seam and the switch (httpOnly cookies on the server only; the reader’s address forwarded with a secret key; the dev-host lock failing closed; our own screens; code emails through Resend; one sign-in again; a way back for 30 days). A4, Clerk leaves, 30 days later. The operator’s four answers (~08:20Z, each on its default): after P2.4 closes; Google’s own button on our sign-in pages; sign-in by email only; backups accepted as for every table today, a backup job proposed in IDEAS. W3 (workspaces as Clerk Organizations) is re-planned on our own membership table when it is built; workspace.clerk_org_id stays null. The terrain reader (Sonnet) 226,411 tokens against ~150k said; the critic (Sonnet, the read-only Plan type) 197,759 against ~150k, SOUND WITH FIXES: the blocker (search_path on the three security definer functions) and fourteen more folded. The plan file ~/.claude/plans/mossy-whistling-balloon.md holds the text.",
+   "word": "the operator, 2026-09-24 ~07:20Z: “plan a full migration to Supabase Auth”; ~08:20Z: the four answers (AskUserQuestion, each on its default); ~08:45Z: the plan approved (ExitPlanMode)"
   }
  ],
  "phases": {
@@ -318,6 +333,10 @@
   "P2": {
    "title": "Phase 2 — The general components, over declared sources",
    "note": "The definition model first, then the sources, then the components; each with spec, settings, defaults, template options, renderer and a test from a saved document."
+  },
+  "PA": {
+   "title": "Phase A — Accounts move to Supabase Auth",
+   "note": "Clerk’s free plan signs readers out every seven days; the accounts move to the Supabase project the site already runs, behind a seam of our own, their ids unchanged."
   }
  },
  "slots": [
@@ -713,7 +732,7 @@
    "defaults": "Highlight rules stored on the region as row conditions in the filter vocabulary (position.lte:3, points.gte:100) with a style, drawn under a new Property Editor group; the leader and podium rules render on the server; a column link picks a page the row carries (Driver → its page, as Race → its page), never a typed URL; master-detail as a master row link writing the detail region’s filter into the address (the P2.3 vocabulary, r.<id>.filter), the detail served as a cached variant; the followed-series highlight as a small client repaint after the page loads; the standings and results readers carry each row’s driver and team page addresses from the site’s own resolver.",
    "needsWord": "none",
    "acceptance": "A highlighted leader; a driver name linking to /drivers/[slug]; a season list filtering a results table; test.",
-   "status": "planned",
+   "status": "started",
    "scopeHash": "b6e6849d7555"
   },
   {
@@ -919,6 +938,54 @@
    "acceptance": "Deferred until the word.",
    "status": "planned",
    "scopeHash": "2e7134321819"
+  },
+  {
+   "id": "A1",
+   "phase": "PA",
+   "title": "The account seam",
+   "scope": "Three modules of our own (lib/auth/server.ts, lib/auth/client.tsx, lib/auth/directory.ts) become the only code that knows the sign-in provider; every file that imports Clerk moves onto them, with Clerk behind them; readers see no change.",
+   "fixedBy": "the operator’s word of 2026-09-24 (~07:20Z the migration asked; ~08:20Z the four answers; the plan approved by ExitPlanMode); the plan file’s PA section",
+   "defaults": "Account = { id, email, name, username, imageUrl, role, donor }; two PRs, the server first, then the browser; the tests re-pointed to the seam’s mocks, never an assertion changed; a boundary test: no file outside lib/auth imports @clerk/ but a named allow-list that shrinks with each PR.",
+   "needsWord": "none (answered 2026-09-24 ~08:20Z)",
+   "acceptance": "No file outside lib/auth and the allow-list imports @clerk/ (test); every test green; the local site signed in behaves as before (browser).",
+   "status": "planned",
+   "scopeHash": "3967f9263e00"
+  },
+  {
+   "id": "A2",
+   "phase": "PA",
+   "title": "The import",
+   "scope": "A script copies Clerk’s accounts into Supabase Auth with their bcrypt password hashes, roles, supporter flags, names and photos, each keeping its Clerk id as app_metadata.legacy_id; one migration adds the avatars bucket and three service-role directory functions over auth.users.",
+   "fixedBy": "the operator’s word of 2026-09-24 (~07:20Z the migration asked; ~08:20Z the four answers; the plan approved by ExitPlanMode); the plan file’s PA section",
+   "defaults": "A dry run by default; counts only in its output; a rerun changes nothing; a password hash written only for an account that never signed in on Supabase; the functions pin search_path and only the service role may run them; the script runs by the operator’s hand or under a permission rule the operator adds.",
+   "needsWord": "apply <stamp> for the migration; apply A2-op for the operator’s own account",
+   "acceptance": "A synthetic export imported and rerun without change (test); the functions refuse anon (local database); the operator’s account imported on prod and named by the directory.",
+   "status": "planned",
+   "scopeHash": "67c2550b3ed6"
+  },
+  {
+   "id": "A3",
+   "phase": "PA",
+   "title": "Supabase Auth inside the seam, and the switch",
+   "scope": "The seam over @supabase/ssr with httpOnly cookies and the reader’s address forwarded; the middleware refreshes sessions and the dev-host lock fails closed; our own sign-in, sign-up, code, reset and Account screens with Google’s button and Turnstile; four branded code emails through Resend; the Clerk webhook deleted; the switch with the operator present and a way back for 30 days.",
+   "fixedBy": "the operator’s word of 2026-09-24 (~07:20Z the migration asked; ~08:20Z the four answers; the plan approved by ExitPlanMode); the plan file’s PA section",
+   "defaults": "Email and password, a six-digit code, or Google’s own button; sign-in by email only; every email a code, never a link; a notice on the sign-in page for 30 days; the secret key and IP forwarding proven before anything is built on them; prod configured on apply A3-config.",
+   "needsWord": "apply A3-config; apply A3-import; merge",
+   "acceptance": "Every sign-in method on the local stack and on testing against prod’s project; an hour-old session refreshed with each cookie in its own header; anonymous Home a cache HIT; after the switch, the operator signed in by each method on prod and the designer on the dev host.",
+   "status": "planned",
+   "scopeHash": "4a6b232b1827"
+  },
+  {
+   "id": "A4",
+   "phase": "PA",
+   "title": "Clerk leaves",
+   "scope": "Thirty days after the switch: the sign-in notice and every CLERK_ name leave the code and the docs; the operator deletes Clerk’s secrets, application and DNS records.",
+   "fixedBy": "the operator’s word of 2026-09-24 (~07:20Z the migration asked; ~08:20Z the four answers; the plan approved by ExitPlanMode); the plan file’s PA section",
+   "defaults": "Proposed, not built: renaming clerk_user_id; moving betDb to the secret key and revoking the legacy secret; row-level policies; cookies shared across the subdomains.",
+   "needsWord": "the operator’s word on day 30 (deleting the Clerk application cannot be undone)",
+   "acceptance": "No CLERK_ name in the repo (test); the Clerk application deleted and its DNS records gone (the operator’s dashboards).",
+   "status": "planned",
+   "scopeHash": "38546fdd606f"
   }
  ]
 }

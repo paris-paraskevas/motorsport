@@ -43,6 +43,7 @@ import type { EditableShortcut } from '@/lib/design/shortcuts';
 import { BUILD_OPTION_DEFAULTS, BUILD_OPTION_KEYS, type BuildOptionKey, type BuildOptionStatus } from '@/lib/design/build-option-defaults';
 import { DEFAULT_REGION_TEMPLATE, REGION_TEMPLATES, regionTemplate, type RegionTemplateKey, type TemplatePresets } from '@/lib/design/template-options';
 import { FIELD, PBTN, Pills, Ro, TEXTAREA, YesNo, type PropGroup, type PropRow } from './PropertyPane';
+import { filterOps, parseRule } from '@/lib/design/view-state';
 import { TemplateOptionsButton } from './TemplateOptionsDialog';
 import { TextPicker, type Cursor } from './TextPicker';
 import {
@@ -64,6 +65,15 @@ import {
   triggerFor,
   type Selection,
 } from './page-designer-model';
+
+/** Why a highlight rule does not read yet (P2.4), in plain words; undefined when it does. A rule on a column the preset
+ *  lacks answers in the parser's own words (page-document.ts), naming the columns it has. */
+function ruleProblem(text: string, shape: Shape | null): string | undefined {
+  const rule = parseRule(text);
+  if (typeof rule === 'string') return 'needs a column and a value, like position.lte:3';
+  if (shape && !shape.columns.some(c => c.key === rule.column && filterOps(c).includes(rule.op))) return `must be a condition on a column of this preset, like position.lte:3. Its columns: ${shape.columns.map(c => c.key).join(', ')}`;
+  return undefined;
+}
 
 // The Property Editor's groups for whatever is selected (Paddock Designer v2.4,
 // renderPE): the page (Identification, Appearance, Navigation Menu, Head, Page
@@ -842,6 +852,8 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           const also = s.kind === 'choice' ? (s.options?.find(o => o.key === v)?.sets ?? {}) : {};
           return { ...x, settings: { ...x.settings, ...also, [s.key]: v } };
         });
+      // A highlight rule (P2.4) is read as it is typed: the note says what is missing until it reads and names a column of the preset.
+      const ruleNote = s.rule && String(value).trim() ? ruleProblem(String(value), shape) : undefined;
       const row: PropRow = {
         label: s.label,
         common: true,
@@ -912,7 +924,8 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
         ),
         // A report-scope attribute (one value per multi-row region) reads as any other here; its help says so.
         // "Pick a Source first" belongs to a source-bound choice (an option carrying `only`, the Preset); a grouped choice without one (P2.9's Series) needs no Source.
-        note: waiting.length ? `Not yet pickable, ${[...new Set(waiting.map(o => o.later))].join('; ')}: ${waiting.map(o => o.label).join(', ')}.` : grouped && !regionSource && (s.options ?? []).some(o => o.only) ? 'Pick a Source first: the list then follows it.' : boundNote,
+        note: ruleNote ?? (waiting.length ? `Not yet pickable, ${[...new Set(waiting.map(o => o.later))].join('; ')}: ${waiting.map(o => o.label).join(', ')}.` : grouped && !regionSource && (s.options ?? []).some(o => o.only) ? 'Pick a Source first: the list then follows it.' : boundNote),
+        bad: ruleNote !== undefined ? true : undefined,
         help: application
           ? `${s.help ? `${s.help} ` : ''}One value for the whole application (APEX: an attribute of Application scope), set under Shared Components › Component Settings.`
           : s.kind === 'link'

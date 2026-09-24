@@ -83,6 +83,9 @@ export interface AttributeDefinition {
    *  `row:<column>` (ours: APEX substitutes a column into a URL; a typed URL is
    *  never allowed here, so the row's own link stands in). */
   rowLinks?: true;
+  /** A text that is one condition on a row in the address's words (`position.lte:3`, P2.4): the parser binds it to the
+   *  preset's shape as it binds a filter, the editor notes a text that does not read. */
+  rule?: true;
 }
 /** APEX: Attribute Groups, named and sequenced sections of the Attributes tab. */
 export interface AttributeGroup {
@@ -158,6 +161,13 @@ export function instanceAttributes(spec: ComponentDefinition): AttributeDefiniti
 const CARDS_ONLY = { key: 'view', values: ['cards'] } as const;
 /** The views the Interactive Report's controls apply to (P2.3): the templates, the List, the Timeline and the Detail ignore a reader's state. */
 const MENU_VIEWS = { key: 'view', values: ['table', 'cards'] } as const;
+/** The views the highlight rules style (P2.4): the templates keep their own marks. */
+const HIGHLIGHT_VIEWS = { key: 'view', values: ['table', 'cards', 'list'] } as const;
+const HIGHLIGHT_STYLES = [
+  { key: 'brand', label: 'Brand' },
+  { key: 'emphasis', label: 'Emphasis' },
+  { key: 'muted', label: 'Muted' },
+] as const;
 /** What a preset's pick sets the Card slots and zones to: its own mapping, nothing linked, the button's plain word. */
 const CARD_RESET: Readonly<Record<string, SettingValue>> = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
 
@@ -290,11 +300,19 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       // PR B: the saved views (APEX: the saved reports' tiers, the designer-authored ones) and the download from the source.
       { key: 'views', label: 'Saved views', kind: 'boolean', scope: 'report', group: 'menu', dependingOn: MENU_VIEWS, default: false, help: 'A Views menu beside Actions listing Primary (the region as designed) and the Alternatives saved under Shared Components › Saved Views; a reader picks one and shares its link (?view=<key>). Works on a page served from its rows.' },
       { key: 'download', label: 'Download CSV', kind: 'boolean', scope: 'report', group: 'menu', dependingOn: MENU_VIEWS, default: false, help: 'Download CSV in the Actions menu: the rows as sorted, filtered and columned, read from the source (never the screen), at most 5000. Works on a page served from its rows.' },
+      // P2.4: the highlight rules (APEX: an Interactive Report's Highlight) — three conditions on a row in the address's words,
+      // a style each, the first a row meets styling it; and the followed-series tint the browser adds after the page loads.
+      ...([1, 2, 3] as const).flatMap(n => [
+        { key: `highlight${n}`, label: `Highlight ${n}`, kind: 'text' as const, scope: 'report' as const, group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, rule: true as const, default: '', maxLength: 120, help: 'A condition on the row in the address’s words — position.eq:1, position.lte:3, points.gte:100, team.eq:Mercedes. The first rule a row meets styles it.' },
+        { key: `highlight${n}Style`, label: `Highlight ${n} style`, kind: 'choice' as const, scope: 'report' as const, group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, options: HIGHLIGHT_STYLES, default: 'brand', help: 'Brand is the leader’s tint; Emphasis raises the row on the elevated surface; Muted fades it.' },
+      ]),
+      { key: 'highlightFollowed', label: 'Followed series', kind: 'boolean', scope: 'report', group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, default: false, help: 'Tint the rows of the series the reader follows, in the browser after the page loads; the page stays the same for everyone. Rows without a series, as a one-series standings table, stay as they are.' },
     ],
     groups: [
       { key: 'card', title: 'Card', seq: 10 },
       { key: 'actions', title: 'Actions', seq: 20 },
       { key: 'menu', title: 'Actions Menu', seq: 30 },
+      { key: 'highlight', title: 'Highlight', seq: 40 },
     ],
     sources: ['standings', 'results', 'posts', 'news', 'weekends'],
   },
