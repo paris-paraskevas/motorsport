@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import { Bell } from 'lucide-react';
 
 interface SessionTypePrefs {
@@ -74,7 +74,7 @@ export function NotifPrefsSection() {
   const [prefs, setPrefs] = useState<NotifPrefs | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAccount();
 
   useEffect(() => {
     if (!isSignedIn) return; // signed-out: the prefs API would 401

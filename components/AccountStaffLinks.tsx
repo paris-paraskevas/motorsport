@@ -1,16 +1,15 @@
 'use client';
 import Link from 'next/link';
 import { ArrowUpRight, LayoutDashboard, MessageSquare, NotebookPen, PenLine } from 'lucide-react';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 
-// The staff-only rows on /settings, resolved CLIENT-side via useUser so the
-// Account page's server render never pays a currentUser() Clerk backend hop
-// (which added ~100-500ms to /settings — a 0.99.0 regression). Renders nothing
-// until Clerk loads and confirms a staff role (mirrors HeaderUtils).
+// The staff-only rows on /settings, resolved CLIENT-side via useAccount so the
+// Account page's server render never pays a session read (which added
+// ~100-500ms to /settings — a 0.99.0 regression). Renders nothing until the
+// account has loaded and confirms a staff role (mirrors HeaderUtils).
 export function AccountStaffLinks() {
-  const { isLoaded, isSignedIn } = useAuth();
-  const { user } = useUser();
-  const role = user?.publicMetadata?.role;
+  const { isLoaded, isSignedIn, account } = useAccount();
+  const role = account?.role;
   const isStaff = role === 'admin' || role === 'moderator';
   const isAdmin = role === 'admin';
   // Authors are not "staff" for the rows below, but they own a studio + profile —

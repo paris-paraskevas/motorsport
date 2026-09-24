@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useAccount, useAccountFlags } from '@/lib/auth/client';
 import { Coffee, Heart, X } from 'lucide-react';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { SUPPORT_URL } from '@/lib/site';
@@ -51,12 +51,14 @@ const FOCUS_RING =
  *
  * Dismissal scope differs by auth state, and the copy says so: a guest's
  * "don't show this again" holds for the visit (sessionStorage), while a signed-
- * in reader's writes a versioned flag to Clerk `unsafeMetadata` and silences it
- * everywhere, for good. Clerk metadata rather than a table because `useUser()`
- * reads it client-side with no extra request, which leaves ISR untouched.
+ * in reader's writes a versioned flag to the account (lib/auth useAccountFlags,
+ * Clerk's unsafeMetadata today) and silences it everywhere, for good. The
+ * account's flags rather than a table because the browser reads them with no
+ * extra request, which leaves ISR untouched.
  */
 export function SupportPrompt() {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn } = useAccount();
+  const { flags, setFlag } = useAccountFlags();
   const pathname = usePathname();
   const [stage, setStage] = useState<AskStage | null>(null);
   // Entrance flag, flipped a frame after the panel mounts so the closed-state
@@ -74,7 +76,7 @@ export function SupportPrompt() {
   // ever been on screen. Reproduced in dev before this guard existed.
   const stageRef = useRef<AskStage | null>(null);
 
-  const optedOut = Boolean(isSignedIn && hasOptedOut(user?.unsafeMetadata));
+  const optedOut = Boolean(isSignedIn && hasOptedOut(flags ?? undefined));
 
   const persist = useCallback(() => {
     try {
@@ -215,14 +217,12 @@ export function SupportPrompt() {
     settle(true);
     // Signed in: make it permanent, on every device. The visit flag above has
     // already taken effect, so a failed write costs this visit's silence only.
-    if (isSignedIn && user) {
-      void user
-        .update({ unsafeMetadata: { ...user.unsafeMetadata, [OPT_OUT_KEY]: OPT_OUT_VALUE } })
-        .catch(() => {
-          /* offline / rate-limited: the visit-scoped dismissal still holds */
-        });
+    if (isSignedIn) {
+      void setFlag(OPT_OUT_KEY, OPT_OUT_VALUE).catch(() => {
+        /* offline / rate-limited: the visit-scoped dismissal still holds */
+      });
     }
-  }, [settle, isSignedIn, user]);
+  }, [settle, isSignedIn, setFlag]);
 
   useFocusTrap(panelRef, softDismiss, stage !== null);
 

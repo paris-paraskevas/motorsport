@@ -2,7 +2,8 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { SignInButton, useAuth, useUser } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
+import { SignInLink } from '@/lib/auth/client-pieces';
 
 // The application form on /write-for-us. Client-side so the page itself stays
 // cacheable: signed-out visitors get a sign-in CTA, existing authors get sent
@@ -20,8 +21,7 @@ function Label({ text }: { text: string }) {
 }
 
 export function WriteForUsForm() {
-  const { isLoaded, isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { isLoaded, isSignedIn, account } = useAccount();
   const [pitch, setPitch] = useState('');
   const [links, setLinks] = useState('');
   const [sample, setSample] = useState('');
@@ -29,7 +29,7 @@ export function WriteForUsForm() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const role = user?.publicMetadata?.role;
+  const role = account?.role;
   const alreadyAuthor = role === 'contributor' || role === 'writer' || role === 'admin';
 
   if (!isLoaded) return null;
@@ -40,14 +40,14 @@ export function WriteForUsForm() {
         <p className="text-sm text-text-muted">
           Applications are tied to an account, so sign in first. It takes a minute and it is free.
         </p>
-        <SignInButton mode="modal">
+        <SignInLink>
           <button
             type="button"
             className="mt-3 bg-text px-4 py-2 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
           >
             Sign in to apply
           </button>
-        </SignInButton>
+        </SignInLink>
       </div>
     );
   }

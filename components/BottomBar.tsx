@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import { isActivePath, resolveEntry, type NavEntry } from '@/lib/design/destinations';
 import type { AuthzScheme } from '@/lib/design/authz-defaults';
 import { useVisibleEntries } from './useVisitor';
@@ -61,10 +61,9 @@ export function BottomBar({
 }) {
   const pathname = usePathname();
   // The signed-in user's picture on the Account cell (falls back to the
-  // generic icon when signed-out). Clerk is already mounted by the (app)
+  // generic icon when signed-out). The provider is already mounted by the (app)
   // layout, so this adds no new SDK cost.
-  const { isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { isSignedIn, avatarUrl } = useAccount();
   const visible = useVisibleEntries(entries, schemes);
 
   const cells: { entry: NavEntry; href: string }[] = [];
@@ -90,7 +89,7 @@ export function BottomBar({
             active={isActivePath(href, pathname)}
             label={entry.label}
             Icon={ICONS[entry.icon ?? ''] ?? Compass}
-            avatarUrl={entry.dest === 'account' && isSignedIn ? user?.imageUrl : undefined}
+            avatarUrl={entry.dest === 'account' && isSignedIn ? avatarUrl ?? undefined : undefined}
             divider={i > 0}
             dataTour={entry.dest === 'account' ? 'account' : undefined}
             dataHeatmapId={`bottombar:${entry.dest}`}

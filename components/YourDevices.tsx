@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import { Smartphone, Loader2 } from 'lucide-react';
 import { getCurrentPushEndpoint, unsubscribeFromPush } from '@/lib/pushClient';
 
@@ -15,7 +15,7 @@ interface Device {
 // per-device Test + Remove. Test/Remove are keyed on the endpoint and
 // ownership-checked server-side. Renders nothing until there's ≥1 device.
 export function YourDevices() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAccount();
   const [devices, setDevices] = useState<Device[] | null>(null);
   const [current, setCurrent] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);

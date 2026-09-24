@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import { Bell, BellOff, BellRing } from 'lucide-react';
 import {
   getPushAvailability,
@@ -21,7 +21,7 @@ type Status =
   | 'working';
 
 export function EnableNotifications() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAccount();
   const [status, setStatus] = useState<Status>('checking');
   const [message, setMessage] = useState<string | null>(null);
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import { UserCog, X, Send, ThumbsUp, ThumbsDown, Plus, History, Trash2 } from 'lucide-react';
 import type { ChatMessage } from '@/lib/assistant/prompt';
 import { parseInline } from '@/lib/assistant/render';
@@ -49,7 +49,7 @@ function newId(): string {
 }
 
 export function AssistantWidget() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn } = useAccount();
   const [open, setOpen] = useState(false);
   const [convs, setConvs] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string>('');

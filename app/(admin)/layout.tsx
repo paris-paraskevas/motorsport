@@ -1,6 +1,6 @@
 import { SerwistRegister } from '@/components/SerwistRegister';
 import type { Metadata, Viewport } from 'next';
-import { ClerkProvider } from '@clerk/nextjs';
+import { AuthProvider } from '@/lib/auth/client-provider';
 import { FONT_CLASSES } from '@/lib/fonts';
 import { SITE_URL } from '@/lib/site';
 import { ConsoleModeScript } from '@/components/designer/ConsoleMode';
@@ -35,22 +35,7 @@ export const viewport: Viewport = {
 // admin/layout.tsx; robots noindex keeps the console out of search.
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/"
-      signUpFallbackRedirectUrl="/"
-      appearance={{
-        variables: {
-          colorBackground: '#fffcf2',
-          colorText: '#1e1a13',
-          colorPrimary: '#8c1c13',
-          colorTextOnPrimaryBackground: '#f7f3e8',
-          colorInputBackground: '#fbf7ec',
-          colorInputText: '#1e1a13',
-        },
-      }}
-    >
+    <AuthProvider look="console">
       {/* SSR default is the console's dark mode, plus `dark` so any dark:
           utility (and the shadcn primitives) resolve the same way the site's
           dark-family themes do. ConsoleModeScript corrects both pre-paint for
@@ -66,6 +51,6 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
           <SerwistRegister />
         </body>
       </html>
-    </ClerkProvider>
+    </AuthProvider>
   );
 }

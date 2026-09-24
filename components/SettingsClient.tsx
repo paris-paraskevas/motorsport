@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Lock } from 'lucide-react';
-import { useAuth } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import type { NavSeriesMeta } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 
@@ -47,7 +47,7 @@ function SeriesList({
 }
 
 export function SettingsClient({ seriesList }: { seriesList: NavSeriesMeta[] }) {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn } = useAccount();
   const { followed, hydrated, setFollowed } = useFollowedSeries();
 
   if (!hydrated) {
