@@ -67,6 +67,8 @@ describe('the component catalogue', () => {
       ['highlight3', 'text', 'report'],
       ['highlight3Style', 'choice', 'report'],
       ['highlightFollowed', 'boolean', 'report'],
+      ['detailRegion', 'choice', 'report'],
+      ['detailKey', 'choice', 'report'],
     ]);
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
@@ -138,8 +140,9 @@ describe('the component catalogue', () => {
     expect(pinned).toMatchObject({ key: 'pinned', label: 'Pinned post', kind: 'text', scope: 'report', default: '', maxLength: 120, dependingOn: { key: 'view', values: ['lead-story'] } });
     expect(region.holds).toBe('a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes, or one of Home’s boxes as a template');
     const HIGHLIGHT = { highlight1: '', highlight1Style: 'brand', highlight2: '', highlight2Style: 'brand', highlight3: '', highlight3Style: 'brand', highlightFollowed: false };
-    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '', ...RESET, sortable: false, actions: false, views: false, download: false, ...HIGHLIGHT });
-    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', pinned: '', ...RESET, sortable: false, actions: false, views: false, download: false, ...HIGHLIGHT });
+    const DETAIL = { detailRegion: '', detailKey: '' };
+    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '', ...RESET, sortable: false, actions: false, views: false, download: false, ...HIGHLIGHT, ...DETAIL });
+    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', pinned: '', ...RESET, sortable: false, actions: false, views: false, download: false, ...HIGHLIGHT, ...DETAIL });
     // The pinned post is named on the tile while the View is Lead story and a slug is set, silent otherwise.
     expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: 'monza-2026' })).toBe('Preset Lead story · View Lead story · Rows 4 · Pinned post monza-2026');
     expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' })).toBe('Preset Lead story · View Lead story · Rows 4');
@@ -153,6 +156,7 @@ describe('the component catalogue', () => {
       { key: 'actions', title: 'Actions', seq: 20 },
       { key: 'menu', title: 'Actions Menu', seq: 30 },
       { key: 'highlight', title: 'Highlight', seq: 40 },
+      { key: 'detail', title: 'Master Detail', seq: 50 },
     ]);
     // P2.4: three highlight rules (a row condition in the address's words, a style each) and the followed-series tint, under
     // Highlight (APEX: an Interactive Report's Highlight), for the Table, the Cards and the List; the tile names a rule when set.
@@ -167,6 +171,17 @@ describe('the component catalogue', () => {
       ['highlightFollowed', 'Followed series', 'boolean', false],
     ]);
     for (const s of highlight) expect(s.dependingOn, s.key).toEqual({ key: 'view', values: ['table', 'cards', 'list'] });
+    // P2.4 PR C: Master Detail (APEX's name): the region whose rows filter another region of the page through the address,
+    // and the column both carry; drawn for the Table, the Cards and the List; the tile names the region's id and the column.
+    const detail = region.settings.filter(s => s.group === 'detail');
+    expect(detail.map(s => [s.key, s.label, s.kind, s.default, s.optionsFrom])).toEqual([
+      ['detailRegion', 'Detail region', 'choice', '', 'regions'],
+      ['detailKey', 'Detail key', 'choice', '', 'columns'],
+    ]);
+    for (const s of detail) expect(s.dependingOn, s.key).toEqual({ key: 'view', values: ['table', 'cards', 'list'] });
+    expect(parseSettings(region, { detailRegion: 'results-2', detailKey: 'round' }).settings).toMatchObject({ detailRegion: 'results-2', detailKey: 'round' });
+    expect(parseSettings(region, { detailRegion: 'Results Two' }).problems).toEqual(['Detail region must name a region of the page: lower-case letters, digits and dashes']);
+    expect(settingsSummary(region, { preset: 'season-results', view: 'list', rows: 8, heading: '', detailRegion: 'results-2', detailKey: 'round' })).toBe('Preset Season results · View List · Rows 8 · Detail region results-2 · Detail key Round');
     for (const s of highlight.filter(x => x.kind === 'text')) expect([s.rule, s.maxLength], s.key).toEqual([true, 120]);
     expect(highlight[1].options!.map(o => [o.key, o.label])).toEqual([['brand', 'Brand'], ['emphasis', 'Emphasis'], ['muted', 'Muted']]);
     expect(settingsSummary(region, { preset: 'drivers', view: 'table', rows: 8, heading: '', highlight1: 'position.eq:1', highlight2: 'position.lte:3', highlight2Style: 'emphasis' })).toBe('Preset Drivers · View Table · Rows 8 · Highlight 1 position.eq:1 · Highlight 2 position.lte:3 · Highlight 2 style Emphasis');

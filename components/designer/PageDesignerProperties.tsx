@@ -18,6 +18,7 @@ import {
   ACTION_NAME_MAX,
   rowMates,
   rowsAt,
+  type ComponentRegion,
   type Condition,
   type ConditionType,
   type DynamicAction,
@@ -862,10 +863,22 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           <Ro dim>Set under Shared Components › Component Settings</Ro>
         ) : s.kind === 'boolean' ? (
           <YesNo label={s.label} value={Boolean(value)} disabled={readOnly} onPick={set} />
+        ) : s.kind === 'choice' && s.optionsFrom === 'regions' ? (
+          // The Detail region (P2.4 PR C; APEX: Master Detail): the page's other Data regions, by title, heading or id.
+          <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
+            <option value="">None</option>
+            {ctx.doc.regions
+              .filter((x): x is ComponentRegion => x.kind === 'component' && x.component === 'data.region' && x.id !== r.id && ['table', 'cards', 'list'].includes(String(x.settings.view ?? 'table')))
+              .map(x => (
+                <option key={x.id} value={x.id}>
+                  {x.title || (typeof x.settings.heading === 'string' && x.settings.heading) || x.id}
+                </option>
+              ))}
+          </select>
         ) : s.kind === 'choice' && s.optionsFrom === 'columns' ? (
           // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column): the preset's own mapping first, then the shape's columns; the share bar is no Media.
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
-            <option value="">{`Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}`}</option>
+            <option value="">{s.key === 'detailKey' ? 'None' : `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}`}</option>
             {(shape?.columns ?? [])
               .filter(c => !(s.key === 'cardMedia' && c.type === 'percent'))
               .map(c => (

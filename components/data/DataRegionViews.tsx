@@ -222,6 +222,48 @@ export interface DataRegionViewProps {
   highlight?: RowHighlight;
   /** The region's id (P2.4): the wrapper `#region-<id>` the followed-series tint marks rows under. */
   region?: string;
+  /** Master-detail (P2.4 PR C): this region's rows as the master, each a Show link into its detail's filter. */
+  master?: MasterSelect;
+  /** Master-detail (P2.4 PR C): this region as the detail, the value its master chose and the way back to every row. */
+  showing?: DetailShowing;
+}
+
+/** A master's link per row (P2.4 PR C; APEX: Master Detail): the address that shows the row's value in the detail, the rest of
+ *  the address kept (null for a row without a value); whether the detail shows it now; its words, "Show <value>". */
+export interface MasterSelect {
+  href(row: PresetRow): string | null;
+  current(row: PresetRow): boolean;
+  label(row: PresetRow): string;
+}
+/** A detail's line above its rows while its master's filter is on (P2.4 PR C): the value shown and the reset. */
+export interface DetailShowing {
+  value: string;
+  reset: string;
+}
+
+/** The master's link for a row (P2.4 PR C): a plain anchor, never next/link, so no variant is prefetched; marked while the
+ *  detail shows its value; nothing for a row without one. */
+function SelectLink({ master, row }: { master: MasterSelect; row: PresetRow }) {
+  const href = master.href(row);
+  if (!href) return null;
+  const current = master.current(row);
+  return (
+    <a href={href} rel="nofollow" aria-current={current ? 'true' : undefined} className={`shrink-0 font-mono text-10 font-semibold uppercase tracking-[0.14em] underline-offset-4 hover:underline ${current ? 'text-brand' : 'text-tint'}`}>
+      {master.label(row)}
+    </a>
+  );
+}
+
+/** The detail's line (P2.4 PR C): the value its master chose, and Show all, the same address without that filter. */
+function Showing({ showing }: { showing: DetailShowing }) {
+  return (
+    <p className="mb-3 font-mono text-10 uppercase tracking-[0.14em] text-text-muted">
+      {`Showing ${showing.value} · `}
+      <a href={showing.reset} rel="nofollow" className="underline-offset-4 hover:text-tint hover:underline">
+        Show all
+      </a>
+    </p>
+  );
 }
 
 /** What the Table and the Cards need to write their links and forms (P2.3): the visited path, this region's key prefix, the
@@ -274,7 +316,7 @@ function Zoned({ to, className, label, children }: { to: ReturnType<Zone>; class
   );
 }
 
-export function DataRegionTable({ heading, level, shape, preset, rows, controls, highlight, region }: DataRegionViewProps) {
+export function DataRegionTable({ heading, level, shape, preset, rows, controls, highlight, region, master, showing }: DataRegionViewProps) {
   const H = level;
   const columns = tableColumns(shape, preset, rows, controls?.state.cols);
   const leader = leaderPoints(rows);
@@ -283,11 +325,17 @@ export function DataRegionTable({ heading, level, shape, preset, rows, controls,
       <H className={HEADING}>{heading}</H>
       {controls && (controls.actions || controls.views || controls.download) && <DataRegionControls controls={controls} shape={shape} shown={columns} nameLabel={preset.nameLabel} sortLinks={false} />}
       {highlight?.followed && region && <FollowedRows region={region} />}
+      {showing && <Showing showing={showing} />}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">{heading}</caption>
           <thead>
             <tr className="border-b border-border font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
+              {master && (
+                <th scope="col" className="py-2 pr-3 font-normal">
+                  <span className="sr-only">Show</span>
+                </th>
+              )}
               {columns.map(c => {
                 const label = c.type === 'percent' ? <span className="sr-only">{c.label}</span> : c.label;
                 // A sortable heading (P2.3) is a link toggling its column ascending → descending → as designed; the sorted one says so.
@@ -311,6 +359,11 @@ export function DataRegionTable({ heading, level, shape, preset, rows, controls,
           <tbody className="divide-y divide-border/60">
             {rows.map((r, i) => (
               <tr key={`${text(r.position)}-${text(r.name)}-${i}`} className={rowClass(highlight, shape, r)} data-series={seriesOf(highlight, r)}>
+                {master && (
+                  <td className="py-2 pr-3 align-baseline">
+                    <SelectLink master={master} row={r} />
+                  </td>
+                )}
                 {columns.map(c => (
                   <Cell key={c.key} column={c} row={r} leader={leader} />
                 ))}
@@ -327,7 +380,7 @@ export function DataRegionTable({ heading, level, shape, preset, rows, controls,
  *  an image column (P2.24 A) or the initials of its column's text (APEX Icon Initials), and the action zones. Full Card set
  *  and resolved for a row makes that card one link named after its title, and its other zones stand down: no link inside a
  *  link. A zone that resolves to nothing for a row draws that part plain. */
-export function DataRegionCards({ heading, level, shape, preset, rows, card, actions, controls, highlight, region }: DataRegionViewProps) {
+export function DataRegionCards({ heading, level, shape, preset, rows, card, actions, controls, highlight, region, master, showing }: DataRegionViewProps) {
   const H = level;
   const slot: CardSlots = card ?? { ...shape.card, media: shape.card.media ?? '' };
   const act = actions ?? NO_ACTIONS;
@@ -337,6 +390,7 @@ export function DataRegionCards({ heading, level, shape, preset, rows, card, act
       <H className={HEADING}>{heading}</H>
       {controls && (controls.actions || controls.views || controls.download) && <DataRegionControls controls={controls} shape={shape} shown={shape.columns} nameLabel={preset.nameLabel} sortLinks />}
       {highlight?.followed && region && <FollowedRows region={region} />}
+      {showing && <Showing showing={showing} />}
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((r, i) => {
           const title = slotText(shape, r, slot.title);
@@ -406,6 +460,11 @@ export function DataRegionCards({ heading, level, shape, preset, rows, card, act
                 )
               ) : (
                 body
+              )}
+              {master && (
+                <div className="mt-3">
+                  <SelectLink master={master} row={r} />
+                </div>
               )}
             </li>
           );
@@ -485,7 +544,7 @@ const groupTitle = (shape: Shape, first: PresetRow): string => (shape.key === 'r
 
 /** A fold of the Rounds layout: the chip, the title, the meta line, the entries; a winners-only round flat, on the
  *  flat series alone (the site's RoundRow; its class and cup cards never collapse). */
-function RoundGroup({ shape, entries, highlight }: { shape: Shape; entries: readonly PresetRow[]; highlight?: RowHighlight }) {
+function RoundGroup({ shape, entries, highlight, master }: { shape: Shape; entries: readonly PresetRow[]; highlight?: RowHighlight; master?: MasterSelect }) {
   const first = entries[0];
   const round = num(first.round);
   const winner = winnerOf(entries);
@@ -496,6 +555,8 @@ function RoundGroup({ shape, entries, highlight }: { shape: Shape; entries: read
         <RaceTitle name={groupTitle(shape, first)} href={text(first.weekend) || null} />
         <Meta date={formatDate(first.date)} winner={winnerLabel(winner)} />
       </div>
+      {/* Master-detail (P2.4 PR C): in a season list the race is the row, so its fold carries the Show link, its first entry's value. */}
+      {master && <SelectLink master={master} row={first} />}
     </>
   );
   if (shape.key === 'race-rows' && entries.length === 1 && WINNER.test(text(first.status))) return <div className="flex items-start gap-3 py-2.5">{head}</div>;
@@ -514,7 +575,7 @@ function RoundGroup({ shape, entries, highlight }: { shape: Shape; entries: read
   );
 }
 
-export function DataRegionList({ heading, level, shape, rows, highlight, region }: DataRegionViewProps) {
+export function DataRegionList({ heading, level, shape, rows, highlight, region, master, showing }: DataRegionViewProps) {
   const H = level;
   if (shape.source !== 'results') {
     // A standings shape's compact list: the position, the name, the points; a shape without them (the posts, the headlines;
@@ -524,9 +585,11 @@ export function DataRegionList({ heading, level, shape, rows, highlight, region 
       <section className="border-y border-border py-4">
         <H className={HEADING}>{heading}</H>
         {highlight?.followed && region && <FollowedRows region={region} />}
+        {showing && <Showing showing={showing} />}
         <ul className="divide-y divide-border/60">
           {rows.map((r, i) => (
             <li key={`${slotText(shape, r, badge)}-${slotText(shape, r, title)}-${i}`} className={join('flex items-baseline gap-3 py-2', rowClass(highlight, shape, r))} data-series={seriesOf(highlight, r)}>
+              {master && <SelectLink master={master} row={r} />}
               <span className={`w-6 text-right font-mono text-sm tabular-nums ${badge === 'position' && r.position === 1 ? 'text-brand font-bold' : 'text-text-faint'}`}>{slotText(shape, r, badge)}</span>
               <span className="min-w-0 flex-1 truncate font-condensed text-15 font-semibold text-text">{slotText(shape, r, title)}</span>
               <span className="w-10 text-right font-mono text-13 font-semibold tabular-nums text-numeral">{slotText(shape, r, body)}</span>
@@ -540,10 +603,11 @@ export function DataRegionList({ heading, level, shape, rows, highlight, region 
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
       {highlight?.followed && region && <FollowedRows region={region} />}
+      {showing && <Showing showing={showing} />}
       <ul className="divide-y divide-border/60">
         {[...groupRows(shape, rows).entries()].map(([k, entries]) => (
           <li key={k} className="py-1">
-            <RoundGroup shape={shape} entries={entries} highlight={highlight} />
+            <RoundGroup shape={shape} entries={entries} highlight={highlight} master={master} />
           </li>
         ))}
       </ul>

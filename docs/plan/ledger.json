@@ -334,6 +334,11 @@
    "date": "2026-09-24",
    "change": "P2.4 PR B merged (#1051, 1.0.170; 43670fd5, cdf347bf; squash-merged 10:32:22Z as 48b1f5cf; prod /changelog 1.0.170 at 10:36:34Z). The reviewer PASS WITH NOTES (247,625 tokens against ~200k said), nothing to fix; its one nit (the Property Editor names a link zone by the shape’s own label) went to IDEAS with the card pickers that share it. On prod, Home’s standings tables link 13 driver names to their pages; with those anchors unwrapped, 26 of Home’s 27 regions are identical across the deploy and the wire differs by a relative age alone. P2.4 continues with PR C, master-detail.",
    "word": "the operator, 2026-09-24 ~10:32Z: \"merge\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PR C built on the approved plan (1.0.172, branch feat/p2.4-c-region-detail): the Master Detail group (detailRegion over the page’s other Data regions, detailKey over the preset’s columns); the parser’s document-wide check (another Data region of the page; a column both carry); the renderer pairs each master with its detail, keys a detail whatever its menus and its view, and writes Show links that replace only the detail’s filter on the key, its sort, columns and view kept; the detail’s “Showing <value> · Show all”; the results List’s fold carries the link (in a season list the race is the row); the Property Editor’s regions select. A Correction to the plan: the Weekends source reads coming weekends only, so the season list is the results List. Tests first, 5 red across 4 files, then green; tsc 0, lint 0 errors, vitest 230 files / 2332 tests; the browser on the local Monza page (14 Show links; Show 3 filters the race table to round 3 under Showing 3 · Show all; Show all; the variant address loaded directly); the dry run 39246.69 KiB.",
+   "word": "the operator, 2026-09-24 ~07:00Z: the plan approved (ExitPlanMode); ~10:32Z: \"merge\" (PR B), then the next task"
   }
  ],
  "phases": {

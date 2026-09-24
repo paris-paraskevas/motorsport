@@ -77,8 +77,9 @@ export interface AttributeDefinition {
   /** A choice whose options are the current preset's shape columns (ours by
    *  name; APEX's Cards list the source's columns for Title Column … Icon
    *  Initials Column). `options` stays empty; '' means the preset's own
-   *  mapping; the document parser checks a value against the shape. */
-  optionsFrom?: 'columns';
+   *  mapping; the document parser checks a value against the shape. `regions` (P2.4 PR C): the page's other Data regions,
+   *  by id, '' for none; the document parser checks the id against the document. */
+  optionsFrom?: 'columns' | 'regions';
   /** A link that may also follow a link column of the row, stored as
    *  `row:<column>` (ours: APEX substitutes a column into a URL; a typed URL is
    *  never allowed here, so the row's own link stands in). */
@@ -163,6 +164,10 @@ const CARDS_ONLY = { key: 'view', values: ['cards'] } as const;
 const MENU_VIEWS = { key: 'view', values: ['table', 'cards'] } as const;
 /** The views the highlight rules style (P2.4): the templates keep their own marks. */
 const HIGHLIGHT_VIEWS = { key: 'view', values: ['table', 'cards', 'list'] } as const;
+/** Master Detail's views (P2.4 PR C): the Table, the Cards and the List draw a row's Show link; the templates keep their own. */
+const DETAIL_VIEWS = { key: 'view', values: ['table', 'cards', 'list'] } as const;
+/** A region's id as the document writes it (page-document.ts REGION_ID), repeated here since that module imports this one. */
+const REGION_KEY = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const HIGHLIGHT_STYLES = [
   { key: 'brand', label: 'Brand' },
   { key: 'emphasis', label: 'Emphasis' },
@@ -307,12 +312,17 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
         { key: `highlight${n}Style`, label: `Highlight ${n} style`, kind: 'choice' as const, scope: 'report' as const, group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, options: HIGHLIGHT_STYLES, default: 'brand', help: 'Brand is the leader’s tint; Emphasis raises the row on the elevated surface; Muted fades it.' },
       ]),
       { key: 'highlightFollowed', label: 'Followed series', kind: 'boolean', scope: 'report', group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, default: false, help: 'Tint the rows of the series the reader follows, in the browser after the page loads; the page stays the same for everyone. Rows without a series, as a one-series standings table, stay as they are.' },
+      // P2.4 PR C: Master Detail (APEX's name): this region's rows filter another Data region of the page through the address,
+      // by a column both carry; the page stays cached and the choice can be shared.
+      { key: 'detailRegion', label: 'Detail region', kind: 'choice', scope: 'report', group: 'detail', dependingOn: DETAIL_VIEWS, optionsFrom: 'regions', default: '', help: 'Another Data region of this page that this region’s rows filter: each row gets a Show link writing its value into that region’s filter, in the address, so the page stays cached and the link can be shared.' },
+      { key: 'detailKey', label: 'Detail key', kind: 'choice', scope: 'report', group: 'detail', dependingOn: DETAIL_VIEWS, optionsFrom: 'columns', default: '', help: 'The column whose value filters the detail region, one both regions carry, such as the round.' },
     ],
     groups: [
       { key: 'card', title: 'Card', seq: 10 },
       { key: 'actions', title: 'Actions', seq: 20 },
       { key: 'menu', title: 'Actions Menu', seq: 30 },
       { key: 'highlight', title: 'Highlight', seq: 40 },
+      { key: 'detail', title: 'Master Detail', seq: 50 },
     ],
     sources: ['standings', 'results', 'posts', 'news', 'weekends'],
   },
@@ -480,6 +490,10 @@ export function parseSettings(spec: ComponentDefinition, raw: unknown): { settin
       // The column's key alone here; whether the preset's shape has it is the document parser's rule (P2.2 B3).
       if (typeof v === 'string' && v.length <= COLUMN_KEY_MAX) settings[s.key] = v;
       else problems.push(`${s.label} must name a column of at most ${COLUMN_KEY_MAX} characters`);
+    } else if (s.kind === 'choice' && s.optionsFrom === 'regions') {
+      // A region's id alone here (P2.4 PR C); whether the document holds that Data region is the document parser's rule.
+      if (typeof v === 'string' && (v === '' || REGION_KEY.test(v))) settings[s.key] = v;
+      else problems.push(`${s.label} must name a region of the page: lower-case letters, digits and dashes`);
     } else if (s.kind === 'choice') {
       if (typeof v === 'string' && s.options?.some(o => o.key === v)) settings[s.key] = v;
       else problems.push(`${s.label} must be one of ${(s.options ?? []).map(o => o.label).join(', ')}`);

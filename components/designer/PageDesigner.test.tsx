@@ -1198,6 +1198,36 @@ describe('PageDesigner', () => {
     expect(within(view()).getByRole('button', { name: 'Table' }).getAttribute('aria-pressed')).toBe('true');
   });
 
+  it('P2.4 PR C: Master Detail offers the page’s other Data regions as the Detail region and the preset’s columns as the Detail key, None first; the tile names them', () => {
+    mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Data region' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Data region' }));
+    const master = () => screen.getAllByRole('button', { name: 'Component: Data region' })[0];
+    fireEvent.click(master());
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    expect(within(pe).getByText('Master Detail')).toBeTruthy();
+    const detailRegion = within(pe).getByLabelText('Detail region') as HTMLSelectElement;
+    // The region itself is not offered; the other one is, by its id since it has no title or heading.
+    expect([...detailRegion.options].map(o => [o.value, o.textContent])).toEqual([['', 'None'], ['region-2', 'region-2']]);
+    const detailKey = within(pe).getByLabelText('Detail key') as HTMLSelectElement;
+    expect(detailKey.options[0].textContent).toBe('None');
+    expect([...detailKey.options].map(o => o.value)).toContain('team');
+    fireEvent.change(detailRegion, { target: { value: 'region-2' } });
+    fireEvent.change(within(pe).getByLabelText('Detail key'), { target: { value: 'team' } });
+    expect(master().textContent).toMatch(/Detail region region-2 · Detail key Team/);
+    // A region drawn as a template or as Detail cannot be a detail (it draws no Show link and no Showing line): once the other
+    // region's View is Detail, the select offers None alone.
+    fireEvent.click(screen.getAllByRole('button', { name: 'Component: Data region' })[1]);
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    fireEvent.click(within(within(pe).getByRole('group', { name: 'View' })).getByRole('button', { name: 'Detail' }));
+    fireEvent.click(master());
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    expect([...(within(pe).getByLabelText('Detail region') as HTMLSelectElement).options].map(o => o.value)).toEqual(['']);
+  });
+
   it('P2.2 B3: the Card and Actions groups appear under the Attributes tab only while the View is Cards; a slot lists the preset’s columns with the preset’s own first and the tile names the pick; a zone offers this row’s link columns on a results preset; Save carries them; a preset’s pick resets them', async () => {
     const { onSaved } = mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
     fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
