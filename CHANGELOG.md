@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.176 — 2026-09-24
+
+### Account — [R9] The Sign out row of the Account page is drawn in the browser (the page answered 500 when signed in)
+
+Found by PA A1a's signed-in browser run (2026-09-24 ~13:20Z), fixed on the operator's word "R9 go" (~13:50Z). `/settings` answered 500 for a signed-in reader on the dev server, on `main` as on A1a's branch: the page, a Server Component, handed a `<button>` child to Clerk's `<SignOutButton>`, a Client Component, and Clerk's single-child check (`@clerk/react` 6.6.2 `assertSingleChild`, `React.Children.only`) refused what arrived across the boundary ("You've passed multiple children components to <SignOutButton/>"; React 19 hands such a child over as a lazy reference). The header's Sign out, created inside a Client Component (`components/AppShell.tsx`), never had the problem.
+
+- **`components/AccountIdentity.tsx`**: `SignOutRow`, the row's markup and heatmap id as they were, created in the browser beside the identity strip of the same page.
+- **`app/(app)/settings/page.tsx`**: renders `<SignOutRow />` inside `{userId && …}`; its Clerk import leaves, so `lib/auth/boundary.test.ts`'s allow-list is one file shorter (24).
+- **Tests first, seen red**: the row's test beside `components/NavGating.test.tsx`'s (its mock renders SignOutButton as its child): the button, its words and its heatmap id.
+- **Browser, signed in** (the local server over the local database; the helper on the operator's word): `/settings` answers 200 with the row at the end of its list (`.playwright-mcp/r9-settings-signed-in.png`); before the fix the same page answered 500 on `main`.
+- **Gates after the last edit**: tsc 0 · eslint 0 on the changed files · vitest 232 files, 2339 tests · `DATA_SOURCE=db npm run cf:build` exit 0 · `wrangler deploy --dry-run` Total Upload **39579.74 KiB / gzip 8667.44 KiB** (1.0.174: 39581.68 KiB).
+- NOTED: whether prod's production build answered the same 500 is read after this deploy by the operator's own browser; the dev server did on every signed-in request.
+
 ## 1.0.175 — 2026-09-24
 
 ### Records — PA A1a on prod, A1 STARTED, the signed-in run's finding (R9 proposed)

@@ -28,6 +28,7 @@ vi.mock('@/components/ContactModal', () => ({ ContactFooterButton: () => <button
 vi.mock('@/components/ManageCookiesButton', () => ({ ManageCookiesButton: () => <button type="button">Cookies</button> }));
 
 import { DoorLinks } from './DoorLinks';
+import { SignOutRow } from './AccountIdentity';
 import { BottomBar } from './BottomBar';
 import { Footer } from './Footer';
 import { DEFAULT_AUTHZ_SCHEMES } from '@/lib/design/authz-defaults';
@@ -85,5 +86,17 @@ describe('navigation entries and authorization schemes', () => {
     expect(screen.getByText('About')).toBeTruthy();
     expect(screen.getByText('Privacy')).toBeTruthy();
     expect(screen.queryByText('Threads')).toBeNull();
+  });
+});
+
+// R9: the Account page’s Sign out row is created in the browser, so Clerk’s SignOutButton (a Client Component) receives its
+// one child from the same runtime; handed across from the page, a Server Component, the child failed Clerk’s single-child
+// check and the page answered 500. The mock above renders SignOutButton as its child.
+describe('the Account page’s Sign out row (R9)', () => {
+  it('draws Clerk’s SignOutButton around one button of the row’s words and heatmap id', () => {
+    render(<SignOutRow />);
+    const button = screen.getByRole('button', { name: /Sign out/ });
+    expect(button.getAttribute('data-heatmap-id')).toBe('account:sign-out');
+    expect(button.textContent).toContain('End this session on this device');
   });
 });
