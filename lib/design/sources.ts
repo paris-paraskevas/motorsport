@@ -221,11 +221,11 @@ export const SOURCES: readonly SourceDefinition[] = [
     holds: 'the championship tables: drivers, constructors, teams, manufacturers and co-drivers, by class where a series has them; position, points, wins; the Latest result is the championship of the newest race across the series Home ranks',
     parameters: [{ ...seriesParam(STANDINGS_SERIES), options: [LATEST_RESULT_OPTION, ...seriesOptions(STANDINGS_SERIES)], help: 'Which championship; the Latest result is the championship of the newest race across the series Home ranks.' }, seasonParam],
     // The series' facts on every row (P2.24 B2): its name and colour; the race winner and the season's end are the Latest result's, null for one championship.
-    columns: [col('kind', 'Kind', 'text'), col('position', 'Position', 'number'), col('name', 'Name', 'text'), col('code', 'Code', 'text'), col('team', 'Team', 'text'), col('points', 'Points', 'number'), col('wins', 'Wins', 'number'), col('class', 'Class', 'text'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour'), col('winner', 'Race winner', 'boolean'), col('final', 'Season complete', 'boolean')],
+    columns: [col('kind', 'Kind', 'text'), col('position', 'Position', 'number'), col('name', 'Name', 'text'), col('code', 'Code', 'text'), col('team', 'Team', 'text'), col('points', 'Points', 'number'), col('wins', 'Wins', 'number'), col('class', 'Class', 'text'), col('profile', 'Page', 'link'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour'), col('winner', 'Race winner', 'boolean'), col('final', 'Season complete', 'boolean')],
     fresh: 'loader',
     load: 'replace',
     pagination: 'none',
-    reads: ['db:standing_current', 'snapshot:standings:', 'snapshot:f1:'],
+    reads: ['db:standing_current', 'snapshot:standings:', 'snapshot:f1:', 'content:series'],
     // GT World's snapshot is season-scoped (lib/standings/gt-world.ts), the one such key; F1 keeps its own slot too. The Latest
     // result's series is known only when read: the reader names the resolved series' keys in the provenance.
     loaderKeys: p => (p.series === LATEST_RESULT_OPTION.key ? [] : [p.series === 'gt-world' ? `standings:gt-world:${p.season}` : `standings:${p.series}`, ...(p.series === 'f1' ? ['f1:standings'] : [])]),
@@ -237,11 +237,11 @@ export const SOURCES: readonly SourceDefinition[] = [
     holds: 'the season’s race results, one row per classified entry: the flat series’ races by session, the sportscar series’ by class or cup, NLS’s winners; Home’s series is the newest finished race across the series Home ranks',
     parameters: [{ ...seriesParam(RESULTS_SERIES), options: [HOME_SERIES_OPTION, ...seriesOptions(RESULTS_SERIES)], help: 'Which championship; Home’s series is the newest finished race across the series Home ranks, its classification alone.' }, seasonParam],
     // The series' facts on every row (P2.24 B2): its name and colour, whether its season is complete and, then, its champion.
-    columns: [col('round', 'Round', 'number'), col('race', 'Race', 'text'), col('raceId', 'Race id', 'number'), col('date', 'Date', 'date'), col('circuit', 'Circuit', 'text'), col('class', 'Class', 'text'), col('session', 'Session', 'text'), col('position', 'Position', 'number'), col('driver', 'Driver', 'text'), col('code', 'Code', 'text'), col('car', 'Car', 'text'), col('team', 'Team', 'text'), col('vehicle', 'Vehicle', 'text'), col('manufacturer', 'Manufacturer', 'text'), col('laps', 'Laps', 'number'), col('status', 'Status', 'text'), col('time', 'Time', 'text'), col('gap', 'Gap', 'text'), col('points', 'Points', 'number'), col('weekend', 'Weekend page', 'link'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour'), col('final', 'Season complete', 'boolean'), col('champion', 'Champion', 'text')],
+    columns: [col('round', 'Round', 'number'), col('race', 'Race', 'text'), col('raceId', 'Race id', 'number'), col('date', 'Date', 'date'), col('circuit', 'Circuit', 'text'), col('class', 'Class', 'text'), col('session', 'Session', 'text'), col('position', 'Position', 'number'), col('driver', 'Driver', 'text'), col('code', 'Code', 'text'), col('car', 'Car', 'text'), col('team', 'Team', 'text'), col('vehicle', 'Vehicle', 'text'), col('manufacturer', 'Manufacturer', 'text'), col('laps', 'Laps', 'number'), col('status', 'Status', 'text'), col('time', 'Time', 'text'), col('gap', 'Gap', 'text'), col('points', 'Points', 'number'), col('weekend', 'Weekend page', 'link'), col('profile', 'Page', 'link'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour'), col('final', 'Season complete', 'boolean'), col('champion', 'Champion', 'text')],
     fresh: 'loader',
     load: 'replace',
     pagination: 'none',
-    reads: ['snapshot:results:', 'snapshot:f1:'],
+    reads: ['snapshot:results:', 'snapshot:f1:', 'content:series'],
     // Home's series reads every one of Home's six; the reader names the resolved series' keys in the provenance.
     loaderKeys: p => (p.series === HOME_SERIES_OPTION.key ? HOME_RESULTS_SERIES.flatMap(resultsKeys) : resultsKeys(p.series)),
     hosts: RESULTS_HOSTS,

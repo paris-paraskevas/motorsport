@@ -1,6 +1,6 @@
 import type { RaceResult } from './types';
 import { buildStandingsAtRound } from './season-trend';
-import { slugify } from './slug';
+import { namesMatch } from './slug';
 
 // Season-form stats for driver/team profile pages (W4 step 3). Derived from
 // the SAME results feeds the weekend standings snapshots cumulate — one data
@@ -43,15 +43,6 @@ export interface TeamSeasonForm {
   position: number;
   points: number;
   fieldSize: number;
-}
-
-// drivers.json names and results feeds drift ("Kimi Antonelli" vs Jolpica's
-// "Andrea Kimi Antonelli") — match on slug equality or containment.
-export function namesMatch(a: string, b: string): boolean {
-  const sa = slugify(a);
-  const sb = slugify(b);
-  if (!sa || !sb) return false;
-  return sa === sb || sa.includes(sb) || sb.includes(sa);
 }
 
 export function driverSeasonForm(

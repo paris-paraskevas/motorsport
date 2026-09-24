@@ -10,3 +10,12 @@ export function slugify(input: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
+// drivers.json names and results feeds drift ("Kimi Antonelli" vs Jolpica's
+// "Andrea Kimi Antonelli") — match on slug equality or containment.
+export function namesMatch(a: string, b: string): boolean {
+  const sa = slugify(a);
+  const sb = slugify(b);
+  if (!sa || !sb) return false;
+  return sa === sb || sa.includes(sb) || sb.includes(sa);
+}

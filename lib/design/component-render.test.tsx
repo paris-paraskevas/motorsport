@@ -345,6 +345,14 @@ describe('renderComponents', () => {
     expect(count(followed, `${ENTRY} data-series="f1">`)).toBe(4);
   });
 
+  it('P2.4 PR B: a results driver links to the page its row carries inside the driver’s own cell, which keeps its look; a driver without a page draws today’s cell', async () => {
+    const rows = [raceRow({ profile: '/drivers/kimi-antonelli' }), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 })];
+    const DRIVER_CELL = '<td class="py-2 pr-3 align-baseline text-xs text-text-muted">';
+    const table = await draw('season-results', 'f1', rows, 'table');
+    expect(table).toMatch(new RegExp(`${DRIVER_CELL}<a href="/drivers/kimi-antonelli"[^>]*>Andrea Kimi Antonelli</a></td>`));
+    expect(table).toContain(`${DRIVER_CELL}George Russell</td>`);
+  });
+
   it('P2.2 B2, the Timeline per results preset: every one of the seven draws one entry per race (or race and class), newest first, on a rail, with the date or the round chip, the title linked to the weekend page, the WIN line and the winner’s initials (APEX Timeline; Avatar); Rows counts races; a race without a position-1 row takes its first', async () => {
     const f1 = await draw('season-results', 'f1', [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }), raceRow({ round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null })], 'timeline');
     expect(f1).not.toContain('<table');
@@ -969,6 +977,23 @@ describe('the highlight rules and the followed-series tint (P2.4 PR A)', () => {
     readSource.mockResolvedValueOnce({ columns: [], total: 2, rows, provenance });
     const off = await draw({ preset: 'whats-next', view: 'table', rows: 10, heading: '' }, { source: 'weekends?count=10' } as Partial<Region>);
     expect(off).not.toContain('data-series');
+  });
+
+  it('P2.4 PR B: a driver’s name links to the page its row carries, in the name’s own cell, and stays text without one; the Cards’ zone follows it', async () => {
+    const rows = [
+      { kind: 'driver', position: 1, name: 'Andrea Kimi Antonelli', code: 'ANT', team: 'Mercedes', points: 267, wins: 7, class: null, profile: '/drivers/kimi-antonelli' },
+      { kind: 'driver', position: 2, name: 'George Russell', code: 'RUS', team: 'Mercedes', points: 201, wins: 2, class: null, profile: null },
+    ];
+    const provenance = { ref: { source: 'standings', params: { series: 'f1', season: 2026 } }, label: 'Standings · Formula 1 · 2026', tier: 'rows' as const, keys: [], rows: 2, ms: 1 };
+    const NAME_CELL = '<td class="py-2 pr-3 align-baseline font-condensed text-15 font-semibold text-text">';
+    readSource.mockResolvedValueOnce({ columns: [], total: 2, rows, provenance });
+    const table = await draw({ preset: 'drivers', view: 'table', rows: 10, heading: '' });
+    expect(table).toMatch(new RegExp(`${NAME_CELL}<a href="/drivers/kimi-antonelli"[^>]*>Andrea Kimi Antonelli</a></td>`));
+    expect(table).toContain(`${NAME_CELL}George Russell</td>`);
+    readSource.mockResolvedValueOnce({ columns: [], total: 2, rows, provenance });
+    const cards = await draw({ preset: 'drivers', view: 'cards', rows: 10, heading: '', actionFullCard: 'row:name' });
+    expect((cards.match(/href="\/drivers\/kimi-antonelli"/g) ?? []).length).toBe(1);
+    expect(cards).not.toContain('href="/drivers/george');
   });
 });
 

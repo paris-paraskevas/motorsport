@@ -63,20 +63,20 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
   'driver-rows': {
     key: 'driver-rows',
     source: 'standings',
-    columns: [position, { key: 'name', label: 'Driver', type: 'text' }, { key: 'code', label: 'Code', type: 'badge' }, { key: 'team', label: 'Team', type: 'text' }, points, wins, gap, share],
+    columns: [position, { key: 'name', label: 'Driver', type: 'link', href: 'profile' }, { key: 'code', label: 'Code', type: 'badge' }, { key: 'team', label: 'Team', type: 'text' }, points, wins, gap, share],
     card: { title: 'name', subtitle: 'team', body: 'points', badge: 'position' },
   },
   'team-rows': {
     key: 'team-rows',
     source: 'standings',
-    columns: [position, { key: 'name', label: 'Constructor', type: 'text' }, points, wins, gap, share],
+    columns: [position, { key: 'name', label: 'Constructor', type: 'link', href: 'profile' }, points, wins, gap, share],
     card: { title: 'name', body: 'points', badge: 'position' },
   },
   // The results shapes (P2.2 B1): the race links to the round's weekend page as the tab's RaceTitle does.
   'race-rows': {
     key: 'race-rows',
     source: 'results',
-    columns: [round, race, date, { key: 'circuit', label: 'Circuit', type: 'text' }, { key: 'session', label: 'Session', type: 'text' }, position, { key: 'driver', label: 'Driver', type: 'text' }, { key: 'code', label: 'Code', type: 'badge' }, team, { key: 'status', label: 'Status', type: 'text' }, { key: 'time', label: 'Time', type: 'text' }, points],
+    columns: [round, race, date, { key: 'circuit', label: 'Circuit', type: 'text' }, { key: 'session', label: 'Session', type: 'text' }, position, { key: 'driver', label: 'Driver', type: 'link', href: 'profile' }, { key: 'code', label: 'Code', type: 'badge' }, team, { key: 'status', label: 'Status', type: 'text' }, { key: 'time', label: 'Time', type: 'text' }, points],
     card: { title: 'driver', subtitle: 'team', body: 'points', badge: 'position' },
   },
   // IMSA's and WEC's timing exports: the car, its crew, its vehicle and the gap; no points.
@@ -141,7 +141,7 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
   'podium-rows': {
     key: 'podium-rows',
     source: 'results',
-    columns: [race, { key: 'seriesName', label: 'Series', type: 'text' }, date, position, { key: 'driver', label: 'Driver', type: 'text' }, team, car, { key: 'time', label: 'Time', type: 'text' }, gapText, points, round],
+    columns: [race, { key: 'seriesName', label: 'Series', type: 'text' }, date, position, { key: 'driver', label: 'Driver', type: 'link', href: 'profile' }, team, car, { key: 'time', label: 'Time', type: 'text' }, gapText, points, round],
     card: { title: 'driver', subtitle: 'team', body: 'time', badge: 'position' },
   },
 };

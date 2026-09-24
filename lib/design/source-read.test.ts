@@ -56,6 +56,14 @@ const fetchWecStandings = vi.fn();
 vi.mock('@/lib/standings/wec', () => ({ fetchWecStandings: () => fetchWecStandings(), WEC_CLASSES: ['Hypercar', 'LMGT3'] }));
 const fetchWRCStandings = vi.fn();
 vi.mock('@/lib/standings/wrc', () => ({ fetchWRCStandings: () => fetchWRCStandings() }));
+// P2.4 PR B: each row's page from the site's own rosters (lib/people.ts). The stand-in answers any name in IMSA and WRC, so a
+// crew, a co-driver or a manufacturer without a page shows the reader never asks the rosters for one.
+vi.mock('@/lib/people', () => ({
+  peopleIndex: async () => ({
+    driver: (series: string, name: string) => (series === 'f1' && name.endsWith('Antonelli') ? '/drivers/kimi-antonelli' : series === 'imsa' || series === 'wrc' ? `/drivers/${series}-any` : null),
+    team: (series: string, name: string) => (series === 'f1' && name === 'Mercedes' ? '/teams/mercedes' : series === 'imsa' || series === 'wrc' ? `/teams/${series}-any` : null),
+  }),
+}));
 // The results dispatch (eight series; P2.2 B1 reads WRC and DTM through their real fetchers, never this).
 // The mock reads the series handed in, so a test may answer per series (P2.24 B2: the newest race across Home's series).
 const loadSnapshotSource = vi.fn<(series: { meta: { slug: string } }) => Promise<unknown>>(async () => snapshotAnswer());
@@ -180,12 +188,12 @@ describe('readSource', () => {
     expect(fetchFullDriverStandings).not.toHaveBeenCalled();
     // P2.24 B2: every row carries the series' name and colour; the race winner and the season's end are the Latest result's facts, null for one championship.
     expect(read.rows).toEqual([
-      { kind: 'driver', position: 1, name: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', points: 267, wins: 7, class: null, seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
-      { kind: 'driver', position: 2, name: 'George Russell', code: 'RUS', team: 'Mercedes', points: 201, wins: 2, class: null, seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
-      { kind: 'constructor', position: 1, name: 'Mercedes', code: null, team: null, points: 468, wins: 9, class: null, seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
+      { kind: 'driver', position: 1, name: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', points: 267, wins: 7, class: null, profile: '/drivers/kimi-antonelli', seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
+      { kind: 'driver', position: 2, name: 'George Russell', code: 'RUS', team: 'Mercedes', points: 201, wins: 2, class: null, profile: null, seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
+      { kind: 'constructor', position: 1, name: 'Mercedes', code: null, team: null, points: 468, wins: 9, class: null, profile: '/teams/mercedes', seriesName: 'Formula 1', colour: '#e10600', winner: null, final: null },
     ]);
     expect(read.total).toBe(3);
-    expect(read.columns.map(c => c.key)).toEqual(['kind', 'position', 'name', 'code', 'team', 'points', 'wins', 'class', 'seriesName', 'colour', 'winner', 'final']);
+    expect(read.columns.map(c => c.key)).toEqual(['kind', 'position', 'name', 'code', 'team', 'points', 'wins', 'class', 'profile', 'seriesName', 'colour', 'winner', 'final']);
     expect(read.provenance).toMatchObject({
       ref: { source: 'standings', params: { series: 'f1', season: 2026 } },
       label: 'Standings · Formula 1 · 2026',
@@ -226,7 +234,7 @@ describe('readSource', () => {
     expect(gt.provenance.tier).toBe('snapshot');
     expect(gt.provenance.keys).toEqual(['standings:gt-world:2026']);
     expect(gt.rows.map(r => `${r.class} · ${r.kind} · ${r.name} · ${r.points}`)).toEqual(['Overall · driver · Marciello · 98', 'Overall · team · WRT · 120', 'Sprint Cup · driver · Engel · 50', 'Endurance Cup · team · AF Corse · 60']);
-    expect(gt.rows[0]).toEqual({ kind: 'driver', position: 1, name: 'Marciello', code: null, team: 'WRT', points: 98, wins: null, class: 'Overall', seriesName: null, colour: null, winner: null, final: null });
+    expect(gt.rows[0]).toEqual({ kind: 'driver', position: 1, name: 'Marciello', code: null, team: 'WRT', points: 98, wins: null, class: 'Overall', profile: null, seriesName: null, colour: null, winner: null, final: null });
     expect(gt.rows[2].wins).toBe(2);
     fetchImsaStandings.mockResolvedValue({
       drivers: { GTP: [{ position: 1, driverName: 'Nasr Tandy', points: 2412 }], LMP2: [], 'GTD Pro': [], GTD: [] },
@@ -255,6 +263,8 @@ describe('readSource', () => {
     expect(wrc.provenance.tier).toBe('snapshot');
     expect(wrc.rows.map(r => `${r.kind} · ${r.name} · ${r.points}`)).toEqual(['driver · Rovanperä · 200', 'co-driver · Halttunen · 200', 'manufacturer · Toyota Gazoo Racing · 412']);
     expect(wrc.rows.every(r => r.class === null)).toBe(true);
+    // P2.4 PR B: the driver's page; a co-driver and a manufacturer none, though the stand-in would answer any WRC name.
+    expect(wrc.rows.map(r => r.profile)).toEqual(['/drivers/wrc-any', null, null]);
     expect(wrc.rows[1]).toMatchObject({ team: 'Toyota', code: null, wins: null });
     // WRC with its rows tier (the drivers, as the loader writes them): the rows tier first, its run kept, the
     // co-drivers and manufacturers joining from the snapshot (the reviewer's finding: the Drivers preset keeps its run).
@@ -298,6 +308,9 @@ describe('readSource', () => {
     expect(f1.rows[0].date).toMatch(/^2026-03-08/);
     // Round 2 has no weekend page (the grouping answers round 1 only): no link.
     expect(f1.rows.find(r => r.round === 2)?.weekend).toBeNull();
+    // P2.4 PR B: a flat series' driver carries the page the rosters answer; one they do not know carries none.
+    expect(f1.rows.find(r => r.session === 'race')?.profile).toBe('/drivers/kimi-antonelli');
+    expect(f1.rows.find(r => r.session === 'sprint')?.profile).toBeNull();
     const f2 = await readSource({ source: 'results', params: { series: 'f2', season: 2026 } });
     expect(f2.rows.map(r => r.session)).toEqual(['feature', 'sprint']);
     const motogp = await readSource({ source: 'results', params: { series: 'motogp', season: 2026 } });
@@ -322,6 +335,8 @@ describe('readSource', () => {
     expect(imsa.rows.map(r => `${r.class} · ${r.position} · ${r.car} · ${r.driver}`)).toEqual(['GTP · 1 · 7 · Nasr Tandy', 'GTP · 2 · 6 · Campbell Jaminet', 'GTD · 1 · 1 · null']);
     expect(imsa.rows[0]).toMatchObject({ round: 1, race: 'Rolex 24 at Daytona', circuit: 'Daytona International Speedway', session: 'race', team: 'Team 7', vehicle: 'Porsche 963', manufacturer: 'Porsche', laps: 780, status: 'Classified', gap: null, points: null, code: null, time: null, raceId: null });
     expect(imsa.rows[1].gap).toBe('+2.5');
+    // P2.4 PR B: a crew (a car row) has no page, and the rosters are never asked, though the stand-in answers any IMSA name.
+    expect(imsa.rows.map(r => r.profile)).toEqual([null, null, null]);
     expect(imsa.rows[0].date).toMatch(/^2026-01-25/);
     const wec = await readSource({ source: 'results', params: { series: 'wec', season: 2026 } });
     expect(wec.rows.map(r => `${r.class} · ${r.position} · ${r.gap}`)).toEqual(['Hypercar · 1 · 24:00:12.345', 'Hypercar · 2 · +1 Lap', 'LMGT3 · 1 · 24:00:30.000']);

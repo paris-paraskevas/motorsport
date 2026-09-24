@@ -1,6 +1,6 @@
 import { listSeriesSlugs, loadSeriesMeta } from './series';
 import { loadCuratedDrivers } from './series-content';
-import { slugify } from './slug';
+import { namesMatch, slugify } from './slug';
 
 export interface DriverDetail {
   slug: string;
@@ -141,4 +141,60 @@ export async function findDriverBySlug(slug: string): Promise<DriverDetail | nul
 export async function findTeamBySlug(slug: string): Promise<TeamDetail | null> {
   const all = await loadAllTeams();
   return all.find(t => t.slug === slug) ?? null;
+}
+
+/** Where a standings or results row's person lives on the site (P2.4 PR B): a page in that series' roster, or null. */
+export interface PeopleIndex {
+  /** A driver's page, matched by the site's drift rule (namesMatch): an exact name first, else the one roster name that contains
+   *  the feed's or that it contains; none, or two, is null. */
+  driver(series: string, name: string): string | null;
+  /** A team's page by the same rule, only where its slug opens that series' own team (findTeamBySlug answers the first listed). */
+  team(series: string, name: string): string | null;
+}
+
+/** The index over the rosters in their listing order (loadAllDrivers, loadAllTeams): every page it answers is the one
+ *  findDriverBySlug or findTeamBySlug resolves to that same person. Exported for tests. */
+export function buildPeopleIndex(drivers: readonly DriverDetail[], teams: readonly TeamDetail[]): PeopleIndex {
+  type Entry = { slug: string; name: string; seriesSlug: string };
+  const owners = (all: readonly Entry[]) => {
+    const m = new Map<string, string>();
+    for (const x of all) if (!m.has(x.slug)) m.set(x.slug, x.seriesSlug);
+    return m;
+  };
+  const bySeries = (all: readonly Entry[]) => {
+    const m = new Map<string, Entry[]>();
+    for (const x of all) m.set(x.seriesSlug, [...(m.get(x.seriesSlug) ?? []), x]);
+    return m;
+  };
+  const pick = (pool: readonly Entry[] | undefined, owner: Map<string, string>, name: string, base: string): string | null => {
+    const want = slugify(name);
+    if (!pool || !want) return null;
+    const exact = pool.filter(x => slugify(x.name) === want);
+    const hits = exact.length > 0 ? exact : pool.filter(x => namesMatch(x.name, name));
+    if (hits.length !== 1) return null;
+    return owner.get(hits[0].slug) === hits[0].seriesSlug ? `${base}/${hits[0].slug}` : null;
+  };
+  const driverOwner = owners(drivers);
+  const teamOwner = owners(teams);
+  const driversIn = bySeries(drivers);
+  const teamsIn = bySeries(teams);
+  return {
+    driver: (series, name) => pick(driversIn.get(series), driverOwner, name, '/drivers'),
+    team: (series, name) => pick(teamsIn.get(series), teamOwner, name, '/teams'),
+  };
+}
+
+let index: Promise<PeopleIndex> | null = null;
+
+/** The index over the site's own rosters, built once per process: the content bundle never changes at run time. A build that
+ *  fails is not kept, so the next read tries again. */
+export function peopleIndex(): Promise<PeopleIndex> {
+  if (!index) {
+    const built = Promise.all([loadAllDrivers(), loadAllTeams()]).then(([d, t]) => buildPeopleIndex(d, t));
+    index = built;
+    built.catch(() => {
+      if (index === built) index = null;
+    });
+  }
+  return index;
 }

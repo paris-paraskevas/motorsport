@@ -324,6 +324,11 @@
    "date": "2026-09-24",
    "change": "P2.4 PR A merged (#1049, 1.0.168; 07d076bc, 7fc485b5, fddd8040; squash-merged 09:23:44Z as 2daa14fc; prod /changelog 1.0.168 at 09:27:59Z). The reviewer SOUND WITH FIXES (227,972 tokens against ~120k said): both should-fix items folded (the results’ round groups gained their highlight test, proven by removing the rows’ highlight on purpose; the CHANGELOG’s browser line names the signed-in session the Playwright browser still held) and two nits (the rule note’s function below the imports and in the parser’s words; the Followed series help). Home’s parity identical across the deploy (27 regions; the countdown clocks and the footer’s version normalised). P2.4 continues with PR B, the links from the readers.",
    "word": "the operator, 2026-09-24 ~09:23Z: \"merge\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PR B built on the approved plan (1.0.170, branch feat/p2.4-b-links): lib/people.ts buildPeopleIndex and peopleIndex (the drift rule, an exact name first; a team only where its slug opens that series’ own team, since 19 team slugs are shared across series); the standings and results readers carry profile (null for co-drivers, manufacturers and crews); the sources declare it and read content:series; driver-rows and team-rows link name, race-rows and podium-rows link driver; the results driver keeps its cell (a Correction to the plan’s claim that a link keeps the name’s class); the CSV writes a link’s text beside its address; namesMatch moved to lib/slug.ts after the first build measured 39266.21 KiB. Tests first, 13 red across 6 files, then green; three older tests now assert the new behaviour with their refusal cases kept; tsc 0, lint 0 errors, vitest 230 files / 2328 tests; the browser on the local Monza page (ten links, Antonelli’s page opens, the Cards’ zone, the CSV’s address column); the dry run 39226.67 KiB.",
+   "word": "the operator, 2026-09-24 ~07:00Z: the plan approved (ExitPlanMode); ~09:23Z: \"merge\" (PR A), then the next task"
   }
  ],
  "phases": {

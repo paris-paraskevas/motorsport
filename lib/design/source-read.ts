@@ -328,9 +328,24 @@ async function seriesResults(graph: ResultsGraph, slug: string, season: number):
   const rounds = new Set(weekends.map(w => w.round));
   const weekend = (round: number | null) => (round !== null && rounds.has(round) ? `/series/${slug}/weekend/${round}` : null);
   const facts = await seriesFacts(graph, series, weekends, season, now);
-  const rows = (await graph.read({ season, series, weekend })).map(r => ({ ...r, ...facts }));
+  const rows = await withProfiles(slug, (await graph.read({ season, series, weekend })).map(r => ({ ...r, ...facts })), resultsAsk);
   return { series, rows };
 }
+
+/** Each row's page (P2.4 PR B): a driver's or a team's address from the site's own rosters (lib/people.ts), exact per series.
+ *  Null for a row the rosters are never asked about (a co-driver, a manufacturer, a crew), for a name they do not know, and
+ *  when they cannot load: a read never throws. */
+async function withProfiles(series: string, rows: SourceRow[], ask: (r: SourceRow) => { kind: 'driver' | 'team'; name: string } | null): Promise<SourceRow[]> {
+  const index = await import('@/lib/people').then(m => m.peopleIndex()).catch(() => null);
+  return rows.map(r => {
+    const q = index ? ask(r) : null;
+    return { ...r, profile: index && q ? (q.kind === 'driver' ? index.driver(series, q.name) : index.team(series, q.name)) : null };
+  });
+}
+/** A standings row's person: a driver, or a team or constructor; WRC's co-drivers and every manufacturer have no page. */
+const standingsAsk = (r: SourceRow) => (typeof r.name !== 'string' || !r.name ? null : r.kind === 'driver' ? { kind: 'driver' as const, name: r.name } : r.kind === 'team' || r.kind === 'constructor' ? { kind: 'team' as const, name: r.name } : null);
+/** A results row's driver on a flat series; a car's crew (IMSA's, WEC's, GT World's cups) is several people and has none. */
+const resultsAsk = (r: SourceRow) => (r.car == null && typeof r.driver === 'string' && r.driver ? { kind: 'driver' as const, name: r.driver } : null);
 
 /** Home's name for a podium entry (lib/home-results.ts): a sportscar entry (a car number) by its team, a flat one by its driver. */
 const podiumName = (r: SourceRow): string | null => (str(r.car) ? str(r.team) ?? str(r.driver) ?? `Car #${String(r.car)}` : str(r.driver));
@@ -372,9 +387,15 @@ export async function latestRaceAcross(slugs: readonly string[], season: number)
 /** Once per request (React's cache, as raceWeekendNow): the Podium and the Leader on one page share the resolution. */
 const latestHomeRace = cache((season: number) => latestRaceAcross(HOME_RESULTS_SERIES, season));
 
+/** One championship's standings with each row's page (P2.4 PR B), for one championship and for the Latest result alike. */
+async function standingsRows(series: string, season: number, keys: string[]): Promise<Answer> {
+  const answer = await standingsAnswer(series, season, keys);
+  return { ...answer, rows: await withProfiles(series, answer.rows, standingsAsk) };
+}
+
 /** One championship's standings: the rows tier with its run first, the snapshot tier after (the class families and WRC's extra
  *  tables from the snapshots the tabs read). */
-async function standingsRows(series: string, season: number, keys: string[]): Promise<Answer> {
+async function standingsAnswer(series: string, season: number, keys: string[]): Promise<Answer> {
   // The class families (P2.2: GT World's cups, IMSA's and WEC's classes) read the snapshot the tabs read: the rows tier holds no class.
   const family = await familyStandings(series, season);
   if (family) return { tier: 'snapshot', rows: family, run: null, meta: await metaFor(keys) };

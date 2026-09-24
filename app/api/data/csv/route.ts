@@ -24,23 +24,24 @@ export const dynamic = 'force-dynamic';
 // 404, so nothing leaks), the state (sort, cols, filter, view) is read and bound as the served table reads it, and the rows
 // come from the source, never the screen: as sorted, filtered and columned, at most CSV_MAX. RFC 4180 text, UTF-8 with a
 // byte-order mark for the spreadsheets that want one, CRLF, a header row of the columns' labels; a date as the source says
-// it (ISO), a link as its address.
+// it (ISO), a link as its text beside a column of its address.
 export const CSV_MAX = 5000;
 
 const cell = (v: PresetRow[string]): string => (v === null || v === undefined ? '' : String(v));
 const quote = (s: string): string => (/[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s);
 
-/** The CSV of the columns over the rows: a link column's address made absolute when it is a path of this site. */
+/** The CSV of the columns over the rows: a link column as its text and, in a column of its own beside it (`<Label> address`),
+ *  its address, made absolute when it is a path of this site (P2.4 PR B; until then a link was its address alone). */
 export function csvOf(columns: readonly PresetColumn[], rows: readonly PresetRow[]): string {
   const line = (cells: readonly string[]) => cells.map(quote).join(',');
-  const value = (c: PresetColumn, r: PresetRow): string => {
-    if (c.type === 'link') {
-      const href = c.href ? cell(r[c.href]) : '';
-      return href.startsWith('/') ? `${SITE_URL}${href}` : href;
-    }
-    return cell(r[c.key]);
+  const address = (c: PresetColumn, r: PresetRow): string => {
+    const href = c.href ? cell(r[c.href]) : '';
+    return href.startsWith('/') ? `${SITE_URL}${href}` : href;
   };
-  return [line(columns.map(c => c.label)), ...rows.map(r => line(columns.map(c => value(c, r))))].join('\r\n') + '\r\n';
+  const linked = (c: PresetColumn) => c.type === 'link' && Boolean(c.href);
+  const head = columns.flatMap(c => (linked(c) ? [c.label, `${c.label} address`] : [c.label]));
+  const body = rows.map(r => line(columns.flatMap(c => (linked(c) ? [cell(r[c.key]), address(c, r)] : [cell(r[c.key])]))));
+  return [line(head), ...body].join('\r\n') + '\r\n';
 }
 
 const notFound = () => new NextResponse('Not found', { status: 404 });
