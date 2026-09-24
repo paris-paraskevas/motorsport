@@ -379,6 +379,11 @@
    "date": "2026-09-24",
    "change": "PA A1b merged (#1059, 1.0.178; squash-merged 19:19:09Z as 4ec78ab1; prod /changelog 1.0.178 at 19:28:16Z on the footer (the deployment took about nine minutes)). A1 DONE: the seam stands on both hosts and Clerk is imported by lib/auth, the middleware, the sign-in pages and the webhook alone. The reviewer SOUND WITH FIXES (200,689 tokens against ~250k said), four small fixes folded. The Worker grew 1571 KiB (41151 KiB, 63.0%), measured against a clean build of main and accepted with the numbers, to be measured again at A3. Two designer tests time out at 5 s on the operator’s machine this evening, on main too; the limit is untouched; the operator’s word of ~19:35Z: leave it, the machine’s speed to be worked out later. Next: A2, the import (personal data, by the operator’s hand).",
    "word": "the operator, 2026-09-24 ~19:18Z: \"merge\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "PA A2 started on the plan: the import script, its six tests, the accounts migration proven on the local database (the bucket, the three functions answering the service role and refusing anon and authenticated, the rerun idempotent), the local auth and storage services switched on in supabase/config.toml for it. The prod apply waits for \"apply 20260924200000\"; the script runs by the operator’s hand with their Clerk export.",
+   "word": "the operator, 2026-09-24 ~19:50Z: \"a2 now\""
   }
  ],
  "phases": {
@@ -1026,8 +1031,9 @@
    "defaults": "A dry run by default; counts only in its output; a rerun changes nothing; a password hash written only for an account that never signed in on Supabase; the functions pin search_path and only the service role may run them; the script runs by the operator’s hand or under a permission rule the operator adds.",
    "needsWord": "apply <stamp> for the migration; apply A2-op for the operator’s own account",
    "acceptance": "A synthetic export imported and rerun without change (test); the functions refuse anon (local database); the operator’s account imported on prod and named by the directory.",
-   "status": "planned",
-   "scopeHash": "67c2550b3ed6"
+   "status": "started",
+   "scopeHash": "67c2550b3ed6",
+   "evidence": "The build (2026-09-24, on the word \"a2 now\" ~19:50Z): scripts/import-clerk-users.mts (the export parsed by column name, the plan matched by legacy id then address, the writer through the admin API, counts alone in the output) with scripts/import-clerk-users.test.ts (six tests: the export, the mapping, the plan, the rerun, the matching, the writer) · supabase/migrations/20260924200000_accounts.sql applied on the local database with psql: the avatars bucket (2 MB, png/jpeg/webp) and the three security definer functions with search_path pinned, answering service_role ({\"total\": 0, \"newest\": []}) and refusing anon and authenticated (permission denied), the rerun idempotent · supabase/config.toml: the local auth and storage services on (they were off; the migration needs both) · vitest includes scripts/**/*.test.ts · the prod apply and the operator’s run follow the merge"
   },
   {
    "id": "A3",
