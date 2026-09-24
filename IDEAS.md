@@ -35,6 +35,7 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 ## Inbox — merged and deduped 2026-08-28 (session 41)
 
+- (2026-09-24, session 56) The operator asked whether moving users to Supabase is planned so sessions stop ending after seven days: it is not in the plan (the designer's workspaces build on Clerk Organizations). Clerk's docs (guides/secure/session-options): a session's Maximum lifetime defaults to 7 days for new instances and the Inactivity timeout is off; both are set at dashboard.clerk.com/~/sessions, and changing them for production needs a paid Clerk plan (free in development). A dashboard setting, not a migration — the operator's call.
 - (2026-09-23, session 56) The CSV route writes cells as they are: a value beginning with `=`, `+`, `-` or `@` is not prefixed against spreadsheet formulas, since the gaps begin with `+` and `−` and every cell is the site's own data (the PR B reviewer's nit, declined with the reason); revisit if a source ever carries reader-written text.
 - (2026-09-23, session 56) A saved view's `seq` has no editor control (the Alternatives list by name; the column exists for it) — a small control in the Saved Views editor when the order matters.
 - (2026-09-23, session 56) The Saved Views editor has no screenshot yet: the sign-in helper was stopped by the system for memory and is restarted only on the operator's word; open Shared Components › Saved Views once it runs, add a view for the local Monza table, and keep the picture.

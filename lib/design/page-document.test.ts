@@ -754,3 +754,14 @@ describe('the reserved prefixes (P2.3)', () => {
     expect(RESERVED_PREFIXES).toContain('/__view');
   });
 });
+
+describe('highlight rules (P2.4): a row condition bound to the preset’s shape', () => {
+  const region = (over: Record<string, unknown>) => ({ id: 'r', kind: 'component', component: 'data.region', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, source: 'standings?series=f1&season=2026', ...over });
+  const doc = (regions: unknown[]) => ({ version: 1, actions: [], regions });
+  it('keeps a rule its shape reads and refuses one it cannot with the reason; an empty rule is fine', () => {
+    expect(parsePageDocument(doc([region({ settings: { preset: 'drivers', view: 'table', highlight1: 'position.lte:3', highlight2: 'team.eq:Mercedes', highlight3: '' } })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([region({ settings: { preset: 'drivers', view: 'table', highlight1: 'nope' } })])).problems).toEqual(['region r: Highlight 1 must be a condition on a column of the Drivers preset, like position.lte:3']);
+    expect(parsePageDocument(doc([region({ settings: { preset: 'drivers', view: 'table', highlight2: 'name.gt:3' } })])).problems).toEqual(['region r: Highlight 2 must be a condition on a column of the Drivers preset, like position.lte:3']);
+    expect(parsePageDocument(doc([region({ settings: { preset: 'drivers', view: 'table', highlight1: 'weekend.eq:x' } })])).problems).toEqual(['region r: Highlight 1 must be a condition on a column of the Drivers preset, like position.lte:3']);
+  });
+});

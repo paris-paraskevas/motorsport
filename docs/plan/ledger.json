@@ -304,6 +304,16 @@
    "date": "2026-09-24",
    "change": "P2.3 DONE: the saved_view migration 20260923220000 applied on prod at 06:25:34Z — rehearsed inside begin…rollback through the Management API (no error; the table absent before and after), applied, read back (0 rows, RLS on, the index and the trigger present, the nine columns), idempotent. Prod’s Shared Components › Saved Views now loads empty and every Views menu lists what the designer saves. Both P2.3 PRs (A #1044 1.0.163, B #1046 1.0.165) were on prod already. Next: P2.4’s plan in plan mode with a Sonnet critic, on the scan’s answers.",
    "word": "the operator, 2026-09-24 ~06:20Z: \"apply 20260923220000\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PLANNED and APPROVED (ExitPlanMode): three PRs, one slot — PR A Highlight rules (three row conditions in the filter vocabulary with a style each under a new group Highlight; leader and podium on the server; the followed series as a client repaint that only adds a tint after load, nothing for the site’s null), PR B Links from the readers (the standings and results rows carry the person’s page from lib/people’s rosters matched by namesMatch — “Andrea Kimi Antonelli” is the roster’s “Kimi Antonelli”, /drivers/kimi-antonelli — the name and driver columns become link columns, the CSV writes a link’s text and its address), PR C Master-detail (Detail region and Detail key on the master; a select link per row writing r.<detail>.filter under the detail’s own state, the detail counted as a controlled region whatever its view, “Showing <value> · Show all”). A Sonnet critic (290,233 tokens against ~150k said) SOUND WITH FIXES, four blockers folded; the terrain reader 230,208 against ~120k. The plan file ~/.claude/plans/mossy-whistling-balloon.md holds the text; P2.4 STARTED.",
+   "word": "the operator, 2026-09-24 ~07:00Z: the plan approved (ExitPlanMode)"
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PR A built on the approved plan (1.0.168, branch feat/p2.4-rules-links): the Highlight group with three rules in the address’s words and a style each, the Followed series toggle; parseRule and rowPasses exported; the parser binds a rule to the preset’s shape; the Table’s, Cards’ and both List paths’ rows take the first rule’s class (today’s markup byte for byte with none); FollowedRows marks the followed rows after the page loads, the stylesheet tints them; the Property Editor notes a rule that does not read. Tests first, 7 red across 7 files, then green; tsc 0, lint 0 errors, vitest 230 files / 2322 tests; the browser on the local Monza page (the leader tinted, the podium raised, the F1 rows tinted once followed). The PR and its reviewer follow the operator’s new planning task (a full migration to Supabase Auth, asked ~07:20Z), which takes the next agent slot.",
+   "word": "the operator, 2026-09-24 ~07:00Z: the plan approved (ExitPlanMode); ~07:20Z: \"plan a full migration to Supabase Auth\""
   }
  ],
  "phases": {
@@ -713,7 +723,7 @@
    "defaults": "Highlight rules stored on the region as row conditions in the filter vocabulary (position.lte:3, points.gte:100) with a style, drawn under a new Property Editor group; the leader and podium rules render on the server; a column link picks a page the row carries (Driver → its page, as Race → its page), never a typed URL; master-detail as a master row link writing the detail region’s filter into the address (the P2.3 vocabulary, r.<id>.filter), the detail served as a cached variant; the followed-series highlight as a small client repaint after the page loads; the standings and results readers carry each row’s driver and team page addresses from the site’s own resolver.",
    "needsWord": "none",
    "acceptance": "A highlighted leader; a driver name linking to /drivers/[slug]; a season list filtering a results table; test.",
-   "status": "planned",
+   "status": "started",
    "scopeHash": "b6e6849d7555"
   },
   {

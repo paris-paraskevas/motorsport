@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ViewState } from './view-state';
 import { readFileSync } from 'node:fs';
-import { PRESETS, PRESET_GROUPS, SHAPES, findPreset, presetRows, presetsFor } from './presets';
+import { PRESETS, PRESET_GROUPS, SHAPES, findPreset, presetRows, presetsFor, rowPasses } from './presets';
 import { SERIES_OPTIONS } from './sources';
 
 /** P2.24 B2: the two Series values the readers resolve (Home's series on Results, the Latest result on Standings), declared, not slugs. */
@@ -355,5 +355,18 @@ describe('presetRows with a reader’s state (P2.3)', () => {
     expect(presetRows(rows, season, 10, state({ sort: { column: 'position', desc: false } })).map(r => r.driver)).toEqual(['China P1', 'Australia P1', 'China P2', 'Australia P2', 'China P3']);
     expect(presetRows(rows, season, 10, state({ filters: [{ column: 'position', op: 'eq', value: '1' }] })).map(r => r.driver)).toEqual(['China P1', 'Australia P1']);
     expect(presetRows(rows, season, 1, state({ filters: [{ column: 'round', op: 'eq', value: '1' }] })).map(r => r.driver)).toEqual(['Australia P1', 'Australia P2']);
+  });
+});
+
+describe('rowPasses (P2.4): a row against one condition, as the column’s type reads it', () => {
+  it('numbers as numbers, text case-insensitively, in over a list; a missing cell passes ne alone', () => {
+    const columns = SHAPES['driver-rows'].columns;
+    const row = { position: 2, name: 'George Russell', team: 'Mercedes', points: 201, wins: null };
+    expect(rowPasses(row, { column: 'position', op: 'lte', value: '3' }, columns)).toBe(true);
+    expect(rowPasses(row, { column: 'position', op: 'eq', value: '1' }, columns)).toBe(false);
+    expect(rowPasses(row, { column: 'team', op: 'eq', value: 'mercedes' }, columns)).toBe(true);
+    expect(rowPasses(row, { column: 'name', op: 'in', value: 'Norris, George Russell' }, columns)).toBe(true);
+    expect(rowPasses(row, { column: 'wins', op: 'gte', value: '1' }, columns)).toBe(false);
+    expect(rowPasses(row, { column: 'wins', op: 'ne', value: '1' }, columns)).toBe(true);
   });
 });

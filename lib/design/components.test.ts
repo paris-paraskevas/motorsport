@@ -60,6 +60,13 @@ describe('the component catalogue', () => {
       ['actions', 'boolean', 'report'],
       ['views', 'boolean', 'report'],
       ['download', 'boolean', 'report'],
+      ['highlight1', 'text', 'report'],
+      ['highlight1Style', 'choice', 'report'],
+      ['highlight2', 'text', 'report'],
+      ['highlight2Style', 'choice', 'report'],
+      ['highlight3', 'text', 'report'],
+      ['highlight3Style', 'choice', 'report'],
+      ['highlightFollowed', 'boolean', 'report'],
     ]);
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
@@ -130,8 +137,9 @@ describe('the component catalogue', () => {
     const pinned = region.settings[4];
     expect(pinned).toMatchObject({ key: 'pinned', label: 'Pinned post', kind: 'text', scope: 'report', default: '', maxLength: 120, dependingOn: { key: 'view', values: ['lead-story'] } });
     expect(region.holds).toBe('a table, cards, a list, a timeline or details over a source from the catalogue, in one of the site’s named shapes, or one of Home’s boxes as a template');
-    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '', ...RESET, sortable: false, actions: false, views: false, download: false });
-    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', pinned: '', ...RESET, sortable: false, actions: false, views: false, download: false });
+    const HIGHLIGHT = { highlight1: '', highlight1Style: 'brand', highlight2: '', highlight2Style: 'brand', highlight3: '', highlight3Style: 'brand', highlightFollowed: false };
+    expect(componentDefaults(region)).toEqual({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '', ...RESET, sortable: false, actions: false, views: false, download: false, ...HIGHLIGHT });
+    expect(parseSettings(region, { preset: 'wec-hypercar-drivers', view: 'cards', rows: 5 }).settings).toEqual({ preset: 'wec-hypercar-drivers', view: 'cards', rows: 5, heading: '', pinned: '', ...RESET, sortable: false, actions: false, views: false, download: false, ...HIGHLIGHT });
     // The pinned post is named on the tile while the View is Lead story and a slug is set, silent otherwise.
     expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: 'monza-2026' })).toBe('Preset Lead story · View Lead story · Rows 4 · Pinned post monza-2026');
     expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' })).toBe('Preset Lead story · View Lead story · Rows 4');
@@ -144,7 +152,25 @@ describe('the component catalogue', () => {
       { key: 'card', title: 'Card', seq: 10 },
       { key: 'actions', title: 'Actions', seq: 20 },
       { key: 'menu', title: 'Actions Menu', seq: 30 },
+      { key: 'highlight', title: 'Highlight', seq: 40 },
     ]);
+    // P2.4: three highlight rules (a row condition in the address's words, a style each) and the followed-series tint, under
+    // Highlight (APEX: an Interactive Report's Highlight), for the Table, the Cards and the List; the tile names a rule when set.
+    const highlight = region.settings.filter(s => s.group === 'highlight');
+    expect(highlight.map(s => [s.key, s.label, s.kind, s.default])).toEqual([
+      ['highlight1', 'Highlight 1', 'text', ''],
+      ['highlight1Style', 'Highlight 1 style', 'choice', 'brand'],
+      ['highlight2', 'Highlight 2', 'text', ''],
+      ['highlight2Style', 'Highlight 2 style', 'choice', 'brand'],
+      ['highlight3', 'Highlight 3', 'text', ''],
+      ['highlight3Style', 'Highlight 3 style', 'choice', 'brand'],
+      ['highlightFollowed', 'Followed series', 'boolean', false],
+    ]);
+    for (const s of highlight) expect(s.dependingOn, s.key).toEqual({ key: 'view', values: ['table', 'cards', 'list'] });
+    for (const s of highlight.filter(x => x.kind === 'text')) expect([s.rule, s.maxLength], s.key).toEqual([true, 120]);
+    expect(highlight[1].options!.map(o => [o.key, o.label])).toEqual([['brand', 'Brand'], ['emphasis', 'Emphasis'], ['muted', 'Muted']]);
+    expect(settingsSummary(region, { preset: 'drivers', view: 'table', rows: 8, heading: '', highlight1: 'position.eq:1', highlight2: 'position.lte:3', highlight2Style: 'emphasis' })).toBe('Preset Drivers · View Table · Rows 8 · Highlight 1 position.eq:1 · Highlight 2 position.lte:3 · Highlight 2 style Emphasis');
+    expect(settingsSummary(region, { preset: 'drivers', view: 'timeline', rows: 8, heading: '', highlight1: 'position.eq:1' })).toBe('Preset Drivers · View Timeline · Rows 8');
     // P2.3: the Interactive Report's controls (APEX: Attributes › Actions Menu), off by default, drawn while the View is Table or Cards;
     // the tile names them only when on (a dependingOn attribute at its default is silent).
     const menu = region.settings.filter(s => s.group === 'menu');

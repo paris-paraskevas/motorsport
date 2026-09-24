@@ -5,8 +5,10 @@ import type { Preset, PresetColumn, PresetRow, Shape } from '@/lib/design/preset
 import { ageLabel } from '@/lib/date';
 import { seriesInk } from '@/lib/site';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
-import { sortHref, sortable, type ViewState } from '@/lib/design/view-state';
+import { sortHref, sortable, type ViewFilter, type ViewState } from '@/lib/design/view-state';
+import { rowPasses } from '@/lib/design/presets';
 import { DataRegionControls } from './DataRegionControls';
+import { FollowedRows } from './FollowedRows';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -215,6 +217,10 @@ export interface DataRegionViewProps {
   series?: string;
   /** The Interactive Report's controls (P2.3): present only where the region has them on and a state can arrive. */
   controls?: RegionControls;
+  /** The highlight rules and the followed-series tint (P2.4); absent draws every row plain. */
+  highlight?: RowHighlight;
+  /** The region's id (P2.4): the wrapper `#region-<id>` the followed-series tint marks rows under. */
+  region?: string;
 }
 
 /** What the Table and the Cards need to write their links and forms (P2.3): the visited path, this region's key prefix, the
@@ -231,6 +237,24 @@ export interface RegionControls {
   /** The CSV route's address for the rows as shown (P2.3 PR B), when Download CSV is on. */
   download?: string;
 }
+
+/** The highlight rules of a region (P2.4; APEX: an Interactive Report's Highlight): the first rule a row meets styles it; with
+ *  `followed`, every row carries its series for the tint the browser adds after the page loads (FollowedRows). */
+export type HighlightStyle = 'brand' | 'emphasis' | 'muted';
+export interface RowHighlight {
+  rules: { filter: ViewFilter; style: HighlightStyle }[];
+  followed: boolean;
+}
+const STYLE_CLASS: Record<HighlightStyle, string> = { brand: 'text-brand font-bold', emphasis: 'bg-surface-elevated font-semibold', muted: 'text-text-faint' };
+/** The class of the first rule a row meets; undefined for none, so an element without a class today keeps none. */
+const rowClass = (h: RowHighlight | undefined, shape: Shape, row: PresetRow): string | undefined => {
+  const hit = h?.rules.find(r => rowPasses(row, r.filter, shape.columns));
+  return hit ? STYLE_CLASS[hit.style] : undefined;
+};
+/** A class list without a trailing space when the highlight adds nothing: today's markup byte for byte. */
+const join = (...parts: (string | undefined)[]): string => parts.filter(Boolean).join(' ');
+/** The row's series for the followed-series tint; undefined without the toggle or a series on the row. */
+const seriesOf = (h: RowHighlight | undefined, row: PresetRow): string | undefined => (h?.followed && text(row.series) ? text(row.series) : undefined);
 
 /** A zone's link around a part of the card, or the part alone; an external address leaves the site in a new tab, as the
  *  Button region does. A part without words of its own (the avatar, hidden from assistive technology) names its link. */
@@ -249,7 +273,7 @@ function Zoned({ to, className, label, children }: { to: ReturnType<Zone>; class
   );
 }
 
-export function DataRegionTable({ heading, level, shape, preset, rows, controls }: DataRegionViewProps) {
+export function DataRegionTable({ heading, level, shape, preset, rows, controls, highlight, region }: DataRegionViewProps) {
   const H = level;
   const columns = tableColumns(shape, preset, rows, controls?.state.cols);
   const leader = leaderPoints(rows);
@@ -257,6 +281,7 @@ export function DataRegionTable({ heading, level, shape, preset, rows, controls 
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
       {controls && (controls.actions || controls.views || controls.download) && <DataRegionControls controls={controls} shape={shape} shown={columns} nameLabel={preset.nameLabel} sortLinks={false} />}
+      {highlight?.followed && region && <FollowedRows region={region} />}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">{heading}</caption>
@@ -284,7 +309,7 @@ export function DataRegionTable({ heading, level, shape, preset, rows, controls 
           </thead>
           <tbody className="divide-y divide-border/60">
             {rows.map((r, i) => (
-              <tr key={`${text(r.position)}-${text(r.name)}-${i}`}>
+              <tr key={`${text(r.position)}-${text(r.name)}-${i}`} className={rowClass(highlight, shape, r)} data-series={seriesOf(highlight, r)}>
                 {columns.map(c => (
                   <Cell key={c.key} column={c} row={r} leader={leader} />
                 ))}
@@ -301,7 +326,7 @@ export function DataRegionTable({ heading, level, shape, preset, rows, controls 
  *  an image column (P2.24 A) or the initials of its column's text (APEX Icon Initials), and the action zones. Full Card set
  *  and resolved for a row makes that card one link named after its title, and its other zones stand down: no link inside a
  *  link. A zone that resolves to nothing for a row draws that part plain. */
-export function DataRegionCards({ heading, level, shape, preset, rows, card, actions, controls }: DataRegionViewProps) {
+export function DataRegionCards({ heading, level, shape, preset, rows, card, actions, controls, highlight, region }: DataRegionViewProps) {
   const H = level;
   const slot: CardSlots = card ?? { ...shape.card, media: shape.card.media ?? '' };
   const act = actions ?? NO_ACTIONS;
@@ -310,6 +335,7 @@ export function DataRegionCards({ heading, level, shape, preset, rows, card, act
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
       {controls && (controls.actions || controls.views || controls.download) && <DataRegionControls controls={controls} shape={shape} shown={shape.columns} nameLabel={preset.nameLabel} sortLinks />}
+      {highlight?.followed && region && <FollowedRows region={region} />}
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((r, i) => {
           const title = slotText(shape, r, slot.title);
@@ -366,7 +392,7 @@ export function DataRegionCards({ heading, level, shape, preset, rows, card, act
             </>
           );
           return (
-            <li key={`${text(r.position)}-${title}-${i}`} className="border border-border bg-surface/40 p-4">
+            <li key={`${text(r.position)}-${title}-${i}`} className={join('border border-border bg-surface/40 p-4', rowClass(highlight, shape, r))} data-series={seriesOf(highlight, r)}>
               {full ? (
                 full.external ? (
                   <a href={full.href} target="_blank" rel="noopener noreferrer" className="block" aria-label={title}>
@@ -433,12 +459,12 @@ function Meta({ date, winner }: { date: string; winner: string | null }) {
  *  site's ResultRow, ImsaResultRow and GtWorldResultRow draw one classified entry: the who, the driver's code where
  *  one exists or the car's number always (a bare # when the export has none, as the site's rows keep the box), the
  *  team and the vehicle, the time or the gap or the status, the points on race rows. */
-export function ContentRow({ shape, row }: { shape: Shape; row: PresetRow }) {
+export function ContentRow({ shape, row, highlight }: { shape: Shape; row: PresetRow; highlight?: RowHighlight }) {
   const who = whoOf(shape, row);
   const line = shape.key === 'race-rows' ? text(row.team) : `${text(row.team)}${text(row.vehicle) ? ` · ${text(row.vehicle)}` : ''}`;
   const right = shape.key === 'race-rows' ? text(row.time) || text(row.status) : shape.key === 'car-rows' ? text(row.gap) || text(row.status) : text(row.gap) || text(row.time);
   return (
-    <li className="flex items-baseline gap-3 py-2 break-inside-avoid">
+    <li className={join('flex items-baseline gap-3 py-2 break-inside-avoid', rowClass(highlight, shape, row))} data-series={seriesOf(highlight, row)}>
       <span className="w-6 text-right font-mono text-sm tabular-nums text-text-faint">{text(row.position)}</span>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
@@ -458,7 +484,7 @@ const groupTitle = (shape: Shape, first: PresetRow): string => (shape.key === 'r
 
 /** A fold of the Rounds layout: the chip, the title, the meta line, the entries; a winners-only round flat, on the
  *  flat series alone (the site's RoundRow; its class and cup cards never collapse). */
-function RoundGroup({ shape, entries }: { shape: Shape; entries: readonly PresetRow[] }) {
+function RoundGroup({ shape, entries, highlight }: { shape: Shape; entries: readonly PresetRow[]; highlight?: RowHighlight }) {
   const first = entries[0];
   const round = num(first.round);
   const winner = winnerOf(entries);
@@ -480,14 +506,14 @@ function RoundGroup({ shape, entries }: { shape: Shape; entries: readonly Preset
       </summary>
       <ul className="ml-2 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3 sm:ml-9 sm:columns-2 sm:gap-x-10">
         {entries.map((e, i) => (
-          <ContentRow key={`${text(e.position)}-${text(e.driver)}-${text(e.car)}-${i}`} shape={shape} row={e} />
+          <ContentRow key={`${text(e.position)}-${text(e.driver)}-${text(e.car)}-${i}`} shape={shape} row={e} highlight={highlight} />
         ))}
       </ul>
     </details>
   );
 }
 
-export function DataRegionList({ heading, level, shape, rows }: DataRegionViewProps) {
+export function DataRegionList({ heading, level, shape, rows, highlight, region }: DataRegionViewProps) {
   const H = level;
   if (shape.source !== 'results') {
     // A standings shape's compact list: the position, the name, the points; a shape without them (the posts, the headlines;
@@ -496,9 +522,10 @@ export function DataRegionList({ heading, level, shape, rows }: DataRegionViewPr
     return (
       <section className="border-y border-border py-4">
         <H className={HEADING}>{heading}</H>
+        {highlight?.followed && region && <FollowedRows region={region} />}
         <ul className="divide-y divide-border/60">
           {rows.map((r, i) => (
-            <li key={`${slotText(shape, r, badge)}-${slotText(shape, r, title)}-${i}`} className="flex items-baseline gap-3 py-2">
+            <li key={`${slotText(shape, r, badge)}-${slotText(shape, r, title)}-${i}`} className={join('flex items-baseline gap-3 py-2', rowClass(highlight, shape, r))} data-series={seriesOf(highlight, r)}>
               <span className={`w-6 text-right font-mono text-sm tabular-nums ${badge === 'position' && r.position === 1 ? 'text-brand font-bold' : 'text-text-faint'}`}>{slotText(shape, r, badge)}</span>
               <span className="min-w-0 flex-1 truncate font-condensed text-15 font-semibold text-text">{slotText(shape, r, title)}</span>
               <span className="w-10 text-right font-mono text-13 font-semibold tabular-nums text-numeral">{slotText(shape, r, body)}</span>
@@ -511,10 +538,11 @@ export function DataRegionList({ heading, level, shape, rows }: DataRegionViewPr
   return (
     <section className="border-y border-border py-4">
       <H className={HEADING}>{heading}</H>
+      {highlight?.followed && region && <FollowedRows region={region} />}
       <ul className="divide-y divide-border/60">
         {[...groupRows(shape, rows).entries()].map(([k, entries]) => (
           <li key={k} className="py-1">
-            <RoundGroup shape={shape} entries={entries} />
+            <RoundGroup shape={shape} entries={entries} highlight={highlight} />
           </li>
         ))}
       </ul>

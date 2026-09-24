@@ -7,8 +7,8 @@ import { SHAPES, findPreset, presetRows } from './presets';
 import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 import { resolveDestination, type PageDestinations } from './destinations';
-import type { CardActions, CardSlots, RegionControls } from '@/components/data/DataRegionViews';
-import { applySavedView, bindViewState, encodeViewState, parseViewState } from './view-state';
+import type { CardActions, CardSlots, HighlightStyle, RegionControls, RowHighlight } from '@/components/data/DataRegionViews';
+import { applySavedView, bindViewState, encodeViewState, filterOps, parseRule, parseViewState } from './view-state';
 
 // The server half of the component catalogue (lib/design/components.ts): how
 // each component is drawn. A renderer takes the region's settings and the
@@ -160,8 +160,22 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
       return () => to;
     };
     const actions: CardActions = { fullCard: zone('actionFullCard'), title: zone('actionTitle'), subtitle: zone('actionSubtitle'), media: zone('actionMedia'), button: zone('actionButton'), buttonLabel: str(settings.actionButtonLabel) || 'Open' };
+    // The highlight rules (P2.4): the first rule a row meets styles it; a rule the shape cannot read is left out; the
+    // followed-series tint marks each row with its series for the browser. Nothing when none is set: the markup stays as today.
+    const rules = ([1, 2, 3] as const).flatMap(n => {
+      const text = str(settings[`highlight${n}`]);
+      if (!text) return [];
+      const rule = parseRule(text);
+      if (typeof rule === 'string') return [];
+      const column = shape.columns.find(c => c.key === rule.column);
+      if (!column || !filterOps(column).includes(rule.op)) return [];
+      const style = str(settings[`highlight${n}Style`]);
+      return [{ filter: rule, style: (style === 'emphasis' || style === 'muted' ? style : 'brand') as HighlightStyle }];
+    });
+    const followed = settings.highlightFollowed === true;
+    const highlight: RowHighlight | undefined = rules.length > 0 || followed ? { rules, followed } : undefined;
     const series = ctx.source.params.series;
-    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions, now: ctx.now, series: typeof series === 'string' && series ? series : undefined, controls };
+    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions, now: ctx.now, series: typeof series === 'string' && series ? series : undefined, controls, highlight, region: ctx.region };
     // Timeline stands on the results' dates (the parser refuses it elsewhere); a stored one on a standings shape draws the table.
     // Home's boxes as templates (P2.24 A) stand on their own shapes the same way; the Podium and the Leader (P2.24 B2) on one
     // shape of their source each (the podium rows, the driver rows), since Results and Standings have several.

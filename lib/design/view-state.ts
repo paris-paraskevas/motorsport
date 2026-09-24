@@ -46,7 +46,9 @@ export function isEmptyView(v: ViewState): boolean {
 
 const params = (query: string | URLSearchParams): URLSearchParams => (typeof query === 'string' ? new URLSearchParams(query.startsWith('?') ? query.slice(1) : query) : query);
 
-function parseFilter(raw: string): ViewFilter | string {
+/** One condition as the vocabulary writes it — `column.op:value`, eq implicit — or the problem as text; the filters of an
+ *  address and a region’s highlight rules (P2.4) read the same words. */
+export function parseRule(raw: string): ViewFilter | string {
   const at = raw.indexOf(':');
   if (at < 0) return `filter is column.op:value: ${raw}`;
   const left = raw.slice(0, at);
@@ -81,7 +83,7 @@ export function parseViewState(query: string | URLSearchParams, prefix = ''): { 
     else problems.push('cols names no column');
   }
   for (const raw of q.getAll(`${prefix}filter`)) {
-    const f = parseFilter(raw);
+    const f = parseRule(raw);
     if (typeof f === 'string') problems.push(f);
     else if (value.filters.length >= FILTERS_MAX) problems.push(`filter beyond the ${FILTERS_MAX} allowed: ${raw}`);
     else value.filters.push(f);

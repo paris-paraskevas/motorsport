@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CANONICAL_MAX, COLS_MAX, EMPTY_VIEW, FILTERS_MAX, PREFIXES_MAX, VIEW_PREFIX, applySavedView, bindViewState, decodeSegment, definitionOf, encodeSegment, encodeViewState, isEmptyView, parseViewDefinition, parseViewState, rewriteTarget, sortHref, viewKeyProblem, viewNameProblem, viewStateHref, type ViewDefinition, type ViewState } from './view-state';
+import { CANONICAL_MAX, COLS_MAX, EMPTY_VIEW, FILTERS_MAX, PREFIXES_MAX, VIEW_PREFIX, applySavedView, bindViewState, decodeSegment, definitionOf, encodeSegment, encodeViewState, isEmptyView, parseRule, parseViewDefinition, parseViewState, rewriteTarget, sortHref, viewKeyProblem, viewNameProblem, viewStateHref, type ViewDefinition, type ViewState } from './view-state';
 import { SHAPES } from './presets';
 
 // The URL vocabulary of a Data region (P2.3; APEX: the Interactive Report's request syntax): what a reader's address may
@@ -138,5 +138,15 @@ describe('saved views (PR B): the rules, a stored definition, the address over i
     expect(applySavedView(url, def)).toEqual({ sort: { column: 'points', desc: true }, cols: ['name'], filters: [{ column: 'team', op: 'eq', value: 'Mercedes' }], view: 'top-five' });
     expect(applySavedView({ filters: [{ column: 'points', op: 'gte', value: '1' }] }, def)).toEqual({ sort: { column: 'points', desc: true }, cols: ['name', 'points'], filters: [{ column: 'points', op: 'gte', value: '1' }] });
     expect(applySavedView(url, null)).toBe(url);
+  });
+});
+
+describe('highlight rules (P2.4): one condition in the vocabulary’s words', () => {
+  it('parseRule reads column.op:value (eq implicit) and answers the problem as text', () => {
+    expect(parseRule('position.lte:3')).toEqual({ column: 'position', op: 'lte', value: '3' });
+    expect(parseRule('team:Mercedes')).toEqual({ column: 'team', op: 'eq', value: 'Mercedes' });
+    expect(typeof parseRule('nope')).toBe('string');
+    expect(typeof parseRule('team.like:x')).toBe('string');
+    expect(typeof parseRule('points.gt:')).toBe('string');
   });
 });

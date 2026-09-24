@@ -40,6 +40,7 @@
 import { pageIdOf, resolveDestination } from './destinations';
 import { COMPONENTS, findComponent, parseSettings, type ComponentDefinition, type SettingValue } from './components';
 import { SHAPES, findPreset } from './presets';
+import { filterOps, parseRule } from './view-state';
 import { CURRENT_SEASON, SERIES_OPTIONS, encodeSourceRef, findSource, parseSourceRef, type SourceRef } from './sources';
 import { BUILD_OPTION_KEYS, isBuildOptionKey, type BuildOptionKey, type BuildOptions } from './build-option-defaults';
 import { parseRegionTemplate, parseTemplateOptions, type RegionTemplateKey } from './template-options';
@@ -557,6 +558,13 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
           if (s.kind === 'link' && s.rowLinks && v.startsWith('row:')) {
             const links = shape.columns.filter(c => c.type === 'link');
             if (!links.some(c => c.key === v.slice(4))) parsed.problems.push(`${s.label} can follow a link column of the ${preset.name} preset: ${links.length ? links.map(c => c.label).join(', ') : 'none'}`);
+          }
+          // A highlight rule (P2.4) is one condition the shape can read: a column of the preset, an operator its type honours.
+          if (s.kind === 'text' && s.rule) {
+            const rule = parseRule(v);
+            if (typeof rule === 'string' || !shape.columns.some(c => c.key === rule.column && filterOps(c).includes(rule.op))) {
+              parsed.problems.push(`${s.label} must be a condition on a column of the ${preset.name} preset, like position.lte:3`);
+            }
           }
         }
         if (parsed.problems.length) problems.push(...parsed.problems.map(p => `${who}: ${p}`));

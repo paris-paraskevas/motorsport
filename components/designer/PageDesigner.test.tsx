@@ -1139,6 +1139,14 @@ describe('PageDesigner', () => {
     fireEvent.click(within(within(pe).getByRole('group', { name: 'View' })).getByRole('button', { name: 'Cards' }));
     fireEvent.change(within(pe).getByLabelText('Rows'), { target: { value: '8' } });
     expect(tile('Component: Data region').textContent).toMatch(/Preset Constructors · View Cards · Rows 8/);
+    // P2.4: the Highlight group — a rule in the address's words, a live note until it reads, the tile naming it once set.
+    const rule = within(pe).getByLabelText('Highlight 1') as HTMLInputElement;
+    fireEvent.change(rule, { target: { value: 'nope' } });
+    expect(within(pe).getByText(/needs a column and a value, like position.lte:3/)).toBeTruthy();
+    fireEvent.change(rule, { target: { value: 'position.lte:3' } });
+    expect(within(pe).queryByText(/needs a column and a value/)).toBeNull();
+    expect(tile('Component: Data region').textContent).toMatch(/Rows 8 · Highlight 1 position.lte:3/);
+    fireEvent.change(rule, { target: { value: '' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSaved).toHaveBeenCalled());
     const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
