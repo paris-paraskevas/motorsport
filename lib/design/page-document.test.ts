@@ -769,3 +769,27 @@ describe('highlight rules (P2.4): a row condition bound to the preset’s shape'
     expect(parsePageDocument(doc([region({ settings: { preset: 'drivers', view: 'table', highlight1: 'weekend.eq:x' } })])).problems).toEqual(['region r: Highlight 1 must be a condition on a column of the Drivers preset, like position.lte:3']);
   });
 });
+
+describe('master-detail (P2.4 PR C): a Detail region is another Data region of the page, the Detail key a column both carry', () => {
+  const data = (id: string, settings: Record<string, unknown>, source = 'results?series=f1&season=2026') => ({ id, kind: 'component', component: 'data.region', title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, source, settings });
+  const doc = (regions: unknown[]) => ({ version: 1, actions: [], regions });
+  const season = (over: Record<string, unknown> = {}) => data('season', { preset: 'season-results', view: 'list', detailRegion: 'race', detailKey: 'round', ...over });
+  const race = data('race', { preset: 'season-results', view: 'table' });
+  it('keeps a master naming another Data region by a column both carry', () => {
+    expect(parsePageDocument(doc([season(), race])).problems).toEqual([]);
+    const kept = parsePageDocument(doc([season(), race])).value.regions.find(r => r.id === 'season');
+    expect(kept).toMatchObject({ settings: { detailRegion: 'race', detailKey: 'round' } });
+  });
+  it('refuses a Detail region that is not another Data region of the page, and a Detail key the detail does not carry', () => {
+    expect(parsePageDocument(doc([season({ detailRegion: 'gone' }), race])).problems).toEqual(['region season: Detail region must be another Data region of this page']);
+    expect(parsePageDocument(doc([season({ detailRegion: 'season' }), race])).problems).toEqual(['region season: Detail region must be another Data region of this page']);
+    const text = { id: 'race', kind: 'static', title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'a note' };
+    expect(parsePageDocument(doc([season(), text])).problems).toEqual(['region season: Detail region must be another Data region of this page']);
+    // The detail's shape lacks the key: a standings table has no round.
+    const standings = data('race', { preset: 'drivers', view: 'table' }, 'standings?series=f1&season=2026');
+    expect(parsePageDocument(doc([season(), standings])).problems).toEqual(['region season: Detail key must be a column both regions carry']);
+    expect(parsePageDocument(doc([season({ detailKey: '' }), race])).problems).toEqual(['region season: Detail key must be a column both regions carry']);
+    // The master's own shape lacks the key: the region's column rule says so first.
+    expect(parsePageDocument(doc([season({ detailKey: 'wins' }), race])).problems[0]).toMatch(/^region season: Detail key must be a column of the Season results preset: /);
+  });
+});

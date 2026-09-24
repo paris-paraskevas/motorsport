@@ -746,6 +746,25 @@ export function parsePageDocument(raw: unknown, components: readonly ComponentDe
   if (phone.length > 1) problems.push('the phone bar holds one region at most');
   regions.sort((a, b) => POSITION_ORDER[a.position] - POSITION_ORDER[b.position] || a.seq - b.seq);
 
+  // Master-detail (P2.4 PR C; APEX: Master Detail): a Detail region names another Data region of this page, and the Detail key
+  // a column both regions' shapes carry (the master's own shape was checked with its settings).
+  const dataRegions = regions.filter((r): r is ComponentRegion => r.kind === 'component' && r.component === 'data.region');
+  const carries = (r: ComponentRegion, key: string) => {
+    const preset = findPreset(String(r.settings.preset ?? ''));
+    return preset !== null && SHAPES[preset.shape].columns.some(c => c.key === key);
+  };
+  for (const r of dataRegions) {
+    const id = r.settings.detailRegion;
+    if (typeof id !== 'string' || id === '') continue;
+    const detail = dataRegions.find(d => d.id === id && d !== r);
+    if (!detail) {
+      problems.push(`region ${r.id}: Detail region must be another Data region of this page`);
+      continue;
+    }
+    const key = r.settings.detailKey;
+    if (typeof key !== 'string' || key === '' || !carries(r, key) || !carries(detail, key)) problems.push(`region ${r.id}: Detail key must be a column both regions carry`);
+  }
+
   // Actions are optional in a stored document (none before step 5) and must
   // name regions that survived the parse above.
   const actions: DynamicAction[] = [];

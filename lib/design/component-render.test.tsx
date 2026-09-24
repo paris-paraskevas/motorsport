@@ -353,6 +353,52 @@ describe('renderComponents', () => {
     expect(table).toContain(`${DRIVER_CELL}George Russell</td>`);
   });
 
+  it('P2.4 PR C: a master’s rows write the detail’s filter into the address, its own keys only; the detail shows that value under “Showing <value> · Show all”; a detail is keyed whatever its menus and its view', async () => {
+    const chinese = { round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z' };
+    const rows = [
+      raceRow({}),
+      raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }),
+      raceRow({ ...chinese, driver: 'Lando Norris', code: 'NOR', team: 'McLaren' }),
+      raceRow({ ...chinese, position: 2, driver: 'Oscar Piastri', code: 'PIA', team: 'McLaren', time: '+2.0s', points: 18 }),
+    ];
+    const SRC = { source: 'results?series=f1&season=2026' } as Partial<Region>;
+    const drawPair = async (view: string, master: Record<string, string | number | boolean> = {}) => {
+      results('f1', rows);
+      results('f1', rows);
+      const out = await renderComponents(
+        doc([
+          region('season', 'data.region', { preset: 'season-results', view: 'list', rows: 10, heading: 'Season', detailRegion: 'race', detailKey: 'round', ...master }, SRC),
+          region('race', 'data.region', { preset: 'season-results', view: 'list', rows: 10, heading: 'Race' }, SRC),
+        ]),
+        { path: '/x', href: '/x', view },
+      );
+      return { season: html(out.season), race: html(out.race) };
+    };
+    // No choice yet: each fold of the season list (the race is the row) writes its round, in bare keys since the detail is the page's one keyed region.
+    const plain = await drawPair('');
+    expect(plain.season).toContain('<a href="/x?filter=round.eq%3A1" rel="nofollow"');
+    expect(plain.season).toContain('<a href="/x?filter=round.eq%3A2" rel="nofollow"');
+    expect(plain.season).not.toContain('aria-current');
+    expect(plain.race).not.toContain('Showing');
+    expect(plain.race).toContain('George Russell');
+    expect(plain.race).toContain('Lando Norris');
+    // Round 2 chosen (with a sort of the detail's own): the detail, a List with no menu, shows round 2 alone under the line and
+    // its reset; the master marks that fold; its other links keep the detail's sort and replace only the filter.
+    const two = await drawPair('sort=-points&filter=round.eq:2');
+    expect(two.race).toContain('Lando Norris');
+    expect(two.race).not.toContain('George Russell');
+    expect(two.race).toContain('Showing 2 · <a href="/x?sort=-points" rel="nofollow"');
+    expect(two.race).toMatch(/Showing 2 · <a [^>]*>Show all<\/a>/);
+    expect(two.season).toMatch(/<a href="\/x\?sort=-points&amp;filter=round.eq%3A2" rel="nofollow" aria-current="true"[^>]*>Show 2<\/a>/);
+    expect(two.season).toContain('<a href="/x?sort=-points&amp;filter=round.eq%3A1" rel="nofollow"');
+    // A Table master with its own controls: two keyed regions read their keys under r.<id>., and each row leads with its link.
+    const table = await drawPair('', { view: 'table', sortable: true });
+    expect(table.season).toMatch(/<tr[^>]*><td[^>]*><a href="\/x\?r\.race\.filter=round\.eq%3A1" rel="nofollow"[^>]*>Show 1<\/a><\/td>/);
+    // No Detail region: today's markup, no link.
+    const alone = await drawPair('', { detailRegion: '', detailKey: '' });
+    expect(alone.season).not.toContain('rel="nofollow"');
+  });
+
   it('P2.2 B2, the Timeline per results preset: every one of the seven draws one entry per race (or race and class), newest first, on a rail, with the date or the round chip, the title linked to the weekend page, the WIN line and the winner’s initials (APEX Timeline; Avatar); Rows counts races; a race without a position-1 row takes its first', async () => {
     const f1 = await draw('season-results', 'f1', [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }), raceRow({ round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null })], 'timeline');
     expect(f1).not.toContain('<table');
