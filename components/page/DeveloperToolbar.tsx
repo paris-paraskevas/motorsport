@@ -222,7 +222,7 @@ interface Trace {
 export function DeveloperToolbar() {
   const { isLoaded, account } = useAccount();
   const pathname = usePathname() ?? '';
-  // Clerk's publicMetadata.role, the source lib/threads.ts isAdmin() reads, checked inline as AppShell does: that module reaches the service-role database client and stays out of the public chunk.
+  // The account's role, the source lib/threads.ts isAdmin() reads, checked inline as AppShell does: that module reaches the service-role database client and stays out of the public chunk.
   const admin = isLoaded && account?.role === 'admin';
   const [pages, setPages] = useState<PageLite[] | null>(null);
   const [level, setLevel] = useState<DebugLevel>(readLevel);

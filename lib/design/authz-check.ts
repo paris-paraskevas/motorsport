@@ -27,7 +27,6 @@ export function visitorFromAccount(account: Account | null | undefined): Visitor
   return { signedIn: true, role: account.role, author: canAuthor(account), emails: account.email ? [account.email] : [] };
 }
 
-
 /** Whether a visitor passes one scheme. Undefined (no such scheme) fails. */
 export function passes(scheme: AuthzScheme | undefined, visitor: Visitor): boolean {
   if (!scheme) return false;
