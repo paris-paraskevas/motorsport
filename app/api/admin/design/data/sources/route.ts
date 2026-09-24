@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { SOURCES, describeLoaderKey } from '@/lib/design/sources';
 import { loadSourceUsage } from '@/lib/design/definitions';
@@ -22,7 +22,7 @@ export const dynamic = 'force-dynamic';
 // else. Admin-only (404). A static segment, so it wins over the sibling
 // `[key]` route as `runs` does.
 export async function GET() {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   const [usage, log, health, meta] = await Promise.all([loadSourceUsage(), loadRunsLog().catch(() => null), getSourceHealth(), readSnapshotMeta()]);
   const sources = SOURCES.map(s => ({
     key: s.key,

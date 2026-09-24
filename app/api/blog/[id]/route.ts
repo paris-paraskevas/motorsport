@@ -1,6 +1,6 @@
 import { NextResponse, after } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { isAdmin, canAuthor } from '@/lib/threads';
 import { isPushConfigured } from '@/lib/push';
@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic';
 async function authorizePostActor(id: string, userId: string): Promise<BlogPost | NextResponse> {
   const post = await getPostById(id);
   if (!post) return NextResponse.json({ error: 'not found' }, { status: 404 });
-  const user = await currentUser();
+  const user = await currentAccount();
   if (isAdmin(user)) return post;
   if (canAuthor(user) && post.authorId === userId) return post;
   return NextResponse.json({ error: 'forbidden' }, { status: 403 });
@@ -31,7 +31,7 @@ async function authorizePostActor(id: string, userId: string): Promise<BlogPost 
 // cron makes it live at that time. Reject is terminal.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
   const { id } = await params;
@@ -55,7 +55,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   // Only an admin decides. A writer may submit their own post (authorizePostActor
   // already proved ownership) but must not approve or reject it — that separation
   // is the whole point of the review state.
-  if (body.action !== 'submit' && !isAdmin(await currentUser())) {
+  if (body.action !== 'submit' && !isAdmin(await currentAccount())) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
   const publishAt = typeof body.publishAt === 'string' ? body.publishAt : undefined;
@@ -161,7 +161,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 // (resend without the field). Omitting it keeps the old last-writer-wins.
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
   const { id } = await params;

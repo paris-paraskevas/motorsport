@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { saveSubscription } from '@/lib/push-store';
 import { isAllowedPushEndpoint } from '@/lib/push-hosts';
 
@@ -57,8 +57,7 @@ export async function POST(req: Request) {
 
   let userId: string | null = null;
   try {
-    const a = await auth();
-    userId = a.userId ?? null;
+    userId = await accountId();
   } catch {
     userId = null;
   }

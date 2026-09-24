@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 
@@ -55,7 +55,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { DELETE, PUT } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T10:12:42.505502+00:00';
 
 function put(key: string, body: unknown) {
@@ -71,8 +71,8 @@ function put(key: string, body: unknown) {
 
 describe('PUT /api/admin/design/authz/[key]', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     update.mockReset();
     filters.mockReset();
     revalidatePath.mockReset();
@@ -88,9 +88,9 @@ describe('PUT /api/admin/design/authz/[key]', () => {
   });
 
   it('is 404 for a non-admin and for a key that is not a key', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await put('signed_in', { label: 'Members', updatedAt: STAMP })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     expect((await put('Not A Key', { label: 'Members', updatedAt: STAMP })).status).toBe(404);
     expect(update).not.toHaveBeenCalled();
   });
@@ -150,8 +150,8 @@ const remove = (key: string) =>
 
 describe('DELETE /api/admin/design/authz/[key]', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     del.mockReset();
     revalidatePath.mockReset();
     deleted = { data: [{ key: 'moderators' }], error: null };
@@ -163,9 +163,9 @@ describe('DELETE /api/admin/design/authz/[key]', () => {
   });
 
   it('is 404 for a non-admin and a key that is not a key, 403 off production, and 400 for a shipped scheme, deleting nothing', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await remove('moderators')).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     expect((await remove('Not A Key')).status).toBe(404);
     delete process.env.PADDOCK_ENV;
     expect((await remove('moderators')).status).toBe(403);

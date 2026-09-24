@@ -1,21 +1,21 @@
 import { describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 import { ANONYMOUS, currentVisitor, passes } from './authz-evaluate';
 
 describe('currentVisitor', () => {
   it('is anonymous without a session and reads role, ladder and emails from a Clerk user', async () => {
-    currentUser.mockResolvedValueOnce(null);
+    currentAccount.mockResolvedValueOnce(null);
     expect(await currentVisitor()).toEqual(ANONYMOUS);
-    currentUser.mockResolvedValueOnce({
+    currentAccount.mockResolvedValueOnce({
       id: 'user_1',
-      publicMetadata: { role: 'writer' },
-      emailAddresses: [{ emailAddress: 'W@Example.com' }],
+      role: 'writer',
+      email: 'W@Example.com',
     });
     expect(await currentVisitor()).toEqual({ signedIn: true, role: 'writer', author: true, emails: ['W@Example.com'] });
-    currentUser.mockResolvedValueOnce({ id: 'user_2', publicMetadata: {}, emailAddresses: [] });
+    currentAccount.mockResolvedValueOnce({ id: 'user_2', role: null, email: null });
     expect(await currentVisitor()).toEqual({ signedIn: true, role: null, author: false, emails: [] });
   });
 

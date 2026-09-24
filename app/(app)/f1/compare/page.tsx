@@ -11,7 +11,7 @@ import { LazySeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { withSocialMeta } from '@/lib/seo';
 import type { RaceResult } from '@/lib/types';
 import { AnalysisGate } from '@/components/f1/AnalysisGate';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { PAGE_WIDE } from '@/lib/site';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
@@ -157,7 +157,7 @@ async function F1ComparePage({
   // Head-to-head is gated (signed-in only), leak-free: the comparison is only
   // computed when unlocked, so an anonymous client never receives the stats.
   // The picker itself stays public so the page is indexable + markets the tool.
-  const { userId } = await auth();
+  const userId = await accountId();
   const ready = canCompare && Boolean(userId);
 
   let formA: DriverSeasonForm | null = null;

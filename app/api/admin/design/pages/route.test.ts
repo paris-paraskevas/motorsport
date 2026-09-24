@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
@@ -79,7 +79,7 @@ import { DELETE, GET, POST } from './route';
 import { CODE_PAGES } from '@/lib/design/page-registry';
 import { pageTemplate } from '@/lib/design/page-templates';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const existingRow = {
   id: 'a1b2c3d4-0000-4000-8000-000000000011',
   path: '/history/spa',
@@ -114,8 +114,8 @@ const monza = { name: 'Monza, a history', path: '/history/monza', group: 'editor
 
 describe('/api/admin/design/pages', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     rpc.mockReset();
     rpcError = null;
     purgeAnswers = {};
@@ -133,9 +133,9 @@ describe('/api/admin/design/pages', () => {
   });
 
   it('GET is 404 for a non-admin and lists the registry with the row pages for an admin, the deleted pages apart (P1.12)', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await GET()).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     const res = await GET();
     expect(res.status).toBe(200);
     const json = (await res.json()) as { pages: { path: string; kind: string }[]; deleted: { path: string; deletedAt: string }[] };
@@ -156,9 +156,9 @@ describe('/api/admin/design/pages', () => {
   });
 
   it('POST is 404 for a non-admin and 403 off production, before anything is written', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await post(monza)).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await post(monza)).status).toBe(403);
     expect(rpc).not.toHaveBeenCalled();
@@ -231,9 +231,9 @@ describe('/api/admin/design/pages', () => {
     const held = await del('?expired=1');
     expect(await held.json()).toEqual({ ok: true, purged: [], held: [{ id: EXPIRED, pages: ['Home'] }] });
     expect((await del('')).status).toBe(400);
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await del('?expired=1')).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await del('?expired=1')).status).toBe(403);
   });

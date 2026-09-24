@@ -2,11 +2,11 @@ import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { after } from 'next/server';
 import Link from 'next/link';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser, ensureBettingUser } from '@/lib/betting/credits';
 import { getInvite } from '@/lib/betting/leagues';
-import { sendFriendRequest, setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
+import { sendFriendRequest, setDisplayNameIfMissing, accountDisplayName } from '@/lib/betting/friends';
 import { JoinLeagueFlow } from '@/components/betting/JoinLeagueFlow';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
@@ -45,7 +45,7 @@ async function JoinLeaguePage({ params }: { params: Promise<{ token: string }> }
   }
 
   const inviter = invite.inviterName ?? `Racer ${invite.inviterId.slice(-4)}`;
-  const { userId } = await auth();
+  const userId = await accountId();
 
   if (!userId) {
     const back = encodeURIComponent(`/social/leagues/join/${token}`);
@@ -90,7 +90,7 @@ async function JoinLeaguePage({ params }: { params: Promise<{ token: string }> }
   // so the flow below can accept it. The join only needs userId (from auth()).
   //
   // The display-name backfill is deliberately OFF the critical path: it calls
-  // currentUser() (Clerk's backend API), which throws "authorization invalid" on a
+  // currentAccount() (Clerk's backend API), which throws "authorization invalid" on a
   // fresh post-sign-in handshake — notably Safari/ITP arriving here straight from
   // the hosted sign-in redirect. That previously 500'd the whole join; now it runs
   // best-effort in after() and can never block joining.
@@ -99,7 +99,7 @@ async function JoinLeaguePage({ params }: { params: Promise<{ token: string }> }
   await sendFriendRequest(invite.inviterId, userId);
   after(async () => {
     try {
-      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+      await setDisplayNameIfMissing(userId, accountDisplayName(await currentAccount()));
     } catch {
       /* best-effort name backfill — a Clerk hiccup must not block joining */
     }

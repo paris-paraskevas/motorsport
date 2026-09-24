@@ -4,28 +4,28 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // 400 for a named level that is not one or no target, a 404 where no page
 // answers, else the trace at the level asked, the id from cf-ray.
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const tracePage = vi.fn();
 vi.mock('@/lib/design/debug-trace', () => ({ tracePage: (...args: unknown[]) => tracePage(...args) }));
 
 import { GET } from './route';
 
-const admin = { publicMetadata: { role: 'admin' } };
+const admin = { role: 'admin' };
 const req = (query: string, headers: Record<string, string> = {}) => new Request(`https://paddock-tracker.com/api/admin/design/debug${query}`, { headers });
 
 describe('GET /api/admin/design/debug', () => {
   beforeEach(() => {
-    currentUser.mockReset();
+    currentAccount.mockReset();
     tracePage.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     tracePage.mockImplementation(async (target: { path?: string }, level: number, cid: string) => (target.path === '/nowhere' ? null : { cid, level, page: target.path ?? 'revision', startedAt: 'x', totalMs: 1, entries: [] }));
   });
 
   it('is the 404 for anyone but an administrator, before anything is traced', async () => {
-    currentUser.mockResolvedValue(null);
+    currentAccount.mockResolvedValue(null);
     expect((await GET(req('?path=%2Fcalendar'))).status).toBe(404);
-    currentUser.mockResolvedValue({ publicMetadata: { role: 'moderator' } });
+    currentAccount.mockResolvedValue({ role: 'moderator' });
     expect((await GET(req('?path=%2Fcalendar'))).status).toBe(404);
     expect(tracePage).not.toHaveBeenCalled();
   });

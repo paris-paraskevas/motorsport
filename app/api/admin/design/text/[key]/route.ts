@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 // each other unknowingly. Admin-only (404), production-only (403). The stamp
 // travels verbatim: it carries microseconds a JavaScript Date would round away.
 export async function PUT(req: Request, { params }: { params: Promise<{ key: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 
@@ -42,7 +42,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { POST } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const ASSET = 'a1b2c3d4-0000-4000-8000-000000000001';
 const DOC = {
   version: 1,
@@ -64,8 +64,8 @@ const call = (id: string, body: unknown) =>
 
 describe('/api/admin/design/pages/[id]/revisions', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     rpc.mockReset();
     revalidatePath.mockReset();
     rpc.mockResolvedValue({ data: [{ id: 'b1b2c3d4-0000-4000-8000-000000000002', created_at: '2026-09-08T16:05:00.000001+00:00', published_at: null }], error: null });
@@ -76,9 +76,9 @@ describe('/api/admin/design/pages/[id]/revisions', () => {
   });
 
   it('is 404 for a non-admin and 403 off production, before the function is called', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await call(ID, { document: DOC, action: 'draft', base: null })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await call(ID, { document: DOC, action: 'draft', base: null })).status).toBe(403);
     expect(rpc).not.toHaveBeenCalled();

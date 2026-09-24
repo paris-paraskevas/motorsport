@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { kv } from '@/lib/kv';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { allowRequest, clientIp } from '@/lib/rate-limit';
 import { sendEmail, renderBrandedEmail } from '@/lib/email';
 import { SITE_URL, SITE_TITLE } from '@/lib/site';
@@ -114,8 +114,7 @@ export async function POST(req: Request) {
 
   let userId: string | null = null;
   try {
-    const a = await auth();
-    userId = a.userId ?? null;
+    userId = await accountId();
   } catch {
     userId = null;
   }

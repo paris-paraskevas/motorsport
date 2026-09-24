@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser, ensureBettingUser } from '@/lib/betting/credits';
 import { displayNames, sendFriendRequest } from '@/lib/betting/friends';
@@ -47,7 +47,7 @@ async function AddFriendPage({ params }: { params: Promise<{ id: string }> }) {
   }
   const ownerName = names.get(id) ?? `Racer ${id.slice(-4)}`;
 
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) {
     const back = encodeURIComponent(`/social/friends/add/${id}`);
     return frame(
@@ -82,7 +82,7 @@ async function AddFriendPage({ params }: { params: Promise<{ id: string }> }) {
   }
 
   // Onboard the viewer (FK + credits), ensure the owner row, and raise the pending
-  // request (owner → viewer) so the flow below can accept it. No currentUser() on
+  // request (owner → viewer) so the flow below can accept it. No currentAccount() on
   // the critical path — that backend hop can 500 a fresh sign-in (the 0.61.2 fix).
   await ensureBettingUser(userId);
   await ensureAppUser(id);

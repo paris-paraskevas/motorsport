@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { ArrowLeft } from 'lucide-react';
 import { isAdmin } from '@/lib/threads';
 import { readInsights } from '@/lib/assistant/log';
@@ -19,7 +19,7 @@ export const generateMetadata = pageMetadata('/settings/assistant', BASE_METADAT
 // counts, and 👍/👎 — so the operator can expand the help corpus to cover the
 // common questions and fix the down-voted ones. 404s for non-admins.
 async function AssistantInsightsPage() {
-  if (!isAdmin(await currentUser())) notFound();
+  if (!isAdmin(await currentAccount())) notFound();
   const d = await readInsights();
 
   return (

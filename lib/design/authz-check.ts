@@ -1,17 +1,19 @@
 import { canAuthor } from '@/lib/threads';
+import type { Account } from '@/lib/auth/client';
 import type { AuthzScheme } from './authz-defaults';
 
 // The check behind every authorization scheme, client-safe (Phase 3 step 4).
 // A scheme is a row (or one of the shipped four) with a type and a value; a
-// visitor is what Clerk says about the session, on the server (authz-evaluate.ts
-// reads it) or in the browser (visitorFromClerkUser from useUser()). Every check
+// visitor is what the account says about the session, on the server (authz-evaluate.ts
+// reads it through lib/auth) or in the browser (visitorFromClerkUser from useUser(),
+// until A1b moves the browser onto the seam). Every check
 // fails closed: a key that names no scheme, a role scheme with no value, an
 // anonymous visitor asked for anything but public, all refuse. One rule for a
 // page, its regions and the navigation lists.
 
 export interface Visitor {
   signedIn: boolean;
-  /** Clerk publicMetadata.role, when a string. */
+  /** The account's role, when set. */
   role: string | null;
   /** canAuthor's ladder: contributor, writer or admin. */
   author: boolean;
@@ -20,7 +22,13 @@ export interface Visitor {
 
 export const ANONYMOUS: Visitor = { signedIn: false, role: null, author: false, emails: [] };
 
-/** The shape of a Clerk user this needs, the same on the server and in the browser. */
+/** A visitor from an account (lib/auth; PA A1a); anonymous when there is none. */
+export function visitorFromAccount(account: Account | null | undefined): Visitor {
+  if (!account) return ANONYMOUS;
+  return { signedIn: true, role: account.role, author: canAuthor(account), emails: account.email ? [account.email] : [] };
+}
+
+/** The shape of a Clerk user the browser still hands over (useVisitor, from useUser()) until A1b moves it onto the seam. */
 export interface ClerkUserLike {
   publicMetadata?: { role?: unknown } | null;
   emailAddresses?: { emailAddress: string }[];
@@ -33,7 +41,7 @@ export function visitorFromClerkUser(user: ClerkUserLike | null | undefined): Vi
   return {
     signedIn: true,
     role,
-    author: canAuthor({ publicMetadata: user.publicMetadata ?? undefined }),
+    author: canAuthor({ role }),
     emails: (user.emailAddresses ?? []).map(e => e.emailAddress),
   };
 }

@@ -1,4 +1,4 @@
-import { clerkClient } from '@clerk/nextjs/server';
+import { accountById, adminAccountIds } from './auth/directory';
 import { listSubscriptions, deleteSubscription } from './push-store';
 import { sendPushTo, type PushPayload } from './push';
 import { getUserNotifPrefs } from './userPrefs';
@@ -14,19 +14,12 @@ import { SITE_URL } from './site';
 // can import it too. The API route wraps the call in `after()`; the script
 // awaits it best-effort (it no-ops when KV / Clerk / VAPID env is absent).
 
-/** Clerk user ids with publicMetadata.role === 'admin'. Single source of admin
- *  truth (matches lib/threads isAdmin). Fail-soft: an empty set on any Clerk
- *  error, so a draft create/notify never throws on this. Small user base → one
- *  page (limit 100) covers it. */
+/** The app ids of the admins (lib/auth/directory.ts, the role lib/threads isAdmin
+ *  reads). Fail-soft: an empty set on any directory error, so a draft
+ *  create/notify never throws on this. */
 export async function adminUserIds(): Promise<Set<string>> {
   try {
-    const client = await clerkClient();
-    const { data } = await client.users.getUserList({ limit: 100 });
-    return new Set(
-      data
-        .filter(u => (u.publicMetadata as { role?: unknown } | null)?.role === 'admin')
-        .map(u => u.id),
-    );
+    return await adminAccountIds();
   } catch {
     return new Set();
   }
@@ -58,8 +51,7 @@ export async function notifyAuthorDecision(post: {
 
   let to: string | undefined;
   try {
-    const u = await (await clerkClient()).users.getUser(post.authorId);
-    to = u.primaryEmailAddress?.emailAddress ?? u.emailAddresses[0]?.emailAddress ?? undefined;
+    to = (await accountById(post.authorId))?.email ?? undefined;
   } catch {
     return; // no address, no email; the console still shows the status
   }

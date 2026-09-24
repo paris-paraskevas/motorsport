@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -29,7 +29,7 @@ const KEY = /^[a-z0-9_-]{1,40}$/;
 // round away. The layout is revalidated: the served pages read a scheme's
 // message and the shell's lists its check.
 export async function PUT(req: Request, { params }: { params: Promise<{ key: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(
@@ -99,7 +99,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
 // database's foreign keys and answered 409 with the current rows, so nothing is
 // ever left pointing at a rule that is gone. Admin-only (404), production-only (403).
 export async function DELETE(_req: Request, { params }: { params: Promise<{ key: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(

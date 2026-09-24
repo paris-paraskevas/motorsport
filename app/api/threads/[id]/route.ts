@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { decideThread, isAdmin } from '@/lib/threads';
 
@@ -9,9 +9,9 @@ export const dynamic = 'force-dynamic';
 // POST = moderate a thread (admin only): { action: 'approve' | 'reject' }.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isAdmin(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!isAdmin(await currentAccount())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   const { id } = await params;
   let body: { action?: unknown };

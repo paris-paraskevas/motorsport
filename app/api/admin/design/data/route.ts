@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { loadDataIndex } from '@/lib/design/data';
 
@@ -13,6 +13,6 @@ export const dynamic = 'force-dynamic';
 // only, and when its figures were last read here. Reads nothing upstream:
 // the figures come one service at a time from ./[key]. Admin-only (404).
 export async function GET() {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   return NextResponse.json({ services: loadDataIndex() });
 }

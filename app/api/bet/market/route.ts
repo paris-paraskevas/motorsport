@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getOpenMarkets } from '@/lib/betting/markets';
 import { ensureBettingUser } from '@/lib/betting/credits';
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
     const markets = (await getOpenMarkets())
       .filter(m => m.seriesSlug === series && m.round === round)
       .sort((a, b) => typeRank(a.type) - typeRank(b.type));
-    const { userId } = await auth();
+    const userId = await accountId();
     if (!userId) {
       return NextResponse.json({ available: true, signedIn: false, markets });
     }

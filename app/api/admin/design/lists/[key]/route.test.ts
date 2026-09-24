@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
@@ -55,7 +55,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { DELETE, GET, PUT } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T06:34:16.728382+00:00';
 const params = (key: string) => ({ params: Promise.resolve({ key }) });
 
@@ -73,8 +73,8 @@ const get = (key: string) => GET(new Request(`https://paddock-tracker.com/api/ad
 
 describe('/api/admin/design/lists/[key]', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     rpc.mockReset();
     rpc.mockResolvedValue({ data: '2026-09-08T07:00:00.000001+00:00', error: null });
     revalidatePath.mockClear();
@@ -87,9 +87,9 @@ describe('/api/admin/design/lists/[key]', () => {
   });
 
   it('GET is 404 for a non-admin and for a list that does not exist, else the list with its stamp verbatim', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await get('doors')).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     listRow = { data: null, error: null };
     expect((await get('nope')).status).toBe(404);
     listRow = { data: { key: 'doors', role: 'menu', label: 'Header doors', updated_at: STAMP }, error: null };
@@ -198,8 +198,8 @@ describe('DELETE /api/admin/design/lists/[key]', () => {
   const own = { key: 'useful-links', role: 'generic', label: 'Useful links', updated_at: STAMP };
 
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     listRow = { data: own, error: null };
     entryRows = { data: [], error: null };
     deleteResult = { data: [{ key: 'useful-links' }], error: null };
@@ -216,9 +216,9 @@ describe('DELETE /api/admin/design/lists/[key]', () => {
   });
 
   it('is 404 for a non-admin and for a list that does not exist, 400 without the stamp and for one of the shell’s lists', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await del('useful-links', { updatedAt: STAMP })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     expect((await del('useful-links', {})).status).toBe(400);
     listRow = { data: null, error: null };
     expect((await del('nope', { updatedAt: STAMP })).status).toBe(404);

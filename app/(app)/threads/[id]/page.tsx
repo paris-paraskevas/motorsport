@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getThread, isAdmin } from '@/lib/threads';
 import { PAGE_READ } from '@/lib/site';
@@ -33,8 +33,8 @@ async function ThreadPage({ params }: { params: Promise<{ id: string }> }) {
   const thread = await getThread(id);
   if (!thread) return frame(<p className="font-mono text-sm text-text-muted">Thread not found.</p>);
 
-  const { userId } = await auth();
-  const user = userId ? await currentUser() : null;
+  const userId = await accountId();
+  const user = userId ? await currentAccount() : null;
   // A non-approved thread is visible only to its author + admins (never leak a
   // pending/rejected submission to the public).
   const canSee = thread.status === 'approved' || isAdmin(user) || (!!userId && userId === thread.authorId);

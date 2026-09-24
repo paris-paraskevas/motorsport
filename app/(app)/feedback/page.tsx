@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { isStaff, isAdmin } from '@/lib/threads';
 import { FeedbackBoard } from '@/components/feedback/FeedbackBoard';
@@ -14,8 +14,8 @@ export const generateMetadata = pageMetadata('/feedback', BASE_METADATA);
 
 async function FeedbackPage() {
   if (!isBettingConfigured()) notFound();
-  const { userId } = await auth();
-  const user = userId ? await currentUser() : null;
+  const userId = await accountId();
+  const user = userId ? await currentAccount() : null;
   // Everyday users + signed-out get a 404 — the page doesn't exist for them.
   if (!isStaff(user)) notFound();
 

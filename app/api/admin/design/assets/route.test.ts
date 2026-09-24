@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 // A fake `asset` table: `rows` answers the reads; `insert` records its payload
 // and answers with a row built from it (the key is generated inside the route).
@@ -62,7 +62,7 @@ vi.mock('@opennextjs/cloudflare', () => ({
 import { GET, POST } from './route';
 import { ASSET_KEY } from '@/lib/design/asset-defaults';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const PNG_1x1 = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
 
 function upload(fields: Record<string, string>, file?: { bytes: Uint8Array | Buffer; type: string; name?: string }) {
@@ -75,8 +75,8 @@ const words = { caption: 'Antonelli on the grid', credit: 'Paris Paraskevas', li
 
 describe('/api/admin/design/assets', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     insert.mockReset();
     put.mockReset();
     remove.mockReset();
@@ -90,9 +90,9 @@ describe('/api/admin/design/assets', () => {
   });
 
   it('GET is 404 for a non-admin and lists the rows with whether the media store is bound', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await GET()).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     const res = await GET();
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ assets: [], mediaConfigured: true });
@@ -101,9 +101,9 @@ describe('/api/admin/design/assets', () => {
   });
 
   it('POST is 404 for a non-admin, 403 off production and 503 without the media binding, before anything is stored', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await upload(words, { bytes: PNG_1x1, type: 'image/png' })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await upload(words, { bytes: PNG_1x1, type: 'image/png' })).status).toBe(403);
     process.env.PADDOCK_ENV = 'production';

@@ -5,14 +5,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // rule (400 with the problems), the rows capped at fifty. Admin-only; an
 // unknown key is 404.
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const readSource = vi.fn();
 vi.mock('@/lib/design/source-read', () => ({ readSource: (...a: unknown[]) => readSource(...a) }));
 
 import { GET } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const url = (key: string, query = '') => new Request(`http://localhost/api/admin/design/data/sources/${key}${query}`);
 const params = (key: string) => ({ params: Promise.resolve({ key }) });
 const read = {
@@ -24,16 +24,16 @@ const read = {
 
 describe('GET /api/admin/design/data/sources/[key]', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     readSource.mockReset();
     readSource.mockResolvedValue(read);
   });
 
   it('is not found for anyone but an administrator, and for a key the catalogue lacks', async () => {
-    currentUser.mockResolvedValue(null);
+    currentAccount.mockResolvedValue(null);
     expect((await GET(url('standings', '?series=f1&season=2026'), params('standings'))).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     expect((await GET(url('nope'), params('nope'))).status).toBe(404);
     expect(readSource).not.toHaveBeenCalled();
   });

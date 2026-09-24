@@ -18,8 +18,8 @@ vi.mock('next/link', () => ({
 vi.mock('next/image', () => ({
   default: ({ src, alt }: { src: string; alt: string }) => React.createElement('img', { src, alt }),
 }));
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const loadRevisionPreview = vi.fn();
 vi.mock('@/lib/design/live-page', () => ({ loadRevisionPreview: (id: string) => loadRevisionPreview(id), loadAssetsById: async () => new Map() }));
 vi.mock('@/lib/design/shortcuts', () => ({ loadShortcuts: async () => ({ 'times.local': 'All times are local.' }) }));
@@ -57,7 +57,7 @@ import type { PageRow } from '@/lib/design/pages';
 import { SHIPPED_APPEARANCE } from '@/lib/design/appearance-defaults';
 import { SHIPPED_PRESETS } from '@/lib/design/template-options';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const REV = 'b1b2c3d4-0000-4000-8000-000000000002';
 const page: PageRow = { id: 'a1b2c3d4-0000-4000-8000-000000000010', path: '/history/monza', name: 'Monza, a history', kind: 'row', group: 'editorial', template: 'paddock-standard', authz: 'public', title: 'Monza', rendering: 'cached', indexable: true, comments: null, updatedAt: 'x' };
 const preview = {
@@ -80,8 +80,8 @@ const params = Promise.resolve({ rev: REV });
 
 describe('/preview/[rev]', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     loadRevisionPreview.mockReset();
     loadRevisionPreview.mockResolvedValue(preview);
   });
@@ -90,9 +90,9 @@ describe('/preview/[rev]', () => {
     expect(dynamic).toBe('force-dynamic');
     expect((await generateMetadata({ params })).robots).toEqual({ index: false, follow: false });
     expect((await generateMetadata({ params })).title).toBe('Preview · Monza');
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
-    currentUser.mockResolvedValue(null);
+    currentAccount.mockResolvedValue(null);
     await expect(RevisionPreviewPage({ params })).rejects.toBe(NOT_FOUND);
   });
 

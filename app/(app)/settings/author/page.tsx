@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { canAuthor } from '@/lib/threads';
 import { getAuthorByClerkId } from '@/lib/authors';
@@ -25,8 +25,8 @@ export const generateMetadata = pageMetadata('/settings/author', BASE_METADATA);
 // configuration, not an admin surface. 404 for non-writers rather than 403: this
 // URL should not confirm the existence of a writing role to a reader who guesses it.
 async function AuthorProfileSettingsPage() {
-  const { userId } = await auth();
-  const user = await currentUser();
+  const userId = await accountId();
+  const user = await currentAccount();
   if (!userId || !isBettingConfigured() || !canAuthor(user)) notFound();
 
   const [profile, posts] = await Promise.all([getAuthorByClerkId(userId), authorPostVisibility(userId)]);
@@ -34,8 +34,7 @@ async function AuthorProfileSettingsPage() {
   // First-time prefill from the Clerk account. slugify strips everything outside
   // [a-z0-9], so a non-Latin name yields "" — that is left blank deliberately
   // rather than guessed at, since the slug is a permanent public URL.
-  const clerkName =
-    user?.fullName || [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || user?.username || '';
+  const accountName = user?.name || user?.username || '';
 
   return (
     <div className={PAGE_READ}>
@@ -77,8 +76,8 @@ async function AuthorProfileSettingsPage() {
             : null
         }
         posts={posts}
-        suggestedName={clerkName}
-        suggestedSlug={slugify(clerkName)}
+        suggestedName={accountName}
+        suggestedSlug={slugify(accountName)}
       />
     </div>
   );

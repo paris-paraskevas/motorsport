@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 let tables: Record<string, { data: unknown; error: { message: string } | null }> = {};
 vi.mock('@/lib/betting/client', () => ({
@@ -26,18 +26,18 @@ import { GET } from './route';
 import { resetDefinitionsMemo } from '@/lib/design/definitions';
 import { DEFINITIONS } from '@/lib/design/component-definitions';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 
 describe('GET /api/admin/design/definitions', () => {
   beforeEach(() => {
     resetDefinitionsMemo();
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     tables = { component_definition: { data: [], error: null }, page: { data: [], error: null }, page_revision: { data: [], error: null } };
   });
 
   it('is not found for anyone but an administrator', async () => {
-    currentUser.mockResolvedValue(null);
+    currentAccount.mockResolvedValue(null);
     expect((await GET()).status).toBe(404);
   });
 

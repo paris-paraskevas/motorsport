@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import {
   getUserNotifPrefs,
   setUserNotifPrefs,
@@ -10,7 +10,7 @@ import {
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -24,7 +24,7 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }

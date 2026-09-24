@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 // A fake `shortcut` table: `rows` answers the reads; `insert` records its
 // payload and answers with `inserted` or `insertError`.
@@ -32,7 +32,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { GET, POST } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T14:00:00.505502+00:00';
 const seeded = [
   { key: 'times.local', text: 'All times are shown in your local time zone.', updated_at: STAMP },
@@ -50,8 +50,8 @@ const post = (body: unknown) =>
 
 describe('/api/admin/design/shortcuts', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     insert.mockReset();
     inserted = { updated_at: '2026-09-08T14:05:00.000001+00:00' };
     insertError = null;
@@ -63,9 +63,9 @@ describe('/api/admin/design/shortcuts', () => {
   });
 
   it('GET is 404 for a non-admin and lists the rows by key with their stamps for an admin', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await GET()).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     const res = await GET();
     expect(res.status).toBe(200);
     const json = (await res.json()) as { shortcuts: { key: string; updatedAt: string }[] };
@@ -74,9 +74,9 @@ describe('/api/admin/design/shortcuts', () => {
   });
 
   it('POST is 404 for a non-admin and 403 off production, before anything is written', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await post({ key: 'new.one', text: 'x' })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await post({ key: 'new.one', text: 'x' })).status).toBe(403);
     expect(insert).not.toHaveBeenCalled();

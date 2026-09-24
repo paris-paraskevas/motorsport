@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { listThreads, isAdmin } from '@/lib/threads';
 import { loadAllSeriesMeta } from '@/lib/series';
@@ -41,9 +41,9 @@ async function ThreadsPage({
   searchParams: Promise<{ series?: string }>;
 }) {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
-  const { userId } = await auth();
+  const userId = await accountId();
   const { series: rawSeries } = await searchParams;
-  const user = userId ? await currentUser() : null;
+  const user = userId ? await currentAccount() : null;
   const admin = isAdmin(user);
   const allSeries = await loadAllSeriesMeta();
   // Validate the ?series= filter against real slugs; ignore anything unknown.

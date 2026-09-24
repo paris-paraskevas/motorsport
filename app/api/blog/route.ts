@@ -1,8 +1,8 @@
 import { NextResponse, after } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
-import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
+import { setDisplayNameIfMissing, accountDisplayName } from '@/lib/betting/friends';
 import { isAdmin, canAuthor } from '@/lib/threads';
 import { createDraft, listPosts } from '@/lib/blog';
 import { listSeriesSlugs } from '@/lib/series';
@@ -15,9 +15,9 @@ export const dynamic = 'force-dynamic';
 // else, so the client panel self-hides.
 export async function GET() {
   if (!isBettingConfigured()) return NextResponse.json({ drafts: [], scheduled: [] });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  const user = await currentUser();
+  const user = await currentAccount();
   const admin = isAdmin(user);
   if (!admin && !canAuthor(user)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   // Writers are scoped to their own posts; they can still act on what they see
@@ -45,9 +45,9 @@ export async function GET() {
 // path fires it directly).
 export async function POST(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!canAuthor(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!canAuthor(await currentAccount())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   let body: {
     slug?: unknown;
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
     });
     after(async () => {
       try {
-        await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+        await setDisplayNameIfMissing(userId, accountDisplayName(await currentAccount()));
       } catch {
         /* best-effort */
       }

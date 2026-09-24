@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 // GET /api/admin/design/appearance → the stored appearance with the application
 // row's stamp, for the designer. Admin-only; 404 for everyone else.
 export async function GET() {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
   }
@@ -37,7 +37,7 @@ export async function GET() {
 // production-only (403). The stamp travels verbatim: it carries microseconds a
 // JavaScript Date would round away.
 export async function PUT(req: Request) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(

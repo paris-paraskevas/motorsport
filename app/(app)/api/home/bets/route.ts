@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getBalance } from '@/lib/betting/credits';
 import { getUserBets } from '@/lib/betting/bets';
@@ -60,7 +60,7 @@ function noStore(data: HomeBetsData) {
 }
 
 export async function GET() {
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId || !isBettingConfigured()) return noStore(ANON);
 
   try {

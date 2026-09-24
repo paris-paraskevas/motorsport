@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 // A fake store: reads answer per table; insert and update record their
 // payloads and answer with what the test set.
@@ -43,7 +43,7 @@ vi.mock('@/lib/betting/client', () => ({
 import { PUT } from './route';
 import { loadOverlays, resetDefinitionsMemo } from '@/lib/design/definitions';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-17T11:00:00.000001+00:00';
 const CAL = 'a1b2c3d4-0000-4000-8000-000000000001';
 const accent = { key: 'accent', label: 'Accent', kind: 'colour', default: '#8c1c13', group: 'colours' };
@@ -57,8 +57,8 @@ const put = (key: string, body: unknown) =>
 describe('PUT /api/admin/design/definitions/[key]', () => {
   beforeEach(() => {
     resetDefinitionsMemo();
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     insert.mockReset();
     update.mockReset();
     inserted = { data: { updated_at: '2026-09-17T11:05:00.000001+00:00' }, error: null };
@@ -68,9 +68,9 @@ describe('PUT /api/admin/design/definitions/[key]', () => {
   });
 
   it('is not found for anyone but an administrator, for a key the code does not define, and read-only off production', async () => {
-    currentUser.mockResolvedValue(null);
+    currentAccount.mockResolvedValue(null);
     expect((await put('page.heading', { overlay: {}, updatedAt: null })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     expect((await put('nope.x', { overlay: {}, updatedAt: null })).status).toBe(404);
     process.env.PADDOCK_ENV = 'preview';
     expect((await put('page.heading', { overlay: {}, updatedAt: null })).status).toBe(403);

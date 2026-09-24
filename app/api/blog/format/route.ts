@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { canAuthor } from '@/lib/threads';
 import { loadAllDrivers, loadAllTeams } from '@/lib/people';
 import { loadAllSeriesMeta } from '@/lib/series';
@@ -40,7 +40,7 @@ function entities(): Promise<LinkEntity[]> {
 }
 
 export async function POST(req: Request) {
-  if (!canAuthor(await currentUser())) {
+  if (!canAuthor(await currentAccount())) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
   let body: { body?: unknown };

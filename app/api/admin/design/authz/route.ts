@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -28,7 +28,7 @@ export const dynamic = 'force-dynamic';
 const KEY = /^[a-z0-9_-]{1,40}$/;
 
 export async function GET() {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
   }
@@ -38,7 +38,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(

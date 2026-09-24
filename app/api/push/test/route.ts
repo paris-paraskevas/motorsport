@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo } from '@/lib/push';
 
@@ -19,8 +19,8 @@ function endpointTail(endpoint: string): string {
  * - Signed-out: 401 (everyone has to sign in now).
  */
 export async function POST(req: Request) {
-  const a = await auth();
-  if (!a.userId) {
+  const userId = await accountId();
+  if (!userId) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
 
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
   try {
     const all = await listSubscriptions();
-    let subs = all.filter(s => s.userId === a.userId);
+    let subs = all.filter(s => s.userId === userId);
     if (target) subs = subs.filter(s => s.subscription.endpoint === target);
 
     if (subs.length === 0) {

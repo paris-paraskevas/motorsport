@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -67,7 +67,7 @@ function validateEntries(raw: unknown, role: string, schemeKeys: ReadonlySet<str
 }
 
 export async function GET(_req: Request, { params }: { params: Promise<{ key: string }> }) {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
   }
@@ -78,7 +78,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ key: st
 }
 
 export async function PUT(req: Request, { params }: { params: Promise<{ key: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(
@@ -151,7 +151,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
 // page_revision_ref, in the database, whatever tried it (409 with the reason):
 // revisions are kept, so what they name must keep resolving.
 export async function DELETE(req: Request, { params }: { params: Promise<{ key: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 vi.mock('@/lib/search-index', () => ({
@@ -42,7 +42,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { DELETE, PUT } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T18:00:00.505502+00:00';
 const A = 'a1b2c3d4-0000-4000-8000-000000000001';
 const stored = { id: A, question: 'Who leads the F1 standings?', seq: 10, leads_to: '/series/f1/standings', leads_title: 'Formula 1 standings', updated_at: STAMP };
@@ -55,8 +55,8 @@ const remove = (id: string) => DELETE(new Request(`https://paddock-tracker.com/a
 
 describe('/api/admin/design/search-hints/[id]', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     update.mockReset();
     del.mockReset();
     revalidatePath.mockReset();
@@ -70,10 +70,10 @@ describe('/api/admin/design/search-hints/[id]', () => {
   });
 
   it('PUT and DELETE are 404 for a non-admin and for an id that is not one, 403 off production', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await put(A, { question: 'x', seq: 10, updatedAt: STAMP })).status).toBe(404);
     expect((await remove(A)).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     expect((await put('nope', { question: 'x', seq: 10, updatedAt: STAMP })).status).toBe(404);
     delete process.env.PADDOCK_ENV;
     expect((await put(A, { question: 'x', seq: 10, updatedAt: STAMP })).status).toBe(403);

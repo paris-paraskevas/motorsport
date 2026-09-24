@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
@@ -45,7 +45,7 @@ import { GET, PUT } from './route';
 import { SHIPPED_APPEARANCE } from '@/lib/design/appearance-defaults';
 import { SHIPPED_PRESETS } from '@/lib/design/template-options';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T15:30:00.505502+00:00';
 const AIRY = {
   faces: { sans: 'source-sans-3', serif: 'literata', mono: 'jetbrains-mono', condensed: 'roboto-condensed' },
@@ -69,8 +69,8 @@ const put = (body: unknown) =>
 
 describe('/api/admin/design/appearance', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     update.mockReset();
     filters.mockReset();
     revalidatePath.mockClear();
@@ -83,18 +83,18 @@ describe('/api/admin/design/appearance', () => {
   });
 
   it('GET is 404 for a non-admin and hands an admin the stored document with its stamp', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await GET()).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     const res = await GET();
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ appearance: SHIPPED_APPEARANCE, updatedAt: STAMP });
   });
 
   it('PUT is 404 for a non-admin and 403 off production, before anything is written', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await put({ appearance: AIRY, updatedAt: STAMP })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await put({ appearance: AIRY, updatedAt: STAMP })).status).toBe(403);
     expect(update).not.toHaveBeenCalled();

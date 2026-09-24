@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 vi.mock('@/lib/search-index', () => ({
@@ -37,7 +37,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { GET, POST } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T18:00:00.505502+00:00';
 const A = 'a1b2c3d4-0000-4000-8000-000000000001';
 const existing = { id: A, question: 'Who leads the F1 standings?', seq: 10, leads_to: '/series/f1/standings', leads_title: 'Formula 1 standings', updated_at: STAMP };
@@ -52,8 +52,8 @@ const post = (body: unknown) =>
 
 describe('/api/admin/design/search-hints', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     insert.mockReset();
     revalidatePath.mockReset();
     rows = { data: [existing], error: null };
@@ -65,9 +65,9 @@ describe('/api/admin/design/search-hints', () => {
   });
 
   it('GET is 404 for a non-admin and lists the hints in order for an admin', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await GET()).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     const res = await GET();
     expect(res.status).toBe(200);
     expect(((await res.json()) as { hints: { question: string; leadsTitle: string }[] }).hints).toEqual([
@@ -76,9 +76,9 @@ describe('/api/admin/design/search-hints', () => {
   });
 
   it('POST is 404 for a non-admin and 403 off production, and refuses an empty or over-long question, before anything is written', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await post({ question: 'When is the next race?' })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await post({ question: 'When is the next race?' })).status).toBe(403);
     process.env.PADDOCK_ENV = 'production';

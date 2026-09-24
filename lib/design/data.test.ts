@@ -17,7 +17,7 @@ vi.mock('@/lib/analytics/cloudflare', () => ({
   fetchWorkerUsage: async () => null,
   fetchBillableUsage: async () => null,
 }));
-vi.mock('@clerk/nextjs/server', () => ({ clerkClient: async () => ({ users: { getCount: async () => 3, getUserList: async () => ({ data: [] }) } }) }));
+vi.mock('@/lib/auth/directory', () => ({ accountCount: async () => 3, latestAccounts: async () => [] }));
 vi.mock('@/lib/kv', () => ({ kv: { dbsize: async () => 12 } }));
 vi.mock('@/lib/push-store', () => ({ listSubscriptions: async () => [{ endpoint: 'a' }, { endpoint: 'b' }] }));
 

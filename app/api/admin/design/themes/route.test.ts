@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
@@ -34,7 +34,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { GET, POST } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T11:30:00.505502+00:00';
 const SUNSET = {
   bg: '#1a0f1f',
@@ -69,8 +69,8 @@ function post(body: unknown) {
 
 describe('/api/admin/design/themes', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     insert.mockReset();
     revalidatePath.mockClear();
     inserted = { data: { updated_at: '2026-09-08T11:40:00.000001+00:00' }, error: null };
@@ -82,9 +82,9 @@ describe('/api/admin/design/themes', () => {
   });
 
   it('GET is 404 for a non-admin, else every theme with its stamp', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await GET()).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     const res = await GET();
     expect(res.status).toBe(200);
     const json = (await res.json()) as { themes: { key: string; shipped: boolean; isDefault: boolean; updatedAt: string }[] };
@@ -93,9 +93,9 @@ describe('/api/admin/design/themes', () => {
   });
 
   it('POST refuses non-admins (404) and previews (403), writing nothing', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await post({ label: 'Sunset', base: 'midnight', tokens: SUNSET })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await post({ label: 'Sunset', base: 'midnight', tokens: SUNSET })).status).toBe(403);
     expect(insert).not.toHaveBeenCalled();

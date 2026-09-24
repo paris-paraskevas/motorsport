@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { after } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
-import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
+import { setDisplayNameIfMissing, accountDisplayName } from '@/lib/betting/friends';
 import { createThread, listThreads } from '@/lib/threads';
 import { listSeriesSlugs } from '@/lib/series';
 
@@ -26,7 +26,7 @@ export async function GET() {
 // POST = submit a thread (signed-in). Lands `pending` until a moderator approves.
 export async function POST(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
   let body: { title?: unknown; body?: unknown; seriesSlug?: unknown };
@@ -46,11 +46,11 @@ export async function POST(req: Request) {
   try {
     await ensureAppUser(userId);
     const id = await createThread(userId, title, text, seriesSlug);
-    // Name backfill off the critical path (currentUser can fail on a fresh
+    // Name backfill off the critical path (currentAccount can fail on a fresh
     // sign-in handshake) so the author shows a name, not "Racer ####".
     after(async () => {
       try {
-        await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+        await setDisplayNameIfMissing(userId, accountDisplayName(await currentAccount()));
       } catch {
         /* best-effort */
       }

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 
@@ -42,7 +42,7 @@ vi.mock('@/lib/design/live-page', () => ({
 
 import { GET, POST } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-23T21:30:00.505502+00:00';
 const stored = { key: 'mercedes', page_id: 'p1', region_id: 't', name: 'Mercedes', definition: { filters: [{ column: 'team', op: 'eq', value: 'Mercedes' }] }, seq: 10, updated_at: STAMP };
 const post = (body: unknown) =>
@@ -51,8 +51,8 @@ const fresh = { key: 'top-five', name: ' Top five ', pageId: 'p1', regionId: 't'
 
 describe('/api/admin/design/views', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     insert.mockReset();
     revalidatePath.mockReset();
     inserted = { updated_at: '2026-09-23T21:40:00.000001+00:00', seq: 10 };
@@ -69,9 +69,9 @@ describe('/api/admin/design/views', () => {
   });
 
   it('GET is 404 for a non-admin and lists the views by seq then name with their stamps, and the pages with Data regions as targets', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await GET()).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     const res = await GET();
     expect(res.status).toBe(200);
     const json = (await res.json()) as { views: { key: string; updatedAt: string }[]; targets: unknown };
@@ -81,9 +81,9 @@ describe('/api/admin/design/views', () => {
   });
 
   it('POST is 404 for a non-admin and 403 off production, before anything is written', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await post(fresh)).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await post(fresh)).status).toBe(403);
     expect(insert).not.toHaveBeenCalled();
