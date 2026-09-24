@@ -369,6 +369,11 @@
    "date": "2026-09-24",
    "change": "R9 opened and started: the Account page’s Sign out row moves into a Client Component (components/AccountIdentity.tsx SignOutRow) so that Clerk’s SignOutButton receives its child from the same runtime; found by A1a’s signed-in browser run (the dev server answers 500 on main as on the branch; signed out 200).",
    "word": "the operator, 2026-09-24 ~13:50Z: \"R9 go\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "R9 merged and DONE (#1057, 1.0.176; squash-merged 14:01:37Z as 64a5c6f5; prod /changelog 1.0.176 at 14:16:12Z on the footer (the deployment created 14:08:58Z; the pages timed out 14:10–14:14Z during Cloudflare’s open network incident, the static files answering)). The reviewer SOUND (129,313 tokens against ~80k said), nothing to fix. The Account page answers 200 signed in on the local server with its Sign out row; prod’s signed-in answer is the operator’s browser to read. Next: PA A1b.",
+   "word": "the operator, 2026-09-24 ~14:01Z: \"merge\""
   }
  ],
  "phases": {
@@ -1064,8 +1069,9 @@
    "defaults": "The row lives in components/AccountIdentity.tsx (a client file of the same page, already importing Clerk) rather than a file of its own; the test sits beside NavGating’s, whose mock renders SignOutButton as its child; the CHANGELOG names the cause; prod’s own answer is read after the deploy.",
    "needsWord": "none",
    "acceptance": "/settings answers 200 signed in on the local server with the row drawn (browser); the row’s test; the allow-list shorter by one; the whole suite green.",
-   "status": "started",
-   "scopeHash": "1a2ee15cf389"
+   "status": "done",
+   "scopeHash": "1a2ee15cf389",
+   "evidence": "#1057 · 1.0.176 · two commits (3731f027 the fix; 30c472b5 the reviewer’s record), squash-merged 2026-09-24 14:01:37Z as 64a5c6f5 · prod /changelog 1.0.176 at 14:16:12Z on the footer (the deployment created 14:08:58Z; the pages timed out 14:10–14:14Z during Cloudflare’s open network incident, the static files answering) · Home across the deploy: 28 regions, 24 identical byte for byte, four differing by the countdown clocks and the footer’s version at identical lengths · prod /settings signed out 200 · the reviewer (Sonnet) SOUND, 129,313 tokens against ~80k said, 37 tool uses: the mechanism traced to React’s and Clerk’s sources (Children.only accepts a plain element alone; the RSC client deserializes an outlined child as a lazy wrapper) · tests first, seen red (the row’s import), then green · tsc 0, eslint 0 on the changed files, vitest 232 files / 2339 tests, the dry run 39579.74 KiB · the local server signed in through the helper: GET /settings 200 with the row at the end of its list (.playwright-mcp/r9-settings-signed-in.png); before the fix, 500 on main · ACCEPTANCE MET: the page answers 200 signed in with the row drawn; the row’s test; the allow-list 24; the suite green"
   }
  ]
 }

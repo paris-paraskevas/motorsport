@@ -14,9 +14,39 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1058 · 1.0.177 · records · merged Thu 24 Sep 14:17 (14:17Z)
+Records R9's merge (#1057, squash-merged 14:01:37Z as 64a5c6f5): R9 DONE with its evidence, the session-57 handoff with PA A1b first, and the schedule's step 23.
+- **Files (8):**
+  - `CHANGELOG.md` · the release trio: the engineering note (1.0.177).
+  - `RELEASES.md` · the release trio: the public note (1.0.177).
+  - `SCHEDULE.md` · records: step 23.
+  - `docs/HANDOFF.md` · records: the LATEST block for session 57 (PA A1b first, its decision scan and the lesson R9 leaves).
+  - `docs/plan/components-programme.md` · records: the generated plan page, re-rendered from the ledger.
+  - `docs/plan/ledger.json` · records: R9 DONE with its evidence and the dated merge line.
+  - `docs/pull-requests.md` · records: #1057's entry and this PR's.
+  - `package.json` · the release trio: the version bump (1.0.177).
+- **Review:** none (records)
+
+## #1057 · 1.0.176 · R9 · merged Thu 24 Sep 17:01 (14:01Z)
+**The Account page’s Sign out row is drawn in the browser; the page answered 500 when signed in.** Found by PA A1a’s signed-in browser run: the page, a Server Component, handed a `<button>` child to Clerk’s `<SignOutButton>`, a Client Component, whose single-child check refused what arrived across the boundary.
+- **Readers see:** the Account page opens again when signed in, with its Sign out row at the end of the list.
+- **Editors get:** nothing.
+- **Files (9):**
+  - `CHANGELOG.md` · the release trio: the engineering note (1.0.176).
+  - `RELEASES.md` · the release trio: the public note (1.0.176).
+  - `app/(app)/settings/page.tsx` · renders `<SignOutRow />` inside `{userId && …}`; its Clerk import leaves.
+  - `components/AccountIdentity.tsx` · `SignOutRow`: the row’s markup and heatmap id, created in the browser beside the identity strip.
+  - `components/NavGating.test.tsx` · the test for the row (its mock renders SignOutButton as its child), written first.
+  - `docs/plan/components-programme.md` · records: the generated plan page, re-rendered from the ledger.
+  - `docs/plan/ledger.json` · records: slot R9 opened and started, the dated line with the operator’s word.
+  - `lib/auth/boundary.test.ts` · the allow-list loses the Account page (24 files).
+  - `package.json` · the release trio: the version bump (1.0.176).
+- **Verified:** tests first, seen red, then green. Gates: tsc 0 · eslint 0 on the changed files · vitest 232 files, 2339 tests · cf:build exit 0 · wrangler deploy --dry-run Total Upload 39579.74 KiB / gzip 8667.44 KiB. Browser, signed in through the helper: /settings 200 with the row (`.playwright-mcp/r9-settings-signed-in.png`); before the fix, 500 on main.
+- **Review:** SOUND, nothing to fix (~80k tokens said, 129,313 measured, 37 tool uses): the mechanism traced to React’s and Clerk’s sources; the fix matches the header’s pattern; the markup byte-identical; the allow-list’s one removal load-bearing. Two nits left: the test file’s Clerk mock lacks SignInButton and UserButton (the row uses neither); the test guards the markup, the browser run the boundary.
+
 ## #1056 · 1.0.175 · records · merged Thu 24 Sep 13:34 (13:34Z)
 Records PA A1a's merge (#1055, squash-merged 13:26:16Z as 21a5c518): A1 STARTED with its evidence, the signed-in run's finding (/settings 500 signed in, proposed as R9), the session-57 handoff and the schedule's step 22.
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.175).
   - `RELEASES.md` · the release trio: the public note (1.0.175).
   - `SCHEDULE.md` · records: step 22.
@@ -338,7 +368,7 @@ Records P2.3 DONE (the saved_view migration applied on prod) and P2.4's decision
 ## #1047 · 1.0.166 · records · merged Thu 24 Sep 01:25 (22:25Z)
 Records P2.3 PR B's merge (#1046, squash-merged 22:17:00Z as f2f2fe79): the ledger's evidence, the slot staying STARTED until the migration
 is applied on prod, and the session-57 handoff prompt.
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.166).
   - `IDEAS.md` · records: three Inbox lines from PR B's run.
   - `RELEASES.md` · the release trio: the public note (1.0.166).
@@ -408,7 +438,7 @@ link, and Download CSV gives the rows as shown.
 ## #1045 · 1.0.164 · records · merged Thu 24 Sep 00:11 (21:11Z)
 Records P2.3 PR A's merge (#1044, squash-merged 20:59:37Z as a42c6dd1): the ledger's evidence, two honestly-recorded gaps (Home's parity void
 by the operator's own publishes; the cached-variant check unverified on prod), and the session-57 handoff prompt.
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.164).
   - `IDEAS.md` · records: three Inbox lines (prod's Calendar renders per request; the preview draws no controls; the reviewer's two nits).
   - `RELEASES.md` · the release trio: the public note (1.0.164).
@@ -471,7 +501,7 @@ cacheable, plus sortable column headings and an Actions menu on Data regions.
 
 ## #1043 · 1.0.162 · records · merged Wed 23 Sep 21:01 (18:01Z)
 Records R8's merge (#1042, squash-merged 17:50:58Z as 20b1eae7) and a correction to 1.0.161's release note.
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.162).
   - `IDEAS.md` · records: four Inbox lines.
   - `RELEASES.md` · the release trio: the public note (1.0.162), correcting 1.0.161's "nothing changes on the pages you read today".
@@ -514,7 +544,7 @@ instead of always reading "All series".
 
 ## #1041 · 1.0.160 · records · merged Wed 23 Sep 20:02 (17:02Z)
 Records R7's merge (#1040, squash-merged 16:53:19Z as 57b9d3d2) and P2.3's decision scan and plan approval.
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.160).
   - `IDEAS.md` · records: four Inbox lines.
   - `RELEASES.md` · the release trio: the public note (1.0.160).
@@ -658,7 +688,7 @@ list as the lead then the majors with no exclusion. The lead is now excluded fro
 - **Readers see:** yes, the live band no longer boxes the lead series' weekend twice when it is also among the featured series.
 - **Editors get:** nothing beyond the fixed ranking; the Application Setting `home.major_series` still lets an editor list the lead among
   the featured series (left valid, harmless).
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.155).
   - `IDEAS.md` · records: two Inbox lines (prod's prefetched routes referencing a previous build's chunks; the settings editor allowing
     the overlap).
@@ -678,7 +708,7 @@ list as the lead then the majors with no exclusion. The lead is now excluded fro
 ## #1035 · 1.0.154 · records · merged Wed 23 Sep 14:37 (11:37Z)
 Records P2.24 PR B2's merge (#1034, squash-merged 11:27:37Z as dde6c4b6): the ledger's evidence, the slot staying started for PR C, and ten
 Inbox lines.
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.154).
   - `IDEAS.md` · records: ten Inbox lines.
   - `RELEASES.md` · the release trio: the public note (1.0.154).
@@ -753,7 +783,7 @@ stand; P2.3 and P2.10 settled without a further question.
 
 ## #1032 · 1.0.151 · records · merged Wed 23 Sep 10:49 (07:49Z)
 Records P2.24 PR B1's merge (#1031, squash-merged 07:41:42Z as d7b5ba45) and publishes the Phase 2 progress report.
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.151).
   - `IDEAS.md` · records: five Inbox lines.
   - `RELEASES.md` · the release trio: the public note (1.0.151).
@@ -810,7 +840,7 @@ template copied verbatim from Home's `HomeWhatsNext`.
 
 ## #1030 · 1.0.149 · records · merged Wed 23 Sep 09:10 (06:10Z)
 Records P2.24 PR A's merge (#1029, squash-merged 06:01:25Z as 0b0f42a4) and opens the session-56 handoff with PR B first.
-- **Files (8):**
+- **Files (9):**
   - `CHANGELOG.md` · the release trio: the engineering note (1.0.149).
   - `IDEAS.md` · records: eight Inbox lines.
   - `RELEASES.md` · the release trio: the public note (1.0.149).
