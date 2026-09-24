@@ -339,6 +339,21 @@
    "date": "2026-09-24",
    "change": "P2.4 PR C built on the approved plan (1.0.172, branch feat/p2.4-c-region-detail): the Master Detail group (detailRegion over the page’s other Data regions, detailKey over the preset’s columns); the parser’s document-wide check (another Data region of the page; a column both carry); the renderer pairs each master with its detail, keys a detail whatever its menus and its view, and writes Show links that replace only the detail’s filter on the key, its sort, columns and view kept; the detail’s “Showing <value> · Show all”; the results List’s fold carries the link (in a season list the race is the row); the Property Editor’s regions select. A Correction to the plan: the Weekends source reads coming weekends only, so the season list is the results List. Tests first, 5 red across 4 files, then green; tsc 0, lint 0 errors, vitest 230 files / 2332 tests; the browser on the local Monza page (14 Show links; Show 3 filters the race table to round 3 under Showing 3 · Show all; Show all; the variant address loaded directly); the dry run 39246.69 KiB.",
    "word": "the operator, 2026-09-24 ~07:00Z: the plan approved (ExitPlanMode); ~10:32Z: \"merge\" (PR B), then the next task"
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PR C merged (#1053, 1.0.172; e1797054 the build, 63d4bf2f the reviewer’s fixes, 1672c28a the audit’s fix; squash-merged 12:07:29Z as b7d604f6; prod /changelog 1.0.172 at 12:11:49Z). The reviewer SOUND WITH FIXES (244,062 tokens against ~200k said): a Show value over the vocabulary’s 80 characters gets no link; a detail must be drawn as a Table, Cards or List; each master gets its own Showing line; aria-current compares as the detail’s column does. The day’s audit (the three P2.4 PRs re-read by hand after the model change from Opus 5.5 to Fable 5.1, on the operator’s ask): the work held; one gap, a master drawn as a template still keyed its detail, fixed before the merge. Home unchanged across the deploy (23 of 27 regions identical, the rest by clocks, the version and an elapsed countdown). P2.4 DONE: a highlighted leader (PR A), a driver name linking to /drivers/[slug] (PR B, on prod’s Home), a season list filtering a results table (PR C, the Monza fixture), tests.",
+   "word": "the operator, 2026-09-24 ~12:05Z: \"merge\""
+  },
+  {
+   "date": "2026-09-24",
+   "change": "docs/pull-requests.md is the catalogue of pull requests: one entry per PR, newest first (what readers see, what editors get, every changed file with a line, the verification, the review, any Correction), back-filled for #1029–#1053 by one Sonnet writer and carried by the 1.0.173 records. From this line on, every PR adds its entry before merge, and a records PR carries the entries of the merges it records (the law line in CLAUDE.md and docs/plan/rules.md). The operator’s reason: “i need a place to explicitly see what changes in each pr, because otherwise ill get lost”. The writer: one Sonnet agent, ~200k tokens said, 360,938 measured, 75 tool uses; its 715 lines read through by Fable before the commit, one entry corrected (R8’s reviewer, recorded in the changelog and the ledger but not in its PR body).",
+   "word": "the operator, 2026-09-24 ~12:05Z: \"defaults\" (to the proposal of ~11:58Z)"
+  },
+  {
+   "date": "2026-09-24",
+   "change": "Phase D (documentation) and slot D1 planned: the Designer documentation under docs/designer/, ten chapters (00 what it is · 01 concepts · 02 pages · 03 the Data region · 04 the address · 05 saved views and CSV · 06 rules and links · 07 the Property Editor · 08 Shared Components · 09 the laws), written for the operator first and editors second, from the code and the ledger, each chapter read by one Sonnet agent against the code before it lands, about three sessions (00–02, 03–06, 07–09). The order against PA A1a is the operator’s; the default is D1 first.",
+   "word": "the operator, 2026-09-24 ~12:05Z: \"defaults\" (to the proposal of ~11:58Z)"
   }
  ],
  "phases": {
@@ -357,6 +372,10 @@
   "PA": {
    "title": "Phase A — Accounts move to Supabase Auth",
    "note": "Clerk’s free plan signs readers out every seven days; the accounts move to the Supabase project the site already runs, behind a seam of our own, their ids unchanged."
+  },
+  "PD": {
+   "title": "Phase D — The documentation",
+   "note": "The Designer explained for the operator first and editors second, from the code, never from memory; each chapter checked against the code before it lands."
   }
  },
  "slots": [
@@ -752,9 +771,9 @@
    "defaults": "Highlight rules stored on the region as row conditions in the filter vocabulary (position.lte:3, points.gte:100) with a style, drawn under a new Property Editor group; the leader and podium rules render on the server; a column link picks a page the row carries (Driver → its page, as Race → its page), never a typed URL; master-detail as a master row link writing the detail region’s filter into the address (the P2.3 vocabulary, r.<id>.filter), the detail served as a cached variant; the followed-series highlight as a small client repaint after the page loads; the standings and results readers carry each row’s driver and team page addresses from the site’s own resolver.",
    "needsWord": "none",
    "acceptance": "A highlighted leader; a driver name linking to /drivers/[slug]; a season list filtering a results table; test.",
-   "status": "started",
+   "status": "done",
    "scopeHash": "b6e6849d7555",
-   "evidence": "PR A: #1049 · 1.0.168 · three commits (07d076bc the build; 7fc485b5 the PA plan’s records; fddd8040 the reviewer’s fixes), squash-merged 2026-09-24 09:23:44Z as 2daa14fc · prod /changelog 1.0.168 at 09:27:59Z · Home’s 27 regions identical across the deploy with the countdown clocks and the footer’s version normalised · the reviewer (Sonnet) SOUND WITH FIXES, 227,972 tokens against ~120k said · tsc 0, lint 0 errors, vitest 230 files / 2323 tests, the dry run 39159.86 KiB · PR B: #1051 · 1.0.170 · two commits (43670fd5 the build; cdf347bf the reviewer’s record), squash-merged 2026-09-24 10:32:22Z as 48b1f5cf · prod /changelog 1.0.170 at 10:36:34Z · Home’s 27 regions across the deploy: the standings tables’ 13 driver names now link to their pages, and with those anchors unwrapped 26 regions are identical, the wire’s one difference a relative age rolling over (2d ago → 3d ago) · the reviewer (Sonnet) PASS WITH NOTES, 247,625 tokens against ~200k said · tsc 0, lint 0 errors, vitest 230 files / 2328 tests, the dry run 39226.67 KiB"
+   "evidence": "PR A: #1049 · 1.0.168 · three commits (07d076bc the build; 7fc485b5 the PA plan’s records; fddd8040 the reviewer’s fixes), squash-merged 2026-09-24 09:23:44Z as 2daa14fc · prod /changelog 1.0.168 at 09:27:59Z · Home’s 27 regions identical across the deploy with the countdown clocks and the footer’s version normalised · the reviewer (Sonnet) SOUND WITH FIXES, 227,972 tokens against ~120k said · tsc 0, lint 0 errors, vitest 230 files / 2323 tests, the dry run 39159.86 KiB · PR B: #1051 · 1.0.170 · two commits (43670fd5 the build; cdf347bf the reviewer’s record), squash-merged 2026-09-24 10:32:22Z as 48b1f5cf · prod /changelog 1.0.170 at 10:36:34Z · Home’s 27 regions across the deploy: the standings tables’ 13 driver names now link to their pages, and with those anchors unwrapped 26 regions are identical, the wire’s one difference a relative age rolling over (2d ago → 3d ago) · the reviewer (Sonnet) PASS WITH NOTES, 247,625 tokens against ~200k said · tsc 0, lint 0 errors, vitest 230 files / 2328 tests, the dry run 39226.67 KiB · PR C: #1053 · 1.0.172 · three commits (e1797054 the build; 63d4bf2f the reviewer’s fixes; 1672c28a the audit’s fix), squash-merged 2026-09-24 12:07:29Z as b7d604f6 · prod /changelog 1.0.172 at 12:11:49Z · Home’s 27 regions across the deploy: 23 identical byte for byte, three differing by the countdown clocks and the footer’s version alone, the live band by a countdown that elapsed between the captures · the reviewer (Sonnet) SOUND WITH FIXES, 244,062 tokens against ~200k said, three fixes folded · the day’s audit by hand after the model change: one gap fixed before the merge · tsc 0, lint 0 errors, vitest 230 files / 2333 tests, the dry run 39249.78 KiB · the local browser run on the Monza fixture: 14 Show links, “Show 3” → ?r.race.filter=round.eq%3A3, round 3’s 22 rows under “Showing 3 · Show all”, the plain page after Show all · ACCEPTANCE MET: a highlighted leader (PR A, the Monza Drivers table); a driver name linking to /drivers/[slug] (PR B, 13 names on prod’s Home); a season list filtering a results table (PR C, the Monza fixture); tests in every PR"
   },
   {
    "id": "P2.5",
@@ -1007,6 +1026,18 @@
    "acceptance": "No CLERK_ name in the repo (test); the Clerk application deleted and its DNS records gone (the operator’s dashboards).",
    "status": "planned",
    "scopeHash": "38546fdd606f"
+  },
+  {
+   "id": "D1",
+   "phase": "PD",
+   "title": "The Designer documentation",
+   "scope": "docs/designer/: ten Markdown chapters explaining the Designer end to end (what it is; the concepts; pages; the Data region; the address vocabulary; saved views and CSV; highlight, links and master-detail; the Property Editor; Shared Components; the laws), each drafted from the modules it explains with file:line cited, each read by one Sonnet agent against the code before it lands.",
+   "fixedBy": "the operator’s ask of 2026-09-24 ~11:40Z (“very good documentation explaining the entire paddock developer”) and the word “defaults” of ~12:05Z on the proposal (place, audience, shape)",
+   "defaults": "One chapter per file under docs/designer/; the operator’s plain words first, every term expanded; screenshots of the local designer where a screen is described; three sessions (00–02, 03–06, 07–09); each chapter its own commit, one PR per session, a Sonnet reader per chapter; the catalogue docs/pull-requests.md as the companion.",
+   "needsWord": "the order against PA A1a (default: D1 first)",
+   "acceptance": "Ten chapters under docs/designer/, each with its Sonnet reading recorded and its file:line citations resolving; the operator reads chapter 01 and can name every concept without the code.",
+   "status": "planned",
+   "scopeHash": "3359e43f775d"
   }
  ]
 }
