@@ -427,6 +427,12 @@ describe('renderComponents', () => {
     const padded = await three('filter=round.eq:01', [master('season', 'round'), detail()]);
     expect(padded.race).toContain('Showing 01 ·');
     expect(padded.season).toMatch(/aria-current="true"[^>]*>Show 1<\/a>/);
+    // A master drawn as a template (the Timeline here; a stored Detail region outlives a View change) draws no Show link, so it
+    // keys no detail: the address's filter on the key is not read and no Showing line is drawn.
+    const templ = await three('filter=round.eq:1', [master('season', 'round', { view: 'timeline' }), detail()]);
+    expect(templ.season).not.toMatch(/>Show \d/);
+    expect(templ.race).not.toContain('Showing');
+    expect(templ.race).toContain('Lando Norris');
   });
 
   it('P2.2 B2, the Timeline per results preset: every one of the seven draws one entry per race (or race and class), newest first, on a rail, with the date or the round chip, the title linked to the weekend page, the WIN line and the winner’s initials (APEX Timeline; Avatar); Rows counts races; a race without a position-1 row takes its first', async () => {

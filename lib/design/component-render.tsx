@@ -306,8 +306,9 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
     const detail = dataRegions.find(d => d.id === str(master.settings.detailRegion) && d !== master);
     const shape = detail ? shapeOf(detail) : null;
     const carries = shape !== null && shapeOf(master)?.columns.some(c => c.key === key) === true && shape.columns.some(c => c.key === key);
-    // A template (the Podium, the Leader, the Timeline, Home's boxes) draws no Show link and no Showing line: only a Table, Cards or List can be a detail.
-    const drawn = detail ? ROW_VIEWS.includes(str(detail.settings.view) || 'table') : false;
+    // A template (the Podium, the Leader, the Timeline, Home's boxes) draws no Show link and no Showing line: only a Table, Cards
+    // or List can be a detail, or a master (a stored Detail region outlives a View change; its attributes hide with the View).
+    const drawn = detail ? ROW_VIEWS.includes(str(detail.settings.view) || 'table') && ROW_VIEWS.includes(str(master.settings.view) || 'table') : false;
     return detail && shape && key && carries && drawn ? [{ master, detail, key, shape }] : [];
   });
   const details = new Set(pairs.map(p => p.detail));
