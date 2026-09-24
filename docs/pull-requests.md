@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1060 · 1.0.179 · records · merged Thu 24 Sep 19:29 (19:29Z)
+Records PA A1b's merge (#1059, squash-merged 19:19:09Z as 4ec78ab1): A1 DONE with its evidence, the operator's word to leave the two slow designer tests' limit, the session-57 handoff with A2 first, and the schedule's step 24.
+- **Files (8):**
+  - `CHANGELOG.md` · the release trio: the engineering note (1.0.179).
+  - `RELEASES.md` · the release trio: the public note (1.0.179).
+  - `SCHEDULE.md` · records: step 24.
+  - `docs/HANDOFF.md` · records: the LATEST block for session 57 (PA A2 first, its decision scan).
+  - `docs/plan/components-programme.md` · records: the generated plan page, re-rendered from the ledger.
+  - `docs/plan/ledger.json` · records: A1 DONE with A1b's evidence, the dated line with the two words.
+  - `docs/pull-requests.md` · records: #1059's entry and this PR's.
+  - `package.json` · the release trio: the version bump (1.0.179).
+- **Review:** none (records)
+
 ## #1059 · 1.0.178 · PA A1b · merged Thu 24 Sep 22:19 (19:19Z)
 **The account seam, browser: every browser file reads the signed-in person through lib/auth/client.** The second PR of slot A1 (phase PA): the seam’s browser half in three modules, the 18 browser files and the two layouts moved onto it, so that the switch to Supabase Auth (A3) touches the seam alone.
 - **Readers see:** nothing; Clerk stays the provider, and the pages answer as before signed out and signed in.
