@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.173 — 2026-09-24
+
+Internal only: the day's working records, and a catalogue of every change since the components programme began. Nothing changes for readers.
+
 ## 1.0.172 — 2026-09-24
 
 A list that filters a table: in pages built with the site's design tool, each row of one box can show a link that narrows another box to that row's value. Pick a race in a season list and the results table beside it shows that race; the choice rides in the page's address, so it can be shared.

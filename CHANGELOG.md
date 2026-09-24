@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.173 — 2026-09-24
+
+### Records — P2.4 DONE, the day's audit, the pull-request catalogue, the documentation slot
+
+Records only. `docs/plan/ledger.json`: P2.4 DONE with PR C's evidence (#1053 squash-merged 2026-09-24 12:07:29Z as b7d604f6 on the operator's word "merge" ~12:05Z; prod `/changelog` 1.0.172 at 12:11:49Z; Home's 27 regions across the deploy: 23 identical byte for byte, three differing by the countdown clocks and the footer's version alone, the live band by a countdown that elapsed between the captures) and the slot's acceptance met across the three PRs; three dated lines: the merge with the day's audit (the three P2.4 PRs re-read by hand after the model change, one gap fixed before the merge), the catalogue rule, and phase D with slot D1 planned. `docs/pull-requests.md` [new, the operator's word "defaults"]: the catalogue of pull requests, one entry per PR, newest first, back-filled for #1029–#1053 by one Sonnet writer (~200k tokens said, 360,938 measured, 75 tool uses; its 715 lines read through before this commit, one entry corrected: R8's reviewer, which its PR body never recorded); from now on every PR adds its entry before merge, and the law line in `CLAUDE.md` and `docs/plan/rules.md` says so. `docs/HANDOFF.md`: the LATEST block for session 57 (the order between D1 and A1a is the operator's, default D1). `SCHEDULE.md`: step 21.
+
 ## 1.0.172 — 2026-09-24
 
 ### Designer — [P2.4 PR C] Master-detail (APEX: Master Detail)
