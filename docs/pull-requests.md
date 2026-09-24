@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1063 · 1.0.182 · records · opened Fri 25 Sep 01:35 (24 Sep 22:35Z), merged by the operator’s hand
+**Session 56: PA A2 DONE, the accounts imported; the session-57 handoff with A3 first.** Records only.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (7):**
+  - `docs/plan/ledger.json` · A2 DONE: the import run from the session on the operator’s word (18 created on prod’s Supabase Auth, 13 without a password; the rerun unchanged 18; the directory answering BLOG_AUTHOR_ID; account_stats() 18, account_admins() 1); the dated line.
+  - `docs/plan/components-programme.md` · re-rendered from the ledger (54 slots).
+  - `docs/HANDOFF.md` · the LATEST block: PA A3 first with its decision scan; the State paragraph for A2’s run.
+  - `SCHEDULE.md` · step 26; the day’s active time.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio at 1.0.182.
+- **Verified:** node docs/plan/render-ledger.mjs → 54 slots; npx vitest run lib/design/plan-ledger.test.ts → 1 file, 6 tests passed.
+- **Review:** none; records only.
+
 ## #1062 · 1.0.181 · records · opened Fri 25 Sep 00:33 (24 Sep 21:33Z), merged by the operator’s hand
 **Session 56: PA A2 on prod and its migration applied, the session-57 handoff with the operator’s import run first.** Records only.
 - **Readers see:** nothing.
