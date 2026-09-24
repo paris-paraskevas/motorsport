@@ -319,6 +319,11 @@
    "date": "2026-09-24",
    "change": "PA PLANNED and APPROVED (ExitPlanMode): a new phase, Accounts move to Supabase Auth, four slots planned. A1, the account seam (two PRs; readers see no change). A2, the import (bcrypt hashes, roles and flags carried; each account keeps its Clerk id as app_metadata.legacy_id, so no table, column, function, stamp or env var changes). A3, Supabase Auth inside the seam and the switch (httpOnly cookies on the server only; the reader’s address forwarded with a secret key; the dev-host lock failing closed; our own screens; code emails through Resend; one sign-in again; a way back for 30 days). A4, Clerk leaves, 30 days later. The operator’s four answers (~08:20Z, each on its default): after P2.4 closes; Google’s own button on our sign-in pages; sign-in by email only; backups accepted as for every table today, a backup job proposed in IDEAS. W3 (workspaces as Clerk Organizations) is re-planned on our own membership table when it is built; workspace.clerk_org_id stays null. The terrain reader (Sonnet) 226,411 tokens against ~150k said; the critic (Sonnet, the read-only Plan type) 197,759 against ~150k, SOUND WITH FIXES: the blocker (search_path on the three security definer functions) and fourteen more folded. The plan file ~/.claude/plans/mossy-whistling-balloon.md holds the text.",
    "word": "the operator, 2026-09-24 ~07:20Z: “plan a full migration to Supabase Auth”; ~08:20Z: the four answers (AskUserQuestion, each on its default); ~08:45Z: the plan approved (ExitPlanMode)"
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PR A merged (#1049, 1.0.168; 07d076bc, 7fc485b5, fddd8040; squash-merged 09:23:44Z as 2daa14fc; prod /changelog 1.0.168 at 09:27:59Z). The reviewer SOUND WITH FIXES (227,972 tokens against ~120k said): both should-fix items folded (the results’ round groups gained their highlight test, proven by removing the rows’ highlight on purpose; the CHANGELOG’s browser line names the signed-in session the Playwright browser still held) and two nits (the rule note’s function below the imports and in the parser’s words; the Followed series help). Home’s parity identical across the deploy (27 regions; the countdown clocks and the footer’s version normalised). P2.4 continues with PR B, the links from the readers.",
+   "word": "the operator, 2026-09-24 ~09:23Z: \"merge\""
   }
  ],
  "phases": {
@@ -733,7 +738,8 @@
    "needsWord": "none",
    "acceptance": "A highlighted leader; a driver name linking to /drivers/[slug]; a season list filtering a results table; test.",
    "status": "started",
-   "scopeHash": "b6e6849d7555"
+   "scopeHash": "b6e6849d7555",
+   "evidence": "PR A: #1049 · 1.0.168 · three commits (07d076bc the build; 7fc485b5 the PA plan’s records; fddd8040 the reviewer’s fixes), squash-merged 2026-09-24 09:23:44Z as 2daa14fc · prod /changelog 1.0.168 at 09:27:59Z · Home’s 27 regions identical across the deploy with the countdown clocks and the footer’s version normalised · the reviewer (Sonnet) SOUND WITH FIXES, 227,972 tokens against ~120k said · tsc 0, lint 0 errors, vitest 230 files / 2323 tests, the dry run 39159.86 KiB"
   },
   {
    "id": "P2.5",
