@@ -8,8 +8,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // page; a page the code serves is refused; an unknown id is 404; admin-only and
 // production-only.
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
@@ -73,7 +73,7 @@ vi.mock('@/lib/betting/client', () => ({
 import { DELETE, POST, PUT } from './route';
 import { PAGE_COLUMNS } from '@/lib/design/pages';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const ROW = 'a1b2c3d4-0000-4000-8000-000000000010';
 const GONE = 'a1b2c3d4-0000-4000-8000-000000000011';
 const CODE = 'c0de0002-0000-4000-8000-000000000002';
@@ -107,8 +107,8 @@ const put = (id: string, body: unknown) =>
   PUT(new Request(url(id), { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }), { params: Promise.resolve({ id }) });
 
 beforeEach(() => {
-  currentUser.mockReset();
-  currentUser.mockResolvedValue(admin);
+  currentAccount.mockReset();
+  currentAccount.mockResolvedValue(admin);
   loadPageDetail.mockReset();
   loadPageDetail.mockImplementation(async (id: string) => (id === ROW ? rowDetail : id === GONE ? goneDetail : id === CODE ? codeDetail : null));
   revalidatePath.mockClear();
@@ -126,9 +126,9 @@ afterEach(() => {
 
 describe('DELETE /api/admin/design/pages/[id]', () => {
   it('is 404 for a non-admin and 403 off production, touching nothing', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await del(ROW)).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await del(ROW)).status).toBe(403);
     expect(chain).not.toHaveBeenCalled();
@@ -232,9 +232,9 @@ describe('POST /api/admin/design/pages/[id] (reinstate)', () => {
   });
 
   it('is 404 for a non-admin and 403 off production', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await post(GONE, { action: 'reinstate' })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await post(GONE, { action: 'reinstate' })).status).toBe(403);
     expect(chain).not.toHaveBeenCalled();

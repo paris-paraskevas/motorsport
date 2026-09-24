@@ -1,8 +1,8 @@
 import { NextResponse, after } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
-import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
+import { setDisplayNameIfMissing, accountDisplayName } from '@/lib/betting/friends';
 import { isStaff } from '@/lib/threads';
 import { createFeedback, listFeedback, notifyNewFeedback, type FeedbackKind } from '@/lib/feedback';
 
@@ -13,9 +13,9 @@ export const dynamic = 'force-dynamic';
 // users never see it.
 export async function GET() {
   if (!isBettingConfigured()) return NextResponse.json({ items: [] });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isStaff(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!isStaff(await currentAccount())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   try {
     return NextResponse.json({ items: await listFeedback() });
   } catch (err) {
@@ -27,9 +27,9 @@ export async function GET() {
 // POST = post a feedback item (staff only): { kind, title, body }.
 export async function POST(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isStaff(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!isStaff(await currentAccount())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   let body: { kind?: unknown; title?: unknown; body?: unknown };
   try {
@@ -45,15 +45,15 @@ export async function POST(req: Request) {
     await ensureAppUser(userId);
     const id = await createFeedback(userId, kind, title, text);
     after(async () => {
-      const u = await currentUser().catch(() => null);
+      const u = await currentAccount().catch(() => null);
       try {
-        await setDisplayNameIfMissing(userId, clerkDisplayName(u));
+        await setDisplayNameIfMissing(userId, accountDisplayName(u));
       } catch {
         /* best-effort */
       }
       try {
         // Notify the operator's inbox — best-effort, must never affect the post.
-        await notifyNewFeedback({ kind, title, body: text, authorName: clerkDisplayName(u), authorId: userId });
+        await notifyNewFeedback({ kind, title, body: text, authorName: accountDisplayName(u), authorId: userId });
       } catch {
         /* best-effort */
       }

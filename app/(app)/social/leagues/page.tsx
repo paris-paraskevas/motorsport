@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense, type ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
 import { getUserLeagues, getLeaderboardsForLeagues } from '@/lib/betting/leagues';
@@ -46,7 +46,7 @@ function frame(children: ReactNode) {
 
 async function LeaguesPage() {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) {
     return frame(
       <div className="font-mono text-sm text-text-muted">

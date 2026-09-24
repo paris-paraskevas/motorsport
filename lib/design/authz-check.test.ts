@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ANONYMOUS, allowedKeys, mayShow, passes, visitorFromClerkUser, type Visitor } from './authz-check';
+import { ANONYMOUS, allowedKeys, mayShow, passes, visitorFromAccount, visitorFromClerkUser, type Visitor } from './authz-check';
 import { DEFAULT_AUTHZ_SCHEMES } from './authz-defaults';
 
 const reader: Visitor = { signedIn: true, role: null, author: false, emails: ['fan@example.com'] };
@@ -43,6 +43,17 @@ describe('allowedKeys and mayShow', () => {
     expect(mayShow('signed_in', DEFAULT_AUTHZ_SCHEMES, ANONYMOUS)).toBe(false);
     expect(mayShow('signed_in', DEFAULT_AUTHZ_SCHEMES, reader)).toBe(true);
     expect(mayShow('nope', DEFAULT_AUTHZ_SCHEMES, admin)).toBe(false);
+  });
+});
+
+describe('visitorFromAccount (PA A1a)', () => {
+  it('is anonymous without an account and reads the role, the ladder and the one address from one', () => {
+    const account = { id: 'user_1', email: 'W@Example.com', name: 'W', username: null, imageUrl: null, role: 'writer', donor: false };
+    expect(visitorFromAccount(null)).toEqual(ANONYMOUS);
+    expect(visitorFromAccount(undefined)).toEqual(ANONYMOUS);
+    expect(visitorFromAccount(account)).toEqual({ signedIn: true, role: 'writer', author: true, emails: ['W@Example.com'] });
+    expect(visitorFromAccount({ ...account, role: null, email: null })).toEqual({ signedIn: true, role: null, author: false, emails: [] });
+    expect(visitorFromAccount({ ...account, role: 'reader' })).toMatchObject({ role: 'reader', author: false });
   });
 });
 

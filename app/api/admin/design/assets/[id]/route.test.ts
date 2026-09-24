@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 // A fake `asset` table: `rows` answers the reads; `update` and `remove` record
 // their payload and filters and answer with `touched`.
@@ -62,7 +62,7 @@ vi.mock('@opennextjs/cloudflare', () => ({
 
 import { DELETE, PUT } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const ID = 'a1b2c3d4-0000-4000-8000-000000000001';
 const KEY = '2026/09/a1b2c3d4-0000-4000-8000-000000000001.jpg';
 const STAMP = '2026-09-08T14:30:00.505502+00:00';
@@ -92,8 +92,8 @@ const call = (method: 'PUT' | 'DELETE', id: string, body: unknown) => {
 
 describe('/api/admin/design/assets/[id]', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     update.mockReset();
     removeRow.mockReset();
     removeFile.mockReset();
@@ -108,9 +108,9 @@ describe('/api/admin/design/assets/[id]', () => {
   });
 
   it('is 404 for a non-admin and for an id that is not a UUID; 403 off production', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await call('PUT', ID, { ...row, updatedAt: STAMP })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     expect((await call('PUT', 'not-a-uuid', { ...row, updatedAt: STAMP })).status).toBe(404);
     delete process.env.PADDOCK_ENV;
     expect((await call('PUT', ID, { ...row, updatedAt: STAMP })).status).toBe(403);

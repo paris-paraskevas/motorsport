@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { addMutedSeries, removeMutedSeries } from '@/lib/userPrefs';
 
 export const runtime = 'nodejs';
@@ -11,8 +11,8 @@ interface MuteBody {
 }
 
 export async function POST(req: Request) {
-  const a = await auth();
-  if (!a.userId) {
+  const userId = await accountId();
+  if (!userId) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
@@ -31,8 +31,8 @@ export async function POST(req: Request) {
   try {
     const prefs =
       body.action === 'unmute'
-        ? await removeMutedSeries(a.userId, slug)
-        : await addMutedSeries(a.userId, slug);
+        ? await removeMutedSeries(userId, slug)
+        : await addMutedSeries(userId, slug);
     return NextResponse.json({ ok: true, mutedSeries: prefs.mutedSeries ?? [] });
   } catch (err) {
     console.error('POST /api/user/mute-series failed:', err);

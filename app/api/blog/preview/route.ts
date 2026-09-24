@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { canAuthor } from '@/lib/threads';
 import { renderPreviewHtml } from '@/lib/blog-embeds';
 
@@ -15,9 +15,9 @@ export const dynamic = 'force-dynamic';
 // renders on the published post + the draft/scheduled full-page preview. A
 // body with no shortcodes previews byte-identically to before. Writer/admin only.
 export async function POST(req: Request) {
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!canAuthor(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!canAuthor(await currentAccount())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   let body: { body?: unknown };
   try {

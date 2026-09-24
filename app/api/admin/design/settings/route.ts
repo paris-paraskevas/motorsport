@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { loadSettingsForEditing } from '@/lib/design/settings';
@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 // stamp, for the designer. Admin-only; 404 for everyone else. Writes are per
 // key, in ./[key]/route.ts.
 export async function GET() {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
   }

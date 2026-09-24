@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { findSource, parseSourceRef } from '@/lib/design/sources';
 import { readSource } from '@/lib/design/source-read';
@@ -17,7 +17,7 @@ const PREVIEW_ROWS = 50;
 // total and the provenance. Admin-only (404); an unknown key is 404. The
 // reader never throws.
 export async function GET(req: Request, { params }: { params: Promise<{ key: string }> }) {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   const { key } = await params;
   if (!findSource(key)) return new Response('not found', { status: 404 });
   const query = new URL(req.url).searchParams.toString();

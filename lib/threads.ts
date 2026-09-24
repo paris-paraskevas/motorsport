@@ -24,20 +24,20 @@ export interface Thread {
 export const TITLE_MAX = 140;
 export const BODY_MAX = 5000;
 
-/** Admin = Clerk `publicMetadata.role === 'admin'` (no Organizations product). */
-export function isAdmin(user: { publicMetadata?: { role?: unknown } } | null | undefined): boolean {
-  return user?.publicMetadata?.role === 'admin';
+/** Admin = the account's role `admin` (lib/auth; Clerk's publicMetadata.role today; no Organizations product). */
+export function isAdmin(account: { role?: string | null } | null | undefined): boolean {
+  return account?.role === 'admin';
 }
 
-/** Staff = admin OR moderator (Clerk `publicMetadata.role`). Admins also pass
+/** Staff = admin OR moderator (the account's role). Admins also pass
  *  isAdmin for admin-only actions; moderators are staff but not admin. Used to
  *  gate the staff feedback board. */
-export function isStaff(user: { publicMetadata?: { role?: unknown } } | null | undefined): boolean {
-  const role = user?.publicMetadata?.role;
+export function isStaff(account: { role?: string | null } | null | undefined): boolean {
+  const role = account?.role;
   return role === 'admin' || role === 'moderator';
 }
 
-/** Author ladder (Clerk `publicMetadata.role`): `admin` > `writer` (trusted,
+/** Author ladder (the account's role): `admin` > `writer` (trusted,
  *  hand-picked) > `contributor` (granted via the /write-for-us application).
  *  All three can author: create + edit their OWN drafts, submit for review, and
  *  run a public author profile. Capabilities are identical today — the split is
@@ -46,17 +46,17 @@ export function isStaff(user: { publicMetadata?: { role?: unknown } } | null | u
  *  handlers MUST additionally enforce ownership (post.author_id === userId) for
  *  anything post-specific — this helper only proves the role. (Replaced
  *  isWriter in 0.251.0; same contract plus the contributor rung.) */
-export function canAuthor(user: { publicMetadata?: { role?: unknown } } | null | undefined): boolean {
-  const role = user?.publicMetadata?.role;
+export function canAuthor(account: { role?: string | null } | null | undefined): boolean {
+  const role = account?.role;
   return role === 'contributor' || role === 'writer' || role === 'admin';
 }
 
-/** Supporter flag (Clerk `publicMetadata.donor`), set by an admin on
- *  /admin/audience when a donation arrives (Buy Me a Coffee has no webhook wired,
+/** Supporter flag (the account's donor; Clerk's `publicMetadata.donor` today), set by an admin
+ *  when a donation arrives (Buy Me a Coffee has no webhook wired,
  *  so matching donor → account is manual). Gates the studio's AI tools;
  *  admins bypass the gate at the call sites, not here. */
-export function hasDonated(user: { publicMetadata?: { donor?: unknown } } | null | undefined): boolean {
-  return user?.publicMetadata?.donor === true;
+export function hasDonated(account: { donor?: boolean } | null | undefined): boolean {
+  return account?.donor === true;
 }
 
 function toThread(r: Record<string, unknown>, name: string | null): Thread {

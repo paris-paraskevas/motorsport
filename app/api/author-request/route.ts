@@ -1,8 +1,8 @@
 import { NextResponse, after } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { canAuthor } from '@/lib/threads';
-import { clerkDisplayName } from '@/lib/betting/friends';
+import { accountDisplayName } from '@/lib/betting/friends';
 import { createAuthorRequest, notifyAdminsAuthorRequest } from '@/lib/author-requests';
 
 export const runtime = 'nodejs';
@@ -14,9 +14,9 @@ export const dynamic = 'force-dynamic';
 // fires off the critical path; the insert is already committed by then.
 export async function POST(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  const user = await currentUser();
+  const user = await currentAccount();
   if (canAuthor(user)) {
     return NextResponse.json({ error: 'you can already write — open the studio' }, { status: 409 });
   }
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   const str = (v: unknown) => (typeof v === 'string' ? v : '');
 
   try {
-    const displayName = clerkDisplayName(user) || 'Unnamed applicant';
+    const displayName = accountDisplayName(user) || 'Unnamed applicant';
     await createAuthorRequest(userId, {
       displayName,
       pitch: str(body.pitch),

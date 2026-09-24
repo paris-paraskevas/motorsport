@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { recordFeedback } from '@/lib/assistant/log';
 
 export const runtime = 'nodejs';
@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 // 👍/👎 on an assistant answer. Signed-in only; best-effort (recordFeedback never
 // throws). `question` is the user turn that produced the rated answer.
 export async function POST(req: Request) {
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
   let body: { question?: unknown; rating?: unknown };

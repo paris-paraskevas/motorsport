@@ -354,6 +354,11 @@
    "date": "2026-09-24",
    "change": "Phase D (documentation) and slot D1 planned: the Designer documentation under docs/designer/, ten chapters (00 what it is · 01 concepts · 02 pages · 03 the Data region · 04 the address · 05 saved views and CSV · 06 rules and links · 07 the Property Editor · 08 Shared Components · 09 the laws), written for the operator first and editors second, from the code and the ledger, each chapter read by one Sonnet agent against the code before it lands, about three sessions (00–02, 03–06, 07–09). The order against PA A1a is the operator’s; the default is D1 first.",
    "word": "the operator, 2026-09-24 ~12:05Z: \"defaults\" (to the proposal of ~11:58Z)"
+  },
+  {
+   "date": "2026-09-24",
+   "change": "The order between D1 and PA A1a: A1a (the account seam, server) starts now; D1 (the Designer documentation) is done after all phases finish, the last slot of the ledger. D1 carries no question any more.",
+   "word": "the operator, 2026-09-24 ~12:45Z: \"pa a1a, let the documentation be done after all phases finish\""
   }
  ],
  "phases": {
@@ -1032,9 +1037,9 @@
    "phase": "PD",
    "title": "The Designer documentation",
    "scope": "docs/designer/: ten Markdown chapters explaining the Designer end to end (what it is; the concepts; pages; the Data region; the address vocabulary; saved views and CSV; highlight, links and master-detail; the Property Editor; Shared Components; the laws), each drafted from the modules it explains with file:line cited, each read by one Sonnet agent against the code before it lands.",
-   "fixedBy": "the operator’s ask of 2026-09-24 ~11:40Z (“very good documentation explaining the entire paddock developer”) and the word “defaults” of ~12:05Z on the proposal (place, audience, shape)",
+   "fixedBy": "the operator’s ask of 2026-09-24 ~11:40Z (“very good documentation explaining the entire paddock developer”) and the word “defaults” of ~12:05Z on the proposal (place, audience, shape); the operator’s word of ~12:45Z: “pa a1a, let the documentation be done after all phases finish” (D1 is the last slot, after PA and the rest of Phase 2)",
    "defaults": "One chapter per file under docs/designer/; the operator’s plain words first, every term expanded; screenshots of the local designer where a screen is described; three sessions (00–02, 03–06, 07–09); each chapter its own commit, one PR per session, a Sonnet reader per chapter; the catalogue docs/pull-requests.md as the companion.",
-   "needsWord": "the order against PA A1a (default: D1 first)",
+   "needsWord": "none (answered 2026-09-24 ~12:45Z: after all phases finish)",
    "acceptance": "Ten chapters under docs/designer/, each with its Sonnet reading recorded and its file:line citations resolving; the operator reads chapter 01 and can name every concept without the code.",
    "status": "planned",
    "scopeHash": "3359e43f775d"

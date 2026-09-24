@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { requireAdmin } from '@/lib/admin-guard';
 import { isProductionWorker } from '@/lib/env';
 import { NAV_LIST_KEYS, loadListForEditing, loadListsForEditing, type EditableList, type NavListKey } from '@/lib/design/lists';
@@ -53,7 +53,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     initialListIndex,
     ...loaded
   ] = await Promise.all([
-    currentUser(),
+    currentAccount(),
     searchParams,
     loadTextForEditing(),
     loadBuildOptionsForEditing(),
@@ -78,7 +78,7 @@ export default async function DesignerPage({ searchParams }: { searchParams: Pro
     if (list) initialLists[key] = list;
   });
   const production = isProductionWorker();
-  const name = user?.firstName ?? user?.username ?? 'Administrator';
+  const name = user?.name?.split(' ')[0] || user?.username || 'Administrator';
   return (
     <DesignerLoader
       readOnly={!production}

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
@@ -32,7 +32,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { PUT } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T11:30:00.505502+00:00';
 
 function put(body: unknown) {
@@ -47,8 +47,8 @@ function put(body: unknown) {
 
 describe('PUT /api/admin/design/themes/default', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     rpc.mockReset();
     revalidatePath.mockClear();
     rpcResult = { data: '2026-09-08T11:40:00.000001+00:00', error: null };
@@ -60,9 +60,9 @@ describe('PUT /api/admin/design/themes/default', () => {
   });
 
   it('is 404 for a non-admin, 403 off production, 400 for a bad key or stamp, touching nothing', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await put({ key: 'midnight', updatedAt: STAMP })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     delete process.env.PADDOCK_ENV;
     expect((await put({ key: 'midnight', updatedAt: STAMP })).status).toBe(403);
     process.env.PADDOCK_ENV = 'production';

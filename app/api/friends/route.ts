@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
 import { sendFriendRequest, respondToFriendRequest, searchUsers, removeFriend } from '@/lib/betting/friends';
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 // router.refresh()es to re-read. 503-safe so it's inert until betting is provisioned.
 export async function POST(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'unavailable' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
   let body: { action?: unknown; userId?: unknown };
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 // each one's friend state vs the viewer (drives the add-friend UI). Inert until provisioned.
 export async function GET(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'unavailable' }, { status: 503 });
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   await ensureAppUser(userId);
   const q = new URL(req.url).searchParams.get('q') ?? '';

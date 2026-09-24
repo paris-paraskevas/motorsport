@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { allowRequest } from '@/lib/rate-limit';
 import {
   answerConversation,
@@ -22,7 +22,7 @@ const PER_USER_DAILY_CAP = 20;
 const GLOBAL_PER_MINUTE = 12;
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) {
     return NextResponse.json({ error: 'sign in to use the assistant' }, { status: 401 });
   }

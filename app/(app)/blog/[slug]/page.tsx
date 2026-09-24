@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { listPostSlugs, loadPost, loadAllPosts } from '@/lib/posts';
 import { getPostBySlug, publishedPosts, type BlogPost } from '@/lib/blog';
 import { getAuthorByClerkId } from '@/lib/authors';
@@ -22,7 +22,7 @@ import { BlogShare } from '@/components/blog/BlogShare';
 import { BlogReactions } from '@/components/blog/BlogReactions';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-// Force-dynamic: required for the admin scheduled-preview branch (currentUser),
+// Force-dynamic: required for the admin scheduled-preview branch (currentAccount),
 // and DB posts render at request time anyway. generateStaticParams stays
 // MDX-only — DB posts are served dynamically, not enumerated at build.
 export const dynamic = 'force-dynamic';
@@ -148,7 +148,7 @@ function formatDateTime(iso: string): string {
 // non-essential dependency of this page is now wrapped like this.
 async function safeCurrentUser() {
   try {
-    return await currentUser();
+    return await currentAccount();
   } catch {
     return null;
   }

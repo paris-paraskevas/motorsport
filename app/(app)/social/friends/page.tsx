@@ -3,7 +3,7 @@ import { after } from 'next/server';
 import { Suspense, type ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
 import {
@@ -11,7 +11,7 @@ import {
   listIncomingRequests,
   listOutgoingRequests,
   setDisplayNameIfMissing,
-  clerkDisplayName,
+  accountDisplayName,
 } from '@/lib/betting/friends';
 import { FriendsPanel } from '@/components/betting/FriendsPanel';
 import { PAGE_WIDE } from '@/lib/site';
@@ -47,7 +47,7 @@ function frame(children: ReactNode) {
 
 async function FriendsPage() {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) {
     return frame(
       <div className="font-mono text-sm text-text-muted">
@@ -72,11 +72,11 @@ async function FriendsData({ userId }: { userId: string }) {
     listIncomingRequests(userId),
     listOutgoingRequests(userId),
   ]);
-  // Name backfill off the critical path — currentUser() (Clerk backend) can fail
+  // Name backfill off the critical path — currentAccount() (Clerk backend) can fail
   // on a fresh sign-in handshake and must never block the page (see the join page).
   after(async () => {
     try {
-      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+      await setDisplayNameIfMissing(userId, accountDisplayName(await currentAccount()));
     } catch {
       /* best-effort */
     }

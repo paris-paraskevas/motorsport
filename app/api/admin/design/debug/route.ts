@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { levelFromKey, levelFromParam, newCid } from '@/lib/design/debug';
 import { tracePage } from '@/lib/design/debug-trace';
@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 //     untouched.
 
 export async function GET(req: Request) {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   const url = new URL(req.url);
   const levelParam = url.searchParams.get('level');
   // Absent: Info, as APEX starts. Named but unknown: refused, never a silent Info.

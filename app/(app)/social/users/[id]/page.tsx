@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getUserProfile } from '@/lib/betting/account';
 import type { FriendState } from '@/lib/betting/friends';
@@ -43,7 +43,7 @@ function Stat({ value, label }: { value: number | string; label: string }) {
 async function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
-  const { userId } = await auth();
+  const userId = await accountId();
   if (userId === id) redirect('/settings');
 
   const profile = await getUserProfile(id, userId);

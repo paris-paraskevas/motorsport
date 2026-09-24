@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
@@ -16,9 +16,9 @@ export const dynamic = 'force-dynamic';
 // so there is no path to another author's row. Writer-or-admin only; a reader with
 // no writing role has no profile to edit.
 async function requireAuthor(): Promise<{ userId: string } | NextResponse> {
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!canAuthor(user)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   return { userId };
 }

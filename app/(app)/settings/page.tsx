@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight, Bell, Download, LogOut, Palette } from 'lucide-react';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { SignOutButton } from '@clerk/nextjs';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
@@ -25,7 +25,7 @@ export const generateMetadata = pageMetadata('/settings', BASE_METADATA);
 // links into the dedicated Notifications + Championships pages. URL stays
 // /settings (bookmarks, Clerk redirects); the surface is "Account".
 async function AccountPage() {
-  const { userId } = await auth();
+  const userId = await accountId();
   const stats = userId && isBettingConfigured() ? await getAccountStats(userId).catch(() => null) : null;
   const seriesList = (await loadAllSeriesMeta()).map(({ slug, name, color }) => ({ slug, name, color }));
 

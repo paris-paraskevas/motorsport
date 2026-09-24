@@ -3,13 +3,13 @@ import { Suspense, type ReactNode } from 'react';
 import Link from 'next/link';
 import { after } from 'next/server';
 import { Trophy, Users, BookOpen, MessagesSquare, ArrowUpRight } from 'lucide-react';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
 import { getOpenMarkets } from '@/lib/betting/markets';
 import { getUserBets } from '@/lib/betting/bets';
 import { getUserLeagues, getLeaderboard } from '@/lib/betting/leagues';
-import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
+import { setDisplayNameIfMissing, accountDisplayName } from '@/lib/betting/friends';
 import { PlayMarkets } from '@/components/betting/PlayMarkets';
 import { PER_WEEKEND_CREDITS } from '@/lib/betting/constants';
 import { PAGE_WIDE } from '@/lib/site';
@@ -93,7 +93,7 @@ function Row({ href, icon, eyebrow, title, desc }: {
 
 async function SocialPage() {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
-  const { userId } = await auth();
+  const userId = await accountId();
   const signedIn = Boolean(userId);
   return frame(
     <>
@@ -172,7 +172,7 @@ async function Predictions({ userId }: { userId: string }) {
   const leagueRows = firstLeague ? await getLeaderboard(firstLeague.id).catch(() => []) : [];
   after(async () => {
     try {
-      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+      await setDisplayNameIfMissing(userId, accountDisplayName(await currentAccount()));
     } catch {
       /* best-effort */
     }

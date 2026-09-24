@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 let production = true;
 vi.mock('@/lib/env', () => ({ isProductionWorker: () => production }));
@@ -36,7 +36,7 @@ vi.mock('@/lib/betting/client', () => ({
 
 import { GET, POST } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-08T06:34:16.728382+00:00';
 const shell = [
   { key: 'bar', role: 'bar', label: 'Navigation Bar List', updated_at: STAMP },
@@ -47,8 +47,8 @@ const post = (body: unknown) =>
 
 describe('/api/admin/design/lists', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     production = true;
     listRows = { data: shell, error: null };
     entryRows = { data: [{ list_key: 'bar' }, { list_key: 'bar' }, { list_key: 'bar' }, { list_key: 'doors' }], error: null };
@@ -57,9 +57,9 @@ describe('/api/admin/design/lists', () => {
   });
 
   it('GET is 404 for a non-admin, else every list with its role, stamp and entry count', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await GET()).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     const res = await GET();
     expect(res.status).toBe(200);
     const json = (await res.json()) as { lists: { key: string; entries: number; updatedAt: string }[] };

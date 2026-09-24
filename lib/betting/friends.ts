@@ -115,27 +115,18 @@ export async function listIncomingRequests(userId: string): Promise<IncomingRequ
   }));
 }
 
-/** Backfill app_user.display_name from Clerk — only when currently null (never clobbers). */
+/** Backfill app_user.display_name from the account — only when currently null (never clobbers). */
 export async function setDisplayNameIfMissing(userId: string, name: string | null): Promise<void> {
   if (!name) return;
   await betDb().from('app_user').update({ display_name: name }).eq('clerk_user_id', userId).is('display_name', null);
 }
 
-/** Best display name from a Clerk user: full name → username → email local-part → null. */
-export function clerkDisplayName(
-  u: {
-    firstName?: string | null;
-    lastName?: string | null;
-    username?: string | null;
-    primaryEmailAddress?: { emailAddress?: string | null } | null;
-  } | null,
-): string | null {
-  if (!u) return null;
-  const full = [u.firstName, u.lastName].filter(Boolean).join(' ').trim();
-  if (full) return full;
-  if (u.username) return u.username;
-  const email = u.primaryEmailAddress?.emailAddress;
-  if (email) return email.split('@')[0];
+/** Best display name from an account (lib/auth): the name → the username → the address's local part → null. */
+export function accountDisplayName(account: { name?: string | null; username?: string | null; email?: string | null } | null): string | null {
+  if (!account) return null;
+  if (account.name) return account.name;
+  if (account.username) return account.username;
+  if (account.email) return account.email.split('@')[0];
   return null;
 }
 

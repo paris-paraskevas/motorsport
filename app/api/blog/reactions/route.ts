@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createHmac } from 'node:crypto';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { allowRequest, clientIp } from '@/lib/rate-limit';
 import { getReactionSummary, setReaction, removeReaction, type Voter } from '@/lib/blog-reactions';
@@ -17,7 +17,7 @@ function ipHashOf(req: Request): string {
 }
 
 async function resolveVoter(req: Request): Promise<Voter> {
-  const { userId } = await auth();
+  const userId = await accountId();
   return userId ? { userId } : { ipHash: ipHashOf(req) };
 }
 

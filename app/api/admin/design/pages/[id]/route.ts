@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -28,7 +28,7 @@ export const dynamic = 'force-dynamic';
 //     once (a dynamic route as a whole), and this isolate's frame memo is
 //     cleared. Admin-only (404), production-only (403).
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
   }
@@ -42,7 +42,7 @@ const SLUG = /^[a-z0-9_-]+$/;
 const READ_ONLY = { error: 'Design edits are made on production; this copy of the site is read-only.' };
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) return NextResponse.json(READ_ONLY, { status: 403 });
   if (!isBettingConfigured()) {
@@ -115,7 +115,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 //     comes back as it was, its address alive again at once (revalidated).
 //     409 for a page that is not deleted. Admin-only (404), production-only (403).
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) return NextResponse.json(READ_ONLY, { status: 403 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
@@ -170,7 +170,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 //     live: Delete it first. A page the code serves is refused (400) either way:
 //     the code owns its route. Admin-only (404), production-only (403).
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) return NextResponse.json(READ_ONLY, { status: 403 });
   if (!isBettingConfigured()) {

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { listSubscriptions } from '@/lib/push-store';
 
 export const runtime = 'nodejs';
@@ -23,16 +23,16 @@ function endpointProvider(endpoint: string): string {
  * If signed-out, returns 401 (so curl callers can see they need auth).
  */
 export async function GET() {
-  const a = await auth();
-  if (!a.userId) {
+  const userId = await accountId();
+  if (!userId) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
   const all = await listSubscriptions();
-  const mine = all.filter(s => s.userId === a.userId);
+  const mine = all.filter(s => s.userId === userId);
 
   return NextResponse.json({
-    userId: a.userId,
+    userId,
     totalStored: all.length,
     yours: mine.length,
     subscriptions: mine.map(s => ({

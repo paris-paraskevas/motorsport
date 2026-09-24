@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
 import { placeBet } from '@/lib/betting/bets';
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'betting not available' }, { status: 503 });
   }
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
   let body: { marketId?: unknown; pick?: unknown; position?: unknown; legs?: unknown; stake?: unknown; leagueId?: unknown };

@@ -2,10 +2,10 @@ import { Suspense, type ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { after } from 'next/server';
 import Link from 'next/link';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
-import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
+import { setDisplayNameIfMissing, accountDisplayName } from '@/lib/betting/friends';
 import { getLeagueDetail } from '@/lib/betting/leagues';
 import { LeagueDetailView } from '@/components/betting/LeagueDetailView';
 import { PAGE_READ, PLAY_MONEY_NOTE } from '@/lib/site';
@@ -34,7 +34,7 @@ async function LeaguePage({ params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) {
     return frame(<p className="font-mono text-sm text-text-muted">Betting isn&apos;t live yet.</p>);
   }
-  const { userId } = await auth();
+  const userId = await accountId();
   if (!userId) {
     return frame(
       <div className="font-mono text-sm text-text-muted">
@@ -63,7 +63,7 @@ async function LeaguePage({ params }: { params: Promise<{ id: string }> }) {
 
 // Onboarding + detail in one parallel wave; getLeagueDetail's reads don't need
 // the app_user row, so they race ensureBettingUser safely. The name backfill —
-// and its slow currentUser() Clerk hop — is deferred to after() so it never
+// and its slow currentAccount() Clerk hop — is deferred to after() so it never
 // blocks the league render (mirrors /social + the feedback route).
 async function LeagueData({ id, userId }: { id: string; userId: string }) {
   const [, league] = await Promise.all([
@@ -72,7 +72,7 @@ async function LeagueData({ id, userId }: { id: string; userId: string }) {
   ]);
   after(async () => {
     try {
-      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+      await setDisplayNameIfMissing(userId, accountDisplayName(await currentAccount()));
     } catch {
       /* best-effort */
     }

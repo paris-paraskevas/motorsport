@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 
@@ -53,7 +53,7 @@ vi.mock('@/lib/design/live-page', () => ({
 
 import { DELETE, PUT } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const STAMP = '2026-09-23T21:30:00.505502+00:00';
 const NEXT = '2026-09-23T21:45:00.000001+00:00';
 const stored = { key: 'top-five', page_id: 'p1', region_id: 't', name: 'Top five', definition: { sort: { column: 'points', desc: true }, filters: [] }, seq: 10, updated_at: STAMP };
@@ -66,8 +66,8 @@ const call = (method: 'PUT' | 'DELETE', key: string, body: unknown) => {
 
 describe('/api/admin/design/views/[key]', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     update.mockReset();
     remove.mockReset();
     filters.mockReset();
@@ -81,9 +81,9 @@ describe('/api/admin/design/views/[key]', () => {
   });
 
   it('is 404 for a non-admin, for a key outside the rule and for a key not stored; 403 off production', async () => {
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {} });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect((await call('PUT', 'top-five', { name: 'x', updatedAt: STAMP })).status).toBe(404);
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockResolvedValue(admin);
     expect((await call('PUT', 'Not A Key', { name: 'x', updatedAt: STAMP })).status).toBe(404);
     expect((await call('PUT', 'unknown', { name: 'x', updatedAt: STAMP })).status).toBe(404);
     delete process.env.PADDOCK_ENV;

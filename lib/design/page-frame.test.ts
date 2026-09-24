@@ -41,8 +41,8 @@ vi.mock('./lists', () => ({
   loadNavLists: async () => ({ doors: [], bar: [], footerSite: [], footerLegal: [] }),
   loadDocumentLists: async (keys: string[]) => Object.fromEntries(keys.map(k => [k, []])),
 }));
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 // The components' server half: what a region draws, and whether a race weekend is on.
 const raceWeekend = vi.fn(async () => false);
 vi.mock('./component-render', () => ({
@@ -86,8 +86,8 @@ beforeEach(() => {
   configured = true;
   rows = { data: [calendar()], error: null };
   from.mockReset();
-  currentUser.mockReset();
-  currentUser.mockResolvedValue(null);
+  currentAccount.mockReset();
+  currentAccount.mockResolvedValue(null);
   loadLiveFrame.mockReset();
   loadLiveFrame.mockResolvedValue(null);
   resetPageFrameMemo();
@@ -167,7 +167,7 @@ describe('withPageGate', () => {
     rows = { data: null, error: { message: 'down' } };
     resetPageFrameMemo();
     expect(await gated(props)).toBe('page f1');
-    expect(currentUser).not.toHaveBeenCalled();
+    expect(currentAccount).not.toHaveBeenCalled();
   });
 
   it("lets the page's own notFound and redirect propagate", async () => {
@@ -183,7 +183,7 @@ describe('withPageGate', () => {
     const refused = await gated(props);
     expect(typeOf(refused)).toBe(RefusedPage);
     expect(propsOf(refused)).toEqual({ title: 'Race calendar 2026', message: 'Sign in to see this.', signInHelps: true });
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect(await gated(props)).toBe('page f1');
   });
 
@@ -192,7 +192,7 @@ describe('withPageGate', () => {
     await expect(withPageGate('/calendar', Page)(props)).rejects.toThrow('NEXT_NOT_FOUND');
     rows = { data: [calendar({ authz_key: 'contributor' })], error: null };
     resetPageFrameMemo();
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
+    currentAccount.mockResolvedValue({ id: 'u' });
     const refused = await withPageGate('/calendar', Page)(props);
     expect(typeOf(refused)).toBe(RefusedPage);
     expect(propsOf(refused)).toEqual({ title: 'Calendar', message: 'For approved writers.', signInHelps: false });
@@ -215,7 +215,7 @@ describe('withPageGate', () => {
     expect(d.shortcuts['times.local']).toBe('All times are local.');
     expect([...d.allowed]).toEqual([]);
     expect(loadLiveFrame).toHaveBeenCalledWith('/calendar');
-    expect(currentUser).not.toHaveBeenCalled();
+    expect(currentAccount).not.toHaveBeenCalled();
 
     loadLiveFrame.mockResolvedValue(live([]));
     expect(await gated(props)).toBe('page f1');
@@ -230,8 +230,8 @@ describe('withPageGate', () => {
     const anonymous = dataOf(await gated(props));
     expect([...anonymous.allowed]).toEqual([]);
     expect(anonymous.messages).toEqual({ signed_in: 'Sign in to see this.' });
-    expect(currentUser).toHaveBeenCalledTimes(1);
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
+    expect(currentAccount).toHaveBeenCalledTimes(1);
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect([...dataOf(await gated(props)).allowed]).toEqual(['signed_in']);
   });
 
@@ -251,8 +251,8 @@ describe('withPageGate', () => {
     const anonymous = await gated(props);
     expect(typeOf(anonymous)).toBe(CodePageFrame);
     expect(dataOf(anonymous).document.regions.map(r => r.id)).toEqual(['above', 'code-body', 'f1only']);
-    expect(currentUser).toHaveBeenCalledTimes(1);
-    currentUser.mockResolvedValue({ id: 'u', publicMetadata: {}, emailAddresses: [] });
+    expect(currentAccount).toHaveBeenCalledTimes(1);
+    currentAccount.mockResolvedValue({ id: 'u' });
     expect(dataOf(await gated(props)).document.regions.map(r => r.id)).toEqual(['above', 'code-body', 'members', 'f1only']);
   });
 

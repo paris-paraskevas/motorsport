@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { canAuthor, hasDonated, isAdmin } from '@/lib/threads';
 import { askModel, isAssistantConfigured } from '@/lib/assistant/model';
 import { BODY_MAX } from '@/lib/blog';
@@ -35,7 +35,7 @@ const SYSTEM = [
 ].join('\n');
 
 export async function POST(req: Request) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!canAuthor(user)) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }

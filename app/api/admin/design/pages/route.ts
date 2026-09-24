@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -38,7 +38,7 @@ export const dynamic = 'force-dynamic';
 //      an administrator's click, never a side effect of a read (the plan
 //      critic's finding). Admin-only (404), production-only (403).
 export async function GET() {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
   }
@@ -50,7 +50,7 @@ export async function GET() {
 const READ_ONLY = { error: 'Design edits are made on production; this copy of the site is read-only.' };
 
 export async function POST(req: Request) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) return NextResponse.json(READ_ONLY, { status: 403 });
   if (!isBettingConfigured()) {
@@ -121,7 +121,7 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) return NextResponse.json(READ_ONLY, { status: 403 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });

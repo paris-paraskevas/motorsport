@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -34,10 +34,10 @@ function refused(status: number, error: string, extra: Record<string, unknown> =
 
 type Gate =
   | { fail: Response; user?: undefined }
-  | { fail: null; user: Awaited<ReturnType<typeof currentUser>> };
+  | { fail: null; user: Awaited<ReturnType<typeof currentAccount>> };
 
 async function gate(): Promise<Gate> {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return { fail: new Response('not found', { status: 404 }) };
   if (!isProductionWorker()) {
     return { fail: refused(403, 'Design edits are made on production; this copy of the site is read-only.') };

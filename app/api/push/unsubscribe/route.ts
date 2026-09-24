@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { accountId } from '@/lib/auth/server';
 import {
   deleteSubscription,
   getSubscription,
@@ -22,8 +22,7 @@ export async function POST(req: Request) {
 
   let callerId: string | null = null;
   try {
-    const a = await auth();
-    callerId = a.userId ?? null;
+    callerId = await accountId();
   } catch {
     callerId = null;
   }

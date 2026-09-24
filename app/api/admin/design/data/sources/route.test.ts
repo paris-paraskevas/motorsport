@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // tier's runs and the snapshot tier's fetches. Admin-only. The catalogue
 // itself is client-safe, so the route answers only what needs the database.
 
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUser() }));
+const currentAccount = vi.fn();
+vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 
 let tables: Record<string, { data: unknown; error: { message: string } | null }> = {};
 vi.mock('@/lib/betting/client', () => ({
@@ -51,14 +51,14 @@ vi.mock('@/lib/source-snapshot', () => ({
 
 import { GET } from './route';
 
-const admin = { id: 'user_admin', publicMetadata: { role: 'admin' } };
+const admin = { id: 'user_admin', role: 'admin' };
 const MONZA = 'a1b2c3d4-0000-4000-8000-000000000002';
 const region = (id: string, kind: string, extra: Record<string, unknown> = {}) => ({ id, kind, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, ...extra });
 
 describe('GET /api/admin/design/data/sources', () => {
   beforeEach(() => {
-    currentUser.mockReset();
-    currentUser.mockResolvedValue(admin);
+    currentAccount.mockReset();
+    currentAccount.mockResolvedValue(admin);
     tables = {
       page: { data: [{ id: MONZA, path: '/history/monza', name: 'Monza, a history' }], error: null },
       page_revision: {
@@ -69,7 +69,7 @@ describe('GET /api/admin/design/data/sources', () => {
   });
 
   it('is not found for anyone but an administrator', async () => {
-    currentUser.mockResolvedValue(null);
+    currentAccount.mockResolvedValue(null);
     expect((await GET()).status).toBe(404);
   });
 

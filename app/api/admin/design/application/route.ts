@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 // GET /api/admin/design/application → the application definition with the row's
 //     stamp, for the designer's Application Definition editor. Admin-only (404).
 export async function GET() {
-  if (!isAdmin(await currentUser())) return new Response('not found', { status: 404 });
+  if (!isAdmin(await currentAccount())) return new Response('not found', { status: 404 });
   if (!isBettingConfigured()) {
     return NextResponse.json({ error: 'database not configured' }, { status: 503 });
   }
@@ -30,7 +30,7 @@ export async function GET() {
 // alias and the home path are never written (the code's). Admin-only (404),
 // production-only (403). The layout is revalidated: the shell reads the row.
 export async function PUT(req: Request) {
-  const user = await currentUser();
+  const user = await currentAccount();
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(

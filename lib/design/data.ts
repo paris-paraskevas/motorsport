@@ -1,5 +1,5 @@
 import 'server-only';
-import { clerkClient } from '@clerk/nextjs/server';
+import { accountCount, latestAccounts } from '@/lib/auth/directory';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { fetchGa4Traffic, isGa4Configured } from '@/lib/analytics/ga4';
 import { fetchGscSearch, isGscConfigured } from '@/lib/analytics/gsc';
@@ -363,10 +363,8 @@ const readers: Record<string, () => Promise<Partial>> = {
     };
   },
   async clerk() {
-    const client = await clerkClient();
-    const [count, list] = await Promise.all([client.users.getCount(), client.users.getUserList({ limit: 25, orderBy: '-created_at' })]);
+    const [count, recent] = await Promise.all([accountCount(), latestAccounts(25)]);
     const now = Date.now();
-    const recent = list.data;
     const within = (days: number) => recent.filter(u => now - u.createdAt <= days * 86_400_000).length;
     const capped = recent.length === 25 ? ' · among the 25 newest' : '';
     return {
@@ -381,7 +379,7 @@ const readers: Record<string, () => Promise<Partial>> = {
         {
           title: 'Recent sign-ups · the newest accounts',
           cols: ['When', 'Role'],
-          rows: recent.map(u => [day(u.createdAt), typeof u.publicMetadata?.role === 'string' ? u.publicMetadata.role : 'reader']),
+          rows: recent.map(u => [day(u.createdAt), u.role ?? 'reader']),
         },
       ],
     };

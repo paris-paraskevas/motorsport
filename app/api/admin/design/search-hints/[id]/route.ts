@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -19,7 +19,7 @@ export const dynamic = 'force-dynamic';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-function gate(user: { publicMetadata?: { role?: unknown } } | null, id: string): Response | null {
+function gate(user: { role?: string | null } | null, id: string): Response | null {
   if (!isAdmin(user)) return new Response('not found', { status: 404 });
   if (!isProductionWorker()) {
     return NextResponse.json(
@@ -39,7 +39,7 @@ function gate(user: { publicMetadata?: { role?: unknown } } | null, id: string):
 // DELETE /api/admin/design/search-hints/<id> → { ok }
 // Admin-only (404), production-only (403); the layout is revalidated after both.
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   const { id } = await params;
   const refused = gate(user, id);
   if (refused) return refused;
@@ -103,7 +103,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const user = await currentUser();
+  const user = await currentAccount();
   const { id } = await params;
   const refused = gate(user, id);
   if (refused) return refused;
