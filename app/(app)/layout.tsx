@@ -1,7 +1,7 @@
 import { SerwistRegister } from '@/components/SerwistRegister';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { ClerkProvider } from '@clerk/nextjs';
+import { AuthProvider } from '@/lib/auth/client';
 import { FONT_CLASSES } from '@/lib/fonts';
 import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
@@ -119,29 +119,7 @@ export default async function RootLayout({
   const customCss = [appearanceCss(appearance), themeCss(themes)].filter(Boolean).join('\n');
 
   return (
-    <ClerkProvider
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/"
-      signUpFallbackRedirectUrl="/"
-      // Clerk 7 honours only colorPrimary / colorBackground / borderRadius here;
-      // colorText, colorTextOnPrimaryBackground and colorInput* were silently
-      // ignored (verified: --cl-color-* were unset at runtime while the heading
-      // still computed to white). Worse, the hard-coded light colorBackground
-      // painted the card cream on the dark themes while Clerk kept its own white
-      // heading — that is the unreadable sign-in modal.
-      //
-      // Clerk 7's default theme follows the CSS `color-scheme` property, and
-      // globals.css already declares it per theme (dark on :root, light on
-      // newsprint / circuit / paper). So passing no background lets the modal
-      // track whichever of the six themes is active, for free. Only the brand
-      // accent is asserted.
-      appearance={{
-        variables: {
-          colorPrimary: '#8c1c13',
-        },
-      }}
-    >
+    <AuthProvider look="site">
       <html
         lang="en"
         data-theme={theme.dataTheme}
@@ -228,6 +206,6 @@ export default async function RootLayout({
           <SerwistRegister />
         </body>
       </html>
-    </ClerkProvider>
+    </AuthProvider>
   );
 }

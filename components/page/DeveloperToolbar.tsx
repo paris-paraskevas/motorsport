@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import { Bug, FilePen, House, Info, PaintRoller, Settings, SquareMousePointer, SquarePen, Timer, type LucideIcon } from 'lucide-react';
 import { LEVEL_NAMES, keyOfLevel, levelFromKey, levelFromParam, type DebugLevel, type DebugReport, type OnLevel } from '@/lib/design/debug';
 import { noteNavigation } from '@/lib/design/debug-client';
@@ -220,10 +220,10 @@ interface Trace {
 }
 
 export function DeveloperToolbar() {
-  const { isLoaded, user } = useUser();
+  const { isLoaded, account } = useAccount();
   const pathname = usePathname() ?? '';
   // Clerk's publicMetadata.role, the source lib/threads.ts isAdmin() reads, checked inline as AppShell does: that module reaches the service-role database client and stays out of the public chunk.
-  const admin = isLoaded && user?.publicMetadata?.role === 'admin';
+  const admin = isLoaded && account?.role === 'admin';
   const [pages, setPages] = useState<PageLite[] | null>(null);
   const [level, setLevel] = useState<DebugLevel>(readLevel);
   const [menu, setMenu] = useState<OpenMenu>(null);

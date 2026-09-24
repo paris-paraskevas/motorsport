@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Bell, Check, ChevronRight } from 'lucide-react';
-import { useAuth } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import type { NavSeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
@@ -21,7 +21,7 @@ type Step = 'series' | 'notifications' | 'done';
 const ONBOARDED_LS = 'paddock:onboarded';
 
 export function OnboardingWizard({ seriesList }: { seriesList: NavSeriesMeta[] }) {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAccount();
   const { setFollowed } = useFollowedSeries();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('series');

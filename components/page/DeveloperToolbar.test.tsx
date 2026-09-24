@@ -7,9 +7,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // the HTML readers get is unchanged; APEX's nine entries in APEX's order, the
 // built ones live, the rest disabled and naming their slot.
 
-let user: { publicMetadata?: { role?: string } } | null = { publicMetadata: { role: 'admin' } };
+let user: { role?: string | null } | null = { role: 'admin' };
 let pathname = '/history/monza';
-vi.mock('@clerk/nextjs', () => ({ useUser: () => ({ isLoaded: true, user }) }));
+vi.mock('@/lib/auth/client', () => ({ useAccount: () => ({ isLoaded: true, isSignedIn: user !== null, account: user, avatarUrl: null }) }));
 vi.mock('next/navigation', () => ({ usePathname: () => pathname }));
 import { DeveloperToolbar, matchesPattern } from './DeveloperToolbar';
 import { patternMatches } from '@/lib/design/page-document';
@@ -40,7 +40,7 @@ const fetchMock = vi.fn(async (url: string) =>
 beforeEach(() => {
   fetchMock.mockClear();
   vi.stubGlobal('fetch', fetchMock);
-  user = { publicMetadata: { role: 'admin' } };
+  user = { role: 'admin' };
   pathname = '/history/monza';
   window.sessionStorage.clear();
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ANONYMOUS, allowedKeys, mayShow, passes, visitorFromAccount, visitorFromClerkUser, type Visitor } from './authz-check';
+import { ANONYMOUS, allowedKeys, mayShow, passes, visitorFromAccount, type Visitor } from './authz-check';
 import { DEFAULT_AUTHZ_SCHEMES } from './authz-defaults';
 
 const reader: Visitor = { signedIn: true, role: null, author: false, emails: ['fan@example.com'] };
@@ -57,17 +57,3 @@ describe('visitorFromAccount (PA A1a)', () => {
   });
 });
 
-describe('visitorFromClerkUser', () => {
-  it('is anonymous without a user and reads role, ladder and emails from one', () => {
-    expect(visitorFromClerkUser(null)).toEqual(ANONYMOUS);
-    expect(visitorFromClerkUser(undefined)).toEqual(ANONYMOUS);
-    expect(visitorFromClerkUser({ publicMetadata: { role: 'writer' }, emailAddresses: [{ emailAddress: 'W@Example.com' }] })).toEqual({
-      signedIn: true,
-      role: 'writer',
-      author: true,
-      emails: ['W@Example.com'],
-    });
-    expect(visitorFromClerkUser({ publicMetadata: {}, emailAddresses: [] })).toEqual({ signedIn: true, role: null, author: false, emails: [] });
-    expect(visitorFromClerkUser({})).toEqual({ signedIn: true, role: null, author: false, emails: [] });
-  });
-});

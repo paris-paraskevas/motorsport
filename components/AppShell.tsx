@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { useAuth, useUser, SignOutButton } from '@clerk/nextjs';
+import { SignOutButton, useAccount } from '@/lib/auth/client';
 import { NavSeriesMeta } from '@/lib/types';
 import type { NavLists } from '@/lib/design/destinations';
 import type { AuthzScheme } from '@/lib/design/authz-defaults';
@@ -219,8 +219,7 @@ function HeaderDate() {
 // Profile i will go to account page. If not i have access to blog, whats new,
 // about, sign out"). Signed-out gets the same menu with Sign in at the top.
 function HeaderAccount() {
-  const { isLoaded, isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { isLoaded, isSignedIn, account, avatarUrl } = useAccount();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -239,10 +238,11 @@ function HeaderAccount() {
     };
   }, [open]);
 
-  // Clerk's `publicMetadata.role`, the same source lib/threads.ts isAdmin() uses
-  // on the server. Read here rather than passed in so the shell stays a client
-  // component with no Clerk backend hop.
-  const isAdminUser = user?.publicMetadata?.role === 'admin';
+  // The account's role, the same source lib/threads.ts isAdmin() reads on the
+  // server. Read here rather than passed in so the shell stays a client
+  // component with no session read; inline rather than through lib/threads,
+  // which would pull the database client into the shell's bundle.
+  const isAdminUser = account?.role === 'admin';
 
   const itemClass =
     'block w-full px-3 py-2 text-left font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text';
@@ -292,10 +292,10 @@ function HeaderAccount() {
         // was 32px against the bell's 44px and read as an afterthought).
         className="hidden lg:block h-11 w-11 shrink-0 overflow-hidden rounded-full border border-border-strong bg-surface transition-colors duration-(--duration-fast) hover:border-text"
       >
-        {isLoaded && isSignedIn && user?.imageUrl && (
+        {isLoaded && isSignedIn && avatarUrl && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={user.imageUrl} alt="" className="h-full w-full object-cover" />
+            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
           </>
         )}
       </button>
@@ -305,14 +305,14 @@ function HeaderAccount() {
           aria-label="Account"
           className="absolute right-0 top-[calc(100%+10px)] z-50 w-60 border-[1.5px] border-text bg-surface-elevated shadow-lg"
         >
-          {isSignedIn && user ? (
+          {isSignedIn && account ? (
             <div className="border-b border-border px-3 py-2.5">
               <span className="block truncate font-serif text-15 font-semibold leading-tight text-text">
-                {user.fullName ?? user.username ?? 'Signed in'}
+                {account.name ?? account.username ?? 'Signed in'}
               </span>
-              {user.primaryEmailAddress?.emailAddress && (
+              {account.email && (
                 <span className="mt-0.5 block truncate font-mono text-10 text-text-faint">
-                  {user.primaryEmailAddress.emailAddress}
+                  {account.email}
                 </span>
               )}
             </div>
@@ -330,8 +330,8 @@ function HeaderAccount() {
               one destination the operator opens to DO something. A plain <a>,
               not next/link: dev.paddock-tracker.com is a different host, itself
               admin-locked in middleware.ts, so this has to be a full navigation.
-              Role is read client-side from Clerk (same ladder as
-              AccountStaffLinks), so nothing renders until Clerk confirms it and
+              Role is read client-side from the account (same ladder as
+              AccountStaffLinks), so nothing renders until it has loaded and
               a non-admin never sees the row. */}
           {isSignedIn && isAdminUser && (
             <a

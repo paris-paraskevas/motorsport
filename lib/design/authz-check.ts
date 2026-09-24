@@ -5,8 +5,7 @@ import type { AuthzScheme } from './authz-defaults';
 // The check behind every authorization scheme, client-safe (Phase 3 step 4).
 // A scheme is a row (or one of the shipped four) with a type and a value; a
 // visitor is what the account says about the session, on the server (authz-evaluate.ts
-// reads it through lib/auth) or in the browser (visitorFromClerkUser from useUser(),
-// until A1b moves the browser onto the seam). Every check
+// reads it through lib/auth) or in the browser (useVisitor, through useAccount). Every check
 // fails closed: a key that names no scheme, a role scheme with no value, an
 // anonymous visitor asked for anything but public, all refuse. One rule for a
 // page, its regions and the navigation lists.
@@ -28,23 +27,6 @@ export function visitorFromAccount(account: Account | null | undefined): Visitor
   return { signedIn: true, role: account.role, author: canAuthor(account), emails: account.email ? [account.email] : [] };
 }
 
-/** The shape of a Clerk user the browser still hands over (useVisitor, from useUser()) until A1b moves it onto the seam. */
-export interface ClerkUserLike {
-  publicMetadata?: { role?: unknown } | null;
-  emailAddresses?: { emailAddress: string }[];
-}
-
-/** A visitor from a Clerk user; anonymous when there is none. */
-export function visitorFromClerkUser(user: ClerkUserLike | null | undefined): Visitor {
-  if (!user) return ANONYMOUS;
-  const role = user.publicMetadata && typeof user.publicMetadata.role === 'string' ? user.publicMetadata.role : null;
-  return {
-    signedIn: true,
-    role,
-    author: canAuthor({ role }),
-    emails: (user.emailAddresses ?? []).map(e => e.emailAddress),
-  };
-}
 
 /** Whether a visitor passes one scheme. Undefined (no such scheme) fails. */
 export function passes(scheme: AuthzScheme | undefined, visitor: Visitor): boolean {

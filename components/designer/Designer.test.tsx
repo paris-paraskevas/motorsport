@@ -17,12 +17,9 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push() {}, replace() {}, prefetch() {} }),
   useSearchParams: () => new URLSearchParams(),
 }));
-vi.mock('@clerk/nextjs', () => ({
-  useAuth: () => ({ isSignedIn: false, isLoaded: true }),
-  useUser: () => ({ user: null, isLoaded: true, isSignedIn: false }),
-  SignedIn: () => null,
-  SignedOut: () => null,
-  UserButton: () => null,
+vi.mock('@/lib/auth/client', () => ({
+  useAccount: () => ({ account: null, isLoaded: true, isSignedIn: false, avatarUrl: null }),
+  AccountButton: () => null,
 }));
 vi.mock('@/lib/betting/client', () => ({ isBettingConfigured: () => false, betDb: () => ({}) }));
 

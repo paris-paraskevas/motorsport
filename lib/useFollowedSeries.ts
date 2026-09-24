@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import { getFollowedSeries as getLocalFollowed } from './follow';
 
 interface State {
@@ -29,7 +29,7 @@ export function useFollowedSeries(): {
   setFollowed: (slugs: string[]) => void | Promise<void>;
   clearFollowed: () => void;
 } {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAccount();
   const [{ followed, hydrated }, setState] = useState<State>({
     followed: null,
     hydrated: false,

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useAccount, useAccountFlags } from '@/lib/auth/client';
 import { Check, Flag, X } from 'lucide-react';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { currentWhatsNew, type WhatsNewEntry } from '@/lib/whats-new';
@@ -42,25 +42,24 @@ const FOCUS_RING =
  * entry in force, '' hides the notice, and it is seeded with the active entry.
  *
  * The shell — backdrop, focus trap, scroll lock, dismissal to localStorage plus
- * the Clerk account, and an entrance gated behind `motion-safe:` — follows
+ * the account's flags, and an entrance gated behind `motion-safe:` — follows
  * SupportPrompt and the banner it replaces rather than inventing a third dialog
  * language.
  */
 export function WhatsNewModal({ activeId }: { activeId: string }) {
   const entry = currentWhatsNew(activeId);
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn } = useAccount();
+  const { flags, setFlag } = useAccountFlags();
   const [open, setOpen] = useState(false);
   const [entered, setEntered] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const dismissedId = isSignedIn
-    ? (user?.unsafeMetadata as Record<string, unknown> | undefined)?.[META_KEY]
-    : undefined;
+  const dismissedId = isSignedIn ? flags?.[META_KEY] : undefined;
   const dismissedOnAccount = Boolean(entry && dismissedId === entry.id);
 
   useEffect(() => {
     if (!entry) return;
-    // Wait for Clerk rather than flash an announcement at an account that has
+    // Wait for the account rather than flash an announcement at one that has
     // already dismissed this entry on another device.
     if (!isLoaded || dismissedOnAccount) return;
     // The consent modal owns the screen on a first visit, and two stacked
@@ -108,14 +107,12 @@ export function WhatsNewModal({ activeId }: { activeId: string }) {
     } catch {
       /* non-persistent dismissal is acceptable; it returns next visit */
     }
-    if (isSignedIn && user) {
-      void user
-        .update({ unsafeMetadata: { ...user.unsafeMetadata, [META_KEY]: entry.id } })
-        .catch(() => {
-          /* offline / rate-limited: the local dismissal still holds */
-        });
+    if (isSignedIn) {
+      void setFlag(META_KEY, entry.id).catch(() => {
+        /* offline / rate-limited: the local dismissal still holds */
+      });
     }
-  }, [entry, isSignedIn, user]);
+  }, [entry, isSignedIn, setFlag]);
 
   useFocusTrap(panelRef, dismiss, open);
 

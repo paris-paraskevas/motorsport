@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Mail, X } from 'lucide-react';
-import { useUser } from '@clerk/nextjs';
+import { useAccount } from '@/lib/auth/client';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 
 const CONTACT_OPEN_EVENT = 'paddock:open-contact';
@@ -44,19 +44,19 @@ const FIELD_CLASS =
 // fields, mono labels, ink submit. `onCancel` renders the modal's Cancel
 // button; the page omits it.
 export function ContactForm({ onCancel }: { onCancel?: () => void }) {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn, account } = useAccount();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [category, setCategory] = useState<Category>('general');
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
-  // Prefill the signed-in address once Clerk resolves — adjusted DURING render
+  // Prefill the signed-in address once the account resolves — adjusted DURING render
   // (the sanctioned prev-value pattern; an effect would trip the repo's
   // set-state-in-effect error rule). Never clobbers typing: fires once, and
   // only into an empty field.
   const primary =
-    isLoaded && isSignedIn ? user?.primaryEmailAddress?.emailAddress ?? '' : '';
+    isLoaded && isSignedIn ? account?.email ?? '' : '';
   const [prefilled, setPrefilled] = useState(false);
   if (!prefilled && primary !== '') {
     setPrefilled(true);

@@ -9,11 +9,12 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type React from 'react';
 
-let clerk: { user: unknown; isLoaded: boolean; isSignedIn: boolean } = { user: null, isLoaded: false, isSignedIn: false };
-vi.mock('@clerk/nextjs', () => ({
-  useUser: () => clerk,
-  useAuth: () => ({ isSignedIn: clerk.isSignedIn, isLoaded: clerk.isLoaded }),
+let clerk: { account: unknown; isLoaded: boolean; isSignedIn: boolean } = { account: null, isLoaded: false, isSignedIn: false };
+vi.mock('@/lib/auth/client', () => ({
+  useAccount: () => ({ ...clerk, avatarUrl: null }),
   SignOutButton: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignInLink: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  AccountButton: () => null,
 }));
 vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
 vi.mock('next/link', () => ({
@@ -51,7 +52,7 @@ const text = Object.fromEntries(TEXT_KEYS.map(k => [k, TEXT_DEFAULTS[k].text])) 
 
 afterEach(() => {
   cleanup();
-  clerk = { user: null, isLoaded: false, isSignedIn: false };
+  clerk = { account: null, isLoaded: false, isSignedIn: false };
 });
 
 describe('navigation entries and authorization schemes', () => {
@@ -61,12 +62,12 @@ describe('navigation entries and authorization schemes', () => {
     expect(screen.queryByText('Threads')).toBeNull();
     expect(screen.queryByText('Studio')).toBeNull();
     cleanup();
-    clerk = { user: { publicMetadata: {}, emailAddresses: [] }, isLoaded: true, isSignedIn: true };
+    clerk = { account: { id: 'u1', email: null, name: null, username: null, imageUrl: null, role: null, donor: false }, isLoaded: true, isSignedIn: true };
     render(<DoorLinks entries={doors} schemes={DEFAULT_AUTHZ_SCHEMES} preview />);
     expect(screen.getByText('Threads')).toBeTruthy();
     expect(screen.queryByText('Studio')).toBeNull();
     cleanup();
-    clerk = { user: { publicMetadata: { role: 'contributor' }, emailAddresses: [] }, isLoaded: true, isSignedIn: true };
+    clerk = { account: { id: 'u1', email: null, name: null, username: null, imageUrl: null, role: 'contributor', donor: false }, isLoaded: true, isSignedIn: true };
     render(<DoorLinks entries={doors} schemes={DEFAULT_AUTHZ_SCHEMES} preview />);
     expect(screen.getByText('Studio')).toBeTruthy();
   });

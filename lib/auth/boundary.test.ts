@@ -4,34 +4,13 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Who may import Clerk (PA A1): lib/auth/ and a named allow-list that shrinks with each PR of the phase, so the files that
-// read the provider move behind the seam once and stay there. After A1a the server files are behind it; the browser's files
-// and the two layouts wait for A1b, the middleware, the sign-in pages and the webhook for A3. R9 took the Account page off
-// the list: its Sign out row is drawn by components/AccountIdentity.tsx now.
+// read the provider move behind the seam once and stay there. After A1a the server files are behind it, after A1b the
+// browser's files and the two layouts; the middleware, the sign-in pages and the webhook wait for A3.
 const ALLOWED = new Set([
   'middleware.ts',
   'app/api/webhooks/clerk/route.ts',
-  'app/(admin)/layout.tsx',
-  'app/(app)/layout.tsx',
   'app/(app)/sign-in/[[...sign-in]]/page.tsx',
   'app/(app)/sign-up/[[...sign-up]]/page.tsx',
-  'components/AccountIdentity.tsx',
-  'components/AccountStaffLinks.tsx',
-  'components/AppShell.tsx',
-  'components/BottomBar.tsx',
-  'components/ContactModal.tsx',
-  'components/EnableNotifications.tsx',
-  'components/NotifPrefsSection.tsx',
-  'components/OnboardingWizard.tsx',
-  'components/SettingsClient.tsx',
-  'components/SupportPrompt.tsx',
-  'components/YourDevices.tsx',
-  'components/assistant/AssistantWidget.tsx',
-  'components/authors/WriteForUsForm.tsx',
-  'components/blog/StudioLink.tsx',
-  'components/page/DeveloperToolbar.tsx',
-  'components/useVisitor.ts',
-  'components/whats-new/WhatsNewModal.tsx',
-  'lib/useFollowedSeries.ts',
 ]);
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
