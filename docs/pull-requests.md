@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1058 · 1.0.177 · records · merged Thu 24 Sep 14:17 (14:17Z)
+Records R9's merge (#1057, squash-merged 14:01:37Z as 64a5c6f5): R9 DONE with its evidence, the session-57 handoff with PA A1b first, and the schedule's step 23.
+- **Files (8):**
+  - `CHANGELOG.md` · the release trio: the engineering note (1.0.177).
+  - `RELEASES.md` · the release trio: the public note (1.0.177).
+  - `SCHEDULE.md` · records: step 23.
+  - `docs/HANDOFF.md` · records: the LATEST block for session 57 (PA A1b first, its decision scan and the lesson R9 leaves).
+  - `docs/plan/components-programme.md` · records: the generated plan page, re-rendered from the ledger.
+  - `docs/plan/ledger.json` · records: R9 DONE with its evidence and the dated merge line.
+  - `docs/pull-requests.md` · records: #1057's entry and this PR's.
+  - `package.json` · the release trio: the version bump (1.0.177).
+- **Review:** none (records)
+
 ## #1057 · 1.0.176 · R9 · merged Thu 24 Sep 17:01 (14:01Z)
 **The Account page’s Sign out row is drawn in the browser; the page answered 500 when signed in.** Found by PA A1a’s signed-in browser run: the page, a Server Component, handed a `<button>` child to Clerk’s `<SignOutButton>`, a Client Component, whose single-child check refused what arrived across the boundary.
 - **Readers see:** the Account page opens again when signed in, with its Sign out row at the end of the list.
