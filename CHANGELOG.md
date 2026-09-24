@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.167 — 2026-09-24
+
+### Records — P2.3 DONE (the saved_view migration on prod), P2.4's decision scan answered, the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: **P2.3 DONE** — the `saved_view` migration `20260923220000` applied on prod at 2026-09-24T06:25:34Z on the operator's word "apply 20260923220000" (~06:20Z), rehearsed first inside begin…rollback through the Management API (HTTP 201, no error, the table absent before and after), then the file as it is, then read back (0 rows, row level security on, the index and the trigger present, the nine columns as designed), the file once more inside a rolled-back transaction raising nothing; the dated line with the word. **P2.4's decision scan answered** (2026-09-24 ~06:20Z, the options drawn): master-detail through the address (a master row link writes the detail region's filter; cached variants; shareable), not through component events (declared, never run); leader and podium highlight rules on the server, the followed-series highlight as a client repaint after the page loads; driver and team links from the readers (each row's page address by the site's own resolver), never a typed pattern — the slot's `fixedBy` and `defaults` carry them. `docs/HANDOFF.md`: the session-57 prompt (P2.4's plan in plan mode with a Sonnet critic as the first task, the terrain's findings, this run's landmines). `SCHEDULE.md` step 16. Nothing changes for readers.
+
 ## 1.0.166 — 2026-09-23
 
 ### Records — P2.3 PR B on prod, the slot STARTED until the prod apply, the session-57 handoff
