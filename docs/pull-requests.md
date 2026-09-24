@@ -14,6 +14,20 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1062 · 1.0.181 · records · opened Fri 25 Sep 00:33 (24 Sep 21:33Z), merged by the operator’s hand
+**Session 56: PA A2 on prod and its migration applied, the session-57 handoff with the operator’s import run first.** Records only.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (8):**
+  - `docs/plan/ledger.json` · A2’s evidence: the merge of #1061 (21:20:46Z as f79e6330; prod 1.0.180 at 21:24:46Z) and the prod apply of 20260924200000 (rehearsed, applied 21:21:09Z, read back, rerun, account_stats() 0 accounts); the dated line on “merge, apply 20260924200000”; A2 STARTED until the operator’s run.
+  - `docs/plan/components-programme.md` · re-rendered from the ledger (54 slots).
+  - `docs/pull-requests.md` · #1061’s entry and this one.
+  - `docs/HANDOFF.md` · the LATEST block: the operator’s run first (the export, the dry run, --write, the counts), then the directory check for BLOG_AUTHOR_ID, then PA A3; the State paragraph for A2.
+  - `SCHEDULE.md` · step 25; the day’s active time.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio at 1.0.181.
+- **Verified:** node docs/plan/render-ledger.mjs → 54 slots; npx vitest run lib/design/plan-ledger.test.ts → 1 file, 6 tests passed.
+- **Review:** none; records only.
+
 ## #1061 · 1.0.180 · PA A2 · merged Fri 25 Sep 00:20 (24 Sep 21:20Z)
 **The import of Clerk’s accounts into Supabase Auth, ids unchanged; the accounts migration.** The third PR of phase PA: the script the operator runs by hand with their Clerk export, and the migration that gives photos a bucket and the site three functions over auth.users.
 - **Readers see:** nothing; nothing runs until the operator runs it.
