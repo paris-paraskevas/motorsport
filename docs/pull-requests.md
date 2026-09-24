@@ -14,6 +14,149 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1055 · 1.0.174 · PA A1a · merged Thu 24 Sep 16:26 (13:26Z)
+**The account seam, server: every server file reads the signed-in person through lib/auth.** The first PR of phase PA (the accounts’ move from Clerk to Supabase Auth): a seam of our own in front of Clerk, so that the switch (A3) later touches the seam alone and no caller.
+- **Readers see:** nothing; Clerk stays the provider, and the pages answer as before signed out and signed in.
+- **Editors get:** nothing.
+- **Files (134):**
+  - `CHANGELOG.md` · the release trio: the engineering note (1.0.174).
+  - `IDEAS.md` · records: the 331.9 KiB the new shared import added to the Worker, noted not fought.
+  - `RELEASES.md` · the release trio: the public note (1.0.174).
+  - `app/(admin)/admin/designer/page.tsx` · the greeting takes the first word of the account’s name (Clerk’s first name before).
+  - `app/(app)/api/home/bets/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/api/home/social/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/blog/[slug]/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/f1/compare/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/feedback/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/preview/[rev]/page.test.tsx` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/(app)/settings/assistant/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/settings/author/page.tsx` · the suggested author name from the account’s one name.
+  - `app/(app)/settings/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/social/friends/add/[id]/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/social/friends/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/social/leagues/[id]/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/social/leagues/join/[token]/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/social/leagues/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/social/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/social/threads/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/social/users/[id]/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/(app)/threads/[id]/page.tsx` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/appearance/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/appearance/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/application/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/application/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/assets/[id]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/assets/[id]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/assets/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/assets/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/authz/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/authz/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/authz/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/authz/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/build-options/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/build-options/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/build-options/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/data/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/data/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/data/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/data/runs/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/data/sources/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/data/sources/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/data/sources/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/data/sources/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/debug/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/debug/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/definitions/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/definitions/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/definitions/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/definitions/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/lists/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/lists/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/lists/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/lists/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/pages/[id]/revisions/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/pages/[id]/revisions/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/pages/[id]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/pages/[id]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/pages/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/pages/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/search-hints/[id]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/search-hints/[id]/route.ts` · reads the seam; its local gate typed on the account’s role.
+  - `app/api/admin/design/search-hints/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/search-hints/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/settings/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/settings/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/settings/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/shortcuts/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/shortcuts/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/shortcuts/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/shortcuts/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/text/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/text/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/text/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/themes/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/themes/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/themes/default/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/themes/default/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/themes/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/themes/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/views/[key]/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/views/[key]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/admin/design/views/route.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `app/api/admin/design/views/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/assistant/feedback/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/assistant/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/author-request/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/author/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/bet/league/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/bet/market/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/bet/place/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/blog/[id]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/blog/format/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/blog/headings/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/blog/preview/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/blog/reactions/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/blog/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/contact/route.ts` · reads the session’s id through `accountId()` where `const a = await auth()` was.
+  - `app/api/feedback/[id]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/feedback/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/friends/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/push/devices/route.ts` · reads the session’s id through `accountId()` where `const a = await auth()` was.
+  - `app/api/push/inspect/route.ts` · reads the session’s id through `accountId()` where `const a = await auth()` was.
+  - `app/api/push/subscribe/route.ts` · reads the session’s id through `accountId()` where `const a = await auth()` was.
+  - `app/api/push/test/route.ts` · reads the session’s id through `accountId()` where `const a = await auth()` was.
+  - `app/api/push/unsubscribe/route.ts` · reads the session’s id through `accountId()` where `const a = await auth()` was.
+  - `app/api/threads/[id]/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/threads/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/user/mute-series/route.ts` · reads the session’s id through `accountId()` where `const a = await auth()` was.
+  - `app/api/user/notif-prefs/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/user/onboarded/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `app/api/user/prefs/route.ts` · reads the seam: `currentAccount()` and `accountId()` where Clerk’s calls were.
+  - `components/blog/StudioLink.tsx` · maps Clerk’s browser user to the helper’s shape itself until A1b.
+  - `docs/plan/components-programme.md` · records: the generated plan page, re-rendered from the ledger.
+  - `docs/plan/ledger.json` · records: the operator's order (A1a now, D1 after all phases), a dated line.
+  - `lib/admin-guard.ts` · `requireAdmin` and `requireAuthor` read the account; `requireAuthor` returns it.
+  - `lib/auth/boundary.test.ts` · the test that no file outside lib/auth and a 25-file allow-list imports @clerk/, and that every allow-listed file still does.
+  - `lib/auth/client.tsx` · new: the `Account` type (id, email, name, username, imageUrl, role, donor); A1b adds the provider and the hooks.
+  - `lib/auth/directory.ts` · new, server-only: `accountById`, `latestAccounts`, `accountCount`, `adminAccountIds` over Clerk’s Backend API, the id rule at its top.
+  - `lib/auth/server.test.ts` · the tests for the mapping and the two reads, written first.
+  - `lib/auth/server.ts` · new, server-only: `currentAccount()` and `accountId()` over Clerk, with the one mapping `accountFromClerkUser`.
+  - `lib/author-identity.ts` · the byline from `accountById`; the photo gate now the seam’s.
+  - `lib/betting/friends.ts` · `clerkDisplayName` became `accountDisplayName`: the name, the username, the address’s local part.
+  - `lib/blog-notify.ts` · the admins from `adminAccountIds`, the author’s address from `accountById`; the fail-soft rules kept.
+  - `lib/design/authz-check.test.ts` · the tests for `visitorFromAccount`.
+  - `lib/design/authz-check.ts` · `visitorFromAccount` beside `visitorFromClerkUser` (the browser’s, until A1b); the ladder read from the role.
+  - `lib/design/authz-evaluate.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `lib/design/authz-evaluate.ts` · `currentVisitor` reads the account through the seam.
+  - `lib/design/data.test.ts` · the mock moved from clerkClient to the directory.
+  - `lib/design/data.ts` · the accounts card from `accountCount` and `latestAccounts`.
+  - `lib/design/page-frame.test.ts` · the mock moved to `@/lib/auth/server`, the fixtures to account shapes; no assertion changed.
+  - `lib/threads.ts` · the four role helpers (isAdmin, isStaff, canAuthor, hasDonated) take an account’s role and donor.
+  - `package.json` · the release trio: the version bump (1.0.174).
+- **Verified:** tests first, seen red (the mapping; the boundary with 84 offenders before the move), then green. Gates: tsc 0 · lint 0 errors (2 known warnings) · vitest 232 files, 2338 tests · cf:build exit 0 · wrangler deploy --dry-run Total Upload 39581.68 KiB / gzip 8667.89 KiB (+331.9 KiB over 1.0.172, the chunk groups re-cut; IDEAS). Signed out on the local server: the pages and the gated routes answer as before. Signed in through the helper, on the word "helper go": the header’s account menu, /studio and /admin/designer as before (`.playwright-mcp/a1a-header-menu.png`, `a1a-designer.png`).
+- **Review:** SOUND WITH FIXES, nothing blocking (~250k tokens said, 222,762 measured, 65 tool uses). Its one should-fix, stated in the record: the server’s visitor carries the account’s one address where Clerk’s user carried every address (fail-closed; prod holds four schemes, none of type email_domain). Its nit, the greeting’s first word, disclosed.
+- **Finding, outside the PR:** /settings answers 500 when signed in, on main as on the branch: the Server Component hands a `<button>` child to Clerk’s `<SignOutButton>` and Clerk’s single-child check refuses what arrives across the boundary; signed out 200. Proposed as R9.
+
 ## #1053 · 1.0.172 · P2.4 PR C · merged Thu 24 Sep 15:07 (12:07Z)
 **Master-detail: a region's rows filter another region through the address.** The third of P2.4's three PRs: a Data region's rows can filter
 another Data region of the page, each row carrying a Show link that writes its value into the paired region's filter in the address, so the
