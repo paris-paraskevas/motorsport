@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.171 — 2026-09-24
+
+### Records — P2.4 PR B on prod, the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: P2.4's evidence gains PR B. #1051 was squash-merged 2026-09-24 10:32:22Z as 48b1f5cf on the operator's word "merge" (~10:32Z), and prod `/changelog` showed 1.0.170 at 10:36:34Z. On prod, Home's standings tables now link 13 driver names to their pages; with those anchors unwrapped, 26 of Home's 27 regions are identical across the deploy (the countdown clocks and the footer's version normalised), and the wire differs by a relative age alone ("2d ago" became "3d ago" between the cached copy before and the fresh render after). The reviewer's verdict, PASS WITH NOTES, was recorded in cdf347bf. The dated line records the word. `docs/HANDOFF.md`: the LATEST block and the session-57 prompt put P2.4 PR C first (master-detail, on the approved plan), then P2.4 DONE, then phase PA. `SCHEDULE.md`: step 20. No code changes.
+
 ## 1.0.170 — 2026-09-24
 
 ### Designer — [P2.4 PR B] Links from the readers (APEX: a column link)
