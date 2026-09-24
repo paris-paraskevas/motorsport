@@ -19,7 +19,6 @@ vi.mock('next/navigation', () => ({
 }));
 vi.mock('@/lib/auth/client', () => ({
   useAccount: () => ({ account: null, isLoaded: true, isSignedIn: false, avatarUrl: null }),
-  AccountButton: () => null,
 }));
 vi.mock('@/lib/betting/client', () => ({ isBettingConfigured: () => false, betDb: () => ({}) }));
 

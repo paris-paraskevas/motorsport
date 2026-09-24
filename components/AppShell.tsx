@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { SignOutButton, useAccount } from '@/lib/auth/client';
+import { useAccount } from '@/lib/auth/client';
+import { SignOutButton } from '@/lib/auth/client-pieces';
 import { NavSeriesMeta } from '@/lib/types';
 import type { NavLists } from '@/lib/design/destinations';
 import type { AuthzScheme } from '@/lib/design/authz-defaults';

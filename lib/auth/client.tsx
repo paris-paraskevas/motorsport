@@ -1,11 +1,11 @@
 'use client';
-import { useCallback, useMemo, type ReactNode } from 'react';
-import { ClerkProvider, SignInButton, SignOutButton as ClerkSignOutButton, UserButton, useUser } from '@clerk/nextjs';
+import { useCallback, useMemo } from 'react';
+import { useUser } from '@clerk/nextjs';
 
-// The account seam's browser half (PA A1b): the only browser code that knows the provider. Every browser file reads
-// useAccount() and the pieces below; A3 puts Supabase Auth behind them (the account from /api/account, the sign-in link to
-// our own page, the account button our own menu) and no caller changes. R9's lesson holds here too: a piece and its child
-// are created together in the browser; a Server Component's element child is never handed to one.
+// The account seam's browser half (PA A1b): the hooks every browser file reads instead of Clerk's, importing Clerk's useUser
+// alone, so that Clerk's provider and UI code never ride with them into every route's chunk group (client-provider.tsx and
+// client-pieces.tsx hold those, imported where used; the Worker grew 2 MiB when one module held all). A3 puts Supabase
+// Auth behind the same hooks (the account from /api/account) and no caller changes.
 
 /** A signed-in person as the site reads them, the same on the server (lib/auth/server.ts) and in the browser. */
 export interface Account {
@@ -96,42 +96,4 @@ export function useAccountFlags(): { flags: Record<string, unknown> | null; setF
     [on, user],
   );
   return { flags, setFlag };
-}
-
-/** The four addresses the provider's pieces need, the same on both hosts. */
-const URLS = { signInUrl: '/sign-in', signUpUrl: '/sign-up', signInFallbackRedirectUrl: '/', signUpFallbackRedirectUrl: '/' } as const;
-
-/** The two looks of the provider's own screens. The site's asserts the brand accent alone: Clerk 7 honours only
- *  colorPrimary, colorBackground and borderRadius (colorText, colorTextOnPrimaryBackground and colorInput* were silently
- *  ignored: --cl-color-* were unset at run time while the heading still computed to white), a hard-coded light
- *  colorBackground painted the card cream on the dark themes under Clerk's white heading (the unreadable sign-in modal),
- *  and Clerk 7's default theme follows the CSS color-scheme, which globals.css declares per theme, so the modal tracks
- *  whichever of the six themes is active for free. The console's is its paper palette. */
-const LOOKS = {
-  site: { variables: { colorPrimary: '#8c1c13' } },
-  console: { variables: { colorBackground: '#fffcf2', colorText: '#1e1a13', colorPrimary: '#8c1c13', colorTextOnPrimaryBackground: '#f7f3e8', colorInputBackground: '#fbf7ec', colorInputText: '#1e1a13' } },
-} as const;
-
-/** The provider around a host's tree: the (app) layout's site look, the (admin) layout's console look. */
-export function AuthProvider({ look, children }: { look: keyof typeof LOOKS; children: ReactNode }) {
-  return (
-    <ClerkProvider {...URLS} appearance={LOOKS[look]}>
-      {children}
-    </ClerkProvider>
-  );
-}
-
-/** A sign-in affordance around one button created here in the browser: Clerk's modal today, a link to our own page in A3. */
-export function SignInLink({ children }: { children: ReactNode }) {
-  return <SignInButton mode="modal">{children}</SignInButton>;
-}
-
-/** A sign-out affordance around one button created here in the browser (never a Server Component's child: R9). */
-export function SignOutButton({ children, redirectUrl }: { children: ReactNode; redirectUrl?: string }) {
-  return <ClerkSignOutButton redirectUrl={redirectUrl}>{children}</ClerkSignOutButton>;
-}
-
-/** The person's avatar with the provider's account menu behind it: Clerk's UserButton today, our own Account page's menu in A3. */
-export function AccountButton({ avatarClassName }: { avatarClassName: string }) {
-  return <UserButton appearance={{ elements: { avatarBox: avatarClassName } }} />;
 }

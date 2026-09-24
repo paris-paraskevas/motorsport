@@ -10,8 +10,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type React from 'react';
 
 let clerk: { account: unknown; isLoaded: boolean; isSignedIn: boolean } = { account: null, isLoaded: false, isSignedIn: false };
-vi.mock('@/lib/auth/client', () => ({
-  useAccount: () => ({ ...clerk, avatarUrl: null }),
+vi.mock('@/lib/auth/client', () => ({ useAccount: () => ({ ...clerk, avatarUrl: null }) }));
+vi.mock('@/lib/auth/client-pieces', () => ({
   SignOutButton: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   SignInLink: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   AccountButton: () => null,

@@ -23,7 +23,9 @@ const auth = vi.fn();
 const currentUser = vi.fn();
 vi.mock('@clerk/nextjs/server', () => ({ auth: () => auth(), currentUser: () => currentUser() }));
 
-import { AccountButton, AuthProvider, SignInLink, SignOutButton, accountFromBrowserUser, useAccount, useAccountFlags } from './client';
+import { accountFromBrowserUser, useAccount, useAccountFlags } from './client';
+import { AuthProvider } from './client-provider';
+import { AccountButton, SignInLink, SignOutButton } from './client-pieces';
 import { accountFromClerkUser } from './server';
 
 const user = () => ({

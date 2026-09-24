@@ -1,7 +1,7 @@
 import { SerwistRegister } from '@/components/SerwistRegister';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { AuthProvider } from '@/lib/auth/client';
+import { AuthProvider } from '@/lib/auth/client-provider';
 import { FONT_CLASSES } from '@/lib/fonts';
 import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';

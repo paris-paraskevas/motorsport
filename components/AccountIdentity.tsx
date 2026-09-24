@@ -1,6 +1,7 @@
 'use client';
 import { LogIn, LogOut } from 'lucide-react';
-import { AccountButton, SignInLink, SignOutButton, useAccount } from '@/lib/auth/client';
+import { useAccount } from '@/lib/auth/client';
+import { AccountButton, SignInLink, SignOutButton } from '@/lib/auth/client-pieces';
 
 // Identity strip at the top of /settings (the bottom bar calls it Account —
 // PR 2d makes the page keep that promise). Signed in: avatar + name/email,

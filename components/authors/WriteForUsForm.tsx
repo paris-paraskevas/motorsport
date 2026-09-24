@@ -2,7 +2,8 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { SignInLink, useAccount } from '@/lib/auth/client';
+import { useAccount } from '@/lib/auth/client';
+import { SignInLink } from '@/lib/auth/client-pieces';
 
 // The application form on /write-for-us. Client-side so the page itself stays
 // cacheable: signed-out visitors get a sign-in CTA, existing authors get sent

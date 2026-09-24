@@ -1,6 +1,6 @@
 import { SerwistRegister } from '@/components/SerwistRegister';
 import type { Metadata, Viewport } from 'next';
-import { AuthProvider } from '@/lib/auth/client';
+import { AuthProvider } from '@/lib/auth/client-provider';
 import { FONT_CLASSES } from '@/lib/fonts';
 import { SITE_URL } from '@/lib/site';
 import { ConsoleModeScript } from '@/components/designer/ConsoleMode';
