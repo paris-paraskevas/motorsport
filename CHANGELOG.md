@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.181 — 2026-09-24
+
+### Records — PA A2 on prod, its migration applied, the operator's run next
+
+Records only. `docs/plan/ledger.json`: A2's evidence gains the merge (#1061 squash-merged 2026-09-24 21:20:46Z as f79e6330 on the operator's word "merge"; prod `/changelog` 1.0.180 at 21:24:46Z on the footer) and the prod apply on "apply 20260924200000" (rehearsed inside begin…rollback through the Management API, applied 21:21:09Z, read back, rerun without change, `account_stats()` answering 0 accounts); the slot stays STARTED until the operator runs the import by hand. `docs/pull-requests.md`: #1061's entry and this PR's. `docs/HANDOFF.md`: the LATEST block (the operator's run first, then the directory check, then A3). `SCHEDULE.md`: step 25.
+
 ## 1.0.180 — 2026-09-24
 
 ### Accounts — [PA A2] The import: Clerk's accounts into Supabase Auth, ids unchanged

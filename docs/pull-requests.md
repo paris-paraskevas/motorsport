@@ -14,6 +14,38 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1062 · 1.0.181 · records · opened Fri 25 Sep 00:33 (24 Sep 21:33Z), merged by the operator’s hand
+**Session 56: PA A2 on prod and its migration applied, the session-57 handoff with the operator’s import run first.** Records only.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (8):**
+  - `docs/plan/ledger.json` · A2’s evidence: the merge of #1061 (21:20:46Z as f79e6330; prod 1.0.180 at 21:24:46Z) and the prod apply of 20260924200000 (rehearsed, applied 21:21:09Z, read back, rerun, account_stats() 0 accounts); the dated line on “merge, apply 20260924200000”; A2 STARTED until the operator’s run.
+  - `docs/plan/components-programme.md` · re-rendered from the ledger (54 slots).
+  - `docs/pull-requests.md` · #1061’s entry and this one.
+  - `docs/HANDOFF.md` · the LATEST block: the operator’s run first (the export, the dry run, --write, the counts), then the directory check for BLOG_AUTHOR_ID, then PA A3; the State paragraph for A2.
+  - `SCHEDULE.md` · step 25; the day’s active time.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio at 1.0.181.
+- **Verified:** node docs/plan/render-ledger.mjs → 54 slots; npx vitest run lib/design/plan-ledger.test.ts → 1 file, 6 tests passed.
+- **Review:** none; records only.
+
+## #1061 · 1.0.180 · PA A2 · merged Fri 25 Sep 00:20 (24 Sep 21:20Z)
+**The import of Clerk’s accounts into Supabase Auth, ids unchanged; the accounts migration.** The third PR of phase PA: the script the operator runs by hand with their Clerk export, and the migration that gives photos a bucket and the site three functions over auth.users.
+- **Readers see:** nothing; nothing runs until the operator runs it.
+- **Editors get:** nothing.
+- **Files (10):**
+  - `CHANGELOG.md` · the release trio: the engineering note (1.0.180).
+  - `RELEASES.md` · the release trio: the public note (1.0.180).
+  - `docs/plan/components-programme.md` · records: the generated plan page, re-rendered from the ledger.
+  - `docs/plan/ledger.json` · records: A2 STARTED with the build’s evidence and the dated line.
+  - `package.json` · the release trio: the version bump (1.0.180).
+  - `scripts/import-clerk-users.mts` · new: the import (the export parsed by column name, the plan by legacy id then address, the writer through the admin API, counts alone in the output).
+  - `scripts/import-clerk-users.test.ts` · new: seven tests (the export, the mapping, the plan, the rerun, the matching, the writer, a redacted failure).
+  - `supabase/config.toml` · the local auth and storage services on (the migration needs both).
+  - `supabase/migrations/20260924200000_accounts.sql` · new: the avatars bucket and the three service-role functions over auth.users, search_path pinned; on prod 2026-09-24 21:21Z.
+  - `vitest.config.ts` · includes scripts/**/*.test.ts.
+- **Verified:** seven tests (written before the code; their first run came after it, since vitest did not include scripts/ until this PR). The migration on the local database: the bucket as declared, the functions answering the service role and refusing anon and authenticated, applied twice without error. Gates: tsc 0 · lint 0 errors · vitest 234 files, 2349 tests · wrangler deploy --dry-run Total Upload 41151.04 KiB (the Worker’s code untouched). On prod, on the word "apply 20260924200000": rehearsed inside begin…rollback through the Management API, applied 2026-09-24 21:21:09Z, read back (the bucket, the three functions with search_path pinned, execute for service_role alone), rerun without change, account_stats() answering 0 accounts.
+- **Review:** SOUND WITH FIXES, nothing blocking (~150k tokens said, 228,844 measured, 41 tool uses). Folded: the primary address alone (the plan’s pre-mortem), Supabase ids redacted in failures with a test, the revokes in the repo’s form, the parser’s doubled quote tested, the wording of the dry run. Left with the reason: @clerk/backend stays transitive; declaring it re-resolved the lockfile and dropped the @swc/helpers pin of 4 September.
+
 ## #1060 · 1.0.179 · records · merged Thu 24 Sep 19:29 (19:29Z)
 Records PA A1b's merge (#1059, squash-merged 19:19:09Z as 4ec78ab1): A1 DONE with its evidence, the operator's word to leave the two slow designer tests' limit, the session-57 handoff with A2 first, and the schedule's step 24.
 - **Files (8):**
