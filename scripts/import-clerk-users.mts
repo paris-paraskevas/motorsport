@@ -3,7 +3,7 @@
 //
 //   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... CLERK_SECRET_KEY=... \
 //     npx tsx scripts/import-clerk-users.mts --csv <the export from Clerk Dashboard › Settings › User exports>
-//   ... --write            writes (the default is a dry run: the plan's counts alone)
+//   ... --write            writes; without it the run is dry: the plan's counts alone
 //   ... --only <address>   one account
 //
 // Clerk's user list (GET /v1/users, 500 a page) gives everything but the password digests; the export's CSV gives those,
@@ -86,10 +86,11 @@ export function parseExport(csv: string): { digests: Map<string, Digest>; column
   return { digests, columns: { found, missing } };
 }
 
-/** The account Clerk's user becomes: the verified primary address, else the first verified one; none for none. */
+/** The account Clerk's user becomes: the primary address, verified; an account whose primary address is unverified is not
+ *  imported (the plan's pre-mortem), whatever its other addresses hold. */
 export function accountFromClerk(u: ClerkUserLike): ClerkAccount | null {
-  const verified = (u.emailAddresses ?? []).filter(e => e.verification?.status === 'verified');
-  const email = verified.find(e => e.id && e.id === u.primaryEmailAddressId)?.emailAddress ?? verified[0]?.emailAddress ?? null;
+  const primary = (u.emailAddresses ?? []).find(e => e.id && e.id === u.primaryEmailAddressId);
+  const email = primary?.verification?.status === 'verified' ? primary.emailAddress : null;
   if (!email) return null;
   const meta = u.publicMetadata ?? null;
   return {
@@ -149,7 +150,7 @@ export function countsOf(actions: Action[]): Counts {
 }
 
 /** Addresses and ids never reach the output, a provider's error message included. */
-const redact = (s: string) => s.replace(/\S+@\S+/g, '[address]').replace(/user_[A-Za-z0-9]+/g, '[id]');
+const redact = (s: string) => s.replace(/\S+@\S+/g, '[address]').replace(/user_[A-Za-z0-9]+/g, '[id]').replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '[id]');
 export const planLine = (c: Counts) => `plan: create ${c.created} (${c.withoutPassword} without a password) · update ${c.updated} · unchanged ${c.unchanged} · skipped: no verified address ${c.skippedNoEmail}, address held by another ${c.skippedClash}`;
 
 interface AdminLike {

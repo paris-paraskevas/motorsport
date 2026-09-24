@@ -56,9 +56,9 @@ language sql stable security definer set search_path = '' as $$
   );
 $$;
 
-revoke execute on function public.account_directory(text[]) from public, anon, authenticated;
-revoke execute on function public.account_admins() from public, anon, authenticated;
-revoke execute on function public.account_stats() from public, anon, authenticated;
+revoke all on function public.account_directory(text[]) from public, anon, authenticated;
+revoke all on function public.account_admins() from public, anon, authenticated;
+revoke all on function public.account_stats() from public, anon, authenticated;
 grant execute on function public.account_directory(text[]) to service_role;
 grant execute on function public.account_admins() to service_role;
 grant execute on function public.account_stats() to service_role;

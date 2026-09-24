@@ -22,13 +22,14 @@ describe('the export', () => {
     expect(columns.missing).toEqual([]);
     expect(parseExport('id,password_digest\nuser_9,"x, y"\n').digests.get('user_9')).toEqual({ hasher: '', digest: 'x, y' });
     expect(parseExport('id\nuser_9\n').columns.missing).toContain('password_hasher');
+    expect(parseExport('id,password_digest\nuser_8,"a""b"\n').digests.get('user_8')).toEqual({ hasher: '', digest: 'a"b' });
   });
 });
 
 describe('the mapping', () => {
-  it('takes the verified primary address, else the first verified one, and none for an account with no verified address', () => {
+  it('takes the primary address when verified, and none when it is not, whatever another address holds', () => {
     expect(accountFromClerk(clerk())).toMatchObject({ id: 'user_1', email: 'alex@example.com', name: 'Alex Driver', username: 'alexd', imageUrl: 'https://img.clerk.com/a', role: 'admin', donor: true });
-    expect(accountFromClerk(clerk({ primaryEmailAddressId: 'e2', emailAddresses: [{ id: 'e2', emailAddress: 'un@example.com', verification: { status: 'unverified' } }, { id: 'e3', ...verified('second@example.com') }] }))).toMatchObject({ email: 'second@example.com' });
+    expect(accountFromClerk(clerk({ primaryEmailAddressId: 'e2', emailAddresses: [{ id: 'e2', emailAddress: 'un@example.com', verification: { status: 'unverified' } }, { id: 'e3', ...verified('second@example.com') }] }))).toBeNull();
     expect(accountFromClerk(clerk({ emailAddresses: [{ id: 'e1', emailAddress: 'un@example.com', verification: null }] }))).toBeNull();
     expect(accountFromClerk(clerk({ hasImage: false, publicMetadata: {} }))).toMatchObject({ imageUrl: null, role: null, donor: false });
   });
@@ -80,5 +81,12 @@ describe('applying the plan', () => {
     expect(updateUserById).toHaveBeenCalledWith('old', { app_metadata: { legacy_id: 'user_3', role: 'writer', donor: false }, user_metadata: { full_name: 'Alex Driver', username: 'alexd', avatar_url: 'https://x/avatars/k.png' } });
     expect(counts).toEqual({ created: 1, updated: 1, unchanged: 0, withoutPassword: 0, skippedNoEmail: 0, skippedClash: 0 });
     for (const l of lines) expect(l).not.toMatch(/@|user_/);
+  });
+
+  it('a provider’s failure stops the run with its address and ids redacted', async () => {
+    const failing = vi.fn(async () => ({ data: { user: null }, error: { message: 'user 00000000-0000-4000-8000-000000000001 with alex@example.com and user_1 already registered' } }));
+    const { digests } = parseExport(CSV);
+    const actions = planImport([clerk()], digests, []);
+    await expect(applyPlan(actions, { createUser: failing, updateUserById: vi.fn() }, async () => null, () => {})).rejects.toThrow('create 1 failed: user [id] with [address] and [id] already registered');
   });
 });
