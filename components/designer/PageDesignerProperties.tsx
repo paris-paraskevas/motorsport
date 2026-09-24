@@ -44,14 +44,6 @@ import { BUILD_OPTION_DEFAULTS, BUILD_OPTION_KEYS, type BuildOptionKey, type Bui
 import { DEFAULT_REGION_TEMPLATE, REGION_TEMPLATES, regionTemplate, type RegionTemplateKey, type TemplatePresets } from '@/lib/design/template-options';
 import { FIELD, PBTN, Pills, Ro, TEXTAREA, YesNo, type PropGroup, type PropRow } from './PropertyPane';
 import { filterOps, parseRule } from '@/lib/design/view-state';
-
-/** Why a highlight rule does not read yet (P2.4), in plain words; undefined when it does. */
-function ruleProblem(text: string, shape: Shape | null): string | undefined {
-  const rule = parseRule(text);
-  if (typeof rule === 'string') return 'needs a column and a value, like position.lte:3';
-  if (shape && !shape.columns.some(c => c.key === rule.column && filterOps(c).includes(rule.op))) return `needs a column of the preset (${shape.columns.map(c => c.key).join(', ')}) with an operator its type takes`;
-  return undefined;
-}
 import { TemplateOptionsButton } from './TemplateOptionsDialog';
 import { TextPicker, type Cursor } from './TextPicker';
 import {
@@ -73,6 +65,15 @@ import {
   triggerFor,
   type Selection,
 } from './page-designer-model';
+
+/** Why a highlight rule does not read yet (P2.4), in plain words; undefined when it does. A rule on a column the preset
+ *  lacks answers in the parser's own words (page-document.ts), naming the columns it has. */
+function ruleProblem(text: string, shape: Shape | null): string | undefined {
+  const rule = parseRule(text);
+  if (typeof rule === 'string') return 'needs a column and a value, like position.lte:3';
+  if (shape && !shape.columns.some(c => c.key === rule.column && filterOps(c).includes(rule.op))) return `must be a condition on a column of this preset, like position.lte:3. Its columns: ${shape.columns.map(c => c.key).join(', ')}`;
+  return undefined;
+}
 
 // The Property Editor's groups for whatever is selected (Paddock Designer v2.4,
 // renderPE): the page (Identification, Appearance, Navigation Menu, Head, Page

@@ -306,7 +306,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
         { key: `highlight${n}`, label: `Highlight ${n}`, kind: 'text' as const, scope: 'report' as const, group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, rule: true as const, default: '', maxLength: 120, help: 'A condition on the row in the address’s words — position.eq:1, position.lte:3, points.gte:100, team.eq:Mercedes. The first rule a row meets styles it.' },
         { key: `highlight${n}Style`, label: `Highlight ${n} style`, kind: 'choice' as const, scope: 'report' as const, group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, options: HIGHLIGHT_STYLES, default: 'brand', help: 'Brand is the leader’s tint; Emphasis raises the row on the elevated surface; Muted fades it.' },
       ]),
-      { key: 'highlightFollowed', label: 'Followed series', kind: 'boolean', scope: 'report', group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, default: false, help: 'Tint the rows of the series the reader follows, in the browser after the page loads; the page stays the same for everyone.' },
+      { key: 'highlightFollowed', label: 'Followed series', kind: 'boolean', scope: 'report', group: 'highlight', dependingOn: HIGHLIGHT_VIEWS, default: false, help: 'Tint the rows of the series the reader follows, in the browser after the page loads; the page stays the same for everyone. Rows without a series, as a one-series standings table, stay as they are.' },
     ],
     groups: [
       { key: 'card', title: 'Card', seq: 10 },

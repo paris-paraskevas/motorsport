@@ -324,6 +324,27 @@ describe('renderComponents', () => {
     expect(cards).toContain('Mercedes');
   });
 
+  it('P2.4 PR A: the results’ round groups take the highlight rules and, with Followed series on, each entry’s series slug; with neither, today’s markup byte for byte', async () => {
+    const chinese = { round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z' };
+    const rows = [
+      raceRow({ series: 'f1' }),
+      raceRow({ series: 'f1', position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }),
+      raceRow({ series: 'f1', ...chinese, driver: 'Lando Norris', code: 'NOR', team: 'McLaren' }),
+      raceRow({ series: 'f1', ...chinese, position: 2, driver: 'Oscar Piastri', code: 'PIA', team: 'McLaren', time: '+2.0s', points: 18 }),
+    ];
+    const ENTRY = '<li class="flex items-baseline gap-3 py-2 break-inside-avoid"';
+    const count = (s: string, part: string) => s.split(part).length - 1;
+    const plain = await draw('season-results', 'f1', rows);
+    expect(plain).toContain('<details');
+    expect(count(plain, `${ENTRY}>`)).toBe(4);
+    expect(plain).not.toContain('data-series');
+    const styled = await draw('season-results', 'f1', rows, 'list', 50, { highlight1: 'position.eq:1' });
+    expect(count(styled, '<li class="flex items-baseline gap-3 py-2 break-inside-avoid text-brand font-bold">')).toBe(2);
+    expect(count(styled, `${ENTRY}>`)).toBe(2);
+    const followed = await draw('season-results', 'f1', rows, 'list', 50, { highlightFollowed: true });
+    expect(count(followed, `${ENTRY} data-series="f1">`)).toBe(4);
+  });
+
   it('P2.2 B2, the Timeline per results preset: every one of the seven draws one entry per race (or race and class), newest first, on a rail, with the date or the round chip, the title linked to the weekend page, the WIN line and the winner’s initials (APEX Timeline; Avatar); Rows counts races; a race without a position-1 row takes its first', async () => {
     const f1 = await draw('season-results', 'f1', [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }), raceRow({ round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null })], 'timeline');
     expect(f1).not.toContain('<table');

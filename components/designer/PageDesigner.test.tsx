@@ -1143,8 +1143,11 @@ describe('PageDesigner', () => {
     const rule = within(pe).getByLabelText('Highlight 1') as HTMLInputElement;
     fireEvent.change(rule, { target: { value: 'nope' } });
     expect(within(pe).getByText(/needs a column and a value, like position.lte:3/)).toBeTruthy();
+    fireEvent.change(rule, { target: { value: 'weekend.eq:x' } });
+    expect(within(pe).getByText(/must be a condition on a column of this preset, like position.lte:3. Its columns: position/)).toBeTruthy();
     fireEvent.change(rule, { target: { value: 'position.lte:3' } });
     expect(within(pe).queryByText(/needs a column and a value/)).toBeNull();
+    expect(within(pe).queryByText(/must be a condition on a column of this preset/)).toBeNull();
     expect(tile('Component: Data region').textContent).toMatch(/Rows 8 · Highlight 1 position.lte:3/);
     fireEvent.change(rule, { target: { value: '' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
