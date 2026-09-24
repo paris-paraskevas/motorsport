@@ -329,6 +329,11 @@
    "date": "2026-09-24",
    "change": "P2.4 PR B built on the approved plan (1.0.170, branch feat/p2.4-b-links): lib/people.ts buildPeopleIndex and peopleIndex (the drift rule, an exact name first; a team only where its slug opens that series’ own team, since 19 team slugs are shared across series); the standings and results readers carry profile (null for co-drivers, manufacturers and crews); the sources declare it and read content:series; driver-rows and team-rows link name, race-rows and podium-rows link driver; the results driver keeps its cell (a Correction to the plan’s claim that a link keeps the name’s class); the CSV writes a link’s text beside its address; namesMatch moved to lib/slug.ts after the first build measured 39266.21 KiB. Tests first, 13 red across 6 files, then green; three older tests now assert the new behaviour with their refusal cases kept; tsc 0, lint 0 errors, vitest 230 files / 2328 tests; the browser on the local Monza page (ten links, Antonelli’s page opens, the Cards’ zone, the CSV’s address column); the dry run 39226.67 KiB.",
    "word": "the operator, 2026-09-24 ~07:00Z: the plan approved (ExitPlanMode); ~09:23Z: \"merge\" (PR A), then the next task"
+  },
+  {
+   "date": "2026-09-24",
+   "change": "P2.4 PR B merged (#1051, 1.0.170; 43670fd5, cdf347bf; squash-merged 10:32:22Z as 48b1f5cf; prod /changelog 1.0.170 at 10:36:34Z). The reviewer PASS WITH NOTES (247,625 tokens against ~200k said), nothing to fix; its one nit (the Property Editor names a link zone by the shape’s own label) went to IDEAS with the card pickers that share it. On prod, Home’s standings tables link 13 driver names to their pages; with those anchors unwrapped, 26 of Home’s 27 regions are identical across the deploy and the wire differs by a relative age alone. P2.4 continues with PR C, master-detail.",
+   "word": "the operator, 2026-09-24 ~10:32Z: \"merge\""
   }
  ],
  "phases": {
@@ -744,7 +749,7 @@
    "acceptance": "A highlighted leader; a driver name linking to /drivers/[slug]; a season list filtering a results table; test.",
    "status": "started",
    "scopeHash": "b6e6849d7555",
-   "evidence": "PR A: #1049 · 1.0.168 · three commits (07d076bc the build; 7fc485b5 the PA plan’s records; fddd8040 the reviewer’s fixes), squash-merged 2026-09-24 09:23:44Z as 2daa14fc · prod /changelog 1.0.168 at 09:27:59Z · Home’s 27 regions identical across the deploy with the countdown clocks and the footer’s version normalised · the reviewer (Sonnet) SOUND WITH FIXES, 227,972 tokens against ~120k said · tsc 0, lint 0 errors, vitest 230 files / 2323 tests, the dry run 39159.86 KiB"
+   "evidence": "PR A: #1049 · 1.0.168 · three commits (07d076bc the build; 7fc485b5 the PA plan’s records; fddd8040 the reviewer’s fixes), squash-merged 2026-09-24 09:23:44Z as 2daa14fc · prod /changelog 1.0.168 at 09:27:59Z · Home’s 27 regions identical across the deploy with the countdown clocks and the footer’s version normalised · the reviewer (Sonnet) SOUND WITH FIXES, 227,972 tokens against ~120k said · tsc 0, lint 0 errors, vitest 230 files / 2323 tests, the dry run 39159.86 KiB · PR B: #1051 · 1.0.170 · two commits (43670fd5 the build; cdf347bf the reviewer’s record), squash-merged 2026-09-24 10:32:22Z as 48b1f5cf · prod /changelog 1.0.170 at 10:36:34Z · Home’s 27 regions across the deploy: the standings tables’ 13 driver names now link to their pages, and with those anchors unwrapped 26 regions are identical, the wire’s one difference a relative age rolling over (2d ago → 3d ago) · the reviewer (Sonnet) PASS WITH NOTES, 247,625 tokens against ~200k said · tsc 0, lint 0 errors, vitest 230 files / 2328 tests, the dry run 39226.67 KiB"
   },
   {
    "id": "P2.5",
