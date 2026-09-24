@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.170 — 2026-09-24
+
+Names that open their pages: in tables built with the site's design tool, a driver's or a team's name now opens that driver's or team's page on Paddock, and a downloaded table carries each page's address beside the name.
+
 ## 1.0.169 — 2026-09-24
 
 Internal only: the day's working records. The highlight rules are live in the site's design tool. Nothing changes for readers.

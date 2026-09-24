@@ -276,7 +276,7 @@ describe('the preset catalogue', () => {
         { key: 'seriesName', label: 'Series', type: 'text' },
         { key: 'date', label: 'Date', type: 'date' },
         { key: 'position', label: 'Pos', type: 'position' },
-        { key: 'driver', label: 'Driver', type: 'text' },
+        { key: 'driver', label: 'Driver', type: 'link', href: 'profile' },
         { key: 'team', label: 'Team', type: 'text' },
         { key: 'car', label: 'Car', type: 'badge' },
         { key: 'time', label: 'Time', type: 'text' },
@@ -286,6 +286,12 @@ describe('the preset catalogue', () => {
       ],
       card: { title: 'driver', subtitle: 'team', body: 'time', badge: 'position' },
     });
+    // P2.4 PR B: the name and the driver link to the person's page the row carries (text where it carries none); a crew stays text.
+    expect(SHAPES['driver-rows'].columns.find(c => c.key === 'name')).toEqual({ key: 'name', label: 'Driver', type: 'link', href: 'profile' });
+    expect(SHAPES['team-rows'].columns.find(c => c.key === 'name')).toEqual({ key: 'name', label: 'Constructor', type: 'link', href: 'profile' });
+    expect(SHAPES['race-rows'].columns.find(c => c.key === 'driver')).toEqual({ key: 'driver', label: 'Driver', type: 'link', href: 'profile' });
+    expect(SHAPES['car-rows'].columns.find(c => c.key === 'driver')).toEqual({ key: 'driver', label: 'Drivers', type: 'text' });
+    expect(SHAPES['cup-rows'].columns.find(c => c.key === 'driver')).toEqual({ key: 'driver', label: 'Drivers', type: 'text' });
     expect(presetsFor('results', 'home').map(p => p.key)).toEqual(['latest-result']);
     expect(presetsFor('standings', 'latest').map(p => p.key)).toEqual(['what-it-changed']);
     expect(presetsFor('standings', 'wec').map(p => p.key)).not.toContain('what-it-changed');

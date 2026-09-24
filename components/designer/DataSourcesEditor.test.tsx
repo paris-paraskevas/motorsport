@@ -70,8 +70,8 @@ describe('DataSourcesEditor', () => {
     expect(rows).toHaveLength(14);
     const standingsRow = rows.find(r => within(r).queryByText('Standings'))!;
     expect(within(standingsRow).getByText('series · season')).toBeTruthy();
-    // Twelve columns since P2.24 B2 (the series' name and colour, the race winner, the season's end).
-    expect(within(standingsRow).getByText('12')).toBeTruthy();
+    // Thirteen columns: twelve since P2.24 B2 (the series' name and colour, the race winner, the season's end), the row's page since P2.4 PR B.
+    expect(within(standingsRow).getByText('13')).toBeTruthy();
     expect(within(standingsRow).getByText('the loader, every 20 minutes')).toBeTruthy();
     expect(within(standingsRow).getByText('shipped')).toBeTruthy();
     const authorsRow = rows.find(r => within(r).queryByText('Authors'))!;
@@ -81,7 +81,7 @@ describe('DataSourcesEditor', () => {
     const open = screen.getByRole('region', { name: 'Data Source: Standings' });
     expect(within(open).getAllByText('Series').length).toBeGreaterThan(0);
     expect(within(open).getAllByText(/^Season/).length).toBeGreaterThan(0);
-    for (const key of ['kind', 'position', 'name', 'code', 'team', 'points', 'wins', 'class']) expect(within(open).getAllByText(key).length).toBeGreaterThan(0);
+    for (const key of ['kind', 'position', 'name', 'code', 'team', 'points', 'wins', 'class', 'profile']) expect(within(open).getAllByText(key).length).toBeGreaterThan(0);
     expect(within(open).getByText(/rows tier/)).toBeTruthy();
     expect(within(open).getByText(/Jolpica API/)).toBeTruthy();
     expect(within(open).getByText('replace')).toBeTruthy();

@@ -8,10 +8,10 @@ import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource, type SnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import {
   driverSeasonForm,
-  namesMatch,
   teamSeasonForm,
   type TeamSeasonForm,
 } from '@/lib/profile-stats';
+import { namesMatch } from '@/lib/slug';
 import {
   aggregateTeamsTrend,
   buildSeasonTrendData,

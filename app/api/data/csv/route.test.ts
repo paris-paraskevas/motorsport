@@ -32,7 +32,7 @@ const page = { id: 'p1', path: '/history/monza', name: 'Monza', kind: 'row', gro
 const region = (over: Record<string, unknown> = {}) => ({ id: 't', kind: 'component', component: 'data.region', title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null, settings: { preset: 'drivers', view: 'table', rows: 10, heading: '', download: true }, source: 'standings?series=f1&season=2026', ...over });
 const resolved = (regions: unknown[], over: Record<string, unknown> = {}) => ({ kind: 'row', page: { ...page, ...over }, document: { version: 1, actions: [], regions } });
 const driver = (position: number, name: string, team: string, points: number) => ({ kind: 'driver', position, name, code: name.slice(0, 3).toUpperCase(), team, points, wins: 0, class: null });
-const ROWS = [driver(2, 'George Russell', 'Mercedes', 201), driver(1, 'Andrea Kimi Antonelli', 'Mercedes, AMG', 267), { kind: 'constructor', position: 1, name: 'Mercedes', code: null, team: null, points: 468, wins: 9, class: null }];
+const ROWS = [driver(2, 'George Russell', 'Mercedes', 201), { ...driver(1, 'Andrea Kimi Antonelli', 'Mercedes, AMG', 267), profile: '/drivers/kimi-antonelli' }, { kind: 'constructor', position: 1, name: 'Mercedes', code: null, team: null, points: 468, wins: 9, class: null }];
 const provenance = (rows: number) => ({ ref: { source: 'standings', params: {} }, label: 'x', tier: 'db', keys: [], rows, ms: 1 });
 const get = (q: string) => GET(new Request(`https://paddock-tracker.com/api/data/csv?${q}`));
 
@@ -85,7 +85,7 @@ describe('/api/data/csv', () => {
     // The columns in the shape's order whatever the address said, as the served table draws them.
     const b = await body(res);
     expect(b.bom).toEqual([0xef, 0xbb, 0xbf]);
-    expect(b.text).toBe('Driver,Team,Pts\r\nAndrea Kimi Antonelli,"Mercedes, AMG",267\r\nGeorge Russell,Mercedes,201\r\n');
+    expect(b.text).toBe('Driver,Driver address,Team,Pts\r\nAndrea Kimi Antonelli,https://paddock-tracker.com/drivers/kimi-antonelli,"Mercedes, AMG",267\r\nGeorge Russell,,Mercedes,201\r\n');
     expect(readSource).toHaveBeenCalledWith({ source: 'standings', params: { series: 'f1', season: 2026 } });
     expect(loadViewsFor).not.toHaveBeenCalled();
   });
@@ -94,7 +94,7 @@ describe('/api/data/csv', () => {
     loadViewsFor.mockResolvedValue([{ key: 'top', pageId: 'p1', regionId: 't', name: 'Top', definition: { cols: ['name'], filters: [{ column: 'team', op: 'eq', value: 'Mercedes' }] }, seq: 10 }]);
     const res = await get('page=/history/monza&region=t&view=top');
     expect(loadViewsFor).toHaveBeenCalledWith('p1', 't');
-    expect(await res.text()).toBe('Driver\r\nGeorge Russell\r\n');
+    expect(await res.text()).toBe('Driver,Driver address\r\nGeorge Russell,\r\n');
     readSource.mockResolvedValue({ columns: [], total: 6000, rows: Array.from({ length: 6000 }, (_, i) => driver(i + 1, `Driver ${i + 1}`, 'Team', 6000 - i)), provenance: provenance(6000) });
     const capped = await (await get('page=/history/monza&region=t&cols=name')).text();
     expect(capped.split('\r\n').length).toBe(CSV_MAX + 2);
@@ -110,7 +110,9 @@ describe('/api/data/csv', () => {
     expect((await get('page=/history/monza&region=t')).status).toBe(200);
   });
 
-  it('csvOf writes a link column as its address, absolute for a path of this site, and an empty cell for nothing', () => {
-    expect(csvOf([{ key: 'race', label: 'Race', type: 'link', href: 'weekend' }, { key: 'points', label: 'Pts', type: 'number' }], [{ race: 'Italian Grand Prix', weekend: '/series/f1/weekend/16', points: 25 }, { race: 'x', weekend: null, points: null }])).toBe('Race,Pts\r\nhttps://paddock-tracker.com/series/f1/weekend/16,25\r\n,\r\n');
+  it('csvOf writes a link column as its text and, beside it, its address: absolute for a path of this site, as given for another, empty for nothing (P2.4 PR B)', () => {
+    const columns = [{ key: 'race', label: 'Race', type: 'link', href: 'weekend' }, { key: 'title', label: 'Title', type: 'link', href: 'link', external: true }, { key: 'points', label: 'Pts', type: 'number' }] as const;
+    const rows = [{ race: 'Italian Grand Prix', weekend: '/series/f1/weekend/16', title: 'Monza, again', link: 'https://example.com/a', points: 25 }, { race: 'x', weekend: null, title: null, link: null, points: null }];
+    expect(csvOf(columns, rows)).toBe('Race,Race address,Title,Title address,Pts\r\nItalian Grand Prix,https://paddock-tracker.com/series/f1/weekend/16,"Monza, again",https://example.com/a,25\r\nx,,,,\r\n');
   });
 });

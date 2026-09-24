@@ -201,8 +201,15 @@ describe('the source catalogue', () => {
     expect(resultsSeries).toEqual(['home', 'f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world']);
     for (const slug of resultsSeries.filter(s => s !== 'home')) expect(results.hosts?.[slug], slug).toBeDefined();
     expect(results.hosts).toMatchObject({ nls: 'vln', imsa: 'alkamel', wec: 'fiawec', 'gt-world': 'gt-world-challenge' });
-    expect(results.columns.map(c => c.key)).toEqual(['round', 'race', 'raceId', 'date', 'circuit', 'class', 'session', 'position', 'driver', 'code', 'car', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'time', 'gap', 'points', 'weekend', 'seriesName', 'colour', 'final', 'champion']);
+    expect(results.columns.map(c => c.key)).toEqual(['round', 'race', 'raceId', 'date', 'circuit', 'class', 'session', 'position', 'driver', 'code', 'car', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'time', 'gap', 'points', 'weekend', 'profile', 'seriesName', 'colour', 'final', 'champion']);
     expect(results.columns.find(c => c.key === 'weekend')?.type).toBe('link');
+    // P2.4 PR B: a driver's or a team's page beside the race's, from the site's own rosters, which both sources now read.
+    const standingsSource = SOURCES.find(s => s.key === 'standings')!;
+    for (const s of [results, standingsSource]) {
+      expect(s.columns.find(c => c.key === 'profile'), s.key).toMatchObject({ label: 'Page', type: 'link' });
+      expect(s.reads, s.key).toContain('content:series');
+    }
+    expect(standingsSource.columns.map(c => c.key)).toEqual(['kind', 'position', 'name', 'code', 'team', 'points', 'wins', 'class', 'profile', 'seriesName', 'colour', 'winner', 'final']);
     // P2.24 A: the posts and news sources carry what Home's pieces derived (the series' name and colour, the read time), so the Data
     // region's templates are functions of their rows; the slug column is named as such.
     expect(findSource('posts')!.columns.map(c => [c.key, c.label, c.type])).toEqual([

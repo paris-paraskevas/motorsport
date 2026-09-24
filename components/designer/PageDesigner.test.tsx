@@ -1218,9 +1218,11 @@ describe('PageDesigner', () => {
     fireEvent.change(title, { target: { value: 'team' } });
     expect(status()).toMatch(/Title set/);
     expect(tile('Component: Data region').textContent).toMatch(/Preset Drivers · View Cards · Rows 10 · Title Team/);
-    // The zones: a standings shape has no link column, so no "This row"; the catalogue and Nowhere as a Button's Target has them.
+    // The zones: since P2.4 PR B a standings shape links the driver to the page the row carries, so "This row" offers it;
+    // the catalogue and Nowhere as a Button's Target has them.
     const fullCard = within(pe).getByLabelText('Full Card') as HTMLSelectElement;
-    expect([...fullCard.querySelectorAll('optgroup')].map(g => g.label)).not.toContain('This row');
+    expect([...fullCard.querySelectorAll('optgroup')].map(g => g.label)).toContain('This row');
+    expect([...fullCard.options].map(o => o.textContent)).toContain('Driver → its page');
     expect([...fullCard.options].map(o => o.textContent)).toContain('Nowhere');
     fireEvent.change(fullCard, { target: { value: 'calendar' } });
     expect(within(pe).getByLabelText('Button label')).toBeTruthy();

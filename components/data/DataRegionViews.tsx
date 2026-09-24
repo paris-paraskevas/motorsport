@@ -139,7 +139,8 @@ function tdClass(column: PresetColumn, row: PresetRow): string {
     case 'percent':
       return 'py-2 pl-3 align-middle';
     case 'link':
-      return 'py-2 pr-3 align-baseline font-condensed text-15 font-semibold text-text';
+      // A results driver (P2.4 PR B) keeps the cell it had as text: the link adds the page, never a new look.
+      return column.key === 'driver' ? 'py-2 pr-3 align-baseline text-xs text-text-muted' : 'py-2 pr-3 align-baseline font-condensed text-15 font-semibold text-text';
     case 'date':
       return 'py-2 pr-3 align-baseline text-xs text-text-muted';
     case 'image':
