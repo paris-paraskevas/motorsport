@@ -748,6 +748,7 @@ export function parsePageDocument(raw: unknown, components: readonly ComponentDe
 
   // Master-detail (P2.4 PR C; APEX: Master Detail): a Detail region names another Data region of this page, and the Detail key
   // a column both regions' shapes carry (the master's own shape was checked with its settings).
+  const DETAIL_VIEWS = ['table', 'cards', 'list'];
   const dataRegions = regions.filter((r): r is ComponentRegion => r.kind === 'component' && r.component === 'data.region');
   const carries = (r: ComponentRegion, key: string) => {
     const preset = findPreset(String(r.settings.preset ?? ''));
@@ -756,9 +757,11 @@ export function parsePageDocument(raw: unknown, components: readonly ComponentDe
   for (const r of dataRegions) {
     const id = r.settings.detailRegion;
     if (typeof id !== 'string' || id === '') continue;
-    const detail = dataRegions.find(d => d.id === id && d !== r);
+    // A template (the Podium, the Leader, the Timeline, Home's boxes) draws no Show link and no Showing line: only a Table,
+    // Cards or List can be a detail.
+    const detail = dataRegions.find(d => d.id === id && d !== r && DETAIL_VIEWS.includes(String(d.settings.view ?? 'table')));
     if (!detail) {
-      problems.push(`region ${r.id}: Detail region must be another Data region of this page`);
+      problems.push(`region ${r.id}: Detail region must be another Data region of this page, drawn as a Table, Cards or List`);
       continue;
     }
     const key = r.settings.detailKey;

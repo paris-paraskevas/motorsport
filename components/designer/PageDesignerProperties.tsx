@@ -868,7 +868,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
             <option value="">None</option>
             {ctx.doc.regions
-              .filter((x): x is ComponentRegion => x.kind === 'component' && x.component === 'data.region' && x.id !== r.id)
+              .filter((x): x is ComponentRegion => x.kind === 'component' && x.component === 'data.region' && x.id !== r.id && ['table', 'cards', 'list'].includes(String(x.settings.view ?? 'table')))
               .map(x => (
                 <option key={x.id} value={x.id}>
                   {x.title || (typeof x.settings.heading === 'string' && x.settings.heading) || x.id}

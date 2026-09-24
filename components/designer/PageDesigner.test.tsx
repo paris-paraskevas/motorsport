@@ -1218,6 +1218,14 @@ describe('PageDesigner', () => {
     fireEvent.change(detailRegion, { target: { value: 'region-2' } });
     fireEvent.change(within(pe).getByLabelText('Detail key'), { target: { value: 'team' } });
     expect(master().textContent).toMatch(/Detail region region-2 · Detail key Team/);
+    // A region drawn as a template or as Detail cannot be a detail (it draws no Show link and no Showing line): once the other
+    // region's View is Detail, the select offers None alone.
+    fireEvent.click(screen.getAllByRole('button', { name: 'Component: Data region' })[1]);
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    fireEvent.click(within(within(pe).getByRole('group', { name: 'View' })).getByRole('button', { name: 'Detail' }));
+    fireEvent.click(master());
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    expect([...(within(pe).getByLabelText('Detail region') as HTMLSelectElement).options].map(o => o.value)).toEqual(['']);
   });
 
   it('P2.2 B3: the Card and Actions groups appear under the Attributes tab only while the View is Cards; a slot lists the preset’s columns with the preset’s own first and the tile names the pick; a zone offers this row’s link columns on a results preset; Save carries them; a preset’s pick resets them', async () => {

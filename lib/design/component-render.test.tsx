@@ -399,6 +399,36 @@ describe('renderComponents', () => {
     expect(alone.season).not.toContain('rel="nofollow"');
   });
 
+  it('P2.4 PR C, the reviewer’s findings: a value the vocabulary cannot carry gets no link; a template cannot be a detail; two masters on one detail each get their Showing line; the chosen row is marked as the filter reads it', async () => {
+    const long = 'A'.repeat(81);
+    const rows = [raceRow({}), raceRow({ round: 2, race: long, position: 1, driver: 'Lando Norris', code: 'NOR', team: 'McLaren' }), raceRow({ round: 2, race: long, position: 2, driver: 'Oscar Piastri', code: 'PIA', team: 'McLaren', time: '+2.0s', points: 18 })];
+    const SRC = { source: 'results?series=f1&season=2026' } as Partial<Region>;
+    const three = async (view: string, regions: Region[]) => {
+      for (let i = 0; i < regions.length; i++) results('f1', rows);
+      const out = await renderComponents(doc(regions), { path: '/x', href: '/x', view });
+      return Object.fromEntries(Object.entries(out).map(([k, v]) => [k, html(v)]));
+    };
+    const master = (id: string, key: string, over: Record<string, string | number | boolean> = {}) => region(id, 'data.region', { preset: 'season-results', view: 'list', rows: 10, heading: id, detailRegion: 'race', detailKey: key, ...over }, SRC);
+    const detail = (view = 'table') => region('race', 'data.region', { preset: 'season-results', view, rows: 10, heading: 'Race' }, SRC);
+    // The race's name is 81 characters, one over VALUE_MAX: that fold gets no link; round 1's fold keeps its own.
+    const byRace = await three('', [master('season', 'race'), detail()]);
+    expect(byRace.season).toContain('href="/x?filter=race.eq%3AAustralian+Grand+Prix"');
+    expect(byRace.season).not.toContain('race.eq%3AAAAA');
+    expect((byRace.season.match(/rel="nofollow"/g) ?? []).length).toBe(1);
+    // A Podium is a template: no Show link, no Showing line, so it is not a detail and the master draws no links.
+    const podium = await three('', [master('season', 'round'), detail('podium')]);
+    expect(podium.season).not.toContain('rel="nofollow"');
+    // Two masters, two keys, one detail: the line follows whichever filter the address carries.
+    const both = await three('filter=race.eq:Australian%20Grand%20Prix', [master('season', 'round'), master('season-2', 'race'), detail()]);
+    expect(both.race).toContain('Showing Australian Grand Prix · <a href="/x" rel="nofollow"');
+    expect(both['season-2']).toMatch(/aria-current="true"[^>]*>Show Australian Grand Prix<\/a>/);
+    expect(both.season).not.toContain('aria-current');
+    // The chosen row is marked as the filter reads it: "01" chooses round 1 by number, as rowPasses compares.
+    const padded = await three('filter=round.eq:01', [master('season', 'round'), detail()]);
+    expect(padded.race).toContain('Showing 01 ·');
+    expect(padded.season).toMatch(/aria-current="true"[^>]*>Show 1<\/a>/);
+  });
+
   it('P2.2 B2, the Timeline per results preset: every one of the seven draws one entry per race (or race and class), newest first, on a rail, with the date or the round chip, the title linked to the weekend page, the WIN line and the winner’s initials (APEX Timeline; Avatar); Rows counts races; a race without a position-1 row takes its first', async () => {
     const f1 = await draw('season-results', 'f1', [raceRow({}), raceRow({ position: 2, driver: 'George Russell', code: 'RUS', time: '+4.1s', points: 18 }), raceRow({ round: 2, race: 'Chinese Grand Prix', circuit: 'Shanghai', date: '2026-03-15T07:00:00.000Z', driver: 'Lando Norris', code: 'NOR', team: 'McLaren', weekend: null })], 'timeline');
     expect(f1).not.toContain('<table');

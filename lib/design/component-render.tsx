@@ -3,12 +3,12 @@ import { cache, type ReactNode } from 'react';
 import { firstBodyRegion, isLegacyBody, type ComponentRegion, type PageDocument } from './page-document';
 import { findComponent, type SettingValue } from './components';
 import { parseSourceRef, type SourceRef } from './sources';
-import { SHAPES, findPreset, presetRows } from './presets';
+import { SHAPES, findPreset, presetRows, rowPasses } from './presets';
 import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 import { resolveDestination, type PageDestinations } from './destinations';
 import type { CardActions, CardSlots, DetailShowing, HighlightStyle, MasterSelect, RegionControls, RowHighlight } from '@/components/data/DataRegionViews';
-import { applySavedView, bindViewState, encodeViewState, filterOps, parseRule, parseViewState, viewStateHref, type ViewState } from './view-state';
+import { VALUE_MAX, applySavedView, bindViewState, encodeViewState, filterOps, parseRule, parseViewState, viewStateHref, type ViewState } from './view-state';
 
 // The server half of the component catalogue (lib/design/components.ts): how
 // each component is drawn. A renderer takes the region's settings and the
@@ -71,8 +71,8 @@ export interface RenderContext {
   /** Master-detail (P2.4 PR C): the region this one's rows filter, as its key, its key prefix and its state from the address
    *  bound to its shape; only where a state can arrive and the document names a Data region that carries the key. */
   master?: { key: string; prefix: string; state: ViewState };
-  /** The key a master writes into this region's filter (P2.4 PR C), for its "Showing <value> · Show all" line. */
-  detailKey?: string;
+  /** The keys its masters write into this region's filter (P2.4 PR C), for its "Showing <value> · Show all" line. */
+  detailKeys?: string[];
 }
 
 type Renderer = (settings: Readonly<Record<string, SettingValue>>, ctx: RenderContext) => Promise<ReactNode> | ReactNode;
@@ -188,15 +188,18 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
       ? {
           href: row => {
             const v = row[m.key];
-            if (v === null || v === undefined || v === '') return null;
+            // A value the vocabulary cannot carry (over VALUE_MAX) would be dropped when the address is read: no link, as for no value.
+            if (v === null || v === undefined || v === '' || String(v).length > VALUE_MAX) return null;
             const filters = [...m.state.filters.filter(f => f.column !== m.key), { column: m.key, op: 'eq' as const, value: String(v) }];
             return viewStateHref(ctx.href, { ...m.state, filters }, m.prefix, ctx.view ?? '');
           },
-          current: row => m.state.filters.some(f => f.column === m.key && f.op === 'eq' && f.value === String(row[m.key])),
+          // Marked as the filter reads it (rowPasses compares a number column by number), so "01" marks round 1.
+          current: row => m.state.filters.some(f => f.column === m.key && f.op === 'eq' && rowPasses(row, f, shape.columns)),
           label: row => `Show ${String(row[m.key])}`,
         }
       : undefined;
-    const shown = ctx.detailKey !== undefined && urlState ? urlState.filters.find(f => f.column === ctx.detailKey && f.op === 'eq') : undefined;
+    const keys = ctx.detailKeys ?? [];
+    const shown = keys.length > 0 && urlState ? urlState.filters.find(f => keys.includes(f.column) && f.op === 'eq') : undefined;
     const showing: DetailShowing | undefined =
       shown && urlState && ctx.controlsKey !== null ? { value: shown.value, reset: viewStateHref(ctx.href, { ...urlState, filters: urlState.filters.filter(f => f !== shown) }, ctx.controlsKey, ctx.view ?? '') } : undefined;
     const series = ctx.source.params.series;
@@ -292,6 +295,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   // read their own under `r.<id>.`; nowhere a state can arrive, none draws a control.
   // Master-detail (P2.4 PR C): a Data region naming another Data region of the document as its Detail region, by a column both
   // shapes carry. A detail reads its keys whatever its menus and its view, since a results region opens in the List view.
+  const ROW_VIEWS = ['table', 'cards', 'list'];
   const dataRegions = regions.filter(r => r.component === 'data.region');
   const shapeOf = (r: ComponentRegion) => {
     const preset = findPreset(str(r.settings.preset));
@@ -302,7 +306,9 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
     const detail = dataRegions.find(d => d.id === str(master.settings.detailRegion) && d !== master);
     const shape = detail ? shapeOf(detail) : null;
     const carries = shape !== null && shapeOf(master)?.columns.some(c => c.key === key) === true && shape.columns.some(c => c.key === key);
-    return detail && shape && key && carries ? [{ master, detail, key, shape }] : [];
+    // A template (the Podium, the Leader, the Timeline, Home's boxes) draws no Show link and no Showing line: only a Table, Cards or List can be a detail.
+    const drawn = detail ? ROW_VIEWS.includes(str(detail.settings.view) || 'table') : false;
+    return detail && shape && key && carries && drawn ? [{ master, detail, key, shape }] : [];
   });
   const details = new Set(pairs.map(p => p.detail));
   const withControls = regions.filter(r => r.component === 'data.region' && (details.has(r) || ((r.settings.sortable === true || r.settings.actions === true || r.settings.views === true || r.settings.download === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table'))));
@@ -314,7 +320,10 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
     const prefix = p ? controlsKey(p.detail) : null;
     return p && prefix !== null && where.view !== undefined ? { key: p.key, prefix, state: bindViewState(parseViewState(where.view, prefix).value, p.shape) } : undefined;
   };
-  const detailKeyOf = (r: ComponentRegion): string | undefined => pairs.find(x => x.detail === r)?.key;
+  const detailKeysOf = (r: ComponentRegion): string[] | undefined => {
+    const keys = pairs.filter(x => x.detail === r).map(x => x.key);
+    return keys.length ? keys : undefined;
+  };
   await Promise.all(
     regions.map(async r => {
       const render = RENDERERS[r.component];
@@ -328,7 +337,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
       const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
       const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r), region: r.id, master: masterOf(r), detailKey: detailKeyOf(r) });
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r), region: r.id, master: masterOf(r), detailKeys: detailKeysOf(r) });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;
