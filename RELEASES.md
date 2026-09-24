@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.169 — 2026-09-24
+
+Internal only: the day's working records. The highlight rules are live in the site's design tool. Nothing changes for readers.
+
 ## 1.0.168 — 2026-09-24
 
 Highlight rules for the design tool's tables: an editor can tint the leader, raise the podium or fade a row by a condition, and let a table mark the rows of the championships you follow once the page has loaded. Nothing changes on the pages you read today until an editor sets a rule.
