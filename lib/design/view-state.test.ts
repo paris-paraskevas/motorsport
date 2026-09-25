@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CANONICAL_MAX, COLS_MAX, EMPTY_VIEW, FILTERS_MAX, PREFIXES_MAX, VIEW_PREFIX, applySavedView, bindViewState, decodeSegment, definitionOf, encodeSegment, encodeViewState, isEmptyView, parseRule, parseViewDefinition, parseViewState, rewriteTarget, sortHref, viewKeyProblem, viewNameProblem, viewStateHref, type ViewDefinition, type ViewState } from './view-state';
+import { calendarLegacySearch, CANONICAL_MAX, COLS_MAX, EMPTY_VIEW, FILTERS_MAX, PREFIXES_MAX, VIEW_PREFIX, applySavedView, bindViewState, decodeSegment, definitionOf, encodeSegment, encodeViewState, isEmptyView, parseRule, parseViewDefinition, parseViewState, rewriteTarget, sortHref, viewKeyProblem, viewNameProblem, viewStateHref, type ViewDefinition, type ViewState } from './view-state';
 import { SHAPES } from './presets';
 
 // The URL vocabulary of a Data region (P2.3; APEX: the Interactive Report's request syntax): what a reader's address may
@@ -148,5 +148,14 @@ describe('highlight rules (P2.4): one condition in the vocabulary’s words', ()
     expect(typeof parseRule('nope')).toBe('string');
     expect(typeof parseRule('team.like:x')).toBe('string');
     expect(typeof parseRule('points.gt:')).toBe('string');
+  });
+});
+
+describe('calendarLegacySearch (P2.5 PR B)', () => {
+  it('turns the calendar’s old ?s= and ?races= into the Filters region’s filters, the slugs as the series’ names, the rest kept; nothing to do answers the query as it came', () => {
+    expect(calendarLegacySearch('?s=motogp,f1&races=1&m=2026-10')).toBe('?m=2026-10&filter=seriesName.in%3AFormula+1%2CMotoGP&filter=sessionType.in%3Arace');
+    expect(calendarLegacySearch('?s=nope')).toBe('');
+    expect(calendarLegacySearch('?m=2026-10')).toBe('?m=2026-10');
+    expect(calendarLegacySearch('')).toBe('');
   });
 });

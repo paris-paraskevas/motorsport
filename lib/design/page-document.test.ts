@@ -819,3 +819,14 @@ describe('the Filters region (P2.5; APEX: Smart Filters)', () => {
     expect(parsePageDocument(doc([drivers(), filters({ facet1: 'team' })])).problems).toEqual([]);
   });
 });
+
+describe('the Filters region over the calendar (P2.5 PR B)', () => {
+  const base = { kind: 'component', title: '', position: 'body', column: 1, span: 12, newRow: true, hidden: false, authz: null };
+  const month = { ...base, id: 'month', seq: 20, component: 'calendar.month', settings: {} };
+  const filters = (settings: Record<string, unknown>) => ({ ...base, id: 'f', seq: 10, component: 'data.filters', settings });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+  it('a Filters region may name the calendar, whose facets are the columns it declares', () => {
+    expect(parsePageDocument(doc([filters({ filteredRegion: 'month', facet1: 'seriesName', facet2: 'sessionType' }), month])).problems).toEqual([]);
+    expect(parsePageDocument(doc([filters({ filteredRegion: 'month', facet1: 'nope' }), month])).problems).toEqual(['region f: Facet 1 must be a column the filtered region carries']);
+  });
+});

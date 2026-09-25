@@ -261,7 +261,9 @@ describe('the component catalogue', () => {
 
   it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
-    expect(SPLITS['/calendar']).toEqual(['page.heading', 'calendar.month']);
+    // P2.5 PR B: the calendar's Filters region before the month, over the calendar's own facets (it has no preset).
+    expect(SPLITS['/calendar']).toEqual(['page.heading', { id: 'filters', component: 'data.filters', settings: { filteredRegion: 'month', facet1: 'seriesName', facet2: 'sessionType' } }, 'calendar.month']);
+    expect(findComponent('calendar.month')?.facets?.map(c => [c.key, c.label, c.type])).toEqual([['seriesName', 'Series', 'text'], ['sessionType', 'Sessions', 'text']]);
     for (const recipe of Object.values(SPLITS)) for (const entry of recipe) expect(findComponent(typeof entry === 'string' ? entry : entry.component)).not.toBeNull();
   });
 
@@ -288,7 +290,7 @@ describe('the component catalogue', () => {
     expect(recipeRegions('/nowhere')).toEqual([]);
     expect(componentId('page.body', [])).toBe('code-body');
     expect(componentId('data.region', ['region', 'region-2'])).toBe('region-3');
-    expect(defaultDocument('/calendar').regions.map(r => r.component)).toEqual(['page.heading', 'calendar.month']);
+    expect(defaultDocument('/calendar').regions.map(r => r.component)).toEqual(['page.heading', 'data.filters', 'calendar.month']);
   });
 
   it('reads the colour, icon and link kinds, and leaves an application-scope attribute to Component Settings (P2.0)', () => {
@@ -339,7 +341,6 @@ describe('the Filters component (P2.5; APEX: Smart Filters)', () => {
     expect(parseSettings(spec, { facet1DependsOn: 'facet1' }).problems).toEqual(['Facet 1 depends on must name another facet']);
     expect(parseSettings(spec, { filteredRegion: 'Bad Id' }).problems).toEqual(['Filtered region must name a region of the page: lower-case letters, digits and dashes']);
     const summary = settingsSummary(spec, { filteredRegion: 'drivers', facet1: 'team' });
-    expect(summary).toContain('Filtered region drivers');
-    expect(summary).toContain('Facet 1 team');
+    expect(summary).toBe('Filtered region drivers · Facet 1 team');
   });
 });
