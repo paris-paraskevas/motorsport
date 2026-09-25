@@ -123,7 +123,8 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const f = ctx.filters;
     if (!f) return null;
     const [{ DataRegionFilters }, rows] = await Promise.all([dataFilters(), f.rows()]);
-    const current = (column: string): string[] => f.state.filters.find(x => x.column === column && x.op === 'in')?.value.split(',').map(s => s.trim()).filter(s => s !== '') ?? [];
+    // The picks the address carries for a column: an `in` list, or one `eq` value (a value with a comma is picked alone).
+    const current = (column: string): string[] => f.state.filters.filter(x => x.column === column && (x.op === 'in' || x.op === 'eq')).flatMap(x => (x.op === 'in' ? x.value.split(',').map(s => s.trim()).filter(s => s !== '') : [x.value]));
     const facets: Facet[] = ([1, 2, 3] as const).flatMap(n => {
       const column = str(settings[`facet${n}`]);
       const col = f.shape.columns.find(c => c.key === column);
@@ -133,7 +134,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
       const parent = parentColumn ? f.shape.columns.find(c => c.key === parentColumn) : undefined;
       const open = !parent || current(parent.key).length > 0;
       const { values, more } = open ? facetValues(rows, column, f.shape.columns, f.state.filters) : { values: [], more: 0 };
-      return [{ key: `facet${n}`, column, label: str(settings[`facet${n}Label`]) || col.label, several: settings[`facet${n}Several`] === true, open, parentLabel: parent ? str(settings[`${parentKey}Label`]) || parent.label : null, current: current(column), values, more }];
+      return [{ key: `facet${n}`, column, label: str(settings[`facet${n}Label`]) || col.label, several: settings[`facet${n}Several`] === true, open, parentLabel: parent ? str(settings[`${parentKey}Label`]) || parent.label : null, parentColumn: parent?.key ?? null, current: current(column), values, more }];
     });
     return <DataRegionFilters href={ctx.href} prefix={f.prefix} others={ctx.view ?? ''} state={f.state} facets={facets} />;
   },
@@ -278,7 +279,7 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'data.filters': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Data region reads its Source: the standings' two tiers, the results' snapshots, the posts table and the news aggregate
   // (P2.24 A), the series' names and colours from the bundle, and the calendar feeds for the weekends (P2.24 B1).
-  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics'],
+  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
 };
 
 /** What the Debug trace asks of a render (P1.9): each component's timing and outcome. */

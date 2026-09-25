@@ -340,7 +340,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     settings: [
       { key: 'filteredRegion', label: 'Filtered region', kind: 'choice', scope: 'report', group: 'facets', optionsFrom: 'regions', default: '', help: 'The Data region of this page whose rows the facets narrow (APEX: Smart Filters › Filtered Region); a Table, Cards or List.' },
       ...([1, 2, 3] as const).flatMap(n => [
-        { key: `facet${n}`, label: `Facet ${n}`, kind: 'choice' as const, scope: 'report' as const, group: 'facets', optionsFrom: 'columns' as const, default: '', help: 'A column of the filtered region whose values become this facet’s chips (APEX: a filter’s column).' },
+        { key: `facet${n}`, label: `Facet ${n}`, kind: 'choice' as const, scope: 'report' as const, group: 'facets', optionsFrom: 'columns' as const, default: '', help: 'A column of the filtered region whose values become this facet’s chips (APEX: a filter’s column). The address carries a facet’s picks in at most 80 characters; picks beyond that are dropped when the page is read.' },
         { key: `facet${n}Label`, label: `Facet ${n} label`, kind: 'text' as const, scope: 'report' as const, group: 'facets', default: '', maxLength: 40, help: 'The chip’s name; empty draws the column’s own label.' },
         { key: `facet${n}DependsOn`, label: `Facet ${n} depends on`, kind: 'choice' as const, scope: 'report' as const, group: 'facets', optionsFrom: 'facets' as const, default: '', help: 'The facet this one waits for (APEX: Depending On): closed until that one carries a value, its own values narrowed by it.' },
         { key: `facet${n}Several`, label: `Facet ${n} picks several`, kind: 'boolean' as const, scope: 'report' as const, group: 'facets', default: false, help: 'Tick several values and Apply once; off, each value is a link that applies at a tap and stays for the next.' },
@@ -553,6 +553,9 @@ export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Re
   const parts = instanceAttributes(spec).flatMap(s => {
     const v = settings[s.key] ?? s.default;
     if (s.kind === 'text' && String(v).trim() === '') return [];
+    // A region, a column or a facet not named says nothing (P2.5), nor does a grouped switch at its default: the tile names what is set.
+    if (s.optionsFrom && v === '') return [];
+    if (s.kind === 'boolean' && s.group && v === s.default) return [];
     if (s.dependingOn) {
       const on = settings[s.dependingOn.key] ?? spec.settings.find(x => x.key === s.dependingOn!.key)?.default;
       if (!s.dependingOn.values.includes(String(on)) || v === '' || v === s.default) return [];

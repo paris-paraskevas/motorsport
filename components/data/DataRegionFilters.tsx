@@ -14,6 +14,8 @@ export interface Facet {
   /** False while the facet's parent (Depending On) carries no value: the chip names the parent instead of its values. */
   open: boolean;
   parentLabel: string | null;
+  /** The parent's column (Depending On): cleared with the parent, so no filter stays that the chips cannot reach. */
+  parentColumn: string | null;
   /** The values the address carries for this column. */
   current: readonly string[];
   values: readonly { value: string; count: number }[];
@@ -29,22 +31,43 @@ const FIELD = 'border border-border bg-bg px-2 py-1 font-mono text-11 text-text'
 /** The batch form and the search (P2.5), the one raw markup of the Data family, a constant with no data in it: a form set to
  *  pick several folds its ticks into one `in` filter on submit (without it the ticks reach the address as `pick`, which the
  *  vocabulary ignores, so nothing breaks); a facet's search narrows the list drawn, never the address. */
-const SCRIPT =
-  "(function(){var s=document.currentScript,root=s&&s.parentElement;if(!root)return;" +
+export const FILTERS_SCRIPT =
+  "(function(){document.querySelectorAll('[data-filters]').forEach(function(root){if(root.getAttribute('data-bound'))return;root.setAttribute('data-bound','1');" +
   "root.querySelectorAll('form[data-facet]').forEach(function(form){form.addEventListener('submit',function(){" +
   "var picks=[].slice.call(form.querySelectorAll('input[name=pick]'));var vals=picks.filter(function(i){return i.checked}).map(function(i){return i.value});" +
   "picks.forEach(function(i){i.disabled=true});if(vals.length){var h=document.createElement('input');h.type='hidden';h.name=form.getAttribute('data-key');" +
   "h.value=form.getAttribute('data-facet')+'.in:'+vals.join(',');form.appendChild(h)}})});" +
   "root.querySelectorAll('input[data-facet-search]').forEach(function(inp){inp.addEventListener('input',function(){var q=inp.value.toLowerCase();var d=inp.closest('details');if(!d)return;" +
-  "d.querySelectorAll('[data-facet-value]').forEach(function(el){el.hidden=q!==''&&el.getAttribute('data-facet-value').toLowerCase().indexOf(q)===-1})})})})();";
+  "d.querySelectorAll('[data-facet-value]').forEach(function(el){el.hidden=q!==''&&el.getAttribute('data-facet-value').toLowerCase().indexOf(q)===-1})})})})})();";
 
 export function DataRegionFilters({ href, prefix, others, state, facets }: { href: string; prefix: string; others: string; state: ViewState; facets: readonly Facet[] }) {
-  // This region's state with one column's picks replaced (the values sorted, so one set of picks is one address).
+  // This region's state with one column's picks replaced (the values sorted, so one set of picks is one address). A facet
+  // cleared clears the facets that depend on it, and theirs, so no filter stays that the chips cannot reach. A value with a
+  // comma cannot ride an `in` list (the address splits on commas): it is picked alone, as `eq`.
   const stateFor = (column: string, values: readonly string[]): ViewState => {
-    const rest = state.filters.filter(f => f.column !== column);
-    return { ...state, filters: values.length > 0 ? [...rest, { column, op: 'in', value: [...values].sort().join(',') }] : rest };
+    const cleared = new Set<string>();
+    if (values.length === 0) {
+      let frontier = [column];
+      while (frontier.length > 0) {
+        const next: string[] = [];
+        for (const f of facets) {
+          if (f.parentColumn === null || !frontier.includes(f.parentColumn) || cleared.has(f.column)) continue;
+          cleared.add(f.column);
+          next.push(f.column);
+        }
+        frontier = next;
+      }
+    }
+    const rest = state.filters.filter(f => f.column !== column && !cleared.has(f.column));
+    if (values.length === 0) return { ...state, filters: rest };
+    const comma = values.find(v => v.includes(','));
+    if (comma !== undefined) return { ...state, filters: [...rest, { column, op: 'eq', value: comma }] };
+    return { ...state, filters: [...rest, { column, op: 'in', value: [...values].sort().join(',') }] };
   };
-  const toggle = (f: Facet, value: string) => viewStateHref(href, stateFor(f.column, f.current.includes(value) ? f.current.filter(v => v !== value) : [...f.current, value]), prefix, others);
+  const toggle = (f: Facet, value: string) => {
+    const next = f.current.includes(value) ? f.current.filter(v => v !== value) : value.includes(',') ? [value] : [...f.current.filter(v => !v.includes(',')), value];
+    return viewStateHref(href, stateFor(f.column, next), prefix, others);
+  };
   const reset = viewStateHref(href, { ...state, filters: [] }, prefix, others);
   // The rest of the address as a form's hidden inputs: every other region's keys, and this region's but the facet's own column.
   const hidden = (f: Facet): [string, string][] => [...stateEntries(others, prefix), ...new URLSearchParams(encodeViewState(stateFor(f.column, []), prefix)).entries()];
@@ -114,7 +137,7 @@ export function DataRegionFilters({ href, prefix, others, state, facets }: { hre
         </a>
       )}
       {/* The constant script above: raw markup by design, no data in it (rule 4's labelled exception). */}
-      <script dangerouslySetInnerHTML={{ __html: SCRIPT }} />
+      <script dangerouslySetInnerHTML={{ __html: FILTERS_SCRIPT }} />
     </div>
   );
 }
