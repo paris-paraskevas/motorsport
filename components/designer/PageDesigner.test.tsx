@@ -1541,3 +1541,20 @@ describe('the Filters region in the designer (P2.5)', () => {
     expect(screen.getByRole('button', { name: 'Component: Filters' }).textContent).toContain('Filtered region region · Facet 1 team');
   });
 });
+
+describe('the Filters region over the calendar in the designer (P2.5 PR B)', () => {
+  it('offers the calendar as the Filtered region and its own two facets, having no preset', () => {
+    mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Calendar' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Filters' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Component: Filters' }));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    const target = within(pe).getByLabelText('Filtered region') as HTMLSelectElement;
+    expect([...target.options].map(o => o.value)).toEqual(['', 'month']);
+    fireEvent.change(target, { target: { value: 'month' } });
+    const facet1 = within(pe).getByLabelText('Facet 1') as HTMLSelectElement;
+    expect([...facet1.options].map(o => [o.value, o.textContent])).toEqual([['', 'None'], ['seriesName', 'Series'], ['sessionType', 'Sessions']]);
+  });
+});

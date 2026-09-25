@@ -778,7 +778,7 @@ export function parsePageDocument(raw: unknown, components: readonly ComponentDe
     const target = dataRegions.find(d => d.id === id && DETAIL_VIEWS.includes(String(d.settings.view ?? 'table'))) ?? regions.find((x): x is ComponentRegion => x.kind === 'component' && x.id === id && (components.find(c => c.key === x.component)?.facets?.length ?? 0) > 0);
     const hasColumn = (t: ComponentRegion, key: string) => (t.component === 'data.region' ? carries(t, key) : (components.find(c => c.key === t.component)?.facets ?? []).some(c => c.key === key));
     if (!target) {
-      problems.push(`region ${r.id}: Filtered region must be a Data region of this page, drawn as a Table, Cards or List`);
+      problems.push(`region ${r.id}: Filtered region must be a Data region of this page drawn as a Table, Cards or List, or the calendar`);
       continue;
     }
     for (const n of [1, 2, 3]) {

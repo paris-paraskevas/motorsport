@@ -299,7 +299,9 @@ export function applySavedView(url: ViewState, saved: ViewDefinition | null): Vi
 
 /** The calendar's addresses before P2.5 (`?s=<slugs>&races=1`, its filter box's deep links, still written by the series pages)
  *  as the Filters region's state: the slugs as the series' names in one `in` filter, races as the session kind, the other
- *  parameters as they came; the query as it came when neither is there. The middleware runs it for /calendar alone. */
+ *  parameters as they came; the query as it came when neither is there. The middleware runs it for /calendar alone. A list of
+ *  names longer than VALUE_MAX (eight or more of the fifteen) is dropped when the state is read, as any filter that long is:
+ *  such a link shows the whole calendar; the series pages write one slug. */
 export function calendarLegacySearch(search: string | URLSearchParams): string {
   const q = new URLSearchParams(params(search));
   const s = q.get('s');
