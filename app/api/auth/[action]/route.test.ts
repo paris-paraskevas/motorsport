@@ -21,7 +21,7 @@ const sendWelcomeEmail = vi.fn<(input: { id: string; email: string; name?: strin
 vi.mock('@/lib/email', () => ({ sendWelcomeEmail: (a: unknown) => sendWelcomeEmail(a as never) }));
 
 import { withSessionRules } from '@/lib/auth/supabase';
-import { BAD_CODE, CHECK_FAILED, POST, USE_EMAIL, WRONG_CREDENTIALS } from './route';
+import { BAD_CODE, CHECK_FAILED, NONCE_COOKIE, POST, USE_EMAIL, WRONG_CREDENTIALS } from './route';
 
 // The sign-in routes (PA A3): each action over a mocked client, the same-site check, the safe way back, the one message
 // for wrong credentials, the enumeration-safe answers, the welcome sent once at the first confirmed sign-up. The mocked
@@ -38,7 +38,8 @@ const call = async (action: string, body: unknown, headers: Record<string, strin
     body: JSON.stringify(body),
   });
   const res = await POST(req, { params: Promise.resolve({ action }) });
-  return { status: res.status, body: await res.json(), cookies: res.headers.getSetCookie().map(c => c.split(';')[0]), cache: res.headers.get('cache-control') };
+  const raw = res.headers.getSetCookie();
+  return { status: res.status, body: await res.json(), cookies: raw.map(c => c.split(';')[0]), raw, cache: res.headers.get('cache-control') };
 };
 
 describe('/api/auth/[action]', () => {
@@ -122,14 +123,31 @@ describe('/api/auth/[action]', () => {
     expect((await call('sign-up', { name: 'Bo', email: 'bo@example.com', password: 'eight-ch' })).body).toMatchObject({ ok: true, confirm: false });
   });
 
-  it('google: the ID token and the raw nonce go to the provider; sign-out clears the session, everywhere when asked', async () => {
+  it('nonce mints a value into an httpOnly cookie and answers its SHA-256; google reads the raw value back from the cookie, never the body, and clears it', async () => {
+    const minted = await call('nonce', {});
+    expect(minted.status).toBe(200);
+    const hashed = minted.body.hashed as string;
+    expect(hashed).toMatch(/^[0-9a-f]{64}$/);
+    const cookie = minted.cookies.find(c => c.startsWith(`${NONCE_COOKIE}=`));
+    expect(cookie).toBeTruthy();
+    const raw = cookie!.slice(NONCE_COOKIE.length + 1);
+    const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw)))).map(b => b.toString(16).padStart(2, '0')).join('');
+    expect(digest).toBe(hashed);
+    expect(minted.raw.find(c => c.startsWith(`${NONCE_COOKIE}=`))).toMatch(/HttpOnly/i);
     auth.signInWithIdToken.mockImplementationOnce(session);
-    const ok = await call('google', { credential: 'jwt', nonce: 'raw', next: '/settings' });
-    expect(auth.signInWithIdToken).toHaveBeenCalledWith({ provider: 'google', token: 'jwt', nonce: 'raw' });
-    expect(ok).toMatchObject({ status: 200, body: { ok: true, next: '/settings' }, cookies: ['pd-session=tokens', 'pd_signed_in=1'] });
+    const ok = await call('google', { credential: 'jwt', nonce: 'from-the-body', next: '/settings' }, { cookie: `${NONCE_COOKIE}=${raw}` });
+    expect(auth.signInWithIdToken).toHaveBeenCalledWith({ provider: 'google', token: 'jwt', nonce: raw });
+    expect(ok).toMatchObject({ status: 200, body: { ok: true, next: '/settings' } });
+    expect(ok.cookies).toEqual(expect.arrayContaining(['pd-session=tokens', 'pd_signed_in=1', `${NONCE_COOKIE}=`]));
+    // Without the cookie the token is refused before the provider is asked.
+    expect((await call('google', { credential: 'jwt', nonce: raw })).status).toBe(400);
+    expect(auth.signInWithIdToken).toHaveBeenCalledTimes(1);
     auth.signInWithIdToken.mockResolvedValueOnce(failure('bad_id_token'));
-    expect((await call('google', { credential: 'jwt' })).status).toBe(400);
-    expect((await call('google', {})).status).toBe(400);
+    expect((await call('google', { credential: 'jwt' }, { cookie: `${NONCE_COOKIE}=${raw}` })).status).toBe(400);
+    expect((await call('google', {}, { cookie: `${NONCE_COOKIE}=${raw}` })).status).toBe(400);
+  });
+
+  it('sign-out clears the session, everywhere when asked', async () => {
     auth.signOut.mockImplementation(async () => {
       jar?.setAll(withSessionRules([{ name: 'pd-session', value: '', options: { path: '/', maxAge: 0 } }], true));
       return { error: null };

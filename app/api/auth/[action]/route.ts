@@ -11,14 +11,32 @@ export const dynamic = 'force-dynamic';
 // came from the site itself (its Origin names the host). Wrong credentials get one message that never says which part
 // was wrong, and `code` and `reset` answer an unknown address exactly as a known one, so no form tells a stranger who
 // has an account. A username typed where the address goes is answered as such: sign-in is by address alone.
-const ACTIONS = new Set(['password', 'code', 'verify', 'sign-up', 'reset', 'google', 'sign-out']);
+const ACTIONS = new Set(['password', 'code', 'verify', 'sign-up', 'reset', 'nonce', 'google', 'sign-out']);
 const VERIFY_TYPES = new Set(['email', 'signup', 'recovery', 'email_change']);
 export const WRONG_CREDENTIALS = 'Wrong email or password.';
 export const USE_EMAIL = 'Sign in with your email address.';
 export const BAD_CODE = 'That code did not work. Check it, or send a new one.';
 export const CHECK_FAILED = 'The check did not pass. Try again.';
+export const GOOGLE_FAILED = 'Google sign-in did not work. Try again.';
+/** The Google nonce's cookie: minted by `nonce`, read back by `google`, so a captured ID token cannot be replayed from
+ *  another browser (Google gets the SHA-256 as the button's data-nonce; Supabase checks the token carries it). */
+export const NONCE_COOKIE = 'pd_google_nonce';
+const NONCE_MAX_AGE = 600;
 
 type VerifyType = 'email' | 'signup' | 'recovery' | 'email_change';
+
+const nonceCookie = (value: string, maxAge: number) => ({ httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/', maxAge, value });
+
+/** 32 random bytes as base64url (no character a cookie would encode), and their SHA-256 as hex. */
+export async function mintNonce(): Promise<{ raw: string; hashed: string }> {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  const raw = btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
+  const hashed = Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+  return { raw, hashed };
+}
 
 export async function POST(req: NextRequest, ctx: { params: Promise<{ action: string }> }) {
   const { action } = await ctx.params;
@@ -79,13 +97,22 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ action: st
       if (error && error.code !== 'user_already_exists') return answer({ error: 'The account could not be created. Try again.' }, 400);
       return answer({ ok: true, confirm: !data?.session, next });
     }
+    case 'nonce': {
+      const { raw, hashed } = await mintNonce();
+      const res = jar.finish(noStore({ ok: true, hashed }));
+      const { value, ...options } = nonceCookie(raw, NONCE_MAX_AGE);
+      res.cookies.set(NONCE_COOKIE, value, options);
+      return res;
+    }
     case 'google': {
       const credential = field(body.credential, 4096);
-      const nonce = field(body.nonce, 200) || undefined;
-      if (!credential) return answer({ error: 'Google sign-in did not work. Try again.' }, 400);
+      const nonce = req.cookies.get(NONCE_COOKIE)?.value;
+      if (!credential || !nonce) return answer({ error: GOOGLE_FAILED }, 400);
       const { error } = await supabase.auth.signInWithIdToken({ provider: 'google', token: credential, nonce });
-      if (error) return answer({ error: 'Google sign-in did not work. Try again.' }, 400);
-      return answer({ ok: true, next });
+      const res = error ? answer({ error: GOOGLE_FAILED }, 400) : answer({ ok: true, next });
+      const { value, ...options } = nonceCookie('', 0);
+      res.cookies.set(NONCE_COOKIE, value, options);
+      return res;
     }
     case 'sign-out': {
       await supabase.auth.signOut({ scope: body.everywhere === true ? 'global' : 'local' }).catch(() => undefined);
