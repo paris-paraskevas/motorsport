@@ -20,7 +20,7 @@ describe('DATA_SERVICES', () => {
   });
 
   it('names the readers the code has for the live tier, and finds a service by key', () => {
-    expect(DATA_SERVICES.filter(s => s.tier === 'now').map(s => s.key)).toEqual(['ga4', 'gsc', 'bing', 'cf', 'clerk', 'sb', 'upstash']);
+    expect(DATA_SERVICES.filter(s => s.tier === 'now').map(s => s.key)).toEqual(['ga4', 'gsc', 'bing', 'cf', 'auth', 'sb', 'upstash']);
     expect(findDataService('ga4')?.cred).toEqual(['GA4_SA_KEY', 'GA4_PROPERTY_ID']);
     expect(findDataService('nope')).toBeNull();
   });

@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { useAccount } from '@/lib/auth/client';
+import { initialsOf, useAccount } from '@/lib/auth/client';
 import { SignOutButton } from '@/lib/auth/client-pieces';
 import { NavSeriesMeta } from '@/lib/types';
 import type { NavLists } from '@/lib/design/destinations';
@@ -298,6 +298,11 @@ function HeaderAccount() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
           </>
+        )}
+        {isLoaded && isSignedIn && !avatarUrl && (
+          <span aria-hidden="true" className="flex h-full w-full items-center justify-center font-mono text-11 font-semibold uppercase text-text">
+            {initialsOf(account)}
+          </span>
         )}
       </button>
       {open && (

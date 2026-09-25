@@ -1,30 +1,70 @@
 'use client';
-import type { ReactNode } from 'react';
-import { ClerkProvider } from '@clerk/nextjs';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { AccountContext, hasSignedInCookie, type Account, type AccountStore } from './client';
 
-// The account seam's provider (PA A1b), a module of its own: the two layouts alone import it, so Clerk's provider code
-// stays in their chunk groups and never rides with useAccount into every route's (the Worker grew 2 MiB when it did).
+// The account seam's provider (PA A1b; the site's own since A3), a module of its own that the two layouts alone import.
+// It asks GET /api/account once after the page loads, and only when the flag cookie says a session exists; the answer
+// (the account, its flags) is what useAccount and useAccountFlags read everywhere below.
 
-/** The four addresses the provider's pieces need, the same on both hosts. */
-const URLS = { signInUrl: '/sign-in', signUpUrl: '/sign-up', signInFallbackRedirectUrl: '/', signUpFallbackRedirectUrl: '/' } as const;
+interface Held {
+  account: Account | null;
+  flags: Record<string, unknown> | null;
+  isLoaded: boolean;
+}
+const NOT_YET: Held = { account: null, flags: null, isLoaded: false };
+const NOBODY: Held = { account: null, flags: null, isLoaded: true };
 
-/** The two looks of the provider's own screens. The site's asserts the brand accent alone: Clerk 7 honours only
- *  colorPrimary, colorBackground and borderRadius (colorText, colorTextOnPrimaryBackground and colorInput* were silently
- *  ignored: --cl-color-* were unset at run time while the heading still computed to white), a hard-coded light
- *  colorBackground painted the card cream on the dark themes under Clerk's white heading (the unreadable sign-in modal),
- *  and Clerk 7's default theme follows the CSS color-scheme, which globals.css declares per theme, so the modal tracks
- *  whichever of the six themes is active for free. The console's is its paper palette. */
-const LOOKS = {
-  site: { variables: { colorPrimary: '#8c1c13' } },
-  console: { variables: { colorBackground: '#fffcf2', colorText: '#1e1a13', colorPrimary: '#8c1c13', colorTextOnPrimaryBackground: '#f7f3e8', colorInputBackground: '#fbf7ec', colorInputText: '#1e1a13' } },
-} as const;
+/** GET /api/account: the account and its flags, or nobody when the answer is a refusal or cannot be had. */
+async function fetchAccount(): Promise<Held> {
+  try {
+    const res = await fetch('/api/account', { cache: 'no-store', credentials: 'same-origin' });
+    const body = res.ok ? ((await res.json()) as { account?: Account | null; flags?: Record<string, unknown> | null }) : null;
+    const account = body?.account ?? null;
+    return { account, flags: account ? (body?.flags ?? {}) : null, isLoaded: true };
+  } catch {
+    return NOBODY;
+  }
+}
 
-/** The provider around a host's tree: the (app) layout's site look, the (admin) layout's console look. A3 replaces it
- *  with our own, over /api/account. */
-export function AuthProvider({ look, children }: { look: keyof typeof LOOKS; children: ReactNode }) {
-  return (
-    <ClerkProvider {...URLS} appearance={LOOKS[look]}>
-      {children}
-    </ClerkProvider>
+/** The provider around a host's tree, the same on both hosts. */
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [held, setHeld] = useState<Held>(NOT_YET);
+  const refresh = useCallback(async () => {
+    setHeld(await (hasSignedInCookie() ? fetchAccount() : Promise.resolve(NOBODY)));
+  }, []);
+  // The first answer, once the page has mounted: the state is set when the promise settles, never within the effect's
+  // own run, and never after the provider has gone.
+  useEffect(() => {
+    let mounted = true;
+    void (hasSignedInCookie() ? fetchAccount() : Promise.resolve(NOBODY)).then(next => {
+      if (mounted) setHeld(next);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+  const setFlag = useCallback(async (key: string, value: unknown) => {
+    const res = await fetch('/api/account', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ flags: { [key]: value } }),
+    });
+    if (!res.ok) throw new Error('The flag was not saved');
+    const body = (await res.json()) as { flags?: Record<string, unknown> };
+    setHeld(h => ({ ...h, flags: body.flags ?? { ...(h.flags ?? {}), [key]: value } }));
+  }, []);
+  const store = useMemo<AccountStore>(
+    () => ({
+      ...held,
+      refresh,
+      setFlag: held.account
+        ? setFlag
+        : async () => {
+            throw new Error('signed out');
+          },
+    }),
+    [held, refresh, setFlag],
   );
+  return <AccountContext.Provider value={store}>{children}</AccountContext.Provider>;
 }

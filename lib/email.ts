@@ -6,6 +6,7 @@
 // Plain `fetch` to the Resend REST API — no SDK dependency.
 
 import { SITE_URL, SITE_TITLE } from './site';
+import { kv } from './kv';
 
 const DEFAULT_FROM = 'Paddock Tracker <contact@paddock-tracker.com>';
 
@@ -166,4 +167,45 @@ export function renderBrandedEmail(opts: BrandedEmailOptions): { html: string; t
   lines.push(`${SITE_TITLE} · ${domain}`);
 
   return { html, text: lines.join('\n') };
+}
+
+/** The one welcome a new account gets, at its first confirmed sign-up (PA A3; Clerk's webhook sent it before, with the
+ *  same words). One per account ever, kept in KV under the account's id; a missing KV at worst re-welcomes once. Best
+ *  effort: a failed send is false, never a throw. */
+export async function sendWelcomeEmail({ id, email, name }: { id: string; email: string; name?: string | null }): Promise<boolean> {
+  const key = `paddock:welcome:${id}`;
+  const kvOn = Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  if (kvOn) {
+    try {
+      if (await kv.get(key)) return false;
+    } catch {
+      /* best-effort dedupe */
+    }
+  }
+  const first = (name ?? '').trim().split(/\s+/)[0] ?? '';
+  const { html, text } = renderBrandedEmail({
+    preheader: `Welcome to ${SITE_TITLE} — your motorsport companion.`,
+    heading: first ? `Welcome to ${SITE_TITLE}, ${first}` : `Welcome to ${SITE_TITLE}`,
+    intro: 'Your personal motorsport companion.',
+    paragraphs: [
+      'Paddock keeps F1, MotoGP, WEC, WRC, IndyCar, NASCAR and more in one place — live schedules in your local time, results, standings, and a friendly no-stakes prediction game.',
+      'Follow your series so their sessions land front and centre, and turn on notifications so you never miss lights-out.',
+    ],
+    cta: { label: 'Open Paddock', href: `${SITE_URL}/app` },
+    footerNote: `You’re receiving this once because you just created a ${SITE_TITLE} account. Manage email and notifications anytime in Settings.`,
+  });
+  let ok = false;
+  try {
+    ok = (await sendEmail({ to: email, subject: `Welcome to ${SITE_TITLE}`, text, html })).ok;
+  } catch {
+    ok = false;
+  }
+  if (ok && kvOn) {
+    try {
+      await kv.set(key, '1', { ex: 60 * 60 * 24 * 365 });
+    } catch {
+      /* a missing key at worst re-welcomes once */
+    }
+  }
+  return ok;
 }

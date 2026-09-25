@@ -14,6 +14,91 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1064 · 1.0.183 · PA A3 · opened Fri 25 Sep 11:12 (08:12Z); the merge waits for the switch (the operator present)
+**Supabase Auth inside the seam: sessions on the Worker, the site’s own sign-in, sign-up and Account pages, Clerk’s SDK gone.** The switch of phase PA: the seam over @supabase/ssr, the middleware refreshing sessions, the routes under /api/auth and /api/account, the site’s own screens, the templates, the Clerk webhook deleted.
+- **Readers see:** after the merge, the site’s own sign-in page (email and password, a code by email, Google), an Account details page under Settings, initials in the header without a photo, and no sign-out after a week. Until the merge, nothing.
+- **Editors get:** the Data workspace’s accounts card over Supabase Auth; the tree’s Authentication label.
+- **Files (64):**
+  - `.gitignore` · supabase/signing_keys.json (the local JWT signing key) ignored.
+  - `CHANGELOG.md` · the release trio: the engineering note (1.0.183).
+  - `RELEASES.md` · the release trio: the public note (1.0.183).
+  - `SCHEDULE.md` · records: step 27.
+  - `app/(admin)/layout.tsx` · AuthProvider without a look; the comment.
+  - `app/(app)/layout.tsx` · AuthProvider without a look; the Clerk preconnect gone; the toolbar comment.
+  - `app/(app)/settings/account/page.tsx` · new: the Account details page (name, photo, email, password, providers, every device, deletion); ?reset=1 opens the password row.
+  - `app/(app)/settings/page.tsx` · the Account details row (signed in).
+  - `app/(app)/sign-in/[[...sign-in]]/page.tsx` · the site’s own sign-in page (next or redirect_url; a signed-in person goes on).
+  - `app/(app)/sign-up/[[...sign-up]]/page.tsx` · the site’s own sign-up page.
+  - `app/api/account/photo/route.test.ts` · new: its tests.
+  - `app/api/account/photo/route.ts` · new: POST a PNG/JPEG/WebP of 2 MB at most into the avatars bucket; DELETE.
+  - `app/api/account/route.test.ts` · new: its tests.
+  - `app/api/account/route.ts` · new: GET the account, its flags and providers; PATCH name, email, password, flags; DELETE on the session’s sub after the words.
+  - `app/api/auth/[action]/route.test.ts` · new: its tests.
+  - `app/api/auth/[action]/route.ts` · new: password, code, verify, sign-up, reset, google, sign-out.
+  - `app/api/webhooks/clerk/route.ts` · deleted: the welcome moved to verify (lib/email.ts sendWelcomeEmail).
+  - `components/AccountIdentity.tsx` · the strip’s line about the avatar.
+  - `components/AppShell.tsx` · initials in the header when there is no photo.
+  - `components/auth/AccountForm.test.tsx` · new: its tests.
+  - `components/auth/AccountForm.tsx` · new: the Account page’s rows.
+  - `components/auth/GoogleButton.tsx` · new: Google’s button with a browser-made nonce.
+  - `components/auth/SignInForm.test.tsx` · new: its tests.
+  - `components/auth/SignInForm.tsx` · new: password, code, reset, the notice.
+  - `components/auth/SignUpForm.tsx` · new: name, address, password, the code step.
+  - `components/auth/Turnstile.tsx` · new: the widget.
+  - `components/auth/fields.tsx` · new: the forms’ pieces (Field, inputs, Problem, Note, call, go).
+  - `components/designer/PageDesignerTree.tsx` · the tree’s Authentication label.
+  - `components/page/DeveloperToolbar.tsx` · the Session entry’s title.
+  - `docs/HANDOFF.md` · records: the LATEST block for the switch.
+  - `docs/plan/components-programme.md` · records: re-rendered.
+  - `docs/plan/ledger.json` · records: A3 STARTED with the evidence and the dated line.
+  - `docs/pull-requests.md` · records: this entry.
+  - `lib/auth/boundary.test.ts` · no @clerk/ import anywhere; the session library in the seam alone.
+  - `lib/auth/client-pieces.tsx` · the site’s own SignInLink, SignOutButton, AccountButton.
+  - `lib/auth/client-provider.tsx` · AuthProvider over GET /api/account.
+  - `lib/auth/client.test.tsx` · rewritten for the routes.
+  - `lib/auth/client.tsx` · the context, useAccount, useAccountFlags, hasSignedInCookie, initialsOf.
+  - `lib/auth/directory.test.ts` · new: its tests.
+  - `lib/auth/directory.ts` · over the three service-role functions.
+  - `lib/auth/server.test.ts` · rewritten for the claims.
+  - `lib/auth/server.ts` · over getClaims: legacy_id before sub; flagsFromClaims.
+  - `lib/auth/supabase.test.ts` · new: its tests.
+  - `lib/auth/supabase.ts` · new: the client factory, the cookie rules, the request jar, the request checks.
+  - `lib/design/data-services.test.ts` · its key.
+  - `lib/design/data-services.ts` · the Clerk service becomes Supabase Auth.
+  - `lib/design/data.test.ts` · the env names.
+  - `lib/design/data.ts` · the reader auth(); the comment.
+  - `lib/design/page-registry.ts` · /settings/account; the sign-in pages’ descriptions.
+  - `lib/email.ts` · sendWelcomeEmail (from the webhook).
+  - `middleware.test.ts` · new: its tests.
+  - `middleware.ts` · the session first; the cookies on every response; the dev host failing closed; the user-scoped APIs 404 anonymous.
+  - `next.config.ts` · the CSP: Turnstile and Google’s button in, Clerk out.
+  - `package-lock.json` · regenerated with npm 10 (the nested @swc/helpers pin kept for CI’s npm ci).
+  - `package.json` · the trio’s version bump; @clerk/nextjs removed; @clerk/backend a devDependency for the import script; @supabase/ssr added; supabase-js raised to ^2.117.1.
+  - `scripts/sync-worker-secrets.mts` · SUPABASE_SECRET_KEY in the preview set.
+  - `supabase/config.toml` · the local stack: the mail viewer, confirmations, codes, the captcha, Google (off), the templates, the signing key.
+  - `supabase/migrations/20260924234000_pages_seed_account.sql` · new: the page row for /settings/account (prod on “apply 20260924234000”).
+  - `supabase/templates/confirmation.html` · new: the sign-up code email.
+  - `supabase/templates/email_change.html` · new: the new-address code email.
+  - `supabase/templates/magic_link.html` · new: the sign-in code email.
+  - `supabase/templates/recovery.html` · new: the reset code email.
+  - `vitest.config.ts` · middleware.test.ts included.
+  - `docs/pull-requests.md` · records: this entry.
+- **Verified:** tests first (twelve files); tsc 0 · lint 0 errors · vitest 242 files, 2379 tests green (three designer tests time out at their 5 s limit only under load) · wrangler deploy --dry-run Total Upload 39314.62 KiB (41151.04 KiB before: Clerk’s SDK gone) · the local stack’s secret key proven to drive a sign-in first · every flow in the browser on the local stack (the sign-in page, the helper’s sign-in, Settings, the Account page’s rows, sign-up with the emailed code, sign in by code, the reset, the deletion), the dev host’s lock by curl. Not proven locally: Google’s button, the platform’s User-Agent rule and IP forwarding, an hour-old session’s headers on Workers, Home a cache HIT (testing.paddock-tracker.com before the merge).
+- **Review:** a fresh-context Sonnet reviewer on the diff (the verdict in the PR body).
+
+## #1063 · 1.0.182 · records · opened Fri 25 Sep 01:35 (24 Sep 22:35Z), merged by the operator’s hand
+**Session 56: PA A2 DONE, the accounts imported; the session-57 handoff with A3 first.** Records only.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (7):**
+  - `docs/plan/ledger.json` · A2 DONE: the import run from the session on the operator’s word (18 created on prod’s Supabase Auth, 13 without a password; the rerun unchanged 18; the directory answering BLOG_AUTHOR_ID; account_stats() 18, account_admins() 1); the dated line.
+  - `docs/plan/components-programme.md` · re-rendered from the ledger (54 slots).
+  - `docs/HANDOFF.md` · the LATEST block: PA A3 first with its decision scan; the State paragraph for A2’s run.
+  - `SCHEDULE.md` · step 26; the day’s active time.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio at 1.0.182.
+- **Verified:** node docs/plan/render-ledger.mjs → 54 slots; npx vitest run lib/design/plan-ledger.test.ts → 1 file, 6 tests passed.
+- **Review:** none; records only.
+
 ## #1062 · 1.0.181 · records · opened Fri 25 Sep 00:33 (24 Sep 21:33Z), merged by the operator’s hand
 **Session 56: PA A2 on prod and its migration applied, the session-57 handoff with the operator’s import run first.** Records only.
 - **Readers see:** nothing.

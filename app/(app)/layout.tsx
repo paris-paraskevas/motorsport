@@ -119,7 +119,7 @@ export default async function RootLayout({
   const customCss = [appearanceCss(appearance), themeCss(themes)].filter(Boolean).join('\n');
 
   return (
-    <AuthProvider look="site">
+    <AuthProvider>
       <html
         lang="en"
         data-theme={theme.dataTheme}
@@ -133,9 +133,6 @@ export default async function RootLayout({
               (one rule per theme on [data-theme-custom]), after the stylesheet
               so they win at equal specificity. Empty when nothing is stored. */}
           {customCss && <style id="paddock-themes" dangerouslySetInnerHTML={{ __html: customCss }} />}
-          {/* Clerk's SDK + frontend API are the single biggest unused-JS item
-              (audit baseline); warm the connection early. */}
-          <link rel="preconnect" href="https://clerk.paddock-tracker.com" />
           <Script id="consent-default" strategy="beforeInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
@@ -173,7 +170,7 @@ export default async function RootLayout({
           <SupportPrompt />
           {/* The runtime Developer Toolbar (APEX's bar at the foot of a running
               page; R5, 2026-09-10): a client component that draws nothing until
-              Clerk says the visitor is an administrator, so every public page
+              the account seam says the visitor is an administrator, so every public page
               is the same cached render as before. */}
           <DeveloperToolbar />
           {/* AssistantWidget unmounted 2026-08-21 (operator: "until fixed we

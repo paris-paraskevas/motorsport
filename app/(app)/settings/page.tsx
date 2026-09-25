@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Bell, Download, Palette } from 'lucide-react';
+import { ArrowUpRight, Bell, Download, Palette, UserRound } from 'lucide-react';
 import { accountId } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
@@ -61,6 +61,19 @@ async function AccountPage() {
         {/* "Customise home" row removed with the editorial-home cutover
             (2026-08-18) — the four lead blocks are fixed; the widget system +
             /settings/customize are being retired. */}
+        {userId && (
+          <Link
+            href="/settings/account"
+            className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+          >
+            <UserRound size={18} className="shrink-0 text-text-muted" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-text text-base font-semibold">Account details</span>
+              <span className="block text-text-faint text-xs">Name, photo, email and password</span>
+            </span>
+            <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+          </Link>
+        )}
         <Link
           href="/settings/notifications"
           className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"

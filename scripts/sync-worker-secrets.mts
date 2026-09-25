@@ -37,9 +37,10 @@ const PREVIEW_KEYS = [
   'KV_REST_API_READ_ONLY_TOKEN',
   'KV_REST_API_TOKEN',
   'KV_REST_API_URL',
-  'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
+  'SUPABASE_SECRET_KEY',
   'SUPABASE_SERVICE_ROLE_KEY',
   'SUPABASE_URL',
+  'TURNSTILE_SECRET',
 ] as const;
 
 // CONTACT_TO_EMAIL is not in the env file; this is the operator-set default.

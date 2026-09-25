@@ -55,7 +55,10 @@
   ],
   "vars": {
     "DATA_SOURCE": "db",
-    "NEXT_INC_CACHE_R2_PREFIX": "testing-cache"
+    "NEXT_INC_CACHE_R2_PREFIX": "testing-cache",
+    // PA A3: the sign-in pages' two public values, the same widget and client as prod (their hostnames include testing.).
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFDKQWzpce8hsLMk",
+    "GOOGLE_CLIENT_ID": "513497886552-3ho1glc0fbt6upu8vobi3d0r4rugkect.apps.googleusercontent.com"
   },
   "r2_buckets": [
     {

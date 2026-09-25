@@ -3,18 +3,13 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Who may import Clerk (PA A1): lib/auth/ and a named allow-list that shrinks with each PR of the phase, so the files that
-// read the provider move behind the seam once and stay there. After A1a the server files are behind it, after A1b the
-// browser's files and the two layouts; the middleware, the sign-in pages and the webhook wait for A3.
-const ALLOWED = new Set([
-  'middleware.ts',
-  'app/api/webhooks/clerk/route.ts',
-  'app/(app)/sign-in/[[...sign-in]]/page.tsx',
-  'app/(app)/sign-up/[[...sign-up]]/page.tsx',
-]);
-
+// Who may import the provider (PA A1–A3): nobody, since the switch. lib/auth/ is the seam and knows Supabase Auth
+// (@supabase/ssr, @supabase/supabase-js); no file under app, components or lib, nor the middleware, imports Clerk, and
+// the site's dependencies no longer list its SDK. The import script alone (scripts/import-clerk-users.mts) reads Clerk's
+// Backend API through @clerk/backend, for the run after the deploy, until A4 retires it.
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const CLERK = /from '@clerk\//;
+const SSR = /from '@supabase\/ssr'/;
 
 /** Every .ts/.tsx source under a directory, as a repo-relative path with forward slashes; tests and node_modules left out. */
 function sources(dir: string): string[] {
@@ -30,16 +25,19 @@ function sources(dir: string): string[] {
   walk(dir);
   return out;
 }
-const imports = (rel: string) => CLERK.test(readFileSync(join(ROOT, rel), 'utf8'));
+const read = (rel: string) => readFileSync(join(ROOT, rel), 'utf8');
 
-describe('the Clerk boundary (PA A1)', () => {
-  it('no file outside lib/auth and the allow-list imports @clerk/', () => {
+describe('the provider boundary (PA A3)', () => {
+  it('no file imports @clerk/ any more, and the site no longer depends on its SDK', () => {
     const files = [...sources('app'), ...sources('components'), ...sources('lib'), 'middleware.ts'];
     expect(files.length).toBeGreaterThan(100);
-    expect(files.filter(f => !f.startsWith('lib/auth/') && !ALLOWED.has(f) && imports(f))).toEqual([]);
+    expect(files.filter(f => CLERK.test(read(f)))).toEqual([]);
+    const pkg = JSON.parse(read('package.json')) as { dependencies: Record<string, string>; devDependencies: Record<string, string> };
+    expect(Object.keys(pkg.dependencies).filter(k => k.startsWith('@clerk/'))).toEqual([]);
   });
 
-  it('every allow-listed file still imports Clerk, so the list shrinks as the phase moves and never lists a file already moved', () => {
-    for (const f of ALLOWED) expect(imports(f), f).toBe(true);
+  it('the session library is imported by the seam alone', () => {
+    const files = [...sources('app'), ...sources('components'), ...sources('lib'), 'middleware.ts'];
+    expect(files.filter(f => !f.startsWith('lib/auth/') && SSR.test(read(f)))).toEqual([]);
   });
 });

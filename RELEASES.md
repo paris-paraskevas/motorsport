@@ -4,6 +4,14 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.183 — 2026-09-25
+
+Sign-in is Paddock's own now. The same email and password work, Google works, and a six-digit code by email works too; nothing signs you out after a week any more. Settings gains an Account details page: your name, a photo, your email (a code confirms a new one), your password, where you sign in from, a way to sign out of every device, and a way to delete the account. Existing accounts keep everything.
+
+## 1.0.182 — 2026-09-24
+
+Internal only: the day's working records. Nothing changes for readers.
+
 ## 1.0.181 — 2026-09-24
 
 Internal only: the day's working records. Nothing changes for readers.
