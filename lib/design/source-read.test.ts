@@ -41,6 +41,13 @@ vi.mock('@/lib/series', () => {
 vi.mock('@/lib/rounds-loader', () => ({ loadRounds: async () => rounds }));
 const readCurrentStandingsWithRun = vi.fn();
 vi.mock('@/lib/standing-rows', () => ({ readCurrentStandingsWithRun: (...a: unknown[]) => readCurrentStandingsWithRun(...a) }));
+// P2.25: the session-results source reads the session_result_current view alone, a numbered round or the latest.
+const readCurrentSessionResults = vi.fn();
+vi.mock('@/lib/session-result-rows', () => ({ readCurrentSessionResults: (...a: unknown[]) => readCurrentSessionResults(...a) }));
+const sessionRows = [
+  { session: 'qualifying', position: 1, driverName: 'Kimi Antonelli', driverCode: 'ANT', carNumber: '12', team: 'Mercedes', laps: 18, time: '1:40.123', gap: null, interval: null, q1: '1:41.000', q2: '1:40.500', q3: '1:40.123', compound: 'Soft', points: null, status: null },
+  { session: 'qualifying', position: 2, driverName: 'George Russell', driverCode: 'RUS', carNumber: '63', team: 'Mercedes', laps: 17, time: '1:40.223', gap: '+0.100', interval: '+0.100', q1: '1:41.100', q2: '1:40.600', q3: '1:40.223', compound: 'Soft', points: null, status: null },
+];
 const fetchFullDriverStandings = vi.fn();
 vi.mock('@/lib/standings/brief', () => ({
   fetchFullDriverStandings: (...a: unknown[]) => fetchFullDriverStandings(...a),
@@ -506,8 +513,26 @@ describe('readSource', () => {
     expect((await readSource(latest)).rows).toEqual([]);
   });
 
-  it('every one of the fourteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
+  it('P2.25: the session-results source answers the view’s rows in the shape’s columns, the driver linked to their page and the round to its weekend; the latest round by default; no rows answers empty with the db tier', async () => {
+    readCurrentSessionResults.mockResolvedValue({ round: 15, rows: sessionRows, runId: 'run-15' });
+    const read = await readSource({ source: 'session-results', params: { series: 'f1', season: 2026, round: 'latest', session: 'qualifying' } });
+    expect(readCurrentSessionResults).toHaveBeenCalledWith({ series: 'f1', season: 2026, round: 'latest', session: 'qualifying' });
+    expect(read.provenance).toMatchObject({ tier: 'db', rows: 2 });
+    expect(read.rows[0]).toMatchObject({ round: 15, session: 'qualifying', position: 1, driver: 'Kimi Antonelli', code: 'ANT', number: '12', team: 'Mercedes', laps: 18, time: '1:40.123', q3: '1:40.123', compound: 'Soft', weekend: '/series/f1/weekend/15', profile: '/drivers/kimi-antonelli' });
+    expect(read.rows[1]).toMatchObject({ position: 2, gap: '+0.100', interval: '+0.100' });
+    const pinned = await readSource({ source: 'session-results', params: { series: 'f1', season: 2026, round: 3, session: 'practice-1' } });
+    expect(readCurrentSessionResults).toHaveBeenLastCalledWith({ series: 'f1', season: 2026, round: 3, session: 'practice-1' });
+    expect(pinned.rows).toHaveLength(2);
+    readCurrentSessionResults.mockResolvedValue(null);
+    const empty = await readSource({ source: 'session-results', params: { series: 'f1', season: 2026, round: 'latest', session: 'practice-2' } });
+    expect(empty.rows).toEqual([]);
+    expect(empty.provenance).toMatchObject({ tier: 'db', rows: 0 });
+    expect(empty.provenance.error).toBeUndefined();
+  });
+
+  it('every one of the fifteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
     readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: null });
+    readCurrentSessionResults.mockResolvedValue({ round: 15, rows: sessionRows, runId: null });
     const results = SOURCES.find(s => s.key === 'results')!;
     const refs = [...SOURCES.map(s => defaultSourceRef(s)), ...results.parameters[0].options!.map(o => ({ source: 'results', params: { series: o.key, season: 2026 } }))];
     for (const ref of refs) {

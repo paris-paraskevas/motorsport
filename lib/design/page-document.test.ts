@@ -238,7 +238,7 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(none.value.regions[0]).not.toHaveProperty('source');
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: '' })])).value.regions[0]).not.toHaveProperty('source');
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?season=2026' })])).problems).toEqual(['region r: Standings needs a series']);
-    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'rounds?series=f1' })])).problems).toEqual(['region r: Source must be one of Standings, Results, Posts, News, Weekends']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'rounds?series=f1' })])).problems).toEqual(['region r: Source must be one of Standings, Results, Posts, News, Weekends, Session results']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?series=f1&season=2025' })])).value.regions).toEqual([]);
     expect(parsePageDocument(doc([region({ component: 'series.live', source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Live band reads no source']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 42 })])).problems).toEqual(['region r: Source must be text']);

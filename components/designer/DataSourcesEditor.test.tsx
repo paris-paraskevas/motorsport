@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 //
 // Data Sources (P2.1; APEX: REST Data Sources, ours: the code's readers): the
-// fourteen in a table with their parameters, columns, how they are kept fresh,
+// fifteen in a table with their parameters, columns, how they are kept fresh,
 // Utilization and History; one opened below with its Data Profile, how it is
 // read, where it is used, and a Preview through the reader. The same browser
 // serves the Data workspace's Object Browser with the loader's work in two
@@ -60,14 +60,14 @@ afterEach(() => {
 });
 
 describe('DataSourcesEditor', () => {
-  it('lists the fourteen with their parameters, columns, how they are kept fresh, Used on and Changed; opens one with its Data Profile, how it is read, Utilization with Open and History', async () => {
+  it('lists the fifteen with their parameters, columns, how they are kept fresh, Used on and Changed; opens one with its Data Profile, how it is read, Utilization with Open and History', async () => {
     const onOpenPage = vi.fn();
     render(<DataSourcesEditor series={series} onOpenPage={onOpenPage} />);
     expect(screen.getByRole('heading', { name: 'Data Sources' })).toBeTruthy();
     await waitFor(() => expect(urls).toContain('/api/admin/design/data/sources'));
     await screen.findByText('1 page');
     const rows = screen.getAllByRole('row').slice(1);
-    expect(rows).toHaveLength(14);
+    expect(rows).toHaveLength(15);
     const standingsRow = rows.find(r => within(r).queryByText('Standings'))!;
     expect(within(standingsRow).getByText('series · season')).toBeTruthy();
     // Thirteen columns: twelve since P2.24 B2 (the series' name and colour, the race winner, the season's end), the row's page since P2.4 PR B.

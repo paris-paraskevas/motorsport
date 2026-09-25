@@ -13,7 +13,7 @@ const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home']
 // results presets declared and waiting for the Rounds view (PR B).
 
 describe('the preset catalogue', () => {
-  it('holds the twenty groups in the drawn order and thirty-eight presets: twenty-seven standings over two shapes, eight results over four, the site’s tables drawn as the Rounds layout by default (P2.2 B1), and Home’s five boxes as templates (P2.24 A, B1, B2)', () => {
+  it('holds the twenty-one groups in the drawn order and thirty-nine presets: twenty-seven standings over two shapes, eight results over four, one session (P2.25), the site’s tables drawn as the Rounds layout by default (P2.2 B1), and Home’s five boxes as templates (P2.24 A, B1, B2)', () => {
     expect(PRESET_GROUPS.map(g => g.name)).toEqual([
       'Drivers',
       'Constructors',
@@ -35,8 +35,9 @@ describe('the preset catalogue', () => {
       "What's next",
       'Latest result',
       'What it changed',
+      'Session',
     ]);
-    expect(PRESETS).toHaveLength(38);
+    expect(PRESETS).toHaveLength(39);
     const standings = PRESETS.filter(p => p.source === 'standings');
     expect(standings).toHaveLength(27);
     expect(new Set(standings.map(p => p.shape))).toEqual(new Set(['driver-rows', 'team-rows']));
@@ -46,6 +47,13 @@ describe('the preset catalogue', () => {
     expect(PRESETS.filter(p => p.source === 'posts').map(p => p.key)).toEqual(['lead-story']);
     expect(PRESETS.filter(p => p.source === 'news').map(p => p.key)).toEqual(['wire']);
     expect(PRESETS.filter(p => p.source === 'weekends').map(p => p.key)).toEqual(['whats-next']);
+    // P2.25: one Session preset over the session-results source, F1 alone, the Table, thirty rows so a full classification shows.
+    expect(PRESETS.filter(p => p.source === 'session-results')).toEqual([{ key: 'session', name: 'Session', group: 'session', source: 'session-results', shape: 'session-rows', where: {}, series: ['f1'], nameLabel: 'Driver', view: 'table', rows: 30 }]);
+    expect(SHAPES['session-rows'].columns.map(c => c.key)).toEqual(['position', 'driver', 'code', 'team', 'laps', 'time', 'gap', 'interval', 'q1', 'q2', 'q3', 'compound', 'status']);
+    expect(SHAPES['session-rows'].columns.find(c => c.key === 'driver')).toEqual({ key: 'driver', label: 'Driver', type: 'link', href: 'profile' });
+    expect(SHAPES['session-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'time', badge: 'position' });
+    expect(presetsFor('session-results', 'f1').map(p => p.key)).toEqual(['session']);
+    expect(presetsFor('session-results', 'f2')).toEqual([]);
     for (const p of PRESETS) expect(Object.keys(p), p.key).not.toContain('later');
     // The site's tables bring the Rounds layout (results) or the Table (standings); Home's two boxes over these sources bring their own templates (P2.24 B2).
     for (const p of results) expect(p.view, p.key).toBe(p.key === 'latest-result' ? 'podium' : 'list');
@@ -68,7 +76,7 @@ describe('the preset catalogue', () => {
     expect(SHAPES['car-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'date', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'gap']);
     expect(SHAPES['cup-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'laps', 'gap']);
     expect(SHAPES['car-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'gap', badge: 'car' });
-    expect(new Set(PRESETS.map(p => p.key)).size).toBe(38);
+    expect(new Set(PRESETS.map(p => p.key)).size).toBe(39);
     const groups = new Set(PRESET_GROUPS.map(g => g.key));
     const slugs = new Set(SERIES_OPTIONS.map(o => o.key));
     for (const p of PRESETS) {
@@ -260,7 +268,7 @@ describe('the preset catalogue', () => {
   });
 
   it('P2.24 B2: Home’s Latest result and What it changed: the Latest result preset over podium-rows (its view the Podium template, three rows) for Home’s series and every results series, What it changed over driver-rows (its view the Leader template, five rows) for the Latest result and the ten with a drivers’ brief; the podium shape puts its numbers last; the podium rows are the newest race by date, its first class alone, by position, cut to the count', () => {
-    expect(PRESET_GROUPS.slice(18)).toEqual([
+    expect(PRESET_GROUPS.slice(18, 20)).toEqual([
       { key: 'latest-result', name: 'Latest result', source: 'results' },
       { key: 'what-it-changed', name: 'What it changed', source: 'standings' },
     ]);

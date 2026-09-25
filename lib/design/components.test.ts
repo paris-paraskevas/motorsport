@@ -32,7 +32,7 @@ describe('the component catalogue', () => {
   });
 
   it('P2.1: the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1); no other definition reads one (What it changed left with Home’s six, P2.24 C)', () => {
-    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends']);
+    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results']);
     for (const c of COMPONENTS) if (c.key !== 'data.region') expect(c.sources, c.key).toBeUndefined();
   });
 
@@ -73,7 +73,7 @@ describe('the component catalogue', () => {
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
     const preset = region.settings[0];
-    expect(preset.options).toHaveLength(38);
+    expect(preset.options).toHaveLength(39);
     expect(preset.options![0]).toEqual({
       key: 'drivers',
       label: 'Drivers',
@@ -108,7 +108,8 @@ describe('the component catalogue', () => {
       only: { source: 'standings', series: ['latest', 'f1', 'f2', 'f3', 'indycar', 'formula-e', 'motogp', 'nascar-cup', 'wsbk', 'wrc', 'dtm'] },
       sets: { view: 'leader', rows: 5, ...RESET },
     });
-    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(['lead-story', 'wire', 'whats-next', 'latest-result', 'what-it-changed'].includes(o.key));
+    // P2.25: the Session preset sets thirty rows too, a full classification without a Rows edit.
+    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(['lead-story', 'wire', 'whats-next', 'latest-result', 'what-it-changed', 'session'].includes(o.key));
     expect(region.settings[1].options!.map(o => [o.key, o.label])).toEqual([
       ['table', 'Table'],
       ['cards', 'Cards'],
