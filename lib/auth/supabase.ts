@@ -183,3 +183,24 @@ export function field(value: unknown, max = 200): string {
 export function noStore(body: unknown, status = 200): NextResponse {
   return NextResponse.json(body, { status, headers: { 'Cache-Control': 'private, no-store' } });
 }
+
+/** Turnstile's check, done here: Supabase Auth skips its own captcha check for requests made with the secret key (proven
+ *  against prod on 2026-09-25: no token and a bad token both answered invalid_credentials), so the Worker asks
+ *  Cloudflare's siteverify itself. Without TURNSTILE_SECRET (a preview without the widget) the check is off, as the
+ *  widget is; with it, a missing or refused token fails. Cloudflare's endpoint is unreachable: refused too. */
+export async function turnstilePasses(token: string | undefined, ip: string | null): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET;
+  if (!secret) return true;
+  if (!token) return false;
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ secret, response: token, ...(ip ? { remoteip: ip } : {}) }),
+    });
+    const body = (await res.json()) as { success?: boolean };
+    return body.success === true;
+  } catch {
+    return false;
+  }
+}

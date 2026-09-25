@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { authClient, clientIp, EMAIL_RE, field, noStore, originProblem, PASSWORD_MIN, requestJar, safeNext } from '@/lib/auth/supabase';
+import { authClient, clientIp, EMAIL_RE, field, noStore, originProblem, PASSWORD_MIN, requestJar, safeNext, turnstilePasses } from '@/lib/auth/supabase';
 import { accountFromClaims } from '@/lib/auth/server';
 import { sendWelcomeEmail } from '@/lib/email';
 
@@ -52,6 +52,10 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ action: st
   const next = safeNext(body.next);
   const needsEmail = action === 'password' || action === 'code' || action === 'sign-up' || action === 'reset' || action === 'verify';
   if (needsEmail && !EMAIL_RE.test(email)) return answer({ error: USE_EMAIL }, 400);
+  // The three forms the plan guards, and the sign-up: Turnstile's token checked here, since the provider does not check it
+  // for the Worker's secret key (lib/auth/supabase.ts turnstilePasses).
+  const guarded = action === 'password' || action === 'code' || action === 'reset' || action === 'sign-up';
+  if (guarded && !(await turnstilePasses(captchaToken, clientIp(req)))) return answer({ error: CHECK_FAILED }, 400);
 
   switch (action) {
     case 'password': {

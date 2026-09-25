@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const createServerClient = vi.fn(() => ({ auth: {} }));
 vi.mock('@supabase/ssr', () => ({ createServerClient: (...args: unknown[]) => createServerClient(...(args as [])) }));
 
-import { authClient, clientIp, hasSessionCookie, originProblem, requestJar, safeNext, SESSION_COOKIE, SIGNED_IN_COOKIE, WORKER_USER_AGENT, withSessionRules } from './supabase';
+import { authClient, clientIp, hasSessionCookie, originProblem, requestJar, safeNext, SESSION_COOKIE, SIGNED_IN_COOKIE, turnstilePasses, WORKER_USER_AGENT, withSessionRules } from './supabase';
 
 // The account seam's client factory (PA A3): the Worker's headers on every call, the cookie rules on every write, the
 // request jar that carries a refresh to the response, and the two request checks the routes share.
@@ -91,6 +91,28 @@ describe('the auth client (PA A3)', () => {
     const out = jar.finish(new NextResponse('Not found', { status: 404 }));
     expect(out.headers.getSetCookie().filter(c => c.startsWith(`${SESSION_COOKIE}=;`))).toHaveLength(1);
     expect(hasSessionCookie(new NextRequest('https://paddock-tracker.com/', { headers: { cookie: 'theme=dark' } }))).toBe(false);
+  });
+
+  it('the Turnstile check is off without a secret, refuses a missing or rejected token with one, sends the reader’s address, and treats an unreachable Cloudflare as a refusal', async () => {
+    vi.stubEnv('TURNSTILE_SECRET', '');
+    expect(await turnstilePasses(undefined, null)).toBe(true);
+    vi.stubEnv('TURNSTILE_SECRET', 'widget-secret');
+    expect(await turnstilePasses(undefined, null)).toBe(false);
+    const siteverify = vi.fn(async () => ({ json: async () => ({ success: true }) }));
+    vi.stubGlobal('fetch', siteverify);
+    try {
+      expect(await turnstilePasses('tok', '203.0.113.9')).toBe(true);
+      const [url, init] = siteverify.mock.calls[0] as unknown as [string, RequestInit];
+      expect(url).toBe('https://challenges.cloudflare.com/turnstile/v0/siteverify');
+      expect(init.method).toBe('POST');
+      expect(JSON.parse(init.body as string)).toEqual({ secret: 'widget-secret', response: 'tok', remoteip: '203.0.113.9' });
+      siteverify.mockResolvedValueOnce({ json: async () => ({ success: false }) } as never);
+      expect(await turnstilePasses('tok', null)).toBe(false);
+      siteverify.mockRejectedValueOnce(new Error('down'));
+      expect(await turnstilePasses('tok', null)).toBe(false);
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it('the reader’s address, the same-site check on a write, and a safe next path', () => {

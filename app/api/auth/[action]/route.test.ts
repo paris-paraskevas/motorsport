@@ -147,6 +147,34 @@ describe('/api/auth/[action]', () => {
     expect((await call('google', {}, { cookie: `${NONCE_COOKIE}=${raw}` })).status).toBe(400);
   });
 
+  it('with a Turnstile secret set, password, code, reset and sign-up need a token Cloudflare accepts before the provider is asked; verify and sign-out never do', async () => {
+    vi.stubEnv('TURNSTILE_SECRET', 'widget-secret');
+    const siteverify = vi.fn(async () => ({ json: async () => ({ success: true }) }));
+    vi.stubGlobal('fetch', siteverify);
+    try {
+      expect(await call('password', { email: 'alex@example.com', password: 'secret-123' })).toMatchObject({ status: 400, body: { error: CHECK_FAILED } });
+      expect(siteverify).not.toHaveBeenCalled();
+      expect(auth.signInWithPassword).not.toHaveBeenCalled();
+      auth.signInWithPassword.mockImplementationOnce(session);
+      expect((await call('password', { email: 'alex@example.com', password: 'secret-123', captchaToken: 'tok' })).status).toBe(200);
+      const [url, init] = siteverify.mock.calls[0] as unknown as [string, RequestInit];
+      expect(url).toBe('https://challenges.cloudflare.com/turnstile/v0/siteverify');
+      expect(JSON.parse(init.body as string)).toEqual({ secret: 'widget-secret', response: 'tok' });
+      siteverify.mockResolvedValueOnce({ json: async () => ({ success: false, 'error-codes': ['invalid-input-response'] }) } as never);
+      expect(await call('code', { email: 'alex@example.com', captchaToken: 'stale' })).toMatchObject({ status: 400, body: { error: CHECK_FAILED } });
+      expect(auth.signInWithOtp).not.toHaveBeenCalled();
+      expect((await call('reset', { email: 'alex@example.com' })).body.error).toBe(CHECK_FAILED);
+      expect((await call('sign-up', { name: 'Bo', email: 'bo@example.com', password: 'eight-ch' })).body.error).toBe(CHECK_FAILED);
+      auth.verifyOtp.mockImplementationOnce(session);
+      expect((await call('verify', { email: 'alex@example.com', token: '123456', type: 'email' })).status).toBe(200);
+      siteverify.mockRejectedValueOnce(new Error('unreachable'));
+      expect((await call('password', { email: 'alex@example.com', password: 'x', captchaToken: 'tok' })).body.error).toBe(CHECK_FAILED);
+    } finally {
+      vi.unstubAllGlobals();
+      vi.unstubAllEnvs();
+    }
+  });
+
   it('sign-out clears the session, everywhere when asked', async () => {
     auth.signOut.mockImplementation(async () => {
       jar?.setAll(withSessionRules([{ name: 'pd-session', value: '', options: { path: '/', maxAge: 0 } }], true));

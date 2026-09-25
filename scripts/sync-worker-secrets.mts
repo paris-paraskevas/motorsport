@@ -40,6 +40,7 @@ const PREVIEW_KEYS = [
   'SUPABASE_SECRET_KEY',
   'SUPABASE_SERVICE_ROLE_KEY',
   'SUPABASE_URL',
+  'TURNSTILE_SECRET',
 ] as const;
 
 // CONTACT_TO_EMAIL is not in the env file; this is the operator-set default.
