@@ -439,6 +439,21 @@
    "date": "2026-09-25",
    "change": "PA A3 DONE on the next-day check (session 57): the Worker’s errors 0 over 20.52k invocations (the dashboard, by the operator’s hand), account_stats() 18 with every id a legacy id, the operator’s morning session refreshed forty minutes in and their morning tab still signed in after 11:30Z, the first code email through Resend’s SMTP on prod sent and received in a private window; Supabase’s audit table empty and its logs endpoint answering “Backend error”, both recorded. The operator’s asks at the check (the header’s signed-out flash until /api/account answers; “Forgot it?” and “Email me a code instead” clickable without an email; a “was it you?” email at a sign-in; a view-password toggle; a strength line with lower, upper, digit and symbol required; the honeypot question) go to the Inbox and to a slot proposal with its decision scan, in plan mode on the word. A4 stays planned for 2026-10-25; E1 after this.",
    "word": "the operator, 2026-09-25 ~11:30Z–11:40Z: the three answers to the check (“cloudflare errors 0”, “no emails”, “the email gets sent”, the morning tab signed in after a moment)"
+  },
+  {
+   "date": "2026-09-25",
+   "change": "#1068 (1.0.187, the A3 records) squash-merged 11:50:23Z as a9d503bf on the word.",
+   "word": "the operator, 2026-09-25 ~11:49Z: “merge 1068 now”"
+  },
+  {
+   "date": "2026-09-25",
+   "change": "The one-time sign-in notice email, the sign-in polish (the six asks of the day) and E1’s newsletter placed into P2.21 (Email Templates), to come at its turn in the order of 2026-09-17 ~09:19Z; P2.21’s scope, needsWord and acceptance carry them and E1’s row closes with P2.21 (both rehashed). Noted to the operator: the notice loses its point by P2.21’s turn; “send” on the approved draft (artifact 75d20db3-6f90-4a20-a2e4-89685af637ec) sends it any time.",
+   "word": "the operator, 2026-09-25 ~11:49Z: “place sign in notice email, sign in polish and e1 into p2.21”"
+  },
+  {
+   "date": "2026-09-25",
+   "change": "The session-results slot and P2.5 picked up by subagents on the word: one Sonnet reading agent per slot, one at a time as rule 7 says, each writing the slot’s plan with its decision scan to a scratchpad file (about 300k tokens each, said first); the plans presented for the word before any code; the building by me. The session-results agent launched ~11:52Z; P2.5’s follows it.",
+   "word": "the operator, 2026-09-25 ~11:49Z: “so we can now pick up session-results in one subagent and then in another sub agent do p2.5”"
   }
  ],
  "phases": {
@@ -1024,13 +1039,13 @@
    "id": "P2.21",
    "phase": "P2",
    "title": "Email Templates",
-   "scope": "Shared component: subject and body with placeholders, edited in the designer, sent through the existing Resend wrapper by contact, welcome, feedback, draft-ready.",
+   "scope": "Shared component: subject and body with placeholders, edited in the designer, sent through the existing Resend wrapper by contact, welcome, feedback, draft-ready. Folded in on the operator’s word of 2026-09-25 ~11:49Z, to come at this slot’s turn: (a) the one-time sign-in notice to every account (a service message about their account, sent once through Resend’s API from the approved draft; draft 1 at artifact 75d20db3-6f90-4a20-a2e4-89685af637ec); (b) the sign-in polish, the six asks of 2026-09-25: the header draws the signed-out control until /api/account answers (a neutral placeholder while the flag cookie says signed in); “Forgot it?” and “Email me a code instead” clickable without an email, leading to a step that asks for it; a “was it you?” email at a sign-in naming the browser and the place; a view-password toggle on every password field; password rules (8 characters with a lowercase, an uppercase, a digit and a symbol) with a strength line on sign-up, reset and the account’s change, enforced by Supabase’s password_required_characters on an apply word; the honeypot question answered (Turnstile checked on the server is the bot gate; none added); (c) E1’s newsletter as its row says (the toggle with consent, the Resend Audience, the letters scheduled through Broadcasts).",
    "fixedBy": "APEX Email Templates; Resend wired",
    "defaults": "Placeholders as {name}; a preview with sample values; the four senders read their template by key with the code’s text as the fallback.",
-   "needsWord": "none",
-   "acceptance": "The welcome email renders from the row; test.",
+   "needsWord": "the plan in plan mode before code (its own decision scan); the notice’s words and “send”; “apply” for the password rule; the first letter’s send",
+   "acceptance": "The welcome email renders from the row; test. The notice delivered to every account (Resend’s Emails page). The six sign-in asks proven in the browser on the local server. E1’s acceptance as its row says.",
    "status": "planned",
-   "scopeHash": "c6d9eb480f49"
+   "scopeHash": "479eee7e85d3"
   },
   {
    "id": "P2.22",
@@ -1123,13 +1138,13 @@
    "id": "E1",
    "phase": "PE",
    "title": "Newsletter consent and the Resend Audience",
-   "scope": "A Newsletter toggle on /settings/notifications (off by default, the consent recorded on the account), the consenting accounts synced into a Resend Audience (a contact created on opt-in, removed on opt-out and at deletion), the operator’s letters written and sent in Resend’s Broadcasts with Resend’s unsubscribe (an unsubscribe there clears the toggle through Resend’s webhook or a periodic read), the sender address and the footer’s postal line, a budget (the Free plan’s contact allowance read in the dashboard).",
+   "scope": "Folded into P2.21 on the operator’s word of 2026-09-25 ~11:49Z; this row closes with P2.21. A Newsletter toggle on /settings/notifications (off by default, the consent recorded on the account), the consenting accounts synced into a Resend Audience (a contact created on opt-in, removed on opt-out and at deletion), the operator’s letters written and sent in Resend’s Broadcasts with Resend’s unsubscribe (an unsubscribe there clears the toggle through Resend’s webhook or a periodic read), the sender address and the footer’s postal line, a budget (the Free plan’s contact allowance read in the dashboard).",
    "fixedBy": "the operator’s word of 2026-09-25 ~08:40Z (AskUserQuestion with previews: Broadcasts + Audience, after A3’s switch); consent law (opt-in, an unsubscribe in every mail, the sender’s postal address).",
    "defaults": "Off by default for every account, the eighteen imported included; the toggle beside the push preferences; the contact’s fields email and first name; a sync on toggle and a nightly reconciliation; the letters’ look from the site’s email template; the first letter drafted by the operator.",
-   "needsWord": "the plan in plan mode before code (its own decision scan); the first letter’s send",
+   "needsWord": "none of its own: P2.21’s",
    "acceptance": "An account’s toggle creates and removes the Resend contact (seen in the dashboard); an unsubscribe in Resend clears the toggle; a broadcast reaches consenting accounts alone; no account is contacted without the toggle on.",
    "status": "planned",
-   "scopeHash": "d3cc46b36986"
+   "scopeHash": "48241a9f6fe9"
   },
   {
    "id": "D1",
