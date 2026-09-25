@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.184 — 2026-09-25
+
+### Records — the switch to Supabase Auth on prod (PA A3), the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: A3's evidence gains the switch (the operator's dashboard steps, the two applies on prod, the Worker secrets, the merge of #1064 at 09:28Z with prod at 1.0.183 by 09:32Z, the import after the deploy, the prod probes, the Turnstile finding) and the dated lines on the operator's words; A3 stays STARTED until the operator's sign-ins on prod and the next-day check. `docs/pull-requests.md`: #1064's entry updated with the merge, #1063 noted as closed (shipped inside the squash), this PR's entry. `docs/HANDOFF.md`: the LATEST block (the next-day check, then A3 DONE, then E1's plan). `SCHEDULE.md`: step 28.
+
 ## 1.0.183 — 2026-09-25
 
 ### PA A3 — Supabase Auth inside the seam: sessions on the Worker, the site's own sign-in, sign-up and Account pages, Clerk's SDK gone
