@@ -774,14 +774,16 @@ export function parsePageDocument(raw: unknown, components: readonly ComponentDe
   for (const r of regions.filter((x): x is ComponentRegion => x.kind === 'component' && x.component === 'data.filters')) {
     const id = r.settings.filteredRegion;
     if (typeof id !== 'string' || id === '') continue;
-    const target = dataRegions.find(d => d.id === id && DETAIL_VIEWS.includes(String(d.settings.view ?? 'table')));
+    // A Data region drawn as a Table, Cards or List, or a component declaring its own facets (the calendar, P2.5 PR B).
+    const target = dataRegions.find(d => d.id === id && DETAIL_VIEWS.includes(String(d.settings.view ?? 'table'))) ?? regions.find((x): x is ComponentRegion => x.kind === 'component' && x.id === id && (components.find(c => c.key === x.component)?.facets?.length ?? 0) > 0);
+    const hasColumn = (t: ComponentRegion, key: string) => (t.component === 'data.region' ? carries(t, key) : (components.find(c => c.key === t.component)?.facets ?? []).some(c => c.key === key));
     if (!target) {
       problems.push(`region ${r.id}: Filtered region must be a Data region of this page, drawn as a Table, Cards or List`);
       continue;
     }
     for (const n of [1, 2, 3]) {
       const column = r.settings[`facet${n}`];
-      if (typeof column === 'string' && column !== '' && !carries(target, column)) problems.push(`region ${r.id}: Facet ${n} must be a column the filtered region carries`);
+      if (typeof column === 'string' && column !== '' && !hasColumn(target, column)) problems.push(`region ${r.id}: Facet ${n} must be a column the filtered region carries`);
       const on = r.settings[`facet${n}DependsOn`];
       if (typeof on === 'string' && on !== '' && (on === `facet${n}` || !FACET_KEYS.includes(on))) problems.push(`region ${r.id}: Facet ${n} depends on must name another facet`);
     }

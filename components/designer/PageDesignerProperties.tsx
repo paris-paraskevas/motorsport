@@ -831,9 +831,10 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
     const preset = findPreset(String(r.settings.preset ?? ''));
     const shape = preset ? SHAPES[preset.shape] : null;
     // A Filters region's facets name the columns of the region it filters (P2.5): that region's shape, not its own.
-    const filtersTarget = r.component === 'data.filters' ? ctx.doc.regions.find((x): x is ComponentRegion => x.kind === 'component' && x.component === 'data.region' && x.id === String(r.settings.filteredRegion ?? '')) : undefined;
-    const facetPreset = filtersTarget ? findPreset(String(filtersTarget.settings.preset ?? '')) : null;
-    const facetShape = facetPreset ? SHAPES[facetPreset.shape] : null;
+    const filtersTarget = r.component === 'data.filters' ? ctx.doc.regions.find((x): x is ComponentRegion => x.kind === 'component' && x.id === String(r.settings.filteredRegion ?? '')) : undefined;
+    const facetPreset = filtersTarget?.component === 'data.region' ? findPreset(String(filtersTarget.settings.preset ?? '')) : null;
+    const ownFacets = filtersTarget && filtersTarget.component !== 'data.region' ? findComponent(filtersTarget.component)?.facets : undefined;
+    const facetShape: Pick<Shape, 'columns'> | null = facetPreset ? SHAPES[facetPreset.shape] : ownFacets && ownFacets.length > 0 ? { columns: ownFacets } : null;
     for (const s of spec?.settings ?? []) {
       // APEX: Depending On. An attribute drawn only while another holds one of its values (the Card slots while the View is Cards).
       if (s.dependingOn && !s.dependingOn.values.includes(String(r.settings[s.dependingOn.key] ?? spec?.settings.find(x => x.key === s.dependingOn?.key)?.default ?? ''))) continue;
@@ -872,7 +873,7 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
             <option value="">None</option>
             {ctx.doc.regions
-              .filter((x): x is ComponentRegion => x.kind === 'component' && x.component === 'data.region' && x.id !== r.id && ['table', 'cards', 'list'].includes(String(x.settings.view ?? 'table')))
+              .filter((x): x is ComponentRegion => x.kind === 'component' && x.id !== r.id && ((x.component === 'data.region' && ['table', 'cards', 'list'].includes(String(x.settings.view ?? 'table'))) || (s.key === 'filteredRegion' && (findComponent(x.component)?.facets?.length ?? 0) > 0)))
               .map(x => (
                 <option key={x.id} value={x.id}>
                   {x.title || (typeof x.settings.heading === 'string' && x.settings.heading) || x.id}

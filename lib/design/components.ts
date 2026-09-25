@@ -12,7 +12,7 @@
 // key or a setting outside its spec is a problem the writer refuses; the reader
 // keeps the usable part and falls back to the defaults.
 
-import { PRESETS, PRESET_GROUPS, SHAPES, findPreset } from './presets';
+import { PRESETS, PRESET_GROUPS, SHAPES, findPreset, type PresetColumn } from './presets';
 import { CURRENT_SEASON, SERIES_OPTIONS } from './sources';
 
 export type SettingValue = string | number | boolean;
@@ -136,6 +136,9 @@ export interface ComponentDefinition {
    *  attribute). Absent, it reads none and the Source group holds the Component
    *  row alone. A region carries its pick as `source`, never among the settings. */
   sources?: readonly string[];
+  /** The columns a Filters region may facet on (P2.5 PR B), for a component drawing its own model rather than a preset's
+   *  shape; absent, a Data region's facets come from its preset. */
+  facets?: readonly PresetColumn[];
   /** The transitional component: a page not yet split holds its body as the
    *  code draws it today, one per page, and loses nothing until it is split. */
   legacy?: true;
@@ -178,6 +181,13 @@ const HIGHLIGHT_STYLES = [
 /** What a preset's pick sets the Card slots and zones to: its own mapping, nothing linked, the button's plain word. */
 const CARD_RESET: Readonly<Record<string, SettingValue>> = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
 
+/** The calendar's facets (P2.5 PR B): the series by name and the sessions by kind (lib/calendar-grid.ts classifySession),
+ *  the two narrowings its filter box offered, now the Filters region's. */
+export const CALENDAR_FACETS: readonly PresetColumn[] = [
+  { key: 'seriesName', label: 'Series', type: 'text' },
+  { key: 'sessionType', label: 'Sessions', type: 'text' },
+];
+
 export const COMPONENTS: readonly ComponentDefinition[] = [
   {
     key: 'page.body',
@@ -205,6 +215,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     group: 'Data',
     holds: 'every session of every series, month by month, in the reader’s local time; the weekend under way on top',
     settings: [],
+    facets: CALENDAR_FACETS,
   },
   // Home's six (R2b) left in P2.24 C: each box is a Data region on its template
   // (lib/design/presets.ts), This weekend the Live band; a stored region naming
@@ -399,7 +410,8 @@ export const SPLITS: Readonly<Record<string, readonly (string | RecipeEntry)[]>>
     { id: 'next', component: 'data.region', settings: { preset: 'whats-next', view: 'coming-weekends', rows: 3 }, source: 'weekends?count=10', half: true },
     { id: 'wire', component: 'data.region', settings: { preset: 'wire', view: 'wire', rows: 5 }, source: 'news?per=3' },
   ],
-  '/calendar': ['page.heading', 'calendar.month'],
+  // P2.5 PR B: the Filters region over the calendar's own facets before the month; the filter box the calendar drew is gone.
+  '/calendar': ['page.heading', { id: 'filters', component: 'data.filters', settings: { filteredRegion: 'month', facet1: 'seriesName', facet2: 'sessionType' } }, 'calendar.month'],
 };
 
 /** A region of the document model for a component, as the recipes lay them out. */
