@@ -469,6 +469,11 @@
    "date": "2026-09-25",
    "change": "P2.25 (Session results) DONE: #1069 (1.0.188) merged 13:42Z and on prod 13:47Z; the migration 20260925130000 rehearsed and applied on prod 13:43Z; the backfill on prod 13:48Z–13:56Z: 54 of the season’s 55 finished practice and qualifying sessions written (1175 rows; round 3’s second practice has no classification at OpenF1), the view holding rounds 1–15. The records PR #1070 (1.0.189) under the same word.",
    "word": "the operator, 2026-09-25 ~13:40Z: “merge \"apply 20260925130000”"
+  },
+  {
+   "date": "2026-09-25",
+   "change": "P2.5 (Filters as a layer) STARTED on “build A”: PR A the data.filters component on the base plan with three defaults of mine (facet values as instant links, the batch Apply only for a facet set to pick several first; the news page not to ship as a downgrade, a Headlines view recommended for PR C; “Yours only” kept as a toggle), the swap map’s four questions for PR B and PR C open with their defaults (artifact 4fa604a5-7b46-44f9-a878-95f9daa2a096). The swap reader: a Sonnet agent, 304,675 tokens, 94 tool uses.",
+   "word": "the operator, 2026-09-25 ~14:20Z: “build A”"
   }
  ],
  "phases": {
@@ -912,12 +917,13 @@
    "phase": "P2",
    "title": "Filters as a layer",
    "scope": "A decoupled Filters region attached to a data region by reference: facets from the source's columns, cascading (Depending On), chip preview separate from the value list, search within a facet, a size guardrail, batch apply, reset, facet count charts.",
-   "fixedBy": "Faceted Search and Smart Filters (run 7)",
-   "defaults": "A Filters region names its data region; facets are the source’s declared columns; the URL vocabulary of P2.3 carries the state. The acceptance’s two instances are the live calendar and news pages themselves, rebuilt on the Filters box (the operator, 2026-09-25 ~13:20Z: “swap the pages”), which moves those two pages off their route files with parity checks; the plan is revised before the build, two or three PRs.",
-   "needsWord": "none (2026-09-25 ~13:20Z: “swap the pages”; the plan revised before the build)",
+   "fixedBy": "Faceted Search and Smart Filters (run 7); the plan of 2026-09-25 (artifact 2a38c53c-910c-4ff2-86df-d15876b03ecd, a Sonnet reader, 345,218 tokens) and the swap map (artifact 4fa604a5-7b46-44f9-a878-95f9daa2a096, 304,675 tokens); the operator’s “swap the pages” (~13:20Z) and “build A” (~14:20Z)",
+   "defaults": "A Filters region names its data region; facets are the source’s declared columns; the URL vocabulary of P2.3 carries the state. The acceptance’s two instances are the live calendar and news pages themselves, rebuilt on the Filters box (the operator, 2026-09-25 ~13:20Z: “swap the pages”), which moves those two pages off their route files with parity checks; the plan is revised before the build, two or three PRs. PR A’s own defaults (2026-09-25 ~14:20Z): a data.filters component that names its Data region (optionsFrom regions, as Master Detail), three facet slots over the target’s shape columns with Depending On, the values and counts from the target’s rows after every other facet, one `in` filter per facet under the target’s controls key (no vocabulary change), facet values as links that apply at once (one navigation per tap, as APEX’s Smart Filters and today’s chips), the batch Apply form only for a facet set to pick several first, search within a facet server-side, a guardrail of forty values, a plain server-rendered count bar, readSource shared per request through React’s cache, zero client script; the cascade proven on a local document (Team → Driver); PR B the calendar and PR C the news page after the four answers (defaults named in the swap map).",
+   "needsWord": "the four answers for PR B and PR C (News’ look: a Headlines view (default) or the wire; the old /calendar?s= links kept by a middleware shim (default) or not; “Yours only” kept as a Data region toggle (default) or dropped; the news standfirst and footer dropped from the composition (default) or rebuilt); “merge” for each PR",
    "acceptance": "The calendar's series filter and the news filter as instances; a cascading team → driver facet; test.",
-   "status": "planned",
-   "scopeHash": "f3bbaaa5de53"
+   "status": "started",
+   "scopeHash": "f3bbaaa5de53",
+   "evidence": "STARTED 2026-09-25 ~14:20Z on “build A” (PR A of three on the revised plan; the swap’s four questions open with their defaults)."
   },
   {
    "id": "P2.7",
