@@ -318,3 +318,28 @@ describe('the component catalogue', () => {
     expect(findComponent('test.card', [...COMPONENTS, card])?.name).toBe('Card');
   });
 });
+
+describe('the Filters component (P2.5; APEX: Smart Filters)', () => {
+  it('names its Data region, three facets over that region’s columns with a label, Depending On and a picks-several switch, in one Facets group; it reads no source of its own', () => {
+    const spec = findComponent('data.filters')!;
+    expect(spec).toMatchObject({ name: 'Filters', group: 'Data' });
+    expect(spec.sources).toBeUndefined();
+    expect(spec.groups).toEqual([{ key: 'facets', title: 'Facets', seq: 10 }]);
+    expect(spec.settings.map(s => [s.key, s.kind, s.optionsFrom ?? null])).toEqual([
+      ['filteredRegion', 'choice', 'regions'],
+      ['facet1', 'choice', 'columns'], ['facet1Label', 'text', null], ['facet1DependsOn', 'choice', 'facets'], ['facet1Several', 'boolean', null],
+      ['facet2', 'choice', 'columns'], ['facet2Label', 'text', null], ['facet2DependsOn', 'choice', 'facets'], ['facet2Several', 'boolean', null],
+      ['facet3', 'choice', 'columns'], ['facet3Label', 'text', null], ['facet3DependsOn', 'choice', 'facets'], ['facet3Several', 'boolean', null],
+    ]);
+    for (const s of spec.settings) expect(s.scope, s.key).toBe('report');
+    const ok = parseSettings(spec, { filteredRegion: 'drivers', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1', facet2Several: true });
+    expect(ok.problems).toEqual([]);
+    expect(ok.settings).toMatchObject({ filteredRegion: 'drivers', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1', facet2Several: true });
+    expect(parseSettings(spec, { facet1DependsOn: 'nope' }).problems).toEqual(['Facet 1 depends on must name another facet']);
+    expect(parseSettings(spec, { facet1DependsOn: 'facet1' }).problems).toEqual(['Facet 1 depends on must name another facet']);
+    expect(parseSettings(spec, { filteredRegion: 'Bad Id' }).problems).toEqual(['Filtered region must name a region of the page: lower-case letters, digits and dashes']);
+    const summary = settingsSummary(spec, { filteredRegion: 'drivers', facet1: 'team' });
+    expect(summary).toContain('Filtered region drivers');
+    expect(summary).toContain('Facet 1 team');
+  });
+});

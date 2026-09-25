@@ -830,6 +830,10 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
     // The preset's shape, for the Card slots' columns and the zones' row links (P2.2 B3).
     const preset = findPreset(String(r.settings.preset ?? ''));
     const shape = preset ? SHAPES[preset.shape] : null;
+    // A Filters region's facets name the columns of the region it filters (P2.5): that region's shape, not its own.
+    const filtersTarget = r.component === 'data.filters' ? ctx.doc.regions.find((x): x is ComponentRegion => x.kind === 'component' && x.component === 'data.region' && x.id === String(r.settings.filteredRegion ?? '')) : undefined;
+    const facetPreset = filtersTarget ? findPreset(String(filtersTarget.settings.preset ?? '')) : null;
+    const facetShape = facetPreset ? SHAPES[facetPreset.shape] : null;
     for (const s of spec?.settings ?? []) {
       // APEX: Depending On. An attribute drawn only while another holds one of its values (the Card slots while the View is Cards).
       if (s.dependingOn && !s.dependingOn.values.includes(String(r.settings[s.dependingOn.key] ?? spec?.settings.find(x => x.key === s.dependingOn?.key)?.default ?? ''))) continue;
@@ -878,12 +882,24 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
         ) : s.kind === 'choice' && s.optionsFrom === 'columns' ? (
           // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column): the preset's own mapping first, then the shape's columns; the share bar is no Media.
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
-            <option value="">{s.key === 'detailKey' ? 'None' : `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}`}</option>
-            {(shape?.columns ?? [])
+            <option value="">{s.key === 'detailKey' || s.key.startsWith('facet') ? 'None' : `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}`}</option>
+            {((s.key.startsWith('facet') ? facetShape : shape)?.columns ?? [])
               .filter(c => !(s.key === 'cardMedia' && c.type === 'percent'))
               .map(c => (
                 <option key={c.key} value={c.key}>
                   {c.label}
+                </option>
+              ))}
+          </select>
+        ) : s.kind === 'choice' && s.optionsFrom === 'facets' ? (
+          // Depending On (P2.5; APEX): the other two facets of this region, by their labels.
+          <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
+            <option value="">None</option>
+            {['facet1', 'facet2', 'facet3']
+              .filter(k => k !== s.key.replace(/DependsOn$/, ''))
+              .map(k => (
+                <option key={k} value={k}>
+                  {`Facet ${k.slice(5)}`}
                 </option>
               ))}
           </select>

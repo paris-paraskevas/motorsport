@@ -39,6 +39,11 @@ const calendarView = () => import('@/components/calendar/CalendarView');
 const sourceRead = () => import('./source-read');
 const dataViews = () => import('@/components/data/DataRegionViews');
 const savedViews = () => import('./views');
+const dataFilters = () => import('@/components/data/DataRegionFilters');
+
+import type { Facet } from '@/components/data/DataRegionFilters';
+import type { SourceRead as SourceReadResult } from './source-read';
+import { facetValues, type PresetRow as FacetRow, type Shape as FacetShape } from './presets';
 
 export interface RenderContext {
   /** The registry pattern or literal path of the page. */
@@ -73,6 +78,10 @@ export interface RenderContext {
   master?: { key: string; prefix: string; state: ViewState };
   /** The keys its masters write into this region's filter (P2.4 PR C), for its "Showing <value> · Show all" line. */
   detailKeys?: string[];
+  /** The region's Source read (P2.5), shared with a Filters region that targets it: one read per request for both. */
+  read?: () => Promise<SourceReadResult>;
+  /** A Filters region's target (P2.5): its keys' prefix, its shape, its state from the address, and its rows after the preset's own rule. */
+  filters?: { prefix: string; shape: FacetShape; state: ViewState; rows: () => Promise<FacetRow[]> };
 }
 
 type Renderer = (settings: Readonly<Record<string, SettingValue>>, ctx: RenderContext) => Promise<ReactNode> | ReactNode;
@@ -109,6 +118,26 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
   },
   // The Live band (P2.9); This weekend, Home's retired piece, upgrades to it on read (P2.24 C).
   'series.live': settings => drawLiveBand(settings),
+  // Filters (P2.5; APEX: Smart Filters): the chips over its target's rows; nothing without a target or where no state can arrive.
+  async 'data.filters'(settings, ctx) {
+    const f = ctx.filters;
+    if (!f) return null;
+    const [{ DataRegionFilters }, rows] = await Promise.all([dataFilters(), f.rows()]);
+    // The picks the address carries for a column: an `in` list, or one `eq` value (a value with a comma is picked alone).
+    const current = (column: string): string[] => f.state.filters.filter(x => x.column === column && (x.op === 'in' || x.op === 'eq')).flatMap(x => (x.op === 'in' ? x.value.split(',').map(s => s.trim()).filter(s => s !== '') : [x.value]));
+    const facets: Facet[] = ([1, 2, 3] as const).flatMap(n => {
+      const column = str(settings[`facet${n}`]);
+      const col = f.shape.columns.find(c => c.key === column);
+      if (!col) return [];
+      const parentKey = str(settings[`facet${n}DependsOn`]);
+      const parentColumn = parentKey ? str(settings[parentKey]) : '';
+      const parent = parentColumn ? f.shape.columns.find(c => c.key === parentColumn) : undefined;
+      const open = !parent || current(parent.key).length > 0;
+      const { values, more } = open ? facetValues(rows, column, f.shape.columns, f.state.filters) : { values: [], more: 0 };
+      return [{ key: `facet${n}`, column, label: str(settings[`facet${n}Label`]) || col.label, several: settings[`facet${n}Several`] === true, open, parentLabel: parent ? str(settings[`${parentKey}Label`]) || parent.label : null, parentColumn: parent?.key ?? null, current: current(column), values, more }];
+    });
+    return <DataRegionFilters href={ctx.href} prefix={f.prefix} others={ctx.view ?? ''} state={f.state} facets={facets} />;
+  },
   // The Data region (P2.2): one of the site's named shapes over the region's Source. Nothing without a Source
   // (APEX: a report without one renders nothing; the designer's Messages say so).
   async 'data.region'(settings, ctx) {
@@ -133,7 +162,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const download = state && settings.download === true ? `/api/data/csv?page=${encodeURIComponent(ctx.href)}&region=${encodeURIComponent(ctx.region)}${(s => (s ? `&${s}` : ''))(encodeViewState({ ...state, view: undefined }))}` : undefined;
     const controls: RegionControls | undefined = state && ctx.controlsKey !== null && ctx.view !== undefined ? { href: ctx.href, key: ctx.controlsKey, others: ctx.view, state, sortable: settings.sortable === true, actions: settings.actions === true, views: viewsMenu, download } : undefined;
     const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
-    const read = await readSource(ctx.source);
+    const read = ctx.read ? await ctx.read() : await readSource(ctx.source);
     ctx.onSourceRead?.(read.provenance);
     // The Lead story's pin (P2.24 A): the post whose slug is named leads, from every row the Source read, the rest following
     // it; none by that slug and the newest leads, as Home's pin falls back.
@@ -246,9 +275,11 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'page.heading': [],
   'calendar.month': ['content:series'],
   'series.live': ['content:series'],
+  // The Filters region reads its target's Source (P2.5): the same tiers, once for both.
+  'data.filters': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Data region reads its Source: the standings' two tiers, the results' snapshots, the posts table and the news aggregate
   // (P2.24 A), the series' names and colours from the bundle, and the calendar feeds for the weekends (P2.24 B1).
-  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics'],
+  'data.region': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
 };
 
 /** What the Debug trace asks of a render (P1.9): each component's timing and outcome. */
@@ -311,7 +342,11 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
     const drawn = detail ? ROW_VIEWS.includes(str(detail.settings.view) || 'table') && ROW_VIEWS.includes(str(master.settings.view) || 'table') : false;
     return detail && shape && key && carries && drawn ? [{ master, detail, key, shape }] : [];
   });
-  const details = new Set(pairs.map(p => p.detail));
+  // Filters (P2.5): a Filters region's target reads its keys whatever its menus, as a detail does; only a target drawn as a
+  // Table, Cards or List, named by a Filters region's Filtered region, on a shape.
+  const targetOf = (f: ComponentRegion) => dataRegions.find(d => d.id === str(f.settings.filteredRegion) && ROW_VIEWS.includes(str(d.settings.view) || 'table') && shapeOf(d) !== null) ?? null;
+  const filterTargets = regions.filter(r => r.component === 'data.filters').map(targetOf).filter((d): d is ComponentRegion => d !== null);
+  const details = new Set([...pairs.map(p => p.detail), ...filterTargets]);
   const withControls = regions.filter(r => r.component === 'data.region' && (details.has(r) || ((r.settings.sortable === true || r.settings.actions === true || r.settings.views === true || r.settings.download === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table'))));
   const controlsKey = (r: ComponentRegion): string | null => (where.view === undefined || !withControls.includes(r) ? null : withControls.length > 1 ? `r.${r.id}.` : '');
   // A master's view of its detail: the detail's key prefix and its state from the address, bound to the detail's shape; none
@@ -324,6 +359,27 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   const detailKeysOf = (r: ComponentRegion): string[] | undefined => {
     const keys = pairs.filter(x => x.detail === r).map(x => x.key);
     return keys.length ? keys : undefined;
+  };
+  // One Source read per region and request (P2.5): a Filters region reads its target's rows through the same promise.
+  const reads = new Map<string, Promise<SourceReadResult>>();
+  const readFor = (r: ComponentRegion, source: SourceRef) => () => {
+    let p = reads.get(r.id);
+    if (!p) {
+      p = sourceRead().then(m => m.readSource(source));
+      reads.set(r.id, p);
+    }
+    return p;
+  };
+  const filtersOf = (f: ComponentRegion): RenderContext['filters'] => {
+    const target = targetOf(f);
+    const prefix = target ? controlsKey(target) : null;
+    const shape = target ? shapeOf(target) : null;
+    const preset = target ? findPreset(str(target.settings.preset)) : null;
+    const spec = target ? findComponent(target.component) : null;
+    const source = target && target.source && spec?.sources?.length ? parseSourceRef(target.source, spec.sources).value : null;
+    if (!target || prefix === null || !shape || !preset || !source || where.view === undefined) return undefined;
+    const read = readFor(target, source);
+    return { prefix, shape, state: bindViewState(parseViewState(where.view, prefix).value, shape), rows: async () => presetRows((await read()).rows, preset, Number.MAX_SAFE_INTEGER) };
   };
   await Promise.all(
     regions.map(async r => {
@@ -338,7 +394,7 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
       const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
       const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r), region: r.id, master: masterOf(r), detailKeys: detailKeysOf(r) });
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r), read: source ? readFor(r, source) : undefined, filters: r.component === 'data.filters' ? filtersOf(r) : undefined, region: r.id, master: masterOf(r), detailKeys: detailKeysOf(r) });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;

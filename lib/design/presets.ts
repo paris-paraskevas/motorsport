@@ -369,6 +369,25 @@ export function rowPasses(row: PresetRow, f: ViewFilter, columns: readonly Prese
   return f.op === 'eq' ? a === b : f.op === 'ne' ? a !== b : false;
 }
 
+/** The values a facet lists at most (P2.5); past it the chip names how many more. Sized to the site's own data: fifteen series,
+ *  at most two dozen drivers a season. */
+export const FACET_VALUES_MAX = 40;
+/** The values a facet offers (P2.5; APEX: a Smart Filter's list): each distinct value of the column across the rows that pass
+ *  every OTHER active filter (never the facet's own, so a picked value keeps its siblings), with its count, the most frequent
+ *  first and a tie by value; a missing value is left out; the list cut at FACET_VALUES_MAX with the rest counted. */
+export function facetValues(rows: readonly PresetRow[], column: string, columns: readonly PresetColumn[], filters: readonly ViewFilter[]): { values: { value: string; count: number }[]; more: number } {
+  const others = filters.filter(f => f.column !== column);
+  const counts = new Map<string, number>();
+  for (const r of rows) {
+    if (!others.every(f => rowPasses(r, f, columns))) continue;
+    const v = cell(r[column]);
+    if (v === '') continue;
+    counts.set(v, (counts.get(v) ?? 0) + 1);
+  }
+  const all = [...counts].map(([value, count]) => ({ value, count })).sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
+  return { values: all.slice(0, FACET_VALUES_MAX), more: Math.max(0, all.length - FACET_VALUES_MAX) };
+}
+
 /** The rows by a reader's column (P2.3), as its type orders — numbers as numbers, a date by its instant, text by locale —
  *  an empty cell last either way, a tie in the order given (the preset's own). */
 function sortBy(base: readonly PresetRow[], sort: { column: string; desc: boolean }, columns: readonly PresetColumn[]): PresetRow[] {

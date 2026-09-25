@@ -1082,3 +1082,32 @@ describe('the highlight rules and the followed-series tint (P2.4 PR A)', () => {
 // The followed-series tint's client component reads the reader's followed series through Clerk's hook; the render tests stand
 // outside a ClerkProvider, so the hook answers nothing here (the component's own test drives it).
 vi.mock('@/lib/useFollowedSeries', () => ({ useFollowedSeries: () => ({ followed: null, hydrated: false, setFollowed: () => {}, clearFollowed: () => {} }) }));
+
+describe('the Filters region (P2.5; APEX: Smart Filters)', () => {
+  const DRIVERS = { preset: 'drivers', view: 'table', rows: 10, heading: '' };
+  const F1 = { source: 'standings?series=f1&season=2026' } as Partial<Region>;
+  const FILTERS = { filteredRegion: 'd', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1' };
+  const pair = () => doc([region('f', 'data.filters', FILTERS, { seq: 5 }), region('d', 'data.region', DRIVERS, F1)]);
+  it('draws the facets of its Data region from that region’s rows, one read shared by both; a dependent facet waits for its parent; nothing where no state can arrive', async () => {
+    readSource.mockClear();
+    const out = await renderComponents(pair(), { path: '/x', view: '' });
+    const chips = html(out.f);
+    expect(readSource).toHaveBeenCalledTimes(1);
+    expect(chips).toContain('Team');
+    expect(chips).toContain('Mercedes');
+    expect(chips).toContain('team.in%3AMercedes');
+    // The Driver facet waits for a Team.
+    expect(chips).toContain('Pick Team first');
+    expect(chips).not.toContain('Antonelli');
+    // With a team picked, the Driver facet opens over the narrowed rows, and the table itself narrows to them.
+    const picked = await renderComponents(pair(), { path: '/x', view: 'filter=team.in:Mercedes' });
+    expect(html(picked.f)).toContain('Antonelli');
+    expect(html(picked.f)).toContain('Russell');
+    expect(html(picked.d)).toContain('Antonelli');
+    // Nowhere a state can arrive (a framed code route), the Filters region draws nothing and the table is as it was.
+    const none = await renderComponents(pair(), { path: '/x' });
+    expect(none.f).toBeNull();
+    const alone = await renderComponents(doc([region('d', 'data.region', DRIVERS, F1)]), { path: '/x' });
+    expect(html(none.d)).toBe(html(alone.d));
+  });
+});

@@ -79,7 +79,7 @@ export interface AttributeDefinition {
    *  Initials Column). `options` stays empty; '' means the preset's own
    *  mapping; the document parser checks a value against the shape. `regions` (P2.4 PR C): the page's other Data regions,
    *  by id, '' for none; the document parser checks the id against the document. */
-  optionsFrom?: 'columns' | 'regions';
+  optionsFrom?: 'columns' | 'regions' | 'facets';
   /** A link that may also follow a link column of the row, stored as
    *  `row:<column>` (ours: APEX substitutes a column into a URL; a typed URL is
    *  never allowed here, so the row's own link stands in). */
@@ -168,6 +168,8 @@ const HIGHLIGHT_VIEWS = { key: 'view', values: ['table', 'cards', 'list'] } as c
 const DETAIL_VIEWS = { key: 'view', values: ['table', 'cards', 'list'] } as const;
 /** A region's id as the document writes it (page-document.ts REGION_ID), repeated here since that module imports this one. */
 const REGION_KEY = /^[a-z0-9][a-z0-9-]{0,39}$/;
+/** The Filters region's facet slots (P2.5): what Depending On may name. */
+const FACET_KEYS = ['facet1', 'facet2', 'facet3'];
 const HIGHLIGHT_STYLES = [
   { key: 'brand', label: 'Brand' },
   { key: 'emphasis', label: 'Emphasis' },
@@ -325,6 +327,26 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'detail', title: 'Master Detail', seq: 50 },
     ],
     sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results'],
+  },
+  // Filters (P2.5; APEX: Smart Filters, the chips above a report): a panel over another Data region of the page, its facets
+  // that region's columns, each value a link that narrows the rows through the address (one `in` filter per facet under the
+  // region's own keys), one facet waiting on another (APEX: Depending On), a facet set to pick several a form with Apply.
+  // It reads no source of its own: the region it filters reads, once, for both.
+  {
+    key: 'data.filters',
+    name: 'Filters',
+    group: 'Data',
+    holds: 'a filter panel over another Data region’s rows: facets from its columns, one narrowing another, applied at a tap or several at once',
+    settings: [
+      { key: 'filteredRegion', label: 'Filtered region', kind: 'choice', scope: 'report', group: 'facets', optionsFrom: 'regions', default: '', help: 'The Data region of this page whose rows the facets narrow (APEX: Smart Filters › Filtered Region); a Table, Cards or List.' },
+      ...([1, 2, 3] as const).flatMap(n => [
+        { key: `facet${n}`, label: `Facet ${n}`, kind: 'choice' as const, scope: 'report' as const, group: 'facets', optionsFrom: 'columns' as const, default: '', help: 'A column of the filtered region whose values become this facet’s chips (APEX: a filter’s column). The address carries a facet’s picks in at most 80 characters; picks beyond that are dropped when the page is read.' },
+        { key: `facet${n}Label`, label: `Facet ${n} label`, kind: 'text' as const, scope: 'report' as const, group: 'facets', default: '', maxLength: 40, help: 'The chip’s name; empty draws the column’s own label.' },
+        { key: `facet${n}DependsOn`, label: `Facet ${n} depends on`, kind: 'choice' as const, scope: 'report' as const, group: 'facets', optionsFrom: 'facets' as const, default: '', help: 'The facet this one waits for (APEX: Depending On): closed until that one carries a value, its own values narrowed by it.' },
+        { key: `facet${n}Several`, label: `Facet ${n} picks several`, kind: 'boolean' as const, scope: 'report' as const, group: 'facets', default: false, help: 'Tick several values and Apply once; off, each value is a link that applies at a tap and stays for the next.' },
+      ]),
+    ],
+    groups: [{ key: 'facets', title: 'Facets', seq: 10 }],
   },
   // The Live band (P2.9; ours by name: APEX has no live band, a domain piece the site draws on Home as This weekend, whose
   // renderer is the band's first instance). It reads the content bundle through the home model as Home's pieces do, never
@@ -494,6 +516,10 @@ export function parseSettings(spec: ComponentDefinition, raw: unknown): { settin
       // A region's id alone here (P2.4 PR C); whether the document holds that Data region is the document parser's rule.
       if (typeof v === 'string' && (v === '' || REGION_KEY.test(v))) settings[s.key] = v;
       else problems.push(`${s.label} must name a region of the page: lower-case letters, digits and dashes`);
+    } else if (s.kind === 'choice' && s.optionsFrom === 'facets') {
+      // Another facet of the same region (P2.5; APEX: Depending On), never itself; whether that facet is set is the renderer's concern.
+      if (typeof v === 'string' && (v === '' || (FACET_KEYS.includes(v) && v !== s.key.replace(/DependsOn$/, '')))) settings[s.key] = v;
+      else problems.push(`${s.label} must name another facet`);
     } else if (s.kind === 'choice') {
       if (typeof v === 'string' && s.options?.some(o => o.key === v)) settings[s.key] = v;
       else problems.push(`${s.label} must be one of ${(s.options ?? []).map(o => o.label).join(', ')}`);
@@ -527,6 +553,9 @@ export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Re
   const parts = instanceAttributes(spec).flatMap(s => {
     const v = settings[s.key] ?? s.default;
     if (s.kind === 'text' && String(v).trim() === '') return [];
+    // A region, a column or a facet not named says nothing (P2.5), nor does a grouped switch at its default: the tile names what is set.
+    if (s.optionsFrom && v === '') return [];
+    if (s.kind === 'boolean' && s.group && v === s.default) return [];
     if (s.dependingOn) {
       const on = settings[s.dependingOn.key] ?? spec.settings.find(x => x.key === s.dependingOn!.key)?.default;
       if (!s.dependingOn.values.includes(String(on)) || v === '' || v === s.default) return [];

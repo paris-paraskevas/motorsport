@@ -1514,3 +1514,30 @@ describe('PageDesigner', () => {
     expect((screen.getByRole('menuitem', { name: /Delete permanently/ }) as HTMLButtonElement).disabled).toBe(true);
   });
 });
+
+describe('the Filters region in the designer (P2.5)', () => {
+  it('offers the page’s Data regions as the Filtered region, that region’s columns as each facet, and the other facets as Depending On', () => {
+    mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Data region' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Filters' }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Component: Data region' })[0]);
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'drivers' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Component: Filters' }));
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    expect(within(pe).getByText('Facets')).toBeTruthy();
+    const target = within(pe).getByLabelText('Filtered region') as HTMLSelectElement;
+    expect([...target.options].map(o => [o.value, o.textContent])).toEqual([['', 'None'], ['region', 'region']]);
+    fireEvent.change(target, { target: { value: 'region' } });
+    const facet1 = within(pe).getByLabelText('Facet 1') as HTMLSelectElement;
+    expect(facet1.options[0].textContent).toBe('None');
+    expect([...facet1.options].map(o => o.value)).toContain('team');
+    fireEvent.change(facet1, { target: { value: 'team' } });
+    const depends = within(pe).getByLabelText('Facet 2 depends on') as HTMLSelectElement;
+    expect([...depends.options].map(o => [o.value, o.textContent])).toEqual([['', 'None'], ['facet1', 'Facet 1'], ['facet3', 'Facet 3']]);
+    expect(screen.getByRole('button', { name: 'Component: Filters' }).textContent).toContain('Filtered region region · Facet 1 team');
+  });
+});
