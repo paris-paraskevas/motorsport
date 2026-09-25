@@ -399,6 +399,11 @@
    "date": "2026-09-24",
    "change": "PA A3 STARTED on the operator’s word, the decision scan answered on its four defaults (the dashboard steps by their hand at apply A3-config; Resend’s Free plan watched on the day; the helper started when the browser runs came; the switch hour with the operator present). A3.1 proven first on the local stack: the secret key drives a reader’s sign-in, so the plan’s fallback question never arose. Four defaults taken beyond the plan’s words, each reversible: the Google nonce generated in the browser (raw + SHA-256, Supabase’s documented flow) rather than in an httpOnly cookie; an email change confirmed by one code to the new address (secure email change off); the admin list read straight from account_admins() without a KV cache; and a page-row migration for /settings/account (20260924234000_pages_seed_account.sql), which the registry test requires of every code route — a second apply word for the slot. Built and proven locally in the browser (every sign-in method, the Account page, the deletion, the dev host’s lock); the PR, the reviewer and the prod configuration follow.",
    "word": "the operator, 2026-09-24 ~22:40Z: \"a3 go\""
+  },
+  {
+   "date": "2026-09-25",
+   "change": "Phase PE (Email to accounts) opened with slot E1 planned: a Newsletter toggle with consent on the account, the consenting accounts synced into a Resend Audience, the operator’s letters through Resend’s Broadcasts with Resend’s unsubscribe; after A3’s switch. Chosen with previews over the site’s own digest sender (a later slot if the letters are opened). Verified the same morning on resend.com: Broadcasts send to Contacts alone, do not count against the transactional limit of 100 a day, and carry their own unsubscribe; the site already sends transactional mail through Resend’s API.",
+   "word": "the operator, 2026-09-25 ~08:40Z: \"Broadcasts + Audience\" and \"After A3’s switch\" (AskUserQuestion with previews)"
   }
  ],
  "phases": {
@@ -421,6 +426,10 @@
   "PD": {
    "title": "Phase D — The documentation",
    "note": "The Designer explained for the operator first and editors second, from the code, never from memory; each chapter checked against the code before it lands."
+  },
+  "PE": {
+   "title": "Phase E — Email to accounts",
+   "note": "Now that accounts are the site’s own (PA), letters and reminders through Resend, behind consent and a budget; Broadcasts first, a digest of the site’s own data later if the letters are opened."
   }
  },
  "slots": [
@@ -1074,6 +1083,18 @@
    "acceptance": "No CLERK_ name in the repo (test); the Clerk application deleted and its DNS records gone (the operator’s dashboards).",
    "status": "planned",
    "scopeHash": "38546fdd606f"
+  },
+  {
+   "id": "E1",
+   "phase": "PE",
+   "title": "Newsletter consent and the Resend Audience",
+   "scope": "A Newsletter toggle on /settings/notifications (off by default, the consent recorded on the account), the consenting accounts synced into a Resend Audience (a contact created on opt-in, removed on opt-out and at deletion), the operator’s letters written and sent in Resend’s Broadcasts with Resend’s unsubscribe (an unsubscribe there clears the toggle through Resend’s webhook or a periodic read), the sender address and the footer’s postal line, a budget (the Free plan’s contact allowance read in the dashboard).",
+   "fixedBy": "the operator’s word of 2026-09-25 ~08:40Z (AskUserQuestion with previews: Broadcasts + Audience, after A3’s switch); consent law (opt-in, an unsubscribe in every mail, the sender’s postal address).",
+   "defaults": "Off by default for every account, the eighteen imported included; the toggle beside the push preferences; the contact’s fields email and first name; a sync on toggle and a nightly reconciliation; the letters’ look from the site’s email template; the first letter drafted by the operator.",
+   "needsWord": "the plan in plan mode before code (its own decision scan); the first letter’s send",
+   "acceptance": "An account’s toggle creates and removes the Resend contact (seen in the dashboard); an unsubscribe in Resend clears the toggle; a broadcast reaches consenting accounts alone; no account is contacted without the toggle on.",
+   "status": "planned",
+   "scopeHash": "d3cc46b36986"
   },
   {
    "id": "D1",
