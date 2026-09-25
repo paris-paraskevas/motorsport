@@ -206,12 +206,12 @@ describe('messages', () => {
   it('a page served from rows opens with its default composition when nothing is stored, never the transitional body', () => {
     const composed: PageRow = { ...page, path: '/calendar', name: 'Calendar', kind: 'code', served: 'rows' };
     const opened = withImplicitBody({ version: 1, regions: [], actions: [] }, composed);
-    expect(opened.regions.map(r => `${r.position}:${r.id}`)).toEqual(['body:heading', 'body:month']);
+    expect(opened.regions.map(r => `${r.position}:${r.id}`)).toEqual(['body:heading', 'body:filters', 'body:month']);
     const stored: PageDocument = { version: 1, regions: [region({ id: 'own' })], actions: [] };
     expect(withImplicitBody(stored, composed)).toBe(stored);
     // A transitional body stored before the route file went (an R2 revision) opens as the recipe in its place.
     const withLegacy: PageDocument = { version: 1, regions: [legacy('code-body'), region({ id: 'own', seq: 20 })], actions: [] };
-    expect(withImplicitBody(withLegacy, composed).regions.map(r => `${r.id}:${r.seq}`)).toEqual(['heading:10', 'month:20', 'own:30']);
+    expect(withImplicitBody(withLegacy, composed).regions.map(r => `${r.id}:${r.seq}`)).toEqual(['heading:10', 'filters:20', 'month:30', 'own:40']);
   });
 
   it('a code page with no Body regions opens with the transitional body in its Body; a row page, a document that names it, and a split page are left alone', () => {

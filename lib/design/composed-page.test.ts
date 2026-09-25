@@ -24,8 +24,8 @@ describe('composed pages', () => {
 
   it('renders the published document when it has Body regions, the default composition when nothing is published, and keeps a published frame around the default', () => {
     const base = composedDocument(null, '/calendar');
-    expect(base.regions.map(r => (r.kind === 'component' ? r.component : r.kind))).toEqual(['page.heading', 'calendar.month']);
-    expect(base.regions.map(r => r.id)).toEqual(['heading', 'month']);
+    expect(base.regions.map(r => (r.kind === 'component' ? r.component : r.kind))).toEqual(['page.heading', 'data.filters', 'calendar.month']);
+    expect(base.regions.map(r => r.id)).toEqual(['heading', 'filters', 'month']);
     const published: PageDocument = {
       version: 1,
       actions: [],
@@ -38,7 +38,7 @@ describe('composed pages', () => {
       regions: [{ id: 'kicker', kind: 'static', title: '', position: 'header', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'Above' }],
     };
     const merged = composedDocument(frameOnly, '/calendar');
-    expect(merged.regions.map(r => `${r.position}:${r.id}`)).toEqual(['header:kicker', 'body:heading', 'body:month']);
+    expect(merged.regions.map(r => `${r.position}:${r.id}`)).toEqual(['header:kicker', 'body:heading', 'body:filters', 'body:month']);
     expect(composedDocument(null, '/nowhere').regions).toEqual([]);
   });
 
@@ -48,7 +48,7 @@ describe('composed pages', () => {
     const kicker: Region = { ...note, id: 'kicker', position: 'header', seq: 10 };
     const doc: PageDocument = { version: 1, actions: [], regions: [kicker, legacy, note] };
     const adopted = adoptRecipe(doc, '/calendar');
-    expect(adopted.regions.map(r => `${r.position}:${r.id}:${r.seq}`)).toEqual(['header:kicker:10', 'body:heading:10', 'body:month:20', 'body:note:40']);
+    expect(adopted.regions.map(r => `${r.position}:${r.id}:${r.seq}`)).toEqual(['header:kicker:10', 'body:heading:10', 'body:filters:20', 'body:month:30', 'body:note:50']);
     expect(composedDocument(doc, '/calendar')).toEqual(adopted);
     expect(adoptRecipe(doc, '/nowhere').regions.map(r => r.id)).toEqual(['kicker', 'note']);
     const plain: PageDocument = { version: 1, actions: [], regions: [note] };
