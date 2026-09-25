@@ -14,7 +14,21 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1064 · 1.0.183 · PA A3 · opened Fri 25 Sep 11:12 (08:12Z); the merge waits for the switch (the operator present)
+## #1065 · 1.0.184 · records · opened Fri 25 Sep 12:45 (09:45Z), merged under the same word
+**The switch to Supabase Auth on prod (PA A3), the session-57 handoff.** Records only.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (8):**
+  - `docs/plan/ledger.json` · A3’s evidence: the switch’s steps, the merge, the prod probes, the Turnstile finding; two dated lines on the operator’s words; A3 STARTED until the sign-ins and the next-day check.
+  - `docs/plan/components-programme.md` · re-rendered from the ledger (55 slots).
+  - `docs/pull-requests.md` · #1064’s entry updated with the merge and the review; #1063 noted as closed; this entry.
+  - `docs/HANDOFF.md` · the LATEST block: close A3 (the sign-ins, the next-day check), then E1’s plan, A4 on 2026-10-25; the State paragraph for prod’s auth configuration and the Worker secrets.
+  - `SCHEDULE.md` · step 28; the day’s active time.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio at 1.0.184.
+- **Verified:** node docs/plan/render-ledger.mjs → 55 slots; npx vitest run lib/design/plan-ledger.test.ts → 1 file, 6 tests passed.
+- **Review:** none; records only.
+
+## #1064 · 1.0.183 · PA A3 · merged Fri 25 Sep 12:28 (09:28Z), prod 1.0.183 at 12:32
 **Supabase Auth inside the seam: sessions on the Worker, the site’s own sign-in, sign-up and Account pages, Clerk’s SDK gone.** The switch of phase PA: the seam over @supabase/ssr, the middleware refreshing sessions, the routes under /api/auth and /api/account, the site’s own screens, the templates, the Clerk webhook deleted.
 - **Readers see:** after the merge, the site’s own sign-in page (email and password, a code by email, Google), an Account details page under Settings, initials in the header without a photo, and no sign-out after a week. Until the merge, nothing.
 - **Editors get:** the Data workspace’s accounts card over Supabase Auth; the tree’s Authentication label.
@@ -84,9 +98,9 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `vitest.config.ts` · middleware.test.ts included.
   - `docs/pull-requests.md` · records: this entry.
 - **Verified:** tests first (twelve files); tsc 0 · lint 0 errors · vitest 242 files, 2379 tests green (three designer tests time out at their 5 s limit only under load) · wrangler deploy --dry-run Total Upload 39314.62 KiB (41151.04 KiB before: Clerk’s SDK gone) · the local stack’s secret key proven to drive a sign-in first · every flow in the browser on the local stack (the sign-in page, the helper’s sign-in, Settings, the Account page’s rows, sign-up with the emailed code, sign in by code, the reset, the deletion), the dev host’s lock by curl. Not proven locally: Google’s button, the platform’s User-Agent rule and IP forwarding, an hour-old session’s headers on Workers, Home a cache HIT (testing.paddock-tracker.com before the merge).
-- **Review:** a fresh-context Sonnet reviewer on the diff (the verdict in the PR body).
+- **Review:** a fresh-context Sonnet reviewer (about 150k said, 387,410 measured, 113 tool uses): SOUND WITH FIXES; folded: the Google nonce minted by the route into an httpOnly cookie (the blocking finding), tests for GoogleButton and SignUpForm, the Clerk publishable key out of the preview secrets; left with the reason: no KV cache on the one-function admin list, the provider’s mount effect as its own promise chain, a failed sign-out still reloads, the flags’ last-write-wins. After the review, two more commits: the Worker checks the Turnstile token with Cloudflare’s siteverify itself (Supabase Auth skips the captcha for secret-key requests, proven against prod) and the two public vars in the Worker configs. The switch: the two applies on prod, the secrets, testing deployed and probed, the operator’s word “straight to prod”, the import run again after the deploy (unchanged 18), prod probed (Home a HIT, the sign-in page, the captcha gate, the dev host’s lock).
 
-## #1063 · 1.0.182 · records · opened Fri 25 Sep 01:35 (24 Sep 22:35Z), merged by the operator’s hand
+## #1063 · 1.0.182 · records · opened Fri 25 Sep 01:35 (24 Sep 22:35Z); closed Fri 25 Sep 12:33 as shipped inside #1064’s squash (its two commits were the base of A3’s branch)
 **Session 56: PA A2 DONE, the accounts imported; the session-57 handoff with A3 first.** Records only.
 - **Readers see:** nothing.
 - **Editors get:** nothing.
