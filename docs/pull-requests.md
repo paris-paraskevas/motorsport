@@ -14,6 +14,24 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1071 · 1.0.190 · P2.5 PR A · merged Fri 25 Sep 20:45 (17:45Z) under the standing word
+**Filters as a layer, PR A: a Filters region over another Data region's rows.** APEX's Smart Filters as a component of its own; the calendar and news pages follow in PR B and PR C.
+- **Readers see:** nothing until an editor places a Filters region on a page.
+- **Editors get:** a Filters component in the Gallery: a Filtered region, three facets over its columns with a label, Depending On and a picks-several switch; on the page, chips whose values narrow the table at a tap, one facet waiting on another, a search box inside a chip, "and N more" past forty values, Reset.
+- **Files (14):**
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the data.filters definition, the facets option kind, the parser's rule for Depending On, the summary's silence on what is not set.
+  - `lib/design/presets.ts`, `lib/design/presets.test.ts` · facetValues and FACET_VALUES_MAX.
+  - `lib/design/page-document.ts`, `lib/design/page-document.test.ts` · the Filters checks; a Filters panel never takes the h1.
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · the target reads its keys, one shared read per request, the data.filters renderer, READS.
+  - `components/data/DataRegionFilters.tsx`, `components/data/DataRegionFilters.test.tsx` · the chips, the links, the picks-several form, the constant script, Reset; the hrefs, the hidden inputs and the escaping asserted.
+  - `components/designer/PageDesignerProperties.tsx`, `components/designer/PageDesigner.test.tsx` · the Facets group's selects over the filtered region's columns and the other facets.
+  - `components/designer/PluginsEditor.test.tsx` · six definitions listed.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.5 started on the revised plan; PR A's evidence.
+  - `IDEAS.md` · the hydration warning seen on the run page too.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.190.
+- **Verified:** tests first (seven cases red across six files and one new), then green; tsc 0; lint 0 errors (the two known warnings); vitest 248 files, 2415 tests; cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39423.21 KiB (39351.47 before); in the browser on the local server: the Gallery's Filters entry, the Facets group on the Monza page over its Session results region (Team, then Driver depending on Team), Save and Run Page: the Team chip with counts, Ferrari picked narrowing the table to Leclerc and Hamilton and opening the Driver chip with those two, Reset back to twenty-two rows (screenshots .playwright-mcp/p25a-01..02).
+- **Review:** a fresh-context Sonnet (~250k said, 228,850 measured, 29 tool uses): SOUND WITH FIXES, none blocking; the five folded in 8b381088 (a cleared facet clears its dependents, a comma value picked alone as eq, READS equal for both Data regions, the 80-character note in the help, the script bound once per region and tested in jsdom); the gates re-run after: vitest 248 files, 2418 tests, cf:build clean, the dry run 39423.21 KiB.
+
 ## #1070 · 1.0.189 · records · opened Fri 25 Sep 17:05 (14:05Z); the merge on the word
 **P2.25 done on prod; the session-57 handoff.** Records only: the merge, the migration and the backfill on prod, and where session 58 starts.
 - **Readers see:** nothing.
