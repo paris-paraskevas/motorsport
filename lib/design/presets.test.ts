@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ViewState } from './view-state';
 import { readFileSync } from 'node:fs';
-import { PRESETS, PRESET_GROUPS, SHAPES, findPreset, presetRows, presetsFor, rowPasses } from './presets';
+import { FACET_VALUES_MAX, PRESETS, PRESET_GROUPS, SHAPES, facetValues, findPreset, presetRows, presetsFor, rowPasses } from './presets';
 import { SERIES_OPTIONS } from './sources';
 
 /** P2.24 B2: the two Series values the readers resolve (Home's series on Results, the Latest result on Standings), declared, not slugs. */
@@ -382,5 +382,31 @@ describe('rowPasses (P2.4): a row against one condition, as the column’s type 
     expect(rowPasses(row, { column: 'name', op: 'in', value: 'Norris, George Russell' }, columns)).toBe(true);
     expect(rowPasses(row, { column: 'wins', op: 'gte', value: '1' }, columns)).toBe(false);
     expect(rowPasses(row, { column: 'wins', op: 'ne', value: '1' }, columns)).toBe(true);
+  });
+});
+
+describe('facetValues (P2.5: the values a facet offers, from the rows after every other filter)', () => {
+  const columns = SHAPES['driver-rows'].columns;
+  const rows = [
+    { kind: 'driver', position: 1, name: 'A Driver', code: 'ADR', team: 'McLaren', points: 10, wins: 1 },
+    { kind: 'driver', position: 2, name: 'B Driver', code: 'BDR', team: 'McLaren', points: 8, wins: 0 },
+    { kind: 'driver', position: 3, name: 'C Driver', code: 'CDR', team: 'Ferrari', points: 6, wins: 0 },
+    { kind: 'driver', position: 4, name: 'D Driver', code: 'DDR', team: null, points: 4, wins: 0 },
+  ];
+  it('counts each distinct value, the most frequent first and a tie by value; a missing value is left out', () => {
+    expect(facetValues(rows, 'team', columns, [])).toEqual({ values: [{ value: 'McLaren', count: 2 }, { value: 'Ferrari', count: 1 }], more: 0 });
+  });
+  it('narrows by every other active filter and never by the facet’s own column, so a picked value keeps its siblings', () => {
+    const active = [{ column: 'team', op: 'in' as const, value: 'Ferrari' }];
+    expect(facetValues(rows, 'name', columns, active).values).toEqual([{ value: 'C Driver', count: 1 }]);
+    expect(facetValues(rows, 'team', columns, active).values.map(v => v.value)).toEqual(['McLaren', 'Ferrari']);
+  });
+  it('caps the list at FACET_VALUES_MAX and counts the rest; no rows answer nothing', () => {
+    const many = Array.from({ length: 45 }, (_, i) => ({ kind: 'driver', position: i + 1, name: 'Driver ' + i, team: 'Team ' + i, points: 0 }));
+    const out = facetValues(many, 'team', columns, []);
+    expect(FACET_VALUES_MAX).toBe(40);
+    expect(out.values).toHaveLength(40);
+    expect(out.more).toBe(5);
+    expect(facetValues([], 'team', columns, [])).toEqual({ values: [], more: 0 });
   });
 });

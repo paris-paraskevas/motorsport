@@ -799,3 +799,23 @@ describe('master-detail (P2.4 PR C): a Detail region is another Data region of t
     expect(own[0]).toMatch(/^region season: Detail key must be a column of the Season results preset: /);
   });
 });
+
+describe('the Filters region (P2.5; APEX: Smart Filters)', () => {
+  const base = { kind: 'component', title: '', position: 'body', column: 1, span: 12, newRow: true, hidden: false, authz: null };
+  const drivers = (over: Record<string, unknown> = {}) => ({ ...base, id: 'd', seq: 10, component: 'data.region', source: 'standings?series=f1&season=2026', settings: { preset: 'drivers', view: 'table', rows: 10, heading: '' }, ...over });
+  const filters = (settings: Record<string, unknown>) => ({ ...base, id: 'f', seq: 5, component: 'data.filters', settings });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+  it('names a Data region of the page drawn as a Table, Cards or List, facets the region’s shape carries, and Depending On another facet', () => {
+    const kept = parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1', facet2Several: true })]));
+    expect(kept.problems).toEqual([]);
+    expect(kept.value?.regions.find(r => r.id === 'f')).toMatchObject({ settings: { filteredRegion: 'd', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1', facet2Several: true } });
+    const refused = 'region f: Filtered region must be a Data region of this page, drawn as a Table, Cards or List';
+    expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'gone', facet1: 'team' })])).problems).toEqual([refused]);
+    expect(parsePageDocument(doc([drivers({ settings: { preset: 'drivers', view: 'detail', rows: 10, heading: '' } }), filters({ filteredRegion: 'd' })])).problems).toEqual([refused]);
+    expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'nope' })])).problems).toEqual(['region f: Facet 1 must be a column the filtered region carries']);
+    expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'team', facet1DependsOn: 'facet1' })])).problems).toEqual(['region f: Facet 1 depends on must name another facet']);
+    // Depending on a facet that is not set is kept (the chip simply never shows); no Filtered region: nothing to check, nothing drawn.
+    expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'team', facet1DependsOn: 'facet3' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([drivers(), filters({ facet1: 'team' })])).problems).toEqual([]);
+  });
+});
