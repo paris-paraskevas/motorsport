@@ -768,6 +768,25 @@ export function parsePageDocument(raw: unknown, components: readonly ComponentDe
     if (typeof key !== 'string' || key === '' || !carries(r, key) || !carries(detail, key)) problems.push(`region ${r.id}: Detail key must be a column both regions carry`);
   }
 
+  // Filters (P2.5; APEX: Smart Filters): a Filters region names a Data region of this page drawn as a Table, Cards or List (a
+  // template draws no rows to narrow), each facet a column that region's shape carries, and Depending On another facet.
+  const FACET_KEYS = ['facet1', 'facet2', 'facet3'];
+  for (const r of regions.filter((x): x is ComponentRegion => x.kind === 'component' && x.component === 'data.filters')) {
+    const id = r.settings.filteredRegion;
+    if (typeof id !== 'string' || id === '') continue;
+    const target = dataRegions.find(d => d.id === id && DETAIL_VIEWS.includes(String(d.settings.view ?? 'table')));
+    if (!target) {
+      problems.push(`region ${r.id}: Filtered region must be a Data region of this page, drawn as a Table, Cards or List`);
+      continue;
+    }
+    for (const n of [1, 2, 3]) {
+      const column = r.settings[`facet${n}`];
+      if (typeof column === 'string' && column !== '' && !carries(target, column)) problems.push(`region ${r.id}: Facet ${n} must be a column the filtered region carries`);
+      const on = r.settings[`facet${n}DependsOn`];
+      if (typeof on === 'string' && on !== '' && (on === `facet${n}` || !FACET_KEYS.includes(on))) problems.push(`region ${r.id}: Facet ${n} depends on must name another facet`);
+    }
+  }
+
   // Actions are optional in a stored document (none before step 5) and must
   // name regions that survived the parse above.
   const actions: DynamicAction[] = [];
@@ -899,7 +918,8 @@ export function isInside(doc: PageDocument, id: string, ancestor: string): boole
  *  page's h1 (component-render.tsx). A sub region never does, whatever its
  *  place in the document. Kept here so the rule has a test of its own. */
 export function firstBodyRegion(doc: PageDocument): Region | undefined {
-  return doc.regions.find(r => r.position === 'body' && !r.hidden && !r.parent);
+  // A Filters panel carries no heading (P2.5): the first region after it takes the h1.
+  return doc.regions.find(r => r.position === 'body' && !r.hidden && !r.parent && !(r.kind === 'component' && r.component === 'data.filters'));
 }
 
 /** Whether the Body is the operator's own composition (the components programme, R2b; P2.24 C): page-level Body rows
