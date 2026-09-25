@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.189 — 2026-09-25
+
+Internal only: the session results of 1.0.188 are now filled in for the whole season. Nothing changes for readers.
+
 ## 1.0.188 — 2026-09-25
 
 Behind the scenes: Formula 1 practice and qualifying results are now kept as rows the page designer can place on any page as a Session table, with each driver's tyre on their best lap. Nothing changes for readers until an editor places one.

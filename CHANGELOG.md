@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.189 — 2026-09-25
+
+### Records — P2.25 done on prod; the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: P2.25 DONE with the merge (#1069 at 13:42Z, prod 13:47Z), the migration applied on prod on the word (rehearsed first), and the backfill's run (54 of 55 finished sessions, 1175 rows; round 3's second practice has no classification at OpenF1). `docs/HANDOFF.md`: the LATEST block for the rest of session 57 and for session 58 (P2.5 with the operator's "swap the pages", then Phase 2 in order; P2.21 carrying the sign-in notice, the sign-in polish and E1). `SCHEDULE.md`: the session-57 block to ~14:00Z. `docs/pull-requests.md`: this entry.
+
 ## 1.0.188 — 2026-09-25
 
 ### P2.25 — Session results: practice and qualifying classifications as rows, a Session preset, the cron writing beside its KV write, a backfill

@@ -14,7 +14,21 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1069 · 1.0.188 · P2.25 · opened Fri 25 Sep 16:45 (13:45Z); the merge on the word
+## #1070 · 1.0.189 · records · opened Fri 25 Sep 17:05 (14:05Z); the merge on the word
+**P2.25 done on prod; the session-57 handoff.** Records only: the merge, the migration and the backfill on prod, and where session 58 starts.
+- **Readers see:** nothing.
+- **Editors get:** nothing new; the Session results source holds the season since the backfill.
+- **Files (7):**
+  - `docs/plan/ledger.json` · P2.25 DONE with the merge, the apply and the backfill's counts; the dated line.
+  - `docs/plan/components-programme.md` · re-rendered (57 slots, 37 done).
+  - `docs/HANDOFF.md` · the LATEST block: P2.5 next with "swap the pages", the known facts of the day (the local key override, the helper's captcha token, OpenF1's lockout and 429s).
+  - `SCHEDULE.md` · the session-57 block to ~14:00Z.
+  - `docs/pull-requests.md` · #1069 merged; this entry.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio, 1.0.189.
+- **Verified:** node docs/plan/render-ledger.mjs → 57 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; the counts read from prod through the Management API (session_result_current: 1175 rows, 54 sessions).
+- **Review:** none; records.
+
+## #1069 · 1.0.188 · P2.25 · merged Fri 25 Sep 16:42 (13:42Z), prod 1.0.188 at 16:47
 **Session results: practice and qualifying classifications as rows, a Session preset, the cron writing beside its KV write, a backfill.** The operator's ask of the day: the Results source carries races alone, so a Data region could not show a practice or a qualifying.
 - **Readers see:** nothing until an editor places a Session region on a page.
 - **Editors get:** a fifteenth source, Session results (F1), with Series, Season, Round ("Latest captured" or one of 24) and Session (the three practices, qualifying, sprint qualifying); a Session preset (Table, thirty rows) with the driver linked, code, team, laps, time, gap, interval, Q1 to Q3, the tyre of the best lap and status.
