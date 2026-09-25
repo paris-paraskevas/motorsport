@@ -16,7 +16,14 @@ import { basename } from 'node:path';
 import { SESSION_KINDS } from '@/lib/design/sources';
 import { loadSeries } from '@/lib/series';
 import { buildRoundLookup, roundFor, sessionSlug } from '@/lib/weekend';
-import { fetchOpenF1WeekendSessions, fetchSessionClassification, hasResolvedDrivers, type OpenF1Session } from '@/lib/results/openf1';
+import {
+  fetchOpenF1WeekendSessions,
+  fetchSessionClassification,
+  hasResolvedDrivers,
+  type OpenF1Session,
+  type SessionClassification,
+  type SessionClassificationEntry,
+} from '@/lib/results/openf1';
 import { hasCurrentSessionResult, sessionResultKey, writeSessionResultRun } from '@/lib/session-result-rows';
 
 export { SESSION_KINDS };
@@ -42,10 +49,19 @@ export interface BackfillOutcome {
   rows: number;
   note?: string;
 }
+/** What the write reaches for, handed in so the walk is tested without a network or a database. */
+export interface BackfillDeps {
+  fetchWeekendSessions: (start: Date, end: Date) => Promise<OpenF1Session[]>;
+  fetchClassification: (session: OpenF1Session) => Promise<SessionClassification | null>;
+  resolved: (classification: SessionClassification | null) => boolean;
+  write: (opts: { series: string; season: number; round: number; session: string; entries: readonly SessionClassificationEntry[]; runner: string }) => Promise<{ ok: boolean; rows: number; note: string }>;
+  log: (line: string) => void;
+}
 
 /** OpenF1 refuses a session that ended less than thirty minutes ago to unauthenticated callers (read 2026-09-25). */
 const LOCKOUT_MS = 30 * 60_000;
 const KINDS: readonly string[] = SESSION_KINDS;
+const RUNNER = 'backfill-session-results';
 
 /** The plan from a season's sessions: what is finished, what is already captured, what is still locked out. */
 export function planBackfill(sessions: readonly BackfillSession[], now: Date, present: ReadonlySet<string>, series = 'f1', season = 2026): BackfillPlan {
@@ -75,8 +91,9 @@ export function summarise(outcomes: readonly BackfillOutcome[]): { written: numb
   return { written, rows, failed };
 }
 
-/** The cron's matcher: the slugified OpenF1 session name first, then the nearest start within three hours. */
-function matchOpenF1Session(candidates: readonly OpenF1Session[], slug: string, start: Date): OpenF1Session | null {
+/** The cron's matcher (app/api/cron/warm-sessions/route.ts): the slugified OpenF1 session name first, then the nearest
+ *  start within three hours; null when neither fits. */
+export function matchOpenF1Session(candidates: readonly OpenF1Session[], slug: string, start: Date): OpenF1Session | null {
   const byName = candidates.find(s => sessionSlug(s.session_name) === slug);
   if (byName) return byName;
   let best: OpenF1Session | null = null;
@@ -89,6 +106,44 @@ function matchOpenF1Session(candidates: readonly OpenF1Session[], slug: string, 
     }
   }
   return best;
+}
+
+/** The write: the plan's sessions in order, the weekend's OpenF1 sessions fetched once per round (the round's own first
+ *  start to its last end), each classification under the cron's guard, one run per session; every outcome logged. */
+export async function runBackfill(plan: BackfillPlan, sessions: readonly BackfillSession[], season: number, deps: BackfillDeps, series = 'f1'): Promise<BackfillOutcome[]> {
+  const byRound = new Map<number, OpenF1Session[]>();
+  const outcomes: BackfillOutcome[] = [];
+  const report = (s: BackfillSession, o: BackfillOutcome) => {
+    outcomes.push(o);
+    deps.log(`  ${o.ok ? 'wrote ' : 'failed'} r${s.round} ${s.slug}: ${o.ok ? `${o.rows} rows` : o.note}`);
+  };
+  for (const s of plan.planned) {
+    let weekendSessions = byRound.get(s.round);
+    if (!weekendSessions) {
+      const own = sessions.filter(x => x.round === s.round);
+      const start = new Date(Math.min(...own.map(x => x.start.getTime())));
+      const end = new Date(Math.max(...own.map(x => x.end.getTime())));
+      weekendSessions = await deps.fetchWeekendSessions(start, end);
+      byRound.set(s.round, weekendSessions);
+    }
+    const match = matchOpenF1Session(weekendSessions, s.slug, s.start);
+    if (!match) {
+      report(s, { ok: false, rows: 0, note: 'no-openf1-match' });
+      continue;
+    }
+    const classification = await deps.fetchClassification(match);
+    if (!classification || classification.entries.length === 0) {
+      report(s, { ok: false, rows: 0, note: 'no-classification' });
+      continue;
+    }
+    if (!deps.resolved(classification)) {
+      report(s, { ok: false, rows: 0, note: 'no-driver-names' });
+      continue;
+    }
+    const out = await deps.write({ series, season, round: s.round, session: s.slug, entries: classification.entries, runner: RUNNER });
+    report(s, { ok: out.ok, rows: out.rows, note: out.note });
+  }
+  return outcomes;
 }
 
 async function main(): Promise<void> {
@@ -120,40 +175,15 @@ async function main(): Promise<void> {
       `${plan.notYet.length} inside the lockout · ${plan.planned.length} to capture across ${rounds} rounds (${plan.planned.length * 4 + rounds} OpenF1 calls)`,
   );
   for (const s of plan.planned) console.log(`  plan   r${s.round} ${s.slug}`);
+  // The dry run ends here: nothing is fetched from OpenF1 and nothing is written.
   if (!write) return;
-
-  const byRound = new Map<number, OpenF1Session[]>();
-  const outcomes: BackfillOutcome[] = [];
-  const report = (s: BackfillSession, o: BackfillOutcome) => {
-    outcomes.push(o);
-    console.log(`  ${o.ok ? 'wrote ' : 'failed'} r${s.round} ${s.slug}: ${o.ok ? `${o.rows} rows` : o.note}`);
-  };
-  for (const s of plan.planned) {
-    let weekendSessions = byRound.get(s.round);
-    if (!weekendSessions) {
-      const own = sessions.filter(x => x.round === s.round);
-      const start = new Date(Math.min(...own.map(x => x.start.getTime())));
-      const end = new Date(Math.max(...own.map(x => x.end.getTime())));
-      weekendSessions = await fetchOpenF1WeekendSessions(start, end);
-      byRound.set(s.round, weekendSessions);
-    }
-    const match = matchOpenF1Session(weekendSessions, s.slug, s.start);
-    if (!match) {
-      report(s, { ok: false, rows: 0, note: 'no-openf1-match' });
-      continue;
-    }
-    const classification = await fetchSessionClassification(match);
-    if (!classification || classification.entries.length === 0) {
-      report(s, { ok: false, rows: 0, note: 'no-classification' });
-      continue;
-    }
-    if (!hasResolvedDrivers(classification)) {
-      report(s, { ok: false, rows: 0, note: 'no-driver-names' });
-      continue;
-    }
-    const out = await writeSessionResultRun({ series: 'f1', season, round: s.round, session: s.slug, entries: classification.entries, runner: 'backfill-session-results' });
-    report(s, { ok: out.ok, rows: out.rows, note: out.note });
-  }
+  const outcomes = await runBackfill(plan, sessions, season, {
+    fetchWeekendSessions: fetchOpenF1WeekendSessions,
+    fetchClassification: fetchSessionClassification,
+    resolved: hasResolvedDrivers,
+    write: writeSessionResultRun,
+    log: line => console.log(line),
+  });
   const sum = summarise(outcomes);
   console.log(`written ${sum.written} sessions (${sum.rows} rows), failed ${sum.failed}`);
 }

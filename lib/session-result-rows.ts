@@ -57,6 +57,8 @@ export interface SessionResultRow {
 }
 
 const VIEW_COLUMNS = 'source_run_id, round, session, position, driver_name, driver_code, car_number, team, laps, time, gap, interval, q1, q2, q3, compound, points, status';
+/** Rows enough for one round of a 22-car grid, with room for a corrected recapture's extra lines. */
+const LATEST_ROWS_MAX = 40;
 
 const strOrNull = (v: unknown): string | null => (typeof v === 'string' && v ? v : null);
 const numOrNull = (v: unknown): number | null => {
@@ -104,7 +106,7 @@ export async function writeSessionResultRun(opts: {
           driver_name: e.driverName,
           driver_code: e.driverCode ?? null,
           car_number: e.carNumber ?? null,
-          team: e.team || null,
+          team: e.team ?? null,
           laps: e.laps ?? null,
           time: e.time ?? null,
           gap: e.gap ?? null,
@@ -154,7 +156,11 @@ export async function readCurrentSessionResults(ask: SessionAsk): Promise<{ roun
   try {
     let q = betDb().from('session_result_current').select(VIEW_COLUMNS).eq('series', ask.series).eq('season', ask.season).eq('session', ask.session);
     if (ask.round !== 'latest') q = q.eq('round', ask.round);
-    const { data, error } = await q.order('round', { ascending: false }).order('position', { ascending: true, nullsFirst: false });
+    let ordered = q.order('round', { ascending: false }).order('position', { ascending: true, nullsFirst: false });
+    // The latest round is the source's default pick: the newest round's rows come first in this order, so the read stops
+    // after one round's worth (F1 classifies at most 22 cars) instead of the whole season's.
+    if (ask.round === 'latest') ordered = ordered.limit(LATEST_ROWS_MAX);
+    const { data, error } = await ordered;
     if (error || !data || data.length === 0) return null;
     const all = data as Record<string, unknown>[];
     const round = numOrNull(all[0].round);
