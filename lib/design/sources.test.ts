@@ -14,15 +14,15 @@ import { MAX_PER_SERIES_AGGREGATE } from '@/lib/news';
 // and a reader; a ref is one string a region carries; the loader's keys read
 // back in the catalogue's words.
 
-const FOURTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends'];
+const FIFTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results'];
 const PARAMETER_KINDS = ['series', 'season', 'number', 'choice', 'text'];
 const COLUMN_TYPES = ['text', 'number', 'date', 'boolean', 'link', 'image', 'colour'];
 /** P2.24 B2: the two Series values the readers resolve rather than read (Home's series, the Latest result), each on its source alone. */
 const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home'], standings: ['latest'] };
 
 describe('the source catalogue', () => {
-  it('holds the fourteen in the changes line’s order (Weekends last, P2.24 B1), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
-    expect(SOURCES.map(s => s.key)).toEqual(FOURTEEN);
+  it('holds the fifteen in the changes line’s order (Weekends the fourteenth, P2.24 B1; Session results the fifteenth, P2.25), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
+    expect(SOURCES.map(s => s.key)).toEqual(FIFTEEN);
     const contentSlugs = readdirSync(path.join(process.cwd(), 'content', 'series'), { withFileTypes: true })
       .filter(e => e.isDirectory())
       .map(e => e.name)

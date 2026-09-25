@@ -324,7 +324,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'highlight', title: 'Highlight', seq: 40 },
       { key: 'detail', title: 'Master Detail', seq: 50 },
     ],
-    sources: ['standings', 'results', 'posts', 'news', 'weekends'],
+    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results'],
   },
   // The Live band (P2.9; ours by name: APEX has no live band, a domain piece the site draws on Home as This weekend, whose
   // renderer is the band's first instance). It reads the content bundle through the home model as Home's pieces do, never

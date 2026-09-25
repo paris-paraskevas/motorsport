@@ -346,6 +346,8 @@ async function withProfiles(series: string, rows: SourceRow[], ask: (r: SourceRo
 const standingsAsk = (r: SourceRow) => (typeof r.name !== 'string' || !r.name ? null : r.kind === 'driver' ? { kind: 'driver' as const, name: r.name } : r.kind === 'team' || r.kind === 'constructor' ? { kind: 'team' as const, name: r.name } : null);
 /** A results row's driver on a flat series; a car's crew (IMSA's, WEC's, GT World's cups) is several people and has none. */
 const resultsAsk = (r: SourceRow) => (r.car == null && typeof r.driver === 'string' && r.driver ? { kind: 'driver' as const, name: r.driver } : null);
+/** A session row's driver (P2.25): every row is one person. */
+const sessionAsk = (r: SourceRow) => (typeof r.driver === 'string' && r.driver ? { kind: 'driver' as const, name: r.driver } : null);
 
 /** Home's name for a podium entry (lib/home-results.ts): a sportscar entry (a car number) by its team, a flat one by its driver. */
 const podiumName = (r: SourceRow): string | null => (str(r.car) ? str(r.team) ?? str(r.driver) ?? `Car #${String(r.car)}` : str(r.driver));
@@ -565,6 +567,18 @@ const READERS: Readonly<Record<string, Reader>> = {
         return { title: i.title, link: i.link, source: hostOf(i.link), published: iso(i.pubDate), series: i.seriesSlug, seriesName: m?.name ?? null, colour: m?.color ?? null };
       });
     return { tier: 'snapshot', rows, run: null, meta: await metaFor(keys) };
+  },
+  // One session's classification (P2.25): the session_result_current view, a numbered round or the latest captured of the
+  // kind; the driver's page from the rosters as the results rows get theirs, the round's weekend page as a link column.
+  async 'session-results'(params) {
+    const { readCurrentSessionResults } = await import('@/lib/session-result-rows');
+    const series = typeof params.series === 'string' && params.series ? params.series : 'f1';
+    const pick = params.round === undefined || params.round === 'latest' ? 'latest' : Number(params.round);
+    const current = await readCurrentSessionResults({ series, season: Number(params.season), round: pick, session: String(params.session ?? '') });
+    if (!current) return { tier: 'db', rows: [], run: null };
+    const weekend = `/series/${series}/weekend/${current.round}`;
+    const rows: SourceRow[] = current.rows.map(r => ({ round: current.round, session: r.session, position: r.position, driver: r.driverName, code: r.driverCode, number: r.carNumber, team: r.team, laps: r.laps, time: r.time, gap: r.gap, interval: r.interval, q1: r.q1, q2: r.q2, q3: r.q3, compound: r.compound, points: r.points, status: r.status, weekend }));
+    return { tier: 'db', rows: await withProfiles(series, rows, sessionAsk), run: await readRun(current.runId) };
   },
   async authors() {
     const { listAuthors } = await import('@/lib/authors');

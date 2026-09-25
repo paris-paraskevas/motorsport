@@ -14,6 +14,28 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1069 · 1.0.188 · P2.25 · opened Fri 25 Sep 16:45 (13:45Z); the merge on the word
+**Session results: practice and qualifying classifications as rows, a Session preset, the cron writing beside its KV write, a backfill.** The operator's ask of the day: the Results source carries races alone, so a Data region could not show a practice or a qualifying.
+- **Readers see:** nothing until an editor places a Session region on a page.
+- **Editors get:** a fifteenth source, Session results (F1), with Series, Season, Round ("Latest captured" or one of 24) and Session (the three practices, qualifying, sprint qualifying); a Session preset (Table, thirty rows) with the driver linked, code, team, laps, time, gap, interval, Q1 to Q3, the tyre of the best lap and status.
+- **Files (28):**
+  - `supabase/migrations/20260925130000_session_result.sql` · the session_result table and its session_result_current view, the Phase 0 pattern; on prod on "apply 20260925130000".
+  - `lib/session-result-rows.ts`, `lib/session-result-rows.test.ts` · the writer (a run per capture, ok last, failed on error), the readers (a numbered round or the latest, bounded), the backfill's skip check; the compound helper's test beside them.
+  - `app/api/cron/warm-sessions/route.ts`, `app/api/cron/warm-sessions/route.test.ts` · the rows written beside the KV write under the hasResolvedDrivers guard; the report's db note; the cases: written, neither on a nameless or empty classification, a failed row write never blocking the KV write.
+  - `lib/results/openf1.ts` · the compound of each driver's best lap from /laps and /stints (bestLapCompounds), two more fail-soft calls per capture.
+  - `lib/design/sources.ts`, `lib/design/sources.test.ts` · the session-results source (SESSION_KINDS, the round options); the fifteen.
+  - `lib/design/presets.ts`, `lib/design/presets.test.ts` · the session-rows shape, the Session group and preset; thirty-nine presets, twenty-one groups.
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the Data region reads the sixth source; the preset option sets thirty rows.
+  - `lib/design/source-read.ts`, `lib/design/source-read.test.ts` · the reader over the view: the latest round by default, the driver's page through the rosters, the weekend link; every column answered.
+  - `lib/design/page-document.test.ts`, `app/api/admin/design/data/sources/route.test.ts`, `components/designer/DataSourcesEditor.test.tsx`, `components/designer/DataWorkspace.test.tsx`, `components/designer/PluginsEditor.test.tsx` · the counts and names that list the sources, now fifteen.
+  - `scripts/backfill-session-results.mts`, `scripts/backfill-session-results.test.ts` · the season's finished sessions not yet captured; a dry run by default; --write, --season, --round; runBackfill and the cron's matcher tested without a network.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.25 started on the plan, its evidence; P2.5's decision of the day (the two live pages rebuilt on the Filters box); the dated lines.
+  - `IDEAS.md` · two Inbox lines: OpenF1's 429s under the paced client during the backfill; the designer's hydration warning seen in the proof.
+  - `docs/pull-requests.md` · this entry.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio, 1.0.188.
+- **Verified:** tests first, twelve files red, then green; tsc 0; lint 0 errors (the two known warnings); vitest 247 files, 2405 tests; cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39351.47 KiB (39314.62 before); the migration applied locally (`supabase migration up --local`); the backfill's dry run then `--round 14 --write` locally (86 rows across Monza's four sessions); the cron run locally against Baku's finished sessions (two warmed, each `db: written`); in the browser on the local server: the Data Sources list, the Property Editor's Source group, the Session table on the run page with the driver linked and the tyre column (screenshots .playwright-mcp/p225-01..03; the review page as an artifact).
+- **Review:** a fresh-context Sonnet, SOUND WITH FIXES, none blocking; the three folded in c35a921d.
+
 ## #1068 · 1.0.187 · records · opened Fri 25 Sep 14:55 (11:55Z); the merge on the word
 **PA A3 done on the next-day check; the operator's sign-in asks recorded.** Records only: the check that closes the accounts move, and the six asks the operator made while doing it.
 - **Readers see:** nothing.

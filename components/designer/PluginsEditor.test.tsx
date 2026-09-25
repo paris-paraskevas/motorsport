@@ -73,11 +73,11 @@ describe('PluginsEditor', () => {
     expect(within(open).getByText(/Events/)).toBeTruthy();
   });
 
-  it('P2.1: the opened definition names the sources it may read: the five for the Data region, none for the heading', () => {
+  it('P2.1: the opened definition names the sources it may read: the six for the Data region (Session results since P2.25), none for the heading', () => {
     render(<PluginsEditor definitions={list} readOnly={false} onSaved={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Open Data region' }));
     const region = screen.getByRole('region', { name: 'Plug-in: Data region' });
-    expect(within(region).getByText('Sources').nextElementSibling?.textContent).toMatch(/^Standings.*Results.*Posts.*News.*Weekends$/);
+    expect(within(region).getByText('Sources').nextElementSibling?.textContent).toMatch(/^Standings.*Results.*Posts.*News.*Weekends.*Session results$/);
     fireEvent.click(screen.getByRole('button', { name: 'Open Page heading' }));
     const heading = screen.getByRole('region', { name: 'Plug-in: Page heading' });
     expect(within(heading).getByText('Sources').nextElementSibling?.textContent).toMatch(/^none/);
