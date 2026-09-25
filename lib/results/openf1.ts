@@ -10,6 +10,7 @@
 // trusting it (Jolpica precedent suggests fine).
 
 import { fetchOpenF1 } from '@/lib/openf1/client';
+import type { OF1Lap, OF1Stint } from '@/lib/openf1/types';
 import { loadCuratedDrivers } from '@/lib/series-content';
 
 const REVALIDATE_SECONDS = 300;
@@ -71,6 +72,8 @@ export interface SessionClassificationEntry {
   q2?: string;
   q3?: string;
   points?: number;
+  /** The tyre compound of the driver's best lap (P2.25), from /laps and /stints; absent when either is unavailable. */
+  compound?: string;
   status?: 'DNF' | 'DNS' | 'DSQ';
 }
 
@@ -203,14 +206,41 @@ export function hasResolvedDrivers(c: SessionClassification | null): boolean {
   return c.entries.some(e => e.driverName && !/^#\d+$/.test(e.driverName));
 }
 
+/**
+ * The tyre compound of each driver's best lap (P2.25): the fastest finite lap per
+ * driver in `/laps`, matched to the stint in `/stints` that holds its lap number.
+ * OpenF1's upper-case names are drawn as words ("Soft"). A driver without a timed
+ * lap or a matching stint is absent; a throttled answer to either endpoint
+ * leaves every driver absent, never the row.
+ */
+export function bestLapCompounds(laps: readonly OF1Lap[], stints: readonly OF1Stint[]): Map<number, string> {
+  const best = new Map<number, OF1Lap>();
+  for (const lap of laps) {
+    if (typeof lap.lap_duration !== 'number' || !Number.isFinite(lap.lap_duration) || lap.lap_duration <= 0) continue;
+    const b = best.get(lap.driver_number);
+    if (!b || lap.lap_duration < (b.lap_duration as number)) best.set(lap.driver_number, lap);
+  }
+  const out = new Map<number, string>();
+  for (const [driver, lap] of best) {
+    const stint = stints.find(s => s.driver_number === driver && s.compound && s.lap_start <= lap.lap_number && lap.lap_number <= s.lap_end);
+    const name = stint?.compound?.trim();
+    if (name) out.set(driver, name.charAt(0).toUpperCase() + name.slice(1).toLowerCase());
+  }
+  return out;
+}
+
 export async function fetchSessionClassification(
   session: OpenF1Session,
 ): Promise<SessionClassification | null> {
-  const [results, drivers] = await Promise.all([
+  const [results, drivers, laps, stints] = await Promise.all([
     fetchJson<OpenF1Result>(`/session_result?session_key=${session.session_key}`),
     fetchJson<OpenF1Driver>(`/drivers?session_key=${session.session_key}`),
+    // P2.25: the tyre of each driver's best lap; both fail-soft (an empty answer leaves the compound out, never the row).
+    fetchJson<OF1Lap>(`/laps?session_key=${session.session_key}`),
+    fetchJson<OF1Stint>(`/stints?session_key=${session.session_key}`),
   ]);
   if (!results || results.length === 0) return null;
+  const compounds = bestLapCompounds(laps ?? [], stints ?? []);
 
   const byNumber = new Map((drivers ?? []).map(d => [d.driver_number, d]));
   // Belt-and-braces: if `/drivers` came back empty (throttled, or the session is
@@ -254,6 +284,8 @@ export async function fetchSessionClassification(
       points: r.points,
       status,
     };
+    const compound = compounds.get(r.driver_number);
+    if (compound) entry.compound = compound;
 
     if (isQualifying && Array.isArray(r.duration)) {
       const [q1, q2, q3] = r.duration;

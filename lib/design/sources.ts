@@ -191,6 +191,14 @@ const RESULTS_HOSTS: Readonly<Record<string, string>> = {
 
 const col = (key: string, label: string, type: SourceColumnType): SourceColumn => ({ key, label, type });
 
+/** The sessions the Session results source offers (P2.25): the practices and the qualifyings, as lib/weekend.ts sessionSlug
+ *  spells F1's titles; the races stay the Results source's. The cron stores whichever session it captures. */
+export const SESSION_KINDS = ['practice-1', 'practice-2', 'practice-3', 'qualifying', 'sprint-qualifying'] as const;
+const SESSION_KIND_LABELS: Readonly<Record<(typeof SESSION_KINDS)[number], string>> = { 'practice-1': 'Practice 1', 'practice-2': 'Practice 2', 'practice-3': 'Practice 3', qualifying: 'Qualifying', 'sprint-qualifying': 'Sprint qualifying' };
+/** The round values (P2.25): the newest captured of the kind, or one of the season's rounds (F1 runs at most 24). */
+export const LATEST_ROUND_OPTION = { key: 'latest', label: 'Latest captured' } as const;
+const ROUND_OPTIONS = [LATEST_ROUND_OPTION, ...Array.from({ length: 24 }, (_, i) => ({ key: String(i + 1), label: `Round ${i + 1}` }))];
+
 /** The thirteen, in the order the changes line of 2026-09-17 names them; then Weekends (P2.24 B1), the fourteenth. */
 export const SOURCES: readonly SourceDefinition[] = [
   {
@@ -375,6 +383,25 @@ export const SOURCES: readonly SourceDefinition[] = [
     load: 'none',
     pagination: 'none',
     reads: ['content:series', 'live:ics'],
+  },
+  // One F1 session's classification (P2.25): practice and qualifying as the warm-sessions cron captured them into the
+  // session_result rows (the Results source carries the races); the round "latest" is the newest captured of the kind, so a
+  // placed region follows the season; the driver's page and the round's weekend page as link columns.
+  {
+    key: 'session-results',
+    name: 'Session results',
+    holds: 'one F1 session’s classification, practice or qualifying: position, driver, team, laps, best lap, gap, Q1–Q3, the tyre of the best lap, status',
+    parameters: [
+      { ...seriesParam(['f1']), help: 'Formula 1 alone: the classifications come from OpenF1.' },
+      seasonParam,
+      { key: 'round', label: 'Round', kind: 'choice', required: true, default: LATEST_ROUND_OPTION.key, options: ROUND_OPTIONS, help: 'The newest round holding a captured session of the kind, or one round of the season.' },
+      { key: 'session', label: 'Session', kind: 'choice', required: true, default: 'qualifying', options: SESSION_KINDS.map(k => ({ key: k, label: SESSION_KIND_LABELS[k] })), help: 'Which session of the weekend.' },
+    ],
+    columns: [col('round', 'Round', 'number'), col('session', 'Session', 'text'), col('position', 'Position', 'number'), col('driver', 'Driver', 'text'), col('code', 'Code', 'text'), col('number', 'Number', 'text'), col('team', 'Team', 'text'), col('laps', 'Laps', 'number'), col('time', 'Time', 'text'), col('gap', 'Gap', 'text'), col('interval', 'Interval', 'text'), col('q1', 'Q1', 'text'), col('q2', 'Q2', 'text'), col('q3', 'Q3', 'text'), col('compound', 'Tyre', 'text'), col('points', 'Points', 'number'), col('status', 'Status', 'text'), col('weekend', 'Weekend page', 'link'), col('profile', 'Driver page', 'link')],
+    fresh: 'db',
+    load: 'none',
+    pagination: 'none',
+    reads: ['db:session_result_current'],
   },
 ];
 

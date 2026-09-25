@@ -15,7 +15,7 @@
 
 import type { ViewFilter, ViewState } from './view-state';
 
-export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends';
+export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends' | 'session-results';
 /** The `kind` a standings row carries (lib/design/source-read.ts). */
 export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver';
 /** The column types a view draws (APEX: a report's column types). The image column arrived with P2.24 A, where the posts
@@ -32,7 +32,7 @@ export interface PresetColumn {
   /** For a link whose address leaves the site (the news headlines): drawn in a new tab, as an external destination is. */
   external?: true;
 }
-export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows';
+export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows' | 'session-rows';
 export interface Shape {
   key: ShapeKey;
   source: PresetSource;
@@ -144,6 +144,15 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     columns: [race, { key: 'seriesName', label: 'Series', type: 'text' }, date, position, { key: 'driver', label: 'Driver', type: 'link', href: 'profile' }, team, car, { key: 'time', label: 'Time', type: 'text' }, gapText, points, round],
     card: { title: 'driver', subtitle: 'team', body: 'time', badge: 'position' },
   },
+  // One session's classification (P2.25): the flat series' columns of the results shapes, the best lap as the time, the gap
+  // as the timing states it, the qualifying segments and the tyre of the best lap; no round or race column, the source's own
+  // pick names them.
+  'session-rows': {
+    key: 'session-rows',
+    source: 'session-results',
+    columns: [position, { key: 'driver', label: 'Driver', type: 'link', href: 'profile' }, { key: 'code', label: 'Code', type: 'badge' }, team, laps, { key: 'time', label: 'Time', type: 'text' }, gapText, { key: 'interval', label: 'Interval', type: 'text' }, { key: 'q1', label: 'Q1', type: 'text' }, { key: 'q2', label: 'Q2', type: 'text' }, { key: 'q3', label: 'Q3', type: 'text' }, { key: 'compound', label: 'Tyre', type: 'text' }, { key: 'status', label: 'Status', type: 'text' }],
+    card: { title: 'driver', subtitle: 'team', body: 'time', badge: 'position' },
+  },
 };
 
 export interface PresetGroup {
@@ -175,6 +184,8 @@ export const PRESET_GROUPS: readonly PresetGroup[] = [
   // Home's Latest result and What it changed (P2.24 B2), Home's literals (HomeLatestResult's aria-label, HomeWhatChanged's rule).
   { key: 'latest-result', name: 'Latest result', source: 'results' },
   { key: 'what-it-changed', name: 'What it changed', source: 'standings' },
+  // One session's classification (P2.25).
+  { key: 'session', name: 'Session', source: 'session-results' },
 ];
 
 export interface Preset {
@@ -229,7 +240,7 @@ const family = (prefix: string, group: string, series: string, cls: string, kind
   );
 const results = (key: string, name: string, group: string, series: readonly string[], shape: ShapeKey = 'race-rows', where: Preset['where'] = {}): Preset => ({ key, name, group, source: 'results', shape, where, series, nameLabel: 'Driver', view: 'list' });
 
-/** The thirty-eight: twenty-six standings (the fifteen groups' first eight), seven results (the other seven), each the site's own
+/** The thirty-nine: twenty-six standings (the fifteen groups' first eight), seven results (the other seven), each the site's own
  *  table; then Home's five boxes as templates of their own: the Lead story and The wire over the posts and the news (P2.24 A),
  *  What's next over the weekends (B1), Latest result over the results and What it changed over the standings (B2). */
 export const PRESETS: readonly Preset[] = [
@@ -264,6 +275,9 @@ export const PRESETS: readonly Preset[] = [
   results('season-results-imsa', 'Season results · IMSA', 'season-results-imsa', ['imsa'], 'car-rows'),
   results('season-results-wec', 'Season results · WEC', 'season-results-wec', ['wec'], 'car-rows'),
   results('season-results-gt-world', 'Season results · GT World', 'season-results-gt-world', ['gt-world'], 'cup-rows'),
+  // One session's classification (P2.25): F1 alone (OpenF1), the Table, thirty rows so a full grid shows without a Rows edit;
+  // the source's own Round and Session picks say which session, so one preset serves them all.
+  { key: 'session', name: 'Session', group: 'session', source: 'session-results', shape: 'session-rows', where: {}, series: ['f1'], nameLabel: 'Driver', view: 'table', rows: 30 },
   // Home's boxes (P2.24 A): the lead with its three further posts, the wire's five headlines (the counts Home shipped; the two
   // Application Settings that once set them left in P2.24 C); `nameLabel` unused, the shapes carrying no name column.
   { key: 'lead-story', name: 'Lead story', group: 'lead-story', source: 'posts', shape: 'post-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Title', view: 'lead-story', rows: 4 },

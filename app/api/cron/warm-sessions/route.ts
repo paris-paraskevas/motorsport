@@ -19,6 +19,7 @@ import {
   writeResultsCache,
   sessionClassCacheKey,
 } from '@/lib/results-cache';
+import { writeSessionResultRun } from '@/lib/session-result-rows';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -53,7 +54,8 @@ const LOOKBACK_MINUTES = 6 * 60;
 // Give OpenF1 a few minutes to publish session_result before the first attempt;
 // too-early fetches just burn calls (misses are retried next tick anyway).
 const MIN_AGE_MINUTES = 10;
-// Politeness cap on upstream capture attempts per run (~3 OpenF1 calls each).
+// Politeness cap on upstream capture attempts per run (~5 OpenF1 calls each since
+// P2.25: the weekend's sessions once, then results, drivers, laps and stints).
 // No F1 weekend has more than 2-3 sessions ending within a 6h window.
 const MAX_CAPTURES_PER_RUN = 3;
 // Must match the session page's SESSION_CLASS_TTL_SECONDS (7 days): long enough
@@ -92,6 +94,8 @@ interface WarmOutcome {
     | 'no-classification'
     | 'no-driver-names'
     | 'capture-cap';
+  /** P2.25: the rows beside the KV write, `written` or `failed: <why>`; the KV write stands either way. */
+  db?: string;
 }
 
 export async function GET(req: Request) {
@@ -177,7 +181,10 @@ export async function GET(req: Request) {
         { classification, classClassifications: [] },
         SESSION_CLASS_TTL_SECONDS,
       );
-      outcomes.push({ session: slug, round, status: 'warmed' });
+      // P2.25: the same classification as rows, under the same guard; a failed row write is reported and never blocks
+      // the KV write (lib/session-result-rows.ts never throws).
+      const rows = await writeSessionResultRun({ series: 'f1', season: series.meta.season, round, session: slug, entries: classification.entries, runner: 'warm-sessions' });
+      outcomes.push({ session: slug, round, status: 'warmed', db: rows.ok ? 'written' : `failed: ${rows.note}` });
     }
 
     const warmed = outcomes.filter(o => o.status === 'warmed');
