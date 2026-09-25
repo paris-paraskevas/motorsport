@@ -14,7 +14,24 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1066 · 1.0.185 · R10 · opened Fri 25 Sep 13:38 (10:38Z); the merge on the word
+## #1067 · 1.0.186 · chore · opened Fri 25 Sep 13:55 (10:55Z); the merge on the word
+**The server-only package declared; the writing scripts run with the react-server condition; R10’s merge and the session’s close in the records.** Found by the blog writer: scripts/draft-post.mts had failed since PA A1a.
+- **Readers see:** nothing.
+- **Editors get:** the blog draft script working again.
+- **Files (10):**
+  - `package.json`, `package-lock.json` · server-only ^0.0.1 declared; the lockfile regenerated with npm 10 (the nested @swc/helpers pin kept); the trio’s version 1.0.186.
+  - `scripts/draft-post.mts` · the usage with --conditions=react-server and why.
+  - `IDEAS.md` · the two Inbox lines of the day (session results in regions; the weekend articles), the newsletter decided.
+  - `docs/plan/ledger.json` · R10’s merge, review and probe; the dated line; the session’s evidence.
+  - `docs/plan/components-programme.md` · re-rendered (56 slots).
+  - `docs/HANDOFF.md` · the LATEST block for session 57: the next-day check, then the session-results slot from its brief, then Phase 2 in order.
+  - `SCHEDULE.md` · step 29; the day’s active time.
+  - `docs/pull-requests.md` · #1066 merged; this entry.
+  - `CHANGELOG.md`, `RELEASES.md` · the trio.
+- **Verified:** npx tsx --conditions=react-server --env-file=.env.blog scripts/draft-post.mts drafts/f1-baku-2026-practice.md --dry → DRY RUN parsed; npm run lockfile:check clean; the plan-ledger test 6 passed.
+- **Review:** none; a dependency and records.
+
+## #1066 · 1.0.185 · R10 · merged Fri 25 Sep 13:39 (10:39Z), prod 1.0.185 at 13:43
 **The dev host lets the sign-in routes and the account routes through; the lock redirected the sign-in itself.** A quick fix on the operator’s critical report: on dev.paddock-tracker.com every sign-in method failed because the dev host’s lock exempted the two sign-in pages alone, and since A3 the sign-in posts to /api/auth/* on the same host.
 - **Readers see:** nothing on the site; the admin host signs in again.
 - **Editors get:** the designer reachable again after a sign-in on the dev host.
@@ -25,7 +42,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `docs/plan/components-programme.md` · re-rendered (56 slots).
   - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio at 1.0.185.
 - **Verified:** middleware.test.ts 6 tests green; tsc 0; lint 0 errors; the cause probed on prod (a signed-out POST /api/auth/password on the dev host answered 307, on the main host the route’s 400).
-- **Review:** a fresh-context Sonnet reviewer on the diff (its verdict in the PR before the merge).
+- **Review:** a fresh-context Sonnet reviewer (10 tool uses): SOUND WITH FIXES; folded: /api/account matched on a path boundary. Probed after the deploy: a signed-out POST /api/auth/password on the dev host answers the route.
 
 ## #1065 · 1.0.184 · records · opened Fri 25 Sep 12:45 (09:45Z), merged under the same word
 **The switch to Supabase Auth on prod (PA A3), the session-57 handoff.** Records only.

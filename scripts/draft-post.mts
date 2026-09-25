@@ -1,9 +1,12 @@
 // Create a blog draft (status 'draft') on Supabase from a `.md` or `.json` file,
 // then ping admins — so it lands in the /blog admin queue to read/edit/schedule/approve.
-//   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... BLOG_AUTHOR_ID=... \
-//     npx tsx scripts/draft-post.mts drafts/<slug>.md
-//   npx tsx --env-file=.env.local scripts/draft-post.mts post.json
-//   npx tsx scripts/draft-post.mts drafts/<slug>.md --dry   # parse + print, NO DB write
+//   npx tsx --conditions=react-server --env-file=.env.blog scripts/draft-post.mts drafts/<slug>.md
+//   npx tsx --conditions=react-server --env-file=.env.local scripts/draft-post.mts post.json
+//   npx tsx --conditions=react-server scripts/draft-post.mts drafts/<slug>.md --dry   # parse + print, NO DB write
+//
+// `--conditions=react-server` is not optional: the admin ping reaches lib/auth/directory.ts, which imports the
+// `server-only` package (declared since 1.0.186), and that package throws under Node's default export condition; the
+// react-server condition resolves it to its empty module, as Next's own build does (vitest aliases it in vitest.config.ts).
 //
 // .md   → the weekend-post exemplar format, parsed by parseDraftMarkdown.
 // .json → { authorId?, slug, title, summary, body, seriesSlug?, heroImage?, publishAt? }.
