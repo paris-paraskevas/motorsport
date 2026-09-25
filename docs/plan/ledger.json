@@ -419,6 +419,11 @@
    "date": "2026-09-25",
    "change": "PA A3 merged straight to prod on the operator’s word, the testing proof of A3.7 waived by them: #1064 squash-merged 09:28:23Z as b1a90451 (the branch carried #1063’s records, so #1063 was closed as shipped), prod 1.0.183 at 09:32:06Z, the import run again after the deploy (unchanged 18), prod probed (Home a HIT with no cookie, the sign-in page complete, the captcha gate live, a foreign Origin refused, the dev host’s lock live). A3 stays STARTED until the operator’s sign-ins on prod by each method and the next-day check; the way back for thirty days is a revert of the merge.",
    "word": "the operator, 2026-09-25 ~09:25Z: \"why did we launch on testing, no reasomn. straight to prod. lets go.\""
+  },
+  {
+   "date": "2026-09-25",
+   "change": "R10 opened and built on the operator’s critical report: sign-in on the dev host failed by every method because the dev host’s lock redirected the sign-in routes themselves (they live on the host since A3; Clerk’s never did). The lock now lets /api/auth/* and /api/account* through as it lets the sign-in pages; nothing else on the dev host changes. PR on the word “merge”.",
+   "word": "the operator, 2026-09-25 ~10:25Z: \"critical, sign in on dev.paddocktracker.com doesnt work…\""
   }
  ],
  "phases": {
@@ -1135,6 +1140,19 @@
    "status": "done",
    "scopeHash": "1a2ee15cf389",
    "evidence": "#1057 · 1.0.176 · two commits (3731f027 the fix; 30c472b5 the reviewer’s record), squash-merged 2026-09-24 14:01:37Z as 64a5c6f5 · prod /changelog 1.0.176 at 14:16:12Z on the footer (the deployment created 14:08:58Z; the pages timed out 14:10–14:14Z during Cloudflare’s open network incident, the static files answering) · Home across the deploy: 28 regions, 24 identical byte for byte, four differing by the countdown clocks and the footer’s version at identical lengths · prod /settings signed out 200 · the reviewer (Sonnet) SOUND, 129,313 tokens against ~80k said, 37 tool uses: the mechanism traced to React’s and Clerk’s sources (Children.only accepts a plain element alone; the RSC client deserializes an outlined child as a lazy wrapper) · tests first, seen red (the row’s import), then green · tsc 0, eslint 0 on the changed files, vitest 232 files / 2339 tests, the dry run 39579.74 KiB · the local server signed in through the helper: GET /settings 200 with the row at the end of its list (.playwright-mcp/r9-settings-signed-in.png); before the fix, 500 on main · ACCEPTANCE MET: the page answers 200 signed in with the row drawn; the row’s test; the allow-list 24; the suite green"
+  },
+  {
+   "id": "R10",
+   "phase": "P2",
+   "title": "The dev host lets the sign-in routes through",
+   "scope": "The dev host’s lock lets the sign-in routes (/api/auth/*) and the account routes (/api/account*) through, as it lets the sign-in pages: with the site’s own sign-in (A3) the routes live on this host too, and the lock redirected a signed-out sign-in to the sign-in page and refused a reader’s sign-out with 403.",
+   "fixedBy": "the operator’s report of 2026-09-25 ~10:25Z (“critical, sign in on dev.paddocktracker.com doesnt work”: password, a code, the reset and Google all failed there; the same account signed in on paddock-tracker.com at 09:40Z)",
+   "defaults": "One condition in middleware.ts: the paths the dev host lets a signed-out visitor reach are the two sign-in pages, /api/auth/* and /api/account*; everything else keeps its lock (a signed-out visitor to /api/user/prefs is still sent to sign in; a reader at /admin/designer still gets 403). A test for each.",
+   "needsWord": "merge",
+   "acceptance": "On dev.paddock-tracker.com a signed-out POST /api/auth/password answers the route (400 “The check did not pass” without a token), not a redirect; the operator signs in there by password; the designer opens.",
+   "status": "started",
+   "scopeHash": "528b07cb8c1b",
+   "evidence": "CAUSE: middleware.ts’s dev-host block exempted /sign-in and /sign-up alone; since A3 the sign-in posts to /api/auth/* on the same host, so a signed-out POST /api/auth/password on dev.paddock-tracker.com answered 307 to /sign-in?next= (probed 10:30Z; the same POST on paddock-tracker.com answered the route’s 400). Clerk’s sign-in never met the lock because it talked to clerk.paddock-tracker.com. FIX: one condition (signInPath: /sign-in, /sign-up, /api/auth/, /api/account) skips the dev-host block; middleware.test.ts gains the case (a signed-out sign-in passes, a reader signs out, the account read passes, the rest keeps its lock) · gates: middleware.test.ts 6 tests green · tsc 0 · lint 0 errors"
   }
  ]
 }

@@ -77,7 +77,15 @@ export default async function middleware(req: NextRequest) {
   // lock fails closed: no claim, no entry); the root serves the designer (the console it used to serve was retired on
   // 2026-09-09; the designer is the admin area). Auth pages are exempt (no redirect loop).
   const host = req.headers.get('host') ?? '';
-  if (host.startsWith('dev.') && !url.pathname.startsWith('/sign-in') && !url.pathname.startsWith('/sign-up')) {
+  // The sign-in pages and the routes they post to (R10: with the site's own sign-in the routes live on this host too, and
+  // the lock redirected the sign-in itself), and the account's own routes, which answer by session.
+  const signInPath =
+    url.pathname.startsWith('/sign-in') ||
+    url.pathname.startsWith('/sign-up') ||
+    url.pathname.startsWith('/api/auth/') ||
+    url.pathname === '/api/account' ||
+    url.pathname.startsWith('/api/account/');
+  if (host.startsWith('dev.') && !signInPath) {
     if (!claims) {
       const signIn = url.clone();
       signIn.pathname = '/sign-in';

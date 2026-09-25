@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1066 · 1.0.185 · R10 · opened Fri 25 Sep 13:38 (10:38Z); the merge on the word
+**The dev host lets the sign-in routes and the account routes through; the lock redirected the sign-in itself.** A quick fix on the operator’s critical report: on dev.paddock-tracker.com every sign-in method failed because the dev host’s lock exempted the two sign-in pages alone, and since A3 the sign-in posts to /api/auth/* on the same host.
+- **Readers see:** nothing on the site; the admin host signs in again.
+- **Editors get:** the designer reachable again after a sign-in on the dev host.
+- **Files (7):**
+  - `middleware.ts` · one condition: /sign-in, /sign-up, /api/auth/* and /api/account* skip the dev host’s lock.
+  - `middleware.test.ts` · the case: a signed-out sign-in passes, a reader signs out, the account read passes, the rest keeps its lock.
+  - `docs/plan/ledger.json` · R10 STARTED with the cause and the fix; the dated line on the report.
+  - `docs/plan/components-programme.md` · re-rendered (56 slots).
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio at 1.0.185.
+- **Verified:** middleware.test.ts 6 tests green; tsc 0; lint 0 errors; the cause probed on prod (a signed-out POST /api/auth/password on the dev host answered 307, on the main host the route’s 400).
+- **Review:** a fresh-context Sonnet reviewer on the diff (its verdict in the PR before the merge).
+
 ## #1065 · 1.0.184 · records · opened Fri 25 Sep 12:45 (09:45Z), merged under the same word
 **The switch to Supabase Auth on prod (PA A3), the session-57 handoff.** Records only.
 - **Readers see:** nothing.

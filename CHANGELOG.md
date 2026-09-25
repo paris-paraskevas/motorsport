@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.185 — 2026-09-25
+
+### R10 — the dev host lets the sign-in routes through
+
+`middleware.ts`: the dev host's lock exempted the two sign-in pages alone; since PA A3 the sign-in posts to `/api/auth/*` on the same host, so a signed-out sign-in on dev.paddock-tracker.com was redirected to the sign-in page and a reader's sign-out refused with 403 (the operator's report: password, a code, the reset and Google all failed there; the same account had signed in on paddock-tracker.com). One condition now lets `/api/auth/*` and `/api/account*` through as it lets the sign-in pages; everything else on the dev host keeps its lock. `middleware.test.ts` gains the case.
+
 ## 1.0.184 — 2026-09-25
 
 ### Records — the switch to Supabase Auth on prod (PA A3), the session-57 handoff
