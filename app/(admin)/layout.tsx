@@ -30,12 +30,12 @@ export const viewport: Viewport = {
 // NONE of the (app) chrome: no header / footer / mobile bottom bar, no assistant
 // bubble, no heatmap tracker, cookie-consent modal, launch banner, AdSense/GA
 // scripts, or Vercel Analytics / Speed Insights. Just the shared fonts,
-// globals.css, and a ClerkProvider mirroring the (app) group so auth resolves.
+// globals.css, and the account provider mirroring the (app) group so auth resolves.
 // The admin gate (requireAdmin) + amber nav rail live in the nested
 // admin/layout.tsx; robots noindex keeps the console out of search.
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider look="console">
+    <AuthProvider>
       {/* SSR default is the console's dark mode, plus `dark` so any dark:
           utility (and the shadcn primitives) resolve the same way the site's
           dark-family themes do. ConsoleModeScript corrects both pre-paint for

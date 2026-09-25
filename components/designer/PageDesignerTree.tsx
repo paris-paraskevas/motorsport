@@ -263,7 +263,7 @@ export function PageDesignerTree({
         key: 'ps',
         label: 'Security',
         cls: 'grp',
-        children: [n('auth', 'Authentication · Clerk', '', 'authz'), n('authz', 'Authorization schemes used', usage.schemes.join(', ') || 'Public', 'authz')],
+        children: [n('auth', 'Authentication · Supabase Auth', '', 'authz'), n('authz', 'Authorization schemes used', usage.schemes.join(', ') || 'Public', 'authz')],
       },
       {
         key: 'po',

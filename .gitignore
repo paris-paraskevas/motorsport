@@ -99,3 +99,6 @@ Thumbs.db
 # The harness: hooks and settings.json are versioned; settings.local.json stays local.
 !.claude/hooks/
 !.claude/settings.json
+
+# Local JWT signing keys for the Supabase stack (PA A3): generated per machine, never committed.
+supabase/signing_keys.json

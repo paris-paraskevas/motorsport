@@ -44,8 +44,9 @@ const CSP = [
   // 'self' (not 'none') so the /admin heatmap overlay can frame our own pages to
   // paint the click overlay; still blocks cross-origin (clickjacking) framing.
   "frame-ancestors 'self'",
-  "form-action 'self' https://*.clerk.accounts.dev https://clerk.paddock-tracker.com",
-  // Scripts: self + inline/eval (Next bootstrap, inline gtag), Clerk, AdSense,
+  "form-action 'self'",
+  // Scripts: self + inline/eval (Next bootstrap, inline gtag), Turnstile and
+  // Google's sign-in button (the sign-in pages alone load them; PA A3), AdSense,
   // GA/GTM, Cloudflare Web Analytics, and blob: for worker bootstrapping.
   //
   // `*.adtrafficquality.google` is REQUIRED and was found by enforcing the policy
@@ -55,23 +56,24 @@ const CSP = [
   // `script-src`, so report-only never surfaced it and enforcing blocked the
   // script outright. Wildcarded rather than pinned to ep2 because Google rotates
   // the endpoint number, and a rotation would break ad serving again.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com https://static.cloudflareinsights.com https://*.adtrafficquality.google",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://challenges.cloudflare.com https://accounts.google.com/gsi/client https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com https://static.cloudflareinsights.com https://*.adtrafficquality.google",
   // Web workers (three.js/drei, serwist SW) load from self + blob:.
   "worker-src 'self' blob:",
   "child-src 'self' blob:",
   // Styles: self + inline (Tailwind utilities, inline style attributes).
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style",
   "font-src 'self' data: https://fonts.gstatic.com",
-  // Images: self + data/blob + https (Clerk avatars, F1/OpenF1 headshots, ad +
-  // analytics pixels). Broad on purpose for a first pass.
+  // Images: self + data/blob + https (account photos, Google's pictures, F1/OpenF1
+  // headshots, ad + analytics pixels). Broad on purpose for a first pass.
   "img-src 'self' data: blob: https:",
-  // XHR/fetch/websocket targets: self, Clerk, analytics, ad networks, and the
-  // OpenF1 telemetry API. https: kept broad while observing.
-  "connect-src 'self' https: wss://*.clerk.accounts.dev wss://clerk.paddock-tracker.com",
-  // Frames: Clerk (auth widgets) + AdSense/DoubleClick. pagead2.googlesyndication.com
-  // serves the ad-slot iframes; ep2.adtrafficquality.google is Google's ad-traffic
-  // quality (spam/fraud) frame that AdSense injects alongside them.
-  "frame-src 'self' https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://googleads.g.doubleclick.net https://*.doubleclick.net https://www.google.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google",
+  // XHR/fetch/websocket targets: self, Google's sign-in button, analytics, ad
+  // networks, and the OpenF1 telemetry API. https: kept broad while observing.
+  // The browser never calls Supabase: sessions live on the Worker (PA A3).
+  "connect-src 'self' https:",
+  // Frames: Turnstile and Google's sign-in button (PA A3) + AdSense/DoubleClick.
+  // pagead2.googlesyndication.com serves the ad-slot iframes; ep2.adtrafficquality.google
+  // is Google's ad-traffic quality (spam/fraud) frame that AdSense injects alongside them.
+  "frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com/gsi/ https://googleads.g.doubleclick.net https://*.doubleclick.net https://www.google.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google",
 ].join("; ");
 
 const nextConfig: NextConfig = {

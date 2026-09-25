@@ -51,7 +51,7 @@ export function AccountIdentity() {
           <p className="font-mono text-11 text-text-faint truncate mt-0.5">{email}</p>
         )}
         <p className="text-text-faint text-xs mt-1">
-          Preferences sync to your account. Manage profile or sign out from the avatar.
+          Preferences sync to your account. Your name, photo, email and password are behind the avatar.
         </p>
       </div>
     </div>

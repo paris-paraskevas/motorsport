@@ -95,12 +95,14 @@ beforeEach(() => {
   configured = true;
   fetchGa4.mockReset();
   fetchGa4.mockResolvedValue(traffic);
-  delete process.env.CLERK_SECRET_KEY;
+  delete process.env.SUPABASE_URL;
+  delete process.env.SUPABASE_SERVICE_ROLE_KEY;
   delete process.env.KV_REST_API_URL;
   delete process.env.KV_REST_API_TOKEN;
 });
 afterEach(() => {
-  delete process.env.CLERK_SECRET_KEY;
+  delete process.env.SUPABASE_URL;
+  delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 });
 
 describe('serviceState and the index', () => {
@@ -110,9 +112,10 @@ describe('serviceState and the index', () => {
     expect(serviceState(findDataService('ga4')!)).toBe('connect');
     ga4Configured = true;
     expect(serviceState(findDataService('ga4')!)).toBe('live');
-    expect(serviceState(findDataService('clerk')!)).toBe('connect');
-    process.env.CLERK_SECRET_KEY = 'sk_test_x';
-    expect(serviceState(findDataService('clerk')!)).toBe('live');
+    expect(serviceState(findDataService('auth')!)).toBe('connect');
+    process.env.SUPABASE_URL = 'http://127.0.0.1:54321';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
+    expect(serviceState(findDataService('auth')!)).toBe('live');
     expect(serviceState(findDataService('sb')!)).toBe('live');
     configured = false;
     expect(serviceState(findDataService('sb')!)).toBe('connect');

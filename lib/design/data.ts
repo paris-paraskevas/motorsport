@@ -18,7 +18,7 @@ import { DATA_SERVICES, findDataService, type DataService, type DataState, type 
 
 // The Data workspace's figures (Phase 4 of the designer plan, PR 4.1): one
 // overview per service, read through the readers the code already has
-// (lib/analytics/*, Clerk, Supabase, the key-value store) and nothing new.
+// (lib/analytics/*, the account seam over Supabase Auth, Supabase, the key-value store) and nothing new.
 //
 // THE RULE THIS FILE ENFORCES: nothing here throws and nothing here writes. A
 // reader that fails or answers nothing lands the card in `error` with a plain
@@ -362,7 +362,7 @@ const readers: Record<string, () => Promise<Partial>> = {
       note: notes.length ? notes.join(' ') : undefined,
     };
   },
-  async clerk() {
+  async auth() {
     const [count, recent] = await Promise.all([accountCount(), latestAccounts(25)]);
     const now = Date.now();
     const within = (days: number) => recent.filter(u => now - u.createdAt <= days * 86_400_000).length;

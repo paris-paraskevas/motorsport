@@ -37,8 +37,8 @@ export const DESIGNER_TAB = 'paddock-designer';
 
 // Developer Toolbar Options (APEX: the gear at the far right: Auto Hide, Show
 // Icons Only, Display Position), kept per browser under OPTIONS_KEY and read the
-// way the Debug level is: the bar renders only once Clerk has said who the
-// visitor is, so the first client render never differs from the server's nothing.
+// way the Debug level is: the bar renders only once the account seam has said who
+// the visitor is, so the first client render never differs from the server's nothing.
 export const POSITIONS = ['top', 'left', 'bottom', 'right'] as const;
 export type Position = (typeof POSITIONS)[number];
 export interface ToolbarOptions {
@@ -336,7 +336,7 @@ export function DeveloperToolbar() {
         ) : (
           <Entry icon={FilePen} label={preview ? `Preview ${preview[1]}` : 'Page'} title={noPageTitle} iconOnly={options.iconsOnly} />
         )}
-        <Entry icon={Timer} label="Session" title="Session: no slot yet; Clerk holds the session" iconOnly={options.iconsOnly} />
+        <Entry icon={Timer} label="Session" title="Session: no slot yet; Supabase Auth holds the session" iconOnly={options.iconsOnly} />
         <button
           type="button"
           className={ENTRY}

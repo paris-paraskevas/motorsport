@@ -1,107 +1,132 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, renderHook, screen } from '@testing-library/react';
-import type React from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, render, renderHook, screen, waitFor } from '@testing-library/react';
+import type { ReactNode } from 'react';
 
-// The account seam's browser half (PA A1b): what every browser file reads instead of Clerk's hooks and pieces. Clerk's
-// module is mocked whole; the provider's props are captured, the hooks answer the fixture below.
-type ClerkUser = Record<string, unknown> | null;
-let clerk: { isLoaded: boolean; isSignedIn: boolean | undefined; user: ClerkUser } = { isLoaded: true, isSignedIn: true, user: null };
-const providerProps = vi.fn();
-const update = vi.fn(async () => undefined);
-vi.mock('@clerk/nextjs', () => ({
-  useUser: () => clerk,
-  ClerkProvider: ({ children, ...props }: { children: React.ReactNode } & Record<string, unknown>) => {
-    providerProps(props);
-    return <>{children}</>;
-  },
-  SignInButton: ({ children, mode }: { children: React.ReactNode; mode?: string }) => <span data-testid="sign-in" data-mode={mode}>{children}</span>,
-  SignOutButton: ({ children, redirectUrl }: { children: React.ReactNode; redirectUrl?: string }) => <span data-testid="sign-out" data-redirect={redirectUrl}>{children}</span>,
-  UserButton: (props: { appearance?: { elements?: { avatarBox?: string } } }) => <span data-testid="user-button" data-avatar={props.appearance?.elements?.avatarBox} />,
-}));
-const auth = vi.fn();
-const currentUser = vi.fn();
-vi.mock('@clerk/nextjs/server', () => ({ auth: () => auth(), currentUser: () => currentUser() }));
+const push = vi.fn();
+let pathname = '/settings';
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push }), usePathname: () => pathname }));
+vi.mock('next/link', () => ({ default: ({ href, children, ...rest }: { href: string; children: ReactNode } & Record<string, unknown>) => <a href={href} {...rest}>{children}</a> }));
 
-import { accountFromBrowserUser, useAccount, useAccountFlags } from './client';
+import { AccountContext, hasSignedInCookie, initialsOf, SIGNED_IN_COOKIE, useAccount, useAccountFlags, type Account } from './client';
 import { AuthProvider } from './client-provider';
-import { AccountButton, SignInLink, SignOutButton } from './client-pieces';
-import { accountFromClerkUser } from './server';
+import { AccountButton, SignInLink, signInHref, SignOutButton } from './client-pieces';
+import { SIGNED_IN_COOKIE as SERVER_FLAG } from './supabase';
 
-const user = () => ({
-  id: 'user_1',
-  fullName: 'Alex Driver',
-  firstName: 'Alex',
-  lastName: 'Driver',
-  username: 'alexd',
-  imageUrl: 'https://img.clerk.com/x',
-  hasImage: true,
-  primaryEmailAddress: { emailAddress: 'alex@example.com' },
-  emailAddresses: [{ emailAddress: 'alex@example.com' }],
-  publicMetadata: { role: 'admin', donor: true },
-  unsafeMetadata: { 'support-prompt': 'never' },
-  update,
-});
+// The account seam in the browser over the site's own routes (PA A3): the provider asks /api/account only when the flag
+// cookie says a session exists, the hooks read its answer, the pieces act through the routes.
+const alex: Account = { id: 'user_1', email: 'alex@example.com', name: 'Alex Driver', username: 'alexd', imageUrl: 'https://x/avatars/k.png', role: 'admin', donor: true };
+const fetchMock = vi.fn();
+const answer = (body: unknown, ok = true) => ({ ok, json: async () => body });
+const wrapper = ({ children }: { children: ReactNode }) => <AuthProvider>{children}</AuthProvider>;
 
-describe('the account seam in the browser (PA A1b)', () => {
+describe('the account seam in the browser (PA A3)', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', fetchMock);
+    document.cookie = `${SIGNED_IN_COOKIE}=; Max-Age=0`;
+  });
   afterEach(() => {
     cleanup();
-    clerk = { isLoaded: true, isSignedIn: true, user: null };
-    providerProps.mockClear();
-    update.mockClear();
+    fetchMock.mockReset();
+    push.mockClear();
+    vi.unstubAllGlobals();
+    pathname = '/settings';
   });
 
-  it('maps Clerk’s browser user exactly as the server maps Clerk’s user', () => {
-    const u = user();
-    expect(accountFromBrowserUser(u)).toEqual(accountFromClerkUser(u));
-    expect(accountFromBrowserUser({ ...u, hasImage: false, publicMetadata: { role: 7 } })).toEqual(accountFromClerkUser({ ...u, hasImage: false, publicMetadata: { role: 7 } }));
-    expect(accountFromBrowserUser(null)).toBeNull();
+  it('the flag cookie has the same name on both sides, and tells whether to ask', () => {
+    expect(SIGNED_IN_COOKIE).toBe(SERVER_FLAG);
+    expect(hasSignedInCookie('theme=dark; pd_signed_in=1')).toBe(true);
+    expect(hasSignedInCookie('theme=dark')).toBe(false);
+    expect(hasSignedInCookie('pd_signed_in=')).toBe(false);
+    expect(hasSignedInCookie('')).toBe(false);
   });
 
-  it('useAccount answers the account, the load and sign-in flags and the avatar the provider shows; nothing before Clerk loads, nothing signed out', () => {
-    clerk = { isLoaded: true, isSignedIn: true, user: user() };
-    const signedIn = renderHook(() => useAccount()).result.current;
-    expect(signedIn).toEqual({ account: { id: 'user_1', email: 'alex@example.com', name: 'Alex Driver', username: 'alexd', imageUrl: 'https://img.clerk.com/x', role: 'admin', donor: true }, isLoaded: true, isSignedIn: true, avatarUrl: 'https://img.clerk.com/x' });
-    // Without a photo the account carries no image, but the provider still shows a generated picture, which the header keeps drawing.
-    clerk = { isLoaded: true, isSignedIn: true, user: { ...user(), hasImage: false } };
-    expect(renderHook(() => useAccount()).result.current).toMatchObject({ account: { imageUrl: null }, avatarUrl: 'https://img.clerk.com/x' });
-    clerk = { isLoaded: false, isSignedIn: undefined, user: null };
-    expect(renderHook(() => useAccount()).result.current).toEqual({ account: null, isLoaded: false, isSignedIn: false, avatarUrl: null });
-    clerk = { isLoaded: true, isSignedIn: false, user: null };
-    expect(renderHook(() => useAccount()).result.current).toEqual({ account: null, isLoaded: true, isSignedIn: false, avatarUrl: null });
-  });
-
-  it('useAccountFlags reads the person’s browser-written flags and setFlag merges one key into them; null and a refusal signed out', async () => {
-    clerk = { isLoaded: true, isSignedIn: true, user: user() };
-    const { result } = renderHook(() => useAccountFlags());
-    expect(result.current.flags).toEqual({ 'support-prompt': 'never' });
-    await result.current.setFlag('whats-new', 'v42');
-    expect(update).toHaveBeenCalledWith({ unsafeMetadata: { 'support-prompt': 'never', 'whats-new': 'v42' } });
-    clerk = { isLoaded: true, isSignedIn: false, user: null };
-    const out = renderHook(() => useAccountFlags()).result.current;
-    expect(out.flags).toBeNull();
-    await expect(out.setFlag('x', 1)).rejects.toThrow();
-  });
-
-  it('AuthProvider renders Clerk’s provider with the site’s or the console’s look; the sign-in, sign-out and account pieces are Clerk’s, created with their child in the browser', () => {
-    render(
-      <AuthProvider look="site">
-        <SignInLink>
-          <button type="button">Sign in</button>
-        </SignInLink>
-        <SignOutButton redirectUrl="/">
-          <button type="button">Sign out</button>
-        </SignOutButton>
-        <AccountButton avatarClassName="w-10 h-10" />
-      </AuthProvider>,
-    );
-    expect(providerProps).toHaveBeenCalledWith({ signInUrl: '/sign-in', signUpUrl: '/sign-up', signInFallbackRedirectUrl: '/', signUpFallbackRedirectUrl: '/', appearance: { variables: { colorPrimary: '#8c1c13' } } });
-    expect(screen.getByTestId('sign-in').getAttribute('data-mode')).toBe('modal');
-    expect(screen.getByRole('button', { name: 'Sign in' })).toBeTruthy();
-    expect(screen.getByTestId('sign-out').getAttribute('data-redirect')).toBe('/');
-    expect(screen.getByTestId('user-button').getAttribute('data-avatar')).toBe('w-10 h-10');
+  it('without the flag the provider answers signed out at once and asks nothing; with it, it asks /api/account and hands the account and its flags to the hooks', async () => {
+    const out = renderHook(() => useAccount(), { wrapper });
+    await waitFor(() => expect(out.result.current.isLoaded).toBe(true));
+    expect(out.result.current).toEqual({ account: null, isLoaded: true, isSignedIn: false, avatarUrl: null });
+    expect(fetchMock).not.toHaveBeenCalled();
     cleanup();
-    render(<AuthProvider look="console">x</AuthProvider>);
-    expect(providerProps).toHaveBeenLastCalledWith({ signInUrl: '/sign-in', signUpUrl: '/sign-up', signInFallbackRedirectUrl: '/', signUpFallbackRedirectUrl: '/', appearance: { variables: { colorBackground: '#fffcf2', colorText: '#1e1a13', colorPrimary: '#8c1c13', colorTextOnPrimaryBackground: '#f7f3e8', colorInputBackground: '#fbf7ec', colorInputText: '#1e1a13' } } });
+    document.cookie = `${SIGNED_IN_COOKIE}=1`;
+    fetchMock.mockResolvedValueOnce(answer({ account: alex, flags: { 'support-prompt': 'never' }, providers: ['email'] }));
+    const signedIn = renderHook(() => ({ account: useAccount(), flags: useAccountFlags() }), { wrapper });
+    expect(signedIn.result.current.account.isLoaded).toBe(false);
+    await waitFor(() => expect(signedIn.result.current.account.isLoaded).toBe(true));
+    expect(fetchMock).toHaveBeenCalledWith('/api/account', { cache: 'no-store', credentials: 'same-origin' });
+    expect(signedIn.result.current.account).toEqual({ account: alex, isLoaded: true, isSignedIn: true, avatarUrl: 'https://x/avatars/k.png' });
+    expect(signedIn.result.current.flags.flags).toEqual({ 'support-prompt': 'never' });
+    // setFlag writes one key through PATCH and keeps the answer's flags.
+    fetchMock.mockResolvedValueOnce(answer({ ok: true, flags: { 'support-prompt': 'never', 'whats-new': 'v42' } }));
+    await act(() => signedIn.result.current.flags.setFlag('whats-new', 'v42'));
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/account', { method: 'PATCH', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ flags: { 'whats-new': 'v42' } }) });
+    expect(signedIn.result.current.flags.flags).toEqual({ 'support-prompt': 'never', 'whats-new': 'v42' });
+    fetchMock.mockResolvedValueOnce(answer({ error: 'no' }, false));
+    await expect(signedIn.result.current.flags.setFlag('x', 1)).rejects.toThrow();
+  });
+
+  it('a refused or failed answer reads as signed out; outside a provider nothing has loaded and setFlag refuses', async () => {
+    document.cookie = `${SIGNED_IN_COOKIE}=1`;
+    fetchMock.mockResolvedValueOnce(answer({ error: 'x' }, false));
+    const refused = renderHook(() => useAccount(), { wrapper });
+    await waitFor(() => expect(refused.result.current.isLoaded).toBe(true));
+    expect(refused.result.current.isSignedIn).toBe(false);
+    cleanup();
+    fetchMock.mockRejectedValueOnce(new Error('offline'));
+    const failed = renderHook(() => useAccountFlags(), { wrapper });
+    await waitFor(() => expect(failed.result.current.flags).toBeNull());
+    await expect(failed.result.current.setFlag('x', 1)).rejects.toThrow('signed out');
+    cleanup();
+    const outside = renderHook(() => useAccount()).result.current;
+    expect(outside).toEqual({ account: null, isLoaded: false, isSignedIn: false, avatarUrl: null });
+  });
+
+  it('the pieces: SignInLink goes to the sign-in page with the way back, SignOutButton ends the session then reloads, AccountButton links to the Account page with the photo or the initials', async () => {
+    expect(signInHref('/settings')).toBe('/sign-in?next=%2Fsettings');
+    expect(signInHref('/')).toBe('/sign-in');
+    expect(signInHref('/sign-up')).toBe('/sign-in');
+    expect(signInHref(null)).toBe('/sign-in');
+    const onClick = vi.fn();
+    render(
+      <SignInLink>
+        <button type="button" onClick={onClick}>Sign in</button>
+      </SignInLink>,
+    );
+    screen.getByRole('button', { name: 'Sign in' }).click();
+    expect(onClick).toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith('/sign-in?next=%2Fsettings');
+    cleanup();
+    const assign = vi.fn();
+    vi.stubGlobal('location', { ...window.location, assign });
+    fetchMock.mockResolvedValueOnce(answer({ ok: true }));
+    render(
+      <SignOutButton redirectUrl="/">
+        <button type="button">Sign out</button>
+      </SignOutButton>,
+    );
+    screen.getByRole('button', { name: 'Sign out' }).click();
+    await waitFor(() => expect(assign).toHaveBeenCalledWith('/'));
+    expect(fetchMock).toHaveBeenCalledWith('/api/auth/sign-out', { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: '{}' });
+    cleanup();
+    const store = { account: alex, flags: {}, isLoaded: true, refresh: async () => undefined, setFlag: async () => undefined };
+    render(
+      <AccountContext.Provider value={store}>
+        <AccountButton avatarClassName="w-10 h-10" />
+      </AccountContext.Provider>,
+    );
+    const link = screen.getByRole('link', { name: 'Your account' });
+    expect(link.getAttribute('href')).toBe('/settings/account');
+    expect(link.className).toContain('w-10 h-10');
+    expect(link.querySelector('img')?.getAttribute('src')).toBe('https://x/avatars/k.png');
+    cleanup();
+    render(
+      <AccountContext.Provider value={{ ...store, account: { ...alex, imageUrl: null } }}>
+        <AccountButton avatarClassName="w-10 h-10" />
+      </AccountContext.Provider>,
+    );
+    expect(screen.getByRole('link', { name: 'Your account' }).textContent).toBe('AD');
+    expect(initialsOf({ ...alex, name: 'Alex' })).toBe('AL');
+    expect(initialsOf({ ...alex, name: null })).toBe('AL');
+    expect(initialsOf({ ...alex, name: null, username: null })).toBe('AL');
+    expect(initialsOf(null)).toBe('');
   });
 });
