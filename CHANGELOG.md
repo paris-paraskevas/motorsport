@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.187 — 2026-09-25
+
+### Records — PA A3 done on the next-day check; the sign-in asks recorded
+
+Records only. `docs/plan/ledger.json`: A3 DONE with the next-day check's evidence (the Worker's errors 0 over 20.52k invocations, read from the Cloudflare dashboard by the operator; account_stats() 18 with every id a legacy id; the operator's morning session refreshed forty minutes in and their morning tab still signed in after 11:30Z; the first code email through Resend's SMTP on prod sent and received in a private window; Supabase's audit table empty and its logs endpoint answering "Backend error" to every query, both recorded) and the dated line. `IDEAS.md`: the operator's six asks at the check (the header draws the signed-out control until /api/account answers; "Forgot it?" and "Email me a code instead" clickable without an email; a "was it you?" email at a sign-in; a view-password toggle; password rules with a strength line; the honeypot question, answered), to be proposed as one slot. `docs/HANDOFF.md`: the LATEST block's state. `SCHEDULE.md`: the session-57 block. `docs/pull-requests.md`: this entry.
+
 ## 1.0.186 — 2026-09-25
 
 ### The server-only package declared; the scripts that reach it run with the react-server condition

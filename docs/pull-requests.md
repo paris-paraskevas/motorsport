@@ -14,6 +14,21 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1068 · 1.0.187 · records · opened Fri 25 Sep 14:55 (11:55Z); the merge on the word
+**PA A3 done on the next-day check; the operator's sign-in asks recorded.** Records only: the check that closes the accounts move, and the six asks the operator made while doing it.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (8):**
+  - `docs/plan/ledger.json` · A3 DONE: the next-day check's evidence (the Management API reads, the prod probes, the operator's dashboard reads and words, what could not be read) and the dated line.
+  - `docs/plan/components-programme.md` · re-rendered (56 slots, 36 done).
+  - `IDEAS.md` · six Inbox lines: the header's signed-out flash, the code and forgot links without an email, the "was it you?" email, the view-password toggle, the password rules with a strength line, the honeypot question answered.
+  - `docs/HANDOFF.md` · the LATEST block: A3 DONE; the sign-in asks as the next slot proposal; the agenda.
+  - `SCHEDULE.md` · the session-57 block: the intent, the check, the close, the won't-touch line.
+  - `docs/pull-requests.md` · this entry.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json` · the trio, 1.0.187.
+- **Verified:** node docs/plan/render-ledger.mjs → 56 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed.
+- **Review:** none; records.
+
 ## #1067 · 1.0.186 · chore · opened Fri 25 Sep 13:55 (10:55Z); the merge on the word
 **The server-only package declared; the writing scripts run with the react-server condition; R10’s merge and the session’s close in the records.** Found by the blog writer: scripts/draft-post.mts had failed since PA A1a.
 - **Readers see:** nothing.

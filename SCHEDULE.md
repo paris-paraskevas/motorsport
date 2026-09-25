@@ -2150,6 +2150,14 @@ Won't touch this session: P2.3 PR B before PR A; the Filters UI (P2.5); Cache Co
 Active: ~9h 50m from ~12:35Z to ~22:25Z on the 23rd, plus ~15h 10m from ~06:20Z to ~22:30Z on the 24th, plus ~9h 30m unattended from ~22:40Z on the 24th to ~08:10Z on the 25th, plus ~2h 50m with the operator from ~08:10Z to ~11:00Z on the 25th, less the pause ~15:00Z–15:19Z (the operator present at the words, ~12:45Z, ~13:20Z, ~14:38Z, ~15:20Z, ~15:45Z, ~16:35Z, ~16:53Z, ~17:05Z, ~17:10Z, ~17:25Z, ~20:58Z, ~22:10Z, ~06:20Z, ~07:00Z, ~07:20Z, ~08:20Z, ~08:45Z, ~09:23Z, ~10:32Z, ~11:40Z, ~12:05Z, ~12:45Z, ~13:12Z, ~13:18Z, ~13:50Z, ~14:01Z, ~16:52Z, ~19:18Z, ~19:50Z, ~20:10Z, ~21:19Z, ~21:36Z, ~22:20Z and ~22:40Z ("a3 go"), then ~07:35Z on the 25th ("keep working, be careful"), ~08:15Z (the four words), ~08:40Z (the newsletter's shape), ~09:25Z ("straight to prod. lets go"); no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
 
+### Fri 2026-09-25, midday — session 57 (the operator present at the words) — PA A3’s next-day check; the sign-in asks
+Intent: the next-day check and A3 DONE (a records PR); the operator’s sign-in asks as a slot proposal in plan mode; the session-results slot in plan mode from its brief; then Phase 2 in the ledger’s order; E1 after A3.
+1. **Session start** (~11:10Z–11:20Z): the rules, the ledger (56 slots, A3 started), the handoff, the Inbox, the schedule, the memory rules; local main level with origin. → done
+2. **The next-day check** (~11:20Z–11:40Z): account_stats() 18 and the sessions read through the Management API (a refresh forty minutes in; the audit table empty; the logs endpoint answering "Backend error"); prod probed; the Cloudflare dashboard and Resend's page by the operator's hand (errors 0 over 20.52k invocations; no mail yet); the operator's morning tab signed in after a moment and the first code email sent and received in a private window; a read of the auth config echoed the captcha secret's stored value into the tool log (flagged at once; rotation offered, default no). → done
+3. **A3 DONE and the records** (~11:40Z–11:55Z): the ledger's evidence and dated line, the trio 1.0.187, the six Inbox lines, the handoff's state, this block, the board republished; the records PR on the word "merge".
+Won't touch this session: any Phase 2 slot beyond its decision scan; Home's publish; branch deletions; any prod Supabase write without "apply <id>"; any push to `main`; agents on Fable; a fan-out.
+Active: ~45m from ~11:10Z (the operator present at the words, ~11:27Z and ~11:38Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
