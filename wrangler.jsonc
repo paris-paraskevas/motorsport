@@ -55,7 +55,12 @@
     // Phase 1: the ONLY config that says "production". `isProductionWorker()` in
     // lib/env.ts gates every design write; the preview configs must never carry it
     // (they share this database, so a design write from a preview edits the live site).
-    "PADDOCK_ENV": "production"
+    "PADDOCK_ENV": "production",
+    // PA A3: the sign-in pages' two public values (the Turnstile widget's site key and the Google client's id); the
+    // secrets beside them (the widget's secret, the client's secret, the SMTP key) live in Supabase's auth config,
+    // and the Worker's own secret key in `wrangler secret` under SUPABASE_SECRET_KEY.
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFDKQWzpce8hsLMk",
+    "GOOGLE_CLIENT_ID": "513497886552-3ho1glc0fbt6upu8vobi3d0r4rugkect.apps.googleusercontent.com"
   },
   // ISR page cache (see open-next.config.ts). Without these the adapter falls
   // back to its "dummy" cache and every request re-renders.
