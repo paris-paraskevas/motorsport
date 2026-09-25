@@ -89,6 +89,19 @@ describe('the middleware (PA A3)', () => {
     expect((await middleware(at('/sign-in', { host: 'dev.paddock-tracker.com' }))).headers.get('x-middleware-next')).toBe('1');
   });
 
+  it('the dev host lets the sign-in routes and the account routes through: a signed-out sign-in is not redirected, a reader can sign out, the account read answers by session (R10)', async () => {
+    const post = (path: string, cookie?: string) => new NextRequest(`https://dev.paddock-tracker.com${path}`, { method: 'POST', headers: { host: 'dev.paddock-tracker.com', ...(cookie ? { cookie } : {}) } });
+    expect((await middleware(post('/api/auth/password'))).headers.get('x-middleware-next')).toBe('1');
+    expect((await middleware(post('/api/auth/nonce'))).headers.get('x-middleware-next')).toBe('1');
+    expect((await middleware(at('/api/account', { host: 'dev.paddock-tracker.com' }))).headers.get('x-middleware-next')).toBe('1');
+    session = { claims: reader };
+    expect((await middleware(post('/api/auth/sign-out', signedIn))).headers.get('x-middleware-next')).toBe('1');
+    expect((await middleware(at('/api/account', { host: 'dev.paddock-tracker.com', cookie: signedIn }))).headers.get('x-middleware-next')).toBe('1');
+    // Everything else on the dev host keeps its lock.
+    expect((await middleware(at('/api/user/prefs', { host: 'dev.paddock-tracker.com' }))).status).toBe(307);
+    expect((await middleware(at('/admin/designer', { host: 'dev.paddock-tracker.com', cookie: signedIn }))).status).toBe(403);
+  });
+
   it('a user-scoped API without a session answers 404; with one it passes; the public APIs pass either way', async () => {
     expect((await middleware(at('/api/user/prefs'))).status).toBe(404);
     expect((await middleware(at('/api/push/subscribe'))).status).toBe(404);
