@@ -79,7 +79,12 @@ export default async function middleware(req: NextRequest) {
   const host = req.headers.get('host') ?? '';
   // The sign-in pages and the routes they post to (R10: with the site's own sign-in the routes live on this host too, and
   // the lock redirected the sign-in itself), and the account's own routes, which answer by session.
-  const signInPath = url.pathname.startsWith('/sign-in') || url.pathname.startsWith('/sign-up') || url.pathname.startsWith('/api/auth/') || url.pathname.startsWith('/api/account');
+  const signInPath =
+    url.pathname.startsWith('/sign-in') ||
+    url.pathname.startsWith('/sign-up') ||
+    url.pathname.startsWith('/api/auth/') ||
+    url.pathname === '/api/account' ||
+    url.pathname.startsWith('/api/account/');
   if (host.startsWith('dev.') && !signInPath) {
     if (!claims) {
       const signIn = url.clone();
