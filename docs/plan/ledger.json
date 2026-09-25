@@ -429,6 +429,11 @@
    "date": "2026-09-25",
    "change": "R10 merged (#1066, 1.0.185, squash-merged 10:39:51Z as 6ced94b9; prod 1.0.185 at 10:43Z): the dev host lets the sign-in and account routes through; probed on prod after the deploy. Also found by the blog writer: scripts/draft-post.mts has failed since A1a because lib/auth/directory.ts imports the server-only package, which was never declared and which throws under Node’s default export condition; the package is declared (1.0.186) and the scripts run with --conditions=react-server, as the script’s usage now says.",
    "word": "the operator, 2026-09-25 ~10:39Z: \"merge\""
+  },
+  {
+   "date": "2026-09-25",
+   "change": "R10 DONE: the operator signs in on dev.paddock-tracker.com again; #1067 (the server-only dependency, the handoff for session 57) merged under the same word.",
+   "word": "the operator, 2026-09-25 ~11:05Z: \"merge and it signs me in\""
   }
  ],
  "phases": {
@@ -1155,9 +1160,9 @@
    "defaults": "One condition in middleware.ts: the paths the dev host lets a signed-out visitor reach are the two sign-in pages, /api/auth/* and /api/account*; everything else keeps its lock (a signed-out visitor to /api/user/prefs is still sent to sign in; a reader at /admin/designer still gets 403). A test for each.",
    "needsWord": "merge",
    "acceptance": "On dev.paddock-tracker.com a signed-out POST /api/auth/password answers the route (400 “The check did not pass” without a token), not a redirect; the operator signs in there by password; the designer opens.",
-   "status": "started",
+   "status": "done",
    "scopeHash": "528b07cb8c1b",
-   "evidence": "CAUSE: middleware.ts’s dev-host block exempted /sign-in and /sign-up alone; since A3 the sign-in posts to /api/auth/* on the same host, so a signed-out POST /api/auth/password on dev.paddock-tracker.com answered 307 to /sign-in?next= (probed 10:30Z; the same POST on paddock-tracker.com answered the route’s 400). Clerk’s sign-in never met the lock because it talked to clerk.paddock-tracker.com. FIX: one condition (signInPath: /sign-in, /sign-up, /api/auth/, /api/account) skips the dev-host block; middleware.test.ts gains the case (a signed-out sign-in passes, a reader signs out, the account read passes, the rest keeps its lock) · gates: middleware.test.ts 6 tests green · tsc 0 · lint 0 errors · REVIEW (a fresh-context Sonnet, 10 tool uses): SOUND WITH FIXES, the one fix folded (/api/account matched on a path boundary) · MERGED #1066 squash-merged 2026-09-25 10:39:51Z as 6ced94b9 on the word “merge”; prod /about 1.0.185 at 10:43:24Z; probed after: a signed-out POST /api/auth/password on dev.paddock-tracker.com answers the route (400 “The check did not pass”), nonce answers, the root still sends anonymous visitors to /sign-in?next=%2F · the operator’s own sign-in on the dev host: to be confirmed (asked 2026-09-25 ~10:45Z)"
+   "evidence": "CAUSE: middleware.ts’s dev-host block exempted /sign-in and /sign-up alone; since A3 the sign-in posts to /api/auth/* on the same host, so a signed-out POST /api/auth/password on dev.paddock-tracker.com answered 307 to /sign-in?next= (probed 10:30Z; the same POST on paddock-tracker.com answered the route’s 400). Clerk’s sign-in never met the lock because it talked to clerk.paddock-tracker.com. FIX: one condition (signInPath: /sign-in, /sign-up, /api/auth/, /api/account) skips the dev-host block; middleware.test.ts gains the case (a signed-out sign-in passes, a reader signs out, the account read passes, the rest keeps its lock) · gates: middleware.test.ts 6 tests green · tsc 0 · lint 0 errors · REVIEW (a fresh-context Sonnet, 10 tool uses): SOUND WITH FIXES, the one fix folded (/api/account matched on a path boundary) · MERGED #1066 squash-merged 2026-09-25 10:39:51Z as 6ced94b9 on the word “merge”; prod /about 1.0.185 at 10:43:24Z; probed after: a signed-out POST /api/auth/password on dev.paddock-tracker.com answers the route (400 “The check did not pass”), nonce answers, the root still sends anonymous visitors to /sign-in?next=%2F · the operator’s own sign-in on the dev host confirmed 2026-09-25 ~11:05Z (“it signs me in”) · R10 DONE"
   }
  ]
 }
