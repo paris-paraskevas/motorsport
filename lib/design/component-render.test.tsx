@@ -766,6 +766,8 @@ describe('renderComponents', () => {
   it('P2.24 B2, the Podium template: Home’s Latest result over the results source, verbatim: the section named by the heading, the series’ bar and name, the round and the day, the headline as the page’s h1 when first (an h2 a size down otherwise), the winning margin from second’s time or the winner’s detail, the report link to the weekend page, the classification of the podium rows; Rows cuts; champion mode when the season is complete; a sportscar race names the team with its crew and the gap; nothing without a winner or rows; the Table over the shape; a stored podium view over Season results draws the Table', async () => {
     const podium = await drawOver(HOME, PODIUM, PODIUM_SETTINGS);
     expect(podium).toContain('<section aria-label="Latest result" class="border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5">');
+    // The classification column is a grid item: without min-w-0 its no-wrap names set the column's floor and the box runs past a phone's edge (the operator's report, 2026-09-26).
+    expect(podium).toContain('<div class="min-w-0"><div class="flex items-baseline justify-between border-b border-text pb-1">');
     expect(podium).toContain('style="background-color:#e10600"');
     expect(podium).toContain('>Formula 1<');
     expect(podium).toContain('Round 13 · Sunday 6 September');

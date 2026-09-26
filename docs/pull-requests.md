@@ -14,6 +14,24 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #— · 1.0.191 · R11 · on branch claude/mobile-layout-contact-form-e72ool, Sat 26 Sep; the PR and the merge on the word
+**The operator's phone report: the boxed result spilling past the screen, the Learn hint cut short, the calendar's floating date, the contact form's silent email.** Three of the four items fixed; the fourth, the calendar's mobile shape, is a question in the ledger's R11 slot.
+- **Readers see:** on a phone the Podium box (Home's latest result, and any Podium region) stays inside the screen, its long names truncated as on desktop; the Learn field's hint reads whole ("Ask a question — try “what is DRS”"); the calendar agenda's date sits at the top of its day; the contact form says "message stored, a reply may take longer" when its email did not go, and "could not be delivered" when nothing kept the message.
+- **Editors get:** nothing.
+- **Files (19):**
+  - `components/data/DataRegionViews.tsx` · min-w-0 on the Podium's classification column.
+  - `components/HomeLead.tsx` · the same on Home's own Latest result, the verbatim twin.
+  - `lib/design/component-render.test.tsx` · the Podium case asserts the column's class.
+  - `components/information/AskField.tsx`, `components/information/AskField.test.tsx` · the hint at 34 characters; the test holds it under forty with its example.
+  - `components/calendar/MonthView.tsx`, `components/calendar/MonthView.test.tsx` · self-start on the date gutter; the test finds it on a day of two sessions.
+  - `app/api/contact/route.ts`, `app/api/contact/route.test.ts` · stored as the write's truth, the failures logged with a phase, 503 when nothing kept the message; three cases.
+  - `components/ContactModal.tsx` · the honest line on emailed: false.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R11 with its question and default, the dated line.
+  - `IDEAS.md`, `docs/HANDOFF.md`, `SCHEDULE.md` · one Inbox line; the session block; the day.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.191.
+- **Verified:** tests first (five red across four files, then green); tsc 0; eslint 0 on the changed files; vitest 251 files, 2423 tests; the hooks' own tests 31; the phone proof in headless Chromium at 390×844 on the local server: the Podium column's right edge 539px without the class and 355px with it (the section's 374), the hint 157px wide in a 332px field, the date gutter 10px from its day's top on a 581px day of 14 lines. The Worker build and its dry run: see the ledger's evidence.
+- **Review:** a fresh-context Sonnet before the merge, on the word.
+
 ## #1071 · 1.0.190 · P2.5 PR A · merged Fri 25 Sep 20:45 (17:45Z) under the standing word
 **Filters as a layer, PR A: a Filters region over another Data region's rows.** APEX's Smart Filters as a component of its own; the calendar and news pages follow in PR B and PR C.
 - **Readers see:** nothing until an editor places a Filters region on a page.

@@ -507,7 +507,7 @@ export function HomeLatestResult({
             Full weekend report →
           </Link>
         </div>
-        <div>
+        <div className="min-w-0">
           <div className="flex items-baseline justify-between border-b border-text pb-1">
             {/* In champion mode the h1 is about the title, so the podium
                 must name its race itself (operator annotation, 2026-08-20). */}

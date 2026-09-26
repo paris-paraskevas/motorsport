@@ -2163,6 +2163,17 @@ Intent: the next-day check and A3 DONE (a records PR); the operator’s sign-in 
 Won't touch this session: any Phase 2 slot beyond its decision scan and its approved plan; Home's publish; branch deletions; any prod Supabase write without "apply <id>"; any push to `main`; agents on Fable; a fan-out.
 Active: ~2h 50m from ~11:10Z to ~14:00Z (the operator present at the words, ~11:27Z, ~11:38Z, ~11:45Z, ~11:49Z, ~12:20Z, ~13:10Z, ~13:20Z, ~13:40Z; no `[+Nm]` prefixes were sent, the figure is the wall clock of the prompts)
 
+### Sat 2026-09-26, midday — session 58 (a cloud session; the operator’s phone report, four items with five screenshots) — R11
+Intent: trace each item to its cause; fix what fits one sentence with a test first; carry the design item as a question; the records; the branch pushed, no PR without the word.
+1. **Session start** (~10:40Z): the rules, the ledger, the handoff, the Inbox, the schedule; the branch claude/mobile-layout-contact-form-e72ool clean on 1.0.190. → done
+2. **The four causes** (~10:40Z–10:50Z): the Podium column’s min-width; the 62-character hint; the stretched date button; the contact route’s silent failure (the code path to Resend exists; the operator’s secrets are the other half). → done
+3. **Tests first, then the fixes** (~10:50Z–10:57Z): five red across four files, then green; tsc 0; eslint 0; vitest 251 files, 2423 tests. → done
+4. **The phone proof** (~10:57Z–11:05Z): headless Chromium at 390×844 on the local server: the column 539px → 355px, the hint 157px in 332px, the gutter 10px from its day’s top. → done
+5. **The records** (~11:05Z–11:20Z): the trio 1.0.191, the pull-requests entry, R11 in the ledger with its question and the dated line, one Inbox line, this block, the handoff. → done
+6. **The Worker build and the dry run**: attempted without secrets. → see the ledger’s evidence
+Won't touch this session: the calendar’s mobile shape (a question); a PR; a merge; any Phase 2 slot; Home's publish; branch deletions; any prod write; any push to `main`; agents on Fable.
+Active: ~45m from ~10:40Z (the operator absent: a cloud session on the report)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
