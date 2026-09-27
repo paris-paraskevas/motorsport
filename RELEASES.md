@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.191 — 2026-09-25
+
+The calendar's filters are now two chips above the months: pick a series and a kind of session, each with its count, and the address carries the choice so a filtered calendar can be shared. Old links to a series' calendar keep working.
+
 ## 1.0.190 — 2026-09-25
 
 Behind the scenes: the page designer gains a Filters box that narrows a table by the values of its columns, one facet waiting on another. Nothing changes for readers until an editor places one.
