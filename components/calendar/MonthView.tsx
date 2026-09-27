@@ -236,12 +236,15 @@ export function MonthView({
               <section key={cell.key} className="flex gap-3 border-b border-border py-2.5">
                 {/* The date gutter. Fixed width so every day's sessions start on
                     the same left edge — the column that makes a schedule read as
-                    a schedule rather than as a list of headings. */}
+                    a schedule rather than as a list of headings. Pinned to the
+                    top of its day: a button centres its content, so stretched to
+                    the row it floated the date halfway down a long day (the
+                    operator's report, 2026-09-26). */}
                 <button
                   type="button"
                   onClick={() => onSelectDay(cell.date)}
                   aria-label={`Open ${weekdayFmt.format(cell.date)} ${dayFmt.format(cell.date)}`}
-                  className="w-9 shrink-0 pt-0.5 text-center"
+                  className="w-9 shrink-0 self-start pt-0.5 text-center"
                 >
                   <span
                     className={`mx-auto flex h-7 w-7 items-center justify-center font-mono text-15 font-semibold tabular-nums ${

@@ -928,7 +928,7 @@ export function DataRegionPodium({ heading, level, rows }: DataRegionViewProps) 
             </Link>
           )}
         </div>
-        <div>
+        <div className="min-w-0">
           <div className="flex items-baseline justify-between border-b border-text pb-1">
             {/* In champion mode the h1 is about the title, so the podium must name its race itself (operator annotation, 2026-08-20). */}
             <span className="min-w-0 truncate font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{championName ? `${raceName} · Classification` : 'Classification'}</span>
