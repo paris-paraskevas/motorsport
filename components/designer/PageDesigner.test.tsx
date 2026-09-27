@@ -1132,7 +1132,7 @@ describe('PageDesigner', () => {
     // P2.2 B2: Timeline is bound to a Results source; on Standings its pill is disabled with the reason in the note; Detail is open to every shape.
     const view = () => within(pe).getByRole('group', { name: 'View' });
     expect((within(view()).getByRole('button', { name: 'Timeline' }) as HTMLButtonElement).disabled).toBe(true);
-    expect(within(pe).getByText(/Timeline is for a Results source; Lead story is for a Posts source; The wire is for a News source; What's next is for a Weekends source; Latest result is for a Results source; this region reads Standings/)).toBeTruthy();
+    expect(within(pe).getByText(/Timeline is for a Results source; Lead story is for a Posts source; The wire is for a News source; Headlines is for a News source; What's next is for a Weekends source; Latest result is for a Results source; this region reads Standings/)).toBeTruthy();
     expect((within(view()).getByRole('button', { name: 'Detail' }) as HTMLButtonElement).disabled).toBe(false);
     fireEvent.change(preset, { target: { value: 'constructors' } });
     expect(status()).toMatch(/Preset set/);
@@ -1293,7 +1293,7 @@ describe('PageDesigner', () => {
     expect((within(view()).getByRole('button', { name: 'Lead story' }) as HTMLButtonElement).disabled).toBe(true);
     expect((within(view()).getByRole('button', { name: 'The wire' }) as HTMLButtonElement).disabled).toBe(true);
     expect((within(view()).getByRole('button', { name: "What's next" }) as HTMLButtonElement).disabled).toBe(true);
-    expect(within(pe).getByText(/Lead story is for a Posts source; The wire is for a News source; What's next is for a Weekends source; Latest result is for a Results source; this region reads Standings/)).toBeTruthy();
+    expect(within(pe).getByText(/Lead story is for a Posts source; The wire is for a News source; Headlines is for a News source; What's next is for a Weekends source; Latest result is for a Results source; this region reads Standings/)).toBeTruthy();
     // Posts: the Lead story preset under its group, picked by the change of Source itself (R7: Drivers is no posts preset); the pick brings the template and its rows.
     fireEvent.click(within(pe).getByRole('tab', { name: 'Region' }));
     fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'posts' } });

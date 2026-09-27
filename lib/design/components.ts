@@ -266,15 +266,18 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           // to the source whose rows it reads.
           { key: 'lead-story', label: 'Lead story', only: { source: 'posts' } },
           { key: 'wire', label: 'The wire', only: { source: 'news' } },
+          // The News page's list (P2.5 PR C): the route file's rows as a template of the news source.
+          { key: 'headlines', label: 'Headlines', only: { source: 'news' } },
           { key: 'coming-weekends', label: "What's next", only: { source: 'weekends' } },
           // Home's Latest result and What it changed (P2.24 B2): each drawn on its own shape (the podium rows, the driver rows); the
           // renderer draws the Table for a stored one on another shape of the source.
           { key: 'podium', label: 'Latest result', only: { source: 'results' } },
           { key: 'leader', label: 'What it changed', only: { source: 'standings' } },
         ],
-        help: 'How the rows are drawn (APEX: a report’s Template; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. Lead story (posts), The wire (news), What’s next (weekends), Latest result (results) and What it changed (standings) are Home’s boxes as templates: the lead with its cover, its age and its further reading; the headlines linked out with their source and age; the coming weekends, the nearest first with its countdown; the newest race’s headline, margin and podium; the championship after it, the leader’s headline and the table with the winner’s row marked; each brings its rows. A preset brings its own view when picked.',
+        help: 'How the rows are drawn (APEX: a report’s Template; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. Lead story (posts), The wire (news), What’s next (weekends), Latest result (results) and What it changed (standings) are Home’s boxes as templates: the lead with its cover, its age and its further reading; the headlines linked out with their source and age; the coming weekends, the nearest first with its countdown; the newest race’s headline, margin and podium; the championship after it, the leader’s headline and the table with the winner’s row marked; each brings its rows. Headlines (news) is the News page’s list: two columns of headlines linked out, each with its series, its source and its age, and the reader’s Everything or Yours only chips while they follow series. A preset brings its own view when picked.',
       },
-      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 50, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole; for the Lead story, the lead and its further reading.' },
+      // The cap at 150 (P2.5 PR C): the News page shows its whole aggregate, ten per series, at once.
+      { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 150, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole; for the Lead story, the lead and its further reading; the News page shows up to 150.' },
       { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The heading above the rows; empty draws the preset’s name. The Lead story writes it in its eyebrow, The wire in its rule.' },
       // The Lead story's pin (P2.24 A; the words of home.lead's), drawn while the View is Lead story.
       {
@@ -412,6 +415,15 @@ export const SPLITS: Readonly<Record<string, readonly (string | RecipeEntry)[]>>
   ],
   // P2.5 PR B: the Filters region over the calendar's own facets before the month; the filter box the calendar drew is gone.
   '/calendar': ['page.heading', { id: 'filters', component: 'data.filters', settings: { filteredRegion: 'month', facet1: 'seriesName', facet2: 'sessionType' } }, 'calendar.month'],
+  // P2.5 PR C: the news page off its route file: the heading with the route's own words (the page's name is News, its h1 was The
+  // wire), the Filters region over the wire's series, the wire on the Headlines view over the News page's ten per series, every
+  // row shown (the Rows cap raised to 150 for it); the route's standfirst and footer dropped, its Everything / Yours only chips
+  // the view's own.
+  '/news': [
+    { id: 'heading', component: 'page.heading', settings: { text: 'The wire' } },
+    { id: 'filters', component: 'data.filters', settings: { filteredRegion: 'wire', facet1: 'seriesName' } },
+    { id: 'wire', component: 'data.region', settings: { preset: 'wire', view: 'headlines', rows: 150 }, source: 'news?per=10' },
+  ],
 };
 
 /** A region of the document model for a component, as the recipes lay them out. */

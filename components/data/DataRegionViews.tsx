@@ -1,6 +1,6 @@
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ExternalLink } from 'lucide-react';
 import type { Preset, PresetColumn, PresetRow, Shape } from '@/lib/design/presets';
 import { ageLabel } from '@/lib/date';
 import { seriesInk } from '@/lib/site';
@@ -8,7 +8,7 @@ import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { sortHref, sortable, type ViewFilter, type ViewState } from '@/lib/design/view-state';
 import { rowPasses } from '@/lib/design/presets';
 import { DataRegionControls } from './DataRegionControls';
-import { FollowedRows } from './FollowedRows';
+import { FollowedRows, FollowedScope } from './FollowedRows';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -811,6 +811,64 @@ export function DataRegionWire({ heading, rows, now }: DataRegionViewProps) {
           );
         })}
       </ul>
+    </section>
+  );
+}
+
+/** The News page's list as the template of the news source (P2.5 PR C; the route file's rows, moved as they were): the section
+ *  named by the region's heading, drawn without a rule or a heading of its own (the page's heading stands above it); the reader's
+ *  Everything and Yours only chips while they follow series (FollowedScope, in the browser after the page loads; the rows carry
+ *  their series for it); two columns from md, each headline an external link with the series' colour bar, the title at h2 as the
+ *  route drew it, "Series · source" (the source alone for a series the reader did not know) and its age. Without rows, the
+ *  route's box: linked out to the source. */
+export function DataRegionHeadlines({ heading, rows, now, region }: DataRegionViewProps) {
+  return (
+    <section aria-label={heading}>
+      {region && <FollowedScope region={region} />}
+      {rows.length === 0 ? (
+        <div className="border border-border bg-surface/40 p-6 text-center md:p-8">
+          <div className="mb-1 text-base font-medium text-text">No stories</div>
+          <div className="mx-auto mb-5 max-w-xs text-sm text-text-faint">Latest stories are unavailable right now.</div>
+          <a
+            href="https://www.motorsport.com/"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+            className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 font-mono text-xs font-medium text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text"
+          >
+            Visit official site
+            <ExternalLink size={12} />
+          </a>
+        </div>
+      ) : (
+        <div className="border-t border-text md:columns-2 md:gap-10">
+          {rows.map((r, i) => {
+            const seriesName = text(r.seriesName);
+            const source = text(r.source);
+            const published = text(r.published);
+            return (
+              <a
+                key={`${text(r.link)}-${i}`}
+                href={text(r.link)}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                data-series={text(r.series) || undefined}
+                className="group flex items-baseline gap-3 border-b border-border py-2.5 transition-colors duration-(--duration-fast) hover:bg-surface md:break-inside-avoid"
+              >
+                <span aria-hidden="true" className="relative top-[2px] h-3.5 w-[3px] shrink-0 self-start" style={{ backgroundColor: text(r.colour) || undefined }} />
+                <span className="min-w-0 flex-1">
+                  <h2 className="font-serif text-17 font-semibold leading-snug text-text group-hover:underline">{text(r.title)}</h2>
+                  <span className="mt-0.5 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">{seriesName ? `${seriesName} · ${source}` : source}</span>
+                </span>
+                {published && (
+                  <time dateTime={published} className="shrink-0 font-mono text-10 tabular-nums text-text-faint">
+                    {ageOf(r.published, now)}
+                  </time>
+                )}
+              </a>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

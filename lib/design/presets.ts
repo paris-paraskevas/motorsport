@@ -205,7 +205,7 @@ export interface Preset {
   /** The view the preset brings when picked: the standings tables, the results' Rounds layout (List), Home's boxes their own
    *  template (P2.24 A: lead-story, wire; B1: coming-weekends; B2: podium, leader); Timeline and Detail (P2.2 B2) are the
    *  operator's picks, no preset brings them. */
-  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire' | 'coming-weekends' | 'podium' | 'leader';
+  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire' | 'headlines' | 'coming-weekends' | 'podium' | 'leader';
   /** The Rows the pick sets, where the site's box has a count of its own (P2.24 A: the lead and its three further posts, the
    *  wire's five); absent, the region's Rows stands. Ours: the counts were Application Settings of Home's pieces. */
   rows?: number;

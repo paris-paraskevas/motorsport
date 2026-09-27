@@ -19,6 +19,7 @@ export interface PageFamily {
 
 const FAMILIES: Readonly<Record<string, () => Promise<PageFamily>>> = {
   '/calendar': () => import('./families/calendar').then(m => m.family),
+  '/news': () => import('./families/news').then(m => m.family),
 };
 
 /** Whether a registry pattern has a family here. */

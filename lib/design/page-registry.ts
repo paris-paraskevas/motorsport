@@ -88,7 +88,9 @@ export const CODE_PAGES: readonly CodePage[] = [
 
   P('/blog', 'Blog', 'editorial', 'cached', true),
   P('/blog/[slug]', 'Blog post', 'editorial', 'dynamic', true),
-  P('/news', 'News wire', 'editorial', 'cached', true),
+  // P2.5 PR C: the news page's route file left; the catch-all serves it from its row (the recipe in components.ts SPLITS, the
+  // family in families/news.tsx). Its name is the route's title, News.
+  R('/news', 'News', 'editorial', 'cached', true),
   P('/information', 'Learn', 'editorial', 'cached', true),
   P('/information/[topic]', 'Learn topic', 'editorial', 'cached', false),
   P('/information/[topic]/[slug]', 'Learn answer', 'editorial', 'cached', false),

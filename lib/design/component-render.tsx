@@ -257,13 +257,15 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
                 ? views.DataRegionLeadStory
                 : settings.view === 'wire' && shape.source === 'news'
                   ? views.DataRegionWire
-                  : settings.view === 'coming-weekends' && shape.source === 'weekends'
-                    ? views.DataRegionComingWeekends
-                    : settings.view === 'podium' && shape.key === 'podium-rows'
-                      ? views.DataRegionPodium
-                      : settings.view === 'leader' && shape.key === 'driver-rows'
-                        ? views.DataRegionLeader
-                        : views.DataRegionTable;
+                  : settings.view === 'headlines' && shape.source === 'news'
+                    ? views.DataRegionHeadlines
+                    : settings.view === 'coming-weekends' && shape.source === 'weekends'
+                      ? views.DataRegionComingWeekends
+                      : settings.view === 'podium' && shape.key === 'podium-rows'
+                        ? views.DataRegionPodium
+                        : settings.view === 'leader' && shape.key === 'driver-rows'
+                          ? views.DataRegionLeader
+                          : views.DataRegionTable;
     return <View {...props} />;
   },
 };
@@ -335,6 +337,9 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   // Master-detail (P2.4 PR C): a Data region naming another Data region of the document as its Detail region, by a column both
   // shapes carry. A detail reads its keys whatever its menus and its view, since a results region opens in the List view.
   const ROW_VIEWS = ['table', 'cards', 'list'];
+  // A Filters region may also target the Headlines view (P2.5 PR C): the News page's list narrows by series; master-detail stays
+  // on the three.
+  const FILTER_VIEWS = [...ROW_VIEWS, 'headlines'];
   const dataRegions = regions.filter(r => r.component === 'data.region');
   const shapeOf = (r: ComponentRegion) => {
     const preset = findPreset(str(r.settings.preset));
@@ -351,9 +356,9 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
     return detail && shape && key && carries && drawn ? [{ master, detail, key, shape }] : [];
   });
   // Filters (P2.5): a Filters region's target reads its keys whatever its menus, as a detail does; only a target drawn as a
-  // Table, Cards or List, named by a Filters region's Filtered region, on a shape.
+  // Table, Cards, List or Headlines, named by a Filters region's Filtered region, on a shape.
   const targetOf = (f: ComponentRegion) =>
-    dataRegions.find(d => d.id === str(f.settings.filteredRegion) && ROW_VIEWS.includes(str(d.settings.view) || 'table') && shapeOf(d) !== null) ??
+    dataRegions.find(d => d.id === str(f.settings.filteredRegion) && FILTER_VIEWS.includes(str(d.settings.view) || 'table') && shapeOf(d) !== null) ??
     // A component declaring its own facets (the calendar, P2.5 PR B).
     regions.find(r => r.id === str(f.settings.filteredRegion) && (findComponent(r.component)?.facets?.length ?? 0) > 0) ??
     null;

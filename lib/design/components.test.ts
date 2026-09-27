@@ -23,8 +23,8 @@ describe('the component catalogue', () => {
     expect(defaults).toMatchObject({ preset: 'drivers', view: 'table', rows: 10, heading: '', pinned: '' });
     expect(parseSettings(region, undefined)).toEqual({ settings: defaults, problems: [] });
     expect(parseSettings(region, { rows: 12 })).toEqual({ settings: { ...defaults, rows: 12 }, problems: [] });
-    expect(parseSettings(region, { rows: 60 })).toEqual({ settings: defaults, problems: ['Rows must be a number from 1 to 50'] });
-    expect(parseSettings(region, { rows: 'many' }).problems).toEqual(['Rows must be a number from 1 to 50']);
+    expect(parseSettings(region, { rows: 160 })).toEqual({ settings: defaults, problems: ['Rows must be a number from 1 to 150'] });
+    expect(parseSettings(region, { rows: 'many' }).problems).toEqual(['Rows must be a number from 1 to 150']);
     expect(parseSettings(region, { colour: 'red' }).problems).toEqual(['Data region has no setting called colour']);
     expect(parseSettings(region, ['x']).problems).toEqual(['the settings must be an object']);
     expect(parseSettings(region, { pinned: 'monza-2026', heading: 'Riders' })).toEqual({ settings: { ...defaults, pinned: 'monza-2026', heading: 'Riders' }, problems: [] });
@@ -118,6 +118,7 @@ describe('the component catalogue', () => {
       ['detail', 'Detail'],
       ['lead-story', 'Lead story'],
       ['wire', 'The wire'],
+      ['headlines', 'Headlines'],
       ['coming-weekends', "What's next"],
       ['podium', 'Latest result'],
       ['leader', 'What it changed'],
@@ -149,7 +150,7 @@ describe('the component catalogue', () => {
     expect(settingsSummary(region, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' })).toBe('Preset Lead story · View Lead story · Rows 4');
     expect(settingsSummary(region, { preset: 'lead-story', view: 'table', rows: 4, heading: '', pinned: 'monza-2026' })).toBe('Preset Lead story · View Table · Rows 4');
     expect(parseSettings(region, { preset: 'nope' }).problems[0]).toMatch(/^Preset must be one of Drivers, Constructors, Teams/);
-    expect(parseSettings(region, { rows: 0 }).problems).toEqual(['Rows must be a number from 1 to 50']);
+    expect(parseSettings(region, { rows: 0 }).problems).toEqual(['Rows must be a number from 1 to 150']);
     expect(settingsSummary(region, { preset: 'constructors', view: 'cards', rows: 8, heading: '' })).toMatch(/^Preset Constructors · View Cards · Rows 8/);
     // P2.2 B3: the Card slots and the action zones, under the Card and Actions groups, drawn while the View is Cards (APEX: Depending On).
     expect(region.groups).toEqual([
@@ -264,6 +265,15 @@ describe('the component catalogue', () => {
     // P2.5 PR B: the calendar's Filters region before the month, over the calendar's own facets (it has no preset).
     expect(SPLITS['/calendar']).toEqual(['page.heading', { id: 'filters', component: 'data.filters', settings: { filteredRegion: 'month', facet1: 'seriesName', facet2: 'sessionType' } }, 'calendar.month']);
     expect(findComponent('calendar.month')?.facets?.map(c => [c.key, c.label, c.type])).toEqual([['seriesName', 'Series', 'text'], ['sessionType', 'Sessions', 'text']]);
+    // P2.5 PR C: the news page's recipe: the heading with the route's words, the Filters region over the wire's series, the wire on the
+    // Headlines view over the News page's ten per series, every row shown (the Rows cap raised to 150 for it).
+    expect(SPLITS['/news']).toEqual([
+      { id: 'heading', component: 'page.heading', settings: { text: 'The wire' } },
+      { id: 'filters', component: 'data.filters', settings: { filteredRegion: 'wire', facet1: 'seriesName' } },
+      { id: 'wire', component: 'data.region', settings: { preset: 'wire', view: 'headlines', rows: 150 }, source: 'news?per=10' },
+    ]);
+    expect(findComponent('data.region')?.settings.find(s => s.key === 'rows')).toMatchObject({ min: 1, max: 150 });
+    expect(findComponent('data.region')?.settings.find(s => s.key === 'view')).toMatchObject({ options: expect.arrayContaining([{ key: 'headlines', label: 'Headlines', only: { source: 'news' } }]) });
     for (const recipe of Object.values(SPLITS)) for (const entry of recipe) expect(findComponent(typeof entry === 'string' ? entry : entry.component)).not.toBeNull();
   });
 
