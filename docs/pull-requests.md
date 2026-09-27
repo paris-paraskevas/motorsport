@@ -14,6 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1075 · 1.0.193 · R12 · opened Sat 27 Sep 04:40 (01:40Z); the merge on the word
+**The month grid on phones.** The operator's word for the desktop calendar on mobile: the seven-column grid at every width, the phone agenda gone, a day's sessions as series bars below md, a tap opening the day.
+- **Readers see:** on a phone, the month as a grid (the date, the day's count, a bar per series) instead of the agenda list; a tap opens the day as before. The desktop as it was.
+- **Editors get:** nothing new.
+- **Files (8):**
+  - `components/calendar/MonthView.tsx` · the grid at every width; the agenda, its comment and its day formatter removed; the bars below md sharing the cell's width; the cell's floor 52px below md, the desktop's 100px as it was; the day's name for a phone reader (visually hidden, below md only).
+  - `components/calendar/MonthView.test.tsx` · the grid at every width, the bars and the lines, the one desktop floor, the reader's name, the tap, the three-bar cap (replacing R11's agenda case, whose gutter is gone with the agenda).
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R12 on the word; its evidence.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.193.
+- **Verified:** tests first (the grid case red on the agenda), then green; tsc 0; lint 0 errors (the two known warnings); vitest full green (251 files, 2429 tests); cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39508.31 KiB / gzip: 8590.15 KiB; in the browser on the local server at 390px: the month grid with its bars and counts, a day tapped opening the Day view; at 1280px the desktop grid as it was (screenshots .playwright-mcp/r12-01..03; the review page as an artifact).
+- **Review:** a fresh-context Sonnet reviewer: BLOCKING on a leftover desktop floor (a 72px md floor beside main's 100px on one cell, the winner undecidable from the source), fixed to main's floor alone; its two fixes taken (the bars sharing the cell's width, the day's name for a phone reader) and its cap test written; the empty month left as the desktop has it
+
 ## #1074 · 1.0.192 · R11 · merged Sat 27 Sep 04:00 (01:00Z) under the standing word
 **The operator's phone report: the boxed result spilling past the screen, the Learn hint cut short, the calendar's floating date, the contact form's silent email.** Three of the four items fixed; the fourth, the calendar's mobile shape, is a question in the ledger's R11 slot.
 - **Readers see:** on a phone the Podium box (Home's latest result, and any Podium region) stays inside the screen, its long names truncated as on desktop; the Learn field's hint reads whole ("Ask a question — try “what is DRS”"); the calendar agenda's date sits at the top of its day; the contact form says "message stored, a reply may take longer" when its email did not go, and "could not be delivered" when nothing kept the message.

@@ -207,6 +207,7 @@ export function MonthView({
   // desktop"). The phone agenda of 2026-08-25 (Google's schedule view) is gone with it, the second word on one behaviour
   // after the grid's "chaotic on mobile" of 2026-08-20: below md a day shows its sessions as series bars alone and a tap
   // opens the day; the weekend banners and the legend stay md+.
+  const weekdayFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short' });
 
   return (
     <div>
@@ -269,10 +270,12 @@ export function MonthView({
                         onSelectDay(cell.date);
                       }
                     }}
-                    className={`flex min-h-[52px] cursor-pointer flex-col md:min-h-[72px] border-b border-r border-border px-[9px] pt-[6px] pb-[7px] transition-colors duration-(--duration-fast) hover:bg-surface md:min-h-[100px] ${
+                    className={`flex min-h-[52px] cursor-pointer flex-col border-b border-r border-border px-[9px] pt-[6px] pb-[7px] transition-colors duration-(--duration-fast) hover:bg-surface md:min-h-[100px] ${
                       cell.inMonth ? '' : 'opacity-55'
                     } ${cell.isToday ? 'bg-surface-elevated shadow-[inset_0_0_0_2px_var(--brand)]' : ''}`}
                   >
+                    {/* Below md the cell is the only tappable surface (R12): its name for a reader, as the agenda's button had it; md+ unchanged. */}
+                    <span className="sr-only md:hidden">{`Open ${weekdayFmt.format(cell.date)}`}</span>
                     <div className="flex items-baseline justify-between">
                       <span className={`font-mono text-xs tabular-nums ${cell.isToday ? 'font-semibold text-brand' : 'text-text-muted'}`}>
                         {cell.date.getDate()}
@@ -282,10 +285,11 @@ export function MonthView({
                         <span className="font-mono text-10 tabular-nums text-text-faint">{entries.length}</span>
                       )}
                     </div>
-                    {/* Below md (R12): the day's sessions as series bars alone, the cap and the order of the lines; a tap opens the day. */}
-                    <div className="mt-1 flex flex-wrap gap-[3px] md:hidden" aria-hidden="true">
+                    {/* Below md (R12): the day's sessions as series bars alone, the cap and the order of the lines, the bars sharing the
+                        cell's width (a 390px cell is about 32px inside, too narrow for fixed bars in one row); a tap opens the day. */}
+                    <div className="mt-1 flex gap-[2px] md:hidden" aria-hidden="true">
                       {visible.map(l => (
-                        <span key={l.key} className="h-[5px] w-4" style={{ backgroundColor: l.color }} />
+                        <span key={l.key} className="h-[5px] min-w-0 flex-1" style={{ backgroundColor: l.color }} />
                       ))}
                     </div>
                     {/* md+: summarising lines, capped — deciders always shown,

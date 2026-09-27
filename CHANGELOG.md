@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.193 — 2026-09-27
+
+### R12 — the month grid on phones
+
+The operator's word of 2026-09-27 ("id like the desktop calendar on mobile. i prefer desktop"), the second word on one behaviour after the phone agenda of 2026-08-25 (Google's schedule view) and the grid's "chaotic on mobile" of 2026-08-20. `components/calendar/MonthView.tsx`: the seven-column grid renders at every width; the agenda and its day formatter leave; below md a day's cell keeps its date and its session count and shows the day's sessions as series bars alone (the same lines, cap and order as the desktop's text, one bar per run, the bars sharing the cell's width), with a shorter floor (52px below md; the desktop's 100px as it was); a tap opens the day, as on the desktop; the weekend banners and the legend stay md+. The reviewer's three findings taken: the cell carried two desktop floors (a 72px beside main's 100px), now one; the bars share the width instead of wrapping (a 390px cell is about 32px inside); the cell's name for a phone reader starts with the day (a visually hidden "Open Sat" before the date, below md only), as the agenda's button had it. `components/calendar/MonthView.test.tsx`: the grid at every width, the bars below md and the lines md+, the one desktop floor, the reader's name, the tap, the three-bar cap. Readers on a phone see the month as a grid again, a look change on the operator's word.
+
 ## 1.0.192 — 2026-09-27
 
 ### R11 — The operator's phone report: the boxed result spilling past the screen, the Learn hint cut short, the calendar's floating date, the contact form's silent email
