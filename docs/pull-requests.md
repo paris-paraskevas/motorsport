@@ -14,6 +14,24 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1074 · 1.0.192 · R11 · merged Sat 27 Sep 04:00 (01:00Z) under the standing word
+**The operator's phone report: the boxed result spilling past the screen, the Learn hint cut short, the calendar's floating date, the contact form's silent email.** Three of the four items fixed; the fourth, the calendar's mobile shape, is a question in the ledger's R11 slot.
+- **Readers see:** on a phone the Podium box (Home's latest result, and any Podium region) stays inside the screen, its long names truncated as on desktop; the Learn field's hint reads whole ("Ask a question — try “what is DRS”"); the calendar agenda's date sits at the top of its day; the contact form says "message stored, a reply may take longer" when its email did not go, and "could not be delivered" when nothing kept the message.
+- **Editors get:** nothing.
+- **Files (19):**
+  - `components/data/DataRegionViews.tsx` · min-w-0 on the Podium's classification column.
+  - `components/HomeLead.tsx` · the same on Home's own Latest result, the verbatim twin.
+  - `lib/design/component-render.test.tsx` · the Podium case asserts the column's class.
+  - `components/information/AskField.tsx`, `components/information/AskField.test.tsx` · the hint at 34 characters; the test holds it under forty with its example.
+  - `components/calendar/MonthView.tsx`, `components/calendar/MonthView.test.tsx` · self-start on the date gutter; the test finds it on a day of two sessions.
+  - `app/api/contact/route.ts`, `app/api/contact/route.test.ts` · stored as the write's truth, the failures logged with a phase, 503 when nothing kept the message; three cases.
+  - `components/ContactModal.tsx` · the honest line on emailed: false.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R11 with its question and default, the dated line.
+  - `IDEAS.md`, `docs/HANDOFF.md`, `SCHEDULE.md` · one Inbox line; the session block; the day.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.191.
+- **Verified:** the other session's tests first (five red across four files) and its phone proof in Chromium and WebKit at 390px on prod's mirrored Home (the column's right edge 337 against the section's 357 after); here: tsc 0; lint 0 errors (the two known warnings); vitest full green; cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39514.40 KiB (39513.89 before; the edits after that build were tests alone).
+- **Review:** a fresh-context Sonnet (~150k said, 162,962 measured, 50 tool uses): BLOCKING on one finding of the take itself, not of the fixes: the taken test file predated PR B and would have erased the calendar Filters tests; restored from main with the Podium's assertion re-applied (b8b660e2), the twin in HomeLead asserted too; the four fixes found correct, in scope and covered; the version collision named and redone at 1.0.192.
+
 ## #1073 · 1.0.191 · P2.5 PR B · merged Fri 25 Sep 21:15 (18:15Z) under the standing word
 **The calendar page on the Filters region.** The live /calendar rebuilt on the Filters box (the operator's "swap the pages"): the series and the sessions as facets of the calendar's own model, the picks from the address, the old links kept, the filter box gone.
 - **Readers see:** two chips (Series, Sessions) with counts above the calendar instead of the filter box; a pick reloads the page under a shareable address; old links with ?s= or ?races= still narrow.
