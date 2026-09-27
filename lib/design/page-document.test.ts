@@ -809,7 +809,9 @@ describe('the Filters region (P2.5; APEX: Smart Filters)', () => {
     const kept = parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1', facet2Several: true })]));
     expect(kept.problems).toEqual([]);
     expect(kept.value?.regions.find(r => r.id === 'f')).toMatchObject({ settings: { filteredRegion: 'd', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1', facet2Several: true } });
-    const refused = 'region f: Filtered region must be a Data region of this page drawn as a Table, Cards or List, or the calendar';
+    const refused = 'region f: Filtered region must be a Data region of this page drawn as a Table, Cards, List or Headlines, or the calendar';
+    // P2.5 PR C: the news page's wire on the Headlines view is a target too; its facet a column the news rows carry.
+    expect(parsePageDocument(doc([drivers({ id: 'w', source: 'news?per=10', settings: { preset: 'wire', view: 'headlines', rows: 150, heading: '' } }), filters({ filteredRegion: 'w', facet1: 'seriesName' })])).problems).toEqual([]);
     expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'gone', facet1: 'team' })])).problems).toEqual([refused]);
     expect(parsePageDocument(doc([drivers({ settings: { preset: 'drivers', view: 'detail', rows: 10, heading: '' } }), filters({ filteredRegion: 'd' })])).problems).toEqual([refused]);
     expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'nope' })])).problems).toEqual(['region f: Facet 1 must be a column the filtered region carries']);

@@ -43,7 +43,8 @@ describe('the page registry', () => {
     // The components programme (R4): a page whose route file has left is served
     // from its row by the catch-all, and its file must indeed be gone.
     const composed = CODE_PAGES.filter(p => p.served === 'rows').map(p => p.path);
-    expect(composed).toEqual(['/calendar']);
+    // P2.5 PR C: the news page's route file left; the catch-all serves it from its row.
+    expect(composed).toEqual(['/calendar', '/news']);
     for (const p of composed) expect(fromFiles.has(p), `${p} still has a route file`).toBe(false);
     expect(new Set(CODE_PAGES.map(p => p.path)).size).toBe(CODE_PAGES.length);
   });

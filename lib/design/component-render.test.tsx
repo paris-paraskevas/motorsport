@@ -675,6 +675,25 @@ describe('renderComponents', () => {
     expect(table).toContain('<table');
   });
 
+  it('P2.5 PR C, the Headlines view: the News page’s list over the news source: two columns from md, each headline an external link with the series’ bar, “Series · source” (the source alone without a series) and its age, each row marked with its series for the reader’s scope; no rule, no heading of its own; the route’s box without rows', async () => {
+    const list = await drawOver('news?per=10', NEWS, { preset: 'wire', view: 'headlines', rows: 150, heading: '' }, false);
+    expect(list).toContain('<section aria-label="The wire"');
+    expect(list).toContain('class="border-t border-text md:columns-2 md:gap-10"');
+    expect((list.match(/<a href="https:\/\/www\.example\.com\/\d" target="_blank" rel="nofollow noopener noreferrer"/g) ?? []).length).toBe(3);
+    expect(list).toMatch(/<h2 class="[^"]*font-serif text-17[^"]*">Headline 1<\/h2>/);
+    expect(list).toContain('Formula 1 · example.com');
+    expect(list).toMatch(/>example\.com<\/span>/);
+    expect(list).toContain('>4h ago<');
+    expect((list.match(/data-series="f1"/g) ?? []).length).toBe(3);
+    expect((list.match(/background-color:#e10600/g) ?? []).length).toBe(2);
+    expect(list).not.toContain('Reported elsewhere');
+    expect(list).not.toContain('<h1');
+    expect(list).not.toContain('>The wire<');
+    const empty = await drawOver('news?per=10', [], { preset: 'wire', view: 'headlines', rows: 150, heading: '' }, false);
+    expect(empty).toContain('No stories');
+    expect(empty).toContain('href="https://www.motorsport.com/"');
+  });
+
   it('P2.24 A, the image column and the shapes without a position: the Table over posts draws the cover as a thumbnail and the title linked to the post; the Standard cards draw the picture in the Media box (an empty box without one) and format a date slot; the compact List and Detail head their rows by the title and format the date; over news the title leaves the site in a new tab from the Table cell and from a Full Card zone', async () => {
     const table = await drawOver('posts?count=10', POSTS.slice(0, 2), { preset: 'lead-story', view: 'table', rows: 10, heading: '' });
     expect(table).toContain('<table');

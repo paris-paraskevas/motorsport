@@ -9,7 +9,7 @@ import type { PageDocument, Region } from './page-document';
 
 describe('composed pages', () => {
   it('lists the pages the registry marks as served from rows, and matches an address to one with its parts', () => {
-    expect(composedCodePages().map(p => p.path)).toEqual(['/calendar']);
+    expect(composedCodePages().map(p => p.path)).toEqual(['/calendar', '/news']);
     expect(matchComposedPage('/calendar')).toEqual({ page: expect.objectContaining({ path: '/calendar', served: 'rows' }), params: {} });
     expect(matchComposedPage('/calendar/extra')).toBeNull();
     expect(matchComposedPage('/series/f1')).toBeNull();
@@ -40,6 +40,14 @@ describe('composed pages', () => {
     const merged = composedDocument(frameOnly, '/calendar');
     expect(merged.regions.map(r => `${r.position}:${r.id}`)).toEqual(['header:kicker', 'body:heading', 'body:filters', 'body:month']);
     expect(composedDocument(null, '/nowhere').regions).toEqual([]);
+  });
+
+  it('the news page (P2.5 PR C): the heading with the route’s words, the Filters region over the wire region’s series, the wire region on the Headlines view over the News page’s ten per series, every row shown', () => {
+    const news = composedDocument(null, '/news');
+    expect(news.regions.map(r => `${r.position}:${r.id}:${r.kind === 'component' ? r.component : r.kind}:${r.seq}`)).toEqual(['body:heading:page.heading:10', 'body:filters:data.filters:20', 'body:wire:data.region:30']);
+    expect(news.regions[0]).toMatchObject({ settings: { text: 'The wire' } });
+    expect(news.regions[1]).toMatchObject({ settings: { filteredRegion: 'wire', facet1: 'seriesName' } });
+    expect(news.regions[2]).toMatchObject({ source: 'news?per=10', settings: { preset: 'wire', view: 'headlines', rows: 150 } });
   });
 
   it('adopts the recipe where a published transitional body sits, moving the Body regions after it past the fresh ones; every page served from rows has a recipe', () => {
