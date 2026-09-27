@@ -873,6 +873,83 @@ export function DataRegionHeadlines({ heading, rows, now, region }: DataRegionVi
   );
 }
 
+/** A Metric card (P2.7): the figure's label, whether it is a column's value or the count of rows, the columns of the value, the
+ *  description and the trend, and the rule naming its row (the first without one). */
+export interface MetricCard {
+  label: string;
+  figure: 'value' | 'count';
+  value: string;
+  description: string;
+  trend: string;
+  row?: ViewFilter;
+}
+
+/** Metric cards (P2.7; APEX 26.1's Metric Card theme component, "a single key value alongside a label and supporting details"):
+ *  a card per figure over the preset's rows, the figure a column of the first row or of the first row its rule names, drawn as the
+ *  Table draws the type (a share as its whole percent, since the Table's bar carries no words; a link column as its words alone,
+ *  since a card carries no link in this slot), a dash where no row passes; the
+ *  description beneath as the column reads, a number with its column's label in lower case (302 pts); the trend's sign and size
+ *  after the figure, a reader hearing up, down or level; the
+ *  count of the preset's rows for a count card; a name column's default label the preset's own (Driver, Co-Driver, Constructor).
+ *  The site's box for each, the columns per row from md; the rule above when a heading is set, its words the page's h1 when the
+ *  region is the first showing in the Body. */
+export function DataRegionMetrics({ heading, level, shape, nameLabel, rows, cards, columns }: { heading: string; level: 'h1' | 'h2'; shape: Shape; nameLabel: string; rows: readonly PresetRow[]; cards: readonly MetricCard[]; columns: number }) {
+  const leader = leaderPoints(rows);
+  const column = (key: string) => shape.columns.find(c => c.key === key);
+  const figureOf = (col: PresetColumn, row: PresetRow): ReactNode => {
+    if (col.type === 'percent') {
+      const share = shareOf(row, leader);
+      return share === null ? '—' : `${share}%`;
+    }
+    if (col.type === 'link') return text(row[col.key]) || '—';
+    const drawn = cellValue(col, row, leader);
+    return drawn === '' || drawn === null || drawn === undefined ? '—' : drawn;
+  };
+  const grid = columns === 2 ? 'md:grid-cols-2' : columns === 4 ? 'md:grid-cols-4' : 'md:grid-cols-3';
+  return (
+    <section aria-label={heading || 'Metrics'}>
+      {heading &&
+        (level === 'h1' ? (
+          <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
+            <h1 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{heading}</h1>
+          </div>
+        ) : (
+          <SectionRule label={heading} />
+        ))}
+      <div className={`grid gap-3 ${grid}`}>
+        {cards.map((c, i) => {
+          const row = c.row ? rows.find(r => rowPasses(r, c.row!, shape.columns)) : rows[0];
+          const col = c.figure === 'value' ? column(c.value) : undefined;
+          const label = c.label || (c.figure === 'count' ? 'Rows' : col?.key === 'name' ? nameLabel : (col?.label ?? c.value));
+          const figure: ReactNode = c.figure === 'count' ? rows.length : row && col ? figureOf(col, row) : '—';
+          const description = c.description && row ? column(c.description) : undefined;
+          const trend = c.trend && row ? num(row[c.trend]) : null;
+          return (
+            <div key={`${c.figure}-${c.value}-${i}`} className="border-[1.5px] border-text bg-surface-elevated p-4 shadow-lg">
+              <span className="block font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</span>
+              <span className="mt-1 flex flex-wrap items-baseline gap-x-2">
+                <span className="font-serif text-30 font-semibold leading-none tabular-nums text-text md:text-36">{figure}</span>
+                {trend !== null && (
+                  <span className="font-mono text-12 tabular-nums text-text-faint">
+                    <span aria-hidden="true">{trend > 0 ? '▲' : trend < 0 ? '▼' : '—'}</span>
+                    <span className="sr-only">{trend > 0 ? 'up' : trend < 0 ? 'down' : 'level'}</span> {Math.abs(trend)}
+                  </span>
+                )}
+              </span>
+              {description && row && (
+                <span className="mt-1 block font-mono text-11 text-text-faint">
+                  {figureOf(description, row)}
+                  {(description.type === 'number' || description.type === 'gap' || description.type === 'percent') && ` ${description.label.toLowerCase()}`}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 /** Home's What's next (components/HomeLead.tsx HomeWhatsNext) as the template of the weekends source (P2.24 B1): the section
  *  named by the region's heading, the rule with Home's words (the series' name in place of All series when the Source names one,
  *  R8), each weekend a link to its page with the series' bar, the title and the series' name; the first row still to start at the

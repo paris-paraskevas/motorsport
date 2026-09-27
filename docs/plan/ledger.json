@@ -509,6 +509,11 @@
    "date": "2026-09-27",
    "change": "R12 and P2.5 C merged and on prod: the calendar’s month grid on phones (1.0.193), the news page off its route file on the Filters region and the Headlines view (1.0.194); P2.5 done. The masthead of /news at the site’s heading size, named as the operator’s call, stands until they say otherwise.",
    "word": "the operator, 2026-09-27 ~09:48Z: “merge keep going”"
+  },
+  {
+   "date": "2026-09-27",
+   "change": "P2.7 Metric cards starts on the approved plan: one component over the Data region’s sources, a card per figure with its label, description, trend and row rule, the Preset without the Data region’s resets; the acceptance instance (the leader and the gap) proven in the local designer on the series hub, the hub’s code untouched; readers see nothing until an editor places a region.",
+   "word": "the operator, 2026-09-27 ~09:48Z: “merge keep going”; the plan approved in plan mode ~10:20Z"
   }
  ],
  "phases": {
@@ -968,12 +973,13 @@
    "phase": "P2",
    "title": "Metric cards",
    "scope": "Figures with labels and trend over standings brief, weekend facts, data counts.",
-   "fixedBy": "Metric Card (26.1 gallery)",
-   "defaults": "A card is one figure, label and trend from a source field; a row of cards is one region.",
+   "fixedBy": "Metric Card (26.1 gallery; the Universal Theme sample app’s Metric Card page and the 26.1 attributes Value · Value Description · Label · Avatar Icon · Badge Value · Badge State, verified 2026-09-27); the Data region’s read path and the parser’s shape checks; the plan of 2026-09-27 (~/.claude/plans/wobbly-wiggling-pudding.md, a Sonnet plan critic’s two blocking findings folded: the Preset pick’s resets, the sources assertion)",
+   "defaults": "A card is one figure, label and trend from a source field; a row of cards is one region. One component data.metrics (Data group, the Data region’s six sources): the Preset (the Data region’s options without their resets), a Heading, Columns per row (2 · 3 · 4 from md, one below), four cards each with a Label, a Figure (a column’s value or the count of rows), a Value column, a Description column, a Trend column (▲ ▼ — by the sign) and a Row rule in the address’s words (position.eq:2; empty the first row); the figures drawn as the Table draws its cells (a share as a whole percent); the site’s box for each card; APEX’s Avatar icon and Badge left for a later slot (no icon library on regions, no semantic colours in the theme); readers see nothing until an editor places a region; the hub untouched until P3.3.",
    "needsWord": "none",
    "acceptance": "Leader and gap on a series hub; test.",
-   "status": "planned",
-   "scopeHash": "2b0f6cfad1af"
+   "status": "started",
+   "scopeHash": "2b0f6cfad1af",
+   "evidence": "PLANNED 2026-09-27 in plan mode on the operator’s “merge keep going” (~09:48Z), the plan approved ~10:20Z · STARTED ~10:25Z (branch feat/p2.7-metric-cards): the tests first (six red across five files), the build (lib/design/components.ts, lib/design/component-render.tsx, components/data/DataRegionViews.tsx, components/designer/PageDesignerProperties.tsx) · GATES after the last edit: tsc 0 · lint 0 errors (the two known) · vitest 251 files, 2439 tests · cf:build clean · wrangler deploy --dry-run Total Upload 39316.01 KiB / gzip: 8556.29 KiB · ACCEPTANCE in the local designer: a Metric cards region on /series/f1 from the Gallery (Standings · Formula 1 · 2026, Preset Drivers; Leader = name with points, Gap to second = gap of position.eq:2 with the name, Wins, Drivers classified as a count; Columns 4), saved and published locally, the cards above the hub’s body at 1280px and 390px (screenshots p27-01..03) · REVIEW: a fresh-context Sonnet reviewer (220,242 tokens): BLOCKING on a link column drawing a live link inside the figure (the plan: no link on a card in this slot), fixed to the words alone; its four fixes taken (a name column's default label from the preset, a count card ignoring fields left from before, the heading as the page's h1 when first in the Body, stable keys), each with a test; the rest left as it was with its reasons · PR #1078 (1.0.196) opened; the merge on the word (the look shown first)"
   },
   {
    "id": "P2.8",

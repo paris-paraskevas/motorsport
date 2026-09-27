@@ -881,9 +881,9 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
               ))}
           </select>
         ) : s.kind === 'choice' && s.optionsFrom === 'columns' ? (
-          // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column): the preset's own mapping first, then the shape's columns; the share bar is no Media.
+          // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column): the preset's own mapping first, then the shape's columns; the share bar is no Media. Any other column choice (the Detail key, a facet, a Metric card's columns, P2.7) starts at None.
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
-            <option value="">{s.key === 'detailKey' || s.key.startsWith('facet') ? 'None' : `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}`}</option>
+            <option value="">{s.group === 'card' ? `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}` : 'None'}</option>
             {((s.key.startsWith('facet') ? facetShape : shape)?.columns ?? [])
               .filter(c => !(s.key === 'cardMedia' && c.type === 'percent'))
               .map(c => (

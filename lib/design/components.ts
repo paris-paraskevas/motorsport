@@ -362,6 +362,71 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     ],
     groups: [{ key: 'facets', title: 'Facets', seq: 10 }],
   },
+  // Metric cards (P2.7; APEX 26.1: the Metric Card theme component, "a single key value alongside a label and supporting
+  // details"): a card per figure over a preset's rows, each the value of a column on the first row or on the row a rule names,
+  // or the count of rows; a description and a trend beside it. Its Preset options are the Data region's without their resets:
+  // the View, the Rows and the Card slots are the Data region's keys, and a pick spreading them here would have the parser
+  // drop the region (the plan critic's finding). APEX's Avatar icon and Badge wait for a later slot; the theme has no
+  // semantic colours for a badge's state.
+  {
+    key: 'data.metrics',
+    name: 'Metric cards',
+    group: 'Data',
+    holds: 'figures with labels over a source’s rows: a card per figure, its value a column of the first row or of a row a rule names, with a description and a trend beside it',
+    settings: [
+      {
+        key: 'preset',
+        label: 'Preset',
+        kind: 'choice',
+        scope: 'report',
+        default: 'drivers',
+        options: PRESETS.map(p => ({ key: p.key, label: p.name, group: PRESET_GROUPS.find(g => g.key === p.group)?.name ?? p.group, only: { source: p.source, series: p.series } })),
+        help: 'Which of the site’s tables the cards read (APEX: the report’s source and template; ours: the named presets). The list follows the Source. A pick sets nothing else.',
+      },
+      { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The rule above the cards; empty draws none. The section’s name for a reader either way.' },
+      {
+        key: 'columns',
+        label: 'Columns',
+        kind: 'choice',
+        scope: 'report',
+        default: '3',
+        options: [
+          { key: '2', label: '2' },
+          { key: '3', label: '3' },
+          { key: '4', label: '4' },
+        ],
+        help: 'Cards per row from md (APEX: the Metric Card layouts; ours: one box look, the row’s count); one per row on a phone.',
+      },
+      // Four cards (APEX: Value, Value Description, Label; ours: the Figure, the Trend and the Row), a group each.
+      ...([1, 2, 3, 4] as const).flatMap(n => [
+        { key: `card${n}Label`, label: `Card ${n} label`, kind: 'text' as const, scope: 'report' as const, group: `card${n}`, default: '', maxLength: 40, help: 'The words above the figure (APEX: Label); empty draws the column’s label, or Rows for a count.' },
+        {
+          key: `card${n}Figure`,
+          label: `Card ${n} figure`,
+          kind: 'choice' as const,
+          scope: 'report' as const,
+          group: `card${n}`,
+          default: 'value',
+          options: [
+            { key: 'value', label: 'Column value' },
+            { key: 'count', label: 'Row count' },
+          ],
+          help: 'A column’s value on the card’s row, or the count of the rows the preset keeps (on a results preset, its classification rows).',
+        },
+        { key: `card${n}Value`, label: `Card ${n} value`, kind: 'choice' as const, scope: 'report' as const, group: `card${n}`, dependingOn: { key: `card${n}Figure`, values: ['value'] }, optionsFrom: 'columns' as const, default: '', help: 'The column drawn as the figure (APEX: Value), as the Table draws it: a gap against the leader, a share as a percent, the site’s date. No column, no card.' },
+        { key: `card${n}Description`, label: `Card ${n} description`, kind: 'choice' as const, scope: 'report' as const, group: `card${n}`, dependingOn: { key: `card${n}Figure`, values: ['value'] }, optionsFrom: 'columns' as const, default: '', help: 'A column drawn small beneath the figure (APEX: Value Description); none by default.' },
+        { key: `card${n}Trend`, label: `Card ${n} trend`, kind: 'choice' as const, scope: 'report' as const, group: `card${n}`, dependingOn: { key: `card${n}Figure`, values: ['value'] }, optionsFrom: 'columns' as const, default: '', help: 'A number column whose sign draws ▲, ▼ or — after the figure (ours: APEX’s badge state is static); none by default.' },
+        { key: `card${n}Row`, label: `Card ${n} row`, kind: 'text' as const, scope: 'report' as const, group: `card${n}`, dependingOn: { key: `card${n}Figure`, values: ['value'] }, rule: true as const, default: '', maxLength: 120, help: 'Which row the card reads, as a condition in the address’s words: position.eq:2 for the second. Empty reads the first row of the preset’s order; a row none passes draws a dash.' },
+      ]),
+    ],
+    groups: [
+      { key: 'card1', title: 'Card 1', seq: 10 },
+      { key: 'card2', title: 'Card 2', seq: 20 },
+      { key: 'card3', title: 'Card 3', seq: 30 },
+      { key: 'card4', title: 'Card 4', seq: 40 },
+    ],
+    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results'],
+  },
   // The Live band (P2.9; ours by name: APEX has no live band, a domain piece the site draws on Home as This weekend, whose
   // renderer is the band's first instance). It reads the content bundle through the home model as Home's pieces do, never
   // a query: the band's data is nested (the next session, the same-day sessions), which the catalogue's flat rows cannot
@@ -574,6 +639,19 @@ const shapeOf = (settings: Readonly<Record<string, SettingValue>>) => {
  *  label, a row link by its page. */
 export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Record<string, SettingValue>>): string {
   const shape = shapeOf(settings);
+  // Metric cards (P2.7): the preset, the columns and the cards set, each by its label, else its column's, else Rows for a count;
+  // the twenty-four card fields listed would name the tile past reading.
+  if (spec.key === 'data.metrics') {
+    const preset = findPreset(String(settings.preset ?? spec.settings[0].default));
+    const cards = [1, 2, 3, 4].flatMap(n => {
+      const count = settings[`card${n}Figure`] === 'count';
+      const value = String(settings[`card${n}Value`] ?? '');
+      if (!count && !value) return [];
+      const label = String(settings[`card${n}Label`] ?? '').trim();
+      return [label || (count ? 'Rows' : (shape?.columns.find(c => c.key === value)?.label ?? value))];
+    });
+    return `Preset ${preset?.name ?? String(settings.preset ?? '')} · Columns ${String(settings.columns ?? '3')} · ${cards.length ? `Cards ${cards.join(', ')}` : 'no card'}`;
+  }
   const parts = instanceAttributes(spec).flatMap(s => {
     const v = settings[s.key] ?? s.default;
     if (s.kind === 'text' && String(v).trim() === '') return [];

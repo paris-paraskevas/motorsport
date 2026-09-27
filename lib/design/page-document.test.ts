@@ -832,3 +832,17 @@ describe('the Filters region over the calendar (P2.5 PR B)', () => {
     expect(parsePageDocument(doc([filters({ filteredRegion: 'month', facet1: 'nope' }), month])).problems).toEqual(['region f: Facet 1 must be a column the filtered region carries']);
   });
 });
+
+describe('the Metric cards region (P2.7): every card’s columns and its row rule are the preset’s shape’s', () => {
+  const base = { kind: 'component', title: '', position: 'body', column: 1, span: 12, newRow: true, hidden: false, authz: null };
+  const metrics = (settings: Record<string, unknown>) => ({ ...base, id: 'm', seq: 10, component: 'data.metrics', source: 'standings?series=f1&season=2026', settings: { preset: 'drivers', ...settings } });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+  it('keeps a document whose cards name columns of the Drivers preset and a row rule its columns can read; refuses a column or a rule the shape lacks, and the Data region’s own keys', () => {
+    const kept = parsePageDocument(doc([metrics({ card1Label: 'Leader', card1Value: 'name', card1Description: 'points', card2Label: 'Gap to second', card2Value: 'gap', card2Row: 'position.eq:2', card4Figure: 'count' })]));
+    expect(kept.problems).toEqual([]);
+    expect(kept.value?.regions[0]).toMatchObject({ component: 'data.metrics', source: 'standings?series=f1&season=2026', settings: { preset: 'drivers', columns: '3', heading: '', card1Figure: 'value', card1Value: 'name', card2Row: 'position.eq:2', card3Value: '', card4Figure: 'count' } });
+    expect(parsePageDocument(doc([metrics({ card1Value: 'nope' })])).problems).toEqual([expect.stringMatching(/^region m: Card 1 value must be a column of the Drivers preset: /)]);
+    expect(parsePageDocument(doc([metrics({ card2Value: 'gap', card2Row: 'name.gt:3' })])).problems).toEqual(['region m: Card 2 row must be a condition on a column of the Drivers preset, like position.lte:3']);
+    expect(parsePageDocument(doc([metrics({ view: 'table' })])).problems).toEqual(['region m: Metric cards has no setting called view']);
+  });
+});
