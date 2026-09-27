@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1072 · 1.0.191 · P2.5 PR B · merged Fri 25 Sep 21:15 (18:15Z) under the standing word
+## #1073 · 1.0.191 · P2.5 PR B · merged Fri 25 Sep 21:15 (18:15Z) under the standing word
 **The calendar page on the Filters region.** The live /calendar rebuilt on the Filters box (the operator's "swap the pages"): the series and the sessions as facets of the calendar's own model, the picks from the address, the old links kept, the filter box gone.
 - **Readers see:** two chips (Series, Sessions) with counts above the calendar instead of the filter box; a pick reloads the page under a shareable address; old links with ?s= or ?races= still narrow.
 - **Editors get:** a Filters region may name the calendar as its filtered region; the calendar's facets in the Facets group.
