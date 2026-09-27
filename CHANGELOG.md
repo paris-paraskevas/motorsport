@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.195 — 2026-09-27
+
+### Records — R12 and P2.5 C done on prod
+
+Records only. `docs/plan/ledger.json`: R12 DONE with the merge (#1075 at 09:49Z, prod 1.0.193 by 09:53Z; the month grid seen on prod at 390px in the browser); P2.5 DONE on prod with PR C's merge (#1076 at 09:50Z, rebased onto main after R12, prod 1.0.194 by 09:54Z) and the parity of /news on prod against the capture from before (the metadata, the h1, the breadcrumb and the rows identical; 130 rows at once against 20 and Load more; one Series chip against thirteen buttons; the standfirst and the footer gone; the masthead at the site's heading size, named). `docs/pull-requests.md`: this entry.
+
 ## 1.0.194 — 2026-09-27
 
 ### P2.5 C — the news page on the Filters region and the Headlines view

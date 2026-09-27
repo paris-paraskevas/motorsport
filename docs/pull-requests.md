@@ -14,6 +14,16 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1077 · 1.0.195 · records · opened Sun 27 Sep 12:58 (09:58Z); the merge on the standing word
+**R12 and P2.5 C done on prod.** Records only: the two merges, the deploys, the prod checks (the phone grid in the browser, the news parity by curl).
+- **Readers see:** nothing.
+- **Editors get:** nothing new.
+- **Files (6):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R12 DONE (#1075 on prod, the 390px check); P2.5 DONE (PR C #1076 on prod, the parity of /news); a dated line for the word.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.195.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 59 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; prod /about 1.0.194 by 09:53:58Z; prod /calendar at 390px in the browser (the month grid with its bars and counts); prod /news against the capture of 01:37Z (the fields above).
+- **Review:** none; records.
+
 ## #1076 · 1.0.194 · P2.5 C · opened Sat 27 Sep 05:20 (02:20Z); the merge on the word
 **The news page on the Filters region and the Headlines view.** The last of P2.5's three PRs: `/news` off its route file, composed as the heading, a Filters region over the wire's series and the wire on the Headlines view, every row shown.
 - **Readers see:** the same page (title, description, card, breadcrumb, the h1 "The wire", the same rows in the same order) with every headline at once in two columns instead of twenty and Load more; one Series chip (the Filters region, a pick in the address) instead of the thirteen series chips; Everything / Yours only as before for a reader who follows series (a pick in the address starts at Everything; an empty Yours only says so); the standfirst and the footer gone; the masthead at the site's page-heading size (34px, 40px from md) instead of the route's own 38px, 46px (the reviewer's finding, named as the operator's call).
