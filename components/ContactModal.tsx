@@ -77,7 +77,13 @@ export function ContactForm({ onCancel }: { onCancel?: () => void }) {
       if (!res.ok) {
         throw new Error(data?.error || `error (${res.status})`);
       }
-      setResult({ ok: true, msg: 'Thanks — message received.' });
+      // The route says what took the message: the inbox, or the store alone
+      // when the email did not go (then a reply waits for the next look there).
+      setResult(
+        data?.emailed === false
+          ? { ok: true, msg: 'Thanks — message stored. A reply may take longer than usual.' }
+          : { ok: true, msg: 'Thanks — message received.' },
+      );
       setMessage('');
     } catch (err) {
       setResult({

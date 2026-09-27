@@ -57,7 +57,7 @@ async function sendViaResend(
 // echo the submitted message: this email goes to a visitor-supplied address,
 // so echoing attacker-controlled text would turn the form into a relay for
 // arbitrary content sent under our sender reputation. Receipt confirmation only.
-async function sendAckToVisitor(toEmail: string, category: Category): Promise<void> {
+async function sendAckToVisitor(toEmail: string, category: Category): Promise<{ ok: boolean; error?: string }> {
   const categoryLabel = CATEGORY_LABEL[category];
   const { html, text } = renderBrandedEmail({
     preheader: 'Thanks — we’ve got your message.',
@@ -69,7 +69,7 @@ async function sendAckToVisitor(toEmail: string, category: Category): Promise<vo
     cta: { label: 'Open Paddock', href: `${SITE_URL}/app` },
     footerNote: `You’re receiving this because you contacted us through ${SITE_URL.replace(/^https?:\/\//, '')}.`,
   });
-  await sendEmail({ to: toEmail, subject: `We’ve got your message — ${SITE_TITLE}`, text, html });
+  return sendEmail({ to: toEmail, subject: `We’ve got your message — ${SITE_TITLE}`, text, html });
 }
 
 export async function POST(req: Request) {
@@ -127,24 +127,37 @@ export async function POST(req: Request) {
     createdAt: new Date().toISOString(),
   };
 
+  // `stored` is the write's own truth, not the configuration's: the answer
+  // below leans on it.
+  let stored = false;
   if (isKvConfigured()) {
     const key = `paddock:contact:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
     try {
       // 12-month retention to match the privacy policy retention table.
       await kv.set(key, record, { ex: 60 * 60 * 24 * 365 });
-    } catch {
-      /* don't block on KV failure */
+      stored = true;
+    } catch (err) {
+      // Never block on the store; name the loss.
+      console.error(`[contact] store failed: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
   const sent = await sendViaResend(email, message, category, userId);
+  // A failed send is the operator's loss, not the visitor's, and it used to be
+  // silent (the operator's report of 2026-09-26: "I get nothing"). The Worker's
+  // log names the phase and the reason the wrapper gave — a missing
+  // RESEND_API_KEY or CONTACT_TO_EMAIL reads "resend not configured", a refused
+  // key or an unverified domain carries Resend's status — so the next
+  // `wrangler tail` shows it, and `emailed` lets the form say so.
+  if (!sent.ok) console.error(`[contact] send failed: ${sent.error ?? 'unknown'}`);
+  // Nothing kept the message: say so, and thank nobody for it.
+  if (!sent.ok && !stored) {
+    return NextResponse.json({ error: 'the message could not be delivered; try again later' }, { status: 503 });
+  }
 
   // Acknowledge the visitor (best-effort; never changes the response contract).
-  await sendAckToVisitor(email, category);
+  const ack = await sendAckToVisitor(email, category);
+  if (!ack.ok) console.error(`[contact] ack failed: ${ack.error ?? 'unknown'}`);
 
-  return NextResponse.json({
-    ok: true,
-    stored: isKvConfigured(),
-    emailed: sent.ok,
-  });
+  return NextResponse.json({ ok: true, stored, emailed: sent.ok });
 }

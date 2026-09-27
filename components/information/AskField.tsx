@@ -6,7 +6,9 @@ import { useState } from 'react';
 // The Learn hub's "Ask a question" field (design handoff §4.3, panel 9a):
 // a 44px input with a hard ink border that filters the full answer index in
 // place — the writing is the product, the field is how you reach it. Pure
-// client filtering over the slim list the server ships; no network.
+// client filtering over the slim list the server ships; no network. The hint
+// keeps one example: at 12px mono a phone shows about forty characters, and the
+// two-example hint was cut mid-word (the operator's report, 2026-09-26).
 export function AskField({ entries }: { entries: Array<{ q: string; href: string }> }) {
   const [query, setQuery] = useState('');
   const q = query.trim().toLowerCase();
@@ -18,7 +20,7 @@ export function AskField({ entries }: { entries: Array<{ q: string; href: string
         type="text"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        placeholder="Ask a question — try “what is DRS” or “how do WEC points work”"
+        placeholder="Ask a question — try “what is DRS”"
         aria-label="Search the answers"
         className="h-11 w-full border-[1.5px] border-text bg-surface-elevated px-3 font-mono text-12 text-text outline-none placeholder:text-text-muted"
       />
