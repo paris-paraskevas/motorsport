@@ -14,6 +14,22 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1080 · 1.0.198 · R13 A · opened Mon 28 Sep 01:40 (27 Sep 22:40Z); the merge on the word
+**The SEO check of 2026-09-27, PR A: the server and the head.** Every finding verified on prod first; the code fixes that need no look change.
+- **Readers see:** a plain http or a www link lands on the apex over https (one 301); the home's title and description in search results are shorter; nothing on the pages changes.
+- **Editors get:** nothing new; a Page heading region that is not first in the Body is an h2 of the same look.
+- **Files (13):**
+  - `middleware.ts`, `middleware.test.ts` · the two 301s before the session read, by exact host; three cases (http, www, the other hosts untouched).
+  - `next.config.ts` · `poweredByHeader: false`.
+  - `app/(app)/layout.tsx` · `icons.apple`; the Organization and WebSite JSON-LD on every page.
+  - `app/(app)/page.tsx` · the title (53 characters) and the description (148).
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · page.heading an h1 only when first in the Body.
+  - `IDEAS.md` · the anchors and the copy left by design.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R13 on the word; PR A's evidence.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.198.
+- **Verified:** tests first (three red across two files), then green; tsc 0; lint 0 errors (the two known warnings); vitest 251 files, 2442 tests; cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39186.43 KiB / gzip: 8521.38 KiB; on the local server: the head carries the Apple icon link and two ld+json blocks, the title and the description as written; the redirects cannot fire locally by design (the unit tests carry them); on prod after the merge: the curl checks of the plan, pasted into the ledger.
+- **Review:** a fresh-context Sonnet reviewer (207,798 tokens): SOUND WITH FIXES, none blocking; it traced the favicon suppression the local server had shown (an icons object in the metadata ends Next's file-based icon merge, resolve-metadata.js) and confirmed /icon.png as the favicon's route; the redirects' loop-safety traced to the Worker's own request scheme, OpenNext's Location normalisation, the header flag, the JSON-LD, the lengths and the heading level confirmed; its one gap, the records, closed in this commit
+
 ## #1079 · 1.0.197 · records · opened Sun 27 Sep 23:06 (20:06Z); the merge on the standing word
 **P2.7 done on prod.** Records only: the merge, the deploy, the slot closed.
 - **Readers see:** nothing.

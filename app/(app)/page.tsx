@@ -36,13 +36,13 @@ const BASE_METADATA: Metadata = {
   // land on from a search for the site itself, so it carries the site name and
   // what it does rather than an internal label.
   title: {
-    absolute: `${SITE_TITLE} — every session, every result, in your own time zone`,
+    absolute: `${SITE_TITLE} — every result, in your own time zone`,
   },
-  description:
-    'Fifteen motorsport championships in one place: the latest result and what it changed in the championship, what races next, and the wire. F1, MotoGP, WEC, IndyCar, NASCAR, WRC and more, in your local time. Free to browse, no account needed.',
+  // Within Google's width (R13, the SEO check of 2026-09-27: 239 characters drew 1524px against 1000): 148 characters.
+  description: 'Fifteen motorsport championships in one place: the latest result, what it changed, what races next, and the wire. F1, MotoGP, WEC, IndyCar and more.',
   alternates: { canonical: '/' },
   ...withSocialMeta({
-    title: `${SITE_TITLE} — every session, every result, in your own time zone`,
+    title: `${SITE_TITLE} — every result, in your own time zone`,
     description:
       'Fifteen motorsport championships in one place — schedules, standings, results and sourced explainers, in your own time zone. Free to browse, no account needed.',
     path: '/',

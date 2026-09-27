@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.198 — 2026-09-27
+
+### R13 A — the SEO check of 2026-09-27: the server and the head
+
+The operator's Seobility check of the home (34/100), every finding verified on prod before a line changed. `middleware.ts`: plain http on `paddock-tracker.com` and every request to `www.paddock-tracker.com` answer one 301 to the apex over https (the path and the query kept), before the session is read; the host by exact equality, so the dev and testing hosts and localhost are untouched. `next.config.ts`: the X-Powered-By header off. `app/(app)/layout.tsx`: the Apple touch icon from the PWA's 192px icon through metadata; the Organization and WebSite JSON-LD (`lib/json-ld.ts`, without a caller since the landing was retired) printed on every page, resolving the `#org` and `#website` ids every Article and SportsEvent schema already points at. `app/(app)/page.tsx`: the home's title at 53 characters and its description at 148 (629px and 1524px before, against Google's 580 and 1000); the social description stays. `lib/design/component-render.tsx`: the Page heading component draws the page's h1 only when it is the first showing in the Body, an h2 of the same look otherwise (Home's eight section headings drew eight h1s). An icons object in the metadata ends Next's file-based icon merge, so the favicon (app/icon.png) is named beside the Apple icon (seen on the local server, traced by the reviewer); the same flag also drops OpenNext's own X-OpenNext header, which nothing reads. Left by design, in IDEAS: the rows' and cards' single-link anchors, the copy's sentence length. The five duplicate "Drivers" headings are the operator's Home document (theirs in the designer); the response time is a measured performance slot after (PR C); the images' alt texts follow in PR B; backlinks are not code.
+
 ## 1.0.197 — 2026-09-27
 
 ### Records — P2.7 done on prod

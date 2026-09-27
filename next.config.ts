@@ -78,6 +78,8 @@ const CSP = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // The X-Powered-By header named the framework for nothing (R13, the SEO check of 2026-09-27).
+  poweredByHeader: false,
   // Images: the Cloudflare Workers runtime has no built-in Next image optimizer,
   // so serve unoptimized (one component uses next/image). A Cloudflare Images
   // custom loader can be added later if optimization is wanted.
