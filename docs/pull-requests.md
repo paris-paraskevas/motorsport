@@ -14,6 +14,16 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1079 · 1.0.197 · records · opened Sun 27 Sep 23:06 (20:06Z); the merge on the standing word
+**P2.7 done on prod.** Records only: the merge, the deploy, the slot closed.
+- **Readers see:** nothing.
+- **Editors get:** nothing new (the Metric cards of 1.0.196 stand).
+- **Files (6):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.7 DONE (#1078 on prod); a dated line for the word.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.197.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 59 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; prod /about 1.0.196 by 20:03:21Z.
+- **Review:** none; records.
+
 ## #1078 · 1.0.196 · P2.7 · opened Sun 27 Sep 17:01 (14:01Z); the merge on the word
 **Metric cards.** APEX 26.1's Metric Card as a component over the catalogue's sources: a card per figure (a column of a row, or the count of rows), its label, description and trend; the Preset without the Data region's resets.
 - **Readers see:** nothing until an editor places a Metric cards region on a page.
