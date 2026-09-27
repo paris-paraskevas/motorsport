@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.199 — 2026-09-27
+
+### R13 B — the SEO check of 2026-09-27: the images' words
+
+The eighteen images on the home carried an empty alt, decorative by design. Content images now name their content: the lead's cover and its further-reading thumbnails the post's title (`components/data/DataRegionViews.tsx` DataRegionLeadStory, `components/HomeLead.tsx` its twin), a card's media the card's title (the Cards view), a Table picture the row's name (`cellValue`'s image case reads it off the row). For a reader: the cover's link is hidden from assistive technology, so its words serve crawlers and image search alone; a card's link names itself already; the three thumbnails are heard twice beside their title, the common trade. Tests: the three assertions that asserted an empty alt now assert the title, a Cards media case, the Home lead's twin.
+
 ## 1.0.198 — 2026-09-27
 
 ### R13 A — the SEO check of 2026-09-27: the server and the head

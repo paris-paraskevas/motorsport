@@ -44,6 +44,13 @@ describe('HomeLead', () => {
     expect(leading).toMatch(/<h1[^>]*>Andrea Kimi Antonelli wins/);
   });
 
+  it('the lead’s cover and a thumbnail name their story (R13, the SEO check of 2026-09-27); the cover’s link stays hidden from a reader', () => {
+    const covered = renderToStaticMarkup(<HomeLeadStory blog={{ ...blog, heroImage: 'https://img.example/monza.jpg' }} suggested={1} />);
+    // The file's Link mock drops aria-hidden and tabindex; the cover's words are what this asserts (the hidden link is component-render.test.tsx's).
+    expect(covered).toContain('<img src="https://img.example/monza.jpg" alt="Monza, a history"');
+    expect(covered).not.toContain('alt=""');
+  });
+
   it('each piece renders on its own with its settings: further reading capped, table rows capped, headings by place', () => {
     expect((renderToStaticMarkup(<HomeLeadStory blog={blog} suggested={1} />).match(/\/blog\/(a|b)"/g) ?? []).length).toBe(1);
     expect((renderToStaticMarkup(<HomeWhatChanged changed={changed} rows={2} />).match(/border-b border-border py-1.5/g) ?? []).length).toBe(2);
