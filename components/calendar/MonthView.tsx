@@ -203,101 +203,22 @@ export function MonthView({
   const weeks: DayCell[][] = [];
   for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
 
-  // Below md the month renders as an agenda, not a grid: a 7-column grid can't
-  // carry text at 390px, and the dot row it used to show carried no information
-  // (feedback board 2026-08-20: "chaotic on mobile"). Days without sessions
-  // don't rent space; today always appears as an anchor.
-  // Operator, 2026-08-25: "i want it to look like google calendar". That means
-  // Google's mobile SCHEDULE view, which is the shape this already was
-  // underneath: the date moves into a narrow left gutter (day number large,
-  // weekday small beneath it) with the sessions stacked to its right, empty days
-  // omitted, and today's number in a filled circle instead of a "· Today"
-  // suffix. The full-width date header the agenda used before cost a whole row
-  // per day for three words.
-  //
-  // The circle is a deliberate exception to the house sharp-corners rule: it is
-  // the single most recognisable cue in the thing being asked for.
-  const dayFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric' });
+  // The grid at every width (R12, the operator's word of 2026-09-27: "id like the desktop calendar on mobile. i prefer
+  // desktop"). The phone agenda of 2026-08-25 (Google's schedule view) is gone with it, the second word on one behaviour
+  // after the grid's "chaotic on mobile" of 2026-08-20: below md a day shows its sessions as series bars alone and a tap
+  // opens the day; the weekend banners and the legend stay md+.
   const weekdayFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short' });
-  const agendaDays = cells.filter(c => c.inMonth && ((buckets.get(c.key)?.length ?? 0) > 0 || c.isToday));
 
   return (
     <div>
-      <div className="md:hidden">
-        {agendaDays.length === 0 ? (
-          <p className="border-y border-border py-6 text-center font-mono text-xs uppercase tracking-[0.12em] text-text-muted">
-            Nothing scheduled this month
-          </p>
-        ) : (
-          agendaDays.map(cell => {
-            const entries = buckets.get(cell.key) ?? [];
-            const lines = summariseDay(entries, roundByKey);
-            return (
-              <section key={cell.key} className="flex gap-3 border-b border-border py-2.5">
-                {/* The date gutter. Fixed width so every day's sessions start on
-                    the same left edge — the column that makes a schedule read as
-                    a schedule rather than as a list of headings. Pinned to the
-                    top of its day: a button centres its content, so stretched to
-                    the row it floated the date halfway down a long day (the
-                    operator's report, 2026-09-26). */}
-                <button
-                  type="button"
-                  onClick={() => onSelectDay(cell.date)}
-                  aria-label={`Open ${weekdayFmt.format(cell.date)} ${dayFmt.format(cell.date)}`}
-                  className="w-9 shrink-0 self-start pt-0.5 text-center"
-                >
-                  <span
-                    className={`mx-auto flex h-7 w-7 items-center justify-center font-mono text-15 font-semibold tabular-nums ${
-                      cell.isToday ? 'rounded-full bg-brand-fill text-bg' : 'text-text'
-                    }`}
-                  >
-                    {dayFmt.format(cell.date)}
-                  </span>
-                  <span
-                    className={`mt-0.5 block font-mono text-9 font-semibold uppercase tracking-[0.1em] ${
-                      cell.isToday ? 'text-brand' : 'text-text-faint'
-                    }`}
-                  >
-                    {weekdayFmt.format(cell.date)}
-                  </span>
-                </button>
-
-                <div className="min-w-0 flex-1">
-                  {lines.map(l => (
-                    <Link key={l.key} href={l.href} className="flex min-h-10 min-w-0 items-center gap-2">
-                      <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: l.color }} />
-                      <span className="w-12 shrink-0 font-mono text-9 font-semibold uppercase tracking-[0.08em] text-text-faint">
-                        {code(l.seriesSlug)}
-                      </span>
-                      <span
-                        className={`min-w-0 flex-1 truncate font-serif text-14 leading-tight ${
-                          l.decides ? 'font-semibold text-text' : 'text-text-muted'
-                        }`}
-                      >
-                        {l.label}
-                      </span>
-                      <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">{l.time}</span>
-                    </Link>
-                  ))}
-                  {entries.length === 0 && (
-                    <p className="flex min-h-10 items-center font-serif text-13 italic leading-snug text-text-muted">
-                      Nothing today.
-                    </p>
-                  )}
-                </div>
-              </section>
-            );
-          })
-        )}
-      </div>
-      <div className="hidden grid-cols-7 border-b border-text md:grid">
+      <div className="grid grid-cols-7 border-b border-text">
         {WEEKDAYS.map(d => (
           <div key={d} className="px-1.5 pb-1 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-muted">
             {d}
           </div>
         ))}
       </div>
-      <div className="hidden md:block">
+      <div>
       {weeks.map((week, wi) => {
         const banners = bannersForWeek(week, buckets, roundByKey, roundNames);
         return (
@@ -349,10 +270,12 @@ export function MonthView({
                         onSelectDay(cell.date);
                       }
                     }}
-                    className={`flex min-h-[72px] cursor-pointer flex-col border-b border-r border-border px-[9px] pt-[6px] pb-[7px] transition-colors duration-(--duration-fast) hover:bg-surface md:min-h-[100px] ${
+                    className={`flex min-h-[52px] cursor-pointer flex-col border-b border-r border-border px-[9px] pt-[6px] pb-[7px] transition-colors duration-(--duration-fast) hover:bg-surface md:min-h-[100px] ${
                       cell.inMonth ? '' : 'opacity-55'
                     } ${cell.isToday ? 'bg-surface-elevated shadow-[inset_0_0_0_2px_var(--brand)]' : ''}`}
                   >
+                    {/* Below md the cell is the only tappable surface (R12): its name for a reader, as the agenda's button had it; md+ unchanged. */}
+                    <span className="sr-only md:hidden">{`Open ${weekdayFmt.format(cell.date)}`}</span>
                     <div className="flex items-baseline justify-between">
                       <span className={`font-mono text-xs tabular-nums ${cell.isToday ? 'font-semibold text-brand' : 'text-text-muted'}`}>
                         {cell.date.getDate()}
@@ -361,6 +284,13 @@ export function MonthView({
                       {entries.length > 0 && (
                         <span className="font-mono text-10 tabular-nums text-text-faint">{entries.length}</span>
                       )}
+                    </div>
+                    {/* Below md (R12): the day's sessions as series bars alone, the cap and the order of the lines, the bars sharing the
+                        cell's width (a 390px cell is about 32px inside, too narrow for fixed bars in one row); a tap opens the day. */}
+                    <div className="mt-1 flex gap-[2px] md:hidden" aria-hidden="true">
+                      {visible.map(l => (
+                        <span key={l.key} className="h-[5px] min-w-0 flex-1" style={{ backgroundColor: l.color }} />
+                      ))}
                     </div>
                     {/* md+: summarising lines, capped — deciders always shown,
                         one line each, the tail behind "+N more". */}

@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.193 — 2026-09-27
+
+The calendar shows the month as a grid on phones too, each day with a bar per series racing that day; tap a day for its sessions.
+
 ## 1.0.192 — 2026-09-27
 
 On a phone, a boxed latest result no longer runs past the edge of the screen, the Learn page's question box shows its whole hint, and the calendar's day numbers sit at the top of their day instead of halfway down it. The contact form now says when your message was stored but its email could not be sent, instead of claiming a delivery it cannot vouch for.
