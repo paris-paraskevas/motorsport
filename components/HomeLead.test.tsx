@@ -48,6 +48,8 @@ describe('HomeLead', () => {
     expect((renderToStaticMarkup(<HomeLeadStory blog={blog} suggested={1} />).match(/\/blog\/(a|b)"/g) ?? []).length).toBe(1);
     expect((renderToStaticMarkup(<HomeWhatChanged changed={changed} rows={2} />).match(/border-b border-border py-1.5/g) ?? []).length).toBe(2);
     expect(renderToStaticMarkup(<HomeLatestResult result={result} changed={changed} heading="h2" compact />)).toMatch(/<h2[^>]*text-24/);
+    // The twin of the Podium view's column (R11): min-w-0, so the box stays inside a phone's screen.
+    expect(renderToStaticMarkup(<HomeLatestResult result={result} changed={changed} heading="h2" compact />)).toContain('<div class="min-w-0"><div class="flex items-baseline justify-between border-b border-text pb-1">');
     expect(renderToStaticMarkup(<HomeWhatsNext next={next} />)).toContain('Spanish Grand Prix (Madrid)');
     expect(renderToStaticMarkup(<HomeWire wire={wire} />)).toContain('example.com');
     expect(renderToStaticMarkup(<HomeThisWeekend liveWeekends={live} />)).toContain('Italian Grand Prix');
