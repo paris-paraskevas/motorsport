@@ -694,6 +694,53 @@ describe('renderComponents', () => {
     expect(empty).toContain('href="https://www.motorsport.com/"');
   });
 
+  it('P2.7, Metric cards: from a saved document over the standings, a card per figure: the leader’s name with the points beneath, the gap of the row a rule names, a number with its trend, the count of the preset’s rows, a share as a percent; the columns per row; the rule above; a card without a value skipped; a dash where no row passes; nothing without a card', async () => {
+    const settings = { preset: 'drivers', heading: 'Drivers’ championship', columns: '4', card1Label: 'Leader', card1Value: 'name', card1Description: 'points', card2Label: 'Gap to second', card2Value: 'gap', card2Description: 'name', card2Row: 'position.eq:2', card3Label: 'Wins', card3Value: 'wins', card3Trend: 'wins', card4Label: 'Drivers classified', card4Figure: 'count' };
+    const m = html((await renderComponents(doc([region('m', 'data.metrics', settings, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).m);
+    expect(m).toContain('<section aria-label="Drivers’ championship"');
+    expect(m).toContain('>Drivers’ championship<');
+    expect(m).toContain('class="grid gap-3 md:grid-cols-4"');
+    expect((m.match(/font-serif text-30/g) ?? []).length).toBe(4);
+    expect(m).toContain('>Leader<');
+    expect(m).toContain('>Andrea Kimi Antonelli<');
+    expect(m).toContain('>267 pts<');
+    expect(m).toContain('>Gap to second<');
+    expect(m).toContain('>−66<');
+    expect(m).toContain('>George Russell<');
+    expect(m).toContain('>Wins<');
+    expect(m).toContain('>7<');
+    expect(m).toContain('<span aria-hidden="true">▲</span><span class="sr-only">up</span> 7');
+    expect(m).toContain('>Drivers classified<');
+    expect(m).toContain('>2<');
+    // A card without a value is skipped; a label left empty takes the column’s; a share draws as a whole percent; no rule passing draws a dash; a heading left empty draws no rule.
+    const some = html((await renderComponents(doc([region('m', 'data.metrics', { preset: 'drivers', card1Value: 'share', card2Value: 'name', card2Row: 'position.eq:9', card3Label: 'Nothing here' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).m);
+    expect((some.match(/font-serif text-30/g) ?? []).length).toBe(2);
+    expect(some).toContain('>Share<');
+    expect(some).toContain('>100%<');
+    expect(some).toContain('>—<');
+    expect(some).not.toContain('Nothing here');
+    expect(some).toContain('<section aria-label="Metrics"');
+    expect(some).not.toContain('border-b border-text pb-1');
+    expect(html((await renderComponents(doc([region('m', 'data.metrics', { preset: 'drivers' }, { source: 'standings?series=f1&season=2026' } as Partial<Region>)]), { path: '/x' })).m)).toBe('');
+    // The reviewer's findings: a link column draws its words alone whatever the row's address (a card carries no link in this slot); a name
+    // column's default label is the preset's own; a count card ignores a value, a description and a trend left from before; first in the
+    // Body, the heading is the page's h1.
+    readSource.mockResolvedValueOnce({ columns: [], total: 1, rows: [{ kind: 'co-driver', position: 1, name: 'Vincent Landais', code: null, team: 'Toyota', points: 100, wins: 3, class: null, profile: '/drivers/vincent-landais' }], provenance: { ref: { source: 'standings', params: { series: 'wrc', season: 2026 } }, label: 'Standings · WRC · 2026', tier: 'db', keys: [], rows: 1, ms: 1 } });
+    const co = html((await renderComponents(doc([region('m', 'data.metrics', { preset: 'co-drivers', heading: 'Co-drivers', card1Value: 'name', card1Description: 'name', card2Figure: 'count', card2Value: 'name', card2Description: 'points', card2Trend: 'wins' }, { source: 'standings?series=wrc&season=2026' } as Partial<Region>)]), { path: '/x' })).m);
+    expect(co).not.toContain('<a ');
+    expect((co.match(/>Vincent Landais</g) ?? []).length).toBe(2);
+    expect(co).toContain('>Co-Driver<');
+    expect(co).toMatch(/<h1 class="[^"]*">Co-drivers<\/h1>/);
+    expect(co).toContain('>Rows<');
+    expect(co).toContain('>1<');
+    expect(co).not.toContain('100 pts');
+    expect(co).not.toContain('sr-only');
+    // Not first in the Body (a heading region before it), the rule's words are a span, as the wire's.
+    const second = html((await renderComponents(doc([region('h', 'page.heading'), region('m', 'data.metrics', { preset: 'drivers', heading: 'Below', card1Value: 'points' }, { source: 'standings?series=f1&season=2026', seq: 20 } as Partial<Region>)]), { path: '/x' })).m);
+    expect(second).not.toContain('<h1');
+    expect(second).toContain('>Below<');
+  });
+
   it('P2.24 A, the image column and the shapes without a position: the Table over posts draws the cover as a thumbnail and the title linked to the post; the Standard cards draw the picture in the Media box (an empty box without one) and format a date slot; the compact List and Detail head their rows by the title and format the date; over news the title leaves the site in a new tab from the Table cell and from a Full Card zone', async () => {
     const table = await drawOver('posts?count=10', POSTS.slice(0, 2), { preset: 'lead-story', view: 'table', rows: 10, heading: '' });
     expect(table).toContain('<table');

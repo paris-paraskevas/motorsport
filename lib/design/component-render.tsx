@@ -7,7 +7,7 @@ import { SHAPES, findPreset, presetRows, rowPasses } from './presets';
 import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 import { resolveDestination, type PageDestinations } from './destinations';
-import type { CardActions, CardSlots, DetailShowing, HighlightStyle, MasterSelect, RegionControls, RowHighlight } from '@/components/data/DataRegionViews';
+import type { CardActions, CardSlots, DetailShowing, HighlightStyle, MasterSelect, MetricCard, RegionControls, RowHighlight } from '@/components/data/DataRegionViews';
 import { VALUE_MAX, applySavedView, bindViewState, encodeViewState, filterOps, parseRule, parseViewState, viewStateHref, type ViewState } from './view-state';
 
 // The server half of the component catalogue (lib/design/components.ts): how
@@ -126,6 +126,33 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
   },
   // The Live band (P2.9); This weekend, Home's retired piece, upgrades to it on read (P2.24 C).
   'series.live': settings => drawLiveBand(settings),
+  // Metric cards (P2.7; APEX 26.1: the Metric Card theme component): the preset's rows read as the Data region reads them (the
+  // shared read where a Filters region has it), every row the preset keeps (a count card counts them); each card a column of the
+  // first row, or of the first row its rule names, or the count; the view draws the figures as the Table draws its cells. Nothing
+  // without a card naming a value or a count (APEX: a report without rows).
+  async 'data.metrics'(settings, ctx) {
+    if (!ctx.source) return null;
+    const preset = findPreset(str(settings.preset));
+    if (!preset) return null;
+    const shape = SHAPES[preset.shape];
+    const cards = ([1, 2, 3, 4] as const).flatMap((n): MetricCard[] => {
+      const figure = str(settings[`card${n}Figure`]) === 'count' ? ('count' as const) : ('value' as const);
+      // A count card carries its label alone: a value, a description, a trend or a row left from before it was a count are not read.
+      if (figure === 'count') return [{ label: str(settings[`card${n}Label`]), figure, value: '', description: '', trend: '' }];
+      const value = str(settings[`card${n}Value`]);
+      if (!shape.columns.some(c => c.key === value)) return [];
+      const rule = str(settings[`card${n}Row`]);
+      const parsed = rule ? parseRule(rule) : '';
+      const row = typeof parsed !== 'string' && shape.columns.some(c => c.key === parsed.column) ? parsed : undefined;
+      return [{ label: str(settings[`card${n}Label`]), figure, value, description: str(settings[`card${n}Description`]), trend: str(settings[`card${n}Trend`]), row }];
+    });
+    if (cards.length === 0) return null;
+    const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
+    const read = ctx.read ? await ctx.read() : await readSource(ctx.source);
+    ctx.onSourceRead?.(read.provenance);
+    const rows = presetRows(read.rows, preset, Number.MAX_SAFE_INTEGER);
+    return <views.DataRegionMetrics heading={str(settings.heading)} level={ctx.first ? 'h1' : 'h2'} shape={shape} nameLabel={preset.nameLabel} rows={rows} cards={cards} columns={Number(str(settings.columns)) || 3} />;
+  },
   // Filters (P2.5; APEX: Smart Filters): the chips over its target's rows; nothing without a target or where no state can arrive.
   async 'data.filters'(settings, ctx) {
     const f = ctx.filters;
@@ -285,6 +312,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'page.heading': [],
   'calendar.month': ['content:series'],
   'series.live': ['content:series'],
+  // Metric cards read a Source as the Data region does (P2.7).
+  'data.metrics': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Filters region reads its target's Source (P2.5): the same tiers, once for both.
   'data.filters': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Data region reads its Source: the standings' two tiers, the results' snapshots, the posts table and the news aggregate

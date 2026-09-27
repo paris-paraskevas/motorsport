@@ -33,7 +33,9 @@ describe('the component catalogue', () => {
 
   it('P2.1: the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1); no other definition reads one (What it changed left with Home’s six, P2.24 C)', () => {
     expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results']);
-    for (const c of COMPONENTS) if (c.key !== 'data.region') expect(c.sources, c.key).toBeUndefined();
+    // P2.7: the Metric cards read the same six; no other definition reads one.
+    expect(findComponent('data.metrics')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results']);
+    for (const c of COMPONENTS) if (c.key !== 'data.region' && c.key !== 'data.metrics') expect(c.sources, c.key).toBeUndefined();
   });
 
   it('P2.2: the Data region’s attributes are per multi-row region: Preset (the thirty-three, grouped by the fifteen, each bound to a source and its series, the results ones waiting), View (Table · Cards), Rows, Heading', () => {
@@ -352,5 +354,40 @@ describe('the Filters component (P2.5; APEX: Smart Filters)', () => {
     expect(parseSettings(spec, { filteredRegion: 'Bad Id' }).problems).toEqual(['Filtered region must name a region of the page: lower-case letters, digits and dashes']);
     const summary = settingsSummary(spec, { filteredRegion: 'drivers', facet1: 'team' });
     expect(summary).toBe('Filtered region drivers · Facet 1 team');
+  });
+});
+
+describe('the Metric cards component (P2.7; APEX 26.1: the Metric Card theme component)', () => {
+  it('draws figures over a preset’s rows: the preset (the same options as the Data region’s, none setting anything else), a heading, the columns per row, and four cards each with a label, a figure, a value, a description and a trend column and a row rule, in a group each; the summary names the preset, the columns and the cards set', () => {
+    const metrics = findComponent('data.metrics')!;
+    expect(metrics).toMatchObject({ name: 'Metric cards', group: 'Data' });
+    const cards = [1, 2, 3, 4].flatMap(n => [
+      [`card${n}Label`, 'text', `card${n}`],
+      [`card${n}Figure`, 'choice', `card${n}`],
+      [`card${n}Value`, 'choice', `card${n}`],
+      [`card${n}Description`, 'choice', `card${n}`],
+      [`card${n}Trend`, 'choice', `card${n}`],
+      [`card${n}Row`, 'text', `card${n}`],
+    ]);
+    expect(metrics.settings.map(s => [s.key, s.kind, s.group])).toEqual([['preset', 'choice', undefined], ['heading', 'text', undefined], ['columns', 'choice', undefined], ...cards]);
+    expect(metrics.settings.every(s => s.scope === 'report')).toBe(true);
+    expect(metrics.groups?.map(g => [g.key, g.title])).toEqual([['card1', 'Card 1'], ['card2', 'Card 2'], ['card3', 'Card 3'], ['card4', 'Card 4']]);
+    // The preset options are the Data region's, bound to the source and its series, and set nothing else: the Data region's
+    // resets (the View, the Rows, the Card slots) are foreign keys here, and a pick spreading them would have the parser drop the region.
+    const preset = metrics.settings[0];
+    const region = findComponent('data.region')!.settings[0];
+    expect(preset.options?.map(o => [o.key, o.label, o.group, o.only])).toEqual(region.options?.map(o => [o.key, o.label, o.group, o.only]));
+    expect(preset.options?.every(o => o.sets === undefined)).toBe(true);
+    expect(preset.default).toBe('drivers');
+    expect(parseSettings(metrics, { view: 'table' }).problems).toEqual(['Metric cards has no setting called view']);
+    // The value, the description, the trend and the row wait on the figure being a column value (a count card carries its label alone).
+    for (const n of [1, 2, 3, 4]) {
+      expect(metrics.settings.find(s => s.key === `card${n}Figure`)).toMatchObject({ default: 'value', options: [{ key: 'value', label: 'Column value' }, { key: 'count', label: 'Row count' }] });
+      for (const k of ['Value', 'Description', 'Trend']) expect(metrics.settings.find(s => s.key === `card${n}${k}`)).toMatchObject({ optionsFrom: 'columns', default: '', dependingOn: { key: `card${n}Figure`, values: ['value'] } });
+      expect(metrics.settings.find(s => s.key === `card${n}Row`)).toMatchObject({ rule: true, default: '', dependingOn: { key: `card${n}Figure`, values: ['value'] } });
+    }
+    expect(metrics.settings.find(s => s.key === 'columns')).toMatchObject({ default: '3', options: [{ key: '2', label: '2' }, { key: '3', label: '3' }, { key: '4', label: '4' }] });
+    expect(settingsSummary(metrics, { preset: 'drivers', columns: '3', card1Label: 'Leader', card1Value: 'name', card1Description: 'points', card2Label: 'Gap to second', card2Value: 'gap', card2Row: 'position.eq:2', card3Value: 'wins', card4Figure: 'count' })).toBe('Preset Drivers · Columns 3 · Cards Leader, Gap to second, Wins, Rows');
+    expect(settingsSummary(metrics, { preset: 'drivers' })).toBe('Preset Drivers · Columns 3 · no card');
   });
 });

@@ -1558,3 +1558,30 @@ describe('the Filters region over the calendar in the designer (P2.5 PR B)', () 
     expect([...facet1.options].map(o => [o.value, o.textContent])).toEqual([['', 'None'], ['seriesName', 'Series'], ['sessionType', 'Sessions']]);
   });
 });
+
+describe('the Metric cards region in the designer (P2.7)', () => {
+  it('offers the Source first, then the preset and four Card groups whose value selects list the preset’s columns; a Preset pick leaves the cards as they are; the tile names the preset, the columns and the cards', () => {
+    mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Metric cards' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Component: Metric cards' }));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'standings' } });
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'drivers' } });
+    expect(within(pe).getByText('Card 1')).toBeTruthy();
+    expect(within(pe).getByText('Card 4')).toBeTruthy();
+    const value = within(pe).getByLabelText('Card 1 value') as HTMLSelectElement;
+    expect(value.options[0].textContent).toBe('None');
+    expect([...value.options].map(o => o.value)).toContain('name');
+    fireEvent.change(value, { target: { value: 'name' } });
+    fireEvent.change(within(pe).getByLabelText('Card 1 label'), { target: { value: 'Leader' } });
+    // The figure is a pill group (a choice of two), as the View is.
+    fireEvent.click(within(within(pe).getByRole('group', { name: 'Card 2 figure' })).getByRole('button', { name: 'Row count' }));
+    expect(within(pe).queryByLabelText('Card 2 value')).toBeNull();
+    // A Preset pick sets nothing else: the card keeps its value (the Data region's pick would have reset its slots).
+    fireEvent.change(within(pe).getByLabelText('Preset'), { target: { value: 'constructors' } });
+    expect((within(pe).getByLabelText('Card 1 value') as HTMLSelectElement).value).toBe('name');
+    expect(screen.getByRole('button', { name: 'Component: Metric cards' }).textContent).toContain('Preset Constructors · Columns 3 · Cards Leader, Rows');
+  });
+});

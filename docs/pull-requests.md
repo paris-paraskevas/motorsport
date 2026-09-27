@@ -14,6 +14,21 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1078 · 1.0.196 · P2.7 · opened Sun 27 Sep 17:01 (14:01Z); the merge on the word
+**Metric cards.** APEX 26.1's Metric Card as a component over the catalogue's sources: a card per figure (a column of a row, or the count of rows), its label, description and trend; the Preset without the Data region's resets.
+- **Readers see:** nothing until an editor places a Metric cards region on a page.
+- **Editors get:** a Metric cards component in the Gallery: the Source and the Preset, a Heading, Columns per row, four cards each with a label, a figure (a column's value or the row count), a value, a description and a trend column and a row rule; the tile naming the preset, the columns and the cards; every column choice outside the Data region's Card slots starting at None.
+- **Files (11):**
+  - `lib/design/components.ts` · the `data.metrics` definition (the preset options without `sets`, the Heading, the Columns, four Card groups, the six sources); `settingsSummary`'s branch for it.
+  - `lib/design/component-render.tsx` · the renderer (the Data region's read path, every row the preset keeps, a card per figure with its row rule bound to the shape), READS.
+  - `components/data/DataRegionViews.tsx` · `MetricCard` and `DataRegionMetrics` (the figures through `cellValue`, a share as a percent, the dash, the trend for a reader, the site's box, the grid).
+  - `components/designer/PageDesignerProperties.tsx` · the columns select's empty option: Preset's own for the Card slots alone, None elsewhere.
+  - `lib/design/components.test.ts`, `lib/design/page-document.test.ts`, `lib/design/component-render.test.tsx`, `components/designer/PluginsEditor.test.tsx`, `components/designer/PageDesigner.test.tsx` · the tests, first red (six across five files).
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.7 started on the approved plan; the evidence; a dated line.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.196.
+- **Verified:** tests first (six red across five files), then green; tsc 0; lint 0 errors (the two known warnings); vitest 251 files, 2439 tests; cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39316.01 KiB / gzip: 8556.29 KiB; in the browser on the local designer: a Metric cards region added to /series/f1 from the Gallery (Source Standings · Formula 1 · 2026, Preset Drivers, four cards: Leader = the name with the points beneath, Gap to second = the gap of position.eq:2 with the name beneath, Wins, Drivers classified as a count; Columns 4; the heading), saved and published locally, the hub at 1280px and 390px with the cards above its body (the screenshots in the review page).
+- **Review:** a fresh-context Sonnet reviewer (220,242 tokens): BLOCKING on a link column drawing a live link inside the figure (the plan: no link on a card in this slot), fixed to the words alone; its four fixes taken (a name column's default label from the preset, a count card ignoring fields left from before, the heading as the page's h1 when first in the Body, stable keys), each with a test; the rest left as it was with its reasons
+
 ## #1077 · 1.0.195 · records · opened Sun 27 Sep 12:58 (09:58Z); the merge on the standing word
 **R12 and P2.5 C done on prod.** Records only: the two merges, the deploys, the prod checks (the phone grid in the browser, the news parity by curl).
 - **Readers see:** nothing.
