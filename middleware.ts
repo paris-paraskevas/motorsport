@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { TABS } from '@/lib/tabs';
 import { topicForSeries, aboutGuideForSeries } from '@/lib/information/topics';
-import { rewriteTarget } from '@/lib/design/view-state';
+import { calendarLegacySearch, rewriteTarget } from '@/lib/design/view-state';
 import { authClient, clientIp, hasSessionCookie, requestJar, type SessionClaims } from '@/lib/auth/supabase';
 
 // Public-with-account: everything is public by default. Only user-scoped API routes require a signed-in person. The
@@ -125,7 +125,9 @@ export default async function middleware(req: NextRequest) {
   // P2.3: a page carrying a table's state (sort, cols, filter, view) is served from its cached variant under
   // /__view/<state>/<path>; the address bar keeps the plain form. A route the code serves and the reserved parts of the site
   // keep their own query strings (lib/design/view-state.ts rewriteTarget).
-  const target = rewriteTarget(url.pathname, url.search);
+  // P2.5 PR B: the calendar's old addresses (?s=<slugs>&races=1, its filter box's deep links) become the Filters region's
+  // state, so a bookmarked or shared link keeps narrowing and is served from the same variant the new address would be.
+  const target = rewriteTarget(url.pathname, url.pathname === '/calendar' ? calendarLegacySearch(url.searchParams) : url.search);
   if (target) {
     const dest = url.clone();
     dest.pathname = target;

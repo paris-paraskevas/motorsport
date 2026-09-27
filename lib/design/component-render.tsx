@@ -1,7 +1,7 @@
 import 'server-only';
 import { cache, type ReactNode } from 'react';
 import { firstBodyRegion, isLegacyBody, type ComponentRegion, type PageDocument } from './page-document';
-import { findComponent, type SettingValue } from './components';
+import { CALENDAR_FACETS, findComponent, type SettingValue } from './components';
 import { parseSourceRef, type SourceRef } from './sources';
 import { SHAPES, findPreset, presetRows, rowPasses } from './presets';
 import type { SourceProvenance } from './source-read';
@@ -39,6 +39,7 @@ const calendarView = () => import('@/components/calendar/CalendarView');
 const sourceRead = () => import('./source-read');
 const dataViews = () => import('@/components/data/DataRegionViews');
 const savedViews = () => import('./views');
+const calendarGrid = () => import('@/lib/calendar-grid');
 const dataFilters = () => import('@/components/data/DataRegionFilters');
 
 import type { Facet } from '@/components/data/DataRegionFilters';
@@ -81,7 +82,7 @@ export interface RenderContext {
   /** The region's Source read (P2.5), shared with a Filters region that targets it: one read per request for both. */
   read?: () => Promise<SourceReadResult>;
   /** A Filters region's target (P2.5): its keys' prefix, its shape, its state from the address, and its rows after the preset's own rule. */
-  filters?: { prefix: string; shape: FacetShape; state: ViewState; rows: () => Promise<FacetRow[]> };
+  filters?: { prefix: string; shape: Pick<FacetShape, 'columns'>; state: ViewState; rows: () => Promise<FacetRow[]> };
 }
 
 type Renderer = (settings: Readonly<Record<string, SettingValue>>, ctx: RenderContext) => Promise<ReactNode> | ReactNode;
@@ -111,10 +112,17 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
       </header>
     );
   },
-  async 'calendar.month'() {
+  // The calendar narrows by a Filters region's picks (P2.5 PR B): the series by name and the sessions by kind, read from the
+  // address under its own keys; none where no state can arrive, and the calendar draws every session as before.
+  async 'calendar.month'(settings, ctx) {
     const [{ loadCalendarModel }, { CalendarView }] = await Promise.all([calendar(), calendarView()]);
     const m = await loadCalendarModel();
-    return <CalendarView items={m.items} roundByKey={m.roundByKey} roundNames={m.roundNames} serverNow={m.serverNow} />;
+    const state = ctx.controlsKey !== null && ctx.view !== undefined ? bindViewState(parseViewState(ctx.view, ctx.controlsKey).value, { columns: CALENDAR_FACETS }) : undefined;
+    const picks = (column: string): string[] | null => {
+      const values = (state?.filters ?? []).filter(f => f.column === column && (f.op === 'in' || f.op === 'eq')).flatMap(f => (f.op === 'in' ? f.value.split(',').map(s => s.trim()).filter(s => s !== '') : [f.value]));
+      return values.length > 0 ? values : null;
+    };
+    return <CalendarView items={m.items} roundByKey={m.roundByKey} roundNames={m.roundNames} serverNow={m.serverNow} seriesNames={picks('seriesName')} sessionKinds={picks('sessionType')} />;
   },
   // The Live band (P2.9); This weekend, Home's retired piece, upgrades to it on read (P2.24 C).
   'series.live': settings => drawLiveBand(settings),
@@ -344,10 +352,14 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   });
   // Filters (P2.5): a Filters region's target reads its keys whatever its menus, as a detail does; only a target drawn as a
   // Table, Cards or List, named by a Filters region's Filtered region, on a shape.
-  const targetOf = (f: ComponentRegion) => dataRegions.find(d => d.id === str(f.settings.filteredRegion) && ROW_VIEWS.includes(str(d.settings.view) || 'table') && shapeOf(d) !== null) ?? null;
+  const targetOf = (f: ComponentRegion) =>
+    dataRegions.find(d => d.id === str(f.settings.filteredRegion) && ROW_VIEWS.includes(str(d.settings.view) || 'table') && shapeOf(d) !== null) ??
+    // A component declaring its own facets (the calendar, P2.5 PR B).
+    regions.find(r => r.id === str(f.settings.filteredRegion) && (findComponent(r.component)?.facets?.length ?? 0) > 0) ??
+    null;
   const filterTargets = regions.filter(r => r.component === 'data.filters').map(targetOf).filter((d): d is ComponentRegion => d !== null);
   const details = new Set([...pairs.map(p => p.detail), ...filterTargets]);
-  const withControls = regions.filter(r => r.component === 'data.region' && (details.has(r) || ((r.settings.sortable === true || r.settings.actions === true || r.settings.views === true || r.settings.download === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table'))));
+  const withControls = regions.filter(r => (r.component === 'data.region' && (details.has(r) || ((r.settings.sortable === true || r.settings.actions === true || r.settings.views === true || r.settings.download === true) && ['table', 'cards'].includes(str(r.settings.view) || 'table')))) || (r.component !== 'data.region' && details.has(r)));
   const controlsKey = (r: ComponentRegion): string | null => (where.view === undefined || !withControls.includes(r) ? null : withControls.length > 1 ? `r.${r.id}.` : '');
   // A master's view of its detail: the detail's key prefix and its state from the address, bound to the detail's shape; none
   // where no state can arrive. A detail knows the key its master writes, for its line.
@@ -373,6 +385,20 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
   const filtersOf = (f: ComponentRegion): RenderContext['filters'] => {
     const target = targetOf(f);
     const prefix = target ? controlsKey(target) : null;
+    // A component with facets of its own (the calendar): its rows are its model's sessions, by series name and session kind.
+    const own = target && target.component !== 'data.region' ? findComponent(target.component)?.facets : undefined;
+    if (target && own && own.length > 0 && prefix !== null && where.view !== undefined) {
+      const columns = own;
+      return {
+        prefix,
+        shape: { columns },
+        state: bindViewState(parseViewState(where.view, prefix).value, { columns }),
+        rows: async () => {
+          const [{ loadCalendarModel }, { classifySession }] = await Promise.all([calendar(), calendarGrid()]);
+          return (await loadCalendarModel()).items.map(i => ({ seriesName: i.seriesName, sessionType: classifySession(i.session.title) }));
+        },
+      };
+    }
     const shape = target ? shapeOf(target) : null;
     const preset = target ? findPreset(str(target.settings.preset)) : null;
     const spec = target ? findComponent(target.component) : null;

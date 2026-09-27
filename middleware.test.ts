@@ -111,3 +111,15 @@ describe('the middleware (PA A3)', () => {
     expect((await middleware(at('/api/push/subscribe', { cookie: signedIn }))).headers.get('x-middleware-next')).toBe('1');
   });
 });
+
+describe('the calendar’s old addresses (P2.5 PR B)', () => {
+  it('?s=<slugs>&races=1 rewrites to the variant the Filters region’s own address would', async () => {
+    const legacy = await middleware(at('/calendar?s=f1&races=1'));
+    const fresh = await middleware(at('/calendar?filter=seriesName.in:Formula 1&filter=sessionType.in:race'));
+    expect(legacy.headers.get('x-middleware-rewrite')).toContain('/__view/');
+    // The same variant (the state rides the path); the rewrite keeps each request's own query string beside it.
+    expect(new URL(legacy.headers.get('x-middleware-rewrite')!).pathname).toBe(new URL(fresh.headers.get('x-middleware-rewrite')!).pathname);
+    const plain = await middleware(at('/calendar?m=2026-10'));
+    expect(plain.headers.get('x-middleware-rewrite')).toBeNull();
+  });
+});

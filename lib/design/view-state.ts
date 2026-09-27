@@ -4,6 +4,7 @@
 // variant path. Client- and edge-safe: no server module, no React; the registry is import-pure.
 import type { ColumnType, PresetColumn, Shape } from './presets';
 import { CODE_PAGES } from './page-registry';
+import { SERIES_OPTIONS } from './sources';
 
 export type FilterOp = 'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte' | 'in';
 export interface ViewFilter {
@@ -107,7 +108,7 @@ export const sortable = (c: PresetColumn): boolean => c.type !== 'image' && c.ty
 
 /** A state against a shape: the sort on a sortable column, the columns within the shape (at least one), a filter's operator
  *  by its column's type; anything else dropped silently. */
-export function bindViewState(state: ViewState, shape: Shape): ViewState {
+export function bindViewState(state: ViewState, shape: Pick<Shape, 'columns'>): ViewState {
   const out: ViewState = { filters: [] };
   const column = (key: string) => shape.columns.find(c => c.key === key);
   if (state.sort) {
@@ -294,4 +295,23 @@ export function applySavedView(url: ViewState, saved: ViewDefinition | null): Vi
   const sort = url.sort ?? saved.sort;
   const cols = url.cols ?? saved.cols;
   return { ...(sort ? { sort } : {}), ...(cols && cols.length > 0 ? { cols } : {}), filters: url.filters.length > 0 ? url.filters : saved.filters, ...(url.view !== undefined ? { view: url.view } : {}) };
+}
+
+/** The calendar's addresses before P2.5 (`?s=<slugs>&races=1`, its filter box's deep links, still written by the series pages)
+ *  as the Filters region's state: the slugs as the series' names in one `in` filter, races as the session kind, the other
+ *  parameters as they came; the query as it came when neither is there. The middleware runs it for /calendar alone. A list of
+ *  names longer than VALUE_MAX (eight or more of the fifteen) is dropped when the state is read, as any filter that long is:
+ *  such a link shows the whole calendar; the series pages write one slug. */
+export function calendarLegacySearch(search: string | URLSearchParams): string {
+  const q = new URLSearchParams(params(search));
+  const s = q.get('s');
+  const races = q.get('races');
+  if (s === null && races === null) return q.toString() ? `?${q}` : '';
+  q.delete('s');
+  q.delete('races');
+  const names = [...new Set((s ?? '').split(',').map(x => SERIES_OPTIONS.find(o => o.key === x.trim())?.label).filter((n): n is string => n !== undefined))].sort();
+  if (names.length > 0) q.append('filter', `seriesName.in:${names.join(',')}`);
+  if (races === '1') q.append('filter', 'sessionType.in:race');
+  const out = q.toString();
+  return out ? `?${out}` : '';
 }

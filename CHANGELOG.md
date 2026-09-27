@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.191 — 2026-09-25
+
+### P2.5 PR B — the calendar page on the Filters region
+
+The operator's "swap the pages": the live /calendar loses its own filter box for the Filters region. `lib/design/components.ts`: a `facets` field on a component definition (the columns a Filters region may facet on, for a component drawing its own model); `calendar.month` declares `CALENDAR_FACETS` (the series by name, the sessions by kind); `SPLITS['/calendar']` puts a Filters region over them before the month. `lib/design/component-render.tsx`: the calendar's renderer takes the picks from the address under its own keys (`seriesNames`, `sessionKinds`); a Filters region may target a component with facets, whose rows for the values come from `loadCalendarModel` and `classifySession`. `lib/design/page-document.ts` and the Property Editor: such a target accepted, its facets checked. `components/calendar/CalendarView.tsx`: the local filter state, the `paddock:calendar-filters:v2` memory and the URL mirroring gone; the picks arrive as props; `components/calendar/CalendarFilters.tsx` (the box: Select all, Clear, Races only, the series chips) removed. `lib/design/view-state.ts` and `middleware.ts`: `calendarLegacySearch` turns the old `?s=<slugs>&races=1` (the series pages still write `/calendar?s=<slug>`) into the region's filters for /calendar alone, so old links keep narrowing and are served from the same cached variant; `bindViewState` takes any column list. Readers see the two chips (Series, Sessions) with counts instead of the box; picking is by inclusion (a pick of more than eighty characters of names is dropped by the vocabulary), the colour swatches, the Select all and Clear buttons and the per-device memory are gone, the address is the memory. Tests first across five files; the compositions' tests updated.
+
 ## 1.0.190 — 2026-09-25
 
 ### P2.5 PR A — Filters as a layer: a Filters region over another Data region's rows

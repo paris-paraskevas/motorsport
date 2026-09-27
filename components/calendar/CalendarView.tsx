@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { useNow } from '@/lib/use-now';
@@ -18,7 +18,6 @@ import {
 } from '@/lib/calendar-grid';
 import type { CalendarEntry, CalendarViewMode } from './types';
 import { CalendarToolbar } from './CalendarToolbar';
-import { CalendarFilterBox } from './CalendarFilters';
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { DayView } from './DayView';
@@ -40,6 +39,9 @@ type CalendarViewProps = {
   roundByKey?: Record<string, number>;
   roundNames?: Record<string, string>;
   serverNow: string;
+  /** The Filters region's picks (P2.5 PR B): the series by name, the sessions by kind; null or absent narrows nothing. */
+  seriesNames?: string[] | null;
+  sessionKinds?: string[] | null;
 };
 
 // Root calendar (replaces the month-list FilteredSessions for /calendar). Owns
@@ -58,7 +60,7 @@ export function CalendarView(props: CalendarViewProps) {
   );
 }
 
-function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarViewProps) {
+function CalendarInner({ items, roundByKey, roundNames, serverNow, seriesNames = null, sessionKinds = null }: CalendarViewProps) {
   const { followed, hydrated } = useFollowedSeries();
   const { now, clock } = useNow(serverNow);
   const [view, setView] = useState<CalendarViewMode>('month');
@@ -79,66 +81,8 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
     setAnchorMs(parseMonthParam(monthParam));
   }
 
-  // Filters, applied ON TAP (no modal, no draft, no Save — §4.2). A shared
-  // ?races=1&s=f1,motogp deep-link is written through replaceState so a
-  // filtered calendar is linkable; localStorage keeps the choice per device.
-  const [racesOnly, setRacesOnly] = useState(() => searchParams.get('races') === '1');
-  const [seriesSel, setSeriesSel] = useState<Set<string> | null>(() => {
-    const s = searchParams.get('s');
-    return s ? new Set(s.split(',').filter(Boolean)) : null;
-  });
-  const [filtersHydrated, setFiltersHydrated] = useState(false);
-
-  // Persist filters per device: load once on mount (URL params win when
-  // present), then save on change (gated on the load so defaults don't clobber
-  // stored prefs).
-  useEffect(() => {
-    try {
-      const urlHasFilters =
-        new URLSearchParams(window.location.search).get('races') === '1' ||
-        !!new URLSearchParams(window.location.search).get('s');
-      if (!urlHasFilters) {
-        const raw = localStorage.getItem('paddock:calendar-filters:v2');
-        if (raw) {
-          const p = JSON.parse(raw) as { racesOnly?: unknown; series?: unknown };
-          // eslint-disable-next-line react-hooks/set-state-in-effect -- persisted-filter adoption after mount is the hydration-safe pattern
-          setRacesOnly(p.racesOnly === true);
-          // A stored empty list would restore a blank calendar — treat it as all.
-          const stored = Array.isArray(p.series)
-            ? p.series.filter((s): s is string => typeof s === 'string')
-            : [];
-          setSeriesSel(stored.length > 0 ? new Set(stored) : null);
-        }
-      }
-    } catch {
-      /* ignore corrupt prefs */
-    }
-    setFiltersHydrated(true);
-  }, []);
-  useEffect(() => {
-    if (!filtersHydrated) return;
-    try {
-      // An empty selection ("none") is transient — persisting it would greet
-      // the next visit with a blank calendar, so it stores as all.
-      localStorage.setItem(
-        'paddock:calendar-filters:v2',
-        JSON.stringify({ racesOnly, series: seriesSel && seriesSel.size > 0 ? [...seriesSel] : null }),
-      );
-    } catch {
-      /* quota / disabled */
-    }
-    // Mirror into the URL (shareable) without a router navigation.
-    try {
-      const url = new URL(window.location.href);
-      if (racesOnly) url.searchParams.set('races', '1');
-      else url.searchParams.delete('races');
-      if (seriesSel && seriesSel.size > 0) url.searchParams.set('s', [...seriesSel].join(','));
-      else url.searchParams.delete('s');
-      window.history.replaceState(window.history.state, '', url);
-    } catch {
-      /* non-browser */
-    }
-  }, [racesOnly, seriesSel, filtersHydrated]);
+  // The filters are the Filters region's (P2.5 PR B): its picks arrive as props from the address, so a filtered calendar is a
+  // cached variant and a shareable link, and the region's chips replace the box this component drew; ?m= stays the calendar's own.
 
   // Gate on BOTH prefs (no other-series flash) AND the synced clock (so day
   // bucketing uses the device timezone, never the server's — no SSR mismatch).
@@ -147,33 +91,11 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
   const anchor = anchorMs != null ? new Date(anchorMs) : startOfDay(now);
   const filtered = followed !== null ? items.filter(i => followed.includes(i.seriesSlug)) : items;
 
-  // In-calendar filters, on top of the followed set. Chips lead with the
-  // marquee series so "just F1" really is one tap.
-  const CHIP_ORDER = ['f1', 'motogp', 'wec', 'indycar', 'nascar-cup', 'formula-e', 'wrc', 'wsbk'];
-  const present = [...new Map(filtered.map(i => [i.seriesSlug, i.color])).entries()]
-    .map(([slug, color]) => ({ slug, color }))
-    .sort((a, b) => {
-      const ia = CHIP_ORDER.indexOf(a.slug);
-      const ib = CHIP_ORDER.indexOf(b.slug);
-      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.slug.localeCompare(b.slug);
-    });
-  const seriesShown = (slug: string) => seriesSel === null || seriesSel.has(slug);
+  // The Filters region's picks, on top of the followed set: the series by name, the sessions by kind.
   const shown = filtered.filter(
-    i => (!racesOnly || classifySession(i.session.title) === 'race') && seriesShown(i.seriesSlug),
+    i => (sessionKinds === null || sessionKinds.includes(classifySession(i.session.title))) && (seriesNames === null || seriesNames.includes(i.seriesName)),
   );
   const buckets = bucketByDay(shown);
-
-  // Checkbox semantics (operator's filter box, 2026-08-20 — replaces the old
-  // tap-to-focus): unticking a series from "all" EXCLUDES just it and keeps
-  // the rest; an empty set is a legal transient "none" (Clear, then build up).
-  const toggleSeries = (slug: string) => {
-    setSeriesSel(cur => {
-      const next = cur === null ? new Set(present.map(p => p.slug)) : new Set(cur);
-      if (next.has(slug)) next.delete(slug);
-      else next.add(slug);
-      return next.size === present.length ? null : next;
-    });
-  };
 
   const setAnchor = (d: Date) => setAnchorMs(startOfDay(d).getTime());
   const step = (n: number) => {
@@ -232,15 +154,6 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
         monthOptions={monthOptions}
         currentMonthValue={currentMonthValue}
         onPickMonth={ms => setAnchorMs(ms)}
-      />
-      <CalendarFilterBox
-        racesOnly={racesOnly}
-        onRacesOnly={setRacesOnly}
-        series={present}
-        seriesSel={seriesSel}
-        onToggleSeries={toggleSeries}
-        onSelectAll={() => setSeriesSel(null)}
-        onClear={() => setSeriesSel(new Set())}
       />
       {view === 'month' && (
         <MonthView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} roundNames={roundNames} onSelectDay={selectDay} />

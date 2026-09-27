@@ -809,7 +809,7 @@ describe('the Filters region (P2.5; APEX: Smart Filters)', () => {
     const kept = parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1', facet2Several: true })]));
     expect(kept.problems).toEqual([]);
     expect(kept.value?.regions.find(r => r.id === 'f')).toMatchObject({ settings: { filteredRegion: 'd', facet1: 'team', facet2: 'name', facet2DependsOn: 'facet1', facet2Several: true } });
-    const refused = 'region f: Filtered region must be a Data region of this page, drawn as a Table, Cards or List';
+    const refused = 'region f: Filtered region must be a Data region of this page drawn as a Table, Cards or List, or the calendar';
     expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'gone', facet1: 'team' })])).problems).toEqual([refused]);
     expect(parsePageDocument(doc([drivers({ settings: { preset: 'drivers', view: 'detail', rows: 10, heading: '' } }), filters({ filteredRegion: 'd' })])).problems).toEqual([refused]);
     expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'nope' })])).problems).toEqual(['region f: Facet 1 must be a column the filtered region carries']);
@@ -817,5 +817,16 @@ describe('the Filters region (P2.5; APEX: Smart Filters)', () => {
     // Depending on a facet that is not set is kept (the chip simply never shows); no Filtered region: nothing to check, nothing drawn.
     expect(parsePageDocument(doc([drivers(), filters({ filteredRegion: 'd', facet1: 'team', facet1DependsOn: 'facet3' })])).problems).toEqual([]);
     expect(parsePageDocument(doc([drivers(), filters({ facet1: 'team' })])).problems).toEqual([]);
+  });
+});
+
+describe('the Filters region over the calendar (P2.5 PR B)', () => {
+  const base = { kind: 'component', title: '', position: 'body', column: 1, span: 12, newRow: true, hidden: false, authz: null };
+  const month = { ...base, id: 'month', seq: 20, component: 'calendar.month', settings: {} };
+  const filters = (settings: Record<string, unknown>) => ({ ...base, id: 'f', seq: 10, component: 'data.filters', settings });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+  it('a Filters region may name the calendar, whose facets are the columns it declares', () => {
+    expect(parsePageDocument(doc([filters({ filteredRegion: 'month', facet1: 'seriesName', facet2: 'sessionType' }), month])).problems).toEqual([]);
+    expect(parsePageDocument(doc([filters({ filteredRegion: 'month', facet1: 'nope' }), month])).problems).toEqual(['region f: Facet 1 must be a column the filtered region carries']);
   });
 });

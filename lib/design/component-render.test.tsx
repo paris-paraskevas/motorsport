@@ -54,10 +54,23 @@ const readSource = vi.spyOn(sourceRead, 'readSource').mockImplementation(async r
   provenance: { ref, label: 'Standings · Formula 1 · 2026', tier: 'rows', keys: ['standings:f1', 'f1:standings'], rows: 3, ms: 3, run: { id: 'run-1', status: 'ok', finished: '2026-09-17T12:20:04Z', rows: 44, runner: 'warm-live-data#77' } },
 }));
 vi.mock('./families/calendar', () => ({
-  loadCalendarModel: async () => ({ items: [], roundByKey: { 'f1:14': 14 }, roundNames: { 'f1:14': 'Spanish Grand Prix (Madrid)' }, serverNow: '2026-09-09T12:00:00.000Z' }),
+  // Two sessions (P2.5 PR B): the Filters region over the calendar facets on the series' names and the sessions' kinds.
+  loadCalendarModel: async () => ({
+    items: [
+      { session: { uid: 'a', seriesSlug: 'f1', title: 'F1 - Race', start: new Date('2026-09-13T13:00:00Z'), end: new Date('2026-09-13T15:00:00Z') }, color: '#e10600', seriesSlug: 'f1', seriesName: 'Formula 1' },
+      { session: { uid: 'b', seriesSlug: 'motogp', title: 'MotoGP - Practice 1', start: new Date('2026-09-11T08:00:00Z'), end: new Date('2026-09-11T09:00:00Z') }, color: '#0af', seriesSlug: 'motogp', seriesName: 'MotoGP' },
+    ],
+    roundByKey: { 'f1:14': 14 },
+    roundNames: { 'f1:14': 'Spanish Grand Prix (Madrid)' },
+    serverNow: '2026-09-09T12:00:00.000Z',
+  }),
 }));
 vi.mock('@/components/calendar/CalendarView', () => ({
-  CalendarView: (props: { items: unknown[]; serverNow: string; roundNames?: Record<string, string> }) => <div data-calendar={props.serverNow}>{Object.values(props.roundNames ?? {}).join(', ')}</div>,
+  CalendarView: (props: { items: unknown[]; serverNow: string; roundNames?: Record<string, string>; seriesNames?: string[] | null; sessionKinds?: string[] | null }) => (
+    <div data-calendar={props.serverNow} data-series={(props.seriesNames ?? []).join('|')} data-kinds={(props.sessionKinds ?? []).join('|')}>
+      {Object.values(props.roundNames ?? {}).join(', ')}
+    </div>
+  ),
 }));
 
 import { canRender, raceWeekendNow, renderComponents } from './component-render';
@@ -1109,5 +1122,27 @@ describe('the Filters region (P2.5; APEX: Smart Filters)', () => {
     expect(none.f).toBeNull();
     const alone = await renderComponents(doc([region('d', 'data.region', DRIVERS, F1)]), { path: '/x' });
     expect(html(none.d)).toBe(html(alone.d));
+  });
+});
+
+describe('the Filters region over the calendar (P2.5 PR B)', () => {
+  const FILTERS = { filteredRegion: 'month', facet1: 'seriesName', facet2: 'sessionType' };
+  const page = () => doc([region('f', 'data.filters', FILTERS, { seq: 5 }), region('month', 'calendar.month', {}, { seq: 10 })]);
+  it('facets on the series’ names and the sessions’ kinds from the calendar’s own model, and hands the picks to the calendar; nothing changes without a state', async () => {
+    const out = await renderComponents(page(), { path: '/calendar', view: '' });
+    const chips = html(out.f);
+    expect(chips).toContain('Formula 1');
+    expect(chips).toContain('MotoGP');
+    expect(chips).toContain('practice');
+    expect(chips).toContain('seriesName.in%3AFormula+1');
+    expect(html(out.month)).toContain('data-series=""');
+    const picked = await renderComponents(page(), { path: '/calendar', view: 'filter=seriesName.in:Formula 1&filter=sessionType.in:race' });
+    expect(html(picked.month)).toContain('data-series="Formula 1"');
+    expect(html(picked.month)).toContain('data-kinds="race"');
+    expect(html(picked.f)).toContain('aria-current="true"');
+    const none = await renderComponents(page(), { path: '/calendar' });
+    expect(none.f).toBeNull();
+    const alone = await renderComponents(doc([region('month', 'calendar.month', {}, { seq: 10 })]), { path: '/calendar' });
+    expect(html(none.month)).toBe(html(alone.month));
   });
 });

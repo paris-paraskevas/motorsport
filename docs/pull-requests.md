@@ -14,6 +14,24 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1073 · 1.0.191 · P2.5 PR B · merged Fri 25 Sep 21:15 (18:15Z) under the standing word
+**The calendar page on the Filters region.** The live /calendar rebuilt on the Filters box (the operator's "swap the pages"): the series and the sessions as facets of the calendar's own model, the picks from the address, the old links kept, the filter box gone.
+- **Readers see:** two chips (Series, Sessions) with counts above the calendar instead of the filter box; a pick reloads the page under a shareable address; old links with ?s= or ?races= still narrow.
+- **Editors get:** a Filters region may name the calendar as its filtered region; the calendar's facets in the Facets group.
+- **Files (16):**
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the facets field, CALENDAR_FACETS, the calendar's recipe with its Filters region.
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · the calendar's picks from the address; a component with facets as a Filters target; the rows from the calendar model.
+  - `lib/design/view-state.ts`, `lib/design/view-state.test.ts` · calendarLegacySearch; bindViewState over any column list.
+  - `middleware.ts`, `middleware.test.ts` · the shim for /calendar's old addresses.
+  - `lib/design/page-document.ts`, `lib/design/page-document.test.ts` · a Filters region may name a component with facets.
+  - `components/designer/PageDesignerProperties.tsx` · the Filtered region select offers such a component; its facets in the facet selects.
+  - `components/calendar/CalendarView.tsx` · the picks as props; the local state, the memory and the mirroring gone.
+  - `components/calendar/CalendarFilters.tsx` · removed (123 lines: the box's markup and handlers).
+  - `components/designer/page-designer-model.test.ts`, `lib/design/composed-page.test.ts` · the compositions with the extra region.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md`, `IDEAS.md`, `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · the records and the trio, 1.0.191.
+- **Verified:** tests first (five cases red across five files), then green; tsc 0; lint 0 errors (the two known warnings); vitest 248 files, 2422 tests; cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39513.89 KiB (39423.21 before); in the browser on the local server: the Filters region added to the calendar page in the designer (the Filtered region select offering the calendar, its two facets), Save and Run Page: the Series chip (MotoGP (179) first) and the Sessions chip (practice, race, qualifying, other), Formula 1 tapped narrowing the months to Formula 1 under filter=seriesName.in:Formula 1, the old link /calendar?s=motogp&races=1 narrowing to MotoGP races with both chips marked (screenshots .playwright-mcp/p25b-01..02; the review page as an artifact); the parity of prod's /calendar before and after the deploy pasted in the ledger.
+- **Review:** a fresh-context Sonnet (~250k said, 199,495 measured, 69 tool uses): BLOCKING on one decision, the Sessions chip's four kinds against the plan's two, taken to the operator, who chose four; the non-blocking items folded in fe63c269 (the refusal names the calendar, the shim states its limit, the designer test for the calendar as a filtered region); left with the reason: the shim drops a list of names over VALUE_MAX (the vocabulary's rule, stated in its comment; the series pages write one slug), and no call-count test for loadCalendarModel (the dedupe is React's cache, which the test's mock cannot show).
+
 ## #1071 · 1.0.190 · P2.5 PR A · merged Fri 25 Sep 20:45 (17:45Z) under the standing word
 **Filters as a layer, PR A: a Filters region over another Data region's rows.** APEX's Smart Filters as a component of its own; the calendar and news pages follow in PR B and PR C.
 - **Readers see:** nothing until an editor places a Filters region on a page.
