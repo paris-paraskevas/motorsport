@@ -8,6 +8,35 @@ Time-series perf snapshot. **Append-only by date** — never overwrite prior row
 
 ---
 
+## 2026-09-28 — the home on 1.0.199, a Lighthouse 12 baseline for R13's PR C (the SEO check's response time)
+
+Run here at ~09:24Z, four minutes after the 1.0.199 deploy, with `npx lighthouse@12` against `https://paddock-tracker.com/` through Playwright's Chromium (the PageSpeed API's keyless daily quota was spent by then; the operator's pagespeed.web.dev run stays the better lab number and belongs in this file when they paste one). The first request after a deploy meets a cold page cache (`s-maxage=300, must-revalidate`, no stale-while-revalidate), so the server-response numbers below are the cold case, the one Seobility met (2.17 s); warm hits from the same machine by curl measured 0.20–0.48 s an hour earlier.
+
+| Metric | Mobile (Moto G Power, slow 4G sim) | Desktop |
+|---|---|---|
+| **Performance** | **56** | **74** |
+| FCP | 2.2 s | 0.9 s |
+| LCP | 13.6 s | 3.7 s |
+| TBT | 290 ms | 0 ms |
+| CLS | 0.125 | 0.004 |
+| Speed Index | 6.5 s | 2.4 s |
+| Server response (root document) | 2,150 ms | 1,640 ms |
+| Requests / total transfer | 75 / 19,419 KiB | 85 / 20,112 KiB |
+| JavaScript files / transfer | 20 / 734 KiB | 21 / 751 KiB |
+| Unused JavaScript | 316 KiB | 315 KiB |
+| Main-thread work / bootup | 4.1 s / 1.2 s | 0.9 s / 0.2 s |
+
+**The LCP element, both runs:** the lead story's cover, `https://upload.wikimedia.org/wikipedia/commons/7/76/Baku-F1-Street-Circuit….jpg`, the original upload, not a thumbnail. Lighthouse's opportunities in order: "Serve images in next-gen formats" (4,860 ms mobile / 1,020 ms desktop), "Properly size images" (3,320 / 1,120 ms), "Reduce initial server response time" (2,151 / 1,641 ms), "Reduce unused JavaScript" (710 ms mobile). Nineteen to twenty megabytes of transfer for the home is the covers: the posts' hero images are Wikimedia originals (several megabytes each) drawn at 1200 px wide at most.
+
+**The levers for PR C, in the order of the numbers:**
+1. The covers' size: a Wikimedia original (`/wikipedia/commons/<a>/<ab>/<File>`) drawn through Wikimedia's own thumbnail service (`/wikipedia/commons/thumb/<a>/<ab>/<File>/1200px-<File>`, the width the layout needs; JPG and PNG), at the one place the posts' hero URL is read for the lead, the thumbnails and the cards; the same for the blog pages. No dependency, no proxy; a fallback to the original when a URL is not a Commons original. Expected: the transfer from ~20 MB to under 2 MB and the LCP from 13.6 s toward the 2.5 s target on mobile.
+2. The server response on a cold cache: Next 16's `expireTime` (a stale-while-revalidate on ISR answers, Next core's `getCacheControlHeader`) so a visitor at expiry gets the stale page while the Worker revalidates; its effect on OpenNext's R2/regional cache to be tested on the testing Worker before prod, never assumed; then the home's own cold render cost (its source reads, timed with the Debug trace).
+3. Unused JavaScript, 316 KiB: the home's client chunks (the Live band's countdown, the consent and analytics scripts, the developer toolbar's chunk for a signed-out reader?) listed from the report's `unused-javascript` items before any is touched.
+4. CLS 0.125 on mobile: the cover's reserved box or a late font; from the report's `layout-shift-elements` before any change.
+
+Raw reports: the session's scratchpad, `lh-home-mobile.json` and `lh-home-desktop.json` (not committed; 1.5 MB each).
+
+
 ## 2026-05-19
 
 First baseline capture. Site is 4–5 days from public launch; Track A + 11 of ~18 Track B bundles shipped today (versions 0.10.23 → 0.10.34, 14 PRs). B-perf hasn't started yet — these are pre-work numbers.

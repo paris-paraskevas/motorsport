@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.200 — 2026-09-28
+
+### Records — R13 A and B on prod; the performance baseline; the session-57 handoff
+
+Records only. `docs/plan/ledger.json`: R13's PR A (#1080, 1.0.198) and PR B (#1081, 1.0.199) merged on the operator's "merge" (09:16Z and 09:17Z), prod 1.0.199 by 09:21Z, and the plan's checks run on prod: the redirects from plain http and from www (301 to the apex over https, the path and the query kept), no X-Powered-By, the home's title and description within Google's width, the favicon and the Apple icon, the two JSON-LD blocks, one h1, eighteen images with the content's words. `docs/perf-baselines.md`: a Lighthouse baseline of the home on 1.0.199 (the PageSpeed API's keyless quota was spent; Lighthouse 12 run here against prod through Playwright's Chromium), the input to R13's PR C. `docs/HANDOFF.md` and `SCHEDULE.md`: the session-57 close and the session-58 pickup. Still the operator's: the five "Drivers" headings on Home (the designer) and Cloudflare's Always Use HTTPS.
+
 ## 1.0.199 — 2026-09-27
 
 ### R13 B — the SEO check of 2026-09-27: the images' words
