@@ -14,6 +14,16 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1088 · 1.0.206 · records · opened Tue 29 Sep 01:25 (28 Sep 22:25Z); the merge on the standing word
+**R14 on prod and done; the crawlers’ reports; R15 proposed.** Records only: the merge, the deploy, the prod checks, the census and the workflow’s first run, the Ahrefs overview and the filter-combination finding, the pickup.
+- **Readers see:** nothing.
+- **Editors get:** nothing new.
+- **Files (9):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R14 done with the checks; R15 planned with its decision scan; two dated lines.
+  - `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md` · the pickup (R15 on the word), the minutes, the Inbox lines.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.206.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 62 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; the prod checks, the census and the workflow run quoted in the ledger.
+
 ## #1087 · 1.0.205 · R14 B · opened Mon 28 Sep 22:23 (19:23Z); the merge on the word
 **The index's shape, the registry's three rows, and a census of every page.** The registry corrected with its seed migration and test; the weekend pages indexed only with a written note and the four table tabs out of the index and the sitemap, one predicate each for the page and the sitemap; the census script with its weekly workflow.
 - **Readers see:** nothing; every page stays reachable. Search engines see the Learn and author pages, the noted weekends and the hubs; the data-only pages ask to stay out.
