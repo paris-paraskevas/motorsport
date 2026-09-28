@@ -14,6 +14,22 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1083 · 1.0.201 · R13 C1 · opened Mon 28 Sep 14:55 (11:55Z); the merge on the word
+**The covers at the size their boxes need.** Every cover from Wikimedia Commons through the thumbnail service's bucketed widths, with a srcset on the lead covers and lazy loading below the fold; the drivers page on the shared rule.
+- **Readers see:** the same pictures, a tenth of the bytes; the first picture sooner.
+- **Editors get:** nothing new; a cover pasted as a Commons original or as any Commons thumb is drawn right either way.
+- **Files (14):**
+  - `lib/commons-thumb.ts`, `lib/commons-thumb.test.ts` · new (on the plan's word): the rule and its cases.
+  - `components/data/DataRegionViews.tsx`, `components/HomeLead.tsx` · the lead cover (960, srcset, sizes), the thumbnails (250, lazy), the Cards media (120, lazy), the Table picture (250, lazy); the twins.
+  - `app/(app)/blog/page.tsx` · the list's lead (960, srcset, its sizes the true box beside the rail with the 520 px cap from 1582 px) and the rows (500, lazy from the fourth), both with the post's title as alt.
+  - `components/blog/PostHeader.tsx` · PostHero (960, srcset up to 1920, the high fetch priority, the article column's sizes).
+  - `app/(app)/drivers/[slug]/page.tsx` · the private helper replaced by the import, the portrait at 500 as before.
+  - `lib/design/component-render.test.tsx`, `components/HomeLead.test.tsx` · Commons-shaped fixtures; the rebucketed src, the srcset, the sizes and the lazy loading asserted.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · PR C1's evidence.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.201.
+- **Verified:** tests first (three red across two files), then green; tsc 0; lint 0 errors (the two known warnings); vitest 252 files, 2447 tests; cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39226.12 KiB / gzip 8532.20 KiB; on the local server: the driver page's Commons portrait through the shared helper at 500 and the home's and the blog list's site-local covers drawn as they are (the local database holds no Commons cover: the Commons path is the unit tests' and, after the deploy, prod's HTML); after the deploy: Lighthouse against prod's home, appended to docs/perf-baselines.md.
+- **Review:** a fresh-context Sonnet reviewer, SOUND WITH FIXES, 0 blocking; its three fixes folded before the PR (the thumbnails at 250 for their 104 px box, the blog list lead's sizes with the true box beside the rail, the high fetch priority on the post's cover); noted, not done: the Cards media and the Table pictures lazy wherever their region sits, a 36 or 64 px picture never a page's largest element
+
 ## #1082 · 1.0.200 · records · opened Mon 28 Sep 12:35 (09:35Z); the merge on the standing word
 **R13 A and B on prod; the performance baseline; the session-57 handoff.** Records only: the two merges, the deploy, the plan's prod checks, a Lighthouse baseline for PR C, the pickup for session 58.
 - **Readers see:** nothing.

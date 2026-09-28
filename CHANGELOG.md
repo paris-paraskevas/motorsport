@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.201 — 2026-09-28
+
+### R13 C1 — the covers at the size their boxes need
+
+The Lighthouse baseline of 2026-09-28 (docs/perf-baselines.md): the home weighed 19.4 MB because the posts' covers were Wikimedia Commons originals (a 12.4 MB file drawn 560 px wide was the LCP element, 13.6 s on mobile). `lib/commons-thumb.ts` (new): `commonsThumb(src, width)` turns a Commons original or an existing Commons thumb into the thumbnail the service renders at one of six bucketed widths (120, 250, 500, 960, 1280, 1920; the only widths it answers for our files), the query dropped, anything else left alone; `commonsSrcSet` lists several buckets for the browser's own choice. Applied where a cover is drawn: the designer's lead story and its twin on Home (960 with a srcset over 500/960/1280 and the box's sizes), the blog list's lead (the same, its sizes the true box beside the rail, 520 px only from 1582 px wide) and its rows (500, lazy from the fourth row), the post's cover (960 with a srcset up to 1920 for the article column, the high fetch priority as the largest picture of its page), the further-reading thumbnails (250, lazy), the Cards media (120, lazy), the Table's pictures (250, lazy); the drivers page's portrait on the shared helper at 500 as before (its rule of 2026-08-20, PNG included). The blog list's images carry the post's title as their alt (R13 B's rule). Readers see the same pictures; a page that weighed twenty megabytes weighs about two. The stored URLs are untouched. Tests: the helper's cases, the render tests over Commons-shaped fixtures, the Home lead's twin.
+
 ## 1.0.200 — 2026-09-28
 
 ### Records — R13 A and B on prod; the performance baseline; the session-57 handoff

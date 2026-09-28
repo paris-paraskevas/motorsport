@@ -9,6 +9,7 @@ import { sortHref, sortable, type ViewFilter, type ViewState } from '@/lib/desig
 import { rowPasses } from '@/lib/design/presets';
 import { DataRegionControls } from './DataRegionControls';
 import { FollowedRows, FollowedScope } from './FollowedRows';
+import { commonsSrcSet, commonsThumb } from '@/lib/commons-thumb';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -110,7 +111,7 @@ function cellValue(column: PresetColumn, row: PresetRow, leader: number): ReactN
       // It names the row it belongs to (R13, the SEO check of 2026-09-27: every image on the home carried an empty alt).
       const src = text(v);
       // eslint-disable-next-line @next/next/no-img-element
-      return src ? <img src={src} alt={text(row.name ?? row.title ?? row.driver)} width={1200} height={750} className="h-10 w-16 shrink-0 border border-border bg-surface object-cover" /> : null;
+      return src ? <img src={commonsThumb(src, 250)} alt={text(row.name ?? row.title ?? row.driver)} width={1200} height={750} loading="lazy" className="h-10 w-16 shrink-0 border border-border bg-surface object-cover" /> : null;
     }
     default:
       return text(v);
@@ -415,7 +416,7 @@ export function DataRegionCards({ heading, level, shape, preset, rows, card, act
                       {picture ? (
                         media ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={media} alt={title} width={1200} height={750} className="h-9 w-9 object-cover" />
+                          <img src={commonsThumb(media, 120)} alt={title} width={1200} height={750} loading="lazy" className="h-9 w-9 object-cover" />
                         ) : null
                       ) : (
                         initials(media)
@@ -711,6 +712,9 @@ export function DataRegionLeadStory({ heading, level, rows, now }: DataRegionVie
   const H = level;
   const href = text(lead.link);
   const cover = text(lead.hero);
+  // The cover at the size its box needs (R13 PR C): the 960 bucket, the 500 one for a phone and 1280 for a sharp desktop, the
+  // browser choosing by the box's share of the page; a cover on another host is drawn as it is.
+  const coverSet = commonsSrcSet(cover, [500, 960, 1280]);
   const seriesName = text(lead.seriesName);
   const colour = text(lead.colour);
   const age = ageOf(lead.published, now);
@@ -726,7 +730,7 @@ export function DataRegionLeadStory({ heading, level, rows, now }: DataRegionVie
             // 8/5 = 1.6:1, the operator's call: tall and dominant rather than a letterbox; width/height carry the same ratio so
             // the reserved box matches the CSS one and nothing shifts before Tailwind lands; object-cover crops the source.
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={cover} alt={text(lead.title)} width={1200} height={750} fetchPriority="high" className="aspect-[8/5] h-full w-full object-cover" />
+            <img src={commonsThumb(cover, 960)} srcSet={coverSet || undefined} sizes={coverSet ? '(min-width: 1024px) 46vw, 100vw' : undefined} alt={text(lead.title)} width={1200} height={750} fetchPriority="high" className="aspect-[8/5] h-full w-full object-cover" />
           ) : (
             // No cover: a typographic panel rather than a broken box.
             <span className="flex aspect-[8/5] items-end bg-surface p-4">
@@ -771,7 +775,7 @@ export function DataRegionLeadStory({ heading, level, rows, now }: DataRegionVie
                     <Link href={text(s.link)} className="flex items-center gap-3 border-b border-border py-2 font-serif text-16 font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text">
                       {text(s.hero) && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={text(s.hero)} alt={text(s.title)} width={1200} height={630} className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover" />
+                        <img src={commonsThumb(text(s.hero), 250)} alt={text(s.title)} width={1200} height={630} loading="lazy" className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover" />
                       )}
                       <span className="min-w-0 flex-1">{text(s.title)}</span>
                     </Link>
