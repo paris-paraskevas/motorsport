@@ -14,6 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1082 · 1.0.200 · records · opened Mon 28 Sep 12:35 (09:35Z); the merge on the standing word
+**R13 A and B on prod; the performance baseline; the session-57 handoff.** Records only: the two merges, the deploy, the plan's prod checks, a Lighthouse baseline for PR C, the pickup for session 58.
+- **Readers see:** nothing.
+- **Editors get:** nothing new.
+- **Files (8):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R13's PR A and PR B on prod with the checks; a dated line.
+  - `docs/perf-baselines.md` · the Lighthouse baseline of the home on 1.0.199, mobile and desktop (appended).
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the session-57 close and the session-58 pickup.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.200.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 60 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; the prod checks quoted in the ledger (curl, 09:21Z); Lighthouse's JSON in the session's scratchpad.
+- **Review:** none; records.
+
 ## #1081 · 1.0.199 · R13 B · opened Mon 28 Sep 01:55 (27 Sep 22:55Z); the merge on the word
 **The SEO check of 2026-09-27, PR B: the images' words.** Content images name their content; the look does not change.
 - **Readers see:** nothing new on the page; a screen reader hears the story's title on a thumbnail beside its title (the cover's link stays hidden, a card's link names itself).
