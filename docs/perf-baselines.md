@@ -27,7 +27,9 @@ The middleware on an intercepted page, checked on testing: `/calendar?series=f1`
 
 **What this says:** the cached pages answer a little sooner and far steadier (the home's p90 from 1.7 s to 0.3 s: a stale entry is served at once and revalidated behind, where Next's own path waited); the cold start stays; the `/calendar` control, which neither Worker can intercept, answers about 27% faster on testing than on prod at every percentile (p50 1.76 against 2.43), so part of the home, series and blog gap is a testing-versus-prod offset (the isolate's warmth, the path) rather than interception alone, and the real read is prod's own before and after once switched; the catch-all's pages (`/calendar`, `/news`) render per request at 1.5–2.5 s with `no-store`, although their rows say `cached` and the registry does too: the next lever, and a Debug-trace question of its own (in IDEAS). The prod switch is the operator's word; the dry run stood at 39235.19 KiB (gzip 8533.75).
 
-Raw: the session's scratchpad, `c2-ttfb-*.txt`, `c2-deploy-testing.txt` (not committed).
+**On prod (1.0.203, merged 18:26:52Z, live by 18:31Z; twenty fetches of the home and ten of three pages at 18:32–18:36Z):** the home answers `x-opennext-cache: HIT` with no `x-nextjs-cache`; `/` p50 0.215 s, p90 0.365, max 0.378 (the same afternoon before the switch: 0.222 / 1.705 / 1.899); `/series/f1` p50 0.355 (the first fetch a MISS at 2.4 s, the deploy's fresh cache); `/blog` p50 0.340; `/calendar`, not interceptable, p50 2.51 and p90 4.10 either way. The tail is what interception removed; the median was never the problem. The catch-all's per-request pages stay the next lever (IDEAS).
+
+Raw: the session's scratchpad, `c2-ttfb-*.txt`, `c2-prod-after.txt`, `c2-deploy-testing.txt` (not committed).
 
 ## 2026-09-28 — the home on 1.0.201, after R13's PR C1 (the covers at the size their boxes need)
 

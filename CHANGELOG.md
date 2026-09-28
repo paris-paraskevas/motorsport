@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.204 — 2026-09-28
+
+### Records — R13 C2 on prod and R13 done; the Learn pages back in the index; the SEO and AdSense report; R14 opened
+
+Records only, with one production change made by hand on the operator's "apply". `docs/plan/ledger.json`: R13's PR C2 (#1085, 1.0.203) merged on "merge" (18:26:52Z), prod by 18:31Z, the checks: the home answers `x-opennext-cache: HIT` with no `x-nextjs-cache`, twenty fetches p50 0.215 s and p90 0.365 (the same afternoon before the switch 0.222 and 1.705); R13 DONE. R14 opened on "go": the operator's two questions (an automated SEO check for every page; a sourced answer to the AdSense "low value content" refusals) answered in a report on a census of all 1,279 sitemap pages, which found 801 of them answering `noindex` since the page registry of 2026-09-08 entered the pattern rows `/information/[topic]`, `/information/[topic]/[slug]` and `/authors/[slug]` with Indexable off and 1.0.70 made the page frame enforce it; the three rows set Indexable on in production at 18:26:10Z (rehearsed inside begin…rollback first), and after the 1.0.203 deploy the Learn pages and the author pages answer `index, follow` again. The Search Console picture of the day is in the slot's evidence (Excluded by noindex 427, Crawled – currently not indexed 760). `docs/perf-baselines.md`: C2's prod numbers. `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md`: the pickup (R14's build first), the day's minutes, the report's later steps as Inbox lines.
+
 ## 1.0.203 — 2026-09-28
 
 ### R13 C2 — the Worker answers a cached page from the routing layer
