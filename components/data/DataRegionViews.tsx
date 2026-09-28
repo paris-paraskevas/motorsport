@@ -107,9 +107,10 @@ function cellValue(column: PresetColumn, row: PresetRow, leader: number): ReactN
       return formatDate(v);
     case 'image': {
       // A thumbnail of the picture (P2.24 A); remote covers never went through next/image (HomeLead.tsx draws them the same way).
+      // It names the row it belongs to (R13, the SEO check of 2026-09-27: every image on the home carried an empty alt).
       const src = text(v);
       // eslint-disable-next-line @next/next/no-img-element
-      return src ? <img src={src} alt="" width={1200} height={750} className="h-10 w-16 shrink-0 border border-border bg-surface object-cover" /> : null;
+      return src ? <img src={src} alt={text(row.name ?? row.title ?? row.driver)} width={1200} height={750} className="h-10 w-16 shrink-0 border border-border bg-surface object-cover" /> : null;
     }
     default:
       return text(v);
@@ -414,7 +415,7 @@ export function DataRegionCards({ heading, level, shape, preset, rows, card, act
                       {picture ? (
                         media ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={media} alt="" width={1200} height={750} className="h-9 w-9 object-cover" />
+                          <img src={media} alt={title} width={1200} height={750} className="h-9 w-9 object-cover" />
                         ) : null
                       ) : (
                         initials(media)
@@ -719,13 +720,13 @@ export function DataRegionLeadStory({ heading, level, rows, now }: DataRegionVie
     <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated shadow-lg">
       <div className="grid lg:grid-cols-[minmax(0,46%)_1fr]">
         {/* Redundant link: aria-hidden + tabIndex -1 so the picture stays clickable for a mouse without announcing a duplicate
-            of the headline link beside it. */}
+            of the headline link beside it. The cover names its story (R13): the words serve crawlers and image search alone. */}
         <Link href={href} aria-hidden="true" tabIndex={-1} className="block border-b-[1.5px] border-text lg:border-b-0 lg:border-r-[1.5px]">
           {cover ? (
             // 8/5 = 1.6:1, the operator's call: tall and dominant rather than a letterbox; width/height carry the same ratio so
             // the reserved box matches the CSS one and nothing shifts before Tailwind lands; object-cover crops the source.
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={cover} alt="" width={1200} height={750} fetchPriority="high" className="aspect-[8/5] h-full w-full object-cover" />
+            <img src={cover} alt={text(lead.title)} width={1200} height={750} fetchPriority="high" className="aspect-[8/5] h-full w-full object-cover" />
           ) : (
             // No cover: a typographic panel rather than a broken box.
             <span className="flex aspect-[8/5] items-end bg-surface p-4">
@@ -765,11 +766,12 @@ export function DataRegionLeadStory({ heading, level, rows, now }: DataRegionVie
               <ul className="mt-2">
                 {more.map((s, i) => (
                   <li key={`${text(s.slug)}-${i}`}>
-                    {/* The thumbnail is deliberately small beside the band's own cover; no cover, no thumbnail and the title spans the row. */}
+                    {/* The thumbnail is deliberately small beside the band's own cover; no cover, no thumbnail and the title spans the row.
+                        It names its story (R13); a reader hears the title twice, beside the span, the common trade. */}
                     <Link href={text(s.link)} className="flex items-center gap-3 border-b border-border py-2 font-serif text-16 font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text">
                       {text(s.hero) && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={text(s.hero)} alt="" width={1200} height={630} className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover" />
+                        <img src={text(s.hero)} alt={text(s.title)} width={1200} height={630} className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover" />
                       )}
                       <span className="min-w-0 flex-1">{text(s.title)}</span>
                     </Link>

@@ -172,7 +172,7 @@ export function HomeLeadStory({ blog, suggested }: { blog: HomeLeadBlog; suggest
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={blog.heroImage}
-              alt=""
+              alt={blog.title}
               width={1200}
               height={750}
               fetchPriority="high"
@@ -271,7 +271,7 @@ export function HomeLeadStory({ blog, suggested }: { blog: HomeLeadBlog; suggest
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={s.heroImage}
-                          alt=""
+                          alt={s.title}
                           width={1200}
                           height={630}
                           className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover"

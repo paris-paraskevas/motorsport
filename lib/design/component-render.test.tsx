@@ -607,7 +607,8 @@ describe('renderComponents', () => {
   it('P2.24 A, the Lead story template: Home’s lead box over the posts source, verbatim: the cover as a redundant link (the series’ name in the panel without one, Paddock without a series), the eyebrow with the region’s heading, the age, the series’ bar and name, the read time, the title linked as the page’s h1 when first, the summary, the button, and More reading over the rows that follow with their thumbnails; Rows counts the lead and its further reading; a pinned slug leads, an unknown one leaves the newest; nothing without rows; an h2 when not first', async () => {
     const lead = await drawOver('posts?count=10', POSTS, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' });
     expect(lead).toContain('<section aria-label="Latest from the blog"');
-    expect(lead).toMatch(/<a href="\/blog\/monza-2026" aria-hidden="true" tabindex="-1"[^>]*><img src="https:\/\/img\.example\/monza\.jpg" alt="" width="1200" height="750" fetchpriority="high"/i);
+    // R13 (the SEO check of 2026-09-27): the cover names its story; the link is aria-hidden, so the words serve crawlers alone.
+    expect(lead).toMatch(/<a href="\/blog\/monza-2026" aria-hidden="true" tabindex="-1"[^>]*><img src="https:\/\/img\.example\/monza\.jpg" alt="Monza, a history" width="1200" height="750" fetchpriority="high"/i);
     expect(lead).toContain('>Lead story<');
     expect(lead).toContain('>2h ago<');
     expect(lead).toContain('style="background-color:#e10600"');
@@ -621,7 +622,7 @@ describe('renderComponents', () => {
     expect(lead).toContain('>Third story<');
     expect(lead).toContain('>Fourth story<');
     expect(lead).not.toContain('Fifth story');
-    expect(lead).toMatch(/<a href="\/blog\/third"[^>]*><img src="https:\/\/img\.example\/third\.jpg" alt="" width="1200" height="630"/);
+    expect(lead).toMatch(/<a href="\/blog\/third"[^>]*><img src="https:\/\/img\.example\/third\.jpg" alt="Third story" width="1200" height="630"/);
     expect(lead).not.toContain('Two.');
     // No cover on the lead: the typographic panel with the series' name, or Paddock; no series, no bar; the age from the stamp.
     const bare = await drawOver('posts?count=10', [POSTS[1], POSTS[0]], { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' });
@@ -745,7 +746,10 @@ describe('renderComponents', () => {
     const table = await drawOver('posts?count=10', POSTS.slice(0, 2), { preset: 'lead-story', view: 'table', rows: 10, heading: '' });
     expect(table).toContain('<table');
     expect(table).toMatch(/<th[^>]*>Cover<\/th>/);
-    expect(table).toMatch(/<td[^>]*><img src="https:\/\/img\.example\/monza\.jpg" alt=""/);
+    expect(table).toMatch(/<td[^>]*><img src="https:\/\/img\.example\/monza\.jpg" alt="Monza, a history"/);
+    // R13: a card's media names the card (its link names itself already, so a reader hears nothing twice).
+    const covers = await drawOver('posts?count=10', POSTS.slice(0, 1), { preset: 'lead-story', view: 'cards', rows: 5, heading: '', cardMedia: 'hero' });
+    expect(covers).toMatch(/<img src="https:\/\/img\.example\/monza\.jpg" alt="Monza, a history" width="1200" height="750" class="h-9 w-9 object-cover"/);
     expect(table).toMatch(/<a href="\/blog\/monza-2026" class="[^"]*">Monza, a history<\/a>/);
     expect(table).toContain('>22 Sept 2026<');
     expect(table).toMatch(/<th[^>]*>Read time<\/th>/);

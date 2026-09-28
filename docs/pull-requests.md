@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1081 · 1.0.199 · R13 B · opened Mon 28 Sep 01:55 (27 Sep 22:55Z); the merge on the word
+**The SEO check of 2026-09-27, PR B: the images' words.** Content images name their content; the look does not change.
+- **Readers see:** nothing new on the page; a screen reader hears the story's title on a thumbnail beside its title (the cover's link stays hidden, a card's link names itself).
+- **Editors get:** nothing new.
+- **Files (9):**
+  - `components/data/DataRegionViews.tsx` · the lead's cover and thumbnails, the Cards media, the Table picture.
+  - `components/HomeLead.tsx` · the twins of the cover and the thumbnails.
+  - `lib/design/component-render.test.tsx`, `components/HomeLead.test.tsx` · the assertions of the title as the alt, the Cards media case, the lead's twin.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · PR B's evidence.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.199.
+- **Verified:** tests first (three red across two files), then green; tsc 0; lint 0 errors (the two known warnings); vitest 251 files, 2443 tests; cf:build clean; `npx wrangler deploy --dry-run` Total Upload 39186.50 KiB / gzip: 8521.43 KiB; on prod after the deploy: every image on the home with a non-empty alt (pasted into the ledger).
+- **Review:** a fresh-context Sonnet reviewer (154,652 tokens): SOUND, nothing to fix: every alt resolves to the content's words or stays empty where none exists, the cover's link hidden from a reader, the card's media inside its own aria-hidden span, the thumbnails and the Table picture heard twice beside their title (the plan's accepted trade); the two signed-in avatars stay decorative
+
 ## #1080 · 1.0.198 · R13 A · opened Mon 28 Sep 01:40 (27 Sep 22:40Z); the merge on the word
 **The SEO check of 2026-09-27, PR A: the server and the head.** Every finding verified on prod first; the code fixes that need no look change.
 - **Readers see:** a plain http or a www link lands on the apex over https (one 301); the home's title and description in search results are shorter; nothing on the pages changes.
