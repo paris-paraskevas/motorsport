@@ -44,4 +44,15 @@ export default defineCloudflareConfig({
   // the read amplification; its 5s TTL bounds how long a revalidation takes
   // to become visible, which is exactly the contract we want.
   tagCache: doShardedTagCache({ baseShardSize: 4, regionalCache: true }),
+  // R13 PR C2 (2026-09-28): a page the prerender manifest knows (the home, /blog,
+  // /series/<slug>, /drivers/<slug>, the archive and information pages; never
+  // the catch-all's pages, a post, an API route) is answered from the
+  // incremental cache by the routing layer itself when it holds a fresh or
+  // stale entry, before Next's server is built for the request; a stale entry
+  // still queues its revalidation. The middleware runs first and its headers
+  // (the refreshed session cookies, the R13 redirects, the /__view rewrite)
+  // ride on the intercepted answer (@opennextjs/aws routingHandler.js). Skipped
+  // for server actions, on-demand revalidation and preview cookies. Measured on
+  // the testing Worker first (docs/perf-baselines.md); PPR is not used here.
+  enableCacheInterception: true,
 });
