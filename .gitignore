@@ -15,6 +15,8 @@
 
 # next.js
 /.next/
+# The SEO census's CSV and summary (scripts/seo-census.mts; the weekly workflow keeps them as its artifact)
+/.seo-census/
 /out/
 
 # serwist service worker — generated into public/ on every build by @serwist/next

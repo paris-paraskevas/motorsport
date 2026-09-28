@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
-import { loadWeekendNotes, weekendNoteKey } from '@/lib/series-content';
+import { hasWeekendNote, loadWeekendNotes, weekendNoteKey } from '@/lib/series-content';
 import { WeekendNote } from '@/components/weekend/WeekendNote';
 import { sessionSlug, weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { groupByDay, groupByWeekend } from '@/lib/group';
@@ -76,6 +76,10 @@ async function baseMetadata(
   const weekend = weekendFor(series, round);
   if (!weekend) notFound();
   const { title: label } = weekendLabel(weekend, round);
+  // R14 (2026-09-28): a weekend page is indexed only when it carries an authored "How it was won" note; without one
+  // it is a schedule, a classification and headlines, which Google's refusal page calls "not only headlines". The
+  // sitemap reads the same predicate (lib/sitemap-data.ts). follow stays on: the page serves readers and its links carry.
+  const indexed = hasWeekendNote(await loadWeekendNotes(slug), series.meta.season, round);
   const baseTitle = label === `Round ${round}`
     ? `${series.meta.name} · Round ${round}`
     : `${series.meta.name} · ${label} · Round ${round}`;
@@ -100,6 +104,7 @@ async function baseMetadata(
       `${series.meta.name} ${label} live stream`,
     ],
     alternates: { canonical: `/series/${slug}/weekend/${round}` },
+    ...(indexed ? {} : { robots: { index: false, follow: true } }),
     // ownCard: the sibling opengraph-image.tsx generates a weekend-specific
     // card, and an explicit `images` here would replace it with the generic one.
     ...withSocialMeta({
