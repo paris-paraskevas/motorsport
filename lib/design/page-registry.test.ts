@@ -100,7 +100,21 @@ describe('the page registry', () => {
       expect(line, p.path).toContain(`'${p.group}',`);
       expect(line, p.path).toContain(`'${p.authz}',`);
       expect(line, p.path).toContain(`'${p.rendering}',`);
-      expect(line, p.path).toMatch(new RegExp(`'${p.rendering}',\\s*${p.indexable},`));
+      // A later *_pages_seed_*.sql may correct a row's indexable value with an
+      // update (20260928190000, R14); the last word wins over the insert.
+      const corrected = [...sql.matchAll(/update page\s+set indexable = (true|false)[^;]*?path in \(([^)]*)\)/gi)]
+        .filter(m => m[2].includes(`'${p.path}'`))
+        .pop();
+      if (corrected) expect(corrected[1] === 'true', p.path).toBe(p.indexable);
+      else expect(line, p.path).toMatch(new RegExp(`'${p.rendering}',\\s*${p.indexable},`));
+    }
+  });
+
+  it('keeps the Learn topic, the Learn answer and the author profile indexable, so the frame leaves the code its own robots rule (R14)', () => {
+    // Off, lib/design/page-frame.tsx applyFrame adds noindex, follow to every
+    // page of the pattern: 801 of 1,279 sitemap pages from 1.0.70 to 2026-09-28.
+    for (const p of ['/information/[topic]', '/information/[topic]/[slug]', '/authors/[slug]']) {
+      expect(CODE_PAGES.find(c => c.path === p)?.indexable, p).toBe(true);
     }
   });
 });

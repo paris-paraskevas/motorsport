@@ -1,14 +1,14 @@
 import type { MetadataRoute } from 'next';
 import { loadAllSeriesMeta, loadSeries } from './series';
 import { groupByWeekend } from './group';
-import { tabsFor } from './tabs';
+import { tabIsIndexed, tabsFor } from './tabs';
 import { tabIsEmpty } from '@/components/SeriesPageView';
 import { listArchivePairs, loadSeasonArchive, isArchiveLiveSeason } from './season-archive';
 import { SITE_URL } from './site';
 import { INFO_TOPICS, aboutGuideForSeries } from './information/topics';
 import { getIndexedInfoEntries, isTopicIndexable } from './information/registry';
 import { listAuthors } from './authors';
-import { loadDriverBios } from './series-content';
+import { hasWeekendNote, loadDriverBios, loadWeekendNotes } from './series-content';
 import { publishedPosts } from './blog';
 import { loadAllPosts } from './posts';
 
@@ -100,16 +100,17 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
       // keep the redirecting URLs out of the sitemap. About only redirects where
       // a guide exists, so gate it on aboutGuideForSeries.
       //
-      // news is noindex'd (see components/SeriesPageView.tsx — it is
-      // motorsport.com aggregation, the one family enrichment cannot fix), and a
-      // sitemap that submits a noindex URL earns Search Console's "Submitted URL
-      // marked noindex" instead of being merely ignored. So the exclusion has to
-      // live in BOTH places or the two contradict each other.
+      // The tabs of NOINDEX_TABS (lib/tabs.ts) answer noindex in
+      // components/SeriesPageView.tsx — news as motorsport.com aggregation, and
+      // since R14 (2026-09-28) blog, standings, results and drivers as tables over
+      // feeds with one standard paragraph — and a sitemap that submits a noindex
+      // URL earns Search Console's "Submitted URL marked noindex" instead of being
+      // merely ignored. One list in both places, so the two cannot contradict.
       .filter(
         (t) =>
           t.key !== 'calendar' &&
           t.key !== 'history' &&
-          t.key !== 'news' &&
+          tabIsIndexed(t.key) &&
           !(t.key === 'about' && aboutGuideForSeries(m.slug)),
       )
       .map((t) => ({ url: `${SITE_URL}/series/${m.slug}/${t.key}` })),
@@ -127,8 +128,12 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     sortedMeta.map(async (m): Promise<MetadataRoute.Sitemap> => {
       try {
         const series = await loadSeries(m.slug);
+        // R14 (2026-09-28): only a weekend carrying an authored note is advertised;
+        // the page answers noindex without one (the weekend route reads the same
+        // predicate), and a sitemap must not submit a noindex URL.
+        const notes = await loadWeekendNotes(m.slug);
         return groupByWeekend(series.sessions, now, series.rounds)
-          .filter((w) => w.round >= 1)
+          .filter((w) => w.round >= 1 && hasWeekendNote(notes, series.meta.season, w.round))
           .map((w) => ({
             url: `${SITE_URL}/series/${m.slug}/weekend/${w.round}`,
           }));

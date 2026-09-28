@@ -14,7 +14,23 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1086 · 1.0.204 · records · opened Mon 28 Sep 21:50 (18:50Z); the merge on the standing word
+## #1087 · 1.0.205 · R14 B · opened Mon 28 Sep 22:23 (19:23Z); the merge on the word
+**The index's shape, the registry's three rows, and a census of every page.** The registry corrected with its seed migration and test; the weekend pages indexed only with a written note and the four table tabs out of the index and the sitemap, one predicate each for the page and the sitemap; the census script with its weekly workflow.
+- **Readers see:** nothing; every page stays reachable. Search engines see the Learn and author pages, the noted weekends and the hubs; the data-only pages ask to stay out.
+- **Editors get:** a weekend page back in the index by writing its note in `content/series/<slug>/weekend-notes.json`.
+- **Files (17):**
+  - `lib/design/page-registry.ts`, `lib/design/page-registry.test.ts`, `supabase/migrations/20260928190000_pages_seed_indexable.sql` · the three rows on, the seed correction, the last-word rule and the rows' test.
+  - `lib/tabs.ts`, `lib/tabs.test.ts` · `NOINDEX_TABS` and `tabIsIndexed`.
+  - `lib/series-content.ts`, `lib/series-content.test.ts` · `hasWeekendNote`.
+  - `app/(app)/series/[slug]/weekend/[round]/page.tsx`, `components/SeriesPageView.tsx` · the robots rules.
+  - `lib/sitemap-data.ts`, `lib/sitemap-data.test.ts` · a weekend only with a note, no tab of the list; the F1 count derived from the notes.
+  - `scripts/seo-census.mts`, `scripts/seo-census.test.ts`, `.github/workflows/seo-census.yml`, `.gitignore` · the census, its checks over fixtures, the weekly run, the output ignored.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R14's evidence.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.205.
+- **Verified:** tests first (4 red across two files), then green; tsc 0; lint 0 errors (the two known warnings); vitest 255 files, 2458 tests; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` Total Upload 39248.85 KiB / gzip 8537.13 KiB; on the local server with the migration applied: weekend 1 index, weekend 18 noindex, the four tabs noindex, champions, the hub, a Learn answer, a topic and /authors index; the local sitemap 996 URLs (f1 weekends 12, no thin tab, champions 15); the census against prod 1,279 pages, 0 contradictions.
+- **Review:** a fresh-context Sonnet reviewer (231k tokens), SOUND WITH FIXES, 0 blocking; its five fixes and its note folded before the PR (tabIsIndexed at both call sites; the migration wrapped in begin…commit like its siblings; the workflow closes its issue on the next green run; actions/upload-artifact@v7 confirmed as the latest release through the GitHub API; /information/series-guides and /information/map counted with the hub; one user agent)
+
+## #1086 · 1.0.204 · records · opened Mon 28 Sep 21:36 (18:36Z; first written 18:50Z, corrected); the merge on the standing word
 **R13 C2 on prod and done; the Learn pages back in the index; the SEO and AdSense report; R14 opened.** Records, plus the record of one production change made by hand on "apply".
 - **Readers see:** nothing on the pages; search engines see the Learn and author pages again.
 - **Editors get:** nothing new.
@@ -38,7 +54,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
 - **Verified:** `DATA_SOURCE=db npm run cf:build` clean (the home ○ in the manifest, revalidate 300); deployed to testing (version f555ad91, 11,755 entries populated); twenty interleaved fetches against prod per page and two cold samples (the table in docs/perf-baselines.md); the middleware checks on testing; tsc 0; lint 0 errors (the two known warnings); vitest 252 files, 2447 tests; `npx wrangler deploy --dry-run` Total Upload 39235.19 KiB / gzip 8533.75 KiB.
 - **Review:** a fresh-context Sonnet reviewer (239k tokens), SOUND WITH FIXES, 0 blocking; its two fixes folded before the word (this review line; a caveat in the perf section: the /calendar control answers about 27% faster on testing than on prod either way, so part of the home, series and blog gap is a testing-versus-prod offset and the real read is prod's own before and after once switched) and its notes taken (the measurement script reads x-opennext-cache too for the next run; the two cold samples' seconds stand in the record, their curl output was not kept; tsc and lint were run, their logs not kept)
 
-## #1084 · 1.0.202 · records · opened Mon 28 Sep 17:40 (14:40Z); the merge on the standing word
+## #1084 · 1.0.202 · records · opened Mon 28 Sep 17:18 (14:18Z; first written 14:40Z, corrected); the merge on the standing word
 **R13 C1 on prod; the numbers after; the contact form connected; the session-58 pickup.** Records only: the merge, the deploy, the plan's prod checks, the Lighthouse run after, the contact form's connection, the pickup.
 - **Readers see:** nothing.
 - **Editors get:** nothing new.

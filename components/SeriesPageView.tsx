@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries, loadSeriesMeta } from '@/lib/series';
-import { resolveTab, labelForTab, describeTab, seriesSubPages, type TabKey } from '@/lib/tabs';
+import { resolveTab, labelForTab, describeTab, seriesSubPages, tabIsIndexed, type TabKey } from '@/lib/tabs';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -86,8 +86,11 @@ export async function seriesTabMetadata(slug: string, rawTab: string | undefined
       // for readers — this removes it from the index, not from the site.
       // `follow` stays on in both cases: the page remains fully usable and its
       // outbound links still carry. This removes them from the index, not from
-      // the site — the same call 0.334.8 made for the news tabs.
-      ...(tab === 'news' || (await tabIsEmpty(slug, tab, meta))
+      // the site — the same call 0.334.8 made for the news tabs. R14 (2026-09-28)
+      // widened the list to the blog, standings, results and drivers tabs, tables
+      // over feeds with one standard paragraph (NOINDEX_TABS, lib/tabs.ts; the
+      // sitemap reads the same list).
+      ...(!tabIsIndexed(tab) || (await tabIsEmpty(slug, tab, meta))
         ? { robots: { index: false, follow: true } }
         : {}),
       // ownCard: `app/(app)/series/[slug]/opengraph-image.tsx` generates a

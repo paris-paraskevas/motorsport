@@ -160,6 +160,14 @@ export function weekendNoteKey(season: number, round: number): string {
   return `${season}-${round}`;
 }
 
+/** Whether a race weekend carries an authored note with text (R14, 2026-09-28): the page is indexed and the sitemap
+ *  advertises it only then; without one the page is a schedule, a classification and headlines. One reader for the
+ *  route's robots rule and the sitemap, so they cannot drift. */
+export function hasWeekendNote(notes: WeekendNotesFile | null | undefined, season: number, round: number): boolean {
+  const note = notes?.[weekendNoteKey(season, round)];
+  return typeof note?.note === 'string' && note.note.trim().length > 0;
+}
+
 /** Curated WRC per-stage classifications (content/series/wrc/stage-results.json).
  *  The rally results feed is winners-only, so the full per-stage field lives
  *  here as curated content (RULE #1: eWRC + wrc.com). Null when the file is

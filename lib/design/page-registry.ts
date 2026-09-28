@@ -92,12 +92,16 @@ export const CODE_PAGES: readonly CodePage[] = [
   // family in families/news.tsx). Its name is the route's title, News.
   R('/news', 'News', 'editorial', 'cached', true),
   P('/information', 'Learn', 'editorial', 'cached', true),
-  P('/information/[topic]', 'Learn topic', 'editorial', 'cached', false),
-  P('/information/[topic]/[slug]', 'Learn answer', 'editorial', 'cached', false),
+  // Indexable on for the three patterns below (R14, 2026-09-28): the frame then leaves the code its own robots rule,
+  // which indexes a verified and featured Learn answer, a topic index with one, and an author profile. Off, the frame
+  // blanketed every one of them with noindex from 1.0.70 (2026-09-09) until the apply of 2026-09-28 (801 of 1,279
+  // sitemap pages). The seed correction: 20260928190000_pages_seed_indexable.sql.
+  P('/information/[topic]', 'Learn topic', 'editorial', 'cached', true),
+  P('/information/[topic]/[slug]', 'Learn answer', 'editorial', 'cached', true),
   P('/information/map', 'Tracks map', 'editorial', 'cached', true),
   P('/information/series-guides', 'Series guides', 'editorial', 'cached', true),
   P('/authors', 'Authors', 'editorial', 'cached', true),
-  P('/authors/[slug]', 'Author profile', 'editorial', 'cached', false),
+  P('/authors/[slug]', 'Author profile', 'editorial', 'cached', true),
   P('/changelog', 'Changelog', 'editorial', 'cached', true),
   P('/write-for-us', 'Write for us', 'editorial', 'cached', true),
   P('/contribute', 'Contribute', 'editorial', 'cached', false),

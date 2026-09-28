@@ -13,6 +13,17 @@ export const TABS = [
 
 export type TabKey = typeof TABS[number]['key'];
 
+/** Tabs kept out of the index (R14, 2026-09-28): `robots: noindex, follow` on the page and no sitemap entry, in ONE
+ *  list so the two can never contradict each other (a sitemap that submits a noindex URL earns Search Console's
+ *  "Submitted URL marked noindex"). News is motorsport.com aggregation (0.334.8); blog, standings, results and drivers
+ *  are tables and links over feeds with one standard paragraph, which Google's own refusal page calls "not only
+ *  headlines"; the series hub, the champions roll and the mapped rounds stay. A tab comes back by earning sentences. */
+export const NOINDEX_TABS = ['news', 'blog', 'standings', 'results', 'drivers'] as const satisfies readonly TabKey[];
+
+export function tabIsIndexed(key: TabKey): boolean {
+  return !(NOINDEX_TABS as readonly string[]).includes(key);
+}
+
 /** Tabs that make sense for a single-event series (one annual race,
  *  not a championship). Standings / Results / Drivers / News don't apply. */
 // 'drivers' joined 2026-06-12 (content-gap audit #6): ADAC's curated

@@ -1,0 +1,85 @@
+name: Does every page still answer the way the sitemap says?
+
+# The SEO census (R14, 2026-09-28): every URL of the deployed sitemap fetched
+# and checked page by page, once a week and on demand, the way the operator's
+# Seobility report checked the home. It fails on the contradiction a single-page
+# check can never see: a sitemap URL that answers noindex, a redirect, a 404 or
+# a 5xx. The page registry of 2026-09-08 took 801 pages out of the index by a
+# flag and nothing noticed for twenty days; this run would have failed that week.
+# The CSV and the summary by family are kept as the run's artifact.
+
+on:
+  schedule:
+    - cron: '23 6 * * 1' # Mondays, 06:23 UTC
+  workflow_dispatch: {}
+
+concurrency:
+  group: seo-census
+  cancel-in-progress: true
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Least privilege, and `contents: read` must be spelled out: naming a
+    # permissions block drops every default, so omitting it breaks checkout.
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Fetch and check every sitemap URL
+        run: npx tsx scripts/seo-census.mts --site https://paddock-tracker.com --out .seo-census
+      - name: Keep the census
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: seo-census
+          path: .seo-census
+          retention-days: 90
+
+      # ONE issue per contradiction, not one per week: the open issue IS the
+      # alert, as data-freshness.yml does it.
+      - name: Open an issue when the sitemap contradicts a page
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: A sitemap URL answers noindex, a redirect, a 404 or a 5xx
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing is already open; not commenting."
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body "$(cat <<EOF
+          The weekly SEO census found sitemap URLs that answer noindex, a redirect,
+          a 404 or a 5xx. The failing URLs are in the run's log and the CSV is the
+          run's artifact: $RUN_URL
+
+          Close this issue once the pages answer the way the sitemap says, or the
+          sitemap stops advertising them.
+          EOF
+          )"
+
+      - name: Close the issue once the sitemap and the pages agree again
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: A sitemap URL answers noindex, a redirect, a 404 or a 5xx
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -z "$existing" ]; then
+            exit 0
+          fi
+          gh issue close "$existing" --comment "Recovered: $RUN_URL found every sitemap URL answering as advertised."

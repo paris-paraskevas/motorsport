@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { buildSitemapEntries, blogLastModified } from './sitemap-data';
-import { TRACKS_TAB_SLUGS } from './tabs';
+import { NOINDEX_TABS, TRACKS_TAB_SLUGS } from './tabs';
 import { loadSeries, loadAllSeriesMeta } from './series';
-import { loadDriverBios, loadChampionNotes, loadCuratedChampions } from './series-content';
+import { hasWeekendNote, loadDriverBios, loadChampionNotes, loadCuratedChampions, loadWeekendNotes } from './series-content';
 import { loadAllDrivers } from './people';
 import { groupByWeekend } from './group';
 import { weekendLabel } from './weekend';
@@ -35,20 +35,30 @@ describe('buildSitemapEntries', () => {
     expect(seriesUrls).toHaveLength(15);
   });
 
-  it('F1 has 23 weekend URLs in 2026 (Saudi cancelled; Bahrain back, rescheduled at Sepang)', async () => {
-    // 24 original rounds - Saudi (cancelled) - Bahrain (cancelled) = 22 until
-    // 0.245.2 restored Bahrain as round 16 at Sepang (2-4 Oct) → 23. Stale-guard:
-    // if this fails, re-check content/series/f1/rounds.json before touching it.
-    const f1Weekends = urls.filter((u) => u.url.includes('/series/f1/weekend/'));
-    expect(f1Weekends).toHaveLength(23);
+  it('advertises a weekend URL only for a round with an authored note (F1: the rounds in weekend-notes.json; a series without notes: none)', async () => {
+    // R14 (2026-09-28): the page answers noindex without a note (the weekend
+    // route reads hasWeekendNote), and a sitemap that submits a noindex URL earns
+    // "Submitted URL marked noindex". Both derive from groupByWeekend, so this
+    // still asserts page reality (the 1b-2 lesson: six FE URLs once 404'd).
+    const f1 = await loadSeries('f1');
+    const notes = await loadWeekendNotes('f1');
+    const expected = groupByWeekend(f1.sessions, new Date(), f1.rounds)
+      .filter((w) => w.round >= 1 && hasWeekendNote(notes, f1.meta.season, w.round))
+      .map((w) => `${SITE_URL}/series/f1/weekend/${w.round}`)
+      .sort();
+    const f1Weekends = urls.filter((u) => u.url.includes('/series/f1/weekend/')).map((u) => u.url).sort();
+    expect(f1Weekends).toEqual(expected);
+    expect(expected.length).toBeGreaterThanOrEqual(12); // rounds 1–12 of 2026 carry a note today
+    expect(await loadWeekendNotes('formula-e')).toBeNull();
+    expect(urls.some((u) => u.url.includes('/series/formula-e/weekend/'))).toBe(false);
   });
 
-  it('Formula E emits all 17 weekend URLs (doubleheader race 2s split into their own weekends)', async () => {
-    // Before the 1b-2 fix the sitemap listed 17 FE rounds from rounds.json
-    // while the pages only resolved 11 — six advertised URLs 404'd. Both
-    // sides now derive from groupByWeekend, so this asserts page reality.
-    const feWeekends = urls.filter((u) => u.url.includes('/series/formula-e/weekend/'));
-    expect(feWeekends).toHaveLength(17);
+  it('advertises no tab of the noindex list (news, blog, standings, results, drivers) and keeps every champions tab', async () => {
+    for (const key of NOINDEX_TABS) {
+      expect(urls.some((u) => new RegExp(`/series/[^/]+/${key}$`).test(u.url)), key).toBe(false);
+    }
+    const champions = urls.filter((u) => /\/series\/[^/]+\/champions$/.test(u.url));
+    expect(champions.length).toBeGreaterThanOrEqual(15);
   });
 
   it('emits the Tracks tab URL only for coverage-gated series (today: f1)', async () => {
