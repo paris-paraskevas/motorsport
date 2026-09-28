@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1086 · 1.0.204 · records · opened Mon 28 Sep 21:50 (18:50Z); the merge on the standing word
+**R13 C2 on prod and done; the Learn pages back in the index; the SEO and AdSense report; R14 opened.** Records, plus the record of one production change made by hand on "apply".
+- **Readers see:** nothing on the pages; search engines see the Learn and author pages again.
+- **Editors get:** nothing new.
+- **Files (10):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R13's C2 on prod with the checks and R13 done; R14 opened with its decision scan and the apply's evidence; two dated lines.
+  - `docs/perf-baselines.md` · C2's prod numbers under the testing measurement.
+  - `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md` · the pickup (R14's build first, the report's later steps), the day's minutes, four Inbox lines.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.204.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 61 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; the prod checks quoted in the ledger (curl, 18:31–18:36Z); the apply's three verify reads (HTTP 201) in the ledger.
+
 ## #1085 · 1.0.203 · R13 C2 · opened Mon 28 Sep 18:15 (15:15Z); the merge on the word
 **The Worker answers a cached page from the routing layer.** OpenNext's cache interception on, measured on the testing Worker first; the prod switch is the operator's.
 - **Readers see:** the same pages, a little sooner and steadier when cached; nothing else.
