@@ -8,6 +8,33 @@ Time-series perf snapshot. **Append-only by date** — never overwrite prior row
 
 ---
 
+## 2026-09-28 — the home on 1.0.201, after R13's PR C1 (the covers at the size their boxes need)
+
+Run here at ~14:09Z, four minutes after the 1.0.201 deploy (#1083, merged 14:01Z), the same `npx lighthouse@12` through Playwright's Chromium as the baseline below, mobile and desktop, performance only. The page cache was warm (this machine's curl checks of the deploy came first), so the server-response row is the warm case, not the baseline's cold one; the cold case is C2's measurement.
+
+| Metric | Mobile (Moto G Power, slow 4G sim) | Desktop |
+|---|---|---|
+| **Performance** | **68** (was 56) | **82** (was 74) |
+| FCP | 2.0 s | 1.0 s |
+| LCP | 11.7 s (was 13.6 s) | 2.8 s (was 3.7 s) |
+| TBT | 95 ms (was 290 ms) | 0 ms |
+| CLS | 0.124 | 0.004 |
+| Speed Index | 3.2 s (was 6.5 s) | 1.3 s (was 2.4 s) |
+| Server response (root document, warm cache) | 344 ms | 345 ms |
+| Requests / total transfer | 62 / 2,183 KiB (was 75 / 19,419 KiB) | 73 / 2,599 KiB (was 85 / 20,112 KiB) |
+| Images / transfer | 2 / 897 KiB | 6 / 1,306 KiB |
+| JavaScript files / transfer | 21 / 734 KiB | 22 / 718 KiB |
+| Unused JavaScript | 314 KiB | 315 KiB |
+| Main-thread work / bootup | 2.1 s / 0.8 s | 0.5 s / 0.1 s |
+
+**The LCP element, both runs:** the lead story's cover again, now `…/commons/thumb/7/76/Baku-F1-Street-Circuit-Openstreetmaps-rev1.png/960px-…png` at 896 KiB: the newest post's cover is a PNG map (a 1.1 MB original), and a PNG stays a PNG at Wikimedia's thumbnail service (252 KiB at 500, 896 KiB at 960). The mobile LCP's phases: TTFB 0.6 s, load delay 4.1 s, load time 6.5 s (the 896 KiB on the simulated 1.6 Mbps), render 0.5 s. A JPEG of the same map would be about a tenth; the cover's file is an editor's choice (in IDEAS), not this slot's.
+
+**Seen in the desktop run's requests:** three 500 px covers the home never draws (the Baku map, the SkySat and the Tsolov covers, 372 KiB): the router prefetches /blog from the header's link, and React's Flight payload carries a preload hint for every eager `<img>` (the blog list's lead and its two eager rows), which the client preloads. Before this PR the same prefetch preloaded the originals. In IDEAS: the rows lazy from the second when a lead cover exists, or the link's prefetch on hover.
+
+**What C1 changed, in the numbers:** the transfer 19.4 MB → 2.2 MB on mobile and 20.1 → 2.6 MB on desktop; "Properly size images" from the top opportunity to 424 KiB (the PNG); the Speed Index halved; the mobile LCP 13.6 → 11.7 s only, the PNG holding it; TBT 290 → 95 ms. **Next, C2:** the Worker's answer (OpenNext's cache interception on the testing Worker first), then the cold-cache server response measured again.
+
+Raw reports: the session's scratchpad, `lh-c1-mobile.json` and `lh-c1-desktop.json` (not committed).
+
 ## 2026-09-28 — the home on 1.0.199, a Lighthouse 12 baseline for R13's PR C (the SEO check's response time)
 
 Run here at ~09:24Z, four minutes after the 1.0.199 deploy, with `npx lighthouse@12` against `https://paddock-tracker.com/` through Playwright's Chromium (the PageSpeed API's keyless daily quota was spent by then; the operator's pagespeed.web.dev run stays the better lab number and belongs in this file when they paste one). The first request after a deploy meets a cold page cache (`s-maxage=300, must-revalidate`, no stale-while-revalidate), so the server-response numbers below are the cold case, the one Seobility met (2.17 s); warm hits from the same machine by curl measured 0.20–0.48 s an hour earlier.

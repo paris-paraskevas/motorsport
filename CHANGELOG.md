@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.202 — 2026-09-28
+
+### Records — R13 C1 on prod, the numbers after; the contact form connected
+
+Records only. `docs/plan/ledger.json`: R13's PR C1 (#1083, 1.0.201) merged on the operator's "merge" (14:01Z), prod by 14:05Z, and the plan's checks run on prod: the home's lead cover at the 960 bucket with its srcset, sizes, priority and preload link, the thumbnails at 250 and the Cards media at 120 lazy, the blog list's lead and rows, the post's cover with its srcset to 1920, the driver's portrait at 500; the only original left an SVG, by design. `docs/perf-baselines.md`: the same Lighthouse run as the baseline, four minutes after the deploy: mobile 56 → 68 (LCP 13.6 → 11.7 s, 19,419 → 2,183 KiB), desktop 74 → 82 (LCP 3.7 → 2.8 s); the LCP element the lead's cover still, a PNG map of 896 KiB at 960 (a PNG stays a PNG at Wikimedia; the cover's file is an editor's choice, in IDEAS); the three 500 px covers the desktop run fetched for /blog come from the router's prefetch and React's preload hints for eager images (in IDEAS). The contact form, connected at 09:48Z: the Worker's RESEND_API_KEY and CONTACT_TO_EMAIL set by the operator's hand (the rail refuses secret writes from Claude), the fifth test answered `emailed: true`; the operator's own: a stray secret to delete and the pasted key to rotate. `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md`: the pickup for session 58 (PR C2 first), the day's minutes, two Inbox lines.
+
 ## 1.0.201 — 2026-09-28
 
 ### R13 C1 — the covers at the size their boxes need

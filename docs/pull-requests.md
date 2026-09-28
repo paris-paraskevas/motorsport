@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1084 · 1.0.202 · records · opened Mon 28 Sep 17:40 (14:40Z); the merge on the standing word
+**R13 C1 on prod; the numbers after; the contact form connected; the session-58 pickup.** Records only: the merge, the deploy, the plan's prod checks, the Lighthouse run after, the contact form's connection, the pickup.
+- **Readers see:** nothing.
+- **Editors get:** nothing new.
+- **Files (10):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R13's PR C1 on prod with the checks and the numbers; a dated line.
+  - `docs/perf-baselines.md` · the Lighthouse run of the home on 1.0.201, mobile and desktop, beside the baseline.
+  - `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md` · the session-58 pickup (PR C2 first, the contact form's state), the day's minutes, two Inbox lines.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.202.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 60 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; the prod checks quoted in the ledger (curl, 14:05–14:15Z); Lighthouse's JSON in the session's scratchpad.
+
 ## #1083 · 1.0.201 · R13 C1 · opened Mon 28 Sep 14:55 (11:55Z); the merge on the word
 **The covers at the size their boxes need.** Every cover from Wikimedia Commons through the thumbnail service's bucketed widths, with a srcset on the lead covers and lazy loading below the fold; the drivers page on the shared rule.
 - **Readers see:** the same pictures, a tenth of the bytes; the first picture sooner.
