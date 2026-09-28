@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1085 · 1.0.203 · R13 C2 · opened Mon 28 Sep 18:15 (15:15Z); the merge on the word
+**The Worker answers a cached page from the routing layer.** OpenNext's cache interception on, measured on the testing Worker first; the prod switch is the operator's.
+- **Readers see:** the same pages, a little sooner and steadier when cached; nothing else.
+- **Editors get:** nothing new.
+- **Files (11):**
+  - `open-next.config.ts` · `enableCacheInterception: true` with the why.
+  - `docs/perf-baselines.md` · the testing measurement, the cold samples, the middleware checks, the next lever.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R13's PR C2 evidence.
+  - `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md` · the pickup (the prod switch on the word, then the catch-all's pages), the minutes, one Inbox line.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.203.
+- **Verified:** `DATA_SOURCE=db npm run cf:build` clean (the home ○ in the manifest, revalidate 300); deployed to testing (version f555ad91, 11,755 entries populated); twenty interleaved fetches against prod per page and two cold samples (the table in docs/perf-baselines.md); the middleware checks on testing; tsc 0; lint 0 errors (the two known warnings); vitest 252 files, 2447 tests; `npx wrangler deploy --dry-run` Total Upload 39235.19 KiB / gzip 8533.75 KiB.
+- **Review:** a fresh-context Sonnet reviewer (239k tokens), SOUND WITH FIXES, 0 blocking; its two fixes folded before the word (this review line; a caveat in the perf section: the /calendar control answers about 27% faster on testing than on prod either way, so part of the home, series and blog gap is a testing-versus-prod offset and the real read is prod's own before and after once switched) and its notes taken (the measurement script reads x-opennext-cache too for the next run; the two cold samples' seconds stand in the record, their curl output was not kept; tsc and lint were run, their logs not kept)
+
 ## #1084 · 1.0.202 · records · opened Mon 28 Sep 17:40 (14:40Z); the merge on the standing word
 **R13 C1 on prod; the numbers after; the contact form connected; the session-58 pickup.** Records only: the merge, the deploy, the plan's prod checks, the Lighthouse run after, the contact form's connection, the pickup.
 - **Readers see:** nothing.

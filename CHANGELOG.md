@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.203 — 2026-09-28
+
+### R13 C2 — the Worker answers a cached page from the routing layer
+
+`open-next.config.ts`: `enableCacheInterception: true`. A page the prerender manifest knows (the home, the blog list, a series, a driver, the archive and the information pages) is answered from the incremental cache by OpenNext's routing layer when it holds a fresh or stale entry, after the middleware and before Next's server is built for the request; a stale entry still queues its revalidation; skipped for server actions, on-demand revalidation and preview cookies. Measured on the testing Worker first (docs/perf-baselines.md, 2026-09-28): the home's answer p50 0.19 s against prod's 0.22, its p90 0.32 s against 1.7; the cold start unchanged (about 3 s, the isolate's start); the middleware's redirects, the view rewrite, the RSC and prefetch answers and the cookies unchanged. Intercepted answers carry `x-opennext-cache` instead of `x-nextjs-cache`; nothing in the code reads either. A local build needs `DATA_SOURCE=db` in its environment for the home to prerender as prod's build does. Readers see the same pages, a little sooner and steadier.
+
 ## 1.0.202 — 2026-09-28
 
 ### Records — R13 C1 on prod, the numbers after; the contact form connected

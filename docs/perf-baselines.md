@@ -8,6 +8,27 @@ Time-series perf snapshot. **Append-only by date** — never overwrite prior row
 
 ---
 
+## 2026-09-28 — R13 PR C2 measured on the testing Worker: OpenNext's cache interception
+
+The Worker's answer, the second lever of the plan of 2026-09-28. `enableCacheInterception: true` in open-next.config.ts, built here with `DATA_SOURCE=db npm run cf:build` (without the variable in the build's environment the home's loaders fetch upstreams with no-store and `/` leaves the prerender manifest as a dynamic route, which the interceptor never touches; prod's build carries it, so `/` is ISR there: its prefetch payload is the full page, 125,921 bytes) and deployed to testing.paddock-tracker.com at 14:34Z (version f555ad91; the populate wrote 11,755 entries by 14:47Z under the testing prefix). The interceptor answers a page the prerender manifest knows (`/`, `/blog`, `/series/<slug>`, `/drivers/<slug>`, the archive and information pages) from the incremental cache in the routing layer, after the middleware and before Next's server; its answers carry `x-opennext-cache: HIT|STALE` and no `x-nextjs-cache`.
+
+Twenty interleaved fetches from here, one second apart, testing against prod (curl, TTFB in seconds):
+
+| Page | Testing (intercepted) p50 / p90 / max | Prod p50 / p90 / max | Prod's cache header |
+|---|---|---|---|
+| `/` (20 each) | 0.194 / 0.317 / 1.540 | 0.222 / 1.705 / 1.899 | 19 HIT, 1 STALE |
+| `/series/f1` (10) | 0.212 / 2.546 / 2.546 (the first a MISS) | 0.390 / 0.871 / 0.871 | 8 HIT, 2 STALE |
+| `/blog` (10) | 0.211 / 0.380 / 0.380 | 0.348 / 0.407 / 0.407 | 9 HIT, 1 STALE |
+| `/calendar` (5, not interceptable) | 1.762 / 2.139 / 2.139 | 2.427 / 2.480 / 2.480 | none; `private, no-cache, no-store` |
+
+The cold answer (the first request after the isolate went idle): 2.96 s at 14:48Z (13 minutes idle after the populate, `x-opennext-cache: HIT`) and 3.52 s at 15:03Z (11 minutes idle, STALE); the next request to `/calendar` 2.22 s and to `/` again 1.57 s (the queued revalidation of `/` in flight). The cold cost is the isolate's start of a 39 MB Worker and the first read of the cache, not Next's render: interception does not move it, and it is the cost Seobility met after a deploy (2.17 s).
+
+The middleware on an intercepted page, checked on testing: `/calendar?series=f1` answers the filtered page through the `/__view` rewrite (200, 549,132 bytes against the plain page's 549,084); an `RSC: 1` request of `/` gets the RSC payload from the interceptor (`text/x-component`, 125,921 bytes, `x-nextjs-prerender: 1`); the router's prefetch of `/blog` is the same 95,202 bytes as prod's; a request with a bogus session cookie answers 200 with no Set-Cookie (the middleware ignores it either way); plain http on the testing host answers 200 as before (the R13 redirects name the apex only). The middleware's headers ride on an intercepted answer by the routing handler's own code (`applyMiddlewareHeaders` before the early return, @opennextjs/aws 4.1.0 routingHandler.js).
+
+**What this says:** the cached pages answer a little sooner and far steadier (the home's p90 from 1.7 s to 0.3 s: a stale entry is served at once and revalidated behind, where Next's own path waited); the cold start stays; the `/calendar` control, which neither Worker can intercept, answers about 27% faster on testing than on prod at every percentile (p50 1.76 against 2.43), so part of the home, series and blog gap is a testing-versus-prod offset (the isolate's warmth, the path) rather than interception alone, and the real read is prod's own before and after once switched; the catch-all's pages (`/calendar`, `/news`) render per request at 1.5–2.5 s with `no-store`, although their rows say `cached` and the registry does too: the next lever, and a Debug-trace question of its own (in IDEAS). The prod switch is the operator's word; the dry run stood at 39235.19 KiB (gzip 8533.75).
+
+Raw: the session's scratchpad, `c2-ttfb-*.txt`, `c2-deploy-testing.txt` (not committed).
+
 ## 2026-09-28 — the home on 1.0.201, after R13's PR C1 (the covers at the size their boxes need)
 
 Run here at ~14:09Z, four minutes after the 1.0.201 deploy (#1083, merged 14:01Z), the same `npx lighthouse@12` through Playwright's Chromium as the baseline below, mobile and desktop, performance only. The page cache was warm (this machine's curl checks of the deploy came first), so the server-response row is the warm case, not the baseline's cold one; the cold case is C2's measurement.
