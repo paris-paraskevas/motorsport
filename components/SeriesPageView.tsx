@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries, loadSeriesMeta } from '@/lib/series';
-import { NOINDEX_TABS, resolveTab, labelForTab, describeTab, seriesSubPages, type TabKey } from '@/lib/tabs';
+import { resolveTab, labelForTab, describeTab, seriesSubPages, tabIsIndexed, type TabKey } from '@/lib/tabs';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -90,7 +90,7 @@ export async function seriesTabMetadata(slug: string, rawTab: string | undefined
       // widened the list to the blog, standings, results and drivers tabs, tables
       // over feeds with one standard paragraph (NOINDEX_TABS, lib/tabs.ts; the
       // sitemap reads the same list).
-      ...((NOINDEX_TABS as readonly string[]).includes(tab) || (await tabIsEmpty(slug, tab, meta))
+      ...(!tabIsIndexed(tab) || (await tabIsEmpty(slug, tab, meta))
         ? { robots: { index: false, follow: true } }
         : {}),
       // ownCard: `app/(app)/series/[slug]/opengraph-image.tsx` generates a

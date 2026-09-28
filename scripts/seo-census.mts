@@ -58,7 +58,7 @@ export function familyOf(pathname: string): string {
   if (p.length === 0) return 'home';
   if (p[0] === 'information') {
     const slug = p[2] ?? '';
-    if (!p[2]) return p[1] ? 'information/topic index' : 'information/hub';
+    if (!p[2]) return !p[1] || p[1] === 'series-guides' || p[1] === 'map' ? 'information/hub' : 'information/topic index';
     if (p[1] === 'tracks') return 'information/tracks';
     if (/^who-won-the-\d{4}/.test(slug)) return 'information/who-won-<year>';
     if (/^who-has-won-the-most|^most-/.test(slug)) return 'information/most';
@@ -182,9 +182,11 @@ function arg(name: string): string | undefined {
   return i >= 0 ? process.argv[i + 1] : undefined;
 }
 
+const UA = 'paddock-seo-census/1.0 (+https://paddock-tracker.com)';
+
 async function fetchPage(url: string): Promise<PageInput> {
   const t0 = Date.now();
-  const res = await fetch(url, { redirect: 'manual', headers: { 'user-agent': 'paddock-seo-census/1.0 (+https://paddock-tracker.com)' } });
+  const res = await fetch(url, { redirect: 'manual', headers: { 'user-agent': UA } });
   const html = res.status === 200 ? await res.text() : '';
   return { url, status: res.status, location: res.headers.get('location'), ms: Date.now() - t0, html };
 }
@@ -193,7 +195,7 @@ async function main(): Promise<void> {
   const site = (arg('--site') ?? 'https://paddock-tracker.com').replace(/\/$/, '');
   const out = arg('--out') ?? '.seo-census';
   const limit = Number(arg('--limit') ?? 0) || 0;
-  const xml = await (await fetch(`${site}/sitemap.xml`, { headers: { 'user-agent': 'paddock-seo-census/1.0' } })).text();
+  const xml = await (await fetch(`${site}/sitemap.xml`, { headers: { 'user-agent': UA } })).text();
   let urls = parseSitemap(xml);
   if (urls.length === 0) throw new Error(`no <loc> in ${site}/sitemap.xml`);
   if (limit > 0) urls = urls.slice(0, limit);

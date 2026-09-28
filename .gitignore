@@ -104,3 +104,5 @@ Thumbs.db
 
 # Local JWT signing keys for the Supabase stack (PA A3): generated per machine, never committed.
 supabase/signing_keys.json
+# Unlighthouse output (the operator runs npx unlighthouse --site … from the repo root)
+/.unlighthouse/

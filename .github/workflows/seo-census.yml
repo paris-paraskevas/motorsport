@@ -68,3 +68,18 @@ jobs:
           sitemap stops advertising them.
           EOF
           )"
+
+      - name: Close the issue once the sitemap and the pages agree again
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: A sitemap URL answers noindex, a redirect, a 404 or a 5xx
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -z "$existing" ]; then
+            exit 0
+          fi
+          gh issue close "$existing" --comment "Recovered: $RUN_URL found every sitemap URL answering as advertised."

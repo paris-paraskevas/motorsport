@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { loadAllSeriesMeta, loadSeries } from './series';
 import { groupByWeekend } from './group';
-import { NOINDEX_TABS, tabsFor } from './tabs';
+import { tabIsIndexed, tabsFor } from './tabs';
 import { tabIsEmpty } from '@/components/SeriesPageView';
 import { listArchivePairs, loadSeasonArchive, isArchiveLiveSeason } from './season-archive';
 import { SITE_URL } from './site';
@@ -110,7 +110,7 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
         (t) =>
           t.key !== 'calendar' &&
           t.key !== 'history' &&
-          !(NOINDEX_TABS as readonly string[]).includes(t.key) &&
+          tabIsIndexed(t.key) &&
           !(t.key === 'about' && aboutGuideForSeries(m.slug)),
       )
       .map((t) => ({ url: `${SITE_URL}/series/${m.slug}/${t.key}` })),

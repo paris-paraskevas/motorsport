@@ -54,6 +54,8 @@ describe('familyOf and parseSitemap', () => {
     expect(familyOf('/information/tracks/sachsenring')).toBe('information/tracks');
     expect(familyOf('/information/endurance/how-wec-points-work')).toBe('information/how-points-work');
     expect(familyOf('/information/endurance')).toBe('information/topic index');
+    expect(familyOf('/information')).toBe('information/hub');
+    expect(familyOf('/information/series-guides')).toBe('information/hub');
     expect(familyOf('/series/f1/weekend/15')).toBe('series/weekend');
     expect(familyOf('/series/f1/champions')).toBe('series/champions');
     expect(familyOf('/series/f1')).toBe('series/hub');
