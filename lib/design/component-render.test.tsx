@@ -586,11 +586,11 @@ describe('renderComponents', () => {
 
   // P2.24 A: Home's Lead story and The wire as the Data region's templates over the posts and news sources; the clock fixed at noon.
   const NOON = new Date('2026-09-22T12:00:00Z');
-  const postRow = (over: Record<string, string | number | null>) => ({ slug: 'monza-2026', title: 'Monza, a history', summary: 'A century of speed.', series: 'f1', author: 'Paris', published: '2026-09-22T10:00:00.000Z', hero: 'https://img.example/monza.jpg', link: '/blog/monza-2026', seriesName: 'Formula 1', colour: '#e10600', minutes: 6, ...over });
+  const postRow = (over: Record<string, string | number | null>) => ({ slug: 'monza-2026', title: 'Monza, a history', summary: 'A century of speed.', series: 'f1', author: 'Paris', published: '2026-09-22T10:00:00.000Z', hero: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Monza.jpg?utm_source=commons.wikimedia.org&utm_campaign=index', link: '/blog/monza-2026', seriesName: 'Formula 1', colour: '#e10600', minutes: 6, ...over });
   const POSTS = [
     postRow({}),
     postRow({ slug: 'second', title: 'Second story', summary: 'Two.', series: null, hero: null, link: '/blog/second', seriesName: null, colour: null, minutes: 3, published: '2026-09-21T10:00:00.000Z' }),
-    postRow({ slug: 'third', title: 'Third story', summary: 'Three.', hero: 'https://img.example/third.jpg', link: '/blog/third', published: '2026-09-20T10:00:00.000Z' }),
+    postRow({ slug: 'third', title: 'Third story', summary: 'Three.', hero: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Third.jpg/1920px-Third.jpg', link: '/blog/third', published: '2026-09-20T10:00:00.000Z' }),
     postRow({ slug: 'fourth', title: 'Fourth story', hero: null, link: '/blog/fourth', published: '2026-09-19T10:00:00.000Z' }),
     postRow({ slug: 'fifth', title: 'Fifth story', hero: null, link: '/blog/fifth', published: '2026-09-18T10:00:00.000Z' }),
   ];
@@ -608,7 +608,8 @@ describe('renderComponents', () => {
     const lead = await drawOver('posts?count=10', POSTS, { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' });
     expect(lead).toContain('<section aria-label="Latest from the blog"');
     // R13 (the SEO check of 2026-09-27): the cover names its story; the link is aria-hidden, so the words serve crawlers alone.
-    expect(lead).toMatch(/<a href="\/blog\/monza-2026" aria-hidden="true" tabindex="-1"[^>]*><img src="https:\/\/img\.example\/monza\.jpg" alt="Monza, a history" width="1200" height="750" fetchpriority="high"/i);
+    // R13 PR C: the cover at the 960 bucket of Commons' thumbnail service, the srcset for the browser's own choice, the box's sizes, eager.
+    expect(lead).toMatch(new RegExp('<a href="\\/blog\\/monza-2026" aria-hidden="true" tabindex="-1"[^>]*><img src="https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/a\/a9\/Monza\.jpg\/960px-Monza\\.jpg" srcset="https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/a\/a9\/Monza\.jpg\/500px-Monza\\.jpg 500w, https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/a\/a9\/Monza\.jpg\/960px-Monza\\.jpg 960w, https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/a\/a9\/Monza\.jpg\/1280px-Monza\\.jpg 1280w" sizes="\\(min-width: 1024px\\) 46vw, 100vw" alt="Monza, a history" width="1200" height="750" fetchpriority="high"', 'i'));
     expect(lead).toContain('>Lead story<');
     expect(lead).toContain('>2h ago<');
     expect(lead).toContain('style="background-color:#e10600"');
@@ -622,7 +623,7 @@ describe('renderComponents', () => {
     expect(lead).toContain('>Third story<');
     expect(lead).toContain('>Fourth story<');
     expect(lead).not.toContain('Fifth story');
-    expect(lead).toMatch(/<a href="\/blog\/third"[^>]*><img src="https:\/\/img\.example\/third\.jpg" alt="Third story" width="1200" height="630"/);
+    expect(lead).toMatch(new RegExp('<a href="\\/blog\\/third"[^>]*><img src="https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/b\/b2\/Third\.jpg\/250px-Third\\.jpg" alt="Third story" width="1200" height="630" loading="lazy"'));
     expect(lead).not.toContain('Two.');
     // No cover on the lead: the typographic panel with the series' name, or Paddock; no series, no bar; the age from the stamp.
     const bare = await drawOver('posts?count=10', [POSTS[1], POSTS[0]], { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '' });
@@ -746,16 +747,16 @@ describe('renderComponents', () => {
     const table = await drawOver('posts?count=10', POSTS.slice(0, 2), { preset: 'lead-story', view: 'table', rows: 10, heading: '' });
     expect(table).toContain('<table');
     expect(table).toMatch(/<th[^>]*>Cover<\/th>/);
-    expect(table).toMatch(/<td[^>]*><img src="https:\/\/img\.example\/monza\.jpg" alt="Monza, a history"/);
+    expect(table).toMatch(new RegExp('<td[^>]*><img src="https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/a\/a9\/Monza\.jpg\/250px-Monza\\.jpg" alt="Monza, a history" width="1200" height="750" loading="lazy"'));
     // R13: a card's media names the card (its link names itself already, so a reader hears nothing twice).
     const covers = await drawOver('posts?count=10', POSTS.slice(0, 1), { preset: 'lead-story', view: 'cards', rows: 5, heading: '', cardMedia: 'hero' });
-    expect(covers).toMatch(/<img src="https:\/\/img\.example\/monza\.jpg" alt="Monza, a history" width="1200" height="750" class="h-9 w-9 object-cover"/);
+    expect(covers).toMatch(new RegExp('<img src="https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/a\/a9\/Monza\.jpg\/120px-Monza\\.jpg" alt="Monza, a history" width="1200" height="750" loading="lazy" class="h-9 w-9 object-cover"'));
     expect(table).toMatch(/<a href="\/blog\/monza-2026" class="[^"]*">Monza, a history<\/a>/);
     expect(table).toContain('>22 Sept 2026<');
     expect(table).toMatch(/<th[^>]*>Read time<\/th>/);
     expect(table).toContain('>6<');
     const cards = await drawOver('posts?count=10', POSTS.slice(0, 2), { preset: 'lead-story', view: 'cards', rows: 10, heading: '' });
-    expect(cards).toMatch(/<span aria-hidden="true" class="[^"]*h-9 w-9[^"]*"><img src="https:\/\/img\.example\/monza\.jpg"/);
+    expect(cards).toMatch(new RegExp('<span aria-hidden="true" class="[^"]*h-9 w-9[^"]*"><img src="https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/a\/a9\/Monza\.jpg\/120px-Monza\\.jpg"'));
     expect((cards.match(/<img /g) ?? []).length).toBe(1);
     expect(cards).toContain('>22 Sept 2026<');
     expect(cards).toContain('>Formula 1<');

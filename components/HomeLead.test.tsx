@@ -45,9 +45,14 @@ describe('HomeLead', () => {
   });
 
   it('the lead’s cover and a thumbnail name their story (R13, the SEO check of 2026-09-27); the cover’s link stays hidden from a reader', () => {
-    const covered = renderToStaticMarkup(<HomeLeadStory blog={{ ...blog, heroImage: 'https://img.example/monza.jpg' }} suggested={1} />);
-    // The file's Link mock drops aria-hidden and tabindex; the cover's words are what this asserts (the hidden link is component-render.test.tsx's).
-    expect(covered).toContain('<img src="https://img.example/monza.jpg" alt="Monza, a history"');
+    const covered = renderToStaticMarkup(<HomeLeadStory blog={{ ...blog, heroImage: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Monza.jpg' }} suggested={1} />);
+    // The file's Link mock drops aria-hidden and tabindex; the cover's words and its size are what this asserts (the hidden link is
+    // component-render.test.tsx's; React 19 writes srcSet as given). R13 PR C: the 960 bucket of Commons' thumbnail service with the srcset and the box's sizes.
+    expect(covered).toContain('<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Monza.jpg/960px-Monza.jpg" srcSet="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Monza.jpg/500px-Monza.jpg 500w, https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Monza.jpg/960px-Monza.jpg 960w, https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Monza.jpg/1280px-Monza.jpg 1280w" sizes="(min-width: 1024px) 46vw, 100vw" alt="Monza, a history"');
+    // A cover on another host is drawn as it is, without a srcset.
+    const other = renderToStaticMarkup(<HomeLeadStory blog={{ ...blog, heroImage: 'https://img.example/monza.jpg' }} suggested={1} />);
+    expect(other).toContain('<img src="https://img.example/monza.jpg" alt="Monza, a history"');
+    expect(other).not.toContain('srcset');
     expect(covered).not.toContain('alt=""');
   });
 

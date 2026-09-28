@@ -17,6 +17,7 @@ import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_WIDE } from '@/lib/site';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
+import { commonsThumb } from '@/lib/commons-thumb';
 
 // ISR: profile pages edge-cache (was force-dynamic). Season form comes from
 // the cached results fetchers (loadSnapshotSource excludes WEC's no-store).
@@ -51,21 +52,12 @@ async function baseMetadata({
 export const generateMetadata = pageMetadata('/drivers/[slug]', baseMetadata);
 
 // Curated portraits are stored as full-resolution Commons file URLs; the
-// header slot is 176 px, so the original is ~180 KB of wasted bytes on the LCP
+// header slot is 176 px, so the original was ~180 KB of wasted bytes on the LCP
 // element (PSI 2026-08-20: 171 KB of the 182 KB portrait). Commons serves
-// resized copies under /thumb/<a>/<ab>/<file>/<width>px-<file>.
-//
-// 500 is not arbitrary: Wikimedia only renders BUCKETED widths and rejects the
-// rest with a 400 (352/360/400 all fail for our files, with or without a UA —
-// probed 2026-08-20), and 500 is the smallest bucket that still covers the
-// 176 px slot at 2x. Every one of the 22 shipped portraits was HEAD-checked at
-// this width: 22/22 → 200. Non-Commons hosts, existing /thumb/ URLs and
-// non-raster files fall through unchanged, so an unexpected src can never 404.
-function commonsThumb(src: string): string {
-  const m = /^https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/([0-9a-f])\/([0-9a-f]{2})\/([^/]+\.(?:jpg|jpeg|png))$/i.exec(src);
-  if (!m) return src;
-  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${m[1]}/${m[2]}/${m[3]}/500px-${m[3]}`;
-}
+// resized copies at bucketed widths (the rule this page learned on 2026-08-20,
+// now lib/commons-thumb.ts, R13 PR C): 500 is the smallest bucket that still
+// covers the 176 px slot at 2x; every one of the 22 shipped portraits was
+// HEAD-checked at this width, 22/22 → 200.
 
 // Short "About" bio (Wikipedia intro). Attribution mirrors the series About
 // tab's "Source: Wikipedia →" credit; absent bio → no section (fail-soft).
@@ -377,7 +369,7 @@ async function DriverBody({
                   2.6 s of pure load delay from it being lazy). */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={commonsThumb(headshotUrl)}
+                src={commonsThumb(headshotUrl, 500)}
                 alt={driver.name}
                 width={176}
                 height={176}

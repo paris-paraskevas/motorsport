@@ -5,6 +5,7 @@ import { sessionSlug } from '@/lib/weekend';
 import type { PodiumEntry } from '@/lib/home-results';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { SessionDayNote } from '@/components/SessionDayNote';
+import { commonsSrcSet, commonsThumb } from '@/lib/commons-thumb';
 
 // The home's editorial lead (design handoff §4.1, panels 1b/2a): four fixed
 // blocks that answer "what just happened, and what did it change" — the
@@ -171,7 +172,9 @@ export function HomeLeadStory({ blog, suggested }: { blog: HomeLeadBlog; suggest
             // lands; object-cover crops whatever the source actually is.
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={blog.heroImage}
+              src={commonsThumb(blog.heroImage, 960)}
+              srcSet={commonsSrcSet(blog.heroImage, [500, 960, 1280]) || undefined}
+              sizes={commonsSrcSet(blog.heroImage, [500]) ? '(min-width: 1024px) 46vw, 100vw' : undefined}
               alt={blog.title}
               width={1200}
               height={750}
@@ -270,10 +273,11 @@ export function HomeLeadStory({ blog, suggested }: { blog: HomeLeadBlog; suggest
                       {s.heroImage && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={s.heroImage}
+                          src={commonsThumb(s.heroImage, 250)}
                           alt={s.title}
                           width={1200}
                           height={630}
+                          loading="lazy"
                           className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover"
                         />
                       )}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { commonsSrcSet, commonsThumb } from '@/lib/commons-thumb';
 
 // Shared /blog/[slug] post header: date + tags row, title, byline, summary.
 // Two real consumers (the extraction rule's bar): the public server path in
@@ -42,10 +43,13 @@ export function PostHero({ src, alt }: { src: string; alt: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={src}
+      src={commonsThumb(src, 960)}
+      srcSet={commonsSrcSet(src, [500, 960, 1280, 1920]) || undefined}
+      sizes={commonsSrcSet(src, [500]) ? '(min-width: 1024px) 752px, (min-width: 768px) 624px, 100vw' : undefined}
       alt={alt}
       width={1200}
       height={630}
+      fetchPriority="high"
       className="mb-8 aspect-[1200/630] w-full rounded-xl border border-border bg-surface object-cover"
     />
   );

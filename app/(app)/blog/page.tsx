@@ -8,6 +8,7 @@ import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { StudioLink } from '@/components/blog/StudioLink';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
+import { commonsSrcSet, commonsThumb } from '@/lib/commons-thumb';
 
 export const revalidate = 300;
 
@@ -45,7 +46,7 @@ interface Card {
  *  it a name; it stays in this file rather than becoming a component nobody else
  *  imports. `lead` promotes the cover to full width above the headline, the
  *  newspaper shape, instead of the right-hand thumbnail the other rows take. */
-function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
+function PostRow({ post, lead = false, lazy = false }: { post: Card; lead?: boolean; lazy?: boolean }) {
   const meta = (
     <div className="mb-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 font-mono text-10 uppercase tracking-[0.14em]">
       {post.seriesName && <span className="font-semibold text-text-muted">{post.seriesName}</span>}
@@ -109,8 +110,10 @@ function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
                   on the post page itself. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={post.heroImage}
-                alt=""
+                src={commonsThumb(post.heroImage, 960)}
+                srcSet={commonsSrcSet(post.heroImage, [500, 960, 1280]) || undefined}
+                sizes={commonsSrcSet(post.heroImage, [500]) ? '(min-width: 1582px) 520px, (min-width: 1024px) calc(42vw - 145px), (min-width: 768px) 42vw, 100vw' : undefined}
+                alt={post.title}
                 width={1200}
                 height={630}
                 className="aspect-[1200/630] w-full border border-border bg-surface object-cover"
@@ -148,10 +151,11 @@ function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
         <Link href={`/blog/${post.slug}`} className="block sm:order-2 sm:w-[220px] sm:shrink-0 lg:w-[260px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={post.heroImage}
-            alt=""
+            src={commonsThumb(post.heroImage, 500)}
+            alt={post.title}
             width={1200}
             height={630}
+            loading={lazy ? 'lazy' : undefined}
             className="aspect-[21/9] w-full border border-border bg-surface object-cover sm:aspect-[1200/630]"
           />
         </Link>
@@ -297,7 +301,7 @@ async function BlogIndexPage() {
               the standfirst are unchanged — the pictures are the addition. */}
           <ul className="border-t border-text">
             {posts.map((post, i) => (
-              <PostRow key={post.slug} post={post} lead={i === 0} />
+              <PostRow key={post.slug} post={post} lead={i === 0} lazy={i >= 3} />
             ))}
           </ul>
 
