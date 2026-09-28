@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.206 — 2026-09-28
+
+### Records — R14 on prod and done; the crawlers’ reports; R15 proposed
+
+Records only. `docs/plan/ledger.json`: R14’s PR B (#1087, 1.0.205) merged on “merge” (21:59:42Z), prod by 22:04Z, the checks (a weekend with a note indexed, one without noindex, the four tabs noindex, the hub, the champions roll, a Learn page and an author page indexed; the sitemap 1,034 URLs), the census against prod green (1,034 pages, 0 contradictions) and the weekly workflow’s first run green (every step, the CSV kept); R14 DONE. R15 planned on the operator’s Ahrefs Site Audit of the same evening: the crawler found 180,278 link targets on a site of 1,034 pages because the Filters region’s series chips link every combination of fifteen series (a filtered page links every “one more series” page; verified on prod: 14 two-series links from a one-series calendar page, 11 three-series links from a two-series news page), all noindex with a canonical and nofollow already; the proposal is one robots.txt line for the `?filter=` variants, Google’s preferred remedy for faceted navigation, on the word. The Unlighthouse run stops at 200 routes by its default (`scanner.maxRoutes`) and samples dynamic routes; the config to scan every sitemap URL is in the handoff. `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md`: the pickup (R15 on the word, then the census’s reported widths and canonicals, then P2.8), the day’s minutes, the Inbox lines.
+
 ## 1.0.205 — 2026-09-28
 
 ### R14 — the index's shape, the registry's three rows, and a census of every page
