@@ -971,6 +971,12 @@ describe('renderComponents', () => {
     expect(html(titled.heading)).toContain('>Race calendar 2026<');
     const own = await renderComponents(doc([region('heading', 'page.heading', { text: 'Every session' })]), { path: '/calendar', page });
     expect(html(own.heading)).toContain('>Every session<');
+    expect(html(own.heading)).toMatch(/<h1 class="font-serif text-34[^"]*">Every session<\/h1>/);
+    // R13 (the SEO check of 2026-09-27): a heading region that is not the first showing in the Body is an h2 of the same look;
+    // Home's eight section headings drew eight h1s.
+    const second = await renderComponents(doc([region('month', 'calendar.month', {}, { seq: 10 }), region('heading', 'page.heading', { text: 'Below the month' }, { seq: 20 })]), { path: '/calendar', params: {}, page });
+    expect(html(second.heading)).toMatch(/<h2 class="font-serif text-34[^"]*">Below the month<\/h2>/);
+    expect(html(second.heading)).not.toContain('<h1');
   });
 });
 

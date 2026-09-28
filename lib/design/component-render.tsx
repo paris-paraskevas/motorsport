@@ -105,10 +105,12 @@ async function drawLiveBand(settings: Readonly<Record<string, SettingValue>>): P
 const RENDERERS: Readonly<Record<string, Renderer>> = {
   'page.heading'(settings, ctx) {
     const text = str(settings.text) || ctx.page.title || ctx.page.name;
-    // The site's masthead, as the pages the code drew had it (the Calendar's, moved as it was).
+    // The site's masthead, as the pages the code drew had it (the Calendar's, moved as it was): the page's h1 when the region is
+    // the first showing in the Body, an h2 of the same look otherwise (R13: Home's eight section headings drew eight h1s).
+    const H = ctx.first ? 'h1' : 'h2';
     return (
       <header>
-        <h1 className="font-serif text-34 font-medium leading-none tracking-[-0.02em] text-text md:text-40">{text}</h1>
+        <H className="font-serif text-34 font-medium leading-none tracking-[-0.02em] text-text md:text-40">{text}</H>
       </header>
     );
   },

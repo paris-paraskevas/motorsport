@@ -23,6 +23,8 @@ import { appearanceCss, loadAppearance } from '@/lib/design/appearance';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import { SOCIAL_CARD } from '@/lib/seo';
+import { JsonLd } from '@/components/JsonLd';
+import { organizationLd, websiteLd } from '@/lib/json-ld';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
 import '../globals.css';
@@ -38,6 +40,9 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   manifest: '/manifest.json',
+  // The icons named here (R13): an icons object in the metadata replaces the file-based app/icon.png link, so the favicon is
+  // named again beside the Apple touch icon, which is the PWA's own 192px icon; no file of its own.
+  icons: { icon: '/icon.png', apple: '/icons/icon-192.png' },
   robots: {
     index: true,
     follow: true,
@@ -129,6 +134,10 @@ export default async function RootLayout({
         <body className="min-h-screen bg-bg text-text">
           {/* First child on purpose: parser-blocking pre-paint theme init. */}
           <ThemeScript set={themes} />
+          {/* The site's identity for search engines (R13): the Organization and the WebSite every Article and SportsEvent schema
+              on the site points at by id; on every page, so the references resolve wherever a crawler lands. */}
+          <JsonLd data={organizationLd()} />
+          <JsonLd data={websiteLd()} />
           {/* The operator's appearance (one :root rule) and their own themes
               (one rule per theme on [data-theme-custom]), after the stylesheet
               so they win at equal specificity. Empty when nothing is stored. */}

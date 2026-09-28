@@ -519,6 +519,11 @@
    "date": "2026-09-27",
    "change": "P2.7 Metric cards merged and on prod (1.0.196): the component in the Gallery; no page shows it until an editor places a region. Next in the ledger’s order: P2.8 Countdown.",
    "word": "the operator, 2026-09-27 ~19:58Z: “merge”"
+  },
+  {
+   "date": "2026-09-27",
+   "change": "R13 The SEO check of 2026-09-27 enters the ledger and starts on the operator’s word: the verified findings fixed in two PRs (the server and the head; the images’ words), performance measured before it is fixed, the operator’s own settings named (Cloudflare’s Always Use HTTPS, the five Home headings), the rest closed with a reason. P2.8 Countdown waits behind it.",
+   "word": "the operator, 2026-09-27 ~20:05Z: “pleae take a serious look at this … this needs careful planning and execution.”; the plan approved in plan mode ~20:45Z"
   }
  ],
  "phases": {
@@ -1292,6 +1297,19 @@
    "status": "done",
    "scopeHash": "8c2ee2ace578",
    "evidence": "STARTED 2026-09-27 ~01:05Z on the word of ~00:30Z · BUILT (branch fix/r12-month-grid-on-phones): the test first (red on the agenda), the build (components/calendar/MonthView.tsx); the reviewer’s three findings taken (one desktop floor, the bars sharing the width, the reader’s name) · GATES after the last edit: tsc 0 · lint 0 errors (the two known) · vitest full green (251 files, 2429 tests) · cf:build clean · wrangler deploy --dry-run Total Upload 39508.31 KiB / gzip: 8590.15 KiB · BROWSER on the local server: 390px the grid with its bars and counts, a day tapped opening the Day view; 1280px the desktop as it was · REVIEW: a fresh-context Sonnet reviewer: BLOCKING on a leftover desktop floor (a 72px md floor beside main's 100px on one cell, the winner undecidable from the source), fixed to main's floor alone; its two fixes taken (the bars sharing the cell's width, the day's name for a phone reader) and its cap test written; the empty month left as the desktop has it · PR #1075 (1.0.193) opened; the merge on the word after the screenshot · ON PROD: #1075 squash-merged 2026-09-27 09:49:17Z as d44f86ae on the word “merge keep going”, prod 1.0.193 by 09:53:26Z; the month grid seen on prod at 390px in the browser (the bars per series, the counts, the chips; screenshot r12-prod-390) · DONE"
+  },
+  {
+   "id": "R13",
+   "phase": "P2",
+   "title": "The SEO check of 2026-09-27",
+   "scope": "The operator’s Seobility check of the home (34/100), every finding verified on prod: the plain-http and www addresses answered 200 (a 301 to the apex over https), the X-Powered-By header, the title and the description over Google’s width, nine h1s (the Page heading component drew an h1 wherever it stood), no Apple touch icon, no structured data on the home (the Organization and WebSite builders had no caller), eighteen images with an empty alt (PR B); the duplicate “Drivers” headings are the operator’s Home document (theirs in the designer); the anchors and the copy left by design; the response time a measured performance slot after (PR C); backlinks not code.",
+   "fixedBy": "the report (Downloads/paddock_tracker_com_seocheck_2026_09_27.pdf, Seobility, 16 pages); the verification of 2026-09-27 ~20:10Z (curl on http, https and www; the home’s HTML three times; the published Home document through the read-only Management API); the plan of 2026-09-27 (~/.claude/plans/wobbly-wiggling-pudding.md; a Sonnet plan critic, 254,142 tokens, nothing blocking, five fixes folded), approved ~20:45Z",
+   "defaults": "Two 301s in the middleware before the session read, for the prod hosts by exact equality (never the dev, testing or local hosts); poweredByHeader false; the Apple touch icon from the 192px PWA icon through metadata; the Organization and WebSite JSON-LD from the (app) layout on every page; page.heading an h1 only when first in the Body, an h2 of the same look otherwise; the title “Paddock Tracker — every result, in your own time zone” (53 characters) and a description of 148; the images’ alt the content’s title (PR B); anchors, sentence length, social widgets, backlinks left with their reasons; performance measured before it is fixed (PR C).",
+   "needsWord": "the title and description words (the proposed as the default); the five Home headings in the designer (theirs) or “in code”; Cloudflare’s Always Use HTTPS toggle (theirs); social widgets (default no); “merge” for each PR",
+   "acceptance": "On prod after PR A: http and www answer 301 to the apex over https; no X-Powered-By; the head carries the Apple icon and two ld+json blocks; one h1 on the home; the title and the description within Google’s width; tests. After PR B: every image on the home carries a non-empty alt. PR C planned on measurements.",
+   "status": "started",
+   "scopeHash": "cf1eca8d1e22",
+   "evidence": "PLANNED 2026-09-27 ~20:15Z in plan mode on the operator’s “take a serious look at this … careful planning and execution” (~20:05Z), the plan approved ~20:45Z · STARTED (branch fix/r13-seo-check): PR A, the tests first (five red across two files), the build · PR A GATES after the last edit: tsc 0 · lint 0 errors (the two known) · vitest 251 files, 2442 tests · cf:build clean · wrangler deploy --dry-run Total Upload 39186.43 KiB / gzip: 8521.38 KiB · LOCAL: the head with the Apple icon link and two ld+json blocks, the title and the description as written · REVIEW: a fresh-context Sonnet reviewer (207,798 tokens): SOUND WITH FIXES, none blocking; it traced the favicon suppression the local server had shown (an icons object in the metadata ends Next's file-based icon merge, resolve-metadata.js) and confirmed /icon.png as the favicon's route; the redirects' loop-safety traced to the Worker's own request scheme, OpenNext's Location normalisation, the header flag, the JSON-LD, the lengths and the heading level confirmed; its one gap, the records, closed in this commit · PR #1080 (1.0.198) opened; the merge on the word; the prod curl checks after the deploy follow"
   }
  ]
 }

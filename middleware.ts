@@ -32,6 +32,16 @@ const SERIES_ABOUT_RE = /^\/series\/([^/]+)\/about$/;
 
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
+  // The prod hosts answer on one address over https (R13, the SEO check of 2026-09-27: plain http and www both answered 200):
+  // a 301 to the apex over https, the path and the query kept, before the session is read. The host by exact equality alone:
+  // the dev and testing hosts run this middleware on Workers of their own and are never redirected, nor is localhost.
+  if (url.hostname === 'www.paddock-tracker.com' || (url.hostname === 'paddock-tracker.com' && url.protocol === 'http:')) {
+    const dest = url.clone();
+    dest.protocol = 'https:';
+    dest.hostname = 'paddock-tracker.com';
+    dest.port = '';
+    return NextResponse.redirect(dest, 301);
+  }
   const jar = requestJar(req);
   let claims: SessionClaims | null = null;
   if (hasSessionCookie(req)) {

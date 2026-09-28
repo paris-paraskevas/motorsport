@@ -123,3 +123,36 @@ describe('the calendar’s old addresses (P2.5 PR B)', () => {
     expect(plain.headers.get('x-middleware-rewrite')).toBeNull();
   });
 });
+
+describe('the prod hosts (R13, the SEO check of 2026-09-27): plain http and www answer one 301 to the apex over https; the dev host, the testing host and localhost are left alone', () => {
+  afterEach(() => {
+    session = { claims: null };
+    authClient.mockClear();
+  });
+
+  it('http on the apex answers 301 to the same path over https, the query kept, before the session is read', async () => {
+    session = { claims: reader };
+    const res = await middleware(new NextRequest('http://paddock-tracker.com/series/f1?x=1', { headers: { host: 'paddock-tracker.com', cookie: signedIn } }));
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe('https://paddock-tracker.com/series/f1?x=1');
+    expect(authClient).not.toHaveBeenCalled();
+  });
+
+  it('www answers 301 to the apex over https whatever the scheme, the path and the query kept', async () => {
+    const https = await middleware(new NextRequest('https://www.paddock-tracker.com/x?y=1', { headers: { host: 'www.paddock-tracker.com' } }));
+    expect(https.status).toBe(301);
+    expect(https.headers.get('location')).toBe('https://paddock-tracker.com/x?y=1');
+    const http = await middleware(new NextRequest('http://www.paddock-tracker.com/', { headers: { host: 'www.paddock-tracker.com' } }));
+    expect(http.status).toBe(301);
+    expect(http.headers.get('location')).toBe('https://paddock-tracker.com/');
+  });
+
+  it('the https apex passes as before; the dev host, the testing host and localhost are never sent to the apex', async () => {
+    expect((await middleware(at('/calendar'))).headers.get('x-middleware-next')).toBe('1');
+    for (const address of ['http://localhost:3000/calendar', 'https://dev.paddock-tracker.com/calendar', 'http://dev.paddock-tracker.com/calendar', 'https://testing.paddock-tracker.com/calendar']) {
+      const res = await middleware(new NextRequest(address, { headers: { host: new URL(address).host } }));
+      expect(res.status, address).not.toBe(301);
+      expect(res.headers.get('location') ?? '', address).not.toMatch(/^https:\/\/paddock-tracker\.com\//);
+    }
+  });
+});
