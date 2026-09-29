@@ -45,8 +45,13 @@ const currentAccount = vi.fn();
 vi.mock('@/lib/auth/server', () => ({ currentAccount: () => currentAccount(), accountId: async () => ((await currentAccount()) as { id?: string } | null)?.id ?? null }));
 // The components' server half: what a region draws, and whether a race weekend is on.
 const raceWeekend = vi.fn(async () => false);
+// What the frame told the renderer about the page (P2.17: the address's parts ride along).
+let rendered: { path: string; params?: Record<string, string> } | null = null;
 vi.mock('./component-render', () => ({
-  renderComponents: async (doc: { regions: { id: string; kind: string }[] }) => Object.fromEntries(doc.regions.filter(r => r.kind === 'component').map(r => [r.id, `drawn ${r.id}`])),
+  renderComponents: async (doc: { regions: { id: string; kind: string }[] }, where: { path: string; params?: Record<string, string> }) => {
+    rendered = where;
+    return Object.fromEntries(doc.regions.filter(r => r.kind === 'component').map(r => [r.id, `drawn ${r.id}`]));
+  },
   raceWeekendNow: () => raceWeekend(),
 }));
 vi.mock('next/navigation', () => ({
@@ -222,6 +227,16 @@ describe('withPageGate', () => {
     loadLiveFrame.mockRejectedValue(new Error('down'));
     expect(await gated(props)).toBe('page f1');
     expect(await withPageGate('/about', Page)(props)).toBe('page f1');
+  });
+
+  it("P2.17: hands the renderer the route's pattern with the address's parts, so a Breadcrumb on a framed page knows its address; none for a page called without them", async () => {
+    loadLiveFrame.mockResolvedValue(live([welcome()]));
+    rendered = null;
+    await withPageGate('/calendar', Page)(props);
+    expect(rendered).toMatchObject({ path: '/calendar', params: { slug: 'f1' } });
+    rendered = null;
+    await withPageGate('/calendar', async () => 'plain')({});
+    expect(rendered).toMatchObject({ path: '/calendar', params: {} });
   });
 
   it("reads the session only when a region asks for a scheme, and hands the frame the scheme's message for a visitor who fails it", async () => {

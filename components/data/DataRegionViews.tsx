@@ -3,7 +3,10 @@ import Link from 'next/link';
 import { ChevronDown, ExternalLink } from 'lucide-react';
 import type { Preset, PresetColumn, PresetRow, Shape } from '@/lib/design/presets';
 import { ageLabel } from '@/lib/date';
-import { seriesInk } from '@/lib/site';
+import { SITE_URL, seriesInk } from '@/lib/site';
+import { JsonLd } from '@/components/JsonLd';
+import { breadcrumbLd } from '@/lib/json-ld';
+import type { Crumb } from '@/lib/design/breadcrumb';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { LocalTime } from '@/components/LocalTime';
 import { sortHref, sortable, type ViewFilter, type ViewState } from '@/lib/design/view-state';
@@ -1023,6 +1026,37 @@ export function DataRegionCountdown({ heading, level, data, links, every }: { he
         {data.session && <NextRaceCountdown target={data.session.startIso} label={data.dates} color={data.colour} liveUntil={data.session.endIso} />}
       </div>
     </section>
+  );
+}
+
+/** The separators the Breadcrumb offers (P2.17; APEX: the template's Between Level), by the setting's key. */
+export const BREADCRUMB_SEPARATORS: Readonly<Record<string, string>> = { chevron: '›', slash: '/', arrow: '→' };
+
+/** The Breadcrumb (P2.17; APEX: the Breadcrumb region): the trail as a nav with a list in the site's eyebrow (the series tab's
+ *  back link), the pages above as links, the page itself in words with aria-current, a separator between; the trail's
+ *  BreadcrumbList with it unless the page's own code prints one. Fewer than two crumbs draw nothing: no trail to show, and
+ *  Google's floor for a BreadcrumbList. */
+export function DataRegionBreadcrumb({ crumbs, separator, structured }: { crumbs: readonly Crumb[]; separator: string; structured: boolean }) {
+  if (crumbs.length < 2) return null;
+  const glyph = BREADCRUMB_SEPARATORS[separator] ?? BREADCRUMB_SEPARATORS.chevron;
+  return (
+    <nav aria-label="Breadcrumb">
+      <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text-muted">
+        {crumbs.map((c, i) => (
+          <li key={c.href} className="flex items-center gap-x-2">
+            {i > 0 && <span aria-hidden="true" className="text-text-faint">{glyph}</span>}
+            {c.current ? (
+              <span aria-current="page" className="text-text">{c.label}</span>
+            ) : (
+              <Link href={c.href} className="transition-colors duration-(--duration-fast) hover:text-text">
+                {c.label}
+              </Link>
+            )}
+          </li>
+        ))}
+      </ol>
+      {structured && <JsonLd data={breadcrumbLd(crumbs.map(c => ({ name: c.label, url: c.href === '/' ? SITE_URL : `${SITE_URL}${c.href}` })))} />}
+    </nav>
   );
 }
 

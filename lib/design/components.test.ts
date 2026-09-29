@@ -284,6 +284,24 @@ describe('the component catalogue', () => {
     expect(settingsSummary(countdown, { series: 'f1', heading: 'Next up', venueTime: false, link: true })).toBe('Series Formula 1 · Heading Next up · Time at the track no · Links yes');
   });
 
+  it('P2.17: the Breadcrumb is a general component in the Page group with Show Home, a separator and This page as its settings, reading no catalogue source; its tile names what is set', () => {
+    const crumb = findComponent('page.breadcrumb')!;
+    expect(crumb).toMatchObject({ name: 'Breadcrumb', group: 'Page' });
+    expect(crumb.holds).toMatch(/^the page’s place in the site from its address/);
+    expect(crumb.sources).toBeUndefined();
+    expect(crumb.settings.map(s => [s.key, s.kind])).toEqual([
+      ['home', 'boolean'],
+      ['separator', 'choice'],
+      ['current', 'boolean'],
+    ]);
+    expect(crumb.settings[1].options?.map(o => [o.key, o.label])).toEqual([['chevron', '›'], ['slash', '/'], ['arrow', '→']]);
+    expect(componentDefaults(crumb)).toEqual({ home: true, separator: 'chevron', current: true });
+    expect(parseSettings(crumb, { home: false, separator: 'slash', current: true }).settings).toEqual({ home: false, separator: 'slash', current: true });
+    expect(parseSettings(crumb, { separator: 'dots' }).problems[0]).toMatch(/^Separator must be one of ›, \/, →/);
+    expect(settingsSummary(crumb, componentDefaults(crumb))).toBe('Show Home yes · Separator › · This page yes');
+    expect(settingsSummary(crumb, { home: false, separator: 'slash', current: true })).toBe('Show Home no · Separator / · This page yes');
+  });
+
   it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
     // P2.5 PR B: the calendar's Filters region before the month, over the calendar's own facets (it has no preset).

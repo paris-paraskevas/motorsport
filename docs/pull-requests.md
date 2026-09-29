@@ -14,6 +14,26 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1093 · 1.0.211 · P2.17 · opened Tue 29 Sep 13:25 (10:25Z); the merge on the word
+**Breadcrumb.** The page's place in the site from its address as a component editors place in the Breadcrumb Bar: Home, the pages above as links, the page itself, a separator; its BreadcrumbList where the page's code prints none.
+- **Readers see:** nothing until an editor places a Breadcrumb; then the trail above the page.
+- **Editors get:** the Breadcrumb in the gallery's Components with Show Home, Separator and This page; Create › Breadcrumb Region alive.
+- **Files (23):**
+  - `lib/design/breadcrumb.ts`, `lib/design/breadcrumb.test.ts` · the trail and its cases (both new, on the plan’s word).
+  - `lib/design/composed-page.ts` · `matchCodePage` over every registry row; `matchComposedPage` on it.
+  - `lib/design/page-registry.ts`, `lib/design/page-registry.test.ts` · `OWN_BREADCRUMB_LD` and the test holding it to the route files, their components and the families.
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the definition and its catalogue test.
+  - `components/data/DataRegionViews.tsx` · `DataRegionBreadcrumb`.
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · the renderer behind a dynamic import, the READS entry, the render test from a saved document.
+  - `lib/design/page-frame.tsx`, `lib/design/page-frame.test.ts` · the route's address parts into the components (`routeParams`).
+  - `components/designer/PageDesigner.tsx`, `components/designer/PageDesigner.test.tsx` · Create › Breadcrumb Region alive; the entry and its placement tested.
+  - `components/designer/PluginsEditor.test.tsx` · thirteen definitions listed (the Breadcrumb joins).
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.17 started with the build's evidence; the Phase 2 order and Phase O with O1 as dated lines.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup, the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.211.
+- **Verified:** tests first (4 red across four files, the catalogue's and the registry's tests red on the missing pieces), then green; tsc 0; lint 0 errors (the two known warnings); vitest 258 files, 2483 tests; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` Total Upload 39457.97 KiB / gzip 8630.07 KiB; the local designer: Create › Breadcrumb Region on the /series/[slug]/[tab] page, saved and published locally 10:08Z; /series/f1/standings drew HOME › SERIES › FORMULA 1 › STANDINGS above the tab's masthead at 1440 and 390 px, /series/f1/drivers … › DRIVERS, the page source carrying one BreadcrumbList (the page's own); the designer-made /history/monza (published 10:12Z): HOME › MONZA, A HISTORY under the title with the region's BreadcrumbList (the page's code prints none), one in the source; the screenshots p217-tab-desktop, p217-tab-phone, p217-row-desktop; the review page https://claude.ai/code/artifact/3b0bc458-72a2-4e7e-8180-a3c33e48a7ea.
+- **Review:** a fresh-context Sonnet reviewer (163,866 tokens), SOUND, no blocking finding and no fix (the ownership set cross-checked against the call sites, the trail rules against the plan, the frame's params against every renderer, the escaping, the bundle rule); its notes taken (a part carrying a slash would desync the prefix walk, cosmetic; the /social pages carry no resolver by design)
+
 ## #1092 · 1.0.210 · records · opened Tue 29 Sep 11:51 (08:51Z); the merge on the standing word
 **P2.8 on prod and done.** Records only: the merge, the deploy, the slot closed.
 - **Readers see:** nothing.
