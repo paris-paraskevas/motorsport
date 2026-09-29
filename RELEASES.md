@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.216 — 2026-09-29
+
+Internal only: the record of the weather component, checked on the live site, and the notes for the next working session. Nothing changes for readers.
+
 ## 1.0.215 — 2026-09-29
 
 The weather at the track, as a box editors can place on any page: hour by hour across each session, or day by day with the sessions of the day, always in the track’s own time. On a race moved to another circuit the weekend page now reads that circuit’s forecast (Sepang for the Bahrain Grand Prix), not the one its name suggests.

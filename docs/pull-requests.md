@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1098 · 1.0.216 · records · opened Tue 29 Sep 16:06 (13:06Z); the merge on the standing word
+**P2.14 on prod and done; the session-58 handoff.** Records only: the merge, the deploy, the Sepang check on prod, the slot closed; the handoff block for session 59.
+- **Readers see:** nothing.
+- **Editors get:** nothing new (the Weather of 1.0.215 stands).
+- **Files (8):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.14 DONE (#1097 on prod); a dated line closing session 58.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the session-59 pickup block (the prompt, the state, the recipes, the landmines), the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.216.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 63 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; prod /changelog 1.0.215 by 13:05:54Z; prod /series/f1/weekend/16 “Source: Open-Meteo · Petronas Sepang International Circuit”.
+- **Review:** none; records.
+
 ## #1097 · 1.0.215 · P2.14 · opened Tue 29 Sep 15:56 (12:56Z); the merge on the word
 **Weather.** The forecast at the track for a weekend as a component editors place, by venue-local time: hour by hour across each session, or day by day with the sessions; the site's one reader as the source; the weekend page's strip and the session page's forecast corrected to the round's curated venue.
 - **Readers see:** Sepang's forecast on the Bahrain Grand Prix page (it read Sakhir's); nothing else until an editor places a Weather region.
