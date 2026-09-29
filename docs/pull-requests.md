@@ -14,6 +14,16 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1090 · 1.0.208 · records · opened Tue 29 Sep 10:00 (07:00Z); the merge on the standing word
+**R15 on prod and done.** Records only: the merge, the deploy, prod's robots.txt, the census, the pickup for the Seobility crawl.
+- **Readers see:** nothing.
+- **Editors get:** nothing new.
+- **Files (8):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R15 done with the checks; a dated line with the day's order.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup (the Seobility export next), the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.208.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 62 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; the prod checks and the census quoted in the ledger.
+
 ## #1089 · 1.0.207 · R15 · opened Tue 29 Sep 05:31 (02:31Z); the merge on the word
 **Crawlers kept off the filter chips' combination URLs.** One robots.txt line, `Disallow: /*?*filter=`, with a test over Google's matching rules.
 - **Readers see:** nothing.
