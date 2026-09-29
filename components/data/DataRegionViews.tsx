@@ -5,6 +5,7 @@ import type { Preset, PresetColumn, PresetRow, Shape } from '@/lib/design/preset
 import { ageLabel } from '@/lib/date';
 import { seriesInk } from '@/lib/site';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
+import { LocalTime } from '@/components/LocalTime';
 import { sortHref, sortable, type ViewFilter, type ViewState } from '@/lib/design/view-state';
 import { rowPasses } from '@/lib/design/presets';
 import { DataRegionControls } from './DataRegionControls';
@@ -951,6 +952,75 @@ export function DataRegionMetrics({ heading, level, shape, nameLabel, rows, card
             </div>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+/** What the Countdown draws (P2.8): the next session as lib/weekend.ts nextSessionAcross found it, its times already
+ *  formatted where the server can (the track's, in the circuit's zone), the reader's left to LocalTime on the client. */
+export interface CountdownData {
+  seriesName: string;
+  colour: string;
+  round: number;
+  weekendTitle: string;
+  weekendHref: string;
+  dates: string;
+  session: { title: string; href: string; startIso: string; endIso: string; venueTime: string | null } | null;
+}
+
+/** The Countdown (P2.8; ours: APEX has no countdown component): a box with the series' colour as its rule, the eyebrow
+ *  naming the series and the round, the weekend's title and the session's name as links to their pages (words alone with
+ *  the links off), one line of times (the reader's through LocalTime, the track's when the circuit's zone is known), and
+ *  NextRaceCountdown's digits, which read LIVE between the session's start and end. A weekend whose remaining sessions carry
+ *  no clock draws its dates and "times to be confirmed" with no digits; nothing to come draws one line, never a hole. First in
+ *  the Body, the heading is the page's h1, or the weekend's title is when there is no heading, so the page never lacks one. */
+export function DataRegionCountdown({ heading, level, data, links, every }: { heading: string; level: 'h1' | 'h2'; data: CountdownData | null; links: boolean; every: boolean }) {
+  const rule = heading ? (
+    level === 'h1' ? (
+      <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
+        <h1 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{heading}</h1>
+      </div>
+    ) : (
+      <SectionRule label={heading} />
+    )
+  ) : null;
+  // First in the Body without a heading, the one line is the page's h1 as the weekend's title would be (the reviewer's finding).
+  const Empty = level === 'h1' && !heading ? 'h1' : 'p';
+  if (!data) {
+    return (
+      <section aria-label={heading || 'Countdown'}>
+        {rule}
+        <Empty className="font-serif text-15 italic text-text-muted">{every ? 'No session to come.' : 'Season complete.'}</Empty>
+      </section>
+    );
+  }
+  const Title = level === 'h1' && !heading ? 'h1' : 'span';
+  const name = (label: string, href: string) => (links ? <Link href={href} className="hover:underline">{label}</Link> : label);
+  return (
+    <section aria-label={heading || 'Countdown'}>
+      {rule}
+      {/* The site's box (Metric cards, This weekend): the outline and the shadow; the series' colour as the eyebrow's bar. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-[1.5px] border-text bg-surface-elevated p-4 shadow-lg">
+        <div className="min-w-0">
+          <span className="flex items-center gap-2 font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
+            <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: data.colour }} />
+            {data.seriesName} · Round {data.round}
+          </span>
+          <Title className="mt-1 block font-serif text-22 font-semibold leading-tight text-text md:text-26">{name(data.weekendTitle, data.weekendHref)}</Title>
+          {data.session ? (
+            <>
+              <span className="mt-1 block font-serif text-17 font-semibold leading-tight text-text">{name(data.session.title, data.session.href)}</span>
+              <span className="mt-1 block font-mono text-12 text-text-muted">
+                <LocalTime instant={Date.parse(data.session.startIso)} />
+                {data.session.venueTime && ` · ${data.session.venueTime} at the track`}
+              </span>
+            </>
+          ) : (
+            <span className="mt-1 block font-mono text-12 text-text-muted">{data.dates} · times to be confirmed</span>
+          )}
+        </div>
+        {data.session && <NextRaceCountdown target={data.session.startIso} label={data.dates} color={data.colour} liveUntil={data.session.endIso} />}
       </div>
     </section>
   );

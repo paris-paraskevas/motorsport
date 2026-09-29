@@ -41,8 +41,14 @@ const dataViews = () => import('@/components/data/DataRegionViews');
 const savedViews = () => import('./views');
 const calendarGrid = () => import('@/lib/calendar-grid');
 const dataFilters = () => import('@/components/data/DataRegionFilters');
+// The Countdown (P2.8) reads the series' sessions, the weekend rule and the circuits the same way: on demand.
+const seriesLib = () => import('@/lib/series');
+const weekendLib = () => import('@/lib/weekend');
+const circuitsLib = () => import('@/lib/circuits');
 
 import type { Facet } from '@/components/data/DataRegionFilters';
+import type { Series } from '@/lib/types';
+import { formatLocal } from '@/lib/date';
 import type { SourceRead as SourceReadResult } from './source-read';
 import { facetValues, type PresetRow as FacetRow, type Shape as FacetShape } from './presets';
 
@@ -128,6 +134,52 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
   },
   // The Live band (P2.9); This weekend, Home's retired piece, upgrades to it on read (P2.24 C).
   'series.live': settings => drawLiveBand(settings),
+  // The Countdown (P2.8; ours: APEX has no countdown component): the next session of one series or the nearest across every
+  // series (lib/weekend.ts nextSessionAcross, Home's rule: a session under way reads LIVE until its end), its weekend and its
+  // start where the reader is and at the track (the circuit through the curated round venue first, as the weekend page
+  // resolves it; the zone from content/circuits.json). A series whose feed fails contributes nothing; nothing to come draws a
+  // line. The view is DataRegionCountdown.
+  async 'series.countdown'(settings, ctx) {
+    const [{ loadAllSeries, loadSeries }, { nextSessionAcross }, views] = await Promise.all([seriesLib(), weekendLib(), dataViews()]);
+    const slug = str(settings.series);
+    let list: Series[] = [];
+    try {
+      list = slug ? [await loadSeries(slug)] : await loadAllSeries();
+    } catch {
+      list = [];
+    }
+    const next = nextSessionAcross(list, ctx.now);
+    const heading = str(settings.heading);
+    const level = ctx.first ? 'h1' : 'h2';
+    const links = settings.link !== false;
+    if (!next) return <views.DataRegionCountdown heading={heading} level={level} data={null} links={links} every={!slug} />;
+    let venueTime: string | null = null;
+    if (settings.venueTime !== false && next.session) {
+      const { matchCircuit, venueCandidates } = await circuitsLib();
+      const circuit = await matchCircuit(...venueCandidates({ venue: next.weekend.venue, location: next.weekend.location, title: next.weekend.title })).catch(() => null);
+      if (circuit?.tz) {
+        // The site's own zone formatter (lib/date.ts formatLocal, LocalTime's fallback), in the circuit's zone; an unknown
+        // zone throws and leaves the reader's time alone.
+        try {
+          venueTime = formatLocal(next.session.start, circuit.tz);
+        } catch {
+          venueTime = null;
+        }
+      }
+    }
+    const data = {
+      seriesName: next.series.name,
+      colour: next.series.color,
+      round: next.weekend.round,
+      weekendTitle: next.weekend.title,
+      weekendHref: next.weekend.href,
+      dates: next.weekend.dateRangeLabel,
+      session: next.session
+        ? { title: next.session.title, href: `${next.weekend.href}/${next.session.slug}`, startIso: next.session.start.toISOString(), endIso: next.session.end.toISOString(), venueTime }
+        : null,
+    };
+    return <views.DataRegionCountdown heading={heading} level={level} data={data} links={links} every={!slug} />;
+  },
   // Metric cards (P2.7; APEX 26.1: the Metric Card theme component): the preset's rows read as the Data region reads them (the
   // shared read where a Filters region has it), every row the preset keeps (a count card counts them); each card a column of the
   // first row, or of the first row its rule names, or the count; the view draws the figures as the Table draws its cells. Nothing
@@ -314,6 +366,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'page.heading': [],
   'calendar.month': ['content:series'],
   'series.live': ['content:series'],
+  // The Countdown reads the series' sessions from the feeds as the Weekends source does, and the circuits for the track's zone (P2.8).
+  'series.countdown': ['content:series', 'live:ics', 'content:circuits'],
   // Metric cards read a Source as the Data region does (P2.7).
   'data.metrics': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Filters region reads its target's Source (P2.5): the same tiers, once for both.

@@ -14,6 +14,9 @@ import type { PageDocument, Region } from './page-document';
 import * as homeModel from '@/lib/home-model';
 import * as sourceRead from './source-read';
 import * as savedViews from './views';
+import * as seriesLib from '@/lib/series';
+import * as circuitsLib from '@/lib/circuits';
+import type { Series, Session } from '@/lib/types';
 
 vi.mock('next/link', () => ({
   // The anchor as given: the class, an aria-label, and the lead's redundant cover link's aria-hidden and tabIndex (P2.24 A).
@@ -956,6 +959,89 @@ describe('renderComponents', () => {
     expect(one).not.toContain('Italian Grand Prix');
     expect(one).not.toContain('Also racing');
     expect(await band({ series: 'wec', also: true })).toBe('');
+  });
+
+  it('P2.8: the Countdown draws the next session of one series or the nearest across every series from a saved document: its name and its weekend as links, the reader’s time and the time at the track, the tick with its live end; a date-only weekend without digits; one line when nothing is to come; the heading or the weekend’s title as the h1 when first', async () => {
+    // The tick (NextRaceCountdown) reads the machine's clock, not the render's instant: a session already begun draws no digits
+    // on the server (the LIVE pill is the client's), one to come draws them. So the fixtures sit around the real now.
+    const AT = new Date();
+    const h = (n: number) => new Date(AT.getTime() + n * 3_600_000);
+    const mk = (slug: string, name: string, color: string, sessions: Partial<Session>[]): Series =>
+      ({
+        meta: { slug, name, color, season: 2026 },
+        sessions: sessions.map((s, i) => ({ uid: `${slug}-${i}`, seriesSlug: slug, title: s.title ?? 'Race', start: s.start!, end: s.end!, location: s.location, dateOnly: s.dateOnly })),
+      }) as unknown as Series;
+    const f1 = mk('f1', 'Formula 1', '#e10600', [
+      { title: 'F1 - Qualifying', start: h(-22), end: h(-21), location: 'Baku City Circuit' },
+      { title: 'F1 - Race', start: h(-1), end: h(1), location: 'Baku City Circuit' },
+    ]);
+    const motogp = mk('motogp', 'MotoGP', '#cc0000', [{ title: 'MotoGP: Race', start: h(2), end: h(3), location: 'Motegi' }]);
+    const wrc = mk('wrc', 'WRC', '#005f9e', [{ title: 'Rally Chile', start: h(4 * 24), end: h(7 * 24), location: 'Concepción', dateOnly: true }]);
+    const wec = mk('wec', 'FIA WEC', '#0f4c81', [{ title: 'WEC - Race', start: h(-14 * 24), end: h(-14 * 24 + 6), location: 'Fuji Speedway' }]);
+    const bySlug: Record<string, Series> = { f1, motogp, wrc, wec };
+    const loadAll = vi.spyOn(seriesLib, 'loadAllSeries').mockResolvedValue([motogp, f1, wrc]);
+    const loadOne = vi.spyOn(seriesLib, 'loadSeries').mockImplementation(async slug => bySlug[slug]);
+    const circuit = vi.spyOn(circuitsLib, 'matchCircuit').mockImplementation(async (...names) => (names.some(n => n && /baku/i.test(n)) ? { name: 'Baku City Circuit', lat: 40.37, lon: 49.85, aliases: [], tz: 'Asia/Baku' } : null));
+    const draw = async (settings: Record<string, string | number | boolean>, before: Region[] = []) =>
+      html((await renderComponents(doc([...before, region('c', 'series.countdown', settings, { seq: 20 })]), { path: '/x', now: AT })).c);
+    expect(canRender('series.countdown')).toBe(true);
+
+    // Every series: F1’s race is under way and ranks first; its weekend and session are links; the reader’s time and the track’s
+    // (Baku, GMT+4); a session begun draws no digits on the server, the LIVE pill being the client’s.
+    const every = await draw({ series: '' });
+    expect(every).toContain('<section aria-label="Countdown"');
+    expect(every).toContain('Formula 1 · Round 1');
+    expect(every).toMatch(/<h1 class="[^"]*"><a href="\/series\/f1\/weekend\/1"[^>]*>Baku City Circuit<\/a><\/h1>/);
+    expect(every).toMatch(/<a href="\/series\/f1\/weekend\/1\/race"[^>]*>F1 - Race<\/a>/);
+    expect(every).toMatch(/[A-Z][a-z]{2}, \d{2}:\d{2} GMT\+4 at the track/);
+    expect(every).not.toContain('Time until');
+    expect(every).not.toContain('MotoGP');
+    expect(circuit).toHaveBeenCalledWith('Baku City Circuit', 'Baku City Circuit');
+    expect(loadAll).toHaveBeenCalled();
+
+    // One series: MotoGP’s race in two hours counts down (the digits with the weekend’s dates as their label); the circuit is
+    // unknown, so the reader’s time alone; a heading is the h1 when first.
+    const one = await draw({ series: 'motogp', heading: 'Next up' });
+    expect(one).toContain('<section aria-label="Next up"');
+    expect(one).toMatch(/<h1 class="[^"]*">Next up<\/h1>/);
+    expect(one).toContain('MotoGP · Round 1');
+    expect(one).toMatch(/<a href="\/series\/motogp\/weekend\/1"[^>]*>Motegi<\/a>/);
+    expect(one).toContain('MotoGP: Race');
+    expect(one).toMatch(/aria-label="Time until [^"]+"/);
+    expect(one).toMatch(/\d{2}:\d{2}:\d{2}</);
+    expect(one).not.toContain('at the track');
+    expect(one).not.toMatch(/<h1 class="[^"]*"><a/);
+    expect(loadOne).toHaveBeenCalledWith('motogp');
+
+    // The time at the track off, and the links off: words alone.
+    const plain = await draw({ series: 'f1', venueTime: false, link: false });
+    expect(plain).not.toContain('at the track');
+    expect(plain).not.toContain('<a ');
+    expect(plain).toContain('Baku City Circuit');
+    expect(plain).toContain('F1 - Race');
+
+    // A date-only weekend: its dates and “times to be confirmed”, no digits.
+    const rally = await draw({ series: 'wrc' });
+    expect(rally).toContain('Concepción');
+    expect(rally).toContain('times to be confirmed');
+    expect(rally).not.toContain('Time until');
+
+    // Nothing to come: one line, not a hole; first in the Body without a heading, that line is the page's h1 (the reviewer's finding).
+    const over = await draw({ series: 'wec' });
+    expect(over).toMatch(/<h1 class="[^"]*">Season complete\.<\/h1>/);
+    loadAll.mockResolvedValueOnce([wec]);
+    expect(await draw({ series: '' })).toMatch(/<h1 class="[^"]*">No session to come\.<\/h1>/);
+    loadAll.mockResolvedValueOnce([wec]);
+    expect(await draw({ series: '', heading: 'Next up' })).toMatch(/<p class="[^"]*">No session to come\.<\/p>/);
+
+    // Not first in the Body: the heading is the rule’s words and the weekend’s title a span.
+    const second = await draw({ series: 'f1', heading: 'Below' }, [region('h', 'page.heading', {}, { seq: 10 })]);
+    expect(second).not.toContain('<h1');
+    expect(second).toContain('>Below<');
+    expect(second).toMatch(/<span class="[^"]*"><a href="\/series\/f1\/weekend\/1"[^>]*>Baku City Circuit<\/a><\/span>/);
+    loadAll.mockRestore();
+    loadOne.mockRestore();
+    circuit.mockRestore();
   });
 
   it('the race-weekend fact follows the live band’s model: a box or a row under way is true; nothing under way, or a model that cannot be read, is false', async () => {
