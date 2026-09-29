@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.210 — 2026-09-29
+
+Internal only: the record of the countdown box, checked on the live site. Nothing changes for readers.
+
 ## 1.0.209 — 2026-09-29
 
 A countdown box editors can place on any page: the next session of a series, or of all of them, with its name, its weekend, the time where you are and the time at the track, counting down and going live when it starts. Nothing changes on the pages until one is placed.
