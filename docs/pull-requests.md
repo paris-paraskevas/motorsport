@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1096 · 1.0.214 · records · opened Tue 29 Sep 15:05 (12:05Z); the merge on the standing word
+**P2.10 on prod and done.** Records only: the merge, the deploy, the slot closed; the Bing slots behind Phase 2 on the word.
+- **Readers see:** nothing.
+- **Editors get:** nothing new (the Tabs of 1.0.213 stand).
+- **Files (8):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.10 DONE (#1095 on prod); a dated line for the word.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup (P2.14 Weather next), the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.214.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 63 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; prod /changelog 1.0.213 by 12:04:55Z.
+- **Review:** none; records.
+
 ## #1095 · 1.0.213 · P2.10 · opened Tue 29 Sep 14:44 (11:44Z); the merge on the word
 **Tabs.** APEX's Region Display Selector as a component editors place: a tab strip over the page's regions that opt in (one at a time, or all with a scroll to each, the choice remembered, icons when asked), or a strip of links over the sibling pages.
 - **Readers see:** nothing until an editor places a Tabs region; then the strip.

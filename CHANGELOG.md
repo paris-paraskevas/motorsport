@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.214 — 2026-09-29
+
+### Records — P2.10 on prod and done
+
+Records only. `docs/plan/ledger.json`: P2.10 (#1095, 1.0.213) merged on “merge” (12:00:57Z), prod 1.0.213 by 12:04:55Z; readers see nothing until an editor places a Tabs region (the placement on prod is the operator’s); P2.10 DONE; the two Bing slots (the tabs’ paragraphs, the champions pages) moved behind Phase 2 on the operator’s word. `docs/HANDOFF.md`, `SCHEDULE.md`: the pickup (P2.14 Weather next in the operator’s order) and the minutes.
+
 ## 1.0.213 — 2026-09-29
 
 ### P2.10 — Tabs
