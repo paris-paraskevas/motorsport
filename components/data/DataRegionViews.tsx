@@ -16,6 +16,7 @@ import { rowPasses } from '@/lib/design/presets';
 import { DataRegionControls } from './DataRegionControls';
 import { FollowedRows, FollowedScope } from './FollowedRows';
 import { commonsSrcSet, commonsThumb } from '@/lib/commons-thumb';
+import { ChartFrame, type ChartData } from './ChartFrame';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -1131,6 +1132,31 @@ export function DataRegionWeather({ heading, level, data, every, weekendTitle }:
         </div>
       )}
       <div className="mt-2 text-10 uppercase tracking-[0.14em] text-text-faint">{`Source: Open-Meteo · ${data.circuitName} · venue-local time`}</div>
+    </section>
+  );
+}
+
+/** The Chart (P2.11; APEX: the Chart region): the heading's rule (the page's h1 when first in the Body, as the Metric cards), the
+ *  client frame drawing the plot, its legend and the data as a hidden table, and a foot in the site's eyebrow naming what is
+ *  drawn by what and the series highlighted (the team page's own words). Without rows one line, never a hole. */
+export function DataRegionChart({ heading, level, data, foot }: { heading: string; level: 'h1' | 'h2'; data: ChartData | null; foot: string }) {
+  return (
+    <section aria-label={heading}>
+      {level === 'h1' ? (
+        <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
+          <h1 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{heading}</h1>
+        </div>
+      ) : (
+        <SectionRule label={heading} />
+      )}
+      {data ? (
+        <>
+          <ChartFrame data={data} />
+          <div className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{foot}</div>
+        </>
+      ) : (
+        <p className="font-serif text-15 italic text-text-muted">No data yet.</p>
+      )}
     </section>
   );
 }

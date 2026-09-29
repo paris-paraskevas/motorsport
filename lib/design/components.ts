@@ -417,7 +417,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'highlight', title: 'Highlight', seq: 40 },
       { key: 'detail', title: 'Master Detail', seq: 50 },
     ],
-    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results'],
+    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend'],
   },
   // Filters (P2.5; APEX: Smart Filters, the chips above a report): a panel over another Data region of the page, its facets
   // that region's columns, each value a link that narrows the rows through the address (one `in` filter per facet under the
@@ -502,7 +502,77 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'card3', title: 'Card 3', seq: 30 },
       { key: 'card4', title: 'Card 4', seq: 40 },
     ],
-    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results'],
+    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend'],
+  },
+  // The Chart (P2.11; APEX: the Chart region: Attributes › Chart › Type, the Series node's Column Mapping (Label, Value, Series
+  // Name), the Axes' Titles, Legend › Show). One chart over a preset's rows: a line, bars or an area for a value column by a
+  // label column, one series or one per distinct value of a column; the column mappings default to the preset's own (the Card
+  // slots' rule, P2.2 B3), a Row rule in the address's words picks the rows (ours, the Metric cards' Card row). The season trend
+  // comes through the Season trend source (P2.11), the standings tab's charts as rows; the emphasis, the series shown at first
+  // and the zero switch are ours, the team page's and the standings chart's own rules. Pie and donut are left out (the site
+  // draws none, the theme has no palette for slices); Legend › Position, Automatic Refresh and the JET options hook are left
+  // with the reason (the site's legend sits under the plot; the Worker renders per request; no options hook, rule 10). Its
+  // Preset options are the Data region's without their resets, as the Metric cards'.
+  {
+    key: 'data.chart',
+    name: 'Chart',
+    group: 'Data',
+    holds: 'a chart over a source’s rows: a line, bars or an area for a value column by a label column, one series or one per distinct value of a column; the season trend, a championship’s points, a qualifying’s gaps',
+    settings: [
+      {
+        key: 'preset',
+        label: 'Preset',
+        kind: 'choice',
+        scope: 'report',
+        default: 'drivers',
+        options: PRESETS.map(p => ({ key: p.key, label: p.name, group: PRESET_GROUPS.find(g => g.key === p.group)?.name ?? p.group, only: { source: p.source, series: p.series } })),
+        help: 'Which of the site’s tables the chart reads (APEX: the Series’ Source; ours: the named presets). The list follows the Source. A pick sets nothing else: the columns below default to the preset’s own mapping.',
+      },
+      {
+        key: 'type',
+        label: 'Type',
+        kind: 'choice',
+        scope: 'report',
+        default: '',
+        options: [
+          { key: '', label: 'Preset’s own' },
+          { key: 'line', label: 'Line' },
+          { key: 'bar', label: 'Bar' },
+          { key: 'area', label: 'Line with Area' },
+        ],
+        help: 'How the values are drawn (APEX: Chart › Type). Preset’s own is a line for the season trend and bars for the rest.',
+      },
+      { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The rule above the chart; empty draws the preset’s name. The section’s name for a reader either way.' },
+      { key: 'height', label: 'Height', kind: 'number', scope: 'report', default: 320, min: 160, max: 640, help: 'The plot’s height in pixels (APEX: Layout › Height); the standings chart draws 320.' },
+      { key: 'label', label: 'Label', kind: 'choice', scope: 'report', group: 'series', optionsFrom: 'columns', default: '', help: 'The column along the axis, one point or bar per value (APEX: Column Mapping › Label); empty draws the preset’s own.' },
+      { key: 'value', label: 'Value', kind: 'choice', scope: 'report', group: 'series', optionsFrom: 'columns', default: '', help: 'The column drawn as the height of a bar or a line (APEX: Column Mapping › Value): a number, or text that reads as one (a qualifying gap, +0.123); empty draws the preset’s own. No value column, no chart.' },
+      { key: 'seriesName', label: 'Series Name', kind: 'choice', scope: 'report', group: 'series', optionsFrom: 'columns', default: '', help: 'One line or one set of bars per distinct value of this column (APEX: Column Mapping › Series Name); empty draws the preset’s own, else one series named by the Value column.' },
+      { key: 'rule', label: 'Row rule', kind: 'text', scope: 'report', group: 'series', rule: true, default: '', maxLength: 120, help: 'Which rows the chart reads, as a condition in the address’s words: name.in:Lando Norris,Oscar Piastri for two drivers’ lines, round.lte:10 for the first ten rounds. Empty reads every row the preset keeps.' },
+      { key: 'xTitle', label: 'X axis title', kind: 'text', scope: 'report', group: 'axes', default: '', maxLength: 40, help: 'Words under the axis (APEX: Axes › Title); empty draws none.' },
+      { key: 'yTitle', label: 'Y axis title', kind: 'text', scope: 'report', group: 'axes', default: '', maxLength: 40, help: 'Words beside the axis (APEX: Axes › Title); empty draws none.' },
+      { key: 'zero', label: 'Start at zero', kind: 'boolean', scope: 'report', group: 'axes', default: true, help: 'The value axis starts at zero (APEX: Axes › Minimum Value); off, it starts at the lowest value drawn, as a qualifying’s gaps want.' },
+      { key: 'legend', label: 'Show Legend', kind: 'boolean', scope: 'report', group: 'legend', default: true, help: 'The chips under the plot, one per series, each a switch for its line (APEX: Legend › Show; ours: the standings chart’s chips). Nothing with one series.' },
+      { key: 'shown', label: 'Series shown at first', kind: 'number', scope: 'report', group: 'legend', default: 6, min: 1, max: 30, help: 'How many series are drawn at first, the leaders by their last value; the rest wait behind “+N more” in the legend (ours: the standings chart’s rule).' },
+      {
+        key: 'emphasis',
+        label: 'Emphasis',
+        kind: 'choice',
+        scope: 'report',
+        group: 'legend',
+        default: '',
+        options: [
+          { key: '', label: 'None' },
+          { key: 'page', label: 'This page’s driver or team' },
+        ],
+        help: 'On a driver’s or a team’s page, the series that are the page’s own are drawn thick and always shown (ours: the team page’s rule); a team’s are found through its drivers, since a feed may spell the team otherwise.',
+      },
+    ],
+    groups: [
+      { key: 'series', title: 'Series', seq: 10 },
+      { key: 'axes', title: 'Axes', seq: 20 },
+      { key: 'legend', title: 'Legend', seq: 30 },
+    ],
+    sources: ['standings', 'results', 'session-results', 'trend'],
   },
   // The Live band (P2.9; ours by name: APEX has no live band, a domain piece the site draws on Home as This weekend, whose
   // renderer is the band's first instance). It reads the content bundle through the home model as Home's pieces do, never
@@ -785,6 +855,27 @@ export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Re
       return [label || (count ? 'Rows' : (shape?.columns.find(c => c.key === value)?.label ?? value))];
     });
     return `Preset ${preset?.name ?? String(settings.preset ?? '')} · Columns ${String(settings.columns ?? '3')} · ${cards.length ? `Cards ${cards.join(', ')}` : 'no card'}`;
+  }
+  // The Chart (P2.11): the preset, the type and the mapping, the preset's own where '' is stored (a name column by the preset's
+  // label); the fourteen fields listed would name the tile past reading.
+  if (spec.key === 'data.chart') {
+    const preset = findPreset(String(settings.preset ?? spec.settings[0].default));
+    const own = shape?.chart;
+    const pickedType = String(settings.type ?? '');
+    const type = pickedType === 'line' || pickedType === 'bar' || pickedType === 'area' ? pickedType : (own?.type ?? 'bar');
+    const column = (key: string, fallback: string | undefined): string => {
+      const k = String(settings[key] ?? '') || fallback || '';
+      if (!k) return '';
+      if (k === 'name' && preset) return preset.nameLabel;
+      return shape?.columns.find(c => c.key === k)?.label ?? k;
+    };
+    const label = column('label', own?.label);
+    const value = column('value', own?.value);
+    const series = column('seriesName', own?.series);
+    const TYPE_LABEL: Record<string, string> = { line: 'Line', bar: 'Bar', area: 'Line with Area' };
+    const mapping = label && value ? `${value} by ${label}${series ? `, one ${type === 'bar' ? 'set of bars' : 'line'} per ${series}` : ''}` : 'no value column';
+    const heading = String(settings.heading ?? '').trim();
+    return `Preset ${preset?.name ?? String(settings.preset ?? '')} · ${TYPE_LABEL[type]} · ${mapping}${heading ? ` · Heading ${heading}` : ''}`;
   }
   const parts = instanceAttributes(spec).flatMap(s => {
     const v = settings[s.key] ?? s.default;

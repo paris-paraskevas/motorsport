@@ -273,9 +273,12 @@ function MiniMap({ doc, id }: { doc: PageDocument; id: string }) {
 /** The column a preset's own card mapping gives a slot, by its label; "none" for the Media slot on a shape without a picture
  *  column (P2.2 B3; the posts' Cover fills it since P2.24 A). */
 const SLOT_OF: Readonly<Record<string, keyof Shape['card']>> = { cardTitle: 'title', cardSubtitle: 'subtitle', cardBody: 'body', cardMedia: 'media', cardBadge: 'badge' };
+/** The Chart's mapping slots (P2.11): the column the preset's own chart mapping gives each; "none" for a shape without one. */
+const CHART_SLOT_OF: Readonly<Record<string, 'label' | 'value' | 'series'>> = { label: 'label', value: 'value', seriesName: 'series' };
 function ownSlotLabel(shape: Shape, key: string): string {
   const slot = SLOT_OF[key];
-  const column = slot ? shape.card[slot] : undefined;
+  const chartSlot = CHART_SLOT_OF[key];
+  const column = slot ? shape.card[slot] : chartSlot ? shape.chart?.[chartSlot] : undefined;
   return column ? (shape.columns.find(c => c.key === column)?.label ?? column) : 'none';
 }
 
@@ -881,9 +884,9 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
               ))}
           </select>
         ) : s.kind === 'choice' && s.optionsFrom === 'columns' ? (
-          // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column): the preset's own mapping first, then the shape's columns; the share bar is no Media. Any other column choice (the Detail key, a facet, a Metric card's columns, P2.7) starts at None.
+          // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column) and the Chart's Series group (P2.11): the preset's own mapping first, then the shape's columns; the share bar is no Media. Any other column choice (the Detail key, a facet, a Metric card's columns, P2.7) starts at None.
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
-            <option value="">{s.group === 'card' ? `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}` : 'None'}</option>
+            <option value="">{s.group === 'card' || s.group === 'series' ? `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}` : 'None'}</option>
             {((s.key.startsWith('facet') ? facetShape : shape)?.columns ?? [])
               .filter(c => !(s.key === 'cardMedia' && c.type === 'percent'))
               .map(c => (

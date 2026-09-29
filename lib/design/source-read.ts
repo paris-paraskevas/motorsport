@@ -4,6 +4,7 @@ import { cache } from 'react';
 import { HOME_RESULTS_SERIES, HOME_SERIES_OPTION, LATEST_RESULT_OPTION, SERIES_OPTIONS, findSource, sourceLabel, type SourceColumn, type SourceFresh, type SourceParams, type SourceRef } from './sources';
 import type { SnapshotMeta } from '@/lib/source-snapshot';
 import type { RaceResult, RaceResultEntry, Series } from '@/lib/types';
+import type { SeasonTrendData } from '@/lib/season-trend';
 
 // The reader behind the catalogue (the components programme, P2.1): one
 // readSource for the fourteen, each through the loader the code already has,
@@ -579,6 +580,42 @@ const READERS: Readonly<Record<string, Reader>> = {
     const weekend = `/series/${series}/weekend/${current.round}`;
     const rows: SourceRow[] = current.rows.map(r => ({ round: current.round, session: r.session, position: r.position, driver: r.driverName, code: r.driverCode, number: r.carNumber, team: r.team, laps: r.laps, time: r.time, gap: r.gap, interval: r.interval, q1: r.q1, q2: r.q2, q3: r.q3, compound: r.compound, points: r.points, status: r.status, weekend }));
     return { tier: 'db', rows: await withProfiles(series, rows, sessionAsk), run: await readRun(current.runId) };
+  },
+  // The season trend (P2.11): the standings tab's charts as rows (lib/season-trend.ts over the snapshot dispatch, the tab's own
+  // fetchers, WRC's and DTM's chart points included): one row per driver and round with the running total, the round's points
+  // and the season's; the constructors' the same where the teams' championship is the sum of its cars (showTeams). MotoGP's
+  // sprints ride among the snapshot's races, so the tab's split comes first (StandingsTab.tsx: a race named Sprint is an extra
+  // of its round and folds into the round's point). A feed without canonical points answers no rows and the reason: the
+  // CHANGELOG's invariant, no chart whose totals could disagree with the standings tab.
+  async trend(params, keys) {
+    const slug = String(params.series);
+    const [{ loadSeries }, { loadSnapshotSource }, { buildSeasonTrendData, buildConstructorsTrendData }] = await Promise.all([import('@/lib/series'), import('@/components/weekend/WeekendStandingsSnapshot'), import('@/lib/season-trend')]);
+    const series = await loadSeries(slug);
+    const snapshot = await loadSnapshotSource(series);
+    const meta = await metaFor(keys);
+    if (!snapshot) return { tier: 'snapshot', rows: [], run: null, meta };
+    if (!snapshot.pointsExact) throw new Error(`${series.meta.name}’s results carry derived points; the season trend waits for canonical ones (the CHANGELOG’s invariant)`);
+    const sprint = (r: RaceResult) => /Sprint/i.test(r.raceName);
+    const races = slug === 'motogp' ? snapshot.races.filter(r => !sprint(r)) : snapshot.races;
+    const extras = slug === 'motogp' ? [...(snapshot.extras ?? []), ...snapshot.races.filter(sprint)] : (snapshot.extras ?? []);
+    // One row per driver and round: a round with several races (F3's sprint and feature, WorldSBK's three) keeps the total
+    // after its last race, since the axis means "after this round" (the F1 sprint's rule in lib/season-trend.ts); the builder
+    // hands one point per race object, in round order.
+    const flatten = (trend: SeasonTrendData, kind: 'driver' | 'constructor'): SourceRow[] => {
+      const lastByRound = new Map<number, SeasonTrendData['data'][number]>();
+      for (const point of trend.data) lastByRound.set(point.round, point);
+      const previous: Record<string, number> = {};
+      return [...lastByRound.values()].flatMap(point =>
+        trend.drivers.map((d): SourceRow => {
+          const points = Number(point[d.name]) || 0;
+          const row: SourceRow = { kind, round: point.round, race: point.raceName, name: d.name, code: d.code ?? null, team: d.team ?? null, points, gained: points - (previous[d.name] ?? 0), total: trend.totalsByDriver[d.name] ?? 0, seriesName: series.meta.name, colour: series.meta.color };
+          previous[d.name] = points;
+          return row;
+        }),
+      );
+    };
+    const rows = [...flatten(buildSeasonTrendData(races, extras), 'driver'), ...(snapshot.showTeams ? flatten(buildConstructorsTrendData(races, extras), 'constructor') : [])];
+    return { tier: 'snapshot', rows: await withProfiles(slug, rows, standingsAsk), run: null, meta };
   },
   async authors() {
     const { listAuthors } = await import('@/lib/authors');

@@ -15,7 +15,7 @@
 
 import type { ViewFilter, ViewState } from './view-state';
 
-export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends' | 'session-results';
+export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends' | 'session-results' | 'trend';
 /** The `kind` a standings row carries (lib/design/source-read.ts). */
 export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver';
 /** The column types a view draws (APEX: a report's column types). The image column arrived with P2.24 A, where the posts
@@ -32,7 +32,7 @@ export interface PresetColumn {
   /** For a link whose address leaves the site (the news headlines): drawn in a new tab, as an external destination is. */
   external?: true;
 }
-export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows' | 'session-rows';
+export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows' | 'session-rows' | 'trend-rows';
 export interface Shape {
   key: ShapeKey;
   source: PresetSource;
@@ -40,6 +40,9 @@ export interface Shape {
   /** APEX Cards: the column that fills each slot by default, the operator's slots (P2.2 B3) over it; `media` the picture
    *  column a shape carries (P2.24 A), none for the shapes without one. */
   card: { title: string; subtitle?: string; body: string; badge: string; media?: string };
+  /** The Chart's own mapping (P2.11; APEX: the Series' Column Mapping): the column along the axis, the value drawn, the column one
+   *  series is drawn per, and the type; a shape without one draws nothing in a Chart until Label and Value are set. */
+  chart?: { label: string; value: string; series?: string; type: 'line' | 'bar' | 'area' };
 }
 
 const position: PresetColumn = { key: 'position', label: 'Pos', type: 'position' };
@@ -65,12 +68,14 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     source: 'standings',
     columns: [position, { key: 'name', label: 'Driver', type: 'link', href: 'profile' }, { key: 'code', label: 'Code', type: 'badge' }, { key: 'team', label: 'Team', type: 'text' }, points, wins, gap, share],
     card: { title: 'name', subtitle: 'team', body: 'points', badge: 'position' },
+    chart: { label: 'name', value: 'points', type: 'bar' },
   },
   'team-rows': {
     key: 'team-rows',
     source: 'standings',
     columns: [position, { key: 'name', label: 'Constructor', type: 'link', href: 'profile' }, points, wins, gap, share],
     card: { title: 'name', body: 'points', badge: 'position' },
+    chart: { label: 'name', value: 'points', type: 'bar' },
   },
   // The results shapes (P2.2 B1): the race links to the round's weekend page as the tab's RaceTitle does.
   'race-rows': {
@@ -78,6 +83,7 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     source: 'results',
     columns: [round, race, date, { key: 'circuit', label: 'Circuit', type: 'text' }, { key: 'session', label: 'Session', type: 'text' }, position, { key: 'driver', label: 'Driver', type: 'link', href: 'profile' }, { key: 'code', label: 'Code', type: 'badge' }, team, { key: 'status', label: 'Status', type: 'text' }, { key: 'time', label: 'Time', type: 'text' }, points],
     card: { title: 'driver', subtitle: 'team', body: 'points', badge: 'position' },
+    chart: { label: 'driver', value: 'points', type: 'bar' },
   },
   // IMSA's and WEC's timing exports: the car, its crew, its vehicle and the gap; no points.
   'car-rows': {
@@ -143,6 +149,7 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     source: 'results',
     columns: [race, { key: 'seriesName', label: 'Series', type: 'text' }, date, position, { key: 'driver', label: 'Driver', type: 'link', href: 'profile' }, team, car, { key: 'time', label: 'Time', type: 'text' }, gapText, points, round],
     card: { title: 'driver', subtitle: 'team', body: 'time', badge: 'position' },
+    chart: { label: 'driver', value: 'points', type: 'bar' },
   },
   // One session's classification (P2.25): the flat series' columns of the results shapes, the best lap as the time, the gap
   // as the timing states it, the qualifying segments and the tyre of the best lap; no round or race column, the source's own
@@ -152,6 +159,17 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     source: 'session-results',
     columns: [position, { key: 'driver', label: 'Driver', type: 'link', href: 'profile' }, { key: 'code', label: 'Code', type: 'badge' }, team, laps, { key: 'time', label: 'Time', type: 'text' }, gapText, { key: 'interval', label: 'Interval', type: 'text' }, { key: 'q1', label: 'Q1', type: 'text' }, { key: 'q2', label: 'Q2', type: 'text' }, { key: 'q3', label: 'Q3', type: 'text' }, { key: 'compound', label: 'Tyre', type: 'text' }, { key: 'status', label: 'Status', type: 'text' }],
     card: { title: 'driver', subtitle: 'team', body: 'time', badge: 'position' },
+    chart: { label: 'driver', value: 'gap', type: 'bar' },
+  },
+  // The season trend (P2.11): the standings tab's charts as rows of the Season trend source, one per driver (or constructor) and
+  // round: the running total after the round, the round's points, the season's; the name a link to its page. The Chart's own
+  // mapping draws it as the tab does, one line per name by round.
+  'trend-rows': {
+    key: 'trend-rows',
+    source: 'trend',
+    columns: [round, { key: 'race', label: 'Race', type: 'text' }, { key: 'name', label: 'Driver', type: 'link', href: 'profile' }, { key: 'code', label: 'Code', type: 'badge' }, team, { key: 'points', label: 'Points', type: 'number' }, { key: 'gained', label: 'Gained', type: 'number' }, { key: 'total', label: 'Total', type: 'number' }],
+    card: { title: 'name', subtitle: 'team', body: 'points', badge: 'round' },
+    chart: { label: 'round', value: 'points', series: 'name', type: 'line' },
   },
 };
 
@@ -186,6 +204,8 @@ export const PRESET_GROUPS: readonly PresetGroup[] = [
   { key: 'what-it-changed', name: 'What it changed', source: 'standings' },
   // One session's classification (P2.25).
   { key: 'session', name: 'Session', source: 'session-results' },
+  // The season trend (P2.11): the standings tab's two charts as presets over the Season trend source.
+  { key: 'season-trend', name: 'Season trend', source: 'trend' },
 ];
 
 export interface Preset {
@@ -224,6 +244,13 @@ const PODIUM_SERIES = ['home', 'f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp
 /** What it changed's series (P2.24 B2): the Latest result (the Standings source's value the reader resolves) first, then the
  *  ten with a drivers' brief (lib/standings/brief.ts ELIGIBLE_STANDINGS_SLUGS), the only ones Home draws the box for. */
 const LEADER_SERIES = ['latest', 'f1', 'f2', 'f3', 'indycar', 'formula-e', 'motogp', 'nascar-cup', 'wsbk', 'wrc', 'dtm'];
+/** The Season trend's series (P2.11): the eight whose results feeds carry championship-canonical per-round points
+ *  (lib/design/sources.ts TREND_SERIES, listed here since this file imports nothing; a test holds the two equal); the
+ *  constructors' Formula 1 alone, the one constructors' table the site's own chart reconciles against (the proof of
+ *  2026-09-29: F2's and F3's summed cars fall short of their Constructors tables, DTM's teams' table is not the sum,
+ *  MotoGP and WorldSBK draw no teams table), the CHANGELOG's rule (b) until a series is reconciled. */
+const TREND_SERIES = ['f1', 'f2', 'f3', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm'];
+const TREND_TEAM_SERIES = ['f1'];
 
 const standings = (key: string, name: string, group: string, shape: ShapeKey, where: Preset['where'], series: readonly string[], nameLabel: string): Preset => ({ key, name, group, source: 'standings', shape, where, series, nameLabel, view: 'table' });
 const family = (prefix: string, group: string, series: string, cls: string, kinds: readonly RowKind[]): Preset[] =>
@@ -287,6 +314,12 @@ export const PRESETS: readonly Preset[] = [
   // Home's What it changed (P2.24 B2): the drivers' table (five rows, home.changed's default) after the newest race, for the
   // Latest result or any of the ten with a drivers' brief.
   { key: 'what-it-changed', name: 'What it changed', group: 'what-it-changed', source: 'standings', shape: 'driver-rows', where: { kind: 'driver' }, series: LEADER_SERIES, nameLabel: 'Driver', view: 'leader', rows: 5 },
+  // The season trend (P2.11): the standings tab's two charts as presets over the Season trend source, the tab's headings verbatim
+  // (components/tabs/StandingsTab.tsx TrendSection); the drivers' for the eight series with canonical points, the constructors'
+  // for Formula 1 alone, the one constructors' table the site's own chart reconciles against. The Table by default, as a preset must bring a view;
+  // the Chart draws them as the tab does through the shape's own mapping.
+  { key: 'drivers-trend', name: "Drivers' season trend", group: 'season-trend', source: 'trend', shape: 'trend-rows', where: { kind: 'driver' }, series: TREND_SERIES, nameLabel: 'Driver', view: 'table' },
+  { key: 'constructors-trend', name: "Constructors' season trend", group: 'season-trend', source: 'trend', shape: 'trend-rows', where: { kind: 'constructor' }, series: TREND_TEAM_SERIES, nameLabel: 'Constructor', view: 'table' },
 ];
 
 export function findPreset(key: string): Preset | null {
@@ -345,8 +378,8 @@ export function presetRows(rows: readonly PresetRow[], preset: Preset, count: nu
 
 const NUMERIC_TYPES: ReadonlySet<ColumnType> = new Set(['number', 'position', 'percent', 'gap']);
 const cell = (v: PresetRow[string]): string => (v === null || v === undefined ? '' : String(v));
-/** A cell as a number: a number as it is, a string that reads as one ("+12" too), else null. */
-const numeric = (v: PresetRow[string]): number | null => (typeof v === 'number' ? (Number.isFinite(v) ? v : null) : typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v)) ? Number(v) : null);
+/** A cell as a number: a number as it is, a string that reads as one ("+12" too), else null; the Chart's value (P2.11) reads by it. */
+export const numeric = (v: PresetRow[string]): number | null => (typeof v === 'number' ? (Number.isFinite(v) ? v : null) : typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v)) ? Number(v) : null);
 const columnType = (columns: readonly PresetColumn[], key: string): ColumnType => columns.find(c => c.key === key)?.type ?? 'text';
 
 /** Whether a row passes a reader's filter (P2.3), compared as the column's type reads: numbers as numbers (a missing one fails

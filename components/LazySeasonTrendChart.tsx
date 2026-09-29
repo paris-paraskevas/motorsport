@@ -66,7 +66,7 @@ export interface TrendLineStyle {
 // legend chips and ranked-rail dots read the same styles, so they follow.
 // (Operator, 2026-08-20: "cant see the trajectory at all because mercedes
 // colour is invisible on this theme".)
-function buildLineStyles(
+export function buildLineStyles(
   ranked: Array<{ name: string; team?: string }>,
 ): Map<string, TrendLineStyle> {
   const styles = new Map<string, TrendLineStyle>();

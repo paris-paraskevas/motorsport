@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CURRENT_SEASON, HOME_RESULTS_SERIES, REMOTE_SERVERS, SERIES_OPTIONS, SOURCES, defaultSourceRef, describeLoaderKey, encodeSourceRef, findSource, parseSourceRef, sourceLabel } from './sources';
+import { CURRENT_SEASON, HOME_RESULTS_SERIES, REMOTE_SERVERS, SERIES_OPTIONS, SOURCES, TREND_SERIES, defaultSourceRef, describeLoaderKey, encodeSourceRef, findSource, parseSourceRef, sourceLabel } from './sources';
 import { HOME_RESULTS_SLUGS } from '@/lib/home-results';
 import { HEALTH_SEASON } from '@/lib/standings-health';
 import { RESULTS_HEALTH_SEASON } from '@/lib/results-health';
@@ -14,15 +14,15 @@ import { MAX_PER_SERIES_AGGREGATE } from '@/lib/news';
 // and a reader; a ref is one string a region carries; the loader's keys read
 // back in the catalogue's words.
 
-const FIFTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results'];
+const SIXTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results', 'trend'];
 const PARAMETER_KINDS = ['series', 'season', 'number', 'choice', 'text'];
 const COLUMN_TYPES = ['text', 'number', 'date', 'boolean', 'link', 'image', 'colour'];
 /** P2.24 B2: the two Series values the readers resolve rather than read (Home's series, the Latest result), each on its source alone. */
 const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home'], standings: ['latest'] };
 
 describe('the source catalogue', () => {
-  it('holds the fifteen in the changes line’s order (Weekends the fourteenth, P2.24 B1; Session results the fifteenth, P2.25), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
-    expect(SOURCES.map(s => s.key)).toEqual(FIFTEEN);
+  it('holds the sixteen in the changes line’s order (Weekends the fourteenth, P2.24 B1; Session results the fifteenth, P2.25; Season trend the sixteenth, P2.11), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
+    expect(SOURCES.map(s => s.key)).toEqual(SIXTEEN);
     const contentSlugs = readdirSync(path.join(process.cwd(), 'content', 'series'), { withFileTypes: true })
       .filter(e => e.isDirectory())
       .map(e => e.name)
@@ -244,5 +244,40 @@ describe('the source catalogue', () => {
     const imports = text.split(/\r?\n/).filter(l => /^import\b/.test(l));
     for (const line of imports) expect(line, line).toMatch(/^import type\b/);
     expect(text).not.toMatch(/\brequire\(/);
+  });
+});
+
+describe('the Season trend source (P2.11)', () => {
+  it('is the sixteenth: the eight series with canonical points (f1 the default) and the season; the trend’s columns; the loader’s results keys and hosts; a series it does not offer is refused', () => {
+    const trend = findSource('trend')!;
+    expect(trend).toMatchObject({ name: 'Season trend', fresh: 'loader', load: 'replace', pagination: 'none', reads: ['snapshot:results:', 'snapshot:f1:', 'content:series'] });
+    expect(trend.holds).toMatch(/^the season trend the standings tab draws/);
+    expect(trend.parameters.map(p => [p.key, p.kind, p.required, p.default])).toEqual([
+      ['series', 'series', true, 'f1'],
+      ['season', 'season', true, 2026],
+    ]);
+    expect(trend.parameters[0].options?.map(o => o.key)).toEqual(TREND_SERIES);
+    expect(TREND_SERIES).toEqual(['f1', 'f2', 'f3', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm']);
+    expect(trend.columns.map(c => [c.key, c.type])).toEqual([
+      ['kind', 'text'],
+      ['round', 'number'],
+      ['race', 'text'],
+      ['name', 'text'],
+      ['code', 'text'],
+      ['team', 'text'],
+      ['points', 'number'],
+      ['gained', 'number'],
+      ['total', 'number'],
+      ['profile', 'link'],
+      ['seriesName', 'text'],
+      ['colour', 'colour'],
+    ]);
+    expect(trend.loaderKeys?.({ series: 'f1', season: 2026 })).toEqual(['f1:results', 'f1:sprints', 'f1:last-race']);
+    expect(trend.loaderKeys?.({ series: 'wrc', season: 2026 })).toEqual(['results:wrc', 'results:wrc-chart']);
+    expect(trend.hosts).toEqual({ f1: 'jolpica', f2: 'fom', f3: 'fom', motogp: 'pulselive-motogp', wsbk: 'pulselive-wsbk', 'nascar-cup': 'wikipedia', wrc: 'wikipedia', dtm: 'motorsport-com' });
+    expect(sourceLabel({ source: 'trend', params: { series: 'f1', season: 2026 } })).toBe('Season trend · Formula 1 · 2026');
+    expect(parseSourceRef('trend?series=f1&season=2026').value).toEqual({ source: 'trend', params: { series: 'f1', season: 2026 } });
+    // Formula E's and IndyCar's feeds derive their points: the trend never offers them (the CHANGELOG's invariant).
+    expect(parseSourceRef('trend?series=formula-e&season=2026')).toEqual({ value: null, problems: ['Series must be one of the series Season trend offers'] });
   });
 });

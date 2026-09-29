@@ -14,7 +14,30 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1098 · 1.0.216 · records · opened Tue 29 Sep 16:06 (13:06Z); the merge on the standing word
+## #1099 · 1.0.217 · P2.11 · opened Tue 29 Sep 18:55 (15:55Z); the merge on the word
+**Chart.** APEX's Chart region as a component editors place: a line, bars or an area for a value column by a label column over a preset's rows, one series or one per distinct value of a column; the Season trend as the catalogue's sixteenth source, the standings tab's charts as rows; the page's own team drawn thick on its page.
+- **Readers see:** nothing until an editor places a Chart region.
+- **Editors get:** the Chart in the gallery's Components with Preset, Type, Heading, Height, the Series group (Label, Value, Series Name, Row rule), the Axes group (the titles, Start at zero) and the Legend group (Show Legend, Series shown at first, Emphasis); the Season trend under Shared Components › Data Sources with two presets; the mapping selects opening on "Preset's own (<column>)".
+- **Files (27):**
+  - `components/data/ChartFrame.tsx`, `components/data/ChartCanvas.tsx` · the client frame (the box, the chips, the gate, the hidden table) and the Recharts canvas behind next/dynamic (both new, on the plan's word).
+  - `components/data/ChartFrame.test.tsx`, `components/data/ChartCanvas.test.tsx` · their cases in jsdom (the canvas mounted with render(), the critic's probe: renderToStaticMarkup draws Recharts' wrapper alone) (both new).
+  - `lib/design/presets.ts`, `lib/design/presets.test.ts` · `PresetSource` widened, `Shape.chart` on six shapes, the `trend-rows` shape, the Season trend group and its two presets, `numeric` exported; forty-one presets, twenty-two groups.
+  - `lib/design/sources.ts`, `lib/design/sources.test.ts` · `TREND_SERIES` and the Season trend source, the sixteenth.
+  - `lib/design/source-read.ts`, `lib/design/source-read.test.ts` · the trend reader over the snapshot dispatch and lib/season-trend, one row per driver and round, MotoGP's split, the refusals.
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the Chart's definition and its summary; the Data region and the Metric cards read the trend too.
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · the renderer (the mapping, the rule, the ranking, the emphasis through the rosters, the one line), READS, the people thunk; the render cases from saved documents (Racing Bulls among them).
+  - `components/data/DataRegionViews.tsx` · `DataRegionChart`.
+  - `components/LazySeasonTrendChart.tsx` · `buildLineStyles` exported for the frame.
+  - `components/designer/PageDesignerProperties.tsx`, `components/designer/PageDesigner.test.tsx` · the Preset's own label for the Chart's Series group; the designer case (Source Season trend, the mapping selects, the Type pills, Save).
+  - `lib/design/page-document.test.ts` · a Chart's mapping and rule checked against its preset's shape, its preset against its Source.
+  - `components/designer/PluginsEditor.test.tsx`, `components/designer/DataSourcesEditor.test.tsx`, `components/designer/DataWorkspace.test.tsx`, `app/api/admin/design/data/sources/route.test.ts` · sixteen definitions, sixteen sources.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.11 started with the build's evidence; a dated line.
+  - `SCHEDULE.md` · the session-59 items.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.217.
+- **Verified:** the tests written before the code across eleven files (17 red), the first run after the code green with the counts and labels aligned; tsc 0; lint 0 errors (the two known warnings); vitest 261 files, 2515 tests; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` Total Upload 41345.47 KiB / gzip 9022.83 KiB (up 392 KiB on P2.14: the Chart’s frame and canvas as chunks of their own, the trend reader behind the readers’ thunk; 63% of the ceiling); the local designer (PADDOCK_ENV=production npm run dev): a Chart region in the Body of the /teams/[slug] page over Season trend · Formula 1 · 2026, preset Constructors' season trend, Emphasis This page's driver or team, published 14:54Z: /teams/mclaren drew every constructor's line with McLaren's 3.5 px wide and always shown, the top six as chips, "+5 more", the foot "Points by Round · McLaren highlighted"; /teams/racing-bulls thickened "RB F1 Team" through Hadjar's and Lawson's rows; a Chart region on the /series/[slug]/[tab] page over the Drivers' season trend: /series/f1/standings drew the lines with the chips' totals equal to the drivers' table and the tab's own chart (302, 236, 199, 186, 179, 163), /series/motogp/standings one tick per round with the sprints folded (15, as the tab's), its totals the riders' table's (306, 294, 264), F3's and WorldSBK's totals the tab's own chart's (141/141, 602/469) once a round with several races answered one row; republished over Standings · Formula 1 (Drivers) the bars of points by driver in the championship's colour; over Session results the one line (the local Baku qualifying carries no gaps); at 1440 and 390 px; the screenshots on the review page https://claude.ai/code/artifact/0884fa7a-31c4-425b-9a94-af52292ba014.
+- **Review:** a fresh-context Sonnet reviewer (242,026 tokens, 69 reads and runs), SOUND, no blocking finding and no requirement gap (the invariant traced through the eight series’ pointsExact flags and MotoGP’s split against the tab’s; the emphasis traced by hand for Racing Bulls; every Recharts prop checked against the installed types; the bundle rule: only lib/slug and a type join the frame’s chunk; every changed test raises a count or adds a case); its three nits folded (two stray blank lines, aria-expanded on the legend’s fold buttons).
+
+
 **P2.14 on prod and done; the session-58 handoff.** Records only: the merge, the deploy, the Sepang check on prod, the slot closed; the handoff block for session 59.
 - **Readers see:** nothing.
 - **Editors get:** nothing new (the Weather of 1.0.215 stands).

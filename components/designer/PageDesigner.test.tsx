@@ -1615,3 +1615,36 @@ describe('the Metric cards region in the designer (P2.7)', () => {
     expect(screen.getByRole('button', { name: 'Component: Metric cards' }).textContent).toContain('Preset Constructors · Columns 3 · Cards Leader, Rows');
   });
 });
+
+describe('the Chart in the designer (P2.11)', () => {
+  it('adds a Chart from the Gallery over a Season trend Source: the Preset grouped as Season trend, the Series group’s Label, Value and Series Name opening on the preset’s own column, the Type pills with Preset’s own pressed; Save carries the settings and the tile names the preset and the mapping', async () => {
+    const { onSaved } = mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Chart' }));
+    fireEvent.click(tile('Component: Chart'));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'trend' } });
+    expect(status()).toMatch(/Source set/);
+    expect(screen.queryByText(/Not saved:/)).toBeNull();
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    // The Source's change moves the preset to the first the Season trend offers (R7); the list is grouped as Season trend alone.
+    const preset = within(pe).getByLabelText('Preset') as HTMLSelectElement;
+    expect(preset.value).toBe('drivers-trend');
+    expect([...preset.querySelectorAll('optgroup')].map(g => g.label)).toEqual(['Season trend']);
+    expect([...preset.options].map(o => o.textContent)).toEqual(["Drivers' season trend", "Constructors' season trend"]);
+    // The Series group's mapping opens on the preset's own column (the Card slots' rule); the Type pills on Preset's own.
+    expect((within(pe).getByLabelText('Label') as HTMLSelectElement).options[0].textContent).toBe('Preset’s own (Round)');
+    expect((within(pe).getByLabelText('Value') as HTMLSelectElement).options[0].textContent).toBe('Preset’s own (Points)');
+    expect((within(pe).getByLabelText('Series Name') as HTMLSelectElement).options[0].textContent).toBe('Preset’s own (Driver)');
+    expect(within(within(pe).getByRole('group', { name: 'Type' })).getByRole('button', { name: 'Preset’s own' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.change(preset, { target: { value: 'constructors-trend' } });
+    fireEvent.click(within(within(pe).getByRole('group', { name: 'Type' })).getByRole('button', { name: 'Line with Area' }));
+    fireEvent.change(within(pe).getByLabelText('Series shown at first'), { target: { value: '4' } });
+    expect(tile('Component: Chart').textContent).toMatch(/Season trend · Formula 1 · 2026 · Preset Constructors' season trend · Line with Area · Points by Round, one line per Constructor/);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    const saved = posted.document.regions.find(r => r.kind === 'component' && r.component === 'data.chart')!;
+    expect(saved).toMatchObject({ settings: { preset: 'constructors-trend', type: 'area', shown: 4, label: '', value: '', seriesName: '' }, source: 'trend?series=f1&season=2026' });
+  });
+});

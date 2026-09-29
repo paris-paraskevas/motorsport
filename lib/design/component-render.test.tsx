@@ -20,6 +20,7 @@ import * as pageFrame from './page-frame';
 import * as pagesLib from './pages';
 import * as weatherLib from '@/lib/weather';
 import * as buildOptionsLib from './build-options';
+import * as peopleLib from '@/lib/people';
 import type { Series, Session } from '@/lib/types';
 
 vi.mock('next/link', () => ({
@@ -1223,6 +1224,111 @@ describe('renderComponents', () => {
     expect(none).toMatch(/<h1[^>]*>No forecast for Bahrain Grand Prix yet\.<\/h1>/);
     included.mockResolvedValue(false);
     expect(await draw({}, page)).toBeNull();
+  });
+});
+
+describe('the Chart (P2.11; APEX: the Chart region)', () => {
+  const draw = async (settings: Record<string, string | number | boolean>, over: Partial<Region> = {}, where: { path: string; params?: Record<string, string> } = { path: '/x' }) =>
+    (await renderComponents(doc([region('c', 'data.chart', settings, { source: 'standings?series=f1&season=2026', ...over } as Partial<Region>)]), where)).c;
+  const trendRows = (kind: string, name: string, code: string | null, team: string, byRound: number[]) =>
+    byRound.map((points, i) => ({ kind, round: i + 1, race: ['Australian Grand Prix', 'Chinese Grand Prix', 'Japanese Grand Prix'][i], name, code, team, points, gained: points - (byRound[i - 1] ?? 0), total: byRound[byRound.length - 1], profile: null, seriesName: 'Formula 1', colour: '#e10600' }));
+  const TREND = [
+    ...trendRows('driver', 'Andrea Kimi Antonelli', 'ANT', 'Mercedes', [25, 43, 68]),
+    ...trendRows('driver', 'George Russell', 'RUS', 'Mercedes', [18, 43, 58]),
+    ...trendRows('driver', 'Isack Hadjar', 'HAD', 'RB F1 Team', [6, 10, 22]),
+    ...trendRows('driver', 'Liam Lawson', 'LAW', 'RB F1 Team', [0, 2, 3]),
+    ...trendRows('constructor', 'Mercedes', null, 'Mercedes', [43, 86, 126]),
+    ...trendRows('constructor', 'RB F1 Team', null, 'RB F1 Team', [6, 12, 25]),
+  ];
+  const trend = () => readSource.mockResolvedValueOnce({ columns: [], total: TREND.length, rows: TREND, provenance: { ref: { source: 'trend', params: { series: 'f1', season: 2026 } }, label: 'Season trend · Formula 1 · 2026', tier: 'snapshot', keys: ['f1:results', 'f1:sprints', 'f1:last-race'], rows: TREND.length, ms: 2 } });
+  const F1_TREND = { source: 'trend?series=f1&season=2026' } as Partial<Region>;
+
+  it('from a saved document over the standings draws a bar chart of the drivers’ points on the preset’s own mapping, the data as a hidden table, the heading the preset’s name as the h1 when first; nothing without a value column of the shape; one line without rows; not first, the rule is a span', async () => {
+    expect(canRender('data.chart')).toBe(true);
+    // The default mock rows: the Drivers preset keeps the two driver rows, the constructor's goes; its own mapping is bars of points by name.
+    const bars = html(await draw({ preset: 'drivers' }));
+    expect(bars).toContain('<section aria-label="Drivers"');
+    expect(bars).toMatch(/<h1[^>]*>Drivers<\/h1>/);
+    expect(bars).toContain('data-chart-type="bar"');
+    expect(bars).toContain('data-decimals="false"');
+    expect(bars).toContain('style="height:320px"');
+    // The hidden table: the label column's heading (the preset's name label), one series named by the value column, the two rows with their points.
+    expect(bars).toMatch(/<table class="sr-only"[^>]*>.*<th[^>]*>Driver<\/th><th[^>]*>Pts<\/th>.*<td[^>]*>Andrea Kimi Antonelli<\/td><td[^>]*>267<\/td>.*<td[^>]*>George Russell<\/td><td[^>]*>201<\/td>/);
+    expect(bars).not.toContain('Mercedes');
+    // One series: no legend, no chips; the foot names what is drawn by what.
+    expect(bars).not.toContain('<button');
+    expect(bars).toContain('Pts by Driver');
+    // A shape without a chart mapping and nothing set draws nothing; a mapping naming a column the shape lacks too.
+    expect(await draw({ preset: 'season-results-imsa' }, { source: 'results?series=imsa&season=2026' } as Partial<Region>)).toBeNull();
+    expect(await draw({ preset: 'drivers', value: 'nope' })).toBeNull();
+    // No rows: one line under the rule.
+    readSource.mockResolvedValueOnce({ columns: [], total: 0, rows: [], provenance: { ref: { source: 'standings', params: { series: 'f1', season: 2026 } }, label: 'Standings · Formula 1 · 2026', tier: 'rows', keys: [], rows: 0, ms: 1 } });
+    const none = html(await draw({ preset: 'drivers', heading: 'Points' }));
+    expect(none).toMatch(/<h1[^>]*>Points<\/h1>/);
+    expect(none).toContain('No data yet.');
+    expect(none).not.toContain('data-chart-type');
+    const second = html((await renderComponents(doc([region('h', 'page.heading'), region('c', 'data.chart', { preset: 'drivers' }, { source: 'standings?series=f1&season=2026', seq: 20 } as Partial<Region>)]), { path: '/x' })).c);
+    expect(second).not.toContain('<h1');
+    expect(second).toContain('>Drivers<');
+  });
+
+  it('over the season trend draws a line per driver with the legend’s chips and their last value, the series shown at first the leaders and the rest behind “+N more”; a row rule keeps two drivers’ lines; the emphasis on a team’s page goes through its curated drivers (Racing Bulls is “RB F1 Team” in the feed), on a driver’s page to the driver’s own line', async () => {
+    trend();
+    const lines = html(await draw({ preset: 'drivers-trend', shown: 2 }, F1_TREND));
+    expect(lines).toContain('<section aria-label="Drivers&#x27; season trend"');
+    expect(lines).toContain('data-chart-type="line"');
+    // The chips: the two leaders by their last value pressed, the other two behind "+2 more"; each chip its label and last value.
+    expect(lines.match(/aria-pressed="true"/g)).toHaveLength(2);
+    expect(lines).not.toContain('aria-pressed="false"');
+    expect(lines).toMatch(/aria-pressed="true"[^>]*>.*?Andrea Kimi Antonelli<span[^>]*>68<\/span>/);
+    expect(lines).toContain('+2 more');
+    // The hidden table: a heading per series in rank order, a row per round with the points.
+    expect(lines).toMatch(/<th[^>]*>Round<\/th><th[^>]*>Andrea Kimi Antonelli<\/th><th[^>]*>George Russell<\/th><th[^>]*>Isack Hadjar<\/th><th[^>]*>Liam Lawson<\/th>/);
+    expect(lines).toMatch(/<td[^>]*>3<\/td><td[^>]*>68<\/td><td[^>]*>58<\/td><td[^>]*>22<\/td><td[^>]*>3<\/td>/);
+    expect(lines).toContain('Points by Round');
+    // A row rule keeps two drivers' lines: the comparison.
+    trend();
+    const two = html(await draw({ preset: 'drivers-trend', rule: 'name.in:George Russell,Liam Lawson' }, F1_TREND));
+    expect(two).toMatch(/<th[^>]*>Round<\/th><th[^>]*>George Russell<\/th><th[^>]*>Liam Lawson<\/th><\/tr>/);
+    // A team's page: its curated drivers name the feed's team, so both drivers' lines are emphasised and drawn whatever the cap; the
+    // constructors' trend emphasises the team's own line; the foot names the team.
+    vi.spyOn(peopleLib, 'findTeamBySlug').mockResolvedValue({ slug: 'racing-bulls', name: 'Racing Bulls', seriesSlug: 'f1', seriesName: 'Formula 1', seriesColor: '#e10600', drivers: [{ name: 'Isack Hadjar', slug: 'isack-hadjar' }, { name: 'Liam Lawson', slug: 'liam-lawson' }] });
+    trend();
+    const team = html(await draw({ preset: 'drivers-trend', shown: 2, emphasis: 'page' }, F1_TREND, { path: '/teams/[slug]', params: { slug: 'racing-bulls' } }));
+    expect(team).toContain('data-emphasis="s2 s3"');
+    expect(team.match(/aria-pressed="true"/g)).toHaveLength(4);
+    expect(team).not.toContain('more');
+    expect(team).toContain('Racing Bulls highlighted');
+    trend();
+    const teams = html(await draw({ preset: 'constructors-trend', emphasis: 'page' }, F1_TREND, { path: '/teams/[slug]', params: { slug: 'racing-bulls' } }));
+    expect(teams).toContain('data-emphasis="s1"');
+    expect(teams).toMatch(/<th[^>]*>Round<\/th><th[^>]*>Mercedes<\/th><th[^>]*>RB F1 Team<\/th><\/tr>/);
+    // A driver's page emphasises the driver's own line (the roster's spelling against the feed's).
+    vi.spyOn(peopleLib, 'findDriverBySlug').mockResolvedValue({ slug: 'kimi-antonelli', name: 'Kimi Antonelli', team: 'Mercedes', teamSlug: 'mercedes', seriesSlug: 'f1', seriesName: 'Formula 1', seriesColor: '#e10600' });
+    trend();
+    const driver = html(await draw({ preset: 'drivers-trend', emphasis: 'page' }, F1_TREND, { path: '/drivers/[slug]', params: { slug: 'kimi-antonelli' } }));
+    expect(driver).toContain('data-emphasis="s0"');
+    expect(driver).toContain('Kimi Antonelli highlighted');
+    // Elsewhere the emphasis setting draws nothing thick.
+    trend();
+    expect(html(await draw({ preset: 'drivers-trend', emphasis: 'page' }, F1_TREND))).toContain('data-emphasis=""');
+  });
+
+  it('reads a session’s gaps as numbers (+0.100 → 0.1) with a decimal value axis, the pole sitter’s empty gap drawing no bar', async () => {
+    readSource.mockResolvedValueOnce({
+      columns: [],
+      total: 2,
+      rows: [
+        { round: 15, session: 'qualifying', position: 1, driver: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', laps: 18, time: '1:40.123', gap: null, interval: null, q1: null, q2: null, q3: null, compound: 'Soft', points: null, status: null, weekend: '/series/f1/weekend/15', profile: null },
+        { round: 15, session: 'qualifying', position: 2, driver: 'George Russell', code: 'RUS', team: 'Mercedes', laps: 17, time: '1:40.223', gap: '+0.100', interval: '+0.100', q1: null, q2: null, q3: null, compound: 'Soft', points: null, status: null, weekend: '/series/f1/weekend/15', profile: null },
+      ],
+      provenance: { ref: { source: 'session-results', params: { series: 'f1', season: 2026, round: 'latest', session: 'qualifying' } }, label: 'Session results · Formula 1 · 2026 · Latest captured · Qualifying', tier: 'db', keys: [], rows: 2, ms: 1 },
+    });
+    const gaps = html(await draw({ preset: 'session' }, { source: 'session-results?series=f1&season=2026&round=latest&session=qualifying' } as Partial<Region>));
+    expect(gaps).toContain('data-chart-type="bar"');
+    expect(gaps).toContain('data-decimals="true"');
+    expect(gaps).toMatch(/<td[^>]*>Kimi Antonelli<\/td><td[^>]*><\/td>.*<td[^>]*>George Russell<\/td><td[^>]*>0\.1<\/td>/);
+    expect(gaps).toContain('Gap by Driver');
   });
 });
 

@@ -239,7 +239,7 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(none.value.regions[0]).not.toHaveProperty('source');
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: '' })])).value.regions[0]).not.toHaveProperty('source');
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?season=2026' })])).problems).toEqual(['region r: Standings needs a series']);
-    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'rounds?series=f1' })])).problems).toEqual(['region r: Source must be one of Standings, Results, Posts, News, Weekends, Session results']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'rounds?series=f1' })])).problems).toEqual(['region r: Source must be one of Standings, Results, Posts, News, Weekends, Session results, Season trend']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?series=f1&season=2025' })])).value.regions).toEqual([]);
     expect(parsePageDocument(doc([region({ component: 'series.live', source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Live band reads no source']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 42 })])).problems).toEqual(['region r: Source must be text']);
@@ -880,5 +880,24 @@ describe('the Metric cards region (P2.7): every card’s columns and its row rul
     expect(parsePageDocument(doc([metrics({ card1Value: 'nope' })])).problems).toEqual([expect.stringMatching(/^region m: Card 1 value must be a column of the Drivers preset: /)]);
     expect(parsePageDocument(doc([metrics({ card2Value: 'gap', card2Row: 'name.gt:3' })])).problems).toEqual(['region m: Card 2 row must be a condition on a column of the Drivers preset, like position.lte:3']);
     expect(parsePageDocument(doc([metrics({ view: 'table' })])).problems).toEqual(['region m: Metric cards has no setting called view']);
+  });
+});
+
+describe('the Chart region (P2.11): its column mapping and its row rule are the preset’s shape’s; its preset its Source’s', () => {
+  const base = { kind: 'component', title: '', position: 'body', column: 1, span: 12, newRow: true, hidden: false, authz: null };
+  const chart = (settings: Record<string, unknown>, source = 'trend?series=f1&season=2026') => ({ ...base, id: 'c', seq: 10, component: 'data.chart', source, settings: { preset: 'drivers-trend', ...settings } });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+  it('keeps a document whose mapping names columns of the preset and a rule its columns can read; refuses a column or a rule the shape lacks, a preset of another source, and the Data region’s own keys', () => {
+    const kept = parsePageDocument(doc([chart({ label: 'round', value: 'gained', seriesName: 'team', rule: 'round.lte:10', type: 'area' })]));
+    expect(kept.problems).toEqual([]);
+    expect(kept.value?.regions[0]).toMatchObject({
+      component: 'data.chart',
+      source: 'trend?series=f1&season=2026',
+      settings: { preset: 'drivers-trend', type: 'area', label: 'round', value: 'gained', seriesName: 'team', rule: 'round.lte:10', height: 320, zero: true, legend: true, shown: 6, emphasis: '' },
+    });
+    expect(parsePageDocument(doc([chart({ value: 'nope' })])).problems).toEqual([expect.stringMatching(/^region c: Value must be a column of the Drivers' season trend preset: /)]);
+    expect(parsePageDocument(doc([chart({ rule: 'name.gt:3' })])).problems).toEqual(["region c: Row rule must be a condition on a column of the Drivers' season trend preset, like position.lte:3"]);
+    expect(parsePageDocument(doc([chart({ preset: 'drivers' })])).problems).toEqual(['region c: Preset Drivers is for a Standings source; this region reads Season trend']);
+    expect(parsePageDocument(doc([chart({ rows: 5 })])).problems).toEqual(['region c: Chart has no setting called rows']);
   });
 });
