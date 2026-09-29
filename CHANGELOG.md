@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.208 — 2026-09-29
+
+### Records — R15 on prod and done
+
+Records only. `docs/plan/ledger.json`: R15 (#1089, 1.0.207) merged on “merge” (06:46:33Z), prod by 06:52Z; prod's robots.txt carries `Disallow: /*?*filter=`, a filtered page and the plain one still open for readers, the census against prod green (1,034 pages, 0 contradictions); R15 DONE. The day's order in the operator's words: Seobility Premium's full crawl (running), its issues fixed one at a time as slots, then the sitemap resubmitted and the fixes validated in Search Console, then the AdSense application. `docs/HANDOFF.md`, `SCHEDULE.md`: the pickup and the minutes.
+
 ## 1.0.207 — 2026-09-28
 
 ### R15 — crawlers kept off the filter chips’ combination URLs
