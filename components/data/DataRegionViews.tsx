@@ -6,7 +6,7 @@ import { ageLabel } from '@/lib/date';
 import { SITE_URL, seriesInk } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import type { Crumb } from '@/lib/design/breadcrumb';
+import type { Crumb, SiblingPage } from '@/lib/design/breadcrumb';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { LocalTime } from '@/components/LocalTime';
 import { sortHref, sortable, type ViewFilter, type ViewState } from '@/lib/design/view-state';
@@ -1056,6 +1056,26 @@ export function DataRegionBreadcrumb({ crumbs, separator, structured }: { crumbs
         ))}
       </ol>
       {structured && <JsonLd data={breadcrumbLd(crumbs.map(c => ({ name: c.label, url: c.href === '/' ? SITE_URL : `${SITE_URL}${c.href}` })))} />}
+    </nav>
+  );
+}
+
+/** The Tabs over sibling pages (P2.10; ours: the series tabs stay one page per tab, so the strip links them): a nav of links in
+ *  the weekend tabs' look, the current page marked. Fewer than two links draw nothing. */
+export function DataRegionPageTabs({ pages }: { pages: readonly SiblingPage[] }) {
+  if (pages.length < 2) return null;
+  return (
+    <nav aria-label="Pages" className="mb-5 flex flex-wrap gap-x-5 gap-y-2 border-b border-border font-mono text-11 uppercase tracking-[0.16em]">
+      {pages.map(p => (
+        <Link
+          key={p.href}
+          href={p.href}
+          aria-current={p.current ? 'page' : undefined}
+          className={`-mb-px border-b-2 pb-2 transition-colors duration-(--duration-fast) ${p.current ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'}`}
+        >
+          {p.label}
+        </Link>
+      ))}
     </nav>
   );
 }

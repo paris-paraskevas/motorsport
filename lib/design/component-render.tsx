@@ -1,6 +1,6 @@
 import 'server-only';
 import { cache, type ReactNode } from 'react';
-import { firstBodyRegion, isLegacyBody, type ComponentRegion, type PageDocument } from './page-document';
+import { firstBodyRegion, isLegacyBody, tabsOf, type ComponentRegion, type PageDocument } from './page-document';
 import { CALENDAR_FACETS, findComponent, type SettingValue } from './components';
 import { parseSourceRef, type SourceRef } from './sources';
 import { SHAPES, findPreset, presetRows, rowPasses } from './presets';
@@ -47,6 +47,8 @@ const weekendLib = () => import('@/lib/weekend');
 const circuitsLib = () => import('@/lib/circuits');
 // The Breadcrumb (P2.17) reads its trail's label sources the same way, behind its own module.
 const breadcrumbLib = () => import('./breadcrumb');
+// The Tabs strip (P2.10), a client piece, on demand as the views are.
+const regionTabs = () => import('@/components/page/RegionTabs');
 
 import type { Facet } from '@/components/data/DataRegionFilters';
 import type { Series } from '@/lib/types';
@@ -91,6 +93,9 @@ export interface RenderContext {
   read?: () => Promise<SourceReadResult>;
   /** A Filters region's target (P2.5): its keys' prefix, its shape, its state from the address, and its rows after the preset's own rule. */
   filters?: { prefix: string; shape: Pick<FacetShape, 'columns'>; state: ViewState; rows: () => Promise<FacetRow[]> };
+  /** The tabs a Tabs region lists (P2.10; APEX: Region Display Selector): the page-level regions of its position with Region
+   *  Display Selector on, in the document's order, each by its title (its id when untitled) with its icon; only for a Tabs region. */
+  tabs?: readonly { id: string; label: string; icon?: string }[];
 }
 
 type Renderer = (settings: Readonly<Record<string, SettingValue>>, ctx: RenderContext) => Promise<ReactNode> | ReactNode;
@@ -190,6 +195,30 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     // Home, or one crumb: no trail to show (and Google's floor for a BreadcrumbList is two).
     if (crumbs.length < 2) return null;
     return <views.DataRegionBreadcrumb crumbs={crumbs} separator={str(settings.separator) || 'chevron'} structured={!ownsBreadcrumbLd(ctx.path)} />;
+  },
+  // Tabs (P2.10; APEX: Region Display Selector): over the page's opting regions (the context lists them, in order) the client
+  // strip that shows one at a time or scrolls to each and remembers the choice under the page's address; over the sibling pages
+  // a nav of links (ours). Fewer than two tabs or links: nothing.
+  async 'page.tabs'(settings, ctx) {
+    if (str(settings.over) === 'pages') {
+      const [{ siblingPages }, views] = await Promise.all([breadcrumbLib(), dataViews()]);
+      const pages = await siblingPages({ path: ctx.path, params: ctx.params, page: ctx.page });
+      return pages.length < 2 ? null : <views.DataRegionPageTabs pages={pages} />;
+    }
+    const tabs = ctx.tabs ?? [];
+    if (tabs.length < 2) return null;
+    const [{ RegionTabs }, { fillPattern }] = await Promise.all([regionTabs(), breadcrumbLib()]);
+    const remember = str(settings.remember);
+    return (
+      <RegionTabs
+        tabs={tabs}
+        mode={str(settings.mode) === 'scroll' ? 'scroll' : 'single'}
+        showAll={settings.showAll !== false}
+        remember={remember === 'visit' || remember === 'no' ? remember : 'browser'}
+        storageKey={`paddock:tabs:${fillPattern(ctx.path, ctx.params)}:${ctx.region}`}
+        icons={settings.icons === true}
+      />
+    );
   },
   // Metric cards (P2.7; APEX 26.1: the Metric Card theme component): the preset's rows read as the Data region reads them (the
   // shared read where a Filters region has it), every row the preset keeps (a count card counts them); each card a column of the
@@ -381,6 +410,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'series.countdown': ['content:series', 'live:ics', 'content:circuits'],
   // The Breadcrumb's label sources (P2.17): the pages' rows, the series and their sessions, the Learn content, a post or an author.
   'page.breadcrumb': ['db:page', 'content:series', 'live:ics', 'content:information', 'db:post'],
+  // The Tabs over sibling pages (P2.10) read the series' meta or the live row pages; over regions they read nothing.
+  'page.tabs': ['content:series', 'db:page'],
   // Metric cards read a Source as the Data region does (P2.7).
   'data.metrics': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Filters region reads its target's Source (P2.5): the same tiers, once for both.
@@ -523,7 +554,9 @@ export async function renderComponents(doc: PageDocument, where: RenderPage, hoo
       const source = r.source && spec?.sources?.length ? parseSourceRef(r.source, spec.sources).value : null;
       const onSourceRead = hooks?.onSourceRead ? (p: SourceProvenance) => hooks.onSourceRead?.(r.id, p) : undefined;
       try {
-        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r), read: source ? readFor(r, source) : undefined, filters: r.component === 'data.filters' ? filtersOf(r) : undefined, region: r.id, master: masterOf(r), detailKeys: detailKeysOf(r) });
+        // The tabs a Tabs region lists (P2.10): the declared document's regions of every kind, page level, in its order.
+        const tabs = r.component === 'page.tabs' ? tabsOf(doc, r).map(t => ({ id: t.id, label: t.title.trim() || t.id, icon: t.icon })) : undefined;
+        out[r.id] = await render(r.settings, { path: where.path, params: where.params ?? {}, page, first: r.id === firstInBody, source, pages, now, onSourceRead, href: where.href ?? where.path, view: where.view, controlsKey: controlsKey(r), read: source ? readFor(r, source) : undefined, filters: r.component === 'data.filters' ? filtersOf(r) : undefined, region: r.id, master: masterOf(r), detailKeys: detailKeysOf(r), tabs });
         hooks?.onRendered?.(r.id, r.component, Math.round((performance.now() - t) * 10) / 10, true);
       } catch {
         out[r.id] = null;

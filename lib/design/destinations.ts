@@ -26,6 +26,12 @@ export interface NavEntry {
   href?: string;
 }
 
+/** The icon names an entry, or a region (P2.10), may carry: the phone bar's set,
+ *  drawn by the map in components/BottomBar.tsx. Here, plain, so the client-safe
+ *  page parser checks a name without the bar's lucide graph. */
+export const ICON_NAMES = ['house', 'calendar-days', 'compass', 'circle-user', 'flag', 'trophy', 'newspaper', 'book-open', 'users', 'settings', 'search'] as const;
+export type IconName = (typeof ICON_NAMES)[number];
+
 // Row pages as destinations (P1.12 B1): a page made in the designer is named by
 // its id, `page:<uuid>`, never by its path (a page keeps its identity across a
 // rename of its address). The key resolves against the live row pages the

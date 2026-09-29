@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.213 — 2026-09-29
+
+### P2.10 — Tabs
+
+A general component of the catalogue (`page.tabs`, Tabs, the Page group; APEX's Region Display Selector). Over this page's regions it draws a tab strip as the weekend page draws its tabs (`nav role="tablist"`, the brand underline, mono uppercase) over the page-level regions of its position that opt in through the region's new Advanced attribute Region Display Selector (`RegionBase.selector`, stored only when on): View Single Region shows one region at a time by the wrappers' `hidden` (the dynamic actions' way), Show all shows every one, Scroll Window keeps all and scrolls to the chosen; Remember Last Selection keeps the choice under `paddock:tabs:<address>:<region id>` in this browser, this visit, or not at all; Display Region Icons draws each region's new Icon (ours: the phone bar's set, its names moved to `ICON_NAMES` in `lib/design/destinations.ts` so the client-safe parser checks a name without the bar's lucide graph). `applyTabs` in `page-document.ts` hides every tab but the first before the page leaves the server (`RowPageView`, `CodePageFrame`), so nothing flashes; the strip (`components/page/RegionTabs.tsx`, a client piece) then shows the remembered one. Over the sibling pages (ours; the series tabs stay one page per tab, the operator's word of 2026-09-23) it draws a nav of links from the address: a series' sub-pages and News, the Learn topics, the row pages under the same parent (`lib/design/breadcrumb.ts` `siblingPages`), the current page marked. The tabs a region lists are assembled in `renderComponents` from the declared document into `RenderContext.tabs`. The Property Editor gains Region Display Selector (Advanced) and Icon (Appearance) on every region. Readers see nothing until an editor places a Tabs region.
+
 ## 1.0.212 — 2026-09-29
 
 ### Records — P2.17 on prod and done

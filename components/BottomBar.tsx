@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAccount } from '@/lib/auth/client';
-import { isActivePath, resolveEntry, type NavEntry } from '@/lib/design/destinations';
+import { ICON_NAMES, isActivePath, resolveEntry, type IconName, type NavEntry } from '@/lib/design/destinations';
 import type { AuthzScheme } from '@/lib/design/authz-defaults';
 import { useVisibleEntries } from './useVisitor';
 
@@ -30,9 +30,11 @@ import { useVisibleEntries } from './useVisitor';
 // entries, each a route. The loader guarantees the count; a cell whose
 // destination is not a route is skipped.
 
-// The icon names an entry may carry; the designer offers this set. An unknown
-// name falls back to the compass so a cell is never blank.
-const ICONS: Record<string, LucideIcon> = {
+// The icon names an entry may carry (ICON_NAMES in lib/design/destinations.ts,
+// plain, so the page parser checks a region's icon without this file's lucide
+// graph, P2.10); the designer offers this set. An unknown name falls back to the
+// compass so a cell is never blank.
+const ICONS: Record<IconName, LucideIcon> = {
   house: House,
   'calendar-days': CalendarDays,
   compass: Compass,
@@ -45,7 +47,9 @@ const ICONS: Record<string, LucideIcon> = {
   settings: Settings,
   search: Search,
 };
-export const BAR_ICON_NAMES = Object.keys(ICONS);
+export const BAR_ICON_NAMES: readonly string[] = ICON_NAMES;
+/** The set's icons by name, for the Tabs strip (P2.10). */
+export const BAR_ICONS: Readonly<Record<string, LucideIcon>> = ICONS;
 
 // An entry asking for an authorization scheme shows only to a visitor who
 // passes it (Phase 3 step 4); with no schemes given (the designer's preview)
@@ -88,7 +92,7 @@ export function BottomBar({
             href={href}
             active={isActivePath(href, pathname)}
             label={entry.label}
-            Icon={ICONS[entry.icon ?? ''] ?? Compass}
+            Icon={BAR_ICONS[entry.icon ?? ''] ?? Compass}
             avatarUrl={entry.dest === 'account' && isSignedIn ? avatarUrl ?? undefined : undefined}
             divider={i > 0}
             dataTour={entry.dest === 'account' ? 'account' : undefined}
