@@ -649,6 +649,13 @@ body {
   background: transparent;
 }
 
+/* A Map region's marker without a colour of its own (P2.12): the theme's accent. Leaflet writes a marker's colours as
+   presentation attributes, which a var() cannot fill, so the class carries them; a class rule beats an attribute. */
+.leaflet-container .map-marker-accent {
+  stroke: var(--brand-fill);
+  fill: var(--brand-fill);
+}
+
 /* Wikipedia tables (Rules / History / etc.) — token-driven. */
 .wiki-table-scroll {
   overflow-x: auto;

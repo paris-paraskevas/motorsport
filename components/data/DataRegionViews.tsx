@@ -17,6 +17,7 @@ import { DataRegionControls } from './DataRegionControls';
 import { FollowedRows, FollowedScope } from './FollowedRows';
 import { commonsSrcSet, commonsThumb } from '@/lib/commons-thumb';
 import { ChartFrame, type ChartData } from './ChartFrame';
+import { MapFrame, type MapData } from './MapFrame';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -1156,6 +1157,31 @@ export function DataRegionChart({ heading, level, data, foot }: { heading: strin
         </>
       ) : (
         <p className="font-serif text-15 italic text-text-muted">No data yet.</p>
+      )}
+    </section>
+  );
+}
+
+/** The Map (P2.12; APEX: the Map region): the heading's rule (the page's h1 when first), the client frame drawing the markers
+ *  on the background's tiles with the places as a hidden list of links, and a foot in the site's eyebrow counting the markers
+ *  and naming the background. Without a place one line, never a hole. */
+export function DataRegionMap({ heading, level, data, foot }: { heading: string; level: 'h1' | 'h2'; data: MapData | null; foot: string }) {
+  return (
+    <section aria-label={heading}>
+      {level === 'h1' ? (
+        <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
+          <h1 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{heading}</h1>
+        </div>
+      ) : (
+        <SectionRule label={heading} />
+      )}
+      {data ? (
+        <>
+          <MapFrame data={data} />
+          <div className="mt-2 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">{foot}</div>
+        </>
+      ) : (
+        <p className="font-serif text-15 italic text-text-muted">No places yet.</p>
       )}
     </section>
   );

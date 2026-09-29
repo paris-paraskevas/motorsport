@@ -60,14 +60,14 @@ afterEach(() => {
 });
 
 describe('DataSourcesEditor', () => {
-  it('lists the sixteen with their parameters, columns, how they are kept fresh, Used on and Changed; opens one with its Data Profile, how it is read, Utilization with Open and History', async () => {
+  it('lists the seventeen with their parameters, columns, how they are kept fresh, Used on and Changed; opens one with its Data Profile, how it is read, Utilization with Open and History', async () => {
     const onOpenPage = vi.fn();
     render(<DataSourcesEditor series={series} onOpenPage={onOpenPage} />);
     expect(screen.getByRole('heading', { name: 'Data Sources' })).toBeTruthy();
     await waitFor(() => expect(urls).toContain('/api/admin/design/data/sources'));
     await screen.findByText('1 page');
     const rows = screen.getAllByRole('row').slice(1);
-    expect(rows).toHaveLength(16);
+    expect(rows).toHaveLength(17);
     const standingsRow = rows.find(r => within(r).queryByText('Standings'))!;
     expect(within(standingsRow).getByText('series · season')).toBeTruthy();
     // Thirteen columns: twelve since P2.24 B2 (the series' name and colour, the race winner, the season's end), the row's page since P2.4 PR B.

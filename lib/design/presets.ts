@@ -15,7 +15,7 @@
 
 import type { ViewFilter, ViewState } from './view-state';
 
-export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends' | 'session-results' | 'trend';
+export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends' | 'session-results' | 'trend' | 'tracks' | 'guides';
 /** The `kind` a standings row carries (lib/design/source-read.ts). */
 export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver';
 /** The column types a view draws (APEX: a report's column types). The image column arrived with P2.24 A, where the posts
@@ -32,7 +32,7 @@ export interface PresetColumn {
   /** For a link whose address leaves the site (the news headlines): drawn in a new tab, as an external destination is. */
   external?: true;
 }
-export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows' | 'session-rows' | 'trend-rows';
+export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows' | 'session-rows' | 'trend-rows' | 'track-rows' | 'guide-rows';
 export interface Shape {
   key: ShapeKey;
   source: PresetSource;
@@ -43,6 +43,10 @@ export interface Shape {
   /** The Chart's own mapping (P2.11; APEX: the Series' Column Mapping): the column along the axis, the value drawn, the column one
    *  series is drawn per, and the type; a shape without one draws nothing in a Chart until Label and Value are set. */
   chart?: { label: string; value: string; series?: string; type: 'line' | 'bar' | 'area' };
+  /** The Map's own mapping (P2.12; APEX: a Map Layer's Column Mapping and Info Window): the coordinate columns, the popup's title
+   *  and body, the link column the popup's Open follows, the marker's colour column; a shape without one draws nothing in a Map
+   *  until Latitude and Longitude are set. */
+  map?: { latitude: string; longitude: string; title: string; body?: string; link?: string; colour?: string };
 }
 
 const position: PresetColumn = { key: 'position', label: 'Pos', type: 'position' };
@@ -171,6 +175,35 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     card: { title: 'name', subtitle: 'team', body: 'points', badge: 'round' },
     chart: { label: 'round', value: 'points', series: 'name', type: 'line' },
   },
+  // The circuits (P2.12): content/circuits.json as the Tracks source answers it, a place per circuit; the Map's own mapping marks
+  // each by name with the country beneath (the source carries the two-letter code; the guides carry the country's name).
+  'track-rows': {
+    key: 'track-rows',
+    source: 'tracks',
+    columns: [{ key: 'slug', label: 'Slug', type: 'text' }, { key: 'name', label: 'Circuit', type: 'text' }, { key: 'country', label: 'Country', type: 'text' }, { key: 'lat', label: 'Latitude', type: 'number' }, { key: 'lon', label: 'Longitude', type: 'number' }],
+    card: { title: 'name', body: 'country', badge: 'country' },
+    map: { latitude: 'lat', longitude: 'lon', title: 'name', body: 'country' },
+  },
+  // The circuit guides (P2.12): the information hub's track entries with a place, the Circuit Map's markers, each with its page;
+  // the name and the Page column both follow the page, so a link may name either; the colour the primary category's.
+  'guide-rows': {
+    key: 'guide-rows',
+    source: 'guides',
+    columns: [
+      { key: 'slug', label: 'Slug', type: 'text' },
+      { key: 'name', label: 'Circuit', type: 'link', href: 'page' },
+      { key: 'country', label: 'Country', type: 'text' },
+      { key: 'countryCode', label: 'Code', type: 'text' },
+      { key: 'category', label: 'Category', type: 'text' },
+      { key: 'categories', label: 'Categories', type: 'text' },
+      { key: 'lat', label: 'Latitude', type: 'number' },
+      { key: 'lon', label: 'Longitude', type: 'number' },
+      { key: 'page', label: 'Page', type: 'link', href: 'page' },
+      { key: 'colour', label: 'Colour', type: 'text' },
+    ],
+    card: { title: 'name', subtitle: 'country', body: 'category', badge: 'countryCode' },
+    map: { latitude: 'lat', longitude: 'lon', title: 'name', body: 'country', link: 'page', colour: 'colour' },
+  },
 };
 
 export interface PresetGroup {
@@ -206,6 +239,9 @@ export const PRESET_GROUPS: readonly PresetGroup[] = [
   { key: 'session', name: 'Session', source: 'session-results' },
   // The season trend (P2.11): the standings tab's two charts as presets over the Season trend source.
   { key: 'season-trend', name: 'Season trend', source: 'trend' },
+  // The circuits and the circuit guides (P2.12): the Map's two sources, a group of one preset each.
+  { key: 'circuits', name: 'Circuits', source: 'tracks' },
+  { key: 'circuit-guides', name: 'Circuit guides', source: 'guides' },
 ];
 
 export interface Preset {
@@ -320,6 +356,10 @@ export const PRESETS: readonly Preset[] = [
   // the Chart draws them as the tab does through the shape's own mapping.
   { key: 'drivers-trend', name: "Drivers' season trend", group: 'season-trend', source: 'trend', shape: 'trend-rows', where: { kind: 'driver' }, series: TREND_SERIES, nameLabel: 'Driver', view: 'table' },
   { key: 'constructors-trend', name: "Constructors' season trend", group: 'season-trend', source: 'trend', shape: 'trend-rows', where: { kind: 'constructor' }, series: TREND_TEAM_SERIES, nameLabel: 'Constructor', view: 'table' },
+  // The circuits (P2.12): the circuits of content/circuits.json; the circuit guides: the information hub's tracks with a place.
+  // Every series, since neither source takes one (the posts' rule); the Table by default, as a preset must bring a view.
+  { key: 'circuits', name: 'Circuits', group: 'circuits', source: 'tracks', shape: 'track-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Circuit', view: 'table' },
+  { key: 'circuit-guides', name: 'Circuit guides', group: 'circuit-guides', source: 'guides', shape: 'guide-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Circuit', view: 'table' },
 ];
 
 export function findPreset(key: string): Preset | null {

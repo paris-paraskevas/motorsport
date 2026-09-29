@@ -14,15 +14,15 @@ import { MAX_PER_SERIES_AGGREGATE } from '@/lib/news';
 // and a reader; a ref is one string a region carries; the loader's keys read
 // back in the catalogue's words.
 
-const SIXTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results', 'trend'];
+const SEVENTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results', 'trend', 'guides'];
 const PARAMETER_KINDS = ['series', 'season', 'number', 'choice', 'text'];
 const COLUMN_TYPES = ['text', 'number', 'date', 'boolean', 'link', 'image', 'colour'];
 /** P2.24 B2: the two Series values the readers resolve rather than read (Home's series, the Latest result), each on its source alone. */
 const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home'], standings: ['latest'] };
 
 describe('the source catalogue', () => {
-  it('holds the sixteen in the changes line’s order (Weekends the fourteenth, P2.24 B1; Session results the fifteenth, P2.25; Season trend the sixteenth, P2.11), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
-    expect(SOURCES.map(s => s.key)).toEqual(SIXTEEN);
+  it('holds the seventeen in the changes line’s order (Weekends the fourteenth, P2.24 B1; Session results the fifteenth, P2.25; Season trend the sixteenth, P2.11; Circuit guides the seventeenth, P2.12), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
+    expect(SOURCES.map(s => s.key)).toEqual(SEVENTEEN);
     const contentSlugs = readdirSync(path.join(process.cwd(), 'content', 'series'), { withFileTypes: true })
       .filter(e => e.isDirectory())
       .map(e => e.name)
@@ -279,5 +279,28 @@ describe('the Season trend source (P2.11)', () => {
     expect(parseSourceRef('trend?series=f1&season=2026').value).toEqual({ source: 'trend', params: { series: 'f1', season: 2026 } });
     // Formula E's and IndyCar's feeds derive their points: the trend never offers them (the CHANGELOG's invariant).
     expect(parseSourceRef('trend?series=formula-e&season=2026')).toEqual({ value: null, problems: ['Series must be one of the series Season trend offers'] });
+  });
+});
+
+describe('the Circuit guides source (P2.12)', () => {
+  it('is the seventeenth: the information hub’s circuit guides with a place on the map, no parameters, deployed with the site', () => {
+    const guides = findSource('guides')!;
+    expect(guides).toMatchObject({ name: 'Circuit guides', fresh: 'content', load: 'none', pagination: 'none', reads: ['content:information'], parameters: [] });
+    expect(guides.holds).toMatch(/^the information hub’s circuit guides/);
+    expect(guides.columns.map(c => [c.key, c.type])).toEqual([
+      ['slug', 'text'],
+      ['name', 'text'],
+      ['country', 'text'],
+      ['countryCode', 'text'],
+      ['category', 'text'],
+      ['categories', 'text'],
+      ['lat', 'number'],
+      ['lon', 'number'],
+      ['page', 'link'],
+      ['colour', 'colour'],
+    ]);
+    expect(sourceLabel({ source: 'guides', params: {} })).toBe('Circuit guides');
+    expect(parseSourceRef('guides').value).toEqual({ source: 'guides', params: {} });
+    expect(parseSourceRef('guides?series=f1').problems).toEqual(['Circuit guides has no parameter called series']);
   });
 });

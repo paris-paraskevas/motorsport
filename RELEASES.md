@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.219 — 2026-09-29
+
+A map editors can place on any page: the circuits, or the circuit guides with their pages, as markers on a named background whose tiles follow the theme, light or dark. Nothing changes for readers until one is placed.
+
 ## 1.0.218 — 2026-09-29
 
 Internal only: the record of the chart component, checked on the live site. Nothing changes for readers.

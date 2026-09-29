@@ -5,6 +5,7 @@ import { HOME_RESULTS_SERIES, HOME_SERIES_OPTION, LATEST_RESULT_OPTION, SERIES_O
 import type { SnapshotMeta } from '@/lib/source-snapshot';
 import type { RaceResult, RaceResultEntry, Series } from '@/lib/types';
 import type { SeasonTrendData } from '@/lib/season-trend';
+import { trackColour } from '@/lib/information/types';
 
 // The reader behind the catalogue (the components programme, P2.1): one
 // readSource for the fourteen, each through the loader the code already has,
@@ -630,6 +631,19 @@ const READERS: Readonly<Record<string, Reader>> = {
     const { loadCircuits } = await import('@/lib/circuits');
     const circuits = await loadCircuits();
     return { tier: 'content', rows: Object.entries(circuits).map(([slug, c]) => ({ slug, name: c.name, country: c.countryCode ?? null, lat: c.lat, lon: c.lon })) };
+  },
+  // The circuit guides (P2.12): the hub's track entries with finite coordinates, as the Circuit Map keeps them; the page under
+  // /information/tracks, the primary category and its colour (the map's own table), the categories joined.
+  async guides() {
+    const { getTopicEntries } = await import('@/lib/information/registry');
+    const rows: SourceRow[] = [];
+    for (const e of await getTopicEntries('tracks')) {
+      const at = e.kind === 'track' ? e.track?.location : undefined;
+      if (!at || !Number.isFinite(at.lat) || !Number.isFinite(at.lng)) continue;
+      const categories = e.track?.categories ?? [];
+      rows.push({ slug: e.slug, name: e.question, country: e.track?.country ?? null, countryCode: e.track?.countryCode ?? null, category: categories[0] ?? null, categories: categories.length ? categories.join(', ') : null, lat: at.lat, lon: at.lng, page: `/information/tracks/${e.slug}`, colour: trackColour(categories) });
+    }
+    return { tier: 'content', rows };
   },
 };
 

@@ -1648,3 +1648,42 @@ describe('the Chart in the designer (P2.11)', () => {
     expect(saved).toMatchObject({ settings: { preset: 'constructors-trend', type: 'area', shown: 4, label: '', value: '', seriesName: '' }, source: 'trend?series=f1&season=2026' });
   });
 });
+
+describe('the Map in the designer (P2.12)', () => {
+  it('adds a Map from the Gallery over a Circuit guides Source: the Preset grouped as Circuit guides, the Layer group’s columns and Link opening on the preset’s own, the Background pill Canvas and the Type pill Automatic pressed; Save carries the settings and the tile names the preset, the background and the view', async () => {
+    const { onSaved } = mount(detail, false, null, null, undefined, [{ slug: 'f1', name: 'Formula 1' }]);
+    fireEvent.click(within(screen.getByLabelText('Gallery')).getByRole('button', { name: 'Components' }));
+    fireEvent.doubleClick(screen.getByRole('button', { name: 'Gallery: Map' }));
+    fireEvent.click(tile('Component: Map'));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.change(within(pe).getByLabelText('Source type'), { target: { value: 'guides' } });
+    expect(status()).toMatch(/Source set/);
+    expect(screen.queryByText(/Not saved:/)).toBeNull();
+    fireEvent.click(within(pe).getByRole('tab', { name: 'Attributes' }));
+    // The Source's change moves the preset to the one the Circuit guides offer; the list is grouped as Circuit guides alone.
+    const preset = within(pe).getByLabelText('Preset') as HTMLSelectElement;
+    expect(preset.value).toBe('circuit-guides');
+    expect([...preset.querySelectorAll('optgroup')].map(g => g.label)).toEqual(['Circuit guides']);
+    expect([...preset.options].map(o => o.textContent)).toEqual(['Circuit guides']);
+    // The Layer group's mapping opens on the preset's own column (the Card slots' rule), the Link on the preset's own link column.
+    expect((within(pe).getByLabelText('Latitude') as HTMLSelectElement).options[0].textContent).toBe('Preset’s own (Latitude)');
+    expect((within(pe).getByLabelText('Longitude') as HTMLSelectElement).options[0].textContent).toBe('Preset’s own (Longitude)');
+    expect((within(pe).getByLabelText('Title') as HTMLSelectElement).options[0].textContent).toBe('Preset’s own (Circuit)');
+    expect((within(pe).getByLabelText('Body') as HTMLSelectElement).options[0].textContent).toBe('Preset’s own (Country)');
+    expect((within(pe).getByLabelText('Colour') as HTMLSelectElement).options[0].textContent).toBe('Preset’s own (Colour)');
+    const link = within(pe).getByLabelText('Link') as HTMLSelectElement;
+    expect(link.options[0].textContent).toBe('Preset’s own (Page)');
+    expect([...link.options].map(o => o.value)).toContain('row:page');
+    expect(within(within(pe).getByRole('group', { name: 'Background' })).getByRole('button', { name: 'Canvas' }).getAttribute('aria-pressed')).toBe('true');
+    expect(within(within(pe).getByRole('group', { name: 'Type' })).getByRole('button', { name: 'Automatic' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(within(within(pe).getByRole('group', { name: 'Type' })).getByRole('button', { name: 'World' }));
+    fireEvent.change(within(pe).getByLabelText('Height'), { target: { value: '400' } });
+    fireEvent.change(within(pe).getByLabelText('Row rule'), { target: { value: 'category.eq:f1' } });
+    expect(tile('Component: Map').textContent).toMatch(/Circuit guides · Preset Circuit guides · Canvas · World · Row rule category\.eq:f1/);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const posted = calls.find(c => c.method === 'POST')!.body as { document: PageDocument };
+    const saved = posted.document.regions.find(r => r.kind === 'component' && r.component === 'data.map')!;
+    expect(saved).toMatchObject({ settings: { preset: 'circuit-guides', background: 'canvas', view: 'world', height: 400, rule: 'category.eq:f1', latitude: '', longitude: '', title: '', body: '', link: '', colour: '' }, source: 'guides' });
+  });
+});

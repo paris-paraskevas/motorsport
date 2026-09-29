@@ -4,6 +4,7 @@ import { COMPONENTS, type ComponentDefinition } from './components';
 import { DEFINITIONS, EMPTY_OVERLAY, isDefinitionKey, mergeDefinition, mergeDefinitions, parseOverlay, type DefinitionOverlay, type EditableDefinition } from './component-definitions';
 import { encodeSourceRef, parseSourceRef } from './sources';
 import { upgradedKey } from './page-document';
+import { DEFAULT_MAP_BACKGROUND } from './map-backgrounds';
 
 // The component definitions as the site and the designer read them (the
 // components programme, P2.0, PR B; APEX: Plug-ins): the code's definitions
@@ -245,6 +246,43 @@ export async function loadSourceUsage(): Promise<Record<string, SourceUsagePage[
   try {
     const rows = await readUsageRows();
     return rows ? sourceUsageFromRows(rows.pages, rows.revisions) : {};
+  } catch {
+    return {};
+  }
+}
+
+/** Utilization of the Map Backgrounds (P2.12): for each background, the pages whose newest or live revision carries a Map region
+ *  drawing it (the default where the region names none), with the regions' ids. The sources' scan over the same rows. */
+export function mapBackgroundUsageFromRows(pages: unknown, revisions: unknown): Record<string, SourceUsagePage[]> {
+  const out: Record<string, SourceUsagePage[]> = {};
+  for (const { page, newest, live } of latestRevisions(pages, revisions)) {
+    for (const regions of [newest, live]) {
+      if (!regions) continue;
+      for (const item of regions) {
+        if (!item || typeof item !== 'object') continue;
+        const region = item as Record<string, unknown>;
+        if (region.kind !== 'component' || region.component !== 'data.map' || typeof region.id !== 'string') continue;
+        const settings = region.settings && typeof region.settings === 'object' ? (region.settings as Record<string, unknown>) : {};
+        const key = typeof settings.background === 'string' && settings.background !== '' ? settings.background : DEFAULT_MAP_BACKGROUND;
+        const list = (out[key] ??= []);
+        let entry = list.find(p => p.id === page.id);
+        if (!entry) {
+          entry = { ...page, refs: [] };
+          list.push(entry);
+        }
+        if (!entry.refs.includes(region.id)) entry.refs.push(region.id);
+      }
+    }
+  }
+  for (const list of Object.values(out)) for (const entry of list) entry.refs.sort();
+  return out;
+}
+
+export async function loadMapBackgroundUsage(): Promise<Record<string, SourceUsagePage[]>> {
+  if (!isBettingConfigured()) return {};
+  try {
+    const rows = await readUsageRows();
+    return rows ? mapBackgroundUsageFromRows(rows.pages, rows.revisions) : {};
   } catch {
     return {};
   }

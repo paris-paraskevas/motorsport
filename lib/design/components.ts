@@ -14,6 +14,7 @@
 
 import { PRESETS, PRESET_GROUPS, SHAPES, findPreset, type PresetColumn } from './presets';
 import { CURRENT_SEASON, SERIES_OPTIONS } from './sources';
+import { DEFAULT_MAP_BACKGROUND, MAP_BACKGROUNDS, findMapBackground } from './map-backgrounds';
 
 export type SettingValue = string | number | boolean;
 
@@ -417,7 +418,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'highlight', title: 'Highlight', seq: 40 },
       { key: 'detail', title: 'Master Detail', seq: 50 },
     ],
-    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend'],
+    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides'],
   },
   // Filters (P2.5; APEX: Smart Filters, the chips above a report): a panel over another Data region of the page, its facets
   // that region's columns, each value a link that narrows the rows through the address (one `in` filter per facet under the
@@ -502,7 +503,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'card3', title: 'Card 3', seq: 30 },
       { key: 'card4', title: 'Card 4', seq: 40 },
     ],
-    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend'],
+    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides'],
   },
   // The Chart (P2.11; APEX: the Chart region: Attributes › Chart › Type, the Series node's Column Mapping (Label, Value, Series
   // Name), the Axes' Titles, Legend › Show). One chart over a preset's rows: a line, bars or an area for a value column by a
@@ -573,6 +574,82 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'legend', title: 'Legend', seq: 30 },
     ],
     sources: ['standings', 'results', 'session-results', 'trend'],
+  },
+  // The Map (P2.12; APEX: the Map region with one Map Layer of points): a marker per row of a preset on a named background from
+  // Shared Components › Map Backgrounds (lib/design/map-backgrounds.ts), the tiles following the theme's family. The Layer group
+  // is APEX's Map Layer (Column Mapping › Longitude-Latitude; Info Window › Title and Body; ours: the row's link and colour
+  // columns and the Row rule); Initial Position and Zoom and Controls are APEX's groups by name, over Leaflet's controls. Left
+  // with the reason: Zoom and Compass and the Overview Map (Leaflet neither rotates nor insets), Rectangle Zoom, a Bounding
+  // Box, the Lines, Polygons and Heat Map layers (no such data on the site). Preset options are the Data region's without their
+  // resets, as the Chart's.
+  {
+    key: 'data.map',
+    name: 'Map',
+    group: 'Data',
+    holds: 'the markers of a source’s rows on a named background: the circuits, or the circuit guides with their pages; the tiles follow the theme',
+    settings: [
+      {
+        key: 'preset',
+        label: 'Preset',
+        kind: 'choice',
+        scope: 'report',
+        default: 'circuit-guides',
+        options: PRESETS.map(p => ({ key: p.key, label: p.name, group: PRESET_GROUPS.find(g => g.key === p.group)?.name ?? p.group, only: { source: p.source, series: p.series } })),
+        help: 'Which of the site’s tables the map marks (APEX: the Layer’s Source; ours: the named presets). The list follows the Source. A pick sets nothing else: the columns below default to the preset’s own mapping.',
+      },
+      {
+        key: 'background',
+        label: 'Background',
+        kind: 'choice',
+        scope: 'report',
+        default: DEFAULT_MAP_BACKGROUND,
+        options: MAP_BACKGROUNDS.map(b => ({ key: b.key, label: b.name })),
+        help: 'The tiles behind the markers (APEX: Background; the named ones under Shared Components › Map Backgrounds). Each carries a light and a dark set; the theme’s family picks.',
+      },
+      { key: 'heading', label: 'Heading', kind: 'text', scope: 'report', default: '', maxLength: 80, help: 'The rule above the map; empty draws the preset’s name. The section’s name for a reader either way.' },
+      { key: 'height', label: 'Height', kind: 'number', scope: 'report', default: 520, min: 240, max: 800, help: 'The map’s height in pixels (APEX: Layout › Height); the Circuit Map draws 520 at the least.' },
+      { key: 'latitude', label: 'Latitude', kind: 'choice', scope: 'report', group: 'layer', optionsFrom: 'columns', default: '', help: 'The column holding each row’s latitude (APEX: Column Mapping › Latitude Column); empty reads the preset’s own. No coordinate columns, no map.' },
+      { key: 'longitude', label: 'Longitude', kind: 'choice', scope: 'report', group: 'layer', optionsFrom: 'columns', default: '', help: 'The column holding each row’s longitude (APEX: Column Mapping › Longitude Column); empty reads the preset’s own.' },
+      { key: 'title', label: 'Title', kind: 'choice', scope: 'report', group: 'layer', optionsFrom: 'columns', default: '', help: 'The popup’s first line (APEX: Info Window › Title Column); empty draws the preset’s own.' },
+      { key: 'body', label: 'Body', kind: 'choice', scope: 'report', group: 'layer', optionsFrom: 'columns', default: '', help: 'The popup’s second line (APEX: Info Window › Body Column); empty draws the preset’s own, where it has one.' },
+      { key: 'link', label: 'Link', kind: 'link', scope: 'report', group: 'layer', rowLinks: true, default: '', help: 'Where the popup’s Open goes: the row’s own page through one of its link columns, or one place for every marker; empty follows the preset’s own link column, where it has one (ours: APEX substitutes a column into a URL).' },
+      { key: 'colour', label: 'Colour', kind: 'choice', scope: 'report', group: 'layer', optionsFrom: 'columns', default: '', help: 'The column holding each marker’s colour (ours; the guides carry their category’s); empty draws the preset’s own, else the theme’s accent.' },
+      { key: 'rule', label: 'Row rule', kind: 'text', scope: 'report', group: 'layer', rule: true, default: '', maxLength: 120, help: 'Which rows are marked, as a condition in the address’s words: category.eq:f1 for one category, country.in:Italy,Spain for two countries. Empty marks every row the preset keeps.' },
+      {
+        key: 'view',
+        label: 'Type',
+        kind: 'choice',
+        scope: 'report',
+        group: 'position',
+        default: 'auto',
+        options: [
+          { key: 'auto', label: 'Automatic' },
+          { key: 'world', label: 'World' },
+        ],
+        help: 'Where the map opens (APEX: Initial Position and Zoom › Type): Automatic fits the markers; World opens on the whole world, the Circuit Map’s view.',
+      },
+      {
+        key: 'navigation',
+        label: 'Navigation Bar',
+        kind: 'choice',
+        scope: 'report',
+        group: 'controls',
+        default: 'zoom',
+        options: [
+          { key: 'zoom', label: 'Zoom Only' },
+          { key: 'none', label: 'None' },
+        ],
+        help: 'The zoom buttons in the corner (APEX: Controls › Navigation Bar; Zoom and Compass is left, Leaflet does not rotate).',
+      },
+      { key: 'scale', label: 'Scale Bar', kind: 'boolean', scope: 'report', group: 'controls', default: false, help: 'A distance scale in the corner (APEX: Controls › Scale Bar).' },
+      { key: 'wheel', label: 'Mousewheel Zoom', kind: 'boolean', scope: 'report', group: 'controls', default: true, help: 'Whether the wheel zooms the map (APEX: Controls › Mousewheel Zoom); off, the page scrolls past it.' },
+    ],
+    groups: [
+      { key: 'layer', title: 'Layer', seq: 10 },
+      { key: 'position', title: 'Initial Position and Zoom', seq: 20 },
+      { key: 'controls', title: 'Controls', seq: 30 },
+    ],
+    sources: ['tracks', 'guides'],
   },
   // The Live band (P2.9; ours by name: APEX has no live band, a domain piece the site draws on Home as This weekend, whose
   // renderer is the band's first instance). It reads the content bundle through the home model as Home's pieces do, never
@@ -876,6 +953,29 @@ export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Re
     const mapping = label && value ? `${value} by ${label}${series ? `, one ${type === 'bar' ? 'set of bars' : 'line'} per ${series}` : ''}` : 'no value column';
     const heading = String(settings.heading ?? '').trim();
     return `Preset ${preset?.name ?? String(settings.preset ?? '')} · ${TYPE_LABEL[type]} · ${mapping}${heading ? ` · Heading ${heading}` : ''}`;
+  }
+  // The Map (P2.12): the preset, the background and the opening view, then the mapping where set (the preset's own where '' is
+  // stored says nothing), the link, the rule and the heading; the fifteen fields listed would name the tile past reading.
+  if (spec.key === 'data.map') {
+    const preset = findPreset(String(settings.preset ?? spec.settings[0].default));
+    const background = findMapBackground(String(settings.background ?? '')) ?? findMapBackground(DEFAULT_MAP_BACKGROUND);
+    const labelOf = (k: string): string => (k === 'name' && preset ? preset.nameLabel : (shape?.columns.find(c => c.key === k)?.label ?? k));
+    const column = (key: string): string => {
+      const k = String(settings[key] ?? '');
+      return k ? labelOf(k) : '';
+    };
+    const parts = [`Preset ${preset?.name ?? String(settings.preset ?? '')}`, background?.name ?? String(settings.background ?? ''), String(settings.view ?? '') === 'world' ? 'World' : 'Automatic'];
+    for (const [key, label] of [['latitude', 'Latitude'], ['longitude', 'Longitude'], ['title', 'Title'], ['body', 'Body'], ['colour', 'Colour']] as const) {
+      const c = column(key);
+      if (c) parts.push(`${label} ${c}`);
+    }
+    const link = String(settings.link ?? '');
+    if (link) parts.push(`Link ${link.startsWith('row:') ? `${labelOf(link.slice(4))} → its page` : link}`);
+    const rule = String(settings.rule ?? '').trim();
+    if (rule) parts.push(`Row rule ${rule}`);
+    const heading = String(settings.heading ?? '').trim();
+    if (heading) parts.push(`Heading ${heading}`);
+    return parts.join(' · ');
   }
   const parts = instanceAttributes(spec).flatMap(s => {
     const v = settings[s.key] ?? s.default;

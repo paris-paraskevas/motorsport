@@ -13,7 +13,7 @@ const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home']
 // results presets declared and waiting for the Rounds view (PR B).
 
 describe('the preset catalogue', () => {
-  it('holds the twenty-two groups in the drawn order and forty-one presets: twenty-seven standings over two shapes, eight results over four, one session (P2.25), two season trends (P2.11), the site’s tables drawn as the Rounds layout by default (P2.2 B1), and Home’s five boxes as templates (P2.24 A, B1, B2)', () => {
+  it('holds the twenty-four groups in the drawn order and forty-three presets: twenty-seven standings over two shapes, eight results over four, one session (P2.25), two season trends (P2.11), the circuits and the circuit guides (P2.12), the site’s tables drawn as the Rounds layout by default (P2.2 B1), and Home’s five boxes as templates (P2.24 A, B1, B2)', () => {
     expect(PRESET_GROUPS.map(g => g.name)).toEqual([
       'Drivers',
       'Constructors',
@@ -37,8 +37,10 @@ describe('the preset catalogue', () => {
       'What it changed',
       'Session',
       'Season trend',
+      'Circuits',
+      'Circuit guides',
     ]);
-    expect(PRESETS).toHaveLength(41);
+    expect(PRESETS).toHaveLength(43);
     const standings = PRESETS.filter(p => p.source === 'standings');
     expect(standings).toHaveLength(27);
     expect(new Set(standings.map(p => p.shape))).toEqual(new Set(['driver-rows', 'team-rows']));
@@ -77,7 +79,7 @@ describe('the preset catalogue', () => {
     expect(SHAPES['car-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'date', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'gap']);
     expect(SHAPES['cup-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'laps', 'gap']);
     expect(SHAPES['car-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'gap', badge: 'car' });
-    expect(new Set(PRESETS.map(p => p.key)).size).toBe(41);
+    expect(new Set(PRESETS.map(p => p.key)).size).toBe(43);
     const groups = new Set(PRESET_GROUPS.map(g => g.key));
     const slugs = new Set(SERIES_OPTIONS.map(o => o.key));
     for (const p of PRESETS) {
@@ -415,7 +417,7 @@ describe('facetValues (P2.5: the values a facet offers, from the rows after ever
 
 describe('the Season trend presets and the chart mappings (P2.11)', () => {
   it('adds the twenty-second group and two presets over one shape: the drivers’ for the eight series with canonical points, the constructors’ for Formula 1 alone (the one constructors’ table the site’s own chart reconciles against), the standings tab’s headings verbatim; a chart mapping on the six shapes with a number to draw; a value read as a number', () => {
-    expect(PRESET_GROUPS.at(-1)).toEqual({ key: 'season-trend', name: 'Season trend', source: 'trend' });
+    expect(PRESET_GROUPS.find(g => g.key === 'season-trend')).toEqual({ key: 'season-trend', name: 'Season trend', source: 'trend' });
     expect(PRESETS.filter(p => p.source === 'trend')).toEqual([
       { key: 'drivers-trend', name: "Drivers' season trend", group: 'season-trend', source: 'trend', shape: 'trend-rows', where: { kind: 'driver' }, series: ['f1', 'f2', 'f3', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm'], nameLabel: 'Driver', view: 'table' },
       { key: 'constructors-trend', name: "Constructors' season trend", group: 'season-trend', source: 'trend', shape: 'trend-rows', where: { kind: 'constructor' }, series: ['f1'], nameLabel: 'Constructor', view: 'table' },
@@ -463,8 +465,58 @@ describe('the Season trend presets and the chart mappings (P2.11)', () => {
       'weekend-rows': undefined,
       'session-rows': { label: 'driver', value: 'gap', type: 'bar' },
       'trend-rows': { label: 'round', value: 'points', series: 'name', type: 'line' },
+      'track-rows': undefined,
+      'guide-rows': undefined,
     });
     // A value read as rowPasses reads a number: a number as it is, text that reads as one (a gap's +0.100), else null.
     expect([numeric(25), numeric('+0.100'), numeric('−0.5'), numeric('1:40.123'), numeric(''), numeric(null), numeric(undefined)]).toEqual([25, 0.1, null, null, null, null, null]);
+  });
+});
+
+describe('the circuits and the circuit guides (P2.12)', () => {
+  it('adds two groups and two presets over two shapes with a map mapping each: the circuits of content/circuits.json and the information hub’s circuit guides with their pages; every series, since the sources take none', () => {
+    expect(PRESET_GROUPS.slice(-2)).toEqual([
+      { key: 'circuits', name: 'Circuits', source: 'tracks' },
+      { key: 'circuit-guides', name: 'Circuit guides', source: 'guides' },
+    ]);
+    const every = SERIES_OPTIONS.map(o => o.key);
+    expect(PRESETS.filter(p => p.source === 'tracks')).toEqual([{ key: 'circuits', name: 'Circuits', group: 'circuits', source: 'tracks', shape: 'track-rows', where: {}, series: every, nameLabel: 'Circuit', view: 'table' }]);
+    expect(PRESETS.filter(p => p.source === 'guides')).toEqual([{ key: 'circuit-guides', name: 'Circuit guides', group: 'circuit-guides', source: 'guides', shape: 'guide-rows', where: {}, series: every, nameLabel: 'Circuit', view: 'table' }]);
+    expect(SHAPES['track-rows'].source).toBe('tracks');
+    expect(SHAPES['track-rows'].columns.map(c => [c.key, c.type])).toEqual([
+      ['slug', 'text'],
+      ['name', 'text'],
+      ['country', 'text'],
+      ['lat', 'number'],
+      ['lon', 'number'],
+    ]);
+    expect(SHAPES['track-rows'].card).toEqual({ title: 'name', body: 'country', badge: 'country' });
+    expect(SHAPES['track-rows'].map).toEqual({ latitude: 'lat', longitude: 'lon', title: 'name', body: 'country' });
+    expect(SHAPES['guide-rows'].source).toBe('guides');
+    expect(SHAPES['guide-rows'].columns.map(c => [c.key, c.type])).toEqual([
+      ['slug', 'text'],
+      ['name', 'link'],
+      ['country', 'text'],
+      ['countryCode', 'text'],
+      ['category', 'text'],
+      ['categories', 'text'],
+      ['lat', 'number'],
+      ['lon', 'number'],
+      ['page', 'link'],
+      ['colour', 'text'],
+    ]);
+    expect(SHAPES['guide-rows'].columns.find(c => c.key === 'name')).toEqual({ key: 'name', label: 'Circuit', type: 'link', href: 'page' });
+    expect(SHAPES['guide-rows'].columns.find(c => c.key === 'page')).toEqual({ key: 'page', label: 'Page', type: 'link', href: 'page' });
+    expect(SHAPES['guide-rows'].card).toEqual({ title: 'name', subtitle: 'country', body: 'category', badge: 'countryCode' });
+    expect(SHAPES['guide-rows'].map).toEqual({ latitude: 'lat', longitude: 'lon', title: 'name', body: 'country', link: 'page', colour: 'colour' });
+    for (const [key, shape] of Object.entries(SHAPES)) if (key !== 'track-rows' && key !== 'guide-rows') expect(shape.map, key).toBeUndefined();
+    expect(presetsFor('tracks', 'f1').map(p => p.key)).toEqual(['circuits']);
+    expect(presetsFor('guides', 'wec').map(p => p.key)).toEqual(['circuit-guides']);
+    // No position column: presetRows keeps the reader's order.
+    const rows = [
+      { slug: 'b', name: 'B', lat: 1, lon: 2 },
+      { slug: 'a', name: 'A', lat: 3, lon: 4 },
+    ];
+    expect(presetRows(rows, findPreset('circuits')!, 10).map(r => r.slug)).toEqual(['b', 'a']);
   });
 });

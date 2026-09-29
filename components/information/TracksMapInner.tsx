@@ -8,34 +8,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup, LayersControl } from 'rea
 import Link from 'next/link';
 import { Search, X } from 'lucide-react';
 import type { MapTrack } from './TracksMap';
-
-// Category → marker colour. Series categories reuse the site's own series accent
-// colours (content/series/<slug>/meta.json) so the map matches the rest of the
-// app; the remaining descriptive categories get a distinct, sensible hue.
-const CATEGORY_COLOR: Record<string, string> = {
-  f1: '#ff4136', // Formula 1 (series meta)
-  f2: '#38bdf8', // Formula 2 (series meta)
-  f3: '#818cf8', // Formula 3 (series meta)
-  motogp: '#fb923c', // MotoGP (series meta)
-  wsbk: '#f59e0b', // WorldSBK (series meta)
-  nascar: '#a3e635', // NASCAR Cup (series meta)
-  indycar: '#f43f5e', // IndyCar (series meta)
-  endurance: '#3b82f6', // FIA WEC (series meta)
-  gt: '#a855f7', // GT World Challenge (series meta)
-  wrc: '#eab308', // WRC (series meta)
-  rally: '#d97706', // generic rally (amber-600, distinct from WRC)
-  supercars: '#22d3ee', // cyan-400
-  karting: '#ec4899', // pink-500
-  historic: '#a8a29e', // stone-400 (neutral heritage)
-  hillclimb: '#14b8a6', // teal-500
-};
-const DEFAULT_COLOR = '#94a3b8'; // slate-400
-
-/** A track's colour comes from its first (primary) category. */
-function colorFor(categories: string[]): string {
-  const primary = categories[0];
-  return (primary && CATEGORY_COLOR[primary]) || DEFAULT_COLOR;
-}
+import { TRACK_CATEGORY_COLOURS, TRACK_DEFAULT_COLOUR, trackColour } from '@/lib/information/types';
 
 export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
   const mapRef = useRef<LeafletMap>(null);
@@ -138,7 +111,7 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
                   <span
                     aria-hidden="true"
                     className="h-2 w-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: colorFor(t.categories) }}
+                    style={{ backgroundColor: trackColour(t.categories) }}
                   />
                   <span className="truncate font-medium">{t.name}</span>
                   <span className="ml-auto shrink-0 font-mono text-10 uppercase tracking-[0.12em] text-text-faint">
@@ -177,7 +150,7 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
               <span
                 aria-hidden="true"
                 className="h-2 w-2 shrink-0 rounded-full"
-                style={{ backgroundColor: CATEGORY_COLOR[c] ?? DEFAULT_COLOR }}
+                style={{ backgroundColor: TRACK_CATEGORY_COLOURS[c] ?? TRACK_DEFAULT_COLOUR }}
               />
               {c}
             </button>
@@ -223,7 +196,7 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
           </LayersControl.BaseLayer>
         </LayersControl>
         {visible.map((t) => {
-          const color = colorFor(t.categories);
+          const color = trackColour(t.categories);
           return (
             <CircleMarker
               key={t.slug}

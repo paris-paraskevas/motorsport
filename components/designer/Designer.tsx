@@ -39,6 +39,7 @@ import { ShortcutsEditor } from './ShortcutsEditor';
 import { ViewsEditor } from './ViewsEditor';
 import { PluginsEditor } from './PluginsEditor';
 import { DataSourcesEditor } from './DataSourcesEditor';
+import { MapBackgroundsEditor } from './MapBackgroundsEditor';
 import { componentDefinitionsOf, type EditableDefinition } from '@/lib/design/component-definitions';
 import { AssetsEditor } from './AssetsEditor';
 import { SearchHintsEditor } from './SearchHintsEditor';
@@ -1053,6 +1054,15 @@ export function Designer({
           {item?.editor === 'datasources' && (
             <DataSourcesEditor
               series={series}
+              onOpenPage={id => {
+                selectWorkspace('builder');
+                openPageDetail(id);
+              }}
+            />
+          )}
+
+          {item?.editor === 'maps' && (
+            <MapBackgroundsEditor
               onOpenPage={id => {
                 selectWorkspace('builder');
                 openPageDetail(id);
