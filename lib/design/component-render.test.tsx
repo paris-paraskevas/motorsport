@@ -16,6 +16,8 @@ import * as sourceRead from './source-read';
 import * as savedViews from './views';
 import * as seriesLib from '@/lib/series';
 import * as circuitsLib from '@/lib/circuits';
+import * as pageFrame from './page-frame';
+import * as pagesLib from './pages';
 import type { Series, Session } from '@/lib/types';
 
 vi.mock('next/link', () => ({
@@ -1068,6 +1070,47 @@ describe('renderComponents', () => {
     const second = await renderComponents(doc([region('month', 'calendar.month', {}, { seq: 10 }), region('heading', 'page.heading', { text: 'Below the month' }, { seq: 20 })]), { path: '/calendar', params: {}, page });
     expect(html(second.heading)).toMatch(/<h2 class="font-serif text-34[^"]*">Below the month<\/h2>/);
     expect(html(second.heading)).not.toContain('<h1');
+  });
+
+  it('P2.17: the Breadcrumb draws the page’s place from its address in the Breadcrumb Bar: Home, the pages above as links, the page itself current, a separator between; its BreadcrumbList except where the page prints its own; nothing on Home', async () => {
+    const names: Record<string, string> = { '/': 'Home', '/series': 'Series' };
+    vi.spyOn(pageFrame, 'loadPageFrame').mockImplementation(async path => (path in names ? ({ name: names[path] } as unknown as pageFrame.PageFrame) : null));
+    vi.spyOn(seriesLib, 'loadSeries').mockResolvedValue({ meta: { slug: 'f1', name: 'Formula 1', color: '#e10600', season: 2026 }, sessions: [] } as unknown as Series);
+    vi.spyOn(pagesLib, 'loadPageDestinations').mockResolvedValue({});
+    const draw = async (settings: Record<string, string | number | boolean>, where: { path: string; params?: Record<string, string>; page?: { path: string; name: string; title: string | null; id?: string } }) =>
+      (await renderComponents(doc([region('b', 'page.breadcrumb', settings, { position: 'breadcrumb' })]), where)).b;
+    expect(canRender('page.breadcrumb')).toBe(true);
+
+    // The series tab: the trail as a nav with a list; the ancestors links, the tab current; the page prints its own BreadcrumbList.
+    const tab = html(await draw({}, { path: '/series/[slug]/[tab]', params: { slug: 'f1', tab: 'standings' } }));
+    expect(tab).toContain('<nav aria-label="Breadcrumb"');
+    expect(tab).toContain('<ol');
+    expect(tab).toContain('<a href="/"');
+    expect(tab).toMatch(/<a href="\/series\/f1"[^>]*>Formula 1<\/a>/);
+    expect(tab).toMatch(/<span aria-current="page"[^>]*>Standings<\/span>/);
+    expect(tab.split('›').length - 1).toBe(3);
+    expect(tab).not.toContain('application/ld+json');
+    expect(tab).not.toContain('<h1');
+
+    // A row page: the trail and the BreadcrumbList with it, Home first, the page's title last.
+    const row = html(await draw({}, { path: '/history/monza', params: {}, page: { path: '/history/monza', name: 'Monza', title: 'Monza, a history', id: 'p1' } }));
+    expect(row).toMatch(/<span aria-current="page"[^>]*>Monza, a history<\/span>/);
+    expect(row).toContain('application/ld+json');
+    expect(row).toContain('"@type":"BreadcrumbList"');
+    expect(row).toContain('"position":2,"name":"Monza, a history","item":"https://paddock-tracker.com/history/monza"');
+    expect(row).toContain('"position":1,"name":"Home","item":"https://paddock-tracker.com"');
+
+    // Show Home off, the slash, This page off: no link to Home, no current page, the slash between.
+    const bare = html(await draw({ home: false, separator: 'slash', current: false }, { path: '/series/[slug]/[tab]', params: { slug: 'f1', tab: 'standings' } }));
+    expect(bare).not.toContain('<a href="/"');
+    expect(bare).not.toContain('aria-current');
+    expect(bare).toContain('Formula 1</a>');
+    expect(bare.split('›').length - 1).toBe(0);
+    expect(bare).toMatch(/aria-hidden="true"[^>]*>\/</);
+
+    // Home, or one crumb: nothing.
+    expect(await draw({}, { path: '/', params: {} })).toBeNull();
+    expect(await draw({ home: false }, { path: '/about', params: {} })).toBeNull();
   });
 });
 

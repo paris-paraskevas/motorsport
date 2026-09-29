@@ -264,6 +264,17 @@ describe('PageDesigner', () => {
     fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
     for (const name of path) fireEvent.click(menuEntry(name));
   };
+  it('P2.17: Create › Breadcrumb Region places the Breadcrumb component in the Breadcrumb Bar, selected, its position shown (APEX: Create Breadcrumb Region)', () => {
+    mount();
+    fireEvent.click(screen.getByRole('button', { name: 'Create ▾' }));
+    fireEvent.click(menuEntry('Breadcrumb Region'));
+    expect(tile('Component: Breadcrumb')).toBeTruthy();
+    expect(status()).toMatch(/Component placed/);
+    const pe = screen.getByLabelText('Property Editor');
+    expect(within(within(pe).getByRole('group', { name: 'Region position' })).getByRole('button', { name: 'Breadcrumb Bar' }).getAttribute('aria-pressed')).toBe('true');
+    expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
   it('Create ▾ as APEX lists it (P1.10): the seven entries in order, three disabled with their reason, then ours; Page Group… opens the groups sheet on the page’s group and show returns to the list filtered; Developer Comment opens Advanced and focuses Comments; Page… opens the Create page dialog', async () => {
     const { onBack, onWorkspace } = mount();
     const create = () => fireEvent.click(screen.getByRole('button', { name: 'Create ▾' }));
@@ -275,13 +286,16 @@ describe('PageDesigner', () => {
     order.forEach((label, i) => expect(names[i].startsWith(label), `${i}: ${names[i]}`).toBe(true));
     for (const [label, reason] of [
       ['Copy Page', /Phase 4/],
-      ['Breadcrumb Region', /Breadcrumb component/],
       ['Issue', /no counterpart/],
     ] as const) {
       const b = menuEntry(label) as HTMLButtonElement;
       expect(b.disabled).toBe(true);
       expect(b.textContent).toMatch(reason);
     }
+    // P2.17: Breadcrumb Region is alive (its placement is the next test's).
+    const crumbEntry = menuEntry('Breadcrumb Region') as HTMLButtonElement;
+    expect(crumbEntry.disabled).toBe(false);
+    expect(crumbEntry.textContent).toMatch(/Breadcrumb Bar/);
     fireEvent.click(menuEntry('Shared Component…'));
     expect(onWorkspace).toHaveBeenCalledWith('shared');
     // Page Group…: the sheet the pages list has, the page's group (Editorial) marked; Close leaves everything as it was.

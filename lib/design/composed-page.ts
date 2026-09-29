@@ -30,14 +30,22 @@ export function extractParams(pattern: string, path: string): Record<string, str
   return out;
 }
 
-/** The composed page an address belongs to, with its parts; null when no
- *  rows-served page matches. Literal patterns win over dynamic ones. */
-export function matchComposedPage(path: string): { page: CodePage; params: Record<string, string> } | null {
-  const candidates = composedCodePages().filter(p => patternMatches(p.path, path));
-  if (candidates.length === 0) return null;
-  const literal = candidates.find(p => !p.path.includes('['));
-  const page = literal ?? candidates.sort((a, b) => (a.path.match(/\[/g)?.length ?? 0) - (b.path.match(/\[/g)?.length ?? 0))[0];
+/** The code page an address answers to, with its parts; null when none of the
+ *  candidates matches. Literal patterns win over dynamic ones, then the fewest
+ *  parts. Every registry page by default; the Breadcrumb (P2.17) walks an
+ *  address's prefixes through it. */
+export function matchCodePage(path: string, candidates: readonly CodePage[] = CODE_PAGES): { page: CodePage; params: Record<string, string> } | null {
+  const hits = candidates.filter(p => patternMatches(p.path, path));
+  if (hits.length === 0) return null;
+  const literal = hits.find(p => !p.path.includes('['));
+  const page = literal ?? hits.sort((a, b) => (a.path.match(/\[/g)?.length ?? 0) - (b.path.match(/\[/g)?.length ?? 0))[0];
   return { page, params: extractParams(page.path, path) };
+}
+
+/** The composed page an address belongs to, with its parts; null when no
+ *  rows-served page matches. */
+export function matchComposedPage(path: string): { page: CodePage; params: Record<string, string> } | null {
+  return matchCodePage(path, composedCodePages());
 }
 
 /** The document with the transitional body, when it holds one, replaced in its

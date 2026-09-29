@@ -135,6 +135,7 @@ async function framed(
   path: string,
   frame: PageFrame | null,
   render: () => ReactNode | Promise<ReactNode>,
+  params: Readonly<Record<string, string>>,
   visitor?: Visitor,
   schemes?: readonly AuthzScheme[],
 ): Promise<ReactNode> {
@@ -178,14 +179,31 @@ async function framed(
     const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
     const messages: Record<string, string | null> = {};
     for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
-    // The pages, read above for the Buttons, reach the cards' zones too (P2.2 B3).
-    const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path, pages })]);
+    // The pages, read above for the Buttons, reach the cards' zones too (P2.2 B3). The address's parts reach the components
+    // (P2.17: a Breadcrumb knows which series and tab it stands on); the conditions above keep P2.6's rule.
+    const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path, params, pages })]);
     // A split document draws its own Body (splitsBody, the rule CodePageFrame applies): the code's body is neither rendered nor placed.
     const children = splitsBody(document) ? undefined : await body();
     return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages } }, children);
   } catch {
     return body();
   }
+}
+
+/** The address's parts as Next hands them to a route (a promise since Next 15;
+ *  `{}` for a literal route), or nothing when the page is called without them,
+ *  as the routes' own tests do. A catch-all's part is joined back with slashes. */
+async function routeParams(props: object): Promise<Readonly<Record<string, string>>> {
+  const raw = (props as { params?: unknown }).params;
+  const value = raw instanceof Promise ? await raw : raw;
+  const out: Record<string, string> = {};
+  if (value && typeof value === 'object') {
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (typeof v === 'string') out[k] = v;
+      else if (Array.isArray(v)) out[k] = v.filter((x): x is string => typeof x === 'string').join('/');
+    }
+  }
+  return out;
 }
 
 /** A route's default export: the page as it is, unless its row asks for a
@@ -196,11 +214,11 @@ async function framed(
  *  to its own tests (its `notFound()` and `redirect()` propagate unchanged). */
 export function withPageGate<P extends object>(path: string, Page: PageComponent<P>): (props: P) => Promise<ReactNode> {
   return async function GatedPage(props: P): Promise<ReactNode> {
-    const frame = await loadPageFrame(path);
+    const [frame, params] = await Promise.all([loadPageFrame(path), routeParams(props)]);
     const scheme = frame?.authz && frame.authz !== 'public' ? frame.authz : null;
-    if (!frame || !scheme) return framed(path, frame, () => Page(props));
+    if (!frame || !scheme) return framed(path, frame, () => Page(props), params);
     const [visitor, schemes] = await Promise.all([currentVisitor(), loadAuthzSchemes()]);
-    if (allowedKeys([scheme], schemes, visitor).has(scheme)) return framed(path, frame, () => Page(props), visitor, schemes);
+    if (allowedKeys([scheme], schemes, visitor).has(scheme)) return framed(path, frame, () => Page(props), params, visitor, schemes);
     const rule = schemes.find(s => s.key === scheme);
     if (!rule?.message) notFound();
     return createElement(RefusedPage, {

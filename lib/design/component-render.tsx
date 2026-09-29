@@ -45,6 +45,8 @@ const dataFilters = () => import('@/components/data/DataRegionFilters');
 const seriesLib = () => import('@/lib/series');
 const weekendLib = () => import('@/lib/weekend');
 const circuitsLib = () => import('@/lib/circuits');
+// The Breadcrumb (P2.17) reads its trail's label sources the same way, behind its own module.
+const breadcrumbLib = () => import('./breadcrumb');
 
 import type { Facet } from '@/components/data/DataRegionFilters';
 import type { Series } from '@/lib/types';
@@ -179,6 +181,15 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
         : null,
     };
     return <views.DataRegionCountdown heading={heading} level={level} data={data} links={links} every={!slug} />;
+  },
+  // The Breadcrumb (P2.17): the trail from the pattern and the address's parts the frame or the catch-all hands over, the
+  // row for a page made in the designer; its BreadcrumbList unless the page's own code prints one (OWN_BREADCRUMB_LD).
+  async 'page.breadcrumb'(settings, ctx) {
+    const [{ breadcrumbTrail, ownsBreadcrumbLd }, views] = await Promise.all([breadcrumbLib(), dataViews()]);
+    const crumbs = await breadcrumbTrail({ path: ctx.path, params: ctx.params, page: ctx.page }, { home: settings.home !== false, current: settings.current !== false });
+    // Home, or one crumb: no trail to show (and Google's floor for a BreadcrumbList is two).
+    if (crumbs.length < 2) return null;
+    return <views.DataRegionBreadcrumb crumbs={crumbs} separator={str(settings.separator) || 'chevron'} structured={!ownsBreadcrumbLd(ctx.path)} />;
   },
   // Metric cards (P2.7; APEX 26.1: the Metric Card theme component): the preset's rows read as the Data region reads them (the
   // shared read where a Filters region has it), every row the preset keeps (a count card counts them); each card a column of the
@@ -368,6 +379,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'series.live': ['content:series'],
   // The Countdown reads the series' sessions from the feeds as the Weekends source does, and the circuits for the track's zone (P2.8).
   'series.countdown': ['content:series', 'live:ics', 'content:circuits'],
+  // The Breadcrumb's label sources (P2.17): the pages' rows, the series and their sessions, the Learn content, a post or an author.
+  'page.breadcrumb': ['db:page', 'content:series', 'live:ics', 'content:information', 'db:post'],
   // Metric cards read a Source as the Data region does (P2.7).
   'data.metrics': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Filters region reads its target's Source (P2.5): the same tiers, once for both.

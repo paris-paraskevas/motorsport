@@ -141,6 +141,33 @@ export const CODE_PAGES: readonly CodePage[] = [
   P('/preview/[rev]', 'Revision preview', 'site', 'dynamic', false, 'administrator', 'Save and Run: any revision of a row page, for administrators, never indexed'),
 ];
 
+/** The pages whose code prints a BreadcrumbList of its own (P2.17): the route
+ *  file, a component it renders (the series tab through
+ *  components/SeriesPageView.tsx) or the family of a page served from rows. A
+ *  Breadcrumb region prints none there. page-registry.test.ts holds the list to
+ *  the files, so a route file leaving in Phase 3 hands the structured data to
+ *  the region once its path leaves this set. */
+export const OWN_BREADCRUMB_LD: ReadonlySet<string> = new Set([
+  '/calendar',
+  '/news',
+  '/series/[slug]',
+  '/series/[slug]/[tab]',
+  '/series/[slug]/weekend/[round]',
+  '/series/[slug]/weekend/[round]/[session]',
+  '/blog',
+  '/blog/[slug]',
+  '/information',
+  '/information/[topic]',
+  '/information/[topic]/[slug]',
+  '/information/map',
+  '/information/series-guides',
+  '/authors',
+  '/authors/[slug]',
+  '/changelog',
+  '/write-for-us',
+  '/about',
+]);
+
 export function isPageGroup(v: unknown): v is PageGroup {
   return typeof v === 'string' && (PAGE_GROUPS as readonly string[]).includes(v);
 }

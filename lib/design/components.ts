@@ -207,6 +207,31 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     holds: 'the page’s heading in the site’s masthead style: its title, or words of your own',
     settings: [{ key: 'text', label: 'Words', kind: 'text', default: '', maxLength: 120, help: 'Empty shows the page’s title, or its name when it has none.' }],
   },
+  // The Breadcrumb (P2.17; APEX: the Breadcrumb region): the page's place in the
+  // site from its address, derived and never edited (no entry tree, no source).
+  // The separator is APEX's Between Level; This page its Current Page entry.
+  {
+    key: 'page.breadcrumb',
+    name: 'Breadcrumb',
+    group: 'Page',
+    holds: 'the page’s place in the site from its address: Home, the pages above it and the page itself, each a link but the last',
+    settings: [
+      { key: 'home', label: 'Show Home', kind: 'boolean', default: true, help: 'Home as the first crumb.' },
+      {
+        key: 'separator',
+        label: 'Separator',
+        kind: 'choice',
+        default: 'chevron',
+        options: [
+          { key: 'chevron', label: '›' },
+          { key: 'slash', label: '/' },
+          { key: 'arrow', label: '→' },
+        ],
+        help: 'Between the crumbs.',
+      },
+      { key: 'current', label: 'This page', kind: 'boolean', default: true, help: 'The page itself as the last crumb, in words rather than a link.' },
+    ],
+  },
   // The calendar (R4.1, the first page whose route file left the code): the
   // month-by-month timeline of every session across the series.
   {

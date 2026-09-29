@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CODE_PAGES, PAGE_GROUPS, registryPathOf } from './page-registry';
+import { CODE_PAGES, OWN_BREADCRUMB_LD, PAGE_GROUPS, registryPathOf } from './page-registry';
 
 // THE ROUTE-COLLISION TEST (Phase 3 step 1). The registry and the route files
 // must agree exactly, both ways: a route the code serves and the registry does
@@ -116,5 +116,25 @@ describe('the page registry', () => {
     for (const p of ['/information/[topic]', '/information/[topic]/[slug]', '/authors/[slug]']) {
       expect(CODE_PAGES.find(c => c.path === p)?.indexable, p).toBe(true);
     }
+  });
+
+  it('P2.17: OWN_BREADCRUMB_LD names exactly the pages whose route file, a component it imports, or its family prints a BreadcrumbList; the Breadcrumb region prints none there', () => {
+    // The series tab prints its through components/SeriesPageView.tsx, so the scan follows each route's @/components imports one hop.
+    const prints = (file: string) => fs.existsSync(file) && /breadcrumbLd\(/.test(fs.readFileSync(file, 'utf8'));
+    const owning = new Set<string>();
+    for (const f of files) {
+      const src = fs.readFileSync(f.file, 'utf8');
+      const imported = [...src.matchAll(/from '@\/components\/([^']+)'/g)].flatMap(m => {
+        const base = path.join(process.cwd(), 'components', m[1]);
+        return [`${base}.tsx`, `${base}.ts`, path.join(base, 'index.tsx')];
+      });
+      if (/breadcrumbLd\(/.test(src) || imported.some(prints)) owning.add(registryPathOf(f.route));
+    }
+    for (const p of CODE_PAGES.filter(c => c.served === 'rows')) {
+      if (prints(path.join(process.cwd(), 'lib', 'design', 'families', `${p.path.slice(1)}.tsx`))) owning.add(p.path);
+    }
+    expect([...OWN_BREADCRUMB_LD].sort()).toEqual([...owning].sort());
+    expect(OWN_BREADCRUMB_LD.size).toBe(18);
+    for (const p of OWN_BREADCRUMB_LD) expect(CODE_PAGES.some(c => c.path === p), p).toBe(true);
   });
 });

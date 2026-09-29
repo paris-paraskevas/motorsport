@@ -787,15 +787,15 @@ export function PageDesigner({
   // APEX: the toolbar's Create menu, UX map (page-designer-toolbar): Page, Copy
   // Page, Breadcrumb Region, Shared Component, Page Group, Developer Comment,
   // Issue, in that order (P1.10). Copy Page arrives with Phase 4; Breadcrumb
-  // Region waits for the Breadcrumb component (the ledger's changes line of
-  // 2026-09-15 on the slot's "P2.17"); Issue has no counterpart, APEX's Team
-  // Development is not planned. Below the separator, OURS: APEX creates
-  // regions from the tree and the gallery and dynamic actions from the tree;
-  // the designer offers them here as well.
+  // Region places the Breadcrumb component in the Breadcrumb Bar (P2.17; APEX's
+  // wizard also authors the entries, ours are derived from the address); Issue
+  // has no counterpart, APEX's Team Development is not planned. Below the
+  // separator, OURS: APEX creates regions from the tree and the gallery and
+  // dynamic actions from the tree; the designer offers them here as well.
   const createMenu = (): MenuEntry[] => [
     { label: 'Page…', run: () => setCreating(true) },
     { label: 'Copy Page', sub: 'arrives with Phase 4', disabled: true, run: () => {} },
-    { label: 'Breadcrumb Region', sub: 'until the Breadcrumb component', disabled: true, run: () => {} },
+    { label: 'Breadcrumb Region', sub: 'in the Breadcrumb Bar', disabled: readOnly, run: () => act.addComponent('page.breadcrumb', 'breadcrumb') },
     { label: 'Shared Component…', run: () => onWorkspace('shared') },
     { label: 'Page Group…', run: () => setGroupsOpen(true) },
     { label: 'Developer Comment', sub: 'the page’s Comments', run: developerComment },
