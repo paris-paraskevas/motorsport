@@ -110,6 +110,10 @@ const STANDINGS_SERIES = ['f1', 'f2', 'f3', 'motogp', 'wsbk', 'indycar', 'formul
 /** The series the season results dispatch handles (components/weekend/WeekendStandingsSnapshot.tsx). */
 /** The ten the weekend dispatch handles, plus the four the tab reads through their own fetchers (P2.2 B1): NLS, IMSA, WEC, GT World. */
 const RESULTS_SERIES = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm', 'nls', 'imsa', 'wec', 'gt-world'];
+/** The eight series whose results feeds carry championship-canonical per-round points (components/weekend/WeekendStandingsSnapshot.tsx
+ *  pointsExact), the only ones the Season trend offers (P2.11): the CHANGELOG's invariant, no chart whose totals could disagree with
+ *  the standings tab. Formula E's and IndyCar's feeds derive their points and stay out. */
+export const TREND_SERIES = ['f1', 'f2', 'f3', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm'];
 /** The series Home ranks for its Latest result (lib/home-results.ts HOME_RESULTS_SLUGS, in Home's order; a test holds the two
  *  equal, since this file imports nothing at runtime): the Series value "Home's series" resolves to the newest finished race
  *  across them (P2.24 B2). */
@@ -199,7 +203,7 @@ const SESSION_KIND_LABELS: Readonly<Record<(typeof SESSION_KINDS)[number], strin
 export const LATEST_ROUND_OPTION = { key: 'latest', label: 'Latest captured' } as const;
 const ROUND_OPTIONS = [LATEST_ROUND_OPTION, ...Array.from({ length: 24 }, (_, i) => ({ key: String(i + 1), label: `Round ${i + 1}` }))];
 
-/** The thirteen, in the order the changes line of 2026-09-17 names them; then Weekends (P2.24 B1), the fourteenth. */
+/** The thirteen, in the order the changes line of 2026-09-17 names them; then Weekends (P2.24 B1), the fourteenth; Session results (P2.25), the fifteenth; Season trend (P2.11), the sixteenth. */
 export const SOURCES: readonly SourceDefinition[] = [
   {
     key: 'series',
@@ -403,7 +407,25 @@ export const SOURCES: readonly SourceDefinition[] = [
     pagination: 'none',
     reads: ['db:session_result_current'],
   },
+  // The season trend (P2.11): each driver's and, where the teams' championship is the sum of its cars, each constructor's running
+  // points after every round, from the results the standings tab reconciles against (lib/season-trend.ts over the snapshot
+  // dispatch, the tab's own fetchers); the eight series with canonical points alone, so a Chart over it never disagrees with the
+  // standings tab (the CHANGELOG's invariant). The loader's results keys stand behind it.
+  {
+    key: 'trend',
+    name: 'Season trend',
+    holds: 'the season trend the standings tab draws: each driver’s or constructor’s running points after every round, from the same results the standings reconcile against; the eight series whose feeds carry championship-canonical points',
+    parameters: [{ ...seriesParam(TREND_SERIES), help: 'Which championship; the eight whose per-round points are canonical, so the trend’s totals equal the standings tab’s.' }, seasonParam],
+    columns: [col('kind', 'Kind', 'text'), col('round', 'Round', 'number'), col('race', 'Race', 'text'), col('name', 'Name', 'text'), col('code', 'Code', 'text'), col('team', 'Team', 'text'), col('points', 'Points', 'number'), col('gained', 'Gained', 'number'), col('total', 'Total', 'number'), col('profile', 'Page', 'link'), col('seriesName', 'Series', 'text'), col('colour', 'Series colour', 'colour')],
+    fresh: 'loader',
+    load: 'replace',
+    pagination: 'none',
+    reads: ['snapshot:results:', 'snapshot:f1:', 'content:series'],
+    loaderKeys: p => resultsKeys(p.series),
+    hosts: Object.fromEntries(TREND_SERIES.map(s => [s, RESULTS_HOSTS[s]])),
+  },
 ];
+
 
 export function findSource(key: string): SourceDefinition | null {
   return SOURCES.find(s => s.key === key) ?? null;

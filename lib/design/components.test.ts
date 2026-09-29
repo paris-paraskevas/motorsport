@@ -31,11 +31,12 @@ describe('the component catalogue', () => {
     expect(parseSettings(region, { pinned: 'x'.repeat(121) }).problems).toEqual(['Pinned post must be text of at most 120 characters']);
   });
 
-  it('P2.1: the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1); no other definition reads one (What it changed left with Home’s six, P2.24 C)', () => {
-    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results']);
-    // P2.7: the Metric cards read the same six; no other definition reads one.
-    expect(findComponent('data.metrics')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results']);
-    for (const c of COMPONENTS) if (c.key !== 'data.region' && c.key !== 'data.metrics') expect(c.sources, c.key).toBeUndefined();
+  it('P2.1: the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1), session results (P2.25) and the season trend (P2.11); no other definition but the Metric cards and the Chart reads one (What it changed left with Home’s six, P2.24 C)', () => {
+    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend']);
+    // P2.7: the Metric cards read the same seven; the Chart (P2.11) the four whose rows carry a number to draw.
+    expect(findComponent('data.metrics')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend']);
+    expect(findComponent('data.chart')?.sources).toEqual(['standings', 'results', 'session-results', 'trend']);
+    for (const c of COMPONENTS) if (c.key !== 'data.region' && c.key !== 'data.metrics' && c.key !== 'data.chart') expect(c.sources, c.key).toBeUndefined();
   });
 
   it('P2.2: the Data region’s attributes are per multi-row region: Preset (the thirty-three, grouped by the fifteen, each bound to a source and its series, the results ones waiting), View (Table · Cards), Rows, Heading', () => {
@@ -75,7 +76,7 @@ describe('the component catalogue', () => {
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
     const preset = region.settings[0];
-    expect(preset.options).toHaveLength(39);
+    expect(preset.options).toHaveLength(41);
     expect(preset.options![0]).toEqual({
       key: 'drivers',
       label: 'Drivers',
@@ -477,5 +478,56 @@ describe('the Metric cards component (P2.7; APEX 26.1: the Metric Card theme com
     expect(metrics.settings.find(s => s.key === 'columns')).toMatchObject({ default: '3', options: [{ key: '2', label: '2' }, { key: '3', label: '3' }, { key: '4', label: '4' }] });
     expect(settingsSummary(metrics, { preset: 'drivers', columns: '3', card1Label: 'Leader', card1Value: 'name', card1Description: 'points', card2Label: 'Gap to second', card2Value: 'gap', card2Row: 'position.eq:2', card3Value: 'wins', card4Figure: 'count' })).toBe('Preset Drivers · Columns 3 · Cards Leader, Gap to second, Wins, Rows');
     expect(settingsSummary(metrics, { preset: 'drivers' })).toBe('Preset Drivers · Columns 3 · no card');
+  });
+});
+
+describe('the Chart component (P2.11; APEX: the Chart region)', () => {
+  it('draws a chart over a preset’s rows: the preset (the Data region’s options, none setting anything else), the type, a heading and the height; the Series group’s column mapping and row rule, the Axes’ titles and zero switch, the Legend’s show, series shown at first and emphasis; the summary names the preset, the type and the mapping', () => {
+    const chart = findComponent('data.chart')!;
+    expect(chart).toMatchObject({ name: 'Chart', group: 'Data' });
+    expect(chart.holds).toMatch(/^a chart over a source’s rows/);
+    expect(chart.settings.map(s => [s.key, s.kind, s.group])).toEqual([
+      ['preset', 'choice', undefined],
+      ['type', 'choice', undefined],
+      ['heading', 'text', undefined],
+      ['height', 'number', undefined],
+      ['label', 'choice', 'series'],
+      ['value', 'choice', 'series'],
+      ['seriesName', 'choice', 'series'],
+      ['rule', 'text', 'series'],
+      ['xTitle', 'text', 'axes'],
+      ['yTitle', 'text', 'axes'],
+      ['zero', 'boolean', 'axes'],
+      ['legend', 'boolean', 'legend'],
+      ['shown', 'number', 'legend'],
+      ['emphasis', 'choice', 'legend'],
+    ]);
+    expect(chart.settings.every(s => s.scope === 'report')).toBe(true);
+    expect(chart.groups?.map(g => [g.key, g.title])).toEqual([['series', 'Series'], ['axes', 'Axes'], ['legend', 'Legend']]);
+    // The preset options are the Data region's, bound to the source and its series, and set nothing else (the Metric cards' rule).
+    const preset = chart.settings[0];
+    const region = findComponent('data.region')!.settings[0];
+    expect(preset.options?.map(o => [o.key, o.label, o.group, o.only])).toEqual(region.options?.map(o => [o.key, o.label, o.group, o.only]));
+    expect(preset.options?.every(o => o.sets === undefined)).toBe(true);
+    expect(preset.options?.filter(o => o.group === 'Season trend').map(o => o.key)).toEqual(['drivers-trend', 'constructors-trend']);
+    expect(preset.default).toBe('drivers');
+    expect(chart.settings.find(s => s.key === 'type')).toMatchObject({ default: '', options: [{ key: '', label: 'Preset’s own' }, { key: 'line', label: 'Line' }, { key: 'bar', label: 'Bar' }, { key: 'area', label: 'Line with Area' }] });
+    for (const k of ['label', 'value', 'seriesName']) expect(chart.settings.find(s => s.key === k), k).toMatchObject({ optionsFrom: 'columns', default: '' });
+    expect(chart.settings.find(s => s.key === 'rule')).toMatchObject({ rule: true, default: '', maxLength: 120 });
+    expect(chart.settings.find(s => s.key === 'height')).toMatchObject({ default: 320, min: 160, max: 640 });
+    expect(chart.settings.find(s => s.key === 'shown')).toMatchObject({ default: 6, min: 1, max: 30 });
+    expect(chart.settings.find(s => s.key === 'emphasis')).toMatchObject({ default: '', options: [{ key: '', label: 'None' }, { key: 'page', label: 'This page’s driver or team' }] });
+    expect(componentDefaults(chart)).toEqual({ preset: 'drivers', type: '', heading: '', height: 320, label: '', value: '', seriesName: '', rule: '', xTitle: '', yTitle: '', zero: true, legend: true, shown: 6, emphasis: '' });
+    expect(parseSettings(chart, { type: 'pie' }).problems).toEqual(['Type must be one of Preset’s own, Line, Bar, Line with Area']);
+    expect(parseSettings(chart, { height: 100 }).problems).toEqual(['Height must be a number from 160 to 640']);
+    expect(parseSettings(chart, { shown: 31 }).problems).toEqual(['Series shown at first must be a number from 1 to 30']);
+    expect(parseSettings(chart, { rule: 'x'.repeat(121) }).problems).toEqual(['Row rule must be text of at most 120 characters']);
+    expect(parseSettings(chart, { view: 'table' }).problems).toEqual(['Chart has no setting called view']);
+    // The summary: the preset, the type and the mapping, the preset's own where '' is stored; a name column by the preset's label.
+    expect(settingsSummary(chart, { preset: 'drivers-trend' })).toBe("Preset Drivers' season trend · Line · Points by Round, one line per Driver");
+    expect(settingsSummary(chart, { preset: 'constructors-trend', type: 'area', heading: 'The battle' })).toBe("Preset Constructors' season trend · Line with Area · Points by Round, one line per Constructor · Heading The battle");
+    expect(settingsSummary(chart, { preset: 'drivers', label: 'name', value: 'wins', seriesName: 'team' })).toBe('Preset Drivers · Bar · Wins by Driver, one set of bars per Team');
+    expect(settingsSummary(chart, { preset: 'drivers' })).toBe('Preset Drivers · Bar · Pts by Driver');
+    expect(settingsSummary(chart, { preset: 'lead-story' })).toBe('Preset Lead story · Bar · no value column');
   });
 });

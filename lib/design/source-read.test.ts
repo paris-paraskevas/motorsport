@@ -530,7 +530,7 @@ describe('readSource', () => {
     expect(empty.provenance.error).toBeUndefined();
   });
 
-  it('every one of the fifteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
+  it('every one of the sixteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
     readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: null });
     readCurrentSessionResults.mockResolvedValue({ round: 15, rows: sessionRows, runId: null });
     const results = SOURCES.find(s => s.key === 'results')!;
@@ -583,5 +583,78 @@ describe('readSource', () => {
     ]);
     expect(results.rows[0].date).toBe('2026-03-08T05:00:00.000Z');
     expect(results.provenance.keys).toEqual(['f1:results', 'f1:sprints', 'f1:last-race']);
+  });
+});
+
+describe('the Season trend reader (P2.11)', () => {
+  const race = (round: number, raceName: string, results: { driverName: string; team: string; points: number; code?: string }[]) => ({
+    round,
+    raceName,
+    date: new Date(`2026-0${round}-01T00:00:00Z`),
+    circuit: 'x',
+    results: results.map((r, i) => ({ position: i + 1, driverName: r.driverName, driverCode: r.code, team: r.team, status: 'Finished', points: r.points })),
+  });
+  const ANT = { driverName: 'Kimi Antonelli', team: 'Mercedes', points: 25, code: 'ANT' };
+  const RUS = { driverName: 'George Russell', team: 'Mercedes', points: 18, code: 'RUS' };
+
+  it('answers the standings tab’s trend as rows: a driver’s running total after every round with the round’s points and the season’s, the sprints folded into their round, the constructors where the teams’ championship is the sum of its cars; the pages from the rosters; the series’ name and colour', async () => {
+    loadSnapshotSource.mockResolvedValueOnce({
+      races: [race(1, 'Australian Grand Prix', [ANT, RUS]), race(2, 'Chinese Grand Prix', [{ ...RUS, points: 25 }, { ...ANT, points: 18 }])],
+      extras: [race(2, 'Chinese Grand Prix Sprint', [{ ...ANT, points: 8 }])],
+      showTeams: true,
+      pointsExact: true,
+    });
+    const read = await readSource({ source: 'trend', params: { series: 'f1', season: 2026 } });
+    expect(read.provenance).toMatchObject({ tier: 'snapshot', label: 'Season trend · Formula 1 · 2026', keys: ['f1:results', 'f1:sprints', 'f1:last-race'], rows: 6 });
+    expect(read.provenance.error).toBeUndefined();
+    const ant = read.rows.filter(r => r.kind === 'driver' && r.name === 'Kimi Antonelli');
+    expect(ant.map(r => [r.round, r.race, r.points, r.gained, r.total])).toEqual([
+      [1, 'Australian Grand Prix', 25, 25, 51],
+      [2, 'Chinese Grand Prix', 51, 26, 51],
+    ]);
+    expect(ant[0]).toMatchObject({ code: 'ANT', team: 'Mercedes', profile: '/drivers/kimi-antonelli', seriesName: 'Formula 1', colour: '#e10600' });
+    const rus = read.rows.filter(r => r.kind === 'driver' && r.name === 'George Russell');
+    expect(rus.map(r => [r.round, r.points, r.gained, r.total])).toEqual([
+      [1, 18, 18, 43],
+      [2, 43, 25, 43],
+    ]);
+    expect(rus[0].profile).toBeNull();
+    // The constructors' rows: the team's points per race entry (buildStandingsAtRound), so the last equals the constructors' table.
+    expect(read.rows.filter(r => r.kind === 'constructor').map(r => [r.round, r.name, r.team, r.points, r.gained, r.total, r.profile])).toEqual([
+      [1, 'Mercedes', 'Mercedes', 43, 43, 94, '/teams/mercedes'],
+      [2, 'Mercedes', 'Mercedes', 94, 51, 94, '/teams/mercedes'],
+    ]);
+    for (const c of SOURCES.find(s => s.key === 'trend')!.columns) expect(Object.keys(read.rows[0]), c.key).toContain(c.key);
+  });
+
+  it('splits MotoGP’s sprints out of the snapshot’s races as the standings tab does, so a sprint folds into its round instead of a second tick; a round with several races answers one row, the total after its last; a feed without canonical points answers no rows and the reason; no constructors where the teams’ championship is not the sum of its cars; no snapshot answers no rows and no reason', async () => {
+    const rider = { driverName: 'Marc Márquez', team: 'Ducati Lenovo Team', points: 25, code: 'MM93' };
+    loadSnapshotSource.mockResolvedValueOnce({ races: [race(1, 'Thai Grand Prix', [rider]), race(1, 'Thai Grand Prix Sprint', [{ ...rider, points: 12 }]), race(2, 'Argentine Grand Prix', [{ ...rider, points: 20 }])], showTeams: true, pointsExact: true });
+    const motogp = await readSource({ source: 'trend', params: { series: 'motogp', season: 2026 } });
+    expect(motogp.rows.filter(r => r.kind === 'driver').map(r => [r.round, r.race, r.points, r.gained])).toEqual([
+      [1, 'Thai Grand Prix', 37, 37],
+      [2, 'Argentine Grand Prix', 57, 20],
+    ]);
+    expect(motogp.rows.filter(r => r.kind === 'constructor').map(r => [r.round, r.name, r.points])).toEqual([
+      [1, 'Ducati Lenovo Team', 37],
+      [2, 'Ducati Lenovo Team', 57],
+    ]);
+    // Another series with several races in one round (WorldSBK's three, F3's two) answers one row per round, the total after
+    // the round's last race, its name the last race's; no constructors without showTeams.
+    loadSnapshotSource.mockResolvedValueOnce({ races: [race(1, 'Thai Grand Prix', [rider]), race(1, 'Thai Grand Prix Sprint', [{ ...rider, points: 12 }]), race(2, 'Argentine Grand Prix', [{ ...rider, points: 20 }])], showTeams: false, pointsExact: true });
+    const other = await readSource({ source: 'trend', params: { series: 'wsbk', season: 2026 } });
+    expect(other.rows.map(r => [r.kind, r.round, r.race, r.points, r.gained])).toEqual([
+      ['driver', 1, 'Thai Grand Prix Sprint', 37, 37],
+      ['driver', 2, 'Argentine Grand Prix', 57, 20],
+    ]);
+    loadSnapshotSource.mockResolvedValueOnce({ races: [race(1, 'x', [rider])], showTeams: true, pointsExact: false });
+    const derived = await readSource({ source: 'trend', params: { series: 'f3', season: 2026 } });
+    expect(derived.rows).toEqual([]);
+    expect(derived.provenance.error).toMatch(/results carry derived points; the season trend waits for canonical ones/);
+    loadSnapshotSource.mockResolvedValueOnce(null);
+    const none = await readSource({ source: 'trend', params: { series: 'dtm', season: 2026 } });
+    expect(none.rows).toEqual([]);
+    expect(none.provenance).toMatchObject({ tier: 'snapshot', rows: 0 });
+    expect(none.provenance.error).toBeUndefined();
   });
 });

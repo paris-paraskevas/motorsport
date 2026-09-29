@@ -3,10 +3,12 @@ import { cache, type ReactNode } from 'react';
 import { firstBodyRegion, isLegacyBody, tabsOf, type ComponentRegion, type PageDocument } from './page-document';
 import { CALENDAR_FACETS, findComponent, type SettingValue } from './components';
 import { parseSourceRef, type SourceRef } from './sources';
-import { SHAPES, findPreset, presetRows, rowPasses } from './presets';
+import { SHAPES, findPreset, numeric, presetRows, rowPasses } from './presets';
 import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 import { resolveDestination, type PageDestinations } from './destinations';
+import { namesMatch } from '@/lib/slug';
+import type { ChartData } from '@/components/data/ChartFrame';
 import type { CardActions, CardSlots, DetailShowing, HighlightStyle, MasterSelect, MetricCard, RegionControls, RowHighlight } from '@/components/data/DataRegionViews';
 import { VALUE_MAX, applySavedView, bindViewState, encodeViewState, filterOps, parseRule, parseViewState, viewStateHref, type ViewState } from './view-state';
 
@@ -52,6 +54,8 @@ const regionTabs = () => import('@/components/page/RegionTabs');
 // The Weather (P2.14) reads the site's one forecast reader and the Weather build option the same way.
 const weatherLib = () => import('@/lib/weather');
 const buildOptionsLib = () => import('./build-options');
+// The Chart (P2.11) resolves its emphasis through the site's rosters on demand, as the Breadcrumb's labels do.
+const people = () => import('@/lib/people');
 
 import type { Facet } from '@/components/data/DataRegionFilters';
 import type { Series, Weekend } from '@/lib/types';
@@ -300,6 +304,127 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const rows = presetRows(read.rows, preset, Number.MAX_SAFE_INTEGER);
     return <views.DataRegionMetrics heading={str(settings.heading)} level={ctx.first ? 'h1' : 'h2'} shape={shape} nameLabel={preset.nameLabel} rows={rows} cards={cards} columns={Number(str(settings.columns)) || 3} />;
   },
+  // The Chart (P2.11; APEX: the Chart region): the preset's rows read as the Data region reads them (the shared read where a
+  // Filters region has it), the Row rule over them, then one point or bar per label, one series or one per distinct value of the
+  // Series Name column, the value read as rowPasses reads a number (a qualifying gap's text too), the rows of one label in a
+  // series added up (APEX: a Sum aggregation); the series ranked by their last value; the emphasis, on a driver's or a team's
+  // page, the series that are the page's own (a team through its curated drivers' rows, never its name alone: Racing Bulls is
+  // "RB F1 Team" in the feed). Nothing without a Source, a preset, a label and a value column of the shape; no rows draws one
+  // line. The view is DataRegionChart, the frame and the canvas behind it client pieces.
+  async 'data.chart'(settings, ctx) {
+    if (!ctx.source) return null;
+    const preset = findPreset(str(settings.preset));
+    if (!preset) return null;
+    const shape = SHAPES[preset.shape];
+    const own = shape.chart;
+    const labelKey = str(settings.label) || own?.label || '';
+    const valueKey = str(settings.value) || own?.value || '';
+    const seriesKey = str(settings.seriesName) || own?.series || '';
+    const column = (key: string) => shape.columns.find(c => c.key === key);
+    const labelColumn = column(labelKey);
+    const valueColumn = column(valueKey);
+    if (!labelColumn || !valueColumn || (seriesKey && !column(seriesKey))) return null;
+    const picked = str(settings.type);
+    const type: ChartData['type'] = picked === 'line' || picked === 'bar' || picked === 'area' ? picked : (own?.type ?? 'bar');
+    const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
+    const read = ctx.read ? await ctx.read() : await readSource(ctx.source);
+    ctx.onSourceRead?.(read.provenance);
+    let rows = presetRows(read.rows, preset, Number.MAX_SAFE_INTEGER);
+    const ruleText = str(settings.rule);
+    const rule = ruleText ? parseRule(ruleText) : '';
+    if (typeof rule !== 'string' && column(rule.column)) rows = rows.filter(r => rowPasses(r, rule, shape.columns));
+    const cell = (v: unknown): string => (v === null || v === undefined ? '' : String(v));
+    // A name column reads by the preset's label (Driver, Constructor), the rest by the shape's.
+    const labelOf = (c: { key: string; label: string }) => (c.key === 'name' ? preset.nameLabel : c.label);
+    const labelLabel = labelOf(labelColumn);
+    const valueLabel = labelOf(valueColumn);
+    // The labels in the preset's order, the series in first-seen order; a point's title carries a number label's column and the
+    // race where the shape has one (the tab's "R5 · Monaco Grand Prix").
+    const labels: string[] = [];
+    const titles = new Map<string, string>();
+    const names: string[] = [];
+    const values = new Map<string, Map<string, number>>();
+    const teamOf = new Map<string, string>();
+    const raceKey = column('race') && labelKey !== 'race' ? 'race' : null;
+    for (const r of rows) {
+      const label = cell(r[labelKey]);
+      if (!label) continue;
+      const name = seriesKey ? cell(r[seriesKey]) : valueLabel;
+      if (!name) continue;
+      if (!titles.has(label)) {
+        labels.push(label);
+        titles.set(label, `${labelColumn.type === 'number' ? `${labelLabel} ${label}` : label}${raceKey && cell(r[raceKey]) ? ` · ${cell(r[raceKey])}` : ''}`);
+      }
+      if (!values.has(name)) {
+        names.push(name);
+        values.set(name, new Map());
+      }
+      const v = numeric(r[valueKey]);
+      if (v !== null) {
+        const m = values.get(name)!;
+        m.set(label, (m.get(label) ?? 0) + v);
+      }
+      if (!teamOf.has(name) && typeof r.team === 'string' && r.team) teamOf.set(name, r.team);
+    }
+    const heading = str(settings.heading) || preset.name;
+    const level = ctx.first ? ('h1' as const) : ('h2' as const);
+    // No label, no series, or no value that reads as a number (a capture without gaps): the one line, never an empty plot.
+    if (labels.length === 0 || names.length === 0 || ![...values.values()].some(m => m.size > 0)) return <views.DataRegionChart heading={heading} level={level} data={null} foot="" />;
+    // The series ranked by their last value (the standings chart's order): the legend's order and the cap's.
+    const last = (name: string): number | null => {
+      const m = values.get(name)!;
+      for (let i = labels.length - 1; i >= 0; i--) {
+        const v = m.get(labels[i]);
+        if (v !== undefined) return v;
+      }
+      return null;
+    };
+    const ranked = [...names].sort((a, b) => (last(b) ?? Number.NEGATIVE_INFINITY) - (last(a) ?? Number.NEGATIVE_INFINITY));
+    const keyOf = new Map(ranked.map((name, i) => [name, `s${i}`]));
+    // The emphasis (ours): the page's own driver by name; the page's team through its curated drivers' rows, the feed's team name
+    // read off the first match, then every series whose rows carry that team (a constructor line's team is its own name).
+    let emphasised: string[] = [];
+    let highlighted: string | null = null;
+    if (str(settings.emphasis) === 'page' && ctx.params.slug && (ctx.path === '/drivers/[slug]' || ctx.path === '/teams/[slug]')) {
+      const { findDriverBySlug, findTeamBySlug } = await people();
+      if (ctx.path === '/drivers/[slug]') {
+        const driver = await findDriverBySlug(ctx.params.slug).catch(() => null);
+        if (driver) {
+          highlighted = driver.name;
+          emphasised = ranked.filter(name => namesMatch(name, driver.name));
+        }
+      } else {
+        const team = await findTeamBySlug(ctx.params.slug).catch(() => null);
+        if (team) {
+          highlighted = team.name;
+          const personKey = column('name') ? 'name' : column('driver') ? 'driver' : null;
+          const feedTeam = personKey ? read.rows.find(r => r.kind !== 'constructor' && team.drivers.some(d => namesMatch(cell(r[personKey]), d.name)))?.team : undefined;
+          emphasised = ranked.filter(name => (typeof feedTeam === 'string' && feedTeam !== '' && teamOf.get(name) === feedTeam) || namesMatch(name, team.name));
+        }
+      }
+    }
+    const decimals = [...values.values()].some(m => [...m.values()].some(v => !Number.isInteger(v)));
+    // A single series takes the rows' one series colour when every row carries the same (a championship's colour); else the brand's.
+    const colours = new Set(rows.map(r => cell(r.colour)).filter(c => c !== ''));
+    const data: ChartData = {
+      type,
+      series: ranked.map(name => ({ key: keyOf.get(name)!, label: name, team: teamOf.get(name), last: last(name) })),
+      points: labels.map(label => ({ label, title: titles.get(label) ?? label, ...Object.fromEntries(ranked.map(name => [keyOf.get(name)!, values.get(name)!.get(label) ?? null])) })),
+      decimals,
+      zero: settings.zero !== false,
+      height: Math.min(640, Math.max(160, num(settings.height, 320))),
+      legend: settings.legend !== false,
+      shown: Math.min(30, Math.max(1, num(settings.shown, 6))),
+      emphasised: emphasised.map(name => keyOf.get(name)!),
+      xTitle: str(settings.xTitle),
+      yTitle: str(settings.yTitle),
+      colour: ranked.length === 1 && colours.size === 1 ? [...colours][0] : null,
+      labelLabel,
+      valueLabel,
+    };
+    const foot = `${valueLabel} by ${labelLabel}${highlighted && emphasised.length ? ` · ${highlighted} highlighted` : ''}`;
+    return <views.DataRegionChart heading={heading} level={level} data={data} foot={foot} />;
+  },
   // Filters (P2.5; APEX: Smart Filters): the chips over its target's rows; nothing without a target or where no state can arrive.
   async 'data.filters'(settings, ctx) {
     const f = ctx.filters;
@@ -470,6 +595,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'page.tabs': ['content:series', 'db:page'],
   // Metric cards read a Source as the Data region does (P2.7).
   'data.metrics': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
+  // The Chart (P2.11) reads the four sources whose rows carry a number to draw: the standings' two tiers, the results' and the trend's snapshots, the session results.
+  'data.chart': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'content:series', 'db:session_result_current'],
   // The Filters region reads its target's Source (P2.5): the same tiers, once for both.
   'data.filters': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Data region reads its Source: the standings' two tiers, the results' snapshots, the posts table and the news aggregate

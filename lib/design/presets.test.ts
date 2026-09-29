@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { ViewState } from './view-state';
 import { readFileSync } from 'node:fs';
-import { FACET_VALUES_MAX, PRESETS, PRESET_GROUPS, SHAPES, facetValues, findPreset, presetRows, presetsFor, rowPasses } from './presets';
-import { SERIES_OPTIONS } from './sources';
+import { FACET_VALUES_MAX, PRESETS, PRESET_GROUPS, SHAPES, facetValues, findPreset, numeric, presetRows, presetsFor, rowPasses } from './presets';
+import { SERIES_OPTIONS, TREND_SERIES } from './sources';
 
 /** P2.24 B2: the two Series values the readers resolve (Home's series on Results, the Latest result on Standings), declared, not slugs. */
 const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home'], standings: ['latest'] };
@@ -13,7 +13,7 @@ const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home']
 // results presets declared and waiting for the Rounds view (PR B).
 
 describe('the preset catalogue', () => {
-  it('holds the twenty-one groups in the drawn order and thirty-nine presets: twenty-seven standings over two shapes, eight results over four, one session (P2.25), the site’s tables drawn as the Rounds layout by default (P2.2 B1), and Home’s five boxes as templates (P2.24 A, B1, B2)', () => {
+  it('holds the twenty-two groups in the drawn order and forty-one presets: twenty-seven standings over two shapes, eight results over four, one session (P2.25), two season trends (P2.11), the site’s tables drawn as the Rounds layout by default (P2.2 B1), and Home’s five boxes as templates (P2.24 A, B1, B2)', () => {
     expect(PRESET_GROUPS.map(g => g.name)).toEqual([
       'Drivers',
       'Constructors',
@@ -36,8 +36,9 @@ describe('the preset catalogue', () => {
       'Latest result',
       'What it changed',
       'Session',
+      'Season trend',
     ]);
-    expect(PRESETS).toHaveLength(39);
+    expect(PRESETS).toHaveLength(41);
     const standings = PRESETS.filter(p => p.source === 'standings');
     expect(standings).toHaveLength(27);
     expect(new Set(standings.map(p => p.shape))).toEqual(new Set(['driver-rows', 'team-rows']));
@@ -76,7 +77,7 @@ describe('the preset catalogue', () => {
     expect(SHAPES['car-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'date', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'gap']);
     expect(SHAPES['cup-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'laps', 'gap']);
     expect(SHAPES['car-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'gap', badge: 'car' });
-    expect(new Set(PRESETS.map(p => p.key)).size).toBe(39);
+    expect(new Set(PRESETS.map(p => p.key)).size).toBe(41);
     const groups = new Set(PRESET_GROUPS.map(g => g.key));
     const slugs = new Set(SERIES_OPTIONS.map(o => o.key));
     for (const p of PRESETS) {
@@ -293,6 +294,7 @@ describe('the preset catalogue', () => {
         { key: 'round', label: 'Round', type: 'number' },
       ],
       card: { title: 'driver', subtitle: 'team', body: 'time', badge: 'position' },
+      chart: { label: 'driver', value: 'points', type: 'bar' },
     });
     // P2.4 PR B: the name and the driver link to the person's page the row carries (text where it carries none); a crew stays text.
     expect(SHAPES['driver-rows'].columns.find(c => c.key === 'name')).toEqual({ key: 'name', label: 'Driver', type: 'link', href: 'profile' });
@@ -408,5 +410,61 @@ describe('facetValues (P2.5: the values a facet offers, from the rows after ever
     expect(out.values).toHaveLength(40);
     expect(out.more).toBe(5);
     expect(facetValues([], 'team', columns, [])).toEqual({ values: [], more: 0 });
+  });
+});
+
+describe('the Season trend presets and the chart mappings (P2.11)', () => {
+  it('adds the twenty-second group and two presets over one shape: the drivers’ for the eight series with canonical points, the constructors’ for Formula 1 alone (the one constructors’ table the site’s own chart reconciles against), the standings tab’s headings verbatim; a chart mapping on the six shapes with a number to draw; a value read as a number', () => {
+    expect(PRESET_GROUPS.at(-1)).toEqual({ key: 'season-trend', name: 'Season trend', source: 'trend' });
+    expect(PRESETS.filter(p => p.source === 'trend')).toEqual([
+      { key: 'drivers-trend', name: "Drivers' season trend", group: 'season-trend', source: 'trend', shape: 'trend-rows', where: { kind: 'driver' }, series: ['f1', 'f2', 'f3', 'motogp', 'wsbk', 'nascar-cup', 'wrc', 'dtm'], nameLabel: 'Driver', view: 'table' },
+      { key: 'constructors-trend', name: "Constructors' season trend", group: 'season-trend', source: 'trend', shape: 'trend-rows', where: { kind: 'constructor' }, series: ['f1'], nameLabel: 'Constructor', view: 'table' },
+    ]);
+    // The series the source offers (lib/design/sources.ts TREND_SERIES), repeated here since this file imports nothing at runtime.
+    expect(findPreset('drivers-trend')?.series).toEqual(TREND_SERIES);
+    expect(SHAPES['trend-rows'].source).toBe('trend');
+    expect(SHAPES['trend-rows'].columns.map(c => [c.key, c.type])).toEqual([
+      ['round', 'number'],
+      ['race', 'text'],
+      ['name', 'link'],
+      ['code', 'badge'],
+      ['team', 'text'],
+      ['points', 'number'],
+      ['gained', 'number'],
+      ['total', 'number'],
+    ]);
+    expect(SHAPES['trend-rows'].columns.find(c => c.key === 'name')).toEqual({ key: 'name', label: 'Driver', type: 'link', href: 'profile' });
+    expect(SHAPES['trend-rows'].card).toEqual({ title: 'name', subtitle: 'team', body: 'points', badge: 'round' });
+    expect(presetsFor('trend', 'f1').map(p => p.key)).toEqual(['drivers-trend', 'constructors-trend']);
+    expect(presetsFor('trend', 'nascar-cup').map(p => p.key)).toEqual(['drivers-trend']);
+    expect(presetsFor('trend', 'f2').map(p => p.key)).toEqual(['drivers-trend']);
+    expect(presetsFor('trend', 'formula-e')).toEqual([]);
+    // The preset's rows: the kind it names, in the reader's order (by round, the builder's drivers); a constructor's row never on the drivers' preset.
+    const rows = [
+      { kind: 'driver', round: 1, name: 'A', points: 25 },
+      { kind: 'constructor', round: 1, name: 'T', points: 43 },
+      { kind: 'driver', round: 2, name: 'A', points: 43 },
+    ];
+    expect(presetRows(rows, findPreset('drivers-trend')!, 10).map(r => [r.round, r.name])).toEqual([
+      [1, 'A'],
+      [2, 'A'],
+    ]);
+    expect(presetRows(rows, findPreset('constructors-trend')!, 10).map(r => r.name)).toEqual(['T']);
+    // The Chart's own mapping per shape (APEX: the Series' Column Mapping): the trend as one line per driver by round, the tables as bars of points, a session's gaps; none on the rest.
+    expect(Object.fromEntries(Object.values(SHAPES).map(s => [s.key, s.chart]))).toEqual({
+      'driver-rows': { label: 'name', value: 'points', type: 'bar' },
+      'team-rows': { label: 'name', value: 'points', type: 'bar' },
+      'race-rows': { label: 'driver', value: 'points', type: 'bar' },
+      'car-rows': undefined,
+      'cup-rows': undefined,
+      'podium-rows': { label: 'driver', value: 'points', type: 'bar' },
+      'post-rows': undefined,
+      'news-rows': undefined,
+      'weekend-rows': undefined,
+      'session-rows': { label: 'driver', value: 'gap', type: 'bar' },
+      'trend-rows': { label: 'round', value: 'points', series: 'name', type: 'line' },
+    });
+    // A value read as rowPasses reads a number: a number as it is, text that reads as one (a gap's +0.100), else null.
+    expect([numeric(25), numeric('+0.100'), numeric('−0.5'), numeric('1:40.123'), numeric(''), numeric(null), numeric(undefined)]).toEqual([25, 0.1, null, null, null, null, null]);
   });
 });
