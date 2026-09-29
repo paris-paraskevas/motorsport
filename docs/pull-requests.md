@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1094 · 1.0.212 · records · opened Tue 29 Sep 13:39 (10:39Z); the merge on the standing word
+**P2.17 on prod and done.** Records only: the merge, the deploy, the slot closed.
+- **Readers see:** nothing.
+- **Editors get:** nothing new (the Breadcrumb of 1.0.211 stands).
+- **Files (8):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.17 DONE (#1093 on prod); a dated line for the word.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup (P2.10 Tabs next), the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.212.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 63 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; prod /changelog 1.0.211 by 10:38:44Z.
+- **Review:** none; records.
+
 ## #1093 · 1.0.211 · P2.17 · opened Tue 29 Sep 13:25 (10:25Z); the merge on the word
 **Breadcrumb.** The page's place in the site from its address as a component editors place in the Breadcrumb Bar: Home, the pages above as links, the page itself, a separator; its BreadcrumbList where the page's code prints none.
 - **Readers see:** nothing until an editor places a Breadcrumb; then the trail above the page.
