@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1092 · 1.0.210 · records · opened Tue 29 Sep 11:51 (08:51Z); the merge on the standing word
+**P2.8 on prod and done.** Records only: the merge, the deploy, the slot closed.
+- **Readers see:** nothing.
+- **Editors get:** nothing new (the Countdown of 1.0.209 stands).
+- **Files (8):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.8 DONE (#1091 on prod); a dated line for the word.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup (the Seobility export next), the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.210.
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 62 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 passed; prod /changelog 1.0.209 by 08:50:02Z.
+- **Review:** none; records.
+
 ## #1091 · 1.0.209 · P2.8 · opened Tue 29 Sep 11:35 (08:35Z); the merge on the word
 **Countdown.** The next session of one series or the nearest across every series as a component editors place: its name, its weekend, the reader's time and the time at the track, the digits, LIVE while it runs.
 - **Readers see:** nothing until an editor places a Countdown; then the box.
