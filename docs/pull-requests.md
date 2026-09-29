@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1100 · 1.0.218 · records · opened Tue 29 Sep 19:20 (16:20Z); the merge on the standing word
+**P2.11 on prod and done.** Records only: the merge, the deploy, the slot closed; the board at a new link.
+- **Readers see:** nothing.
+- **Editors get:** nothing new (the Chart of 1.0.217 stands).
+- **Files (8):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.11 DONE (#1099 on prod); a dated line for the word.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup (P2.12 Map and Map Backgrounds next), the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.218.
+- **Verified:** node docs/plan/render-ledger.mjs → 63 slots; npx vitest run lib/design/plan-ledger.test.ts lib/record-notes-integrity.test.ts → green; prod /changelog 1.0.217 by 16:08:28Z; the board https://claude.ai/code/artifact/e48d9f01-f919-42c8-b726-3f413692f45e (49 of 63 done).
+- **Review:** none; records.
+
 ## #1099 · 1.0.217 · P2.11 · opened Tue 29 Sep 18:55 (15:55Z); the merge on the word
 **Chart.** APEX's Chart region as a component editors place: a line, bars or an area for a value column by a label column over a preset's rows, one series or one per distinct value of a column; the Season trend as the catalogue's sixteenth source, the standings tab's charts as rows; the page's own team drawn thick on its page.
 - **Readers see:** nothing until an editor places a Chart region.

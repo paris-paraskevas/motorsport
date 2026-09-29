@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.218 — 2026-09-29
+
+Internal only: the record of the chart component, checked on the live site. Nothing changes for readers.
+
 ## 1.0.217 — 2026-09-29
 
 A chart editors can place on any page: a championship's points as bars, the season's trend as one line per driver or constructor with the page's own team drawn thick, a session's gaps, all from the same numbers as the standings tables. Nothing changes for readers until one is placed.
