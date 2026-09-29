@@ -14,6 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1089 · 1.0.207 · R15 · opened Tue 29 Sep 05:31 (02:31Z); the merge on the word
+**Crawlers kept off the filter chips' combination URLs.** One robots.txt line, `Disallow: /*?*filter=`, with a test over Google's matching rules.
+- **Readers see:** nothing.
+- **Editors get:** nothing new.
+- **Files (8):**
+  - `app/robots.ts`, `app/robots.test.ts` · the line and its cases (a filtered calendar or news URL blocked, the plain pages, the sitemap, a series link with another query and every sitemap page allowed).
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R15's evidence; a dated line with the operator's order for the next day.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup, the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.207.
+- **Verified:** tests first (2 of 3 red), then green; tsc 0; lint 0 errors (the two known warnings); vitest 256 files, 2461 tests; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` Total Upload 39244.61 KiB / gzip 8536.74 KiB; the dev server's /robots.txt carries the line.
+- **Review:** a fresh-context Sonnet reviewer (97k tokens), SOUND, 0 blocking; its two notes taken: the sort and view links are a handful per page, not a combination graph, and stay crawlable by design, and a test case pins that boundary
+
 ## #1088 · 1.0.206 · records · opened Tue 29 Sep 01:25 (28 Sep 22:25Z); the merge on the standing word
 **R14 on prod and done; the crawlers’ reports; R15 proposed.** Records only: the merge, the deploy, the prod checks, the census and the workflow’s first run, the Ahrefs overview and the filter-combination finding, the pickup.
 - **Readers see:** nothing.

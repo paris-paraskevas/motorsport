@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.207 — 2026-09-28
+
+### R15 — crawlers kept off the filter chips’ combination URLs
+
+`app/robots.ts`: `Disallow: /*?*filter=`. The Filters region's series chips link every combination of series, so a crawler finds the graph of all subsets (Ahrefs on 2026-09-28: 180,278 link targets on a site of 1,034 pages; Search Console's "Crawled – currently not indexed" rising). Every filtered page already answers `noindex, follow` with a canonical to the plain page and its links carry `rel="nofollow"`; this keeps crawlers off them at the door, the option Google's faceted-navigation page prefers for filtered pages that need no indexing. The plain `/calendar` and `/news`, a series link with another query and every sitemap page stay crawlable. Readers see nothing: robots.txt does not change what a browser can open. Test: `app/robots.test.ts` with Google's matching rules over the cases.
+
 ## 1.0.206 — 2026-09-28
 
 ### Records — R14 on prod and done; the crawlers’ reports; R15 proposed
