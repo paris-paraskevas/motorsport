@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { matchCircuitEntry, venueCandidates } from './circuits';
+import { loadCircuits, matchCircuitEntry, venueCandidates } from './circuits';
 
 // The case these exist for: the 2026 "Formula 1 Gulf Air Bahrain Grand Prix" runs
 // at Sepang International Circuit in Malaysia (formula1.com, 2-4 October 2026).
@@ -47,5 +47,35 @@ describe('matchCircuitEntry with a venue override', () => {
   it('resolves the same title to Bahrain when no venue is curated', async () => {
     const match = await matchCircuitEntry(...venueCandidates({ title: 'Bahrain Grand Prix' }));
     expect(match?.circuit.countryCode).toBe('BH');
+  });
+});
+
+// P2.8, the Countdown's time at the track: every circuit carries an IANA zone
+// the runtime knows (scripts/fetch-circuit-timezones.mts wrote them from
+// Open-Meteo's timezone=auto answer for the circuit's coordinates). A wrong or
+// unknown zone would draw a wrong local time, which is worse than none.
+describe('the circuits’ time zones', () => {
+  it('names a zone the runtime knows on every circuit', async () => {
+    const circuits = await loadCircuits();
+    // A zone the runtime can format in: supportedValuesOf lists the canonical names alone and leaves out links such as
+    // America/Indiana/Indianapolis, which the formatter accepts all the same.
+    const knows = (tz: string): boolean => {
+      try {
+        new Intl.DateTimeFormat('en-GB', { timeZone: tz });
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    const entries = Object.entries(circuits);
+    expect(entries.length).toBeGreaterThan(90);
+    for (const [slug, c] of entries) {
+      expect(typeof c.tz, slug).toBe('string');
+      expect(knows(c.tz!), `${slug}: ${c.tz}`).toBe(true);
+    }
+    expect(knows('Not/AZone')).toBe(false);
+    expect(circuits.bahrain?.tz).toBe('Asia/Bahrain');
+    expect(circuits.sepang?.tz).toBe('Asia/Kuala_Lumpur');
+    expect(circuits.baku?.tz).toBe('Asia/Baku');
   });
 });

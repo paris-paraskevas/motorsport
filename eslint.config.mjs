@@ -16,6 +16,11 @@ const eslintConfig = defineConfig([
     // dot-dirs nor .gitignore, so without this every finding reports ~15×
     // and real errors drown (audit 4-3).
     ".claude/**",
+    // The crawlers' output folders the operator's tools write into the repo root
+    // (Unlighthouse's client bundle carried 29 minified-code errors and 3,245
+    // warnings into the gate on 2026-09-29; both are gitignored).
+    ".unlighthouse/**",
+    ".seo-census/**",
     ".agents/**",
     // Generated serwist bundles.
     "public/sw*.js",

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.209 — 2026-09-29
+
+### P2.8 — Countdown
+
+A general component of the catalogue (`series.countdown`, Countdown, the Series group; ours by name: APEX has no countdown component). It draws the next session of one series or the nearest across every series: the series and the round as the eyebrow, the weekend's title and the session's name as links to their pages, one line of times (the reader's through LocalTime, the track's in the circuit's zone), and NextRaceCountdown's digits, which read LIVE between the session's start and its end. `lib/weekend.ts` `nextSessionAcross` holds the rule: the series' first weekend not past with a session still to end, then its timed session under way or next to start (Home's rule; the driver page's Next out goes blank while a session runs, this stays on it); a weekend whose remaining sessions carry no clock is drawn with its dates and no digits; nothing to come draws one line. The track's time comes from a new `tz` on every circuit in `content/circuits.json` (98 IANA zones written by `scripts/fetch-circuit-timezones.mts` from Open-Meteo's `timezone=auto` answer for each circuit's coordinates, each checked as a zone the runtime knows; the curated round venue resolves the circuit first, so the 2026 Bahrain Grand Prix at Sepang says GMT+8). Settings: Series, Heading, Time at the track, Links; the heading or the weekend's title is the page's h1 when the region is first in the Body. The renderer imports its readers on demand, so the frame's chunk does not grow. Tests: the catalogue, `nextSessionAcross`, the circuits' zones, the render from a saved document, the Plug-ins editor's count. Also: `eslint.config.mjs` ignores the crawlers' output folders (`.unlighthouse/`, `.seo-census/`), which had carried 29 minified-code errors into the lint gate. Readers see nothing until an editor places a Countdown.
+
 ## 1.0.208 — 2026-09-29
 
 ### Records — R15 on prod and done

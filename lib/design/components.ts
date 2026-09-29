@@ -448,6 +448,29 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'also', label: 'Also racing', kind: 'boolean', default: true, help: 'The row of the other weekends under way, beneath the boxes; nothing when one series is picked.' },
     ],
   },
+  // The Countdown (P2.8; ours by name: APEX has no countdown component, its Timer is a dynamic action). The next session of
+  // one series, or the nearest across every series, read from the content bundle as the Live band reads its model: the
+  // session under way or the one to come (lib/weekend.ts nextSessionAcross), its weekend, its start where the reader is and
+  // at the track (the circuit's zone, content/circuits.json), and NextRaceCountdown's tick, LIVE while it runs.
+  {
+    key: 'series.countdown',
+    name: 'Countdown',
+    group: 'Series',
+    holds: 'the next session of one series or the nearest across every series: its name, its weekend, its start where the reader is and at the track, counting down; live while it runs',
+    settings: [
+      {
+        key: 'series',
+        label: 'Series',
+        kind: 'choice',
+        default: '',
+        options: [{ key: '', label: 'Every series', group: 'Series' }, ...SERIES_OPTIONS.map(o => ({ key: o.key, label: o.label, group: 'Series' }))],
+        help: 'Every series, the nearest session first; or one series’ next session alone.',
+      },
+      { key: 'heading', label: 'Heading', kind: 'text', default: '', maxLength: 80, help: 'The rule above the box; empty draws none. The section’s name for a reader either way.' },
+      { key: 'venueTime', label: 'Time at the track', kind: 'boolean', default: true, help: 'The start in the circuit’s own time beside the reader’s, when the circuit’s zone is known (content/circuits.json).' },
+      { key: 'link', label: 'Links', kind: 'boolean', default: true, help: 'The weekend and the session named as links to their pages; off, words alone.' },
+    ],
+  },
 ];
 
 /** One entry of a page's recipe (P2.24 C): the component, the region's id, the settings that differ from the

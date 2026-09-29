@@ -90,6 +90,53 @@ export function weekendStartEnd(weekend: Weekend): { start: Date; end: Date } {
   return { start: sorted[0].start, end: sorted[sorted.length - 1].end };
 }
 
+/** The next session the Countdown (P2.8) draws: one series' or the nearest across several. The weekend is the series'
+ *  first not past with a session still to end (the weekend pages' and the Weekends source's rule); the session is the timed
+ *  one under way or next to start (Home's rule, lib/home-model.ts nextTimed), so a running session reads LIVE until its end
+ *  rather than vanishing; `null` for a weekend whose remaining sessions carry no clock (a rally with hours to be confirmed),
+ *  which is still the next weekend. The curated round's venue rides along for the circuit lookup (the 2026 Bahrain Grand
+ *  Prix at Sepang: lib/types.ts SeriesRoundEntry.venue). */
+export interface NextSession {
+  series: { slug: string; name: string; color: string };
+  weekend: { round: number; title: string; dateRangeLabel: string; href: string; venue?: string; location?: string };
+  session: { title: string; slug: string; start: Date; end: Date } | null;
+}
+
+export function nextSessionAcross(series: readonly Series[], now: Date = new Date()): NextSession | null {
+  const found: { at: number; next: NextSession }[] = [];
+  for (const s of series) {
+    let weekends: Weekend[];
+    try {
+      weekends = groupByWeekend(s.sessions, now, s.rounds);
+    } catch {
+      continue;
+    }
+    const w = weekends.find(x => !x.isPast && x.sessions.some(x2 => x2.end >= now));
+    if (!w) continue;
+    const timed = w.sessions.filter(x => !x.dateOnly && x.end > now).sort((a, b) => a.start.getTime() - b.start.getTime());
+    const session = timed[0] ?? null;
+    const round = s.rounds?.rounds?.find(r => r.round === w.round);
+    found.push({
+      at: session ? session.start.getTime() : weekendStartEnd(w).start.getTime(),
+      next: {
+        series: { slug: s.meta.slug, name: s.meta.name, color: s.meta.color },
+        weekend: {
+          round: w.round,
+          title: weekendLabel(w, w.round).title,
+          dateRangeLabel: w.dateRangeLabel,
+          href: `/series/${s.meta.slug}/weekend/${w.round}`,
+          venue: round?.venue,
+          // The weekend page's rule for the circuit lookup: the first session of the weekend that names a location.
+          location: w.sessions.find(x => x.location)?.location,
+        },
+        session: session ? { title: session.title, slug: sessionSlug(session.title), start: session.start, end: session.end } : null,
+      },
+    });
+  }
+  found.sort((a, b) => a.at - b.at);
+  return found[0]?.next ?? null;
+}
+
 export function weekendIsLive(weekend: Weekend, now: Date = new Date()): boolean {
   return weekend.sessions.some(s => !s.dateOnly && s.start <= now && now <= s.end);
 }

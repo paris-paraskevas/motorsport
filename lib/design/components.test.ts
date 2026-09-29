@@ -262,6 +262,28 @@ describe('the component catalogue', () => {
     expect(recipeRegions('/').find(r => r.component === 'series.live')).not.toHaveProperty('source');
   });
 
+  it('P2.8: the Countdown is a general component in the Series group with a Series choice (every series, or one), a Heading, the time at the track and the links as switches, reading no catalogue source; its tile names what is set', () => {
+    const countdown = findComponent('series.countdown')!;
+    expect(countdown).toMatchObject({ name: 'Countdown', group: 'Series' });
+    expect(countdown.holds).toMatch(/^the next session of one series or the nearest across every series/);
+    expect(countdown.sources).toBeUndefined();
+    expect(countdown.settings.map(s => [s.key, s.kind])).toEqual([
+      ['series', 'choice'],
+      ['heading', 'text'],
+      ['venueTime', 'boolean'],
+      ['link', 'boolean'],
+    ]);
+    const series = countdown.settings[0];
+    expect(series.options![0]).toEqual({ key: '', label: 'Every series', group: 'Series' });
+    expect(series.options).toHaveLength(16);
+    expect(series.options!.find(o => o.key === 'f1')).toEqual({ key: 'f1', label: 'Formula 1', group: 'Series' });
+    expect(componentDefaults(countdown)).toEqual({ series: '', heading: '', venueTime: true, link: true });
+    expect(parseSettings(countdown, { series: 'motogp', heading: 'Next up', venueTime: false, link: true }).settings).toEqual({ series: 'motogp', heading: 'Next up', venueTime: false, link: true });
+    expect(parseSettings(countdown, { series: 'nope' }).problems[0]).toMatch(/^Series must be one of Every series, /);
+    expect(settingsSummary(countdown, componentDefaults(countdown))).toBe('Series Every series · Time at the track yes · Links yes');
+    expect(settingsSummary(countdown, { series: 'f1', heading: 'Next up', venueTime: false, link: true })).toBe('Series Formula 1 · Heading Next up · Time at the track no · Links yes');
+  });
+
   it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
     // P2.5 PR B: the calendar's Filters region before the month, over the calendar's own facets (it has no preset).

@@ -14,6 +14,23 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1091 · 1.0.209 · P2.8 · opened Tue 29 Sep 11:35 (08:35Z); the merge on the word
+**Countdown.** The next session of one series or the nearest across every series as a component editors place: its name, its weekend, the reader's time and the time at the track, the digits, LIVE while it runs.
+- **Readers see:** nothing until an editor places a Countdown; then the box.
+- **Editors get:** the Countdown in the gallery's Components with Series, Heading, Time at the track and Links.
+- **Files (16):**
+  - `lib/weekend.ts`, `lib/weekend.test.ts` · `nextSessionAcross` and its cases (new test file, on the plan’s word).
+  - `lib/circuits.ts`, `lib/circuits.test.ts`, `content/circuits.json`, `scripts/fetch-circuit-timezones.mts` · the `tz` on every circuit, its check, the lookup script (new, on the plan’s word).
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the definition and its catalogue test.
+  - `components/data/DataRegionViews.tsx` · `DataRegionCountdown`.
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · the renderer behind dynamic imports, the READS entry, the render test from a saved document.
+  - `components/designer/PluginsEditor.test.tsx` · twelve definitions listed (the Countdown joins).
+  - `eslint.config.mjs` · the crawlers’ output folders ignored.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.8 started with the build's evidence; a dated line.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.209.
+- **Verified:** tests first (7 red across four files), then green; tsc 0; lint 0 errors (the two known warnings); vitest 257 files, 2468 tests; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` Total Upload 39352.23 KiB / gzip 8555.89 KiB; the local designer: the tile in the gallery, Add To → Body, Series Formula 1, saved and published locally, /series/f1 drawing the Bahrain Grand Prix's Practice 1 with the reader's time and Sepang's (GMT+8), the same weekend and session as the driver page's Next out; the review page https://claude.ai/code/artifact/3cdd1ce5-03ac-4d65-8739-1048fc2c4e42.
+- **Review:** a fresh-context Sonnet reviewer (210k tokens), SOUND WITH FIXES, one blocking finding folded with its test (first in the Body without a heading, the empty state's line is the page's h1) and its notes taken (formatLocal for the track's time; the site's box outline and shadow with the series' colour as the eyebrow's bar; the weekend page's location rule; the tz script keeps the file's shape; the editor test's comment; the live tie-break noted)
+
 ## #1090 · 1.0.208 · records · opened Tue 29 Sep 10:00 (07:00Z); the merge on the standing word
 **R15 on prod and done.** Records only: the merge, the deploy, prod's robots.txt, the census, the pickup for the Seobility crawl.
 - **Readers see:** nothing.

@@ -9,6 +9,11 @@ export interface Circuit {
   lat: number;
   lon: number;
   aliases: string[];
+  /** The circuit's IANA time zone (P2.8, the Countdown's time at the track), written by
+   *  scripts/fetch-circuit-timezones.mts from Open-Meteo's `timezone=auto` answer for the
+   *  coordinates and checked as a zone the runtime knows (lib/circuits.test.ts). Absent, a
+   *  reader sees their own time alone: never a wrong one. */
+  tz?: string;
 }
 
 export type CircuitsMap = Record<string, Circuit>;
