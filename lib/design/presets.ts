@@ -173,7 +173,6 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
   },
 };
 
-
 export interface PresetGroup {
   key: string;
   name: string;

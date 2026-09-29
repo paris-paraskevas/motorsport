@@ -426,7 +426,6 @@ export const SOURCES: readonly SourceDefinition[] = [
   },
 ];
 
-
 export function findSource(key: string): SourceDefinition | null {
   return SOURCES.find(s => s.key === key) ?? null;
 }

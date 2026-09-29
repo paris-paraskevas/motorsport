@@ -129,13 +129,13 @@ export function ChartFrame({ data }: { data: ChartData }) {
             );
           })}
           {hidden > 0 && (
-            <button type="button" onClick={() => setExpanded(true)} className={`${FOLD} text-text-muted hover:border-border-strong hover:text-text`}>
+            <button type="button" aria-expanded={false} onClick={() => setExpanded(true)} className={`${FOLD} text-text-muted hover:border-border-strong hover:text-text`}>
               +{hidden} more
               <ChevronDown size={12} />
             </button>
           )}
           {expanded && series.length > shown && (
-            <button type="button" onClick={() => setExpanded(false)} className={`${FOLD} text-text-faint hover:text-text`}>
+            <button type="button" aria-expanded={true} onClick={() => setExpanded(false)} className={`${FOLD} text-text-faint hover:text-text`}>
               Collapse
             </button>
           )}
