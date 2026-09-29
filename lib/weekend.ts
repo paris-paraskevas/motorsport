@@ -102,16 +102,23 @@ export interface NextSession {
   session: { title: string; slug: string; start: Date; end: Date } | null;
 }
 
+/** The series' next weekend, for the Countdown and the Weather (P2.8, P2.14): the first not past with a session still to end
+ *  (the weekend pages' and the Weekends source's rule); null when nothing is to come or the grouping throws, so a broken feed
+ *  contributes nothing, as the Weekends reader has it. */
+export function nextWeekend(series: Series, now: Date = new Date()): Weekend | null {
+  let weekends: Weekend[];
+  try {
+    weekends = groupByWeekend(series.sessions, now, series.rounds);
+  } catch {
+    return null;
+  }
+  return weekends.find(x => !x.isPast && x.sessions.some(x2 => x2.end >= now)) ?? null;
+}
+
 export function nextSessionAcross(series: readonly Series[], now: Date = new Date()): NextSession | null {
   const found: { at: number; next: NextSession }[] = [];
   for (const s of series) {
-    let weekends: Weekend[];
-    try {
-      weekends = groupByWeekend(s.sessions, now, s.rounds);
-    } catch {
-      continue;
-    }
-    const w = weekends.find(x => !x.isPast && x.sessions.some(x2 => x2.end >= now));
+    const w = nextWeekend(s, now);
     if (!w) continue;
     const timed = w.sessions.filter(x => !x.dateOnly && x.end > now).sort((a, b) => a.start.getTime() - b.start.getTime());
     const session = timed[0] ?? null;

@@ -1,8 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
+  dayLabel,
+  dayTiles,
   forecastAtSession,
   forecastFor,
   forecastWindow,
+  hourLabel,
+  sessionTiles,
   thinHours,
   venueLocalIsoDate,
   venueLocalIsoHour,
@@ -148,5 +152,47 @@ describe('weatherLabel', () => {
     expect(weatherLabel(61).label).toBe('Light rain');
     expect(weatherLabel(0).label).toBe('Clear');
     expect(weatherLabel(1234).label).toBe('Forecast');
+  });
+});
+
+// P2.14, the Weather component: the weekend strip's tiles and the day tiles as pure builders over the reader's forecast, the
+// label a parameter so this file stays a leaf (the callers pass the schedule's shortSessionLabel).
+describe('sessionTiles and dayTiles (P2.14)', () => {
+  const f = forecast();
+  const label = (title: string) => title.replace(/^.*?-\s*/, '').toUpperCase();
+  // 15:00-16:45 local on the 22nd; a sprint 13:00-13:45; a rally day with no hour on the 23rd; a race past the horizon.
+  const race = { uid: 'race', title: 'F1 - Race', start: new Date('2026-08-22T13:00:00Z'), end: new Date('2026-08-22T14:45:00Z') };
+  const sprint = { uid: 'sprint', title: 'F1 - Sprint', start: new Date('2026-08-22T11:00:00Z'), end: new Date('2026-08-22T11:45:00Z') };
+  const rally = { uid: 'rally', title: 'Rally Day', start: new Date('2026-08-23T00:00:00Z'), end: new Date('2026-08-23T23:00:00Z'), dateOnly: true };
+  const far = { uid: 'far', title: 'F1 - Race', start: new Date('2026-09-30T13:00:00Z'), end: new Date('2026-09-30T15:00:00Z') };
+
+  it('labels a venue-local day and hour', () => {
+    expect(dayLabel('2026-08-22')).toBe('SAT 22 AUG');
+    expect(hourLabel('2026-08-22T15:00')).toBe('15:00');
+  });
+
+  it('builds a tile per session in running order: the hours across its running thinned to the cap, the day’s high and low for a session without an hour, nothing past the horizon', () => {
+    const tiles = sessionTiles([race, far, sprint, rally], f, 4, label);
+    expect(tiles.map(t => t.key)).toEqual(['sprint', 'race', 'rally']);
+    expect(tiles[0]).toMatchObject({ label: 'SPRINT', when: 'SAT 22 AUG · 13:00-14:00', day: null });
+    expect(tiles[0].hours.map(h => h.time)).toEqual(['2026-08-22T13:00', '2026-08-22T14:00']);
+    expect(tiles[1]).toMatchObject({ label: 'RACE', when: 'SAT 22 AUG · 15:00-17:00', day: null });
+    expect(tiles[1].hours.map(h => h.time)).toEqual(['2026-08-22T15:00', '2026-08-22T16:00', '2026-08-22T17:00']);
+    expect(tiles[2]).toMatchObject({ label: 'RALLY DAY', when: 'SUN 23 AUG · TBC', hours: [] });
+    expect(tiles[2].day).toMatchObject({ date: '2026-08-23', maxC: 19, minC: 14, precipProb: 33 });
+    // Two rows keep the first and the last hour of the race.
+    expect(sessionTiles([race], f, 2, label)[0].hours.map(h => h.time)).toEqual(['2026-08-22T15:00', '2026-08-22T17:00']);
+    expect(sessionTiles([far], f, 4, label)).toEqual([]);
+  });
+
+  it('builds a tile per venue-local day the sessions span, with the sessions of the day under it and the reading of their hour; TBC without an hour', () => {
+    const days = dayTiles([race, rally, sprint, far], f, label);
+    expect(days.map(d => d.date)).toEqual(['2026-08-22', '2026-08-23']);
+    expect(days[0]).toMatchObject({ label: 'SAT 22 AUG', daily: { maxC: 18, minC: 13, precipProb: 98, weatherCode: 61 } });
+    expect(days[0].sessions.map(s => `${s.label} ${s.hour} ${s.reading?.tempC ?? '-'} ${s.reading?.precipProb ?? '-'}`)).toEqual(['SPRINT 13:00 16 10', 'RACE 15:00 18 30']);
+    expect(days[1]).toMatchObject({ label: 'SUN 23 AUG', daily: { maxC: 19, minC: 14 } });
+    expect(days[1].sessions).toEqual([{ key: 'rally', label: 'RALLY DAY', hour: null, reading: null }]);
+    // A session outside the horizon has no day to stand on.
+    expect(dayTiles([far], f, label)).toEqual([]);
   });
 });

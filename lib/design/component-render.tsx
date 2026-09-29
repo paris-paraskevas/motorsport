@@ -49,9 +49,12 @@ const circuitsLib = () => import('@/lib/circuits');
 const breadcrumbLib = () => import('./breadcrumb');
 // The Tabs strip (P2.10), a client piece, on demand as the views are.
 const regionTabs = () => import('@/components/page/RegionTabs');
+// The Weather (P2.14) reads the site's one forecast reader and the Weather build option the same way.
+const weatherLib = () => import('@/lib/weather');
+const buildOptionsLib = () => import('./build-options');
 
 import type { Facet } from '@/components/data/DataRegionFilters';
-import type { Series } from '@/lib/types';
+import type { Series, Weekend } from '@/lib/types';
 import { formatLocal } from '@/lib/date';
 import type { SourceRead as SourceReadResult } from './source-read';
 import { facetValues, type PresetRow as FacetRow, type Shape as FacetShape } from './presets';
@@ -186,6 +189,56 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
         : null,
     };
     return <views.DataRegionCountdown heading={heading} level={level} data={data} links={links} every={!slug} />;
+  },
+  // The Weather (P2.14): the forecast at the track for the page's weekend (a weekend or a session page, its address's parts)
+  // or the series' next (one series, or the nearest across every series, the Countdown's rule), by venue-local time through
+  // the site's one reader; the curated venue first, the weekend page's rule; nothing when the Weather build option is
+  // excluded, as the two code pieces; one line without a forecast.
+  async 'series.weather'(settings, ctx) {
+    // The switch first: an excluded option loads nothing else (the reviewer's note).
+    const { isBuildOptionIncluded } = await buildOptionsLib();
+    if (!(await isBuildOptionIncluded('weather'))) return null;
+    const [{ loadAllSeries, loadSeries }, { weekendFor, nextSessionAcross, weekendLabel, shortSessionLabel }, { matchCircuit, venueCandidates }, weather, views] = await Promise.all([
+      seriesLib(),
+      weekendLib(),
+      circuitsLib(),
+      weatherLib(),
+      dataViews(),
+    ]);
+    const slug = str(settings.series);
+    const heading = str(settings.heading);
+    const level = ctx.first ? 'h1' : 'h2';
+    const view: 'sessions' | 'daily' = str(settings.view) === 'daily' ? 'daily' : 'sessions';
+    const rows = Math.min(8, Math.max(2, Number(settings.hours) || 4));
+    const onWeekendPage = ctx.path === '/series/[slug]/weekend/[round]' || ctx.path === '/series/[slug]/weekend/[round]/[session]';
+    let series: Series | null = null;
+    let weekend: Weekend | null = null;
+    try {
+      if (onWeekendPage && ctx.params.slug && ctx.params.round) {
+        series = await loadSeries(ctx.params.slug);
+        weekend = weekendFor(series, Number(ctx.params.round), ctx.now);
+      } else {
+        const list = slug ? [await loadSeries(slug)] : await loadAllSeries();
+        const next = nextSessionAcross(list, ctx.now);
+        series = next ? (list.find(s => s.meta.slug === next.series.slug) ?? null) : null;
+        weekend = series && next ? weekendFor(series, next.weekend.round, ctx.now) : null;
+      }
+    } catch {
+      series = null;
+      weekend = null;
+    }
+    if (!series || !weekend) return <views.DataRegionWeather heading={heading} level={level} data={null} every={!slug} weekendTitle={null} />;
+    const title = weekendLabel(weekend, weekend.round).title;
+    const round = series.rounds?.rounds?.find(r => r.round === weekend.round);
+    const circuit = await matchCircuit(...venueCandidates({ venue: round?.venue, location: weekend.sessions.find(s => s.location)?.location, title })).catch(() => null);
+    const forecast = circuit ? await weather.fetchWeather(circuit.lat, circuit.lon).catch(() => null) : null;
+    const sessions = forecast && view === 'sessions' ? weather.sessionTiles(weekend.sessions, forecast, rows, shortSessionLabel) : [];
+    const days = forecast && view === 'daily' ? weather.dayTiles(weekend.sessions, forecast, shortSessionLabel) : [];
+    if (!circuit || !forecast || (sessions.length === 0 && days.length === 0)) {
+      return <views.DataRegionWeather heading={heading} level={level} data={null} every={!slug} weekendTitle={title} />;
+    }
+    const data = { seriesName: series.meta.name, colour: series.meta.color, round: weekend.round, weekendTitle: title, circuitName: circuit.name, view, sessions, days };
+    return <views.DataRegionWeather heading={heading} level={level} data={data} every={!slug} weekendTitle={title} />;
   },
   // The Breadcrumb (P2.17): the trail from the pattern and the address's parts the frame or the catch-all hands over, the
   // row for a page made in the designer; its BreadcrumbList unless the page's own code prints one (OWN_BREADCRUMB_LD).
@@ -408,6 +461,9 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'series.live': ['content:series'],
   // The Countdown reads the series' sessions from the feeds as the Weekends source does, and the circuits for the track's zone (P2.8).
   'series.countdown': ['content:series', 'live:ics', 'content:circuits'],
+  // The Weather reads the weekend as the Countdown does, the circuit, and the forecast through the site's reader (KV, then
+  // Open-Meteo) (P2.14).
+  'series.weather': ['content:series', 'live:ics', 'content:circuits', 'kv:paddock:weather:', 'live:open-meteo'],
   // The Breadcrumb's label sources (P2.17): the pages' rows, the series and their sessions, the Learn content, a post or an author.
   'page.breadcrumb': ['db:page', 'content:series', 'live:ics', 'content:information', 'db:post'],
   // The Tabs over sibling pages (P2.10) read the series' meta or the live row pages; over regions they read nothing.

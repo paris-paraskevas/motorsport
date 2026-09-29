@@ -1,5 +1,5 @@
 import type { Session, Weekend } from '@/lib/types';
-import { matchCircuit } from '@/lib/circuits';
+import { matchCircuit, venueCandidates } from '@/lib/circuits';
 import { fetchWeather, forecastWindow, thinHours } from '@/lib/weather';
 import { HourlyForecastRows } from '@/components/weekend/HourlyForecastRows';
 import { isBuildOptionIncluded } from '@/lib/design/build-options';
@@ -26,9 +26,12 @@ const MAX_ROWS = 7;
 export async function SessionForecast({
   session,
   weekend,
+  venue,
 }: {
   session: Session;
   weekend: Weekend;
+  /** The round's curated venue (P2.14): first in line, as the rest of the page resolves the circuit. */
+  venue?: string;
 }) {
   // The Weather build option (the designer's Build Options): excluded, the
   // forecast renders nothing, exactly as a session without one does.
@@ -38,7 +41,7 @@ export async function SessionForecast({
   // fall back to the weekend's, which is how the rest of this page resolves the
   // venue too.
   const location = session.location ?? weekend.sessions.find(s => s.location)?.location;
-  const circuit = await matchCircuit(location, session.title);
+  const circuit = await matchCircuit(...venueCandidates({ venue, location, title: session.title }));
   if (!circuit) return null;
 
   const forecast = await fetchWeather(circuit.lat, circuit.lon);

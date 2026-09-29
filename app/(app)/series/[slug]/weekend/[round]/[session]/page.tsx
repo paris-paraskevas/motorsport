@@ -682,7 +682,7 @@ async function SessionBody({
           that has not produced timing yet. Self-suppressing: no circuit match, no
           forecast, or a session outside Open-Meteo's 16-day horizon renders
           nothing. */}
-      <SessionForecast session={session} weekend={weekend} />
+      <SessionForecast session={session} weekend={weekend} venue={series.rounds?.rounds?.find(r => r.round === round)?.venue} />
 
       <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 font-mono text-10 uppercase tracking-[0.14em]">
         <Link

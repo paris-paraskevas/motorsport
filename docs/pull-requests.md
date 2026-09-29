@@ -14,6 +14,26 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1097 · 1.0.215 · P2.14 · opened Tue 29 Sep 15:56 (12:56Z); the merge on the word
+**Weather.** The forecast at the track for a weekend as a component editors place, by venue-local time: hour by hour across each session, or day by day with the sessions; the site's one reader as the source; the weekend page's strip and the session page's forecast corrected to the round's curated venue.
+- **Readers see:** Sepang's forecast on the Bahrain Grand Prix page (it read Sakhir's); nothing else until an editor places a Weather region.
+- **Editors get:** the Weather in the gallery's Components with Series, View, Heading and Rows per session.
+- **Files (17):**
+  - `lib/weather.ts`, `lib/weather.test.ts` · `sessionTiles`, `dayTiles`, `dayLabel`, `hourLabel` (the strip’s builders, shared) and their cases; the stale SessionCard note corrected.
+  - `lib/weekend.ts`, `lib/weekend.test.ts` · `nextWeekend`, `nextSessionAcross` on it.
+  - `components/weekend/WeekendWeatherStrip.tsx`, `components/weekend/SessionForecast.tsx` · the shared builders; a `venue` prop resolved through `venueCandidates` (the fix on the word).
+  - `app/(app)/series/[slug]/weekend/[round]/page.tsx`, `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx` · the curated venue handed to the pieces.
+  - `lib/design/build-option-defaults.ts` · the Weather option's words name the region.
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the definition and its catalogue test.
+  - `components/data/DataRegionViews.tsx` · `DataRegionWeather`.
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · the renderer behind dynamic imports, the READS entry, the render test from a saved document.
+  - `components/designer/PluginsEditor.test.tsx` · fifteen definitions listed (the Weather joins).
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.14 started with the build's evidence; a dated line.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup, the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.215.
+- **Verified:** the tests written before the code across five files, the first run after the code green; tsc 0; lint 0 errors (the two known warnings); vitest 259 files, 2500 tests; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` Total Upload 40953.14 KiB / gzip 8926.15 KiB (up 1.3 MiB on P2.10: the weather reader and its KV client as an on-demand chunk of their own; 62% of the ceiling); the local designer: a Weather region in the Page Header of the /series/[slug]/weekend/[round] page, published locally 12:37Z: /series/f1/weekend/16 (the Bahrain Grand Prix at Sepang, 2–4 October) drew FP1 · FP2 · FP3 · QUALI · RACE hour by hour in venue-local time with Source: Open-Meteo · Petronas Sepang International Circuit, and the page's own strip further down the identical tiles naming Sepang (by name alone it read Sakhir); the region republished as Day by day (12:39Z) drew a tile per venue-local day (2, 3, 4 October) with the sessions and their hour's reading under each; a Weather region with Series Formula 1 on /series/f1 (12:41Z) drew the same next weekend; at 1440 and 390 px; the screenshots p214-weekend-desktop, p214-weekend-strip, p214-weekend-phone, p214-daily-desktop, p214-hub-desktop; the review page https://claude.ai/code/artifact/109f380c-c13c-4dfb-ad27-ba4ac3c4d9a1.
+- **Review:** a fresh-context Sonnet reviewer (166,827 tokens), SOUND, no blocking finding (the tile arithmetic hand-checked against the fixtures, the venue fix wired at both call sites, the bundle rule, the strip's markup byte-identical but for the prop); its notes taken (the build option checked before the views load; the day fallback's markup shared with the strip left for Phase 3; the drafts kept out of the commit)
+
 ## #1096 · 1.0.214 · records · opened Tue 29 Sep 15:05 (12:05Z); the merge on the standing word
 **P2.10 on prod and done.** Records only: the merge, the deploy, the slot closed; the Bing slots behind Phase 2 on the word.
 - **Readers see:** nothing.

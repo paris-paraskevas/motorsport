@@ -936,7 +936,7 @@ async function WeekendPage({
                         with it and leave the jump button pointing at nothing. */}
                     <div id="weather" className={ANCHOR_OFFSET}>
                       <Suspense fallback={<div className="h-10 animate-pulse bg-surface/40" />}>
-                        <WeekendWeatherStrip weekend={weekend} />
+                        <WeekendWeatherStrip weekend={weekend} venue={roundMeta?.venue} />
                       </Suspense>
                     </div>
                     {NEWS_SLUG_MAP[slug] != null && (

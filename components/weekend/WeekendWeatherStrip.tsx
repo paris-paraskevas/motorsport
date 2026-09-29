@@ -1,17 +1,7 @@
-import type { Session, Weekend } from '@/lib/types';
-import { matchCircuit } from '@/lib/circuits';
+import type { Weekend } from '@/lib/types';
+import { matchCircuit, venueCandidates } from '@/lib/circuits';
 import { shortSessionLabel } from '@/lib/weekend';
-import {
-  fetchWeather,
-  forecastFor,
-  forecastWindow,
-  thinHours,
-  venueLocalIsoDate,
-  weatherLabel,
-  type DailyWeather,
-  type HourlyWeather,
-  type WeatherForecast,
-} from '@/lib/weather';
+import { fetchWeather, sessionTiles, weatherLabel, type DailyWeather } from '@/lib/weather';
 import { HourlyForecastRows } from '@/components/weekend/HourlyForecastRows';
 import { isBuildOptionIncluded } from '@/lib/design/build-options';
 
@@ -19,33 +9,6 @@ import { isBuildOptionIncluded } from '@/lib/design/build-options';
  *  (start hour through end hour) while a 24-hour race thins to four readings
  *  spanning the whole run rather than truncating to its first morning. */
 const MAX_ROWS = 4;
-
-/** "SAT 22 AUG" in venue-local terms. `iso` is already a venue-local date, so
- *  it is formatted as UTC to stop the server's own zone shifting it again. */
-function dayLabel(iso: string): string {
-  return new Date(`${iso}T00:00:00Z`)
-    .toLocaleDateString('en-GB', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      timeZone: 'UTC',
-    })
-    .toUpperCase();
-}
-
-function hourLabel(isoHour: string): string {
-  return isoHour.slice(11, 16);
-}
-
-interface Tile {
-  key: string;
-  label: string;
-  /** SAT 22 AUG · 15:00-16:45, or SAT 22 AUG · TBC */
-  when: string;
-  hours: HourlyWeather[];
-  /** Only for a session with no known hour: the day's own high/low. */
-  day: DailyWeather | null;
-}
 
 /**
  * Weather for the weekend, read PER SESSION and ACROSS its running (operator,
@@ -60,28 +23,27 @@ interface Tile {
  *
  * A session whose hour is unknown (`dateOnly`, rendered as TBC everywhere else)
  * falls back to its day's high/low, because a day range is the only honest
- * answer when there is no time to read.
+ * answer when there is no time to read. The tiles themselves are built by
+ * lib/weather.ts sessionTiles, shared with the Weather component (P2.14).
+ *
+ * The circuit resolves through the round's curated venue first, as the rest of
+ * the weekend page does (P2.14): by name alone the 2026 Bahrain Grand Prix, run
+ * at Sepang, read Sakhir's forecast.
  */
-export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
+export async function WeekendWeatherStrip({ weekend, venue }: { weekend: Weekend; venue?: string }) {
   // The Weather build option (the designer's Build Options): excluded, the strip
   // renders nothing, exactly as a weekend without a forecast does.
   if (!(await isBuildOptionIncluded('weather'))) return null;
 
   const location = weekend.sessions.find(s => s.location)?.location;
   const title = weekend.sessions[0]?.title;
-  const circuit = await matchCircuit(location, title);
+  const circuit = await matchCircuit(...venueCandidates({ venue, location, title }));
   if (!circuit) return null;
 
   const forecast = await fetchWeather(circuit.lat, circuit.lon);
   if (!forecast) return null;
 
-  const ordered = [...weekend.sessions].sort((a, b) => a.start.getTime() - b.start.getTime());
-  const tiles: Tile[] = [];
-  for (const session of ordered) {
-    const tile = tileFor(session, forecast);
-    if (tile) tiles.push(tile);
-  }
-
+  const tiles = sessionTiles(weekend.sessions, forecast, MAX_ROWS, shortSessionLabel);
   if (tiles.length === 0) return null;
 
   return (
@@ -111,31 +73,6 @@ export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
       </div>
     </section>
   );
-}
-
-function tileFor(session: Session, forecast: WeatherForecast): Tile | null {
-  const dayIso = venueLocalIsoDate(forecast, session.start);
-  const label = shortSessionLabel(session.title);
-
-  // A dateOnly session has no hour to read (lib/types.ts), so the day's range is
-  // the honest answer and the label says TBC, exactly as the schedule does.
-  if (session.dateOnly) {
-    const daily = forecastFor(forecast, dayIso);
-    if (!daily) return null;
-    return { key: session.uid, label, when: `${dayLabel(dayIso)} · TBC`, hours: [], day: daily };
-  }
-
-  const hours = thinHours(forecastWindow(forecast, session.start, session.end), MAX_ROWS);
-  if (hours.length === 0) {
-    // Past Open-Meteo's horizon, or already run and out of its window: better to
-    // omit the session than to draw it against a day it did not happen on.
-    return null;
-  }
-  const span =
-    hours.length > 1
-      ? `${hourLabel(hours[0].time)}-${hourLabel(hours[hours.length - 1].time)}`
-      : hourLabel(hours[0].time);
-  return { key: session.uid, label, when: `${dayLabel(dayIso)} · ${span}`, hours, day: null };
 }
 
 function DayFallback({ daily }: { daily: DailyWeather }) {
