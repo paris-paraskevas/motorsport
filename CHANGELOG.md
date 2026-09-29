@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.216 — 2026-09-29
+
+### Records — P2.14 on prod and done; the session-58 handoff
+
+Records only. `docs/plan/ledger.json`: P2.14 (#1097, 1.0.215) merged on “merge” (13:01:07Z), prod 1.0.215 by 13:05:54Z, prod's Bahrain Grand Prix weather strip naming Sepang; P2.14 DONE; a dated line closes session 58. `docs/HANDOFF.md`: a new LATEST block with the session-59 pickup prompt (P2.11 Chart next in the operator's order; Seobility's export; the Bing slots after Phase 2; O1 before 2027; the operator's own items; the recipes and the landmines learned on the 29th); the old block closed. `SCHEDULE.md`: the day's items and minutes.
+
 ## 1.0.215 — 2026-09-29
 
 ### P2.14 — Weather
