@@ -264,6 +264,22 @@ describe('PageDesigner', () => {
     fireEvent.click(screen.getByRole('button', { name: /Utilities/ }));
     for (const name of path) fireEvent.click(menuEntry(name));
   };
+  it('P2.10: a region’s Advanced group turns Region Display Selector on and its Appearance group picks an icon from the bar’s set; both saved on the region', async () => {
+    const { onSaved } = mount();
+    fireEvent.click(tile('Static Content: A century of speed'));
+    const pe = screen.getByLabelText('Property Editor');
+    fireEvent.click(within(within(pe).getByRole('group', { name: 'Listed by a Tabs region' })).getByRole('button', { name: 'Yes' }));
+    expect(status()).toMatch(/Listed by a Tabs region/);
+    // The pane keeps a group's fold by title across selections, and the page's Appearance group starts folded.
+    fireEvent.click(within(pe).getByRole('button', { name: 'Appearance' }));
+    fireEvent.change(within(pe).getByLabelText('Region icon'), { target: { value: 'flag' } });
+    expect(status()).toMatch(/Icon: flag/);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    const post = calls.find(c => c.method === 'POST')!;
+    expect((post.body as { document: PageDocument }).document.regions.find((r: Region) => r.id === 'intro')).toMatchObject({ selector: true, icon: 'flag' });
+  });
+
   it('P2.17: Create › Breadcrumb Region places the Breadcrumb component in the Breadcrumb Bar, selected, its position shown (APEX: Create Breadcrumb Region)', () => {
     mount();
     fireEvent.click(screen.getByRole('button', { name: 'Create ▾' }));

@@ -1112,6 +1112,36 @@ describe('renderComponents', () => {
     expect(await draw({}, { path: '/', params: {} })).toBeNull();
     expect(await draw({ home: false }, { path: '/about', params: {} })).toBeNull();
   });
+
+  it('P2.10: the Tabs draw a strip over the page’s regions that opt in, in order, Show all first, the icons when asked, nothing with one tab; or a strip of the sibling pages, the current one marked', async () => {
+    const opt = (id: string, seq: number, over: Partial<Region> = {}): Region =>
+      ({ id, kind: 'static', title: id.toUpperCase(), position: 'body', seq, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'x', selector: true, ...over }) as Region;
+    const where = { path: '/history/monza', params: {} };
+    const out = await renderComponents(doc([region('tabs', 'page.tabs', {}, { seq: 5 }), opt('preview', 10, { icon: 'flag' }), opt('report', 20), opt('aside', 30, { selector: undefined })]), where);
+    const strip = html(out.tabs);
+    expect(strip).toContain('role="tablist"');
+    expect(strip).toMatch(/<button[^>]*role="tab"[^>]*aria-selected="true"[^>]*aria-controls="region-preview"/);
+    expect(strip).toMatch(/aria-selected="false"[^>]*aria-controls="region-report"/);
+    expect(strip).not.toContain('region-aside');
+    expect(strip.indexOf('Show all')).toBeLessThan(strip.indexOf('PREVIEW'));
+    expect(strip.indexOf('PREVIEW')).toBeLessThan(strip.indexOf('REPORT'));
+    expect(strip).not.toContain('<svg');
+    const icons = html((await renderComponents(doc([region('tabs', 'page.tabs', { icons: true, showAll: false }, { seq: 5 }), opt('preview', 10, { icon: 'flag' }), opt('report', 20)]), where)).tabs);
+    expect(icons).toContain('<svg');
+    expect(icons).not.toContain('Show all');
+    // One tab: nothing. A sub region and another position never count.
+    expect((await renderComponents(doc([region('tabs', 'page.tabs', {}, { seq: 5 }), opt('preview', 10), opt('sub', 30, { parent: 'preview' }), opt('foot', 10, { position: 'footer' })]), where)).tabs).toBeNull();
+    // Sibling pages: the series tab's sub-pages and News as links, the current one marked; nothing where the address has no siblings.
+    vi.spyOn(seriesLib, 'loadSeries').mockResolvedValue({ meta: { slug: 'f1', name: 'Formula 1', color: '#e10600', season: 2026 }, sessions: [] } as unknown as Series);
+    const pages = html((await renderComponents(doc([region('tabs', 'page.tabs', { over: 'pages' }, { seq: 5 })]), { path: '/series/[slug]/[tab]', params: { slug: 'f1', tab: 'standings' } })).tabs);
+    expect(pages).toContain('<nav aria-label="Pages"');
+    expect(pages).toMatch(/<a[^>]*href="\/series\/f1"[^>]*>Calendar<\/a>/);
+    expect(pages).toMatch(/<a[^>]*href="\/series\/f1\/standings"[^>]*>Standings<\/a>/);
+    expect(pages.match(/aria-current="page"/g)).toHaveLength(1);
+    expect(pages).toMatch(/aria-current="page"[^>]*>Standings<\/a>|href="\/series\/f1\/standings"[^>]*aria-current="page"/);
+    expect(pages).toContain('>News</a>');
+    expect((await renderComponents(doc([region('tabs', 'page.tabs', { over: 'pages' }, { seq: 5 })]), { path: '/about', params: {} })).tabs).toBeNull();
+  });
 });
 
 describe('the table’s controls and the reader’s state (P2.3 PR A)', () => {

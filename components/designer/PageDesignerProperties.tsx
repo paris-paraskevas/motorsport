@@ -1052,6 +1052,40 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           help: 'The region template (APEX: Appearance › Template): how the region is drawn around its content. Plain answers to the Universal Theme’s Content Block, Boxed to Standard, Hero to Hero; Band and Aside are ours. A band takes the whole row.',
         },
         {
+          label: 'Icon',
+          common: true,
+          changed: ch(f('icon')),
+          htmlFor: fieldId('ricon'),
+          control: (
+            // Ours (P2.10): the phone bar's set, drawn by a Tabs region with Display Region Icons on; the study lists no Icon among APEX's region attributes.
+            <select
+              id={fieldId('ricon')}
+              value={r.icon ?? ''}
+              disabled={readOnly}
+              aria-label="Region icon"
+              className={FIELD}
+              onChange={e => {
+                const v = e.target.value;
+                p(v ? `Icon: ${v}.` : 'No icon.', x => {
+                  const y: Region = { ...x };
+                  if (v) y.icon = v;
+                  else delete y.icon;
+                  return y;
+                });
+              }}
+            >
+              <option value="">none</option>
+              {BAR_ICON_NAMES.map(name => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          ),
+          note: 'Drawn by a Tabs region before the tab’s name when it shows icons.',
+          help: 'Ours: an icon from the phone bar’s set, drawn by a Tabs region with Display Region Icons on; nothing else draws it yet.',
+        },
+        {
           label: 'Template Options',
           common: true,
           changed: ch(f('templateOptions')),
@@ -1176,6 +1210,28 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           control: <YesNo label="Hidden until an action shows it" value={r.hidden} disabled={readOnly} onPick={v => p(v ? 'Hidden until an action shows it.' : 'Shown at first.', x => ({ ...x, hidden: v }))} />,
           note: 'Rendered hidden, so a “read more” never flashes; a dynamic action shows it.',
           help: 'Rendered hidden until a dynamic action shows it.',
+        },
+        {
+          label: 'Region Display Selector',
+          common: true,
+          changed: ch(f('selector')),
+          control: (
+            <YesNo
+              label="Listed by a Tabs region"
+              value={r.selector === true}
+              disabled={readOnly}
+              onPick={v =>
+                p(v ? 'Listed by a Tabs region.' : 'Not listed by a Tabs region.', x => {
+                  const y: Region = { ...x };
+                  if (v) y.selector = true;
+                  else delete y.selector;
+                  return y;
+                })
+              }
+            />
+          ),
+          note: 'A Tabs region of this position lists the region as a tab, by its title (P2.10).',
+          help: 'APEX: Region Display Selector. On, a Tabs region in the same position lists this region as a tab; off, the Tabs region leaves it alone.',
         },
         {
           label: 'Actions',

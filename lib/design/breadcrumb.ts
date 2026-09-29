@@ -141,6 +141,44 @@ export async function breadcrumbTrail(where: TrailPage, opts: { home: boolean; c
   return crumbs.filter(c => (opts.home || c.href !== '/') && (opts.current || !c.current));
 }
 
+/** A page beside this one, for the Tabs strip over sibling pages (P2.10). */
+export interface SiblingPage {
+  label: string;
+  href: string;
+  current: boolean;
+}
+
+/** The pages beside an address (P2.10, the Tabs over sibling pages; ours: the series tabs stay one page per tab, so the
+ *  strip links them): a series' sub-pages and News for a series page (the site's own list, lib/tabs.ts seriesSubPages), the
+ *  Learn topics for a topic, the live row pages under the same parent for a page made in the designer; nothing elsewhere,
+ *  and nothing with fewer than two. The current page is marked, never left out. */
+export async function siblingPages(where: TrailPage): Promise<SiblingPage[]> {
+  const address = fillPattern(where.path, where.params);
+  const hit = matchCodePage(address);
+  let list: { label: string; href: string }[] = [];
+  try {
+    if (hit && (hit.page.path === '/series/[slug]' || hit.page.path === '/series/[slug]/[tab]')) {
+      const [{ loadSeries }, { seriesSubPages }] = await Promise.all([import('@/lib/series'), import('@/lib/tabs')]);
+      const series = await loadSeries(hit.params.slug);
+      list = [...seriesSubPages(series.meta).map(p => ({ label: p.label, href: p.href })), { label: 'News', href: `/series/${series.meta.slug}/news` }];
+    } else if (hit && hit.page.path === '/information/[topic]') {
+      const { INFO_TOPICS } = await import('@/lib/information/topics');
+      list = INFO_TOPICS.map(t => ({ label: t.label, href: `/information/${t.id}` }));
+    } else if (!hit) {
+      const parentOf = (path: string) => path.split('/').slice(0, -1).join('/') || '/';
+      const parent = parentOf(address);
+      const live = await (await import('./pages')).loadPageDestinations();
+      list = Object.values(live)
+        .filter(p => parentOf(p.path) === parent)
+        .sort((a, b) => a.path.localeCompare(b.path))
+        .map(p => ({ label: p.name, href: p.path }));
+    }
+  } catch {
+    list = [];
+  }
+  return list.length < 2 ? [] : list.map(p => ({ ...p, current: p.href === address }));
+}
+
 async function labelFor(prefix: string, current: boolean, where: TrailPage, rowName: (path: string) => Promise<string | null>): Promise<string | null> {
   const last = prefix.split('/').filter(Boolean).pop() ?? '';
   const hit = matchCodePage(prefix);

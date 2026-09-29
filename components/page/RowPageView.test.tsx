@@ -49,6 +49,25 @@ const data: RowPageData = {
 describe('RowPageView', () => {
   const html = renderToStaticMarkup(<RowPageView {...data} />);
 
+  it('P2.10: a Tabs region in View Single Region hides every opting region but the first before the page leaves the server; Scroll Window hides none', () => {
+    const tabbed = (mode: string): PageDocument => ({
+      version: 1,
+      actions: [],
+      regions: [
+        { id: 'tabs', kind: 'component', component: 'page.tabs', settings: { over: 'regions', mode, showAll: true, remember: 'browser', icons: false }, title: '', position: 'body', seq: 5, column: 1, span: 12, newRow: true, hidden: false, authz: null },
+        { id: 'preview', kind: 'static', title: 'Preview', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'Before', selector: true },
+        { id: 'report', kind: 'static', title: 'Report', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null, text: 'After', selector: true },
+      ],
+    });
+    const single = renderToStaticMarkup(<RowPageView {...data} document={tabbed('single')} />);
+    expect(single).toMatch(/<div[^>]*id="region-preview" data-region="preview" class=/);
+    expect(single).toMatch(/<div[^>]*id="region-report" data-region="report" hidden=""/);
+    const scroll = renderToStaticMarkup(<RowPageView {...data} document={tabbed('scroll')} />);
+    expect(scroll).toMatch(/<div[^>]*id="region-report" data-region="report" class=/);
+    const framed = renderToStaticMarkup(<CodePageFrame d={{ ...data, document: tabbed('single') }}>code</CodePageFrame>);
+    expect(framed).toMatch(/<div[^>]*id="region-report" data-region="report" hidden=""/);
+  });
+
   it('places the positions in the template order with the title between header and breadcrumb', () => {
     const at = (s: string) => html.indexOf(s);
     expect(at('A circuit history')).toBeGreaterThan(-1);

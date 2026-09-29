@@ -232,6 +232,58 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'current', label: 'This page', kind: 'boolean', default: true, help: 'The page itself as the last crumb, in words rather than a link.' },
     ],
   },
+  // Tabs (P2.10; APEX: Region Display Selector): a strip over this page's regions
+  // that opt in (Advanced › Region Display Selector), one shown at a time or all
+  // with a scroll to each, with APEX's Mode, Include 'Show All', Remember Last
+  // Selection and Display Region Icons; or, ours, a strip of links over the
+  // sibling pages of this one (the series tabs stay one page per tab, the
+  // operator's word of 2026-09-23). No source.
+  {
+    key: 'page.tabs',
+    name: 'Tabs',
+    group: 'Page',
+    holds: 'a tab strip over this page’s regions that opt in, one shown at a time or all with a scroll to each; or over the sibling pages of this one',
+    settings: [
+      {
+        key: 'over',
+        label: 'Over',
+        kind: 'choice',
+        default: 'regions',
+        options: [
+          { key: 'regions', label: 'This page’s regions' },
+          { key: 'pages', label: 'Sibling pages' },
+        ],
+        help: 'This page’s regions: the regions of this position with Region Display Selector on, by their titles. Sibling pages: links to the pages beside this one (a series’ tabs, the Learn topics, the pages under the same address).',
+      },
+      {
+        key: 'mode',
+        label: 'Mode',
+        kind: 'choice',
+        default: 'single',
+        options: [
+          { key: 'single', label: 'View Single Region' },
+          { key: 'scroll', label: 'Scroll Window' },
+        ],
+        help: 'View Single Region shows one region at a time; Scroll Window shows every region and a tab scrolls to its region.',
+        dependingOn: { key: 'over', values: ['regions'] },
+      },
+      { key: 'showAll', label: 'Include Show All', kind: 'boolean', default: true, help: 'A first tab showing every region (View Single Region).', dependingOn: { key: 'over', values: ['regions'] } },
+      {
+        key: 'remember',
+        label: 'Remember Last Selection',
+        kind: 'choice',
+        default: 'browser',
+        options: [
+          { key: 'browser', label: 'This browser' },
+          { key: 'visit', label: 'This visit' },
+          { key: 'no', label: 'No' },
+        ],
+        help: 'The tab a reader chose, kept in their browser, for this visit, or not at all.',
+        dependingOn: { key: 'over', values: ['regions'] },
+      },
+      { key: 'icons', label: 'Display Region Icons', kind: 'boolean', default: false, help: 'Each region’s Icon before its name.', dependingOn: { key: 'over', values: ['regions'] } },
+    ],
+  },
   // The calendar (R4.1, the first page whose route file left the code): the
   // month-by-month timeline of every session across the series.
   {

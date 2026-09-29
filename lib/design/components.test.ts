@@ -302,6 +302,31 @@ describe('the component catalogue', () => {
     expect(settingsSummary(crumb, { home: false, separator: 'slash', current: true })).toBe('Show Home no · Separator / · This page yes');
   });
 
+  it('P2.10: the Tabs are a general component in the Page group over this page’s regions or its sibling pages, with APEX’s Mode, Include Show All, Remember Last Selection and Display Region Icons; no catalogue source; the tile names what is set', () => {
+    const tabs = findComponent('page.tabs')!;
+    expect(tabs).toMatchObject({ name: 'Tabs', group: 'Page' });
+    expect(tabs.holds).toMatch(/^a tab strip over this page’s regions that opt in/);
+    expect(tabs.sources).toBeUndefined();
+    expect(tabs.settings.map(s => [s.key, s.kind])).toEqual([
+      ['over', 'choice'],
+      ['mode', 'choice'],
+      ['showAll', 'boolean'],
+      ['remember', 'choice'],
+      ['icons', 'boolean'],
+    ]);
+    expect(tabs.settings[0].options?.map(o => [o.key, o.label])).toEqual([['regions', 'This page’s regions'], ['pages', 'Sibling pages']]);
+    expect(tabs.settings[1].options?.map(o => [o.key, o.label])).toEqual([['single', 'View Single Region'], ['scroll', 'Scroll Window']]);
+    expect(tabs.settings[3].options?.map(o => [o.key, o.label])).toEqual([['browser', 'This browser'], ['visit', 'This visit'], ['no', 'No']]);
+    // The four of APEX's wait on the strip being over regions.
+    for (const s of tabs.settings.slice(1)) expect(s.dependingOn, s.key).toEqual({ key: 'over', values: ['regions'] });
+    expect(componentDefaults(tabs)).toEqual({ over: 'regions', mode: 'single', showAll: true, remember: 'browser', icons: false });
+    expect(parseSettings(tabs, { mode: 'scroll', showAll: false, remember: 'no', icons: true }).settings).toEqual({ over: 'regions', mode: 'scroll', showAll: false, remember: 'no', icons: true });
+    expect(parseSettings(tabs, { mode: 'stack' }).problems[0]).toMatch(/^Mode must be one of View Single Region, Scroll Window/);
+    expect(settingsSummary(tabs, componentDefaults(tabs))).toBe('Over This page’s regions');
+    expect(settingsSummary(tabs, { over: 'regions', mode: 'scroll', showAll: false, remember: 'no', icons: true })).toBe('Over This page’s regions · Mode Scroll Window · Include Show All no · Remember Last Selection No · Display Region Icons yes');
+    expect(settingsSummary(tabs, { over: 'pages', mode: 'scroll' })).toBe('Over Sibling pages');
+  });
+
   it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
     // P2.5 PR B: the calendar's Filters region before the month, over the calendar's own facets (it has no preset).

@@ -11,7 +11,8 @@ import * as authors from '@/lib/authors';
 import * as people from '@/lib/people';
 import type { Series } from '@/lib/types';
 import { matchCodePage } from './composed-page';
-import { breadcrumbTrail, fillPattern, ownsBreadcrumbLd, trailPrefixes, wordsFromSegment } from './breadcrumb';
+import { INFO_TOPICS } from '@/lib/information/topics';
+import { breadcrumbTrail, fillPattern, ownsBreadcrumbLd, siblingPages, trailPrefixes, wordsFromSegment } from './breadcrumb';
 
 const NAMES: Record<string, string> = { '/': 'Home', '/series': 'Series', '/information': 'Learn', '/social': 'Social', '/social/leagues': 'Leagues' };
 const frames = () => vi.spyOn(pageFrame, 'loadPageFrame').mockImplementation(async path => (path in NAMES ? ({ name: NAMES[path] } as unknown as pageFrame.PageFrame) : null));
@@ -112,6 +113,33 @@ describe('the Breadcrumb trail (P2.17)', () => {
     const where = { path: '/series/[slug]/[tab]', params: { slug: 'f1', tab: 'standings' } };
     expect(hrefs(await breadcrumbTrail(where, { home: false, current: true }))).toEqual(['Series@/series', 'Formula 1@/series/f1', 'Standings@/series/f1/standings!']);
     expect(hrefs(await breadcrumbTrail(where, { home: true, current: false }))).toEqual(['Home@/', 'Series@/series', 'Formula 1@/series/f1']);
+  });
+
+  it('P2.10: the sibling pages of an address: the series tab’s sub-pages and News with the current one marked; the Learn topics; the row pages under the same parent by name; nothing elsewhere', async () => {
+    vi.spyOn(seriesLib, 'loadSeries').mockResolvedValue(f1);
+    const marks = (list: { label: string; href: string; current: boolean }[]) => list.map(p => `${p.label}@${p.href}${p.current ? '!' : ''}`);
+    const tab = await siblingPages({ path: '/series/[slug]/[tab]', params: { slug: 'f1', tab: 'standings' } });
+    expect(marks(tab)).toEqual([
+      'Calendar@/series/f1',
+      'Standings@/series/f1/standings!',
+      'Results@/series/f1/results',
+      'Rounds@/series/f1/tracks',
+      'Drivers@/series/f1/drivers',
+      'Champions@/series/f1/champions',
+      'Blog@/series/f1/blog',
+      'News@/series/f1/news',
+    ]);
+    const hub = await siblingPages({ path: '/series/[slug]', params: { slug: 'f1' } });
+    expect(marks(hub)[0]).toBe('Calendar@/series/f1!');
+    const topics = await siblingPages({ path: '/information/[topic]', params: { topic: INFO_TOPICS[0].id } });
+    expect(topics).toHaveLength(INFO_TOPICS.length);
+    expect(topics[0]).toEqual({ label: INFO_TOPICS[0].label, href: `/information/${INFO_TOPICS[0].id}`, current: true });
+    rows({ a: { path: '/history/monza', name: 'Monza, a history' }, b: { path: '/history/imola', name: 'Imola, a history' }, c: { path: '/history', name: 'History' }, d: { path: '/about-us', name: 'About us' } });
+    const row = await siblingPages({ path: '/history/monza', params: {}, page: { title: null, name: 'Monza, a history' } });
+    expect(marks(row)).toEqual(['Imola, a history@/history/imola', 'Monza, a history@/history/monza!']);
+    expect(await siblingPages({ path: '/about', params: {} })).toEqual([]);
+    vi.spyOn(seriesLib, 'loadSeries').mockRejectedValue(new Error('no such series'));
+    expect(await siblingPages({ path: '/series/[slug]/[tab]', params: { slug: 'zzz', tab: 'standings' } })).toEqual([]);
   });
 
   it('knows which pages print their own BreadcrumbList, so the region prints none there', () => {

@@ -14,6 +14,27 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1095 · 1.0.213 · P2.10 · opened Tue 29 Sep 14:44 (11:44Z); the merge on the word
+**Tabs.** APEX's Region Display Selector as a component editors place: a tab strip over the page's regions that opt in (one at a time, or all with a scroll to each, the choice remembered, icons when asked), or a strip of links over the sibling pages.
+- **Readers see:** nothing until an editor places a Tabs region; then the strip.
+- **Editors get:** the Tabs in the gallery's Components with Over, Mode, Include Show All, Remember Last Selection and Display Region Icons; Region Display Selector (Advanced) and Icon (Appearance) on every region.
+- **Files (25):**
+  - `components/page/RegionTabs.tsx`, `components/page/RegionTabs.test.tsx` · the client strip and its cases in jsdom (both new, on the plan’s word).
+  - `lib/design/destinations.ts`, `components/BottomBar.tsx` · `ICON_NAMES` as a plain list; the bar keyed by it, `BAR_ICON_NAMES` the alias, `BAR_ICONS` for the strip.
+  - `lib/design/page-document.ts`, `lib/design/page-document.test.ts` · `selector` and `icon` on a region, the parser, `tabsOf`, `applyTabs`.
+  - `components/page/RowPageView.tsx`, `components/page/RowPageView.test.tsx` · `applyTabs` before the regions are drawn, on a row page and around a code page.
+  - `components/designer/PageDesignerProperties.tsx`, `components/designer/PageDesigner.test.tsx` · Region Display Selector (Advanced), Icon (Appearance), saved on the region.
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the definition and its catalogue test.
+  - `lib/design/breadcrumb.ts`, `lib/design/breadcrumb.test.ts` · `siblingPages` from the address.
+  - `components/data/DataRegionViews.tsx` · `DataRegionPageTabs`.
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · `RenderContext.tabs`, the renderer behind dynamic imports, the READS entry, the render test from a saved document.
+  - `components/designer/PluginsEditor.test.tsx` · fourteen definitions listed (the Tabs join).
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.10 started with the build's evidence; a dated line.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the pickup (the board’s new link), the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.213.
+- **Verified:** tests first (8 red across eight files), then green; tsc 0; lint 0 errors (the two known warnings); vitest 259 files, 2494 tests; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` Total Upload 39673.91 KiB / gzip 8688.42 KiB (measured before the reviewer’s one-line fold in page-document.ts); the local designer: on /history/imola a Tabs region from the gallery and a Preview and a Report region with Region Display Selector on, published locally 11:22Z: the strip Show all · Preview · Report, Preview shown and Report hidden in the page source, the Report tab switching and the choice kept across a reload (paddock:tabs:/history/imola:tabs = text-2), Show all showing both, Scroll Window (republished 11:28Z) hiding none and scrolling the page to the region; on /series/[slug]/[tab] a Tabs over Sibling pages in the Breadcrumb Bar (published 11:26Z): /series/f1/standings drew Calendar · Standings · Results · Rounds · Drivers · Champions · Blog · News with Standings current, /series/f1/drivers Drivers current; at 1440 and 390 px; the screenshots p210-single-desktop, p210-single-report, p210-single-phone, p210-pages-desktop, p210-pages-phone; the review page https://claude.ai/code/artifact/f48e0ca2-023c-4e11-866f-95437f5fa758.
+- **Review:** a fresh-context Sonnet reviewer (185,293 tokens), SOUND WITH FIXES, one blocking finding folded with its test (applyTabs shows the first tab when it was stored Hidden at first, since the strip marks it selected); its notes taken (two Tabs regions over one position would share the tab set; the drafts stay out of the commit)
+
 ## #1094 · 1.0.212 · records · opened Tue 29 Sep 13:39 (10:39Z); the merge on the standing word
 **P2.17 on prod and done.** Records only: the merge, the deploy, the slot closed.
 - **Readers see:** nothing.

@@ -37,7 +37,7 @@
 // holds and leaves it out when the page runs, through the same filter that
 // drops an Excluded build option; absent means the region runs.
 
-import { pageIdOf, resolveDestination } from './destinations';
+import { ICON_NAMES, pageIdOf, resolveDestination } from './destinations';
 import { COMPONENTS, findComponent, parseSettings, type ComponentDefinition, type SettingValue } from './components';
 import { SHAPES, findPreset } from './presets';
 import { filterOps, parseRule } from './view-state';
@@ -234,6 +234,35 @@ export function applyBuildOptions(doc: PageDocument, options: Readonly<Partial<B
   return without(doc, r => r.commentedOut === true || (r.buildOption !== undefined && options[r.buildOption] === 'exclude'));
 }
 
+/** The tabs a Tabs region lists (P2.10; APEX: Region Display Selector): the
+ *  page-level regions of its position with Region Display Selector on, in the
+ *  document's order, the Tabs region itself left out. The order is the parser's
+ *  invariant (regions sorted by position and seq), and every render path runs
+ *  applyConditions and applyBuildOptions first, so a refused, excluded or
+ *  commented-out region is already gone. */
+export function tabsOf(doc: PageDocument, tabs: Region): Region[] {
+  return doc.regions.filter(r => r.id !== tabs.id && r.position === tabs.position && !r.parent && r.selector === true);
+}
+
+/** The document as the page leaves the server with a Tabs region in View Single
+ *  Region over its regions (P2.10): the first tab shown (the strip marks it
+ *  selected, so a region stored Hidden at first is shown with it) and every
+ *  other tab hidden, so no region flashes before the strip's script runs; the
+ *  strip then shows the remembered one. The document itself when no Tabs region
+ *  asks. */
+export function applyTabs(doc: PageDocument): PageDocument {
+  const hide = new Set<string>();
+  const show = new Set<string>();
+  for (const r of doc.regions) {
+    if (r.kind !== 'component' || r.component !== 'page.tabs' || r.settings.over === 'pages' || r.settings.mode === 'scroll') continue;
+    const [first, ...rest] = tabsOf(doc, r);
+    if (first?.hidden) show.add(first.id);
+    for (const t of rest) if (!t.hidden) hide.add(t.id);
+  }
+  if (hide.size === 0 && show.size === 0) return doc;
+  return { ...doc, regions: doc.regions.map(r => (hide.has(r.id) ? { ...r, hidden: true } : show.has(r.id) ? { ...r, hidden: false } : r)) };
+}
+
 export interface RegionBase {
   /** Stable within the page, lower-case; the designer generates it. */
   id: string;
@@ -284,6 +313,12 @@ export interface RegionBase {
    *  means it runs. Its refs stay in the projection: the write path stores the
    *  document as drawn, so a row it names cannot vanish while it is on the page. */
   commentedOut?: true;
+  /** Advanced › Region Display Selector (APEX; P2.10): a Tabs region of the same
+   *  position lists this region as a tab. Stored only when on. */
+  selector?: true;
+  /** Icon (ours, P2.10): a name of the phone bar's set (ICON_NAMES), drawn by a
+   *  Tabs region before the tab's name when it shows icons; absent means none. */
+  icon?: string;
 }
 export interface StaticRegion extends RegionBase {
   kind: 'static';
@@ -449,6 +484,12 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
   const newRow = r.newRow === true;
   const hidden = r.hidden === true;
   const commentedOut = r.commentedOut === true;
+  const selector = r.selector === true;
+  let icon: string | undefined;
+  if (r.icon !== undefined && r.icon !== null && r.icon !== '') {
+    if (typeof r.icon === 'string' && (ICON_NAMES as readonly string[]).includes(r.icon)) icon = r.icon;
+    else problems.push(`${who}: the icon must be one of the bar’s: ${ICON_NAMES.join(', ')}`);
+  }
   let authz: string | null = null;
   if (r.authz !== undefined && r.authz !== null) {
     if (typeof r.authz === 'string' && SLUG.test(r.authz)) authz = r.authz;
@@ -496,6 +537,8 @@ function parseRegion(raw: unknown, index: number, seen: Set<string>, components:
       ...(template.value ? { template: template.value } : {}),
       ...(parent ? { parent } : {}),
       ...(commentedOut ? { commentedOut: true as const } : {}),
+      ...(selector ? { selector: true as const } : {}),
+      ...(icon ? { icon } : {}),
     };
     if (kind === 'component') {
       const stored = typeof r.component === 'string' ? r.component : '';

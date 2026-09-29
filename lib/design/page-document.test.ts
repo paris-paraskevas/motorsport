@@ -4,6 +4,7 @@ import {
   EMPTY_DOCUMENT,
   applyBuildOptions,
   applyConditions,
+  applyTabs,
   conditionAsks,
   conditionText,
   childrenOf,
@@ -551,6 +552,41 @@ describe('Comment Out (the components programme, P1.11)', () => {
       expect(off.problems).toEqual([]);
       expect(off.value.regions[0]).not.toHaveProperty('commentedOut');
     }
+  });
+
+  it('P2.10: reads selector true only (APEX: Region Display Selector) and an icon from the bar’s set, refuses another name, and leaves both out when off or empty', () => {
+    const on = parsePageDocument(doc([region({ selector: true, icon: 'flag' })]));
+    expect(on.problems).toEqual([]);
+    expect(on.value.regions[0]).toMatchObject({ selector: true, icon: 'flag' });
+    for (const raw of [region({}), region({ selector: false, icon: '' }), region({ selector: 'yes', icon: null })]) {
+      const off = parsePageDocument(doc([raw]));
+      expect(off.problems).toEqual([]);
+      expect(off.value.regions[0]).not.toHaveProperty('selector');
+      expect(off.value.regions[0]).not.toHaveProperty('icon');
+    }
+    const bad = parsePageDocument(doc([region({ icon: 'rocket' })]));
+    expect(bad.problems).toEqual(['region r: the icon must be one of the bar’s: house, calendar-days, compass, circle-user, flag, trophy, newspaper, book-open, users, settings, search']);
+  });
+
+  it('P2.10: applyTabs hides every tab but the first of a Tabs region in View Single Region (the page-level opting regions of its position), leaves the rest and a Scroll Window strip alone, and returns the document itself without one', () => {
+    const tabs = (mode: string) => ({ id: 'tabs', kind: 'component', component: 'page.tabs', settings: { mode }, title: '', position: 'body', seq: 5, column: 1, span: 12, newRow: true, hidden: false, authz: null });
+    const a = region({ id: 'a', selector: true });
+    const b = region({ id: 'b', seq: 20, selector: true });
+    const c = region({ id: 'c', seq: 30 });
+    const sub = region({ id: 'sub', seq: 40, selector: true, parent: 'c' });
+    const foot = region({ id: 'foot', position: 'footer', selector: true });
+    const single = parsePageDocument(doc([tabs('single'), a, b, c, sub, foot]));
+    expect(single.problems).toEqual([]);
+    const out = applyTabs(single.value);
+    expect(out.regions.map(r => `${r.id}:${r.hidden}`)).toEqual(['tabs:false', 'a:false', 'b:true', 'c:false', 'sub:false', 'foot:false']);
+    expect(single.value.regions.find(r => r.id === 'b')?.hidden).toBe(false);
+    // The first tab stored Hidden at first (waiting for a dynamic action) is shown: the strip marks it selected (the reviewer's finding).
+    const firstHidden = parsePageDocument(doc([tabs('single'), region({ id: 'a', selector: true, hidden: true }), b])).value;
+    expect(applyTabs(firstHidden).regions.map(r => `${r.id}:${r.hidden}`)).toEqual(['tabs:false', 'a:false', 'b:true']);
+    const scroll = parsePageDocument(doc([tabs('scroll'), a, b])).value;
+    expect(applyTabs(scroll)).toBe(scroll);
+    const none = parsePageDocument(doc([a, b])).value;
+    expect(applyTabs(none)).toBe(none);
   });
 
   it('applyBuildOptions drops a commented-out region as it drops an Excluded one, keeps the rest, and returns the document itself when none is', () => {

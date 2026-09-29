@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PAGE_WIDE } from '@/lib/site';
 import { pageIdOf, resolveDestination, resolveEntry, type NavEntry, type NavLists, type PageDestinations } from '@/lib/design/destinations';
-import { COLUMNS, NESTING_CAP, childrenOf, isLegacyBody, rowsAt, splitsBody, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
+import { COLUMNS, NESTING_CAP, applyTabs, childrenOf, isLegacyBody, rowsAt, splitsBody, substituteShortcuts, type PageDocument, type Position, type Region } from '@/lib/design/page-document';
 import { SHIPPED_PRESETS, regionTemplate, resolveTemplateOptions, templateOptionClasses, type TemplateOptionClasses, type TemplatePresets } from '@/lib/design/template-options';
 import type { EditableAsset } from '@/lib/design/assets';
 import type { PageRow } from '@/lib/design/pages';
@@ -59,7 +59,14 @@ const LIST_FIELD: Record<string, keyof NavLists> = {
  *  text takes its classes from its Template Options (template-options.ts). */
 const PROSE = 'font-serif text-16 leading-relaxed text-text-muted';
 
-export function RowPageView(d: RowPageData) {
+/** The document as it leaves the server (P2.10): a Tabs region in View Single Region hides its tabs but the first. */
+const tabbed = (d: RowPageData): RowPageData => {
+  const document = applyTabs(d.document);
+  return document === d.document ? d : { ...d, document };
+};
+
+export function RowPageView(served: RowPageData) {
+  const d = tabbed(served);
   const has = (p: Position) => d.document.regions.some(r => r.position === p);
   const hasRight = has('right');
   return (
@@ -100,7 +107,8 @@ export function RowPageView(d: RowPageData) {
  *  component is a page the operator has SPLIT: its components and regions are
  *  the body, and the code's body is not drawn. The Right Side Column waits for
  *  its own decision. Rendered only when the live revision has regions. */
-export function CodePageFrame({ d, children }: { d: RowPageData; children?: React.ReactNode }) {
+export function CodePageFrame({ d: served, children }: { d: RowPageData; children?: React.ReactNode }) {
+  const d = tabbed(served);
   const has = (p: Position) => d.document.regions.some(r => r.position === p);
   const above = has('header') || has('breadcrumb');
   const below = has('footer') || has('phonebar');
