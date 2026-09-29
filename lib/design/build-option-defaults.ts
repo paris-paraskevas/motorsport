@@ -26,7 +26,7 @@ export const BUILD_OPTION_DEFAULTS: Record<BuildOptionKey, { label: string; swit
   weather: {
     label: 'Weather',
     switches:
-      'The weather strip on a weekend page and the hours around a session on its own page. Excluded: both render nothing.',
+      'The weather strip on a weekend page, the hours around a session on its own page, and a Weather region an editor places (P2.14). Excluded: all three render nothing.',
     wired: true,
   },
   social: {

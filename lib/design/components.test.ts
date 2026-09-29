@@ -327,6 +327,29 @@ describe('the component catalogue', () => {
     expect(settingsSummary(tabs, { over: 'pages', mode: 'scroll' })).toBe('Over Sibling pages');
   });
 
+  it('P2.14: the Weather is a general component in the Series group with a Series choice, a View (by session, by day), a Heading and the rows a session tile holds, reading no catalogue source; its tile names what is set', () => {
+    const weather = findComponent('series.weather')!;
+    expect(weather).toMatchObject({ name: 'Weather', group: 'Series' });
+    expect(weather.holds).toMatch(/^the forecast at the track for a weekend, by venue-local time/);
+    expect(weather.sources).toBeUndefined();
+    expect(weather.settings.map(s => [s.key, s.kind])).toEqual([
+      ['series', 'choice'],
+      ['view', 'choice'],
+      ['heading', 'text'],
+      ['hours', 'number'],
+    ]);
+    expect(weather.settings[0].options![0]).toEqual({ key: '', label: 'Every series', group: 'Series' });
+    expect(weather.settings[0].options).toHaveLength(16);
+    expect(weather.settings[1].options?.map(o => [o.key, o.label])).toEqual([['sessions', 'Hour by hour, by session'], ['daily', 'Day by day, with the sessions']]);
+    expect(weather.settings[3]).toMatchObject({ min: 2, max: 8, default: 4 });
+    expect(componentDefaults(weather)).toEqual({ series: '', view: 'sessions', heading: '', hours: 4 });
+    expect(parseSettings(weather, { series: 'f1', view: 'daily', heading: 'Weather at Sepang', hours: 6 }).settings).toEqual({ series: 'f1', view: 'daily', heading: 'Weather at Sepang', hours: 6 });
+    expect(parseSettings(weather, { view: 'weekly' }).problems[0]).toMatch(/^View must be one of Hour by hour, by session, Day by day, with the sessions/);
+    expect(parseSettings(weather, { hours: 9 }).problems).toEqual(['Rows per session must be a number from 2 to 8']);
+    expect(settingsSummary(weather, componentDefaults(weather))).toBe('Series Every series · View Hour by hour, by session · Rows per session 4');
+    expect(settingsSummary(weather, { series: 'f1', view: 'daily', heading: 'At the track', hours: 4 })).toBe('Series Formula 1 · View Day by day, with the sessions · Heading At the track · Rows per session 4');
+  });
+
   it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
     // P2.5 PR B: the calendar's Filters region before the month, over the calendar's own facets (it has no preset).

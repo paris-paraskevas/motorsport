@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.215 — 2026-09-29
+
+### P2.14 — Weather
+
+A general component of the catalogue (`series.weather`, Weather, the Series group; ours by name, APEX has no weather component). It draws the forecast at the track for a weekend by venue-local time (the operator's rule of 2026-08-22): hour by hour across each session, the weekend strip's tiles (a tile per session in running order, the hours it runs in thinned to Rows per session, the day's high and low for a session with no hour), or day by day with the sessions of each day under it and the reading of their hour. The weekend is the page's own on a weekend or session page (the address's parts the frame hands over since P2.17), else the series' next or the nearest across every series (the Countdown's rule); the circuit resolves through the curated round venue first (`venueCandidates`); the forecast comes through the site's one reader (`lib/weather.ts` `fetchWeather`: KV for three hours, Open-Meteo's sixteen days); the Weather build option excluded draws nothing, as the two code pieces do; without a forecast one line, never a hole. The tile builders moved out of the strip into `lib/weather.ts` (`sessionTiles`, `dayTiles`, the label a parameter so the file stays a leaf), shared with `WeekendWeatherStrip.tsx`; `nextWeekend` lifted out of `nextSessionAcross`. The fix on the operator's word: `WeekendWeatherStrip.tsx` and `SessionForecast.tsx` resolved the circuit by name alone, so the 2026 Bahrain Grand Prix page (the race at Sepang, `content/series/f1/rounds.json`) read Sakhir's forecast; both now take the round's curated venue from their pages, the slot's one reader-visible change. Readers see nothing else until an editor places a Weather region.
+
 ## 1.0.214 — 2026-09-29
 
 ### Records — P2.10 on prod and done

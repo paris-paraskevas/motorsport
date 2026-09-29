@@ -33,11 +33,13 @@ export interface WeatherForecast {
 const TTL_SECONDS = 3 * 60 * 60; // 3 hours — Open-Meteo updates roughly hourly
 
 // KV is imported lazily, NOT at module top: this file also exports pure
-// presentational helpers (weatherLabel, forecastFor) that client components
-// like SessionCard bundle, and a static `import { kv }` dragged the whole
-// @upstash/redis SDK (~28 KiB gz) into the browser chunk that /calendar
-// ships and the landing prefetches (0.322.x PSI unused-JS finding). The KV
-// cache is only reachable from fetchWeather, which only runs server-side.
+// presentational helpers (weatherLabel, forecastFor, the tile builders) that a
+// component may bundle (SessionCard did until 0.334.3; no client component
+// imports this file today, and the file stays a leaf so one can again), and a
+// static `import { kv }` dragged the whole @upstash/redis SDK (~28 KiB gz)
+// into the browser chunk that /calendar ships and the landing prefetches
+// (0.322.x PSI unused-JS finding). The KV cache is only reachable from
+// fetchWeather, which only runs server-side.
 async function getKv() {
   return (await import('./kv')).kv;
 }
@@ -308,4 +310,110 @@ const WMO_LABELS: Record<number, { label: string; emoji: string }> = {
 
 export function weatherLabel(code: number): { label: string; emoji: string } {
   return WMO_LABELS[code] ?? { label: 'Forecast', emoji: '🌡️' };
+}
+
+// ── The tiles the weekend strip and the Weather component draw (P2.14) ──────
+// Pure builders over the reader's forecast, shared so a reading cannot be
+// grouped two different ways on two surfaces. The session's label comes in as a
+// parameter (the schedule's shortSessionLabel from the callers), so this file
+// stays a leaf without the weekend grouping behind it.
+
+/** "SAT 22 AUG" in venue-local terms. `iso` is already a venue-local date, so
+ *  it is formatted as UTC to stop the server's own zone shifting it again. */
+export function dayLabel(iso: string): string {
+  return new Date(`${iso}T00:00:00Z`)
+    .toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
+    .toUpperCase();
+}
+
+/** The venue-local clock time out of an hour key ("2026-08-22T15:00" → "15:00"). */
+export function hourLabel(isoHour: string): string {
+  return isoHour.slice(11, 16);
+}
+
+/** What a tile needs of a session: lib/types.ts Session, or any object of its shape. */
+export interface ForecastSession {
+  uid: string;
+  title: string;
+  start: Date;
+  end: Date;
+  dateOnly?: boolean;
+}
+
+export interface SessionTile {
+  key: string;
+  label: string;
+  /** SAT 22 AUG · 15:00-16:45, or SAT 22 AUG · TBC */
+  when: string;
+  hours: HourlyWeather[];
+  /** Only for a session with no known hour: the day's own high/low. */
+  day: DailyWeather | null;
+}
+
+/**
+ * A tile per session in running order, the weather read PER SESSION and ACROSS
+ * its running (operator, 2026-08-22: "must bring weather based on session
+ * time. We don't care if it'll rain on that day", then "the forecast can be for
+ * the hours that the sessions hold, e.g. race is 1,5 hours so needs 3-5
+ * forecast"): the hours the session holds, thinned to `maxRows`, their first
+ * and last kept. A session whose hour is unknown (`dateOnly`, TBC everywhere
+ * else) falls back to its day's high/low, the only honest answer without a
+ * time. A session past Open-Meteo's horizon, or already run and out of its
+ * window, gets no tile: better omitted than drawn against a day it did not
+ * happen on.
+ */
+export function sessionTiles(sessions: readonly ForecastSession[], forecast: WeatherForecast, maxRows: number, label: (title: string) => string): SessionTile[] {
+  const ordered = [...sessions].sort((a, b) => a.start.getTime() - b.start.getTime());
+  const tiles: SessionTile[] = [];
+  for (const session of ordered) {
+    const dayIso = venueLocalIsoDate(forecast, session.start);
+    if (session.dateOnly) {
+      const daily = forecastFor(forecast, dayIso);
+      if (daily) tiles.push({ key: session.uid, label: label(session.title), when: `${dayLabel(dayIso)} · TBC`, hours: [], day: daily });
+      continue;
+    }
+    const hours = thinHours(forecastWindow(forecast, session.start, session.end), maxRows);
+    if (hours.length === 0) continue;
+    const span = hours.length > 1 ? `${hourLabel(hours[0].time)}-${hourLabel(hours[hours.length - 1].time)}` : hourLabel(hours[0].time);
+    tiles.push({ key: session.uid, label: label(session.title), when: `${dayLabel(dayIso)} · ${span}`, hours, day: null });
+  }
+  return tiles;
+}
+
+export interface DayTile {
+  /** The venue-local date, YYYY-MM-DD. */
+  date: string;
+  /** SAT 22 AUG */
+  label: string;
+  daily: DailyWeather;
+  /** The sessions of the day in running order, each with the reading of its hour; no hour and no reading for a TBC session. */
+  sessions: { key: string; label: string; hour: string | null; reading: HourlyWeather | null }[];
+}
+
+/**
+ * A tile per venue-local day the sessions span, in order, with the day's own
+ * forecast and the sessions of the day under it, each with the reading of the
+ * hour it runs in (the "sessions overlay" of the Weather component's day view).
+ * A day past the forecast's horizon has no tile.
+ */
+export function dayTiles(sessions: readonly ForecastSession[], forecast: WeatherForecast, label: (title: string) => string): DayTile[] {
+  const ordered = [...sessions].sort((a, b) => a.start.getTime() - b.start.getTime());
+  const days = new Map<string, DayTile>();
+  for (const session of ordered) {
+    const date = venueLocalIsoDate(forecast, session.start);
+    let day = days.get(date);
+    if (!day) {
+      const daily = forecastFor(forecast, date);
+      if (!daily) continue;
+      day = { date, label: dayLabel(date), daily, sessions: [] };
+      days.set(date, day);
+    }
+    day.sessions.push({
+      key: session.uid,
+      label: label(session.title),
+      hour: session.dateOnly ? null : hourLabel(venueLocalIsoHour(forecast, session.start)),
+      reading: forecastAtSession(forecast, session),
+    });
+  }
+  return [...days.values()];
 }

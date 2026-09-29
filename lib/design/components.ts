@@ -548,6 +548,40 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'link', label: 'Links', kind: 'boolean', default: true, help: 'The weekend and the session named as links to their pages; off, words alone.' },
     ],
   },
+  // The Weather (P2.14): the forecast at the track for a weekend by venue-local
+  // time (the operator's rule of 2026-08-22), hour by hour across each session
+  // (the weekend strip's tiles) or day by day with the sessions on each day; the
+  // existing reader (lib/weather.ts) as the one source. Ours by name: APEX has
+  // no weather component.
+  {
+    key: 'series.weather',
+    name: 'Weather',
+    group: 'Series',
+    holds: 'the forecast at the track for a weekend, by venue-local time: hour by hour across each session, or day by day with the sessions on each day',
+    settings: [
+      {
+        key: 'series',
+        label: 'Series',
+        kind: 'choice',
+        default: '',
+        options: [{ key: '', label: 'Every series', group: 'Series' }, ...SERIES_OPTIONS.map(o => ({ key: o.key, label: o.label, group: 'Series' }))],
+        help: 'Every series: the nearest weekend to come; one series: its next weekend. On a weekend or a session page the page’s own weekend is drawn whatever this says.',
+      },
+      {
+        key: 'view',
+        label: 'View',
+        kind: 'choice',
+        default: 'sessions',
+        options: [
+          { key: 'sessions', label: 'Hour by hour, by session' },
+          { key: 'daily', label: 'Day by day, with the sessions' },
+        ],
+        help: 'A tile per session with the hours it runs in, or a tile per day with the day’s forecast and the sessions of the day under it.',
+      },
+      { key: 'heading', label: 'Heading', kind: 'text', default: '', maxLength: 80, help: 'The rule above the tiles; empty draws the view’s own words as the section’s name.' },
+      { key: 'hours', label: 'Rows per session', kind: 'number', default: 4, min: 2, max: 8, help: 'The hours a session tile holds; a longer session is thinned to them, its first and last hour kept.' },
+    ],
+  },
 ];
 
 /** One entry of a page's recipe (P2.24 C): the component, the region's id, the settings that differ from the

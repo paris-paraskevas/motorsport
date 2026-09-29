@@ -18,6 +18,8 @@ import * as seriesLib from '@/lib/series';
 import * as circuitsLib from '@/lib/circuits';
 import * as pageFrame from './page-frame';
 import * as pagesLib from './pages';
+import * as weatherLib from '@/lib/weather';
+import * as buildOptionsLib from './build-options';
 import type { Series, Session } from '@/lib/types';
 
 vi.mock('next/link', () => ({
@@ -1141,6 +1143,86 @@ describe('renderComponents', () => {
     expect(pages).toMatch(/aria-current="page"[^>]*>Standings<\/a>|href="\/series\/f1\/standings"[^>]*aria-current="page"/);
     expect(pages).toContain('>News</a>');
     expect((await renderComponents(doc([region('tabs', 'page.tabs', { over: 'pages' }, { seq: 5 })]), { path: '/about', params: {} })).tabs).toBeNull();
+  });
+
+  it('P2.14: the Weather draws the forecast at the track for the page’s weekend or the series’ next, by venue-local time, hour by hour by session or day by day with the sessions; the curated venue first; nothing without the build option; one line without a forecast', async () => {
+    // Clock-relative fixtures (the grouping keeps a window around now): a weekend three days ahead, its round curated to Sepang
+    // while its sessions say Bahrain, so the venue rule shows. The forecast is venue-local (UTC+2 in the fixture) as Open-Meteo
+    // returns it under timezone=auto: its keys are computed from the same instants.
+    const day = (n: number, h: number, m = 0) => {
+      const d = new Date();
+      d.setUTCHours(0, 0, 0, 0);
+      d.setUTCDate(d.getUTCDate() + n);
+      d.setUTCHours(h, m);
+      return d;
+    };
+    const OFFSET = 7200;
+    const iso = (d: Date) => new Date(d.getTime() + OFFSET * 1000).toISOString().slice(0, 10);
+    const hourKey = (d: Date) => `${new Date(d.getTime() + OFFSET * 1000).toISOString().slice(0, 13)}:00`;
+    const fp1 = { start: day(3, 11, 30), end: day(3, 12, 30) };
+    const race = { start: day(5, 13), end: day(5, 15) };
+    const f1 = {
+      meta: { slug: 'f1', name: 'Formula 1', color: '#e10600', season: 2026 },
+      sessions: [
+        { uid: 'fp1', seriesSlug: 'f1', title: 'F1 - Practice 1', start: fp1.start, end: fp1.end, location: 'Bahrain International Circuit' },
+        { uid: 'race', seriesSlug: 'f1', title: 'F1 - Race', start: race.start, end: race.end, location: 'Bahrain International Circuit' },
+      ],
+      rounds: { season: 2026, rounds: [{ round: 16, name: 'Bahrain Grand Prix', venue: 'Sepang International Circuit', startDate: iso(fp1.start), endDate: iso(race.end) }] },
+    } as unknown as Series;
+    const hours: string[] = [];
+    for (let t = day(3, 0).getTime(); t <= day(6, 0).getTime(); t += 3_600_000) hours.push(hourKey(new Date(t)));
+    const forecast: weatherLib.WeatherForecast = {
+      lat: 2.76,
+      lon: 101.74,
+      fetchedAt: new Date().toISOString(),
+      utcOffsetSeconds: OFFSET,
+      daily: [iso(fp1.start), iso(day(4, 12)), iso(race.start)].map((date, i) => ({ date, maxC: 30 + i, minC: 24, precipProb: 10 * i, precipMm: 0, windKph: 12, weatherCode: 2 })),
+      hourly: hours.map((time, i) => ({ time, tempC: 25 + (i % 7), precipProb: (i * 7) % 100, precipMm: 0, windKph: 10, weatherCode: 2 })),
+    };
+    vi.spyOn(seriesLib, 'loadSeries').mockResolvedValue(f1);
+    vi.spyOn(seriesLib, 'loadAllSeries').mockResolvedValue([f1]);
+    const circuit = vi.spyOn(circuitsLib, 'matchCircuit').mockImplementation(async (...names) => (names.some(n => n && /sepang/i.test(n)) ? { name: 'Sepang International Circuit', lat: 2.76, lon: 101.74, aliases: [], tz: 'Asia/Kuala_Lumpur' } : null));
+    const fetched = vi.spyOn(weatherLib, 'fetchWeather').mockResolvedValue(forecast);
+    const included = vi.spyOn(buildOptionsLib, 'isBuildOptionIncluded').mockResolvedValue(true);
+    const draw = async (settings: Record<string, string | number | boolean>, where: { path: string; params?: Record<string, string> }, before: Region[] = []) =>
+      (await renderComponents(doc([...before, region('w', 'series.weather', settings, { seq: 20 })]), { ...where, now: new Date() })).w;
+    expect(canRender('series.weather')).toBe(true);
+
+    // The weekend page: its own weekend from the address; the curated venue (Sepang) first; a tile per session, the hours venue-local.
+    const page = { path: '/series/[slug]/weekend/[round]', params: { slug: 'f1', round: '16' } };
+    const sessions = html(await draw({}, page));
+    expect(sessions).toContain('<section aria-label="Weather"');
+    expect(sessions).toContain('Formula 1 · Round 16');
+    expect(sessions).toContain('Source: Open-Meteo · Sepang International Circuit');
+    expect(circuit.mock.calls[0][0]).toBe('Sepang International Circuit');
+    expect(fetched).toHaveBeenCalledWith(2.76, 101.74);
+    expect(sessions).toContain('>FP1<');
+    expect(sessions).toContain('>RACE<');
+    expect(sessions).toContain(`${hourKey(race.start).slice(11, 16)}-${hourKey(race.end).slice(11, 16)}`);
+    // FP1 13:30-14:30 local reads 13:00, 14:00, 15:00; the race 15:00-17:00 local reads 15:00, 16:00, 17:00.
+    expect(sessions.split('<li').length - 1).toBe(3 + 3);
+    // Rows per session 2: each tile keeps its first and last hour.
+    const thin = html(await draw({ hours: 2 }, page));
+    expect(thin.split('<li').length - 1).toBe(2 + 2);
+    // Day by day, with the sessions: one tile per venue-local day, the sessions under their day with the hour's reading.
+    const daily = html(await draw({ view: 'daily' }, page));
+    expect(daily).toContain('<section aria-label="Weather"');
+    expect(daily.match(/data-day="/g)).toHaveLength(2);
+    expect(daily.indexOf('>FP1<')).toBeLessThan(daily.indexOf('>RACE<'));
+    expect(daily).toContain(`${hourKey(race.start).slice(11, 16)}`);
+    expect(daily).toContain('30°');
+    // Every series, no address: the nearest weekend to come is the same one.
+    const nearest = html(await draw({ series: '' }, { path: '/x' }));
+    expect(nearest).toContain('Formula 1 · Round 16');
+    // A heading is the rule; first in the Body without one, the eyebrow line is the page's h1.
+    expect(html(await draw({ heading: 'At the track' }, page))).toContain('>At the track<');
+    expect(html(await draw({}, page))).toMatch(/<h1[^>]*>Formula 1 · Round 16/);
+    // No circuit: one line, the h1 when first without a heading; the Weather build option excluded: nothing at all.
+    circuit.mockResolvedValue(null);
+    const none = html(await draw({}, page));
+    expect(none).toMatch(/<h1[^>]*>No forecast for Bahrain Grand Prix yet\.<\/h1>/);
+    included.mockResolvedValue(false);
+    expect(await draw({}, page)).toBeNull();
   });
 });
 

@@ -55,8 +55,8 @@ describe('PluginsEditor', () => {
     expect(screen.getByRole('heading', { name: 'Plug-ins' })).toBeTruthy();
     const rows = screen.getAllByRole('row').slice(1);
     // The four region kinds and the eight components (the Data region since P2.2, the Live band since P2.9, the Filters since P2.5, the Metric cards since P2.7; Home's six left in P2.24 C).
-    // …the Countdown since P2.8, the Breadcrumb since P2.17 and the Tabs since P2.10, the tenth component: fourteen rows.
-    expect(rows).toHaveLength(14);
+    // …the Countdown since P2.8, the Breadcrumb since P2.17, the Tabs since P2.10 and the Weather since P2.14, the eleventh component: fifteen rows.
+    expect(rows).toHaveLength(15);
     expect(within(rows[0]).getByText('Static Content')).toBeTruthy();
     expect(within(rows[0]).getByText('Region')).toBeTruthy();
     const headingRow = rows.find(r => within(r).queryByText('Page heading'))!;

@@ -7,6 +7,8 @@ import { SITE_URL, seriesInk } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import type { Crumb, SiblingPage } from '@/lib/design/breadcrumb';
+import { HourlyForecastRows } from '@/components/weekend/HourlyForecastRows';
+import { weatherLabel, type DayTile, type SessionTile } from '@/lib/weather';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { LocalTime } from '@/components/LocalTime';
 import { sortHref, sortable, type ViewFilter, type ViewState } from '@/lib/design/view-state';
@@ -1025,6 +1027,110 @@ export function DataRegionCountdown({ heading, level, data, links, every }: { he
         </div>
         {data.session && <NextRaceCountdown target={data.session.startIso} label={data.dates} color={data.colour} liveUntil={data.session.endIso} />}
       </div>
+    </section>
+  );
+}
+
+export interface WeatherData {
+  seriesName: string;
+  colour: string;
+  round: number;
+  weekendTitle: string;
+  circuitName: string;
+  view: 'sessions' | 'daily';
+  sessions: readonly SessionTile[];
+  days: readonly DayTile[];
+}
+
+/** The Weather (P2.14): the forecast at the track for a weekend as the weekend strip draws it, a tile per session with the
+ *  hours it runs in, or a tile per venue-local day with the day's forecast and the sessions of the day under it, each with the
+ *  reading of its hour. The eyebrow names the series, the round and the weekend (the page's h1 when first in the Body without
+ *  a heading); the foot names the source and the circuit. Without a forecast one line, never a hole. */
+export function DataRegionWeather({ heading, level, data, every, weekendTitle }: { heading: string; level: 'h1' | 'h2'; data: WeatherData | null; every: boolean; weekendTitle: string | null }) {
+  const words = data?.view === 'daily' ? 'Weather by day' : 'Weather by session';
+  const rule =
+    heading && level === 'h1' ? (
+      <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
+        <h1 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{heading}</h1>
+      </div>
+    ) : (
+      <SectionRule label={heading || words} right={data ? 'venue-local time' : undefined} />
+    );
+  const Title = level === 'h1' && !heading ? 'h1' : 'p';
+  if (!data) {
+    return (
+      <section aria-label={heading || 'Weather'}>
+        {rule}
+        <Title className="font-serif text-15 italic text-text-muted">{weekendTitle ? `No forecast for ${weekendTitle} yet.` : every ? 'No weekend to come.' : 'Season complete.'}</Title>
+      </section>
+    );
+  }
+  const wet = (p: number) => (p >= 30 ? 'text-sky-700 dark:text-sky-300' : 'text-text-faint');
+  return (
+    <section aria-label={heading || 'Weather'}>
+      {rule}
+      <div className="mb-3 flex items-center gap-2">
+        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: data.colour }} />
+        <Title className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
+          {data.seriesName} · Round {data.round} · {data.weekendTitle}
+        </Title>
+      </div>
+      {data.view === 'sessions' ? (
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {data.sessions.map(tile => (
+            <div key={tile.key} className="border border-border p-3">
+              <div className="font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text">{tile.label}</div>
+              <div className="mt-0.5 font-mono text-10 uppercase tracking-[0.1em] text-text-faint">{tile.when}</div>
+              {tile.hours.length > 0 ? (
+                <HourlyForecastRows hours={[...tile.hours]} className="mt-2" />
+              ) : (
+                tile.day && (
+                  <div className="mt-2">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl" aria-hidden="true">{weatherLabel(tile.day.weatherCode).emoji}</span>
+                      <span className="font-mono text-base font-semibold tabular-nums text-text">{Math.round(tile.day.maxC)}°</span>
+                      <span className="font-mono text-sm tabular-nums text-text-faint">{Math.round(tile.day.minC)}°</span>
+                    </div>
+                    <div className="mt-1 truncate text-xs text-text-muted">{weatherLabel(tile.day.weatherCode).label}</div>
+                    {tile.day.precipProb >= 30 && <div className={`mt-1 font-mono text-11 tabular-nums ${wet(tile.day.precipProb)}`}>{Math.round(tile.day.precipProb)}% rain</div>}
+                  </div>
+                )
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {data.days.map(day => (
+            <div key={day.date} data-day={day.date} className="border border-border p-3">
+              <div className="font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text">{day.label}</div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-xl" aria-hidden="true">{weatherLabel(day.daily.weatherCode).emoji}</span>
+                <span className="font-mono text-base font-semibold tabular-nums text-text">{Math.round(day.daily.maxC)}°</span>
+                <span className="font-mono text-sm tabular-nums text-text-faint">{Math.round(day.daily.minC)}°</span>
+                <span className={`font-mono text-11 tabular-nums ${wet(day.daily.precipProb)}`}>{Math.round(day.daily.precipProb)}%</span>
+              </div>
+              <div className="mt-1 truncate text-xs text-text-muted">{weatherLabel(day.daily.weatherCode).label}</div>
+              <ul className="mt-2">
+                {day.sessions.map(s => (
+                  <li key={s.key} className="flex items-baseline gap-2 border-b border-border py-1 last:border-b-0">
+                    <span className="min-w-0 truncate font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text">{s.label}</span>
+                    <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">{s.hour ?? 'TBC'}</span>
+                    {s.reading && (
+                      <>
+                        <span className="shrink-0 text-13" aria-hidden="true">{weatherLabel(s.reading.weatherCode).emoji}</span>
+                        <span className="shrink-0 font-mono text-12 font-semibold tabular-nums text-text">{Math.round(s.reading.tempC)}°</span>
+                        <span className={`shrink-0 font-mono text-11 tabular-nums ${wet(s.reading.precipProb)}`}>{Math.round(s.reading.precipProb)}%</span>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="mt-2 text-10 uppercase tracking-[0.14em] text-text-faint">{`Source: Open-Meteo · ${data.circuitName} · venue-local time`}</div>
     </section>
   );
 }

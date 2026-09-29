@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { nextSessionAcross } from './weekend';
+import { nextSessionAcross, nextWeekend } from './weekend';
 import type { Series, Session } from './types';
 
 // P2.8, the Countdown: the next session of one series or the nearest across several, from the same grouping the weekend
@@ -65,5 +65,14 @@ describe('nextSessionAcross', () => {
     expect(nextSessionAcross([], AT)).toBeNull();
     const broken = { ...f1, sessions: null } as unknown as Series;
     expect(nextSessionAcross([broken, motogp], AT)?.series.slug).toBe('motogp');
+  });
+
+  it('P2.14: nextWeekend is the weekend nextSessionAcross names for one series, null when nothing is to come or the grouping throws', () => {
+    const next = nextWeekend(f1, AT);
+    expect(next?.round).toBe(nextSessionAcross([f1], AT)?.weekend.round);
+    expect(next?.sessions.map(s => s.title)).toEqual(['F1 - Practice 1', 'F1 - Qualifying', 'F1 - Race']);
+    expect(nextWeekend(wrc, AT)?.sessions[0].title).toBe('Rally Chile');
+    expect(nextWeekend(wec, AT)).toBeNull();
+    expect(nextWeekend({ ...f1, sessions: null } as unknown as Series, AT)).toBeNull();
   });
 });
