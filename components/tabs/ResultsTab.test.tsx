@@ -24,6 +24,8 @@ const f2 = vi.fn(async () => ({ feature: [] as RaceResult[], sprint: [] as RaceR
 const wec = vi.fn(async () => [] as unknown[]);
 const gt = vi.fn(async () => [] as unknown[]);
 const wrc = vi.fn(async (): Promise<RaceResult[]> => []);
+const dtm = vi.fn(async (): Promise<RaceResult[]> => []);
+const nls = vi.fn(async (): Promise<RaceResult[]> => []);
 vi.mock('@/lib/results/f1', () => ({ fetchF1SeasonResults: () => f1() }));
 vi.mock('@/lib/results/f2', () => ({ fetchF2SeasonResults: () => f2() }));
 vi.mock('@/lib/results/f3', () => ({ fetchF3SeasonResults: async () => [] }));
@@ -36,8 +38,8 @@ vi.mock('@/lib/results/motogp', () => ({ fetchMotoGPSeasonResults: async () => [
 vi.mock('@/lib/results/nascar-cup', () => ({ fetchNascarCupSeasonResults: async () => [] }));
 vi.mock('@/lib/results/wsbk', () => ({ fetchWsbkSeasonResults: async () => [] }));
 vi.mock('@/lib/results/wrc', () => ({ fetchWRCSeasonResults: () => wrc() }));
-vi.mock('@/lib/results/dtm', () => ({ fetchDTMSeasonResults: async () => [] }));
-vi.mock('@/lib/results/nls', () => ({ fetchNlsSeasonResults: async () => [], NLS_SOURCE_URL: 'https://vln.example' }));
+vi.mock('@/lib/results/dtm', () => ({ fetchDTMSeasonResults: () => dtm() }));
+vi.mock('@/lib/results/nls', () => ({ fetchNlsSeasonResults: () => nls(), NLS_SOURCE_URL: 'https://vln.example' }));
 vi.mock('@/lib/series-content', () => ({ loadCuratedDrivers: async () => [], loadResultsOverrides: async () => [] }));
 
 import { ResultsTab, raceSessionFor } from './ResultsTab';
@@ -171,6 +173,41 @@ describe('the results tab’s rows', () => {
     expect(h).not.toContain('Team One · GT3');
     expect(h).toContain(`href="/series/gt-world/weekend/1/${sessionSlug('GTWCE - Race 1')}"`);
     expect(h).toContain(`href="/series/gt-world/weekend/1/${sessionSlug('GTWCE - Race 2')}"`);
+  });
+
+  it('keeps the accordion for a series whose race session page cannot show a classification (DTM has no per-race source), latest open', async () => {
+    const dtmSeries = series('dtm', 'DTM', [
+      session('dtm', 'DTM - Race 1', '2026-04-25T11:00:00Z', 1),
+      session('dtm', 'DTM - Race 2', '2026-04-26T11:00:00Z', 1),
+      session('dtm', 'DTM - Race 1', '2026-05-23T11:00:00Z', 1),
+      session('dtm', 'DTM - Race 2', '2026-05-24T11:00:00Z', 1),
+    ]);
+    dtm.mockResolvedValueOnce([
+      race(1, 'Oschersleben — Race 1', '2026-04-25', ['Auer', 'Preining']),
+      race(1, 'Oschersleben — Race 2', '2026-04-26', ['Preining', 'Auer']),
+      race(2, 'Lausitzring — Race 1', '2026-05-23', ['Güven', 'Auer']),
+      race(2, 'Lausitzring — Race 2', '2026-05-24', ['Auer', 'Güven']),
+    ]);
+    const h = await html(dtmSeries);
+    expect(detailsCount(h)).toBe(4);
+    expect(openCount(h)).toBe(1);
+    expect(h).toMatch(opens('Lausitzring — Race 2'));
+    expect(h).not.toContain('Classification →');
+    expect(h).toContain('Preining');
+    expect(h).toContain('href="/series/dtm/weekend/1"');
+  });
+
+  it('leaves a winners-only season (NLS) as flat rows without a classification link', async () => {
+    const nlsSeries = series('nls', 'NLS', [session('nls', 'Westfalenfahrt', '2026-03-28T10:00:00Z', 4)]);
+    nls.mockResolvedValueOnce([
+      { round: 1, raceName: 'Westfalenfahrt', date: at('2026-03-28'), circuit: 'Nürburgring', results: [{ position: 1, driverName: 'Crew One', team: 'Team One', time: undefined, status: 'Winner', points: 0 }] },
+      { round: 2, raceName: 'Eifelrennen', date: at('2026-04-18'), circuit: 'Nürburgring', results: [{ position: 1, driverName: 'Crew Two', team: 'Team Two', time: undefined, status: 'Winner', points: 0 }] },
+    ]);
+    const h = await html(nlsSeries);
+    expect(detailsCount(h)).toBe(0);
+    expect(h).not.toContain('Classification →');
+    expect(h).toContain('Crew One');
+    expect(h).toContain('Overall winners');
   });
 
   it('leaves a winners-only season (WRC) as flat rows without a classification link', async () => {

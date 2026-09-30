@@ -32,7 +32,7 @@ import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
 import { fetchDTMSeasonResults } from '@/lib/results/dtm';
 import { fetchNlsSeasonResults, NLS_SOURCE_URL } from '@/lib/results/nls';
-import { isRaceLikeTitle } from '@/lib/results/session-classification';
+import { CLASS_RESULT_SERIES, isRaceLikeTitle, RACE_SESSION_SERIES } from '@/lib/results/session-classification';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { applyResultsOverrides } from '@/lib/results/overrides';
@@ -175,13 +175,18 @@ export function raceSessionFor(weekend: Weekend, raceName: string): Session | nu
   return main ?? races[races.length - 1];
 }
 
-/** The round links of a series, the weekends grouped once (the grouping weekendFor() uses). */
+/** The round links of a series, the weekends grouped once (the grouping weekendFor() uses). A classification link is
+ *  given only where the race session page can answer it: F1 through OpenF1, the class series per class, the series of
+ *  RACE_SESSION_SERIES from their season feed (the session page’s own three paths); DTM’s page has no per-race source,
+ *  so its rows keep the accordion. */
 function roundLinks(series: Series): RoundLinks {
   const byRound = new Map(groupByWeekend(series.sessions, new Date(), series.rounds).map(w => [w.round, w]));
   const slug = series.meta.slug;
+  const pageAnswers = slug === 'f1' || CLASS_RESULT_SERIES.has(slug) || RACE_SESSION_SERIES.has(slug);
   return {
     weekend: round => (byRound.has(round) ? `/series/${slug}/weekend/${round}` : undefined),
     classification: (round, raceName) => {
+      if (!pageAnswers) return undefined;
       const weekend = byRound.get(round);
       const session = weekend ? raceSessionFor(weekend, raceName) : null;
       return session ? `/series/${slug}/weekend/${round}/${sessionSlug(session.title)}` : undefined;
