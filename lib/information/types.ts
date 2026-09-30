@@ -96,3 +96,32 @@ export function entryKey(e: Pick<InfoEntry, 'topic' | 'slug'>): string {
 export function entryHref(e: Pick<InfoEntry, 'topic' | 'slug'>): string {
   return `/information/${e.topic}/${e.slug}`;
 }
+
+/** A track's marker colour by its category, the Circuit Map's table shared with the Circuit guides source (P2.12): the series
+ *  categories reuse the site's own series accent colours (content/series/<slug>/meta.json) so a map matches the rest of the
+ *  app; the descriptive categories get a distinct, sensible hue. */
+export const TRACK_CATEGORY_COLOURS: Readonly<Record<string, string>> = {
+  f1: '#ff4136', // Formula 1 (series meta)
+  f2: '#38bdf8', // Formula 2 (series meta)
+  f3: '#818cf8', // Formula 3 (series meta)
+  motogp: '#fb923c', // MotoGP (series meta)
+  wsbk: '#f59e0b', // WorldSBK (series meta)
+  nascar: '#a3e635', // NASCAR Cup (series meta)
+  indycar: '#f43f5e', // IndyCar (series meta)
+  endurance: '#3b82f6', // FIA WEC (series meta)
+  gt: '#a855f7', // GT World Challenge (series meta)
+  wrc: '#eab308', // WRC (series meta)
+  rally: '#d97706', // generic rally (amber-600, distinct from WRC)
+  supercars: '#22d3ee', // cyan-400
+  karting: '#ec4899', // pink-500
+  historic: '#a8a29e', // stone-400 (neutral heritage)
+  hillclimb: '#14b8a6', // teal-500
+};
+/** slate-400: a track whose primary category has no colour of its own. */
+export const TRACK_DEFAULT_COLOUR = '#94a3b8';
+
+/** A track's colour comes from its first (primary) category. */
+export function trackColour(categories: readonly string[] | undefined): string {
+  const primary = categories?.[0];
+  return (primary && TRACK_CATEGORY_COLOURS[primary]) || TRACK_DEFAULT_COLOUR;
+}

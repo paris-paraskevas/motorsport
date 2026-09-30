@@ -3,12 +3,14 @@ import { cache, type ReactNode } from 'react';
 import { firstBodyRegion, isLegacyBody, tabsOf, type ComponentRegion, type PageDocument } from './page-document';
 import { CALENDAR_FACETS, findComponent, type SettingValue } from './components';
 import { parseSourceRef, type SourceRef } from './sources';
-import { SHAPES, findPreset, numeric, presetRows, rowPasses } from './presets';
+import { SHAPES, findPreset, numeric, presetRows, rowPasses, type PresetRow } from './presets';
+import { DEFAULT_MAP_BACKGROUND, fillKey, findMapBackground, type TileSet } from './map-backgrounds';
 import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 import { resolveDestination, type PageDestinations } from './destinations';
 import { namesMatch } from '@/lib/slug';
 import type { ChartData } from '@/components/data/ChartFrame';
+import type { MapData, MapMarker } from '@/components/data/MapFrame';
 import type { CardActions, CardSlots, DetailShowing, HighlightStyle, MasterSelect, MetricCard, RegionControls, RowHighlight } from '@/components/data/DataRegionViews';
 import { VALUE_MAX, applySavedView, bindViewState, encodeViewState, filterOps, parseRule, parseViewState, viewStateHref, type ViewState } from './view-state';
 
@@ -425,6 +427,63 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const foot = `${valueLabel} by ${labelLabel}${highlighted && emphasised.length ? ` · ${highlighted} highlighted` : ''}`;
     return <views.DataRegionChart heading={heading} level={level} data={data} foot={foot} />;
   },
+  // The Map (P2.12; APEX: the Map region over a Map Layer of Longitude-Latitude columns): a marker per row of the preset whose
+  // coordinates read as numbers, on the named background's tiles, light and dark both handed to the frame (the family is the
+  // browser's); the mapping the preset's own where '' is stored; the link the row's link column (`row:<key>`, or the preset's
+  // own) or one destination of the catalogue for every marker; a keyed background's URL filled from the environment here, on
+  // the server, so the row carries the background's key alone (rule 10).
+  async 'data.map'(settings, ctx) {
+    if (!ctx.source) return null;
+    const preset = findPreset(str(settings.preset));
+    if (!preset) return null;
+    const shape = SHAPES[preset.shape];
+    const own = shape.map;
+    const column = (key: string) => shape.columns.find(c => c.key === key);
+    const latKey = str(settings.latitude) || own?.latitude || '';
+    const lonKey = str(settings.longitude) || own?.longitude || '';
+    const titleKey = str(settings.title) || own?.title || '';
+    const bodyKey = str(settings.body) || own?.body || '';
+    const colourKey = str(settings.colour) || own?.colour || '';
+    if (!column(latKey) || !column(lonKey) || (titleKey && !column(titleKey)) || (bodyKey && !column(bodyKey)) || (colourKey && !column(colourKey))) return null;
+    const background = findMapBackground(str(settings.background)) ?? findMapBackground(DEFAULT_MAP_BACKGROUND)!;
+    const [{ readSource }, views] = await Promise.all([sourceRead(), dataViews()]);
+    const read = ctx.read ? await ctx.read() : await readSource(ctx.source);
+    ctx.onSourceRead?.(read.provenance);
+    let rows = presetRows(read.rows, preset, Number.MAX_SAFE_INTEGER);
+    const ruleText = str(settings.rule);
+    const rule = ruleText ? parseRule(ruleText) : '';
+    if (typeof rule !== 'string' && column(rule.column)) rows = rows.filter(r => rowPasses(r, rule, shape.columns));
+    const cell = (v: unknown): string => (v === null || v === undefined ? '' : String(v));
+    const linkSetting = str(settings.link);
+    const linkColumn = column(linkSetting ? (linkSetting.startsWith('row:') ? linkSetting.slice(4) : '') : (own?.link ?? ''));
+    const hrefColumn = linkColumn?.type === 'link' ? (linkColumn.href ?? linkColumn.key) : null;
+    const destination = linkSetting && !linkSetting.startsWith('row:') ? resolveDestination(linkSetting, await ctx.pages) : null;
+    const hrefOf = (r: PresetRow): string | null => (hrefColumn ? cell(r[hrefColumn]) || null : destination && destination.kind !== 'action' ? destination.href : null);
+    const markers: MapMarker[] = [];
+    for (const r of rows) {
+      const lat = numeric(r[latKey]);
+      const lon = numeric(r[lonKey]);
+      if (lat === null || lon === null || Math.abs(lat) > 90 || Math.abs(lon) > 180) continue;
+      const title = titleKey ? cell(r[titleKey]) : '';
+      markers.push({ lat, lon, title: title || `${lat}, ${lon}`, body: bodyKey ? cell(r[bodyKey]) : '', href: hrefOf(r), colour: colourKey ? cell(r[colourKey]) || null : null });
+    }
+    const heading = str(settings.heading) || preset.name;
+    const level = ctx.first ? ('h1' as const) : ('h2' as const);
+    if (markers.length === 0) return <views.DataRegionMap heading={heading} level={level} data={null} foot="" />;
+    const fill = (set: TileSet): TileSet => ({ ...set, url: fillKey(set.url, process.env, background.keyVar) });
+    const data: MapData = {
+      background: background.key,
+      light: fill(background.light),
+      dark: background.dark ? fill(background.dark) : null,
+      markers,
+      view: str(settings.view) === 'world' ? 'world' : 'auto',
+      height: Math.min(800, Math.max(240, num(settings.height, 520))),
+      navigation: str(settings.navigation) === 'none' ? 'none' : 'zoom',
+      scale: settings.scale === true,
+      wheel: settings.wheel !== false,
+    };
+    return <views.DataRegionMap heading={heading} level={level} data={data} foot={`${markers.length} ${markers.length === 1 ? 'marker' : 'markers'} · ${background.name}`} />;
+  },
   // Filters (P2.5; APEX: Smart Filters): the chips over its target's rows; nothing without a target or where no state can arrive.
   async 'data.filters'(settings, ctx) {
     const f = ctx.filters;
@@ -597,6 +656,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   'data.metrics': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Chart (P2.11) reads the four sources whose rows carry a number to draw: the standings' two tiers, the results' and the trend's snapshots, the session results.
   'data.chart': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'content:series', 'db:session_result_current'],
+  // The Map (P2.12) reads the circuits of the content bundle, or the information hub's track entries.
+  'data.map': ['content:circuits', 'content:information'],
   // The Filters region reads its target's Source (P2.5): the same tiers, once for both.
   'data.filters': ['db:standing_current', 'snapshot:standings:', 'snapshot:results:', 'snapshot:f1:', 'db:post', 'snapshot:news:aggregate:', 'content:series', 'live:ics', 'db:session_result_current'],
   // The Data region reads its Source: the standings' two tiers, the results' snapshots, the posts table and the news aggregate

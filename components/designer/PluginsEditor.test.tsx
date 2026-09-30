@@ -55,8 +55,8 @@ describe('PluginsEditor', () => {
     expect(screen.getByRole('heading', { name: 'Plug-ins' })).toBeTruthy();
     const rows = screen.getAllByRole('row').slice(1);
     // The four region kinds and the eight components (the Data region since P2.2, the Live band since P2.9, the Filters since P2.5, the Metric cards since P2.7; Home's six left in P2.24 C).
-    // …the Countdown since P2.8, the Breadcrumb since P2.17, the Tabs since P2.10, the Weather since P2.14 and the Chart since P2.11, the twelfth component: sixteen rows.
-    expect(rows).toHaveLength(16);
+    // …the Countdown since P2.8, the Breadcrumb since P2.17, the Tabs since P2.10, the Weather since P2.14, the Chart since P2.11 and the Map since P2.12, the thirteenth component: seventeen rows.
+    expect(rows).toHaveLength(17);
     expect(within(rows[0]).getByText('Static Content')).toBeTruthy();
     expect(within(rows[0]).getByText('Region')).toBeTruthy();
     const headingRow = rows.find(r => within(r).queryByText('Page heading'))!;
@@ -74,11 +74,11 @@ describe('PluginsEditor', () => {
     expect(within(open).getByText(/Events/)).toBeTruthy();
   });
 
-  it('P2.1: the opened definition names the sources it may read: the seven for the Data region (Session results since P2.25, Season trend since P2.11), none for the heading', () => {
+  it('P2.1: the opened definition names the sources it may read: the nine for the Data region (Session results since P2.25, Season trend since P2.11, Tracks and Circuit guides since P2.12), none for the heading', () => {
     render(<PluginsEditor definitions={list} readOnly={false} onSaved={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Open Data region' }));
     const region = screen.getByRole('region', { name: 'Plug-in: Data region' });
-    expect(within(region).getByText('Sources').nextElementSibling?.textContent).toMatch(/^Standings.*Results.*Posts.*News.*Weekends.*Session results.*Season trend$/);
+    expect(within(region).getByText('Sources').nextElementSibling?.textContent).toMatch(/^Standings.*Results.*Posts.*News.*Weekends.*Session results.*Season trend.*Tracks.*Circuit guides$/);
     fireEvent.click(screen.getByRole('button', { name: 'Open Page heading' }));
     const heading = screen.getByRole('region', { name: 'Plug-in: Page heading' });
     expect(within(heading).getByText('Sources').nextElementSibling?.textContent).toMatch(/^none/);

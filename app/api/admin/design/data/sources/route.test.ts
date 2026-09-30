@@ -73,11 +73,11 @@ describe('GET /api/admin/design/data/sources', () => {
     expect((await GET()).status).toBe(404);
   });
 
-  it('lists the sixteen with Utilization and the loader’s work behind each, in the catalogue’s words; a key the vocabulary lacks is left out', async () => {
+  it('lists the seventeen with Utilization and the loader’s work behind each, in the catalogue’s words; a key the vocabulary lacks is left out', async () => {
     const res = await GET();
     expect(res.status).toBe(200);
     const body = (await res.json()) as { sources: { key: string; usedOn: unknown[]; runs: { key: string; label: string; state: string }[]; snapshots: { key: string; label: string; ok: boolean; stale: boolean; meta: unknown }[] }[] };
-    expect(body.sources.map(s => s.key)).toEqual(['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results', 'trend']);
+    expect(body.sources.map(s => s.key)).toEqual(['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results', 'trend', 'guides']);
     const standings = body.sources.find(s => s.key === 'standings')!;
     expect(standings.usedOn).toEqual([{ id: MONZA, path: '/history/monza', name: 'Monza, a history', refs: ['standings?series=f1&season=2026'] }]);
     expect(standings.runs.map(r => [r.key, r.label, r.state])).toEqual([

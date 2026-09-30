@@ -114,6 +114,13 @@ vi.mock('@/app/(app)/changelog/releases', () => ({
 }));
 const loadCircuits = vi.fn(async () => ({ monza: { name: 'Autodromo Nazionale Monza', countryCode: 'IT', lat: 45.6156, lon: 9.2811, aliases: ['Monza'] } }));
 vi.mock('@/lib/circuits', () => ({ loadCircuits: () => loadCircuits() }));
+// The information hub's track entries (P2.12): a track with a place and two categories, a track without coordinates, a country's aggregate page.
+const infoEntries = [
+  { kind: 'track', topic: 'tracks', slug: 'autodromo-nazionale-monza', question: 'Autodromo Nazionale Monza', track: { country: 'Italy', countryCode: 'IT', location: { lat: 45.6156, lng: 9.2811 }, categories: ['f1', 'endurance'] } },
+  { kind: 'track', topic: 'tracks', slug: 'somewhere', question: 'Somewhere', track: { country: 'Nowhere', categories: ['karting'] } },
+  { kind: 'qa', topic: 'tracks', slug: 'italy', question: 'Which circuits are in Italy?' },
+];
+vi.mock('@/lib/information/registry', () => ({ getTopicEntries: async (topic: string) => (topic === 'tracks' ? infoEntries : []) }));
 const readSnapshotMeta = vi.fn(async () => ({}) as Record<string, { run: string; at: string; F?: number; W?: number }>);
 vi.mock('@/lib/source-snapshot', () => ({ readSnapshotMeta: () => readSnapshotMeta() }));
 let tables: Record<string, { data: unknown; error: { message: string } | null }> = {};
@@ -530,7 +537,7 @@ describe('readSource', () => {
     expect(empty.provenance.error).toBeUndefined();
   });
 
-  it('every one of the sixteen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
+  it('every one of the seventeen answers rows that carry each declared column, dates as ISO strings; the results source does so for each of its fourteen series', async () => {
     readCurrentStandingsWithRun.mockResolvedValue({ standings: { drivers, constructors }, runId: null });
     readCurrentSessionResults.mockResolvedValue({ round: 15, rows: sessionRows, runId: null });
     const results = SOURCES.find(s => s.key === 'results')!;
@@ -656,5 +663,16 @@ describe('the Season trend reader (P2.11)', () => {
     expect(none.rows).toEqual([]);
     expect(none.provenance).toMatchObject({ tier: 'snapshot', rows: 0 });
     expect(none.provenance.error).toBeUndefined();
+  });
+});
+
+describe('the Circuit guides reader (P2.12)', () => {
+  it('answers the information hub’s track entries with a place on the map as the Circuit Map keeps them: the page, the primary category and its colour, the categories joined; an entry without coordinates or a question page left out', async () => {
+    const read = await readSource({ source: 'guides', params: {} });
+    expect(read.provenance).toMatchObject({ tier: 'content', label: 'Circuit guides', rows: 1 });
+    expect(read.provenance.error).toBeUndefined();
+    expect(read.rows).toEqual([
+      { slug: 'autodromo-nazionale-monza', name: 'Autodromo Nazionale Monza', country: 'Italy', countryCode: 'IT', category: 'f1', categories: 'f1, endurance', lat: 45.6156, lon: 9.2811, page: '/information/tracks/autodromo-nazionale-monza', colour: '#ff4136' },
+    ]);
   });
 });

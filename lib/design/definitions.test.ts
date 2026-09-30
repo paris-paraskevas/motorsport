@@ -27,7 +27,7 @@ vi.mock('@/lib/betting/client', () => ({
   }),
 }));
 
-import { loadComponents, loadDefinitions, loadDefinitionsForEditing, loadSourceUsage, overlaysFromRows, resetDefinitionsMemo, sourceUsageFromRows, usageFromRows } from './definitions';
+import { loadComponents, loadDefinitions, loadDefinitionsForEditing, loadSourceUsage, mapBackgroundUsageFromRows, overlaysFromRows, resetDefinitionsMemo, sourceUsageFromRows, usageFromRows } from './definitions';
 import { DEFINITIONS } from './component-definitions';
 import { COMPONENTS } from './components';
 
@@ -158,5 +158,21 @@ describe('the definitions loader', () => {
     expect((await loadDefinitions()).find(d => d.key === 'page.heading')?.settings).toHaveLength(2);
     resetDefinitionsMemo();
     expect((await loadDefinitions()).find(d => d.key === 'page.heading')?.settings).toHaveLength(1);
+  });
+});
+
+describe('the Map Backgrounds’ Utilization (P2.12)', () => {
+  it('names the pages whose newest or live revision carries a Map region on a background, the default when unset, by the regions’ ids; a region of another kind is no use', () => {
+    const revs = [
+      { page_id: CAL, created_at: '2026-09-29T10:00:00Z', published_at: null, document: { version: 2, actions: [], regions: [region('map', 'component', { component: 'data.map', settings: { preset: 'circuit-guides', background: 'canvas' }, source: 'guides' })] } },
+      { page_id: MONZA, created_at: '2026-09-29T10:00:00Z', published_at: '2026-09-29T10:00:00Z', document: { version: 2, actions: [], regions: [region('places', 'component', { component: 'data.map', settings: { preset: 'circuits' }, source: 'tracks' }), region('d', 'component', { component: 'data.region', settings: {}, source: 'standings?series=f1&season=2026' })] } },
+    ];
+    expect(mapBackgroundUsageFromRows(pages, revs)).toEqual({
+      canvas: [
+        { id: CAL, path: '/calendar', name: 'Calendar', refs: ['map'] },
+        { id: MONZA, path: '/history/monza', name: 'Monza, a history', refs: ['places'] },
+      ],
+    });
+    expect(mapBackgroundUsageFromRows(pages, revisions)).toEqual({});
   });
 });

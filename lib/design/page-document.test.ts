@@ -239,7 +239,7 @@ describe('components and show rules (the components programme, R2a)', () => {
     expect(none.value.regions[0]).not.toHaveProperty('source');
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: '' })])).value.regions[0]).not.toHaveProperty('source');
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?season=2026' })])).problems).toEqual(['region r: Standings needs a series']);
-    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'rounds?series=f1' })])).problems).toEqual(['region r: Source must be one of Standings, Results, Posts, News, Weekends, Session results, Season trend']);
+    expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'rounds?series=f1' })])).problems).toEqual(['region r: Source must be one of Standings, Results, Posts, News, Weekends, Session results, Season trend, Tracks, Circuit guides']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 'standings?series=f1&season=2025' })])).value.regions).toEqual([]);
     expect(parsePageDocument(doc([region({ component: 'series.live', source: 'standings?series=f1&season=2026' })])).problems).toEqual(['region r: Live band reads no source']);
     expect(parsePageDocument(doc([region({ component: 'data.region', settings: drivers, source: 42 })])).problems).toEqual(['region r: Source must be text']);
@@ -899,5 +899,20 @@ describe('the Chart region (P2.11): its column mapping and its row rule are the 
     expect(parsePageDocument(doc([chart({ rule: 'name.gt:3' })])).problems).toEqual(["region c: Row rule must be a condition on a column of the Drivers' season trend preset, like position.lte:3"]);
     expect(parsePageDocument(doc([chart({ preset: 'drivers' })])).problems).toEqual(['region c: Preset Drivers is for a Standings source; this region reads Season trend']);
     expect(parsePageDocument(doc([chart({ rows: 5 })])).problems).toEqual(['region c: Chart has no setting called rows']);
+  });
+});
+
+describe('the Map region (P2.12): its column mapping and its link are the preset’s shape’s; its preset its Source’s', () => {
+  const base = { kind: 'component', title: '', position: 'body', column: 1, span: 12, newRow: true, hidden: false, authz: null };
+  const map = (settings: Record<string, unknown>, source = 'guides') => ({ ...base, id: 'g', seq: 10, component: 'data.map', source, settings: { preset: 'circuit-guides', ...settings } });
+  const doc = (regions: unknown[]) => ({ version: 2, regions, actions: [] });
+  it('keeps a document whose mapping names columns of the preset and whose link follows the page column; refuses a column the shape lacks, a link column it lacks, and a preset of another source', () => {
+    const kept = parsePageDocument(doc([map({ latitude: 'lat', longitude: 'lon', title: 'name', link: 'row:page', rule: 'category.eq:f1' })]));
+    expect(kept.problems).toEqual([]);
+    expect(kept.value?.regions[0]).toMatchObject({ component: 'data.map', source: 'guides', settings: { preset: 'circuit-guides', background: 'canvas', latitude: 'lat', longitude: 'lon', title: 'name', link: 'row:page', rule: 'category.eq:f1', height: 520, view: 'auto', navigation: 'zoom', scale: false, wheel: true } });
+    expect(parsePageDocument(doc([map({ latitude: 'nope' })])).problems).toEqual([expect.stringMatching(/^region g: Latitude must be a column of the Circuit guides preset: /)]);
+    expect(parsePageDocument(doc([map({ link: 'row:nope' })])).problems).toEqual(['region g: Link can follow a link column of the Circuit guides preset: Circuit, Page']);
+    expect(parsePageDocument(doc([map({ rule: 'lat.in:a' })])).problems).toEqual([]);
+    expect(parsePageDocument(doc([map({ preset: 'circuits' })])).problems).toEqual(['region g: Preset Circuits is for a Tracks source; this region reads Circuit guides']);
   });
 });

@@ -275,10 +275,13 @@ function MiniMap({ doc, id }: { doc: PageDocument; id: string }) {
 const SLOT_OF: Readonly<Record<string, keyof Shape['card']>> = { cardTitle: 'title', cardSubtitle: 'subtitle', cardBody: 'body', cardMedia: 'media', cardBadge: 'badge' };
 /** The Chart's mapping slots (P2.11): the column the preset's own chart mapping gives each; "none" for a shape without one. */
 const CHART_SLOT_OF: Readonly<Record<string, 'label' | 'value' | 'series'>> = { label: 'label', value: 'value', seriesName: 'series' };
+/** The Map's mapping slots (P2.12): the column the preset's own map mapping gives each; "none" for a shape without one. */
+const MAP_SLOT_OF: Readonly<Record<string, 'latitude' | 'longitude' | 'title' | 'body' | 'link' | 'colour'>> = { latitude: 'latitude', longitude: 'longitude', title: 'title', body: 'body', link: 'link', colour: 'colour' };
 function ownSlotLabel(shape: Shape, key: string): string {
   const slot = SLOT_OF[key];
   const chartSlot = CHART_SLOT_OF[key];
-  const column = slot ? shape.card[slot] : chartSlot ? shape.chart?.[chartSlot] : undefined;
+  const mapSlot = MAP_SLOT_OF[key];
+  const column = slot ? shape.card[slot] : chartSlot ? shape.chart?.[chartSlot] : mapSlot ? shape.map?.[mapSlot] : undefined;
   return column ? (shape.columns.find(c => c.key === column)?.label ?? column) : 'none';
 }
 
@@ -884,9 +887,9 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
               ))}
           </select>
         ) : s.kind === 'choice' && s.optionsFrom === 'columns' ? (
-          // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column) and the Chart's Series group (P2.11): the preset's own mapping first, then the shape's columns; the share bar is no Media. Any other column choice (the Detail key, a facet, a Metric card's columns, P2.7) starts at None.
+          // A Card slot over the preset's columns (P2.2 B3; APEX Cards: Title Column … Icon Initials Column) and the Chart's Series group (P2.11) and the Map's Layer group (P2.12): the preset's own mapping first, then the shape's columns; the share bar is no Media. Any other column choice (the Detail key, a facet, a Metric card's columns, P2.7) starts at None.
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
-            <option value="">{s.group === 'card' || s.group === 'series' ? `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}` : 'None'}</option>
+            <option value="">{s.group === 'card' || s.group === 'series' || s.group === 'layer' ? `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}` : 'None'}</option>
             {((s.key.startsWith('facet') ? facetShape : shape)?.columns ?? [])
               .filter(c => !(s.key === 'cardMedia' && c.type === 'percent'))
               .map(c => (
@@ -937,7 +940,8 @@ export function regionGroups(ctx: PropsContext, r: Region): PaneGroups {
           </select>
         ) : s.kind === 'link' ? (
           <select value={String(value)} disabled={readOnly} aria-label={s.label} className={FIELD} onChange={e => set(e.target.value)}>
-            <option value="">Nowhere</option>
+            {/* The Map's Link (P2.12) starts at the preset's own link column, as its Layer columns do; every other link at Nowhere. */}
+            <option value="">{s.group === 'layer' ? `Preset’s own${shape ? ` (${ownSlotLabel(shape, s.key)})` : ''}` : 'Nowhere'}</option>
             {s.rowLinks && shape && shape.columns.some(c => c.type === 'link') ? (
               // A zone may follow a link column of the row (P2.2 B3): the race's weekend page on a results shape.
               <optgroup label="This row">

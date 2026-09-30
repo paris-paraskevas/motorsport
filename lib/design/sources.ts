@@ -424,6 +424,20 @@ export const SOURCES: readonly SourceDefinition[] = [
     loaderKeys: p => resultsKeys(p.series),
     hosts: Object.fromEntries(TREND_SERIES.map(s => [s, RESULTS_HOSTS[s]])),
   },
+  // The circuit guides (P2.12): the information hub's track entries as the Circuit Map keeps them (app/(app)/information/map),
+  // one row per track with a place: the guide's page, the primary category and its colour, the categories joined; the Map's
+  // default preset. Deployed with the site as the hub is (lib/information/registry.ts).
+  {
+    key: 'guides',
+    name: 'Circuit guides',
+    holds: 'the information hub’s circuit guides with a place on the map: name, country, categories, coordinates, the guide’s page and the primary category’s colour',
+    parameters: [],
+    columns: [col('slug', 'Slug', 'text'), col('name', 'Name', 'text'), col('country', 'Country', 'text'), col('countryCode', 'Code', 'text'), col('category', 'Category', 'text'), col('categories', 'Categories', 'text'), col('lat', 'Latitude', 'number'), col('lon', 'Longitude', 'number'), col('page', 'Page', 'link'), col('colour', 'Colour', 'colour')],
+    fresh: 'content',
+    load: 'none',
+    pagination: 'none',
+    reads: ['content:information'],
+  },
 ];
 
 export function findSource(key: string): SourceDefinition | null {

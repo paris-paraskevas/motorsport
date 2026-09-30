@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COMPONENTS, COMPONENT_KEY, SPLITS, componentDefaults, componentId, defaultDocument, findComponent, parseSettings, recipeRegions, settingsSummary, type ComponentDefinition } from './components';
+import { MAP_BACKGROUNDS } from './map-backgrounds';
 
 // The component catalogue: every key well formed and unique, settings read
 // against their spec with defaults standing in, the summary in words, Home's
@@ -32,11 +33,12 @@ describe('the component catalogue', () => {
   });
 
   it('P2.1: the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1), session results (P2.25) and the season trend (P2.11); no other definition but the Metric cards and the Chart reads one (What it changed left with Home’s six, P2.24 C)', () => {
-    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend']);
+    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides']);
     // P2.7: the Metric cards read the same seven; the Chart (P2.11) the four whose rows carry a number to draw.
-    expect(findComponent('data.metrics')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend']);
+    expect(findComponent('data.metrics')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides']);
+    expect(findComponent('data.map')?.sources).toEqual(['tracks', 'guides']);
     expect(findComponent('data.chart')?.sources).toEqual(['standings', 'results', 'session-results', 'trend']);
-    for (const c of COMPONENTS) if (c.key !== 'data.region' && c.key !== 'data.metrics' && c.key !== 'data.chart') expect(c.sources, c.key).toBeUndefined();
+    for (const c of COMPONENTS) if (c.key !== 'data.region' && c.key !== 'data.metrics' && c.key !== 'data.chart' && c.key !== 'data.map') expect(c.sources, c.key).toBeUndefined();
   });
 
   it('P2.2: the Data region’s attributes are per multi-row region: Preset (the thirty-three, grouped by the fifteen, each bound to a source and its series, the results ones waiting), View (Table · Cards), Rows, Heading', () => {
@@ -76,7 +78,7 @@ describe('the component catalogue', () => {
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
     const preset = region.settings[0];
-    expect(preset.options).toHaveLength(41);
+    expect(preset.options).toHaveLength(43);
     expect(preset.options![0]).toEqual({
       key: 'drivers',
       label: 'Drivers',
@@ -529,5 +531,52 @@ describe('the Chart component (P2.11; APEX: the Chart region)', () => {
     expect(settingsSummary(chart, { preset: 'drivers', label: 'name', value: 'wins', seriesName: 'team' })).toBe('Preset Drivers · Bar · Wins by Driver, one set of bars per Team');
     expect(settingsSummary(chart, { preset: 'drivers' })).toBe('Preset Drivers · Bar · Pts by Driver');
     expect(settingsSummary(chart, { preset: 'lead-story' })).toBe('Preset Lead story · Bar · no value column');
+  });
+});
+
+describe('the Map component (P2.12; APEX: the Map region)', () => {
+  it('marks a preset’s rows on a named background: the preset, the background, a heading and the height; the Layer group’s column mapping, link, colour and row rule; the Initial Position and Zoom’s type; the Controls; the summary names the preset, the background and the view', () => {
+    const map = findComponent('data.map')!;
+    expect(map).toMatchObject({ name: 'Map', group: 'Data' });
+    expect(map.holds).toMatch(/^the markers of a source’s rows on a named background/);
+    expect(map.settings.map(s => [s.key, s.kind, s.group])).toEqual([
+      ['preset', 'choice', undefined],
+      ['background', 'choice', undefined],
+      ['heading', 'text', undefined],
+      ['height', 'number', undefined],
+      ['latitude', 'choice', 'layer'],
+      ['longitude', 'choice', 'layer'],
+      ['title', 'choice', 'layer'],
+      ['body', 'choice', 'layer'],
+      ['link', 'link', 'layer'],
+      ['colour', 'choice', 'layer'],
+      ['rule', 'text', 'layer'],
+      ['view', 'choice', 'position'],
+      ['navigation', 'choice', 'controls'],
+      ['scale', 'boolean', 'controls'],
+      ['wheel', 'boolean', 'controls'],
+    ]);
+    expect(map.settings.every(s => s.scope === 'report')).toBe(true);
+    expect(map.groups?.map(g => [g.key, g.title])).toEqual([['layer', 'Layer'], ['position', 'Initial Position and Zoom'], ['controls', 'Controls']]);
+    const preset = map.settings[0];
+    const region = findComponent('data.region')!.settings[0];
+    expect(preset.options?.map(o => [o.key, o.label, o.group, o.only])).toEqual(region.options?.map(o => [o.key, o.label, o.group, o.only]));
+    expect(preset.options?.every(o => o.sets === undefined)).toBe(true);
+    expect(preset.default).toBe('circuit-guides');
+    expect(map.settings.find(s => s.key === 'background')).toMatchObject({ default: 'canvas', options: MAP_BACKGROUNDS.map(b => ({ key: b.key, label: b.name })) });
+    for (const k of ['latitude', 'longitude', 'title', 'body', 'colour']) expect(map.settings.find(s => s.key === k), k).toMatchObject({ optionsFrom: 'columns', default: '' });
+    expect(map.settings.find(s => s.key === 'link')).toMatchObject({ rowLinks: true, default: '' });
+    expect(map.settings.find(s => s.key === 'rule')).toMatchObject({ rule: true, default: '', maxLength: 120 });
+    expect(map.settings.find(s => s.key === 'height')).toMatchObject({ default: 520, min: 240, max: 800 });
+    expect(map.settings.find(s => s.key === 'view')).toMatchObject({ default: 'auto', options: [{ key: 'auto', label: 'Automatic' }, { key: 'world', label: 'World' }] });
+    expect(map.settings.find(s => s.key === 'navigation')).toMatchObject({ default: 'zoom', options: [{ key: 'zoom', label: 'Zoom Only' }, { key: 'none', label: 'None' }] });
+    expect(componentDefaults(map)).toEqual({ preset: 'circuit-guides', background: 'canvas', heading: '', height: 520, latitude: '', longitude: '', title: '', body: '', link: '', colour: '', rule: '', view: 'auto', navigation: 'zoom', scale: false, wheel: true });
+    expect(parseSettings(map, { height: 100 }).problems).toEqual(['Height must be a number from 240 to 800']);
+    expect(parseSettings(map, { background: 'satellite' }).problems).toEqual(['Background must be one of Canvas']);
+    expect(parseSettings(map, { view: 'static' }).problems).toEqual(['Type must be one of Automatic, World']);
+    expect(parseSettings(map, { rows: 5 }).problems).toEqual(['Map has no setting called rows']);
+    expect(settingsSummary(map, { preset: 'circuit-guides', view: 'world' })).toBe('Preset Circuit guides · Canvas · World');
+    expect(settingsSummary(map, componentDefaults(map))).toBe('Preset Circuit guides · Canvas · Automatic');
+    expect(settingsSummary(map, { preset: 'circuits', title: 'name', rule: 'country.eq:IT', heading: 'Italy' })).toBe('Preset Circuits · Canvas · Automatic · Title Circuit · Row rule country.eq:IT · Heading Italy');
   });
 });

@@ -1332,6 +1332,51 @@ describe('the Chart (P2.11; APEX: the Chart region)', () => {
   });
 });
 
+describe('the Map (P2.12; APEX: the Map region)', () => {
+  const GUIDES = [
+    { slug: 'monza', name: 'Autodromo Nazionale Monza', country: 'Italy', countryCode: 'IT', category: 'f1', categories: 'f1, endurance', lat: 45.6156, lon: 9.2811, page: '/information/tracks/monza', colour: '#ff4136' },
+    { slug: 'spa', name: 'Circuit de Spa-Francorchamps', country: 'Belgium', countryCode: 'BE', category: 'endurance', categories: 'endurance', lat: 50.4372, lon: 5.9714, page: '/information/tracks/spa', colour: '#3b82f6' },
+    { slug: 'nowhere', name: 'Nowhere', country: 'Nowhere', countryCode: null, category: null, categories: null, lat: null, lon: null, page: '/information/tracks/nowhere', colour: '#94a3b8' },
+  ];
+  const guides = (rows = GUIDES) => readSource.mockResolvedValueOnce({ columns: [], total: rows.length, rows, provenance: { ref: { source: 'guides', params: {} }, label: 'Circuit guides', tier: 'content', keys: [], rows: rows.length, ms: 1 } });
+  const draw = async (settings: Record<string, string | number | boolean>, over: Partial<Region> = {}, where: { path: string; params?: Record<string, string> } = { path: '/x' }) =>
+    (await renderComponents(doc([region('g', 'data.map', { preset: 'circuit-guides', ...settings }, { source: 'guides', ...over } as Partial<Region>)]), where)).g;
+
+  it('from a saved document over the circuit guides marks the rows with coordinates on the Canvas background: the box at the height, the markers as a hidden list of links, the foot, the heading the preset’s name as the h1 when first; World with a row rule and a title column; the circuits without links; nothing without a coordinate column; one line without a place; not first, the rule a span', async () => {
+    expect(canRender('data.map')).toBe(true);
+    guides();
+    const m = html(await draw({}));
+    expect(m).toContain('<section aria-label="Circuit guides"');
+    expect(m).toMatch(/<h1[^>]*>Circuit guides<\/h1>/);
+    expect(m).toContain('data-map-background="canvas"');
+    expect(m).toContain('data-map-view="auto"');
+    expect(m).toContain('style="height:520px"');
+    expect(m).toMatch(/<ul class="sr-only"[^>]*>.*<a href="\/information\/tracks\/monza"[^>]*>Autodromo Nazionale Monza<\/a> · Italy.*<a href="\/information\/tracks\/spa"[^>]*>Circuit de Spa-Francorchamps<\/a> · Belgium/);
+    expect(m).not.toContain('Nowhere');
+    expect(m).toContain('2 markers · Canvas');
+    guides();
+    const one = html(await draw({ view: 'world', rule: 'category.eq:endurance', heading: 'Endurance', title: 'country' }));
+    expect(one).toContain('data-map-view="world"');
+    expect(one).toMatch(/<h1[^>]*>Endurance<\/h1>/);
+    expect(one).toContain('>Belgium</a>');
+    expect(one).not.toContain('Monza');
+    expect(one).toContain('1 marker · Canvas');
+    readSource.mockResolvedValueOnce({ columns: [], total: 1, rows: [{ slug: 'monza', name: 'Autodromo Nazionale Monza', country: 'IT', lat: 45.6156, lon: 9.2811 }], provenance: { ref: { source: 'tracks', params: {} }, label: 'Tracks', tier: 'content', keys: [], rows: 1, ms: 1 } });
+    const circuits = html(await draw({ preset: 'circuits' }, { source: 'tracks' } as Partial<Region>));
+    expect(circuits).toMatch(/<li>Autodromo Nazionale Monza · IT<\/li>/);
+    expect(circuits).not.toContain('<a ');
+    expect(await draw({ preset: 'circuits', latitude: 'nope' }, { source: 'tracks' } as Partial<Region>)).toBeNull();
+    guides([GUIDES[2]]);
+    const none = html(await draw({}));
+    expect(none).toContain('No places yet.');
+    expect(none).not.toContain('data-map-background');
+    guides();
+    const second = html((await renderComponents(doc([region('h', 'page.heading'), region('g', 'data.map', { preset: 'circuit-guides' }, { source: 'guides', seq: 20 } as Partial<Region>)]), { path: '/x' })).g);
+    expect(second).not.toContain('<h1');
+    expect(second).toContain('>Circuit guides<');
+  });
+});
+
 describe('the table’s controls and the reader’s state (P2.3 PR A)', () => {
   const NOON = new Date('2026-09-22T12:00:00.000Z');
   const DRIVERS = { preset: 'drivers', view: 'table', rows: 10, heading: '' };

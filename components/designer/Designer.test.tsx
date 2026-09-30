@@ -93,6 +93,18 @@ describe('Designer keeps the selection in the URL', () => {
     }
   });
 
+  it('P2.12: opens Map Backgrounds from ?sc=maps and reads the backgrounds’ Utilization', async () => {
+    const fetchMock = vi.fn(async (url: string) => (url === '/api/admin/design/maps' ? { ok: true, status: 200, json: async () => ({ backgrounds: [] }) } : { ok: false, status: 500, json: async () => ({}) }));
+    vi.stubGlobal('fetch', fetchMock);
+    try {
+      render(<Designer readOnly={false} who="Test · Administrator · production" initialSelected="maps" {...loaded} />);
+      expect(screen.getByRole('heading', { level: 2, name: 'Map Backgrounds' })).toBeTruthy();
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/admin/design/maps', expect.anything()));
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('opens the overview for a key the catalogue does not know', () => {
     render(<Designer readOnly={false} who="Test · Administrator · production" initialSelected="no-such-entry" {...loaded} />);
     expect(screen.getByRole('heading', { level: 2, name: 'Shared Components' })).toBeTruthy();
