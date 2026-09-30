@@ -67,29 +67,33 @@ import { SessionClassChips } from '@/components/weekend/SessionClassChips';
 import { PAGE_WIDE, SITE_URL } from '@/lib/site';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
-// STILL force-dynamic, and the reason is now measured rather than assumed.
+// ISR (X7): the session pages edge-cache like the weekend page, revalidated every
+// five minutes on demand. Nothing here reads the request (no cookies(), headers(),
+// searchParams or connection()); the F1 analyses and the classifications are
+// computed once per window instead of once per visitor, and a finished session's
+// classification is KV-persisted below, so a cached render loses nothing.
 //
-// The account gate that used to justify it is gone (0.334.18 made the F1
-// analysis surfaces public), and Clerk's `auth()` no longer runs here — that
-// removed the FIRST blocker to ISR, but not the last one.
-//
-// What was actually tried, so the next attempt does not repeat it:
-//  - `revalidate = 60` alone            -> route still built as `ƒ` (dynamic).
-//  - `fetchCache = 'default-cache'`     -> still `ƒ`. That option honours an
-//    explicit `cache` option, so at least one fetch in this page's fan-out
-//    passes `no-store` outright, which is what keeps the route dynamic under
-//    Next 15+'s uncached-fetch default.
-//  - `dynamic = 'error'`                -> built as `○`, but that is NOT proof
-//    it prerenders: this route has no `generateStaticParams`, so there were no
-//    params to render and Next never executed the page. A green build there
-//    means nothing was attempted.
-//
-// Making this route cacheable therefore means auditing the OpenF1 / Pulselive /
-// results fan-out fetch by fetch and giving each an explicit cache policy. That
-// is outbound network code, which per CLAUDE.md behaves differently in the
-// deployed runtime than on a laptop, so it wants its own scoped change with a
-// prod check rather than riding along with a gate removal.
-export const dynamic = 'force-dynamic';
+// Why this route was force-dynamic from 0.334.18, and why that reading was wrong:
+//  - the build summary marks EVERY route without prerendered params ƒ, the cached
+//    drivers and weekend pages included, so "still built as ƒ" proved nothing;
+//  - a route with no generateStaticParams is rendered dynamically whatever the
+//    page does (the installed docs, generate-static-params.md: "You must always
+//    return an array from generateStaticParams, even if it's empty. Otherwise, the
+//    route will be dynamically rendered"), and OpenNext's cache interception keys
+//    on the prerender manifest, which listed neither this route nor the catch-all;
+//  - the one explicit cache: 'no-store' fetch in the fan-out is the FIA WEC results
+//    POST (lib/results/wec.ts), which the Worker does not run while a results:wec
+//    snapshot is stored (DATA_SOURCE=db); an unseeded key falls through to it
+//    (lib/source-snapshot.ts) and that one render stays dynamic until the loader
+//    seeds the key.
+export const revalidate = 300;
+
+// On demand: every session renders on its first visit and enters the edge cache;
+// nothing is prerendered at build. The export itself puts the route in the
+// prerender manifest.
+export function generateStaticParams() {
+  return [];
+}
 
 // Post-race classifications are immutable, so we KV-persist each session's
 // computed result and read it first on later renders — eliding the upstream

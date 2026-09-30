@@ -99,14 +99,18 @@ describe('the page registry', () => {
       expect(line, p.path).toBeDefined();
       expect(line, p.path).toContain(`'${p.group}',`);
       expect(line, p.path).toContain(`'${p.authz}',`);
-      expect(line, p.path).toContain(`'${p.rendering}',`);
-      // A later *_pages_seed_*.sql may correct a row's indexable value with an
-      // update (20260928190000, R14); the last word wins over the insert.
+      // A later *_pages_seed_*.sql may correct a row's rendering (20260930194100, X7) or its
+      // indexable value (20260928190000, R14) with an update; the last word wins over the insert.
+      const rendering = [...sql.matchAll(/update page\s+set rendering = '(dynamic|cached)'[^;]*?path in \(([^)]*)\)/gi)]
+        .filter(m => m[2].includes(`'${p.path}'`))
+        .pop();
+      if (rendering) expect(rendering[1], p.path).toBe(p.rendering);
+      else expect(line, p.path).toContain(`'${p.rendering}',`);
       const corrected = [...sql.matchAll(/update page\s+set indexable = (true|false)[^;]*?path in \(([^)]*)\)/gi)]
         .filter(m => m[2].includes(`'${p.path}'`))
         .pop();
       if (corrected) expect(corrected[1] === 'true', p.path).toBe(p.indexable);
-      else expect(line, p.path).toMatch(new RegExp(`'${p.rendering}',\\s*${p.indexable},`));
+      else expect(line, p.path).toMatch(new RegExp(`'(dynamic|cached)',\\s*${p.indexable},`));
     }
   });
 

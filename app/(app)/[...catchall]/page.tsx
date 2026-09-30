@@ -46,6 +46,17 @@ import { RefusedPage } from '@/components/page/RefusedPage';
 
 export const revalidate = 300;
 
+// On demand (X7): every address renders on its first visit and enters the edge
+// cache; nothing is prerendered at build. The export itself puts the route in the
+// prerender manifest, which Next and OpenNext's cache interception key on; a
+// route without it is rendered dynamically whatever the page does (the installed
+// docs, generate-static-params.md: "You must always return an array from
+// generateStaticParams, even if it's empty. Otherwise, the route will be
+// dynamically rendered").
+export function generateStaticParams() {
+  return [];
+}
+
 type Params = Promise<{ catchall: string[] }>;
 
 const VIEW_SEGMENT = VIEW_PREFIX.slice(1);
