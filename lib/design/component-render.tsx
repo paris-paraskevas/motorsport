@@ -9,9 +9,10 @@ import type { SourceProvenance } from './source-read';
 import type { PageRow } from './pages';
 import { resolveDestination, type PageDestinations } from './destinations';
 import { namesMatch } from '@/lib/slug';
+import { trackColour } from '@/lib/information/types';
 import type { ChartData } from '@/components/data/ChartFrame';
 import type { MapData, MapMarker } from '@/components/data/MapFrame';
-import type { CardActions, CardSlots, DetailShowing, HighlightStyle, MasterSelect, MetricCard, RegionControls, RowHighlight } from '@/components/data/DataRegionViews';
+import type { CardActions, CardSlots, CircuitData, CircuitFact, DetailShowing, HighlightStyle, MasterSelect, MetricCard, RegionControls, RowHighlight } from '@/components/data/DataRegionViews';
 import { VALUE_MAX, applySavedView, bindViewState, encodeViewState, filterOps, parseRule, parseViewState, viewStateHref, type ViewState } from './view-state';
 
 // The server half of the component catalogue (lib/design/components.ts): how
@@ -56,6 +57,9 @@ const regionTabs = () => import('@/components/page/RegionTabs');
 // The Weather (P2.14) reads the site's one forecast reader and the Weather build option the same way.
 const weatherLib = () => import('@/lib/weather');
 const buildOptionsLib = () => import('./build-options');
+// The Circuit (P2.15) reads the curated drawings and the information hub's track entries the same way.
+const circuitLayoutLib = () => import('@/lib/circuit-layout');
+const informationLib = () => import('@/lib/information/registry');
 // The Chart (P2.11) resolves its emphasis through the site's rosters on demand, as the Breadcrumb's labels do.
 const people = () => import('@/lib/people');
 
@@ -111,6 +115,38 @@ type Renderer = (settings: Readonly<Record<string, SettingValue>>, ctx: RenderCo
 
 const num = (v: SettingValue | undefined, fallback: number): number => (typeof v === 'number' && Number.isFinite(v) ? v : fallback);
 const str = (v: SettingValue | undefined): string => (typeof v === 'string' ? v.trim() : '');
+/** A country's English name from its ISO code through the runtime's own table (the repo keeps none); the code itself when the
+ *  runtime lacks the name; null without a code. */
+function countryName(code: string | undefined): string | null {
+  if (!code) return null;
+  try {
+    return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
+/** The weekend a Series-group component draws (the Weather's rule, P2.14; the Circuit's, P2.15): the page's own weekend from the
+ *  address on a weekend or a session page, else one series' next or the nearest across every series; null when none is to come
+ *  or a series cannot be read. */
+async function weekendInContext(slug: string, ctx: RenderContext): Promise<{ series: Series; weekend: Weekend } | null> {
+  const [{ loadAllSeries, loadSeries }, { weekendFor, nextSessionAcross }] = await Promise.all([seriesLib(), weekendLib()]);
+  const onWeekendPage = ctx.path === '/series/[slug]/weekend/[round]' || ctx.path === '/series/[slug]/weekend/[round]/[session]';
+  try {
+    if (onWeekendPage && ctx.params.slug && ctx.params.round) {
+      const series = await loadSeries(ctx.params.slug);
+      const weekend = weekendFor(series, Number(ctx.params.round), ctx.now);
+      return weekend ? { series, weekend } : null;
+    }
+    const list = slug ? [await loadSeries(slug)] : await loadAllSeries();
+    const next = nextSessionAcross(list, ctx.now);
+    const series = next ? (list.find(s => s.meta.slug === next.series.slug) ?? null) : null;
+    const weekend = series && next ? weekendFor(series, next.weekend.round, ctx.now) : null;
+    return series && weekend ? { series, weekend } : null;
+  } catch {
+    return null;
+  }
+}
 
 /** The Live band (P2.9): every series as Home ranks them, with the Also racing row unless it is off; or one series' weekend
  *  alone, its box from every live box whether Home features it or not; nothing when no weekend is under way. This weekend,
@@ -204,36 +240,15 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     // The switch first: an excluded option loads nothing else (the reviewer's note).
     const { isBuildOptionIncluded } = await buildOptionsLib();
     if (!(await isBuildOptionIncluded('weather'))) return null;
-    const [{ loadAllSeries, loadSeries }, { weekendFor, nextSessionAcross, weekendLabel, shortSessionLabel }, { matchCircuit, venueCandidates }, weather, views] = await Promise.all([
-      seriesLib(),
-      weekendLib(),
-      circuitsLib(),
-      weatherLib(),
-      dataViews(),
-    ]);
+    const [{ weekendLabel, shortSessionLabel }, { matchCircuit, venueCandidates }, weather, views] = await Promise.all([weekendLib(), circuitsLib(), weatherLib(), dataViews()]);
     const slug = str(settings.series);
     const heading = str(settings.heading);
     const level = ctx.first ? 'h1' : 'h2';
     const view: 'sessions' | 'daily' = str(settings.view) === 'daily' ? 'daily' : 'sessions';
     const rows = Math.min(8, Math.max(2, Number(settings.hours) || 4));
-    const onWeekendPage = ctx.path === '/series/[slug]/weekend/[round]' || ctx.path === '/series/[slug]/weekend/[round]/[session]';
-    let series: Series | null = null;
-    let weekend: Weekend | null = null;
-    try {
-      if (onWeekendPage && ctx.params.slug && ctx.params.round) {
-        series = await loadSeries(ctx.params.slug);
-        weekend = weekendFor(series, Number(ctx.params.round), ctx.now);
-      } else {
-        const list = slug ? [await loadSeries(slug)] : await loadAllSeries();
-        const next = nextSessionAcross(list, ctx.now);
-        series = next ? (list.find(s => s.meta.slug === next.series.slug) ?? null) : null;
-        weekend = series && next ? weekendFor(series, next.weekend.round, ctx.now) : null;
-      }
-    } catch {
-      series = null;
-      weekend = null;
-    }
-    if (!series || !weekend) return <views.DataRegionWeather heading={heading} level={level} data={null} every={!slug} weekendTitle={null} />;
+    const found = await weekendInContext(slug, ctx);
+    if (!found) return <views.DataRegionWeather heading={heading} level={level} data={null} every={!slug} weekendTitle={null} />;
+    const { series, weekend } = found;
     const title = weekendLabel(weekend, weekend.round).title;
     const round = series.rounds?.rounds?.find(r => r.round === weekend.round);
     const circuit = await matchCircuit(...venueCandidates({ venue: round?.venue, location: weekend.sessions.find(s => s.location)?.location, title })).catch(() => null);
@@ -245,6 +260,73 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     }
     const data = { seriesName: series.meta.name, colour: series.meta.color, round: weekend.round, weekendTitle: title, circuitName: circuit.name, view, sessions, days };
     return <views.DataRegionWeather heading={heading} level={level} data={data} every={!slug} weekendTitle={title} />;
+  },
+  // The Circuit (P2.15; ours by name, a domain piece as the Weather): the round's venue for the page's weekend or the series'
+  // next, the circuit through the curated venue first (venueCandidates, the 1.0.97 rule), its facts from the information hub's
+  // verified track entry across the bridge from circuit slug to track slug (the two differ for most circuits), its curated
+  // drawing with the credit its licence asks, and its place on a map through the Map's frame (P2.12) on a named background,
+  // the key of a keyed background filled here on the server.
+  async 'series.circuit'(settings, ctx) {
+    const slug = str(settings.series);
+    const heading = str(settings.heading);
+    const level = ctx.first ? ('h1' as const) : ('h2' as const);
+    const [found, views] = await Promise.all([weekendInContext(slug, ctx), dataViews()]);
+    if (!found) return <views.DataRegionCircuit heading={heading} level={level} data={null} every={!slug} weekendTitle={null} />;
+    const { series, weekend } = found;
+    const [{ weekendLabel }, { matchCircuitEntry, venueCandidates }, { circuitLayoutFor }, { getTrackInfoByCircuitSlug, getInfoEntry }] = await Promise.all([weekendLib(), circuitsLib(), circuitLayoutLib(), informationLib()]);
+    const title = weekendLabel(weekend, weekend.round).title;
+    const round = series.rounds?.rounds?.find(r => r.round === weekend.round);
+    const location = weekend.sessions.find(s => s.location)?.location;
+    const place = round?.venue ?? location ?? null;
+    const candidates = venueCandidates({ venue: round?.venue, location, title });
+    const match = await matchCircuitEntry(...candidates).catch(() => null);
+    if (!match) return <views.DataRegionCircuit heading={heading} level={level} data={null} every={!slug} weekendTitle={title} />;
+    const [layout, bridge] = await Promise.all([
+      settings.layout !== false ? circuitLayoutFor(...candidates).catch(() => null) : Promise.resolve(null),
+      getTrackInfoByCircuitSlug().catch(() => new Map<string, string>()),
+    ]);
+    const trackSlug = bridge.get(match.slug) ?? null;
+    const entry = trackSlug ? await getInfoEntry('tracks', trackSlug).catch(() => null) : null;
+    const track = entry?.track ?? null;
+    const guide = settings.guide !== false && trackSlug ? `/information/tracks/${trackSlug}` : null;
+    const country = track?.country ?? countryName(match.circuit.countryCode);
+    const facts: CircuitFact[] = [];
+    if (settings.facts !== false) {
+      if (country) facts.push({ label: 'Country', value: country });
+      if (track?.type) facts.push({ label: 'Type', value: track.type.charAt(0).toUpperCase() + track.type.slice(1) });
+      if (track?.lengthKm != null) facts.push({ label: 'Length', value: `${track.lengthKm} km` });
+      if (track?.turns != null) facts.push({ label: 'Turns', value: String(track.turns) });
+      if (track?.opened != null) facts.push({ label: 'Opened', value: String(track.opened) });
+    }
+    let map: MapData | null = null;
+    if (settings.map !== false) {
+      const background = findMapBackground(str(settings.background)) ?? findMapBackground(DEFAULT_MAP_BACKGROUND)!;
+      const fill = (set: TileSet): TileSet => ({ ...set, url: fillKey(set.url, process.env, background.keyVar) });
+      map = {
+        background: background.key,
+        light: fill(background.light),
+        dark: background.dark ? fill(background.dark) : null,
+        markers: [{ lat: match.circuit.lat, lon: match.circuit.lon, title: match.circuit.name, body: place ?? country ?? '', href: guide, colour: track?.categories?.length ? trackColour(track.categories) : null }],
+        view: 'auto',
+        height: Math.min(600, Math.max(160, num(settings.height, 280))),
+        navigation: 'zoom',
+        scale: false,
+        wheel: false,
+      };
+    }
+    const data: CircuitData = {
+      seriesName: series.meta.name,
+      colour: series.meta.color,
+      round: weekend.round,
+      weekendTitle: title,
+      name: match.circuit.name,
+      place,
+      facts,
+      layout: layout ? { svg: layout.svg, source: layout.source, license: layout.license, sourceUrl: layout.sourceUrl } : null,
+      map,
+      guide,
+    };
+    return <views.DataRegionCircuit heading={heading} level={level} data={data} every={!slug} weekendTitle={title} />;
   },
   // The Breadcrumb (P2.17): the trail from the pattern and the address's parts the frame or the catch-all hands over, the
   // row for a page made in the designer; its BreadcrumbList unless the page's own code prints one (OWN_BREADCRUMB_LD).
@@ -648,6 +730,8 @@ export const READS: Readonly<Record<string, readonly string[]>> = {
   // The Weather reads the weekend as the Countdown does, the circuit, and the forecast through the site's reader (KV, then
   // Open-Meteo) (P2.14).
   'series.weather': ['content:series', 'live:ics', 'content:circuits', 'kv:paddock:weather:', 'live:open-meteo'],
+  // The Circuit (P2.15) reads the weekend as the Weather does, the circuits and their drawings, and the hub's track entries.
+  'series.circuit': ['content:series', 'live:ics', 'content:circuits', 'content:information'],
   // The Breadcrumb's label sources (P2.17): the pages' rows, the series and their sessions, the Learn content, a post or an author.
   'page.breadcrumb': ['db:page', 'content:series', 'live:ics', 'content:information', 'db:post'],
   // The Tabs over sibling pages (P2.10) read the series' meta or the live row pages; over regions they read nothing.

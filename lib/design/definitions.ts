@@ -261,8 +261,10 @@ export function mapBackgroundUsageFromRows(pages: unknown, revisions: unknown): 
       for (const item of regions) {
         if (!item || typeof item !== 'object') continue;
         const region = item as Record<string, unknown>;
-        if (region.kind !== 'component' || region.component !== 'data.map' || typeof region.id !== 'string') continue;
+        if (region.kind !== 'component' || typeof region.id !== 'string') continue;
         const settings = region.settings && typeof region.settings === 'object' ? (region.settings as Record<string, unknown>) : {};
+        // A Map region always draws tiles; a Circuit region (P2.15) only while its map is on.
+        if (!(region.component === 'data.map' || (region.component === 'series.circuit' && settings.map !== false))) continue;
         const key = typeof settings.background === 'string' && settings.background !== '' ? settings.background : DEFAULT_MAP_BACKGROUND;
         const list = (out[key] ??= []);
         let entry = list.find(p => p.id === page.id);

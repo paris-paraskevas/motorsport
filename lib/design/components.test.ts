@@ -353,6 +353,35 @@ describe('the component catalogue', () => {
     expect(settingsSummary(weather, { series: 'f1', view: 'daily', heading: 'At the track', hours: 4 })).toBe('Series Formula 1 · View Day by day, with the sessions · Heading At the track · Rows per session 4');
   });
 
+  it('P2.15: the Circuit is a general component in the Series group with a Series choice, a Heading, the map’s Background and Height shown while the map is on, and the Shows group’s four switches; reading no catalogue source; its tile names what is set', () => {
+    const circuit = findComponent('series.circuit')!;
+    expect(circuit).toMatchObject({ name: 'Circuit', group: 'Series' });
+    expect(circuit.holds).toMatch(/^the round’s venue: the circuit’s name and place, its facts, its layout drawing where one is curated, and its place on a map/);
+    expect(circuit.sources).toBeUndefined();
+    expect(circuit.settings.map(s => [s.key, s.kind, s.group])).toEqual([
+      ['series', 'choice', undefined],
+      ['heading', 'text', undefined],
+      ['background', 'choice', undefined],
+      ['height', 'number', undefined],
+      ['layout', 'boolean', 'shows'],
+      ['map', 'boolean', 'shows'],
+      ['facts', 'boolean', 'shows'],
+      ['guide', 'boolean', 'shows'],
+    ]);
+    expect(circuit.groups?.map(g => [g.key, g.title])).toEqual([['shows', 'Shows']]);
+    expect(circuit.settings[0].options![0]).toEqual({ key: '', label: 'Every series', group: 'Series' });
+    expect(circuit.settings[0].options).toHaveLength(16);
+    expect(circuit.settings.find(s => s.key === 'background')).toMatchObject({ default: 'canvas', options: MAP_BACKGROUNDS.map(b => ({ key: b.key, label: b.name })), dependingOn: { key: 'map', values: ['true'] } });
+    expect(circuit.settings.find(s => s.key === 'height')).toMatchObject({ default: 280, min: 160, max: 600, dependingOn: { key: 'map', values: ['true'] } });
+    expect(componentDefaults(circuit)).toEqual({ series: '', heading: '', background: 'canvas', height: 280, layout: true, map: true, facts: true, guide: true });
+    expect(parseSettings(circuit, { series: 'f1', heading: 'The venue', background: 'canvas', height: 320, layout: false, map: true, facts: true, guide: false }).settings).toEqual({ series: 'f1', heading: 'The venue', background: 'canvas', height: 320, layout: false, map: true, facts: true, guide: false });
+    expect(parseSettings(circuit, { height: 100 }).problems).toEqual(['Height must be a number from 160 to 600']);
+    expect(parseSettings(circuit, { background: 'satellite' }).problems).toEqual(['Background must be one of Canvas']);
+    // The generic summary: the grouped switches and the map's two settings say nothing at their defaults.
+    expect(settingsSummary(circuit, componentDefaults(circuit))).toBe('Series Every series');
+    expect(settingsSummary(circuit, { series: 'f1', heading: 'The venue at Baku', map: false })).toBe('Series Formula 1 · Heading The venue at Baku · Map no');
+  });
+
   it('every split recipe names components the catalogue has', () => {
     expect(SPLITS['/']).toHaveLength(6);
     // P2.5 PR B: the calendar's Filters region before the month, over the calendar's own facets (it has no preset).

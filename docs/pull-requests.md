@@ -14,6 +14,23 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1103 · 1.0.221 · P2.15 · opened Wed 30 Sep 20:35 (17:35Z); the merge on the word
+**Circuit.** The round's venue as a Series-group component: the circuit's name and place, its facts from the Learn hub's circuit guide, its curated layout drawing with its credit, and its place on a map through the Map's frame on a named background; the page's weekend or a series' next, the curated venue first (the rule of 1.0.97: round 14 shows Madring, the Bahrain Grand Prix shows Sepang).
+- **Readers see:** nothing until an editor places a Circuit region.
+- **Editors get:** the Circuit in the gallery's Components with Series, Heading, Background and Height (while the map is on) and the Shows group (Layout drawing, Map, Facts, Circuit guide link); Map Backgrounds' Used on naming the pages with a Circuit's map.
+- **Files (14):**
+  - `lib/design/components.ts`, `lib/design/components.test.ts` · the Circuit's definition; its case.
+  - `lib/design/component-render.tsx`, `lib/design/component-render.test.tsx` · the two thunks, `weekendInContext` shared with the Weather, `countryName`, the renderer, READS; the render cases from saved documents (Madring by the title, Baku across the bridge, a circuit without a guide, the hub's next weekend, the switches, the one line).
+  - `components/data/DataRegionViews.tsx` · `CircuitFact`, `CircuitData`, `DataRegionCircuit`.
+  - `lib/design/definitions.ts`, `lib/design/definitions.test.ts` · the Utilization counts a Circuit region with its map on.
+  - `lib/circuits.test.ts` · the acceptance over the real content: "Spanish Grand Prix (Madrid)" resolves to Madring, the Catalan circuit to Barcelona.
+  - `components/designer/PluginsEditor.test.tsx` · eighteen definitions.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.15 started with the build's evidence; two dated lines (the X slots behind Phase 2 on the word; P2.15's start).
+  - `SCHEDULE.md` · the session-59 item.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.221.
+- **Verified:** the tests written before the code across five files (four red; the Madring case over the real content green at once), the first run after the code green; tsc 0; lint 0 errors (the two known warnings); vitest 266 files, 2540 tests; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` Total Upload 41602.53 KiB / gzip 9057.60 KiB (up 23 KiB on P2.12: one server renderer and one view, the map through the Map’s own chunks; 63% of the ceiling); the local designer (PADDOCK_ENV=production npm run dev): a Circuit region in the Body of the Race weekend page at its defaults, published 17:01Z: /series/f1/weekend/14 drew Madring by its title (the place line "Madring, Madrid", Spain · Street · 5.416 km · 22 · 2026, one marker on Esri's canvas, "Circuit guide →", no drawing), /series/f1/weekend/15 Baku with the f1db drawing and its CC BY 4.0 credit, the map, the facts and the guide to /information/tracks/baku-city-circuit; the dark set on Midnight through the picker; 390 px without sideways scroll (scrollWidth 380); a Circuit with Series Formula 1 on the Series hub drew the next weekend's venue, the Bahrain Grand Prix at Sepang with Country Malaysia from the code and no guide; Shared Components › Map Backgrounds listed the Race weekend and the Series hub pages under Used on; the screenshots on the review page https://claude.ai/code/artifact/f068e56e-585d-42c5-a2cb-b92cdcdadfe2.
+- **Review:** a fresh-context Sonnet reviewer (192,356 tokens, 54 reads and runs: the plan, every diffed file in full, the helper’s extraction compared line by line with the Weather’s old block, the bridge and the candidate order traced, the two test groups run green), SOUND WITH NITS, no blocking finding and no requirement gap; its one should-fix folded (the place line drawn as the rail draws it, the undocumented same-as-name guard dropped); its nits recorded (the double circuit match the weekend page also makes; READS unpinned by a test as the Weather’s is).
+
 ## #1102 · 1.0.220 · records · opened Wed 30 Sep 11:35 (08:35Z); the merge on the standing word
 **P2.12 on prod and done; the Seobility export read.** Records only: the merge, the deploy, the slot closed; the triage of Seobility’s full export as an artifact with eight proposed slots awaiting the word; the board regenerated.
 - **Readers see:** nothing.
