@@ -11,6 +11,7 @@ import { listAuthors } from './authors';
 import { hasWeekendNote, loadDriverBios, loadWeekendNotes } from './series-content';
 import { publishedPosts } from './blog';
 import { loadAllPosts } from './posts';
+import { RELEASE_INDEX } from './content-bundle.generated';
 
 // Google's 2026 sitemap guidance: `priority` and `changefreq` are ignored
 // entirely; `lastmod` is the only acted-upon hint, and only when its accuracy
@@ -62,6 +63,9 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/write-for-us` },
     { url: `${SITE_URL}/about` },
     { url: `${SITE_URL}/changelog` },
+    // The release pages (X6 A) from the bundled index: RELEASES.md is not on the Worker, where this sitemap is
+    // regenerated every six hours, and the index is all it knows of the releases.
+    ...RELEASE_INDEX.map(r => ({ url: `${SITE_URL}/changelog/${r.slug}` })),
     { url: `${SITE_URL}/archive` },
     { url: `${SITE_URL}/privacy` },
     { url: `${SITE_URL}/terms` },

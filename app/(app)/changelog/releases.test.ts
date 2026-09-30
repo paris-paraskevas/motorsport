@@ -5,10 +5,15 @@ import {
   deriveSpan,
   loadReleaseGroups,
   releasesFilePath,
+  findRelease,
+  releaseSlug,
   UNFILED_KEY,
   type ReleaseEntry,
+  type ReleaseGroup,
 } from './releases';
 import { CONTENT_BUNDLE } from '@/lib/content-bundle.generated';
+import { parseReleaseIndex } from '@/lib/release-index';
+import { readFile } from '@/lib/content-fs';
 
 const md = (...lines: string[]) => lines.join('\n');
 
@@ -155,5 +160,27 @@ describe('RELEASES.md stays out of the Worker bundle', () => {
     expect(groups.length).toBeGreaterThan(10);
     expect(groups[0].entries.length).toBeGreaterThan(0);
     expect(groups.at(-1)?.label).toBe('First light');
+  });
+});
+
+describe('releaseSlug and findRelease (X6 A: a release’s page)', () => {
+  const group = (key: string, label: string): ReleaseGroup => ({ key, label, storyHtml: '', dateRange: null, versionSpan: null, entries: [] });
+
+  it('addresses a release by its label’s slug, the key’s when the label yields nothing', () => {
+    expect(releaseSlug(group('Release 15', 'The finishing pass'))).toBe('the-finishing-pass');
+    expect(releaseSlug(group('1.0', 'Lights out'))).toBe('lights-out');
+    expect(releaseSlug(group(UNFILED_KEY, 'Unreleased'))).toBe('unreleased');
+    expect(releaseSlug(group('Release 9', '···'))).toBe('release-9');
+  });
+
+  it('finds a release by slug, none for an unknown one', () => {
+    const groups = [group('1.0', 'Lights out'), group('Release 15', 'The finishing pass')];
+    expect(findRelease(groups, 'the-finishing-pass')?.key).toBe('Release 15');
+    expect(findRelease(groups, 'nothing-here')).toBeNull();
+  });
+
+  it('gives every release of the real file a slug the index agrees with', async () => {
+    const groups = await loadReleaseGroups(releasesFilePath());
+    expect(groups.map(releaseSlug)).toEqual(parseReleaseIndex(await readFile(releasesFilePath(), 'utf-8')).map(r => r.slug));
   });
 });
