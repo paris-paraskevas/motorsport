@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1104 · 1.0.222 · records · opened Wed 30 Sep 20:55 (17:55Z); the merge on the standing word
+**P2.15 on prod and done; the AdSense reading; the order after the slot.** Records only: the merge, the deploy, the slot closed; the operator’s order for what follows (X7, X6, the JavaScript count, each in plan mode); the AdSense ESPA as an artifact; the board regenerated.
+- **Readers see:** nothing.
+- **Editors get:** nothing new (the Circuit of 1.0.221 stands).
+- **Files (9):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.15 DONE (#1103 on prod); dated lines for the words of the 30th.
+  - `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md` · the pickup for session 60 (X7 first in plan mode; the AdSense decisions pending), the minutes, the reading’s pointer.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.222.
+- **Verified:** node docs/plan/render-ledger.mjs → 63 slots; npx vitest run lib/design/plan-ledger.test.ts lib/record-notes-integrity.test.ts → green; prod /changelog 1.0.221 by 17:42:30Z; the board https://claude.ai/code/artifact/e48d9f01-f919-42c8-b726-3f413692f45e (51 of 63 done); the AdSense reading https://claude.ai/code/artifact/2e8db33a-ccdf-47df-b7bf-dac6a0536951; the Seobility triage https://claude.ai/code/artifact/4c2f6e9c-8fee-407d-accb-40c1cbdb90f5.
+- **Review:** none; records.
+
 ## #1103 · 1.0.221 · P2.15 · opened Wed 30 Sep 20:35 (17:35Z); the merge on the word
 **Circuit.** The round's venue as a Series-group component: the circuit's name and place, its facts from the Learn hub's circuit guide, its curated layout drawing with its credit, and its place on a map through the Map's frame on a named background; the page's weekend or a series' next, the curated venue first (the rule of 1.0.97: round 14 shows Madring, the Bahrain Grand Prix shows Sepang).
 - **Readers see:** nothing until an editor places a Circuit region.

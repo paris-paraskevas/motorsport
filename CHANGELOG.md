@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.222 — 2026-09-30
+
+### Records — P2.15 on prod and done; the AdSense reading; the order after the slot
+
+Records only. `docs/plan/ledger.json`: P2.15 (#1103, 1.0.221) merged on “Merge, however before we move on i need you to answer this…” (17:38:17Z), prod 1.0.221 by 17:42:30Z; readers see nothing until an editor places a Circuit region (the placement on prod is the operator’s); P2.15 DONE; dated lines for the operator’s words of the 30th: X7 (the edge cache for the session and catch-all pages), then X6 (page weight), then the JavaScript count come right after P2.15, each in plan mode with a critic; the Seobility export is the most important report the site has had, its findings never dismissed as design. The AdSense reading as an ESPA at https://claude.ai/code/artifact/2e8db33a-ccdf-47df-b7bf-dac6a0536951: Google’s own words for “low value content”, the site measured family by family (about 3,000 indexable pages, about 130 of them writing; 489 generated “who won” pages at 47% of the sitemap; about 1,800 session pages indexable with placeholders on ten of fifteen series), the causes owned, five solutions (index the writing not the database; finish what shows; speed; write more of what works; apply once, after the index settles) and the decisions left to the operator. The ad networks’ current doors recorded in the handoff (Journey by Mediavine 1,000 tier-1 sessions; Newor Media no floor; Monumetric Propel 10,000 pageviews; Raptive 25,000 with half from five countries): none reads Search Console, all read Google Analytics and the same content bar. `docs/HANDOFF.md`: the LATEST block and the pickup prompt for session 60. `SCHEDULE.md`: the minutes. `IDEAS.md`: the AdSense reading’s pointer.
+
 ## 1.0.221 — 2026-09-30
 
 ### P2.15 — Circuit
