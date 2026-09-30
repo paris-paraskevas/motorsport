@@ -1137,6 +1137,99 @@ export function DataRegionWeather({ heading, level, data, every, weekendTitle }:
   );
 }
 
+/** One fact of the venue (P2.15): the track page's rows, Country · Type · Length · Turns · Opened. */
+export interface CircuitFact {
+  label: string;
+  value: string;
+}
+export interface CircuitData {
+  seriesName: string;
+  colour: string;
+  round: number;
+  weekendTitle: string;
+  /** The circuit's name (content/circuits.json). */
+  name: string;
+  /** The round's curated venue or the feed's location, as the weekend page prints it; null when neither is known. */
+  place: string | null;
+  facts: readonly CircuitFact[];
+  /** The curated drawing with the credit its licence asks; null where none is curated. */
+  layout: { svg: string; source: string; license: string; sourceUrl: string } | null;
+  /** The map with its one marker; null when switched off. */
+  map: MapData | null;
+  /** The circuit guide's page when the hub has one; null otherwise. */
+  guide: string | null;
+}
+
+/** The Circuit (P2.15; ours by name, the round's venue): the eyebrow as the Weather's (the page's h1 when first in the Body
+ *  without a heading), the circuit's name in the rail's serif with the place beneath, the drawing and the map side by side from
+ *  md up (stacked on a phone), the facts as the track page's rows, the link to the circuit guide. Without a venue one line, never
+ *  a hole. */
+export function DataRegionCircuit({ heading, level, data, every, weekendTitle }: { heading: string; level: 'h1' | 'h2'; data: CircuitData | null; every: boolean; weekendTitle: string | null }) {
+  const words = 'The venue';
+  const rule =
+    heading && level === 'h1' ? (
+      <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
+        <h1 className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">{heading}</h1>
+      </div>
+    ) : (
+      <SectionRule label={heading || words} />
+    );
+  const Title = level === 'h1' && !heading ? 'h1' : 'p';
+  if (!data) {
+    return (
+      <section aria-label={heading || words}>
+        {rule}
+        <Title className="font-serif text-15 italic text-text-muted">{weekendTitle ? `No venue known for ${weekendTitle} yet.` : every ? 'No weekend to come.' : 'Season complete.'}</Title>
+      </section>
+    );
+  }
+  return (
+    <section aria-label={heading || words}>
+      {rule}
+      <div className="mb-2 flex items-center gap-2">
+        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: data.colour }} />
+        <Title className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
+          {data.seriesName} · Round {data.round} · {data.weekendTitle}
+        </Title>
+      </div>
+      <p className="font-serif text-17 font-semibold leading-tight text-text">{data.name}</p>
+      {data.place !== null && <p className="font-mono text-9 uppercase tracking-[0.12em] text-text-faint">{data.place}</p>}
+      {(data.layout || data.map) && (
+        <div className={`mt-3 grid gap-4${data.layout && data.map ? ' md:grid-cols-2' : ''}`}>
+          {data.layout && (
+            <figure className="m-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={data.layout.svg} alt={`${data.name} track layout`} width={500} height={500} className="h-auto w-full max-w-[320px]" />
+              <figcaption className="mt-1 font-mono text-8 uppercase tracking-[0.12em] text-text-faint">
+                Circuit map ·{' '}
+                <a href={data.layout.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-text-muted">
+                  {data.layout.source} ({data.layout.license})
+                </a>
+              </figcaption>
+            </figure>
+          )}
+          {data.map && <MapFrame data={data.map} />}
+        </div>
+      )}
+      {data.facts.length > 0 && (
+        <dl className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {data.facts.map(f => (
+            <div key={f.label}>
+              <dt className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-faint">{f.label}</dt>
+              <dd className="mt-1 font-medium text-text">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {data.guide !== null && (
+        <Link href={data.guide} className="mt-3 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline">
+          Circuit guide →
+        </Link>
+      )}
+    </section>
+  );
+}
+
 /** The Chart (P2.11; APEX: the Chart region): the heading's rule (the page's h1 when first in the Body, as the Metric cards), the
  *  client frame drawing the plot, its legend and the data as a hidden table, and a foot in the site's eyebrow naming what is
  *  drawn by what and the series highlighted (the team page's own words). Without rows one line, never a hole. */

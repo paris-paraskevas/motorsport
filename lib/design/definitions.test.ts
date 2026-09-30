@@ -162,15 +162,15 @@ describe('the definitions loader', () => {
 });
 
 describe('the Map Backgrounds’ Utilization (P2.12)', () => {
-  it('names the pages whose newest or live revision carries a Map region on a background, the default when unset, by the regions’ ids; a region of another kind is no use', () => {
+  it('names the pages whose newest or live revision carries a Map region, or a Circuit region with its map on (P2.15), on a background, the default when unset, by the regions’ ids; a region of another kind, or a Circuit with its map off, is no use', () => {
     const revs = [
       { page_id: CAL, created_at: '2026-09-29T10:00:00Z', published_at: null, document: { version: 2, actions: [], regions: [region('map', 'component', { component: 'data.map', settings: { preset: 'circuit-guides', background: 'canvas' }, source: 'guides' })] } },
-      { page_id: MONZA, created_at: '2026-09-29T10:00:00Z', published_at: '2026-09-29T10:00:00Z', document: { version: 2, actions: [], regions: [region('places', 'component', { component: 'data.map', settings: { preset: 'circuits' }, source: 'tracks' }), region('d', 'component', { component: 'data.region', settings: {}, source: 'standings?series=f1&season=2026' })] } },
+      { page_id: MONZA, created_at: '2026-09-29T10:00:00Z', published_at: '2026-09-29T10:00:00Z', document: { version: 2, actions: [], regions: [region('places', 'component', { component: 'data.map', settings: { preset: 'circuits' }, source: 'tracks' }), region('venue', 'component', { component: 'series.circuit', settings: { series: 'f1' } }), region('venue-off', 'component', { component: 'series.circuit', settings: { map: false, background: 'canvas' } }), region('d', 'component', { component: 'data.region', settings: {}, source: 'standings?series=f1&season=2026' })] } },
     ];
     expect(mapBackgroundUsageFromRows(pages, revs)).toEqual({
       canvas: [
         { id: CAL, path: '/calendar', name: 'Calendar', refs: ['map'] },
-        { id: MONZA, path: '/history/monza', name: 'Monza, a history', refs: ['places'] },
+        { id: MONZA, path: '/history/monza', name: 'Monza, a history', refs: ['places', 'venue'] },
       ],
     });
     expect(mapBackgroundUsageFromRows(pages, revisions)).toEqual({});

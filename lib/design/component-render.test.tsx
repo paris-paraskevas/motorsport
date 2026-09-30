@@ -21,6 +21,9 @@ import * as pagesLib from './pages';
 import * as weatherLib from '@/lib/weather';
 import * as buildOptionsLib from './build-options';
 import * as peopleLib from '@/lib/people';
+import * as circuitLayoutLib from '@/lib/circuit-layout';
+import * as informationLib from '@/lib/information/registry';
+import type { InfoEntry } from '@/lib/information/types';
 import type { Series, Session } from '@/lib/types';
 
 vi.mock('next/link', () => ({
@@ -1329,6 +1332,118 @@ describe('the Chart (P2.11; APEX: the Chart region)', () => {
     expect(gaps).toContain('data-decimals="true"');
     expect(gaps).toMatch(/<td[^>]*>Kimi Antonelli<\/td><td[^>]*><\/td>.*<td[^>]*>George Russell<\/td><td[^>]*>0\.1<\/td>/);
     expect(gaps).toContain('Gap by Driver');
+  });
+});
+
+describe('the Circuit (P2.15; ours by name: the round’s venue)', () => {
+  // Clock-relative fixtures (the grouping keeps a window around now): round 14 a week ahead, the Spanish Grand Prix (Madrid) with
+  // no curated venue (the title resolves it, the 1.0.97 rule); round 15 two weeks ahead, Baku, with a curated drawing.
+  const day = (n: number, h: number) => {
+    const d = new Date();
+    d.setUTCHours(0, 0, 0, 0);
+    d.setUTCDate(d.getUTCDate() + n);
+    d.setUTCHours(h);
+    return d;
+  };
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+  const f1 = {
+    meta: { slug: 'f1', name: 'Formula 1', color: '#e10600', season: 2026 },
+    sessions: [
+      { uid: 'r14-fp1', seriesSlug: 'f1', title: 'F1 - Practice 1', start: day(7, 11), end: day(7, 12) },
+      { uid: 'r14-race', seriesSlug: 'f1', title: 'F1 - Race', start: day(9, 13), end: day(9, 15) },
+      { uid: 'r15-fp1', seriesSlug: 'f1', title: 'F1 - Practice 1', start: day(14, 9), end: day(14, 10) },
+      { uid: 'r15-race', seriesSlug: 'f1', title: 'F1 - Race', start: day(16, 11), end: day(16, 13) },
+    ],
+    rounds: {
+      season: 2026,
+      rounds: [
+        { round: 14, name: 'Spanish Grand Prix (Madrid)', startDate: iso(day(7, 0)), endDate: iso(day(9, 0)) },
+        { round: 15, name: 'Azerbaijan Grand Prix', startDate: iso(day(14, 0)), endDate: iso(day(16, 0)) },
+      ],
+    },
+  } as unknown as Series;
+  const MADRING = { slug: 'madring', circuit: { name: 'Madring', countryCode: 'ES', lat: 40.46528, lon: -3.61528, aliases: [], tz: 'Europe/Madrid' } };
+  const BAKU = { slug: 'baku', circuit: { name: 'Baku City Circuit', countryCode: 'AZ', lat: 40.3725, lon: 49.8533, aliases: [], tz: 'Asia/Baku' } };
+  const entry = (slug: string, question: string, track: Record<string, unknown>) => ({ kind: 'track', topic: 'tracks', slug, question, track }) as unknown as InfoEntry;
+  const MADRING_ENTRY = entry('madring', 'Madring', { country: 'Spain', countryCode: 'ES', location: { lat: 40.46528, lng: -3.61528 }, type: 'street', categories: ['f1'], lengthKm: 5.416, turns: 22, opened: 2026 });
+  const BAKU_ENTRY = entry('baku-city-circuit', 'Baku City Circuit', { country: 'Azerbaijan', countryCode: 'AZ', location: { lat: 40.3725, lng: 49.8533 }, type: 'street', categories: ['f1'], lengthKm: 6.003, turns: 20, opened: 2016 });
+
+  it('draws the page’s weekend’s venue or the series’ next: the name and place, the facts from the hub’s track entry across the bridge, the drawing with its credit where one is curated, the map with one marker; Madring for round 14 by the title; a matched circuit without an entry keeps its country; one line without a match; the switches', async () => {
+    const loadOne = vi.spyOn(seriesLib, 'loadSeries').mockResolvedValue(f1);
+    const loadAll = vi.spyOn(seriesLib, 'loadAllSeries').mockResolvedValue([f1]);
+    const circuit = vi.spyOn(circuitsLib, 'matchCircuitEntry').mockImplementation(async (...names) => (names.some(n => n && /madrid|madring/i.test(n)) ? MADRING : names.some(n => n && /azerbaijan|baku/i.test(n)) ? BAKU : null));
+    const layout = vi.spyOn(circuitLayoutLib, 'circuitLayoutFor').mockImplementation(async (...names) => (names.some(n => n && /azerbaijan|baku/i.test(n)) ? { svg: '/circuits/baku.svg', source: 'f1db', license: 'CC BY 4.0', sourceUrl: 'https://github.com/f1db/f1db', name: 'Baku City Circuit' } : null));
+    const bridge = vi.spyOn(informationLib, 'getTrackInfoByCircuitSlug').mockResolvedValue(new Map([['madring', 'madring'], ['baku', 'baku-city-circuit']]));
+    const info = vi.spyOn(informationLib, 'getInfoEntry').mockImplementation(async (topic, slug) => (topic !== 'tracks' ? null : slug === 'madring' ? MADRING_ENTRY : slug === 'baku-city-circuit' ? BAKU_ENTRY : null));
+    const draw = async (settings: Record<string, string | number | boolean>, where: { path: string; params?: Record<string, string> }, before: Region[] = []) =>
+      (await renderComponents(doc([...before, region('v', 'series.circuit', settings, { seq: 20 })]), { ...where, now: new Date() })).v;
+    try {
+      expect(canRender('series.circuit')).toBe(true);
+      // Round 14 on the weekend page: Madring by the title alone (no location, no curated venue), never Barcelona.
+      const page14 = { path: '/series/[slug]/weekend/[round]', params: { slug: 'f1', round: '14' } };
+      const madring = html(await draw({}, page14));
+      expect(circuit.mock.calls[0]).toEqual([undefined, 'Spanish Grand Prix (Madrid)']);
+      expect(madring).toContain('<section aria-label="The venue"');
+      expect(madring).toMatch(/<h1[^>]*>Formula 1 · Round 14 · Spanish Grand Prix \(Madrid\)<\/h1>/);
+      expect(madring).toContain('>Madring<');
+      expect(madring).not.toContain('Barcelona');
+      for (const fact of ['>Country<', '>Spain<', '>Type<', '>Street<', '>Length<', '>5.416 km<', '>Turns<', '>22<', '>Opened<', '>2026<']) expect(madring).toContain(fact);
+      expect(madring).not.toContain('<figure');
+      expect(madring).toContain('data-map-background="canvas"');
+      expect(madring).toContain('style="height:280px"');
+      expect(madring).toMatch(/<ul class="sr-only"[^>]*><li><a href="\/information\/tracks\/madring">Madring<\/a> · Spain<\/li><\/ul>/);
+      expect(madring).toContain('Circuit guide →');
+      expect(info).toHaveBeenCalledWith('tracks', 'madring');
+      // Round 15: Baku's drawing with the credit its licence asks, the map, the facts and the guide across the bridge (the slugs differ).
+      const baku = html(await draw({ heading: 'Where they race' }, { path: '/series/[slug]/weekend/[round]/[session]', params: { slug: 'f1', round: '15', session: 'race' } }));
+      expect(baku).toContain('<section aria-label="Where they race"');
+      expect(baku).toMatch(/<h1[^>]*>Where they race<\/h1>/);
+      expect(baku).toContain('<figure');
+      expect(baku).toContain('src="/circuits/baku.svg"');
+      expect(baku).toContain('alt="Baku City Circuit track layout"');
+      expect(baku).toContain('href="https://github.com/f1db/f1db"');
+      expect(baku).toContain('f1db (CC BY 4.0)');
+      expect(baku).toContain('>Azerbaijan<');
+      expect(baku).toContain('>6.003 km<');
+      expect(baku).toContain('href="/information/tracks/baku-city-circuit"');
+      expect(layout).toHaveBeenCalledWith(undefined, 'Azerbaijan Grand Prix');
+      expect(info).toHaveBeenCalledWith('tracks', 'baku-city-circuit');
+      // A matched circuit the hub has no entry for: the name and its country from the code, no other fact, no guide, no popup link.
+      bridge.mockResolvedValueOnce(new Map());
+      const bare = html(await draw({}, page14));
+      expect(bare).toContain('>Madring<');
+      expect(bare).toContain('>Spain<');
+      expect(bare).not.toContain('>Length<');
+      expect(bare).not.toContain('Circuit guide');
+      expect(bare).toMatch(/<li>Madring · Spain<\/li>/);
+      // Not on a weekend page: one series' next weekend (round 14 is the nearest), or the nearest across every series.
+      const hub = html(await draw({ series: 'f1' }, { path: '/series/[slug]', params: { slug: 'f1' } }));
+      expect(hub).toContain('Formula 1 · Round 14 · Spanish Grand Prix (Madrid)');
+      expect(hub).toContain('>Madring<');
+      expect(html(await draw({}, { path: '/' }))).toContain('>Madring<');
+      // The switches.
+      const off = html(await draw({ map: false, layout: false, facts: false, guide: false }, { path: '/series/[slug]/weekend/[round]/[session]', params: { slug: 'f1', round: '15', session: 'race' } }));
+      expect(off).toContain('>Baku City Circuit<');
+      expect(off).not.toContain('data-map-background');
+      expect(off).not.toContain('<figure');
+      expect(off).not.toContain('<dl');
+      expect(off).not.toContain('Circuit guide');
+      // Nothing matched: one line naming the weekend.
+      circuit.mockResolvedValueOnce(null);
+      expect(html(await draw({}, page14))).toContain('No venue known for Spanish Grand Prix (Madrid) yet.');
+      // Not first in the Body: the eyebrow a paragraph, the rule a span.
+      const second = html(await draw({}, page14, [region('h', 'page.heading')]));
+      expect(second).not.toContain('<h1');
+      expect(second).toContain('>The venue<');
+      expect(second).toContain('Formula 1 · Round 14 · Spanish Grand Prix (Madrid)');
+    } finally {
+      loadOne.mockRestore();
+      loadAll.mockRestore();
+      circuit.mockRestore();
+      layout.mockRestore();
+      bridge.mockRestore();
+      info.mockRestore();
+    }
   });
 });
 

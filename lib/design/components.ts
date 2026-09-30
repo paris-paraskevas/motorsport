@@ -729,6 +729,43 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'hours', label: 'Rows per session', kind: 'number', default: 4, min: 2, max: 8, help: 'The hours a session tile holds; a longer session is thinned to them, its first and last hour kept.' },
     ],
   },
+  // The Circuit (P2.15; ours by name: APEX has no circuit component, a domain piece as the Weather). The round's venue for the
+  // page's weekend or a series' next (the Weather's rule): the circuit's name and place through the curated venue first
+  // (lib/circuits.ts venueCandidates, the 1.0.97 rule), its facts from the information hub's verified track entry, its curated
+  // drawing with the credit its licence asks (content/circuits-layout.json), and its place on a map through the Map's frame
+  // (P2.12) on a named background from Shared Components › Map Backgrounds.
+  {
+    key: 'series.circuit',
+    name: 'Circuit',
+    group: 'Series',
+    holds: 'the round’s venue: the circuit’s name and place, its facts, its layout drawing where one is curated, and its place on a map; the page’s weekend, or a series’ next',
+    settings: [
+      {
+        key: 'series',
+        label: 'Series',
+        kind: 'choice',
+        default: '',
+        options: [{ key: '', label: 'Every series', group: 'Series' }, ...SERIES_OPTIONS.map(o => ({ key: o.key, label: o.label, group: 'Series' }))],
+        help: 'Every series: the nearest weekend to come; one series: its next weekend. On a weekend or a session page the page’s own weekend is drawn whatever this says.',
+      },
+      { key: 'heading', label: 'Heading', kind: 'text', default: '', maxLength: 80, help: 'The rule above the venue; empty draws “The venue”. The section’s name for a reader either way.' },
+      {
+        key: 'background',
+        label: 'Background',
+        kind: 'choice',
+        default: DEFAULT_MAP_BACKGROUND,
+        options: MAP_BACKGROUNDS.map(b => ({ key: b.key, label: b.name })),
+        dependingOn: { key: 'map', values: ['true'] },
+        help: 'The map’s tiles (the named backgrounds under Shared Components › Map Backgrounds); the theme’s family picks the light or the dark set.',
+      },
+      { key: 'height', label: 'Height', kind: 'number', default: 280, min: 160, max: 600, dependingOn: { key: 'map', values: ['true'] }, help: 'The map’s height in pixels (APEX: Layout › Height).' },
+      { key: 'layout', label: 'Layout drawing', kind: 'boolean', group: 'shows', default: true, help: 'The circuit’s drawing with its credit, where one is curated (the 2026 Formula 1 calendar’s circuits today).' },
+      { key: 'map', label: 'Map', kind: 'boolean', group: 'shows', default: true, help: 'The circuit’s place on a map, one marker in its category’s colour; the wheel never zooms it, so the page keeps scrolling.' },
+      { key: 'facts', label: 'Facts', kind: 'boolean', group: 'shows', default: true, help: 'Country, type, length, turns and the year it opened, from the circuit guide when the hub has one; the country alone without.' },
+      { key: 'guide', label: 'Circuit guide link', kind: 'boolean', group: 'shows', default: true, help: 'The link to the circuit’s guide under Learn, when the hub has one.' },
+    ],
+    groups: [{ key: 'shows', title: 'Shows', seq: 10 }],
+  },
 ];
 
 /** One entry of a page's recipe (P2.24 C): the component, the region's id, the settings that differ from the

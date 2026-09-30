@@ -50,6 +50,23 @@ describe('matchCircuitEntry with a venue override', () => {
   });
 });
 
+// P2.15, the Circuit component's acceptance: round 14 of 2026 is the Spanish Grand Prix at Madring, resolved by the title
+// alone since the F1 rounds file curates no venue for it. 1.0.97 gave Madring the alias "Spanish Grand Prix (Madrid)", longer
+// than Barcelona's competing aliases, so the longest-alias rule lands on Madring; the Catalan circuit's own name still lands
+// on Barcelona.
+describe('matchCircuitEntry for the Spanish Grand Prix (Madrid)', () => {
+  it('resolves the 2026 title to Madring, not Barcelona', async () => {
+    const match = await matchCircuitEntry(...venueCandidates({ title: 'Spanish Grand Prix (Madrid)' }));
+    expect(match?.slug).toBe('madring');
+    expect(match?.circuit.countryCode).toBe('ES');
+  });
+
+  it('still resolves the Catalan circuit by its own name', async () => {
+    const match = await matchCircuitEntry(...venueCandidates({ location: 'Circuit de Barcelona-Catalunya', title: 'Barcelona-Catalunya Grand Prix' }));
+    expect(match?.slug).toBe('barcelona');
+  });
+});
+
 // P2.8, the Countdown's time at the track: every circuit carries an IANA zone
 // the runtime knows (scripts/fetch-circuit-timezones.mts wrote them from
 // Open-Meteo's timezone=auto answer for the circuit's coordinates). A wrong or

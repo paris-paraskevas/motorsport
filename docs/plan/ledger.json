@@ -629,6 +629,16 @@
    "date": "2026-09-30",
    "change": "P2.12 merged and on prod (1.0.219): the Map in the catalogue over the circuits or the circuit guides on the Canvas background, the tiles following the theme; Map Backgrounds under Shared Components; the Circuit guides source (the seventeenth); P2.12 DONE (the placement on prod is the operator’s). Seobility Premium’s full export of the 29th read and triaged against the live site (https://claude.ai/code/artifact/4c2f6e9c-8fee-407d-accb-40c1cbdb90f5): eight slots X1–X8 proposed, none started; the word pending on which and where against P2.15 Circuit.",
    "word": "“merge then here is the seobility full export” (08:16Z on the 30th); the X slots await a word"
+  },
+  {
+   "date": "2026-09-30",
+   "change": "The Seobility slots X1–X8 (the triage of 1.0.220) wait until Phase 2 is done; the Phase 2 order continues with P2.15 Circuit.",
+   "word": "“x1-8 will be done separately after phase 2 is done. do p2.15 now” (~08:50Z on the 30th)"
+  },
+  {
+   "date": "2026-09-30",
+   "change": "P2.15 Circuit starts on the plan approved in plan mode (a Sonnet critic’s five fixes folded): the round’s venue as a Series-group component (the circuit’s name and place, its facts from the hub’s guide across the bridge, its curated drawing with its credit, its place on a map through the Map’s frame), the weekend as the Weather finds it through a helper both share; the Madring acceptance pinned over the real content.",
+   "word": "the plan approved ~09:25Z on the 30th"
   }
  ],
  "phases": {
@@ -1182,12 +1192,13 @@
    "phase": "P2",
    "title": "Circuit",
    "scope": "The round's venue: map, facts, layout image where one exists.",
-   "fixedBy": "domain component",
-   "defaults": "The tracks content as the source (the Madring fix of 1.0.97 holds); the map through P2.12.",
+   "fixedBy": "domain component (APEX has no circuit component; the Weather and the Countdown as the model of a Series-group piece); the plan of 2026-09-30 in plan mode (~/.claude/plans/breezy-orbiting-clover.md; read in the main agent; a Sonnet plan critic 263,138 tokens, five fixes folded: the Madring fix is an alias not a curated venue, the bridge from circuit slug to track slug exercised with differing pairs, the registry spied through a namespace import, the Utilization’s guard, a case for a circuit without a guide); the weekend page’s venue rail as the look and the words; the layout catalogue’s licence (a visible credit); the Map (P2.12) for the map",
+   "defaults": "The tracks content as the source (content/circuits.json through venueCandidates and matchCircuitEntry, the curated venue alone else the location then the title, the rule of 1.0.97: Madring by its alias; the Madring fix holds and is pinned by lib/circuits.test.ts); the map through P2.12 (MapFrame, one marker in the guide’s category colour or the accent, Automatic view, the wheel off, on a named background whose key is filled on the server). One component series.circuit (Series group): Series (Every series · one; the page’s own weekend on a weekend or a session page), Heading (empty “The venue”), Background and Height (160–600, 280) shown while the map is on (dependingOn on a boolean parent), the Shows group Layout drawing · Map · Facts · Circuit guide link; the weekend as the Weather finds it through weekendInContext (extracted from the Weather’s block, used by both); the facts Country · Type · Length · Turns · Opened from the hub’s verified track entry across the bridge (getTrackInfoByCircuitSlug then getInfoEntry; Baku’s guide is baku-city-circuit), the country alone from the code through Intl.DisplayNames without one; the drawing through circuitLayoutFor with its credit link; DataRegionCircuit the view (the eyebrow as the Weather’s, the drawing and the map side by side from md up, the map alone at full width); the Map Backgrounds’ Utilization counts a Circuit region with its map on; READS; readers see nothing until an editor places a Circuit; the weekend page’s rail untouched (Phase 3)",
    "needsWord": "none",
    "acceptance": "Round 14 shows Madring (fixed in 1.0.97); test.",
-   "status": "planned",
-   "scopeHash": "a5873e70c730"
+   "status": "started",
+   "scopeHash": "a5873e70c730",
+   "evidence": "PLANNED 2026-09-30 in plan mode on the word “x1-8 will be done separately after phase 2 is done. do p2.15 now” (~08:50Z on the 30th), approved ~09:25Z with the critic’s five fixes folded · STARTED ~09:30Z (branch feat/p2-15-circuit): the tests before the code across five files (four red; the Madring case over the real content green at once), then components.ts, component-render.tsx (the thunks, weekendInContext, the renderer, READS), DataRegionViews.tsx, definitions.ts · GATES after the last edit: tsc 0 · lint 0 errors (the two known) · vitest 266 files, 2540 tests · DATA_SOURCE=db cf:build clean · wrangler deploy --dry-run Total Upload 41602.53 KiB / gzip 9057.60 KiB (up 23 KiB on P2.12: one server renderer and one view, the map through the Map’s own chunks; 63% of the ceiling) · LOCAL (the designer on PADDOCK_ENV=production npm run dev): a Circuit region in the Body of the Race weekend page at its defaults (published 17:01Z): /series/f1/weekend/14 Madring by its title with the facts, one marker, the guide, no drawing; /series/f1/weekend/15 Baku with the f1db drawing and credit, the map, the facts, the guide across the bridge; the dark set on Midnight; 390 px; a Circuit with Series Formula 1 on the Series hub drew the Bahrain Grand Prix at Sepang (Country Malaysia from the code, no guide); Map Backgrounds’ Used on naming both pages; the review page https://claude.ai/code/artifact/f068e56e-585d-42c5-a2cb-b92cdcdadfe2 · REVIEW: a fresh-context Sonnet reviewer (192,356 tokens), SOUND WITH NITS, no blocking finding; its one should-fix folded (the place line as the rail draws it) · PR #1103 (1.0.221) opened; the merge on the word"
   },
   {
    "id": "P2.16",
