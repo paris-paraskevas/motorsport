@@ -8,6 +8,40 @@ Time-series perf snapshot. **Append-only by date** — never overwrite prior row
 
 ---
 
+## 2026-09-30 — X7: the session pages and the designer-made pages join the edge cache (1.0.224)
+
+Two route families had never been in the cache: every session page (`/series/<slug>/weekend/<round>/<session>`) and every page the catch-all serves (`/calendar`, `/news`, a row page made in the designer). Both answered `Cache-Control: private, no-cache, no-store` and rendered per visitor. The cause was not a hidden request API but a missing export: a route without `generateStaticParams` is rendered dynamically whatever the page does, and the prerender manifest that OpenNext's cache interception keys on listed neither route. 1.0.224 adds `revalidate = 300` and an empty `generateStaticParams` to both (the drivers' and weekend pages' model) and drops the session route's `force-dynamic`.
+
+**Method:** `curl -s -o /dev/null -D - -w '%{time_starttransfer}'`, twice per page in a row, from Greece; the first request the render (or a cold cache), the second the cache hit; the headers quoted are `cache-control` and `x-opennext-cache`. The testing Worker ran the PR's build before the merge; prod was measured at 1.0.223 just before the merge and at 1.0.224 right after the deploy (20:35Z, the first visit of each page on the new Worker).
+
+**Testing Worker (testing.paddock-tracker.com), before → after:**
+
+| page | before: cache-control · #1 → #2 | after: cache-control · #1 (cold, the populate running) → #2 | steady state, both HIT |
+|---|---|---|---|
+| /series/f1/weekend/15/qualifying | private, no-cache, no-store · 4.87 s → 2.28 s | s-maxage=300 · 12.10 s → HIT 0.25 s | 1.21 s → 0.19 s |
+| /series/wec/weekend/6/6-hours-of-fuji-race | private, no-cache, no-store · 0.48 s → 0.27 s | s-maxage=300 · 3.57 s → HIT 1.41 s | 0.24 s → 0.22 s |
+| /series/dtm/weekend/6/race-1 | private, no-cache, no-store · 0.54 s → 0.40 s | s-maxage=300 · 2.72 s → HIT 0.96 s | 0.18 s → 0.20 s |
+| /calendar | private, no-cache, no-store · 3.06 s → 1.48 s | s-maxage=300 · 4.16 s → HIT 0.46 s | 0.29 s → 0.58 s |
+| /news | private, no-cache, no-store · 0.71 s → 1.23 s | s-maxage=300 · 3.18 s → HIT 0.22 s | 0.43 s → 0.67 s |
+| /history/monza (a 404 on the testing host) | private, no-cache, no-store · 0.26 s → 0.26 s | private (the 404's first render) 0.76 s → HIT 0.20 s | 0.22 s → 0.21 s |
+
+**Prod (paddock-tracker.com), before (1.0.223, ~20:20Z) → after (1.0.224, ~20:35Z):**
+
+| page | before: cache-control · #1 → #2 | after: cache-control · #1 (the first render on the new Worker) → #2 |
+|---|---|---|
+| /series/f1/weekend/15/qualifying | private, no-cache, no-store · 4.03 s → 0.54 s | s-maxage=300 · 3.28 s → HIT 0.33 s |
+| /series/wec/weekend/6/6-hours-of-fuji-race | private, no-cache, no-store · 0.66 s → 0.53 s | s-maxage=300 · 5.29 s → HIT 0.36 s |
+| /series/dtm/weekend/6/race-1 | private, no-cache, no-store · 0.69 s → 0.53 s | s-maxage=300 · 2.87 s → HIT 0.38 s |
+| /calendar | private, no-cache, no-store · 4.05 s → 2.97 s | s-maxage=300 · 3.94 s → HIT 0.40 s |
+| /news | private, no-cache, no-store · 1.07 s → 1.05 s | s-maxage=300 · 1.87 s → HIT 0.42 s |
+| /history/monza (a 404 on prod too: the row page lives in the local design store alone) | private, no-cache, no-store · 0.26 s → 0.24 s | private (the 404's first render) 0.79 s → HIT 0.36 s |
+
+**What to expect over time:** each of the ~1,800 session pages and every designer-made page renders once per five-minute window while visited, instead of once per visitor; the first visitor of a window pays the render (the OpenF1 analyses on an F1 page: 1–4 s, the first render on a fresh Worker slower still), everyone else in the window gets the edge answer (0.2–0.6 s). A not-found address under the catch-all is cached for the window as the drivers' are. Seobility's 1,813 medium-response pages and its 88 crawl errors (the per-request renders under its load) are the numbers to re-read on the operator's next crawl.
+
+**Known and accepted (the plan's defaults, recorded in the ledger's X7 slot):** the five-minute window for sessions, no per-request exception for a running session; a single-page publish does not revalidate that page's `/__view/<state>/<path>` variants (up to 300 s stale); the FIA WEC `no-store` POST is reached only on an unseeded `results:wec` snapshot key, so that one render stays dynamic until the loader seeds the key.
+
+---
+
 ## 2026-09-28 — R13 PR C2 measured on the testing Worker: OpenNext's cache interception
 
 The Worker's answer, the second lever of the plan of 2026-09-28. `enableCacheInterception: true` in open-next.config.ts, built here with `DATA_SOURCE=db npm run cf:build` (without the variable in the build's environment the home's loaders fetch upstreams with no-store and `/` leaves the prerender manifest as a dynamic route, which the interceptor never touches; prod's build carries it, so `/` is ISR there: its prefetch payload is the full page, 125,921 bytes) and deployed to testing.paddock-tracker.com at 14:34Z (version f555ad91; the populate wrote 11,755 entries by 14:47Z under the testing prefix). The interceptor answers a page the prerender manifest knows (`/`, `/blog`, `/series/<slug>`, `/drivers/<slug>`, the archive and information pages) from the incremental cache in the routing layer, after the middleware and before Next's server; its answers carry `x-opennext-cache: HIT|STALE` and no `x-nextjs-cache`.
