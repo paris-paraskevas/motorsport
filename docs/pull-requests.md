@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1102 · 1.0.220 · records · opened Wed 30 Sep 11:35 (08:35Z); the merge on the standing word
+**P2.12 on prod and done; the Seobility export read.** Records only: the merge, the deploy, the slot closed; the triage of Seobility’s full export as an artifact with eight proposed slots awaiting the word; the board regenerated.
+- **Readers see:** nothing.
+- **Editors get:** nothing new (the Map and Map Backgrounds of 1.0.219 stand).
+- **Files (9):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · P2.12 DONE (#1101 on prod); a dated line for the word.
+  - `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md` · the pickup for session 60 (the Seobility slots for the word, else P2.15 Circuit), the minutes, the triage’s pointer in the Inbox.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.220.
+- **Verified:** node docs/plan/render-ledger.mjs → 63 slots; npx vitest run lib/design/plan-ledger.test.ts lib/record-notes-integrity.test.ts → green; prod /changelog 1.0.219 by 08:22:10Z; GET /api/admin/design/maps on prod answers 404 to an anonymous request (the admin gate); the board https://claude.ai/code/artifact/e48d9f01-f919-42c8-b726-3f413692f45e (50 of 63 done); the triage https://claude.ai/code/artifact/4c2f6e9c-8fee-407d-accb-40c1cbdb90f5.
+- **Review:** none; records.
+
 ## #1101 · 1.0.219 · P2.12 · opened Tue 29 Sep 21:40 (18:40Z); the merge on the word
 **Map and Map Backgrounds.** APEX's Map region as a component editors place: the markers of a preset's rows on a named background whose tiles follow the theme's family, the popup with the row's page; Map Backgrounds as the shared component behind it (one named background, Canvas, Esri's grey pair, key-less); the Circuit guides as the catalogue's seventeenth source, the Circuit Map's own markers as rows.
 - **Readers see:** nothing until an editor places a Map region.
