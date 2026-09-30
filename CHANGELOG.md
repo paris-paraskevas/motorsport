@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.220 — 2026-09-30
+
+### Records — P2.12 on prod and done; the Seobility export read
+
+Records only. `docs/plan/ledger.json`: P2.12 (#1101, 1.0.219) merged on “merge then here is the seobility full export” (08:16:53Z on the 30th), prod 1.0.219 by 08:22:10Z; readers see nothing until an editor places a Map region (the placement on prod is the operator’s); P2.12 DONE; a dated line for the word. Seobility Premium’s full export of the 29th (85 pages, 3,083 pages crawled) read in the main agent and every check verified against the live site on the 30th: the triage with the causes at file:line and eight proposed slots (X1 titles and descriptions, X2 the archive’s round-0 canonicals, X3 anchors and cards, X4 thin sessions and shared sentences, X5 team car entries under one team, X6 page weight, X7 an edge cache for the session pages, X8 the sitemap’s coverage) at https://claude.ai/code/artifact/4c2f6e9c-8fee-407d-accb-40c1cbdb90f5; nothing built, the operator’s word pending on which and where against P2.15 Circuit. `docs/HANDOFF.md`: the LATEST block and the pickup prompt for session 60. `SCHEDULE.md`: the minutes. `IDEAS.md`: the triage’s pointer beside the Inbox’s earlier findings of the same defects (the census’s long titles, the catch-all’s no-store pages, Ahrefs’ 4xx canonicals).
+
 ## 1.0.219 — 2026-09-29
 
 ### P2.12 — Map and Map Backgrounds
