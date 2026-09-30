@@ -182,7 +182,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
       const values = (state?.filters ?? []).filter(f => f.column === column && (f.op === 'in' || f.op === 'eq')).flatMap(f => (f.op === 'in' ? f.value.split(',').map(s => s.trim()).filter(s => s !== '') : [f.value]));
       return values.length > 0 ? values : null;
     };
-    return <CalendarView items={m.items} roundByKey={m.roundByKey} roundNames={m.roundNames} serverNow={m.serverNow} seriesNames={picks('seriesName')} sessionKinds={picks('sessionType')} />;
+    return <CalendarView items={m.items} roundNames={m.roundNames} serverNow={m.serverNow} seriesNames={picks('seriesName')} sessionKinds={picks('sessionType')} />;
   },
   // The Live band (P2.9); This weekend, Home's retired piece, upgrades to it on read (P2.24 C).
   'series.live': settings => drawLiveBand(settings),

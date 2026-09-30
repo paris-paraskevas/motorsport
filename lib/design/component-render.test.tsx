@@ -68,17 +68,16 @@ vi.mock('./families/calendar', () => ({
   // Two sessions (P2.5 PR B): the Filters region over the calendar facets on the series' names and the sessions' kinds.
   loadCalendarModel: async () => ({
     items: [
-      { session: { uid: 'a', seriesSlug: 'f1', title: 'F1 - Race', start: new Date('2026-09-13T13:00:00Z'), end: new Date('2026-09-13T15:00:00Z') }, color: '#e10600', seriesSlug: 'f1', seriesName: 'Formula 1' },
+      { session: { uid: 'a', seriesSlug: 'f1', title: 'F1 - Race', start: new Date('2026-09-13T13:00:00Z'), end: new Date('2026-09-13T15:00:00Z') }, color: '#e10600', seriesSlug: 'f1', seriesName: 'Formula 1', round: 14 },
       { session: { uid: 'b', seriesSlug: 'motogp', title: 'MotoGP - Practice 1', start: new Date('2026-09-11T08:00:00Z'), end: new Date('2026-09-11T09:00:00Z') }, color: '#0af', seriesSlug: 'motogp', seriesName: 'MotoGP' },
     ],
-    roundByKey: { 'f1:14': 14 },
     roundNames: { 'f1:14': 'Spanish Grand Prix (Madrid)' },
     serverNow: '2026-09-09T12:00:00.000Z',
   }),
 }));
 vi.mock('@/components/calendar/CalendarView', () => ({
-  CalendarView: (props: { items: unknown[]; serverNow: string; roundNames?: Record<string, string>; seriesNames?: string[] | null; sessionKinds?: string[] | null }) => (
-    <div data-calendar={props.serverNow} data-series={(props.seriesNames ?? []).join('|')} data-kinds={(props.sessionKinds ?? []).join('|')}>
+  CalendarView: (props: { items: { round?: number }[]; serverNow: string; roundNames?: Record<string, string>; seriesNames?: string[] | null; sessionKinds?: string[] | null }) => (
+    <div data-calendar={props.serverNow} data-series={(props.seriesNames ?? []).join('|')} data-kinds={(props.sessionKinds ?? []).join('|')} data-rounds={props.items.map(i => i.round ?? '').join('|')} data-lookup={'roundByKey' in props ? 'yes' : 'no'}>
       {Object.values(props.roundNames ?? {}).join(', ')}
     </div>
   ),
@@ -1066,6 +1065,9 @@ describe('renderComponents', () => {
     expect(html(out.heading)).toMatch(/<h1[^>]*>Calendar<\/h1>/);
     expect(html(out.month)).toContain('data-calendar="2026-09-09T12:00:00.000Z"');
     expect(html(out.month)).toContain('Spanish Grand Prix (Madrid)');
+    // X6 C: the round rides on each entry; the calendar receives no lookup keyed by the feed’s ids.
+    expect(html(out.month)).toContain('data-rounds="14|"');
+    expect(html(out.month)).toContain('data-lookup="no"');
     const titled = await renderComponents(doc([region('heading', 'page.heading')]), { path: '/calendar', page: { ...page, title: 'Race calendar 2026' } });
     expect(html(titled.heading)).toContain('>Race calendar 2026<');
     const own = await renderComponents(doc([region('heading', 'page.heading', { text: 'Every session' })]), { path: '/calendar', page });
@@ -1078,6 +1080,19 @@ describe('renderComponents', () => {
     expect(html(second.heading)).not.toContain('<h1');
   });
 
+  it('X6 C: the calendar’s own model carries each session’s round on the entry and a short key, never the round map or the feed’s ids', async () => {
+    const real = await vi.importActual<typeof import('./families/calendar')>('./families/calendar');
+    const s = (uid: string, title: string, start: string) => ({ uid, seriesSlug: 'f1', title, start: new Date(start), end: new Date(new Date(start).getTime() + 3_600_000), location: 'Monza' });
+    vi.spyOn(seriesLib, 'loadAllSeries').mockResolvedValue([
+      { meta: { slug: 'f1', name: 'Formula 1', color: '#e10600', season: 2026 }, sessions: [s('ics-uid-one-very-long-identifier@example', 'F1 - Qualifying', '2026-09-05T14:00:00Z'), s('ics-uid-two-very-long-identifier@example', 'F1 - Race', '2026-09-06T13:00:00Z'), s('ics-uid-three-very-long-identifier@example', 'F1 - Race', '2026-09-20T13:00:00Z')] } as unknown as Series,
+    ]);
+    const m = await real.loadCalendarModel();
+    expect(Object.keys(m).sort()).toEqual(['items', 'roundNames', 'serverNow']);
+    expect(m.items.map(i => i.round)).toEqual([1, 1, 2]);
+    expect(m.items.map(i => i.session.uid)).toEqual(['0', '1', '2']);
+    expect(m.items[0].session.location).toBe('Monza');
+    expect(JSON.stringify(m)).not.toContain('very-long-identifier');
+  });
   it('P2.17: the Breadcrumb draws the page’s place from its address in the Breadcrumb Bar: Home, the pages above as links, the page itself current, a separator between; its BreadcrumbList except where the page prints its own; nothing on Home', async () => {
     const names: Record<string, string> = { '/': 'Home', '/series': 'Series' };
     vi.spyOn(pageFrame, 'loadPageFrame').mockImplementation(async path => (path in names ? ({ name: names[path] } as unknown as pageFrame.PageFrame) : null));

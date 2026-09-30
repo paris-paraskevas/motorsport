@@ -42,20 +42,18 @@ function rangeLabel(a: Date, b: Date): string {
 export function SeasonView({
   entries,
   now,
-  roundByKey,
   roundNames,
   maxRoundBySlug,
 }: {
   entries: CalendarEntry[];
   now: Date;
-  roundByKey?: Record<string, number>;
   roundNames?: Record<string, string>;
   maxRoundBySlug: Record<string, number>;
 }) {
   // 1 — weekend groups per slug:round.
   const groups = new Map<string, WeekendRow>();
   for (const e of entries) {
-    const round = roundByKey?.[`${e.seriesSlug}:${e.session.uid}`];
+    const round = e.round;
     if (round == null || round < 1) continue;
     const key = `${e.seriesSlug}:${round}`;
     const g = groups.get(key);

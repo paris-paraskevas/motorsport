@@ -4,10 +4,11 @@ import { bucketByDay } from '@/lib/calendar-grid';
 import { MonthView } from './MonthView';
 import type { CalendarEntry } from './types';
 
-const entry = (uid: string, title: string, start: string, [seriesSlug, seriesName, color] = ['f1', 'Formula 1', '#e10600']): CalendarEntry => ({
+const entry = (uid: string, title: string, start: string, [seriesSlug, seriesName, color] = ['f1', 'Formula 1', '#e10600'], round?: number): CalendarEntry => ({
   seriesSlug,
   seriesName,
   color,
+  round,
   session: { uid, seriesSlug, title, start: new Date(start), end: new Date(new Date(start).getTime() + 3_600_000) },
 });
 
@@ -54,5 +55,20 @@ describe('MonthView, the grid at every width (R12)', () => {
     const html = renderToStaticMarkup(<MonthView anchor={anchor} now={now} buckets={bucketByDay(entries)} onSelectDay={() => {}} />);
     expect(barsPerDay(html)).toEqual([3]);
     expect(html).toContain('+1 more');
+  });
+
+  it('X6 C: the round travels on the entry: a decider links its weekend page, and a weekend across two days draws the week banner', () => {
+    const anchor = new Date(2030, 8, 1);
+    const now = new Date(2030, 8, 2, 12);
+    const entries = [
+      entry('q', 'Qualifying', '2030-09-14T14:00:00', undefined, 14),
+      entry('r', 'Race', '2030-09-15T13:00:00', undefined, 14),
+      entry('fp', 'Practice 1', '2030-09-20T11:00:00'),
+    ];
+    const html = renderToStaticMarkup(<MonthView anchor={anchor} now={now} buckets={bucketByDay(entries)} onSelectDay={() => {}} />);
+    expect(html).toContain('href="/series/f1/weekend/14"');
+    expect(html).toContain('Formula 1 · Round 14 · R14');
+    // A session outside every round links the series, as before.
+    expect(html).toContain('href="/series/f1"');
   });
 });
