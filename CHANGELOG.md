@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.225 — 2026-09-30
+
+### Records — X7 on prod and done with the check; the perf baselines; the session-60 close
+
+Records only. `docs/plan/ledger.json`: X7 (#1106, 1.0.224) merged on “merge and apply 20260930194100” (20:29:03Z), the seed correction applied on prod at 20:29:05Z through the Management API (rehearsed inside begin…rollback first; the Session row reads cached), prod 1.0.224 by 20:34:43Z; measured on prod before and after the deploy: every one of the six pages answered `private, no-cache, no-store` before and `s-maxage=300` then `x-opennext-cache: HIT` after (the F1 qualifying page of round 15 0.33 s to the first byte on the hit where its render took 3–4 s, the calendar 0.40 s, the news 0.42 s); X7 DONE; a dated line. `docs/perf-baselines.md`: the X7 section (the testing Worker and prod before and after, the method, what to expect over time, the accepted defaults). `docs/HANDOFF.md`: the LATEST block and the pickup prompt for session 61 (X6 page weight first, in plan mode with a Sonnet critic, then X9 the JavaScript count; the AdSense decisions pending). `SCHEDULE.md`: the minutes. `IDEAS.md`: the R13 C2 Inbox line closed by X7.
 ## 1.0.224 — 2026-09-30
 
 ### X7 — Edge cache for the session pages and the designer-made pages

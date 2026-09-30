@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1107 · 1.0.225 · records · opened Thu 1 Oct 00:05 (21:05Z); the merge on the standing word
+**X7 on prod and done with the check; the perf baselines; the session-60 close.** Records only: the merge, the apply, the deploy, prod measured before and after, the slot closed; the baselines appended; the handoff for session 61; the board regenerated.
+- **Readers see:** nothing (the faster pages are 1.0.224’s).
+- **Editors get:** the Session page’s row reads Cached in the App Builder (the correction applied on prod at 20:29:05Z).
+- **Files (10):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · X7 DONE (#1106 on prod, the apply, prod’s numbers before and after); a dated line for the word.
+  - `docs/perf-baselines.md` · the X7 section: the testing Worker and prod before and after, the method, what to expect.
+  - `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md` · the pickup for session 61 (X6 first in plan mode, then X9; the AdSense decisions pending), the minutes, the R13 C2 Inbox line closed by X7.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.225.
+- **Verified:** node docs/plan/render-ledger.mjs → 66 slots; npx vitest run lib/design/plan-ledger.test.ts lib/record-notes-integrity.test.ts → green; prod /changelog 1.0.224 by 20:34:43Z; the six pages on prod `s-maxage=300` then `x-opennext-cache: HIT` (the table in `docs/perf-baselines.md`); the board https://claude.ai/code/artifact/e48d9f01-f919-42c8-b726-3f413692f45e (52 of 66 done).
+- **Review:** none; records.
 ## #1106 · 1.0.224 · X7 · opened Wed 30 Sep 23:35 (20:35Z); the merge on the word
 **Edge cache for the session pages and the designer-made pages.** Every session page and every page the catch-all serves (the calendar, the news, a row page) rendered per visitor behind `private, no-cache, no-store`; both routes now take the ISR model of the drivers and weekend pages (`revalidate = 300` and an empty `generateStaticParams`, the export that puts a route in the prerender manifest OpenNext’s cache interception keys on), so they answer `s-maxage` from the edge and, on the second request, `x-opennext-cache: HIT`. The first slot of phase X (Seobility’s findings).
 - **Readers see:** the same pages, faster: on the testing Worker the F1 qualifying page of round 15 answers in 0.19–0.25 s to the first byte from the cache where it took 2.3–4.9 s, the calendar in 0.29–0.58 s where it took 1.5–3.1 s; a session’s result may show up to five minutes later than before; a designer publish still shows within seconds.
