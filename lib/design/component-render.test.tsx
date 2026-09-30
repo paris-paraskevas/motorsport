@@ -1092,6 +1092,9 @@ describe('renderComponents', () => {
     expect(m.items.map(i => i.session.uid)).toEqual(['0', '1', '2']);
     expect(m.items[0].session.location).toBe('Monza');
     expect(JSON.stringify(m)).not.toContain('very-long-identifier');
+    // The bound on the payload: a session weighs its own fields (two dates, a title, the series' name, slug and colour, a
+    // location, a round), about 230 bytes; the map and the feed's ids that rode along before were another 130.
+    expect(JSON.stringify(m).length / m.items.length).toBeLessThan(300);
   });
   it('P2.17: the Breadcrumb draws the page’s place from its address in the Breadcrumb Bar: Home, the pages above as links, the page itself current, a separator between; its BreadcrumbList except where the page prints its own; nothing on Home', async () => {
     const names: Record<string, string> = { '/': 'Home', '/series': 'Series' };
