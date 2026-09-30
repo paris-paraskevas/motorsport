@@ -71,7 +71,7 @@ vi.mock('@/lib/design/authz-evaluate', async () => {
   return { ...actual, currentVisitor: () => currentVisitor() };
 });
 
-import CatchAll, { generateMetadata, revalidate } from './page';
+import CatchAll, { generateMetadata, generateStaticParams, revalidate } from './page';
 import type { PageRow } from '@/lib/design/pages';
 import { SHIPPED_APPEARANCE } from '@/lib/design/appearance-defaults';
 import { SHIPPED_PRESETS } from '@/lib/design/template-options';
@@ -99,6 +99,10 @@ describe('the catch-all serving row pages', () => {
     loadLivePage.mockReset();
     currentVisitor.mockReset();
     currentVisitor.mockResolvedValue(ANON);
+  });
+
+  it('X7: declares no params to prerender, so the route enters the prerender manifest and a public page is answered from the edge cache; every address renders on its first visit', async () => {
+    expect(await generateStaticParams()).toEqual([]);
   });
 
   it('revalidates every five minutes and renders the 404 when no row page is live at the path', async () => {

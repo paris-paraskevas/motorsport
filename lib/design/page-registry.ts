@@ -80,7 +80,7 @@ export const CODE_PAGES: readonly CodePage[] = [
   P('/series/[slug]', 'Series hub', 'series', 'cached', true),
   P('/series/[slug]/[tab]', 'Series tab', 'series', 'cached', true, 'public', 'standings, results, drivers, teams, champions and the rest; an empty tab says noindex on its own'),
   P('/series/[slug]/weekend/[round]', 'Race weekend', 'series', 'cached', true),
-  P('/series/[slug]/weekend/[round]/[session]', 'Session', 'series', 'dynamic', true),
+  P('/series/[slug]/weekend/[round]/[session]', 'Session', 'series', 'cached', true),
   P('/drivers/[slug]', 'Driver profile', 'series', 'cached', true),
   P('/teams/[slug]', 'Team profile', 'series', 'cached', true),
   P('/f1/analysis', 'F1 qualifying analysis', 'series', 'cached', true),
