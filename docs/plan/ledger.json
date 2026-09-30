@@ -649,6 +649,11 @@
    "date": "2026-09-30",
    "change": "P2.15 merged and on prod (1.0.221): the Circuit in the catalogue, the round’s venue for the page’s weekend or a series’ next, the Madring acceptance pinned over the real content; P2.15 DONE (the placement on prod is the operator’s). The AdSense reading (https://claude.ai/code/artifact/2e8db33a-ccdf-47df-b7bf-dac6a0536951) presented as an ESPA, its five solutions and decisions awaiting the word; the ad networks’ doors answered in the handoff.",
    "word": "“Merge, however before we move on i need you to answer this…” (17:36Z on the 30th)"
+  },
+  {
+   "date": "2026-09-30",
+   "change": "X7 (the edge cache for the session pages and the designer-made pages) planned in plan mode and approved; a Sonnet critic found the cause: the catch-all route lacks generateStaticParams, so Next renders it dynamically; the session route drops force-dynamic for revalidate 300 and the same export, its registry row to cached. The build runs in session 60 with fresh context; X7 enters the ledger as a slot of a new phase X when it starts, with X6 and X9 (the JavaScript count) planned beside it.",
+   "word": "the plan approved ~18:35Z on the 30th; “we need to handoff … tackle x7 in a next session as we are at 93% context”"
   }
  ],
  "phases": {

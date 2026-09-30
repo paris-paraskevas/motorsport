@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1105 · 1.0.223 · records · opened Wed 30 Sep 21:25 (18:25Z); the merge on the standing word
+**X7 planned and approved; the session-59 close.** Records only: the X7 plan (approved ~18:35Z with the critic's two blocking fixes folded) carried in the handoff for session 60; the operator's search and analytics numbers answered; the minutes.
+- **Readers see:** nothing.
+- **Editors get:** nothing new.
+- **Files (7):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · a dated line: X7 planned and approved, its build next session.
+  - `docs/HANDOFF.md`, `SCHEDULE.md` · the session-60 pickup with the X7 plan verbatim and the pending AdSense decisions; the minutes.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.223.
+- **Verified:** node docs/plan/render-ledger.mjs → 63 slots; npx vitest run lib/design/plan-ledger.test.ts lib/record-notes-integrity.test.ts → green.
+- **Review:** none; records.
+
 ## #1104 · 1.0.222 · records · opened Wed 30 Sep 20:55 (17:55Z); the merge on the standing word
 **P2.15 on prod and done; the AdSense reading; the order after the slot.** Records only: the merge, the deploy, the slot closed; the operator’s order for what follows (X7, X6, the JavaScript count, each in plan mode); the AdSense ESPA as an artifact; the board regenerated.
 - **Readers see:** nothing.
