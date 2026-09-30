@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.223 — 2026-09-30
+
+### Records — X7 planned and approved, its build next session; the session-59 close
+
+Records only. X7 (the edge cache for the session pages and the designer-made pages) planned in plan mode and approved ~18:35Z; a Sonnet plan critic (312,315 tokens) found the cause the code did not show: the catch-all route has no `generateStaticParams`, so Next renders it dynamically whatever the page does (the installed docs: "You must always return an array from generateStaticParams, even if it's empty. Otherwise, the route will be dynamically rendered"; the prerender manifest lists neither the catch-all nor the session route); the session route's registry row must flip to cached with the route; the WEC POST is reachable on an unseeded snapshot key; a single-page publish does not revalidate the `/__view` variants. The plan's text is in `docs/HANDOFF.md`'s LATEST block; the build starts session 60 with fresh context (the operator's word at 93% context). The operator's Search Console and Analytics of 2–29 September read and answered against the ad networks' doors (338 clicks, 34% tier-1; 305 users, 126 tier-1; about one eighth of Journey by Mediavine's 1,000 tier-1 sessions; the champions pages the site's one search asset, 113 of 338 clicks; the 200 generated who-won pages listed 8). `SCHEDULE.md`: the minutes; the ledger: a dated line.
+
 ## 1.0.222 — 2026-09-30
 
 ### Records — P2.15 on prod and done; the AdSense reading; the order after the slot
