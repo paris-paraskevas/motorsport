@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.227 — 2026-10-01
+
+### X6 B — The results tabs: the latest round open, the earlier rounds one line each
+
+The second of three PRs of X6 (page weight). A results tab (`components/tabs/ResultsTab.tsx`) carried every round’s full classification in the page, folded behind `<details>` but shipped twice, as markup and as the inline flight payload: NASCAR 2.38 MB, MotoGP 1.26 MB, F2 1.17 MB, GT World 1.15 MB, F1 757 kB. Folds hide, they do not lighten.
+
+**The change:** the latest round (the greatest date, then the greatest round; GT World, whose results carry no dates, the greatest curated round, else the last race in the feed’s order) renders as the accordion it was, open, with its full classification. Every earlier round renders as the one-line row the panel already drew for winners-only data (the round chip, the race title linking its weekend page as before, the date and the winner) plus “Classification →” to the round’s race session page, which shows every class for IMSA, WEC and GT World and the race classification for the rest. The link is given only where the race session page can answer it (F1 through OpenF1, the class series per class, the `RACE_SESSION_SERIES` from their season feed, now exported from `lib/results/session-classification.ts`); a round without such a page keeps its closed accordion, so no classification becomes unreachable. NLS’s and WRC’s winners-only rows are unchanged. `raceSessionFor(weekend, raceName)` picks the weekend’s race session by the race’s name (sprint, superpole, race 1 or 2 by their word, else the main race); the panels take one `links` object (the weekend page and the race session page per round) built once from the schedule. No fetcher, type or data change.
+
+**What stays, for the word:** NASCAR, IndyCar and WRC name their race sessions by event (“NASCAR Hollywood Casino 400”, “Grand Prix of Long Beach”, “Rallye Monte-Carlo”), so `isRaceLikeTitle` finds no race for them and their session pages show no classification today; DTM’s session page has no per-race source. Their rounds keep the accordion: NASCAR 2.16 MB, IndyCar 827 kB, DTM 591 kB stay above the slot’s 400 kB (WRC 352 kB is under it). The default follow-up, B2 (the weekend’s main session as the race for NASCAR and IndyCar in the session page’s classification rule), awaits the operator’s word.
+
+**Tests:** `components/tabs/ResultsTab.test.tsx` (NEW): the latest open with lines carrying both links, the date-then-round order, F2’s two panels, WEC’s classes, GT World’s round-then-position rule and its unmapped race, DTM’s accordions kept (the reviewer’s finding, red before the fix), NLS’s and WRC’s flat rows, the picker. Written before the code (six cases red), then green.
+
+**Measured:** on the testing Worker (version bf63dd38) /series/nascar-cup/results 2,383,067 → 2,162,042; /series/motogp/results 1,262,093 → 190,816; /series/f1/results 756,661 → 146,401; /series/wec/results 530,430 → 161,970; /series/imsa/results 481,653 → 145,095; /series/gt-world/results 1,146,361 → 282,585; /series/f2/results 1,173,920 → 219,925; /series/indycar/results 867,764 → 826,895; /series/dtm/results 590,622 → 590,982; /series/wrc/results 351,617 → 351,864 bytes of HTML. Every tab whose rounds carry a race session page falls under 400 kB.
+
+**Readers see:** the results tab with the latest round open and the earlier rounds one line each, their classification a tap away on the race page. PR A (#1108, the changelog on pages of its own releases) merged 2026-10-01 05:50:47Z and its registry row applied on prod at 05:50:48Z on the operator’s word.
 ## 1.0.226 — 2026-09-30
 
 ### X6 A — The changelog on pages of its own releases

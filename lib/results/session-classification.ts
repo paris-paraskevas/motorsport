@@ -49,7 +49,7 @@ export function matchOpenF1Session(
 // per-race source yet, IMSA/GTWC class shapes are a follow-up.
 // WRC is absent deliberately: rallies have stage itineraries, not a "race"
 // session — its per-rally classification lives on the results tab.
-const RACE_SESSION_SERIES = new Set([
+export const RACE_SESSION_SERIES = new Set([
   'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup',
 ]);
 

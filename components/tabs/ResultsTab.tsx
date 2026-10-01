@@ -2,10 +2,13 @@ import Link from 'next/link';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import type {
   Series,
+  Session,
   RaceResult,
   RaceResultEntry,
+  Weekend,
 } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
+import { sessionSlug } from '@/lib/weekend';
 import { fetchF1SeasonResults } from '@/lib/results/f1';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
@@ -29,6 +32,7 @@ import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
 import { fetchDTMSeasonResults } from '@/lib/results/dtm';
 import { fetchNlsSeasonResults, NLS_SOURCE_URL } from '@/lib/results/nls';
+import { CLASS_RESULT_SERIES, isRaceLikeTitle, RACE_SESSION_SERIES } from '@/lib/results/session-classification';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { applyResultsOverrides } from '@/lib/results/overrides';
@@ -139,8 +143,77 @@ function RaceTitle({ name, href }: { name: string; href?: string }) {
   );
 }
 
-function RowMeta({ date, winner }: { date?: Date; winner?: string }) {
-  if (!date && !winner) return null;
+// X6 B: a results tab carried every round’s full classification in the page,
+// folded but shipped (NASCAR’s 36 rounds × 40 cars, 2.4 MB). The latest round
+// alone opens with its classification; every earlier round is one line whose
+// "Classification →" leads to the race session page, which shows every class;
+// a round without a race session page keeps its closed accordion, so nothing
+// becomes unreachable.
+type RoundMode = 'open' | 'line' | 'fold';
+
+type RoundLinks = {
+  /** The weekend page of a round the schedule knows, else undefined. */
+  weekend: (round: number) => string | undefined;
+  /** The race session page of a round for one race name, else undefined. */
+  classification: (round: number, raceName: string) => string | undefined;
+};
+
+const cleanTitle = (title: string) => title.replace(/^.*?[-–—:]\s*/, '').toLowerCase();
+
+/** The weekend’s race session that a results row names: sprint, superpole, race 1 or 2 by their word, else the main
+ *  race (the last race-like session that is none of those); null without a race-like session. */
+export function raceSessionFor(weekend: Weekend, raceName: string): Session | null {
+  const races = weekend.sessions.filter(s => isRaceLikeTitle(s.title));
+  if (races.length === 0) return null;
+  const name = raceName.toLowerCase();
+  const pick = (test: (t: string) => boolean) => races.find(s => test(cleanTitle(s.title))) ?? null;
+  if (/sprint/.test(name)) return pick(t => /sprint/.test(t));
+  if (/superpole/.test(name)) return pick(t => /superpole/.test(t));
+  if (/race\s*1\b/.test(name)) return pick(t => /race\s*1\b/.test(t));
+  if (/race\s*2\b/.test(name)) return pick(t => /race\s*2\b/.test(t));
+  const main = [...races].reverse().find(s => !/sprint|superpole|race\s*[12]\b/.test(cleanTitle(s.title)));
+  return main ?? races[races.length - 1];
+}
+
+/** The round links of a series, the weekends grouped once (the grouping weekendFor() uses). A classification link is
+ *  given only where the race session page can answer it: F1 through OpenF1, the class series per class, the series of
+ *  RACE_SESSION_SERIES from their season feed (the session page’s own three paths); DTM’s page has no per-race source,
+ *  so its rows keep the accordion. */
+function roundLinks(series: Series): RoundLinks {
+  const byRound = new Map(groupByWeekend(series.sessions, new Date(), series.rounds).map(w => [w.round, w]));
+  const slug = series.meta.slug;
+  const pageAnswers = slug === 'f1' || CLASS_RESULT_SERIES.has(slug) || RACE_SESSION_SERIES.has(slug);
+  return {
+    weekend: round => (byRound.has(round) ? `/series/${slug}/weekend/${round}` : undefined),
+    classification: (round, raceName) => {
+      if (!pageAnswers) return undefined;
+      const weekend = byRound.get(round);
+      const session = weekend ? raceSessionFor(weekend, raceName) : null;
+      return session ? `/series/${slug}/weekend/${round}/${sessionSlug(session.title)}` : undefined;
+    },
+  };
+}
+
+/** The latest item: the greatest date, then the greatest round; undefined for none. */
+function latestOf<T>(items: T[], date: (item: T) => Date | undefined, round: (item: T) => number): T | undefined {
+  let best: T | undefined;
+  for (const item of items) {
+    if (best === undefined) {
+      best = item;
+      continue;
+    }
+    const a = date(item)?.getTime() ?? NaN;
+    const b = date(best)?.getTime() ?? NaN;
+    const later = Number.isNaN(a) || Number.isNaN(b) ? 0 : a - b;
+    if (later > 0 || (later === 0 && round(item) > round(best))) best = item;
+  }
+  return best;
+}
+
+const modeFor = (latest: boolean, classificationHref: string | undefined): RoundMode => (latest ? 'open' : classificationHref ? 'line' : 'fold');
+
+function RowMeta({ date, winner, classificationHref }: { date?: Date; winner?: string; classificationHref?: string }) {
+  if (!date && !winner && !classificationHref) return null;
   return (
     <div className="mt-0.5 sm:truncate font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
       {date ? formatDate(date) : null}
@@ -151,11 +224,29 @@ function RowMeta({ date, winner }: { date?: Date; winner?: string }) {
           <span className="text-text-muted normal-case">{winner}</span>
         </>
       ) : null}
+      {classificationHref ? (
+        <>
+          {date || winner ? ' · ' : null}
+          <Link href={classificationHref} className="font-semibold text-tint hover:underline">
+            Classification →
+          </Link>
+        </>
+      ) : null}
     </div>
   );
 }
 
-function RoundRow({ race, weekendHref }: { race: RaceResult; weekendHref?: string }) {
+function RoundRow({
+  race,
+  weekendHref,
+  mode,
+  classificationHref,
+}: {
+  race: RaceResult;
+  weekendHref?: string;
+  mode: RoundMode;
+  classificationHref?: string;
+}) {
   const winner = race.results.find(r => r.position === 1) ?? race.results[0];
   const winnerLabel = winner ? `${winner.driverName} — ${winner.team}` : undefined;
   // Winners-only mode: some parsers (FE pre-classification-scrape, WRC's
@@ -167,20 +258,20 @@ function RoundRow({ race, weekendHref }: { race: RaceResult; weekendHref?: strin
   const isWinnersOnly =
     race.results.length === 1 && /^(race\s+)?winner$/i.test(race.results[0].status);
 
-  if (isWinnersOnly) {
+  if (isWinnersOnly || mode === 'line') {
     return (
       <div className="flex items-start gap-3 py-2.5">
         <RoundChip label={`R${race.round}`} />
         <div className="flex-1 min-w-0">
           <RaceTitle name={race.raceName} href={weekendHref} />
-          <RowMeta date={race.date} winner={winnerLabel} />
+          <RowMeta date={race.date} winner={winnerLabel} classificationHref={isWinnersOnly ? undefined : classificationHref} />
         </div>
       </div>
     );
   }
 
   return (
-    <details className="group">
+    <details className="group" open={mode === 'open'}>
       <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
         <RoundChip label={`R${race.round}`} />
         <div className="flex-1 min-w-0">
@@ -205,18 +296,15 @@ function SeasonResultsPanel({
   races,
   heading = 'Season results',
   preserveOrder = false,
-  seriesSlug,
-  weekendRounds,
+  links,
 }: {
   races: RaceResult[];
   heading?: string;
   // When true, caller has already ordered the array — don't resort (WSBK
   // emits R1 / SP / R2 per round and wants R2 last per weekend).
   preserveOrder?: boolean;
-  // When both are provided, rows whose round maps to a live weekend page
-  // link through to /series/<slug>/weekend/<round>.
-  seriesSlug?: string;
-  weekendRounds?: Set<number>;
+  // The weekend page and the race session page of each round, where the schedule knows them.
+  links: RoundLinks;
 }) {
   // Most recent round first. Within a round (F2/F3 ship Feature + Sprint
   // sharing one round number) the Feature race surfaces first because it
@@ -231,27 +319,25 @@ function SeasonResultsPanel({
         if (!aFeature && bFeature) return 1;
         return 0;
       });
+  // The latest race by date, then by round (the preserved orders still carry dates); it alone opens.
+  const latest = latestOf(sorted, r => r.date, r => r.round);
   return (
     <section className="border-y border-border py-4">
       <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         {heading}
       </h2>
       <ul className="divide-y divide-border/60">
-        {sorted.map(r => (
-          // raceName participates in the key because some series (WSBK, F2,
-          // F3) emit multiple RaceResults per round (Race 1 / Superpole / Race
-          // 2 — or Feature / Sprint) sharing the same round number.
-          <li key={`${r.round}-${r.raceName}`} className="py-1">
-            <RoundRow
-              race={r}
-              weekendHref={
-                seriesSlug && weekendRounds?.has(r.round)
-                  ? `/series/${seriesSlug}/weekend/${r.round}`
-                  : undefined
-              }
-            />
-          </li>
-        ))}
+        {sorted.map(r => {
+          const classificationHref = links.classification(r.round, r.raceName);
+          return (
+            // raceName participates in the key because some series (WSBK, F2,
+            // F3) emit multiple RaceResults per round (Race 1 / Superpole / Race
+            // 2 — or Feature / Sprint) sharing the same round number.
+            <li key={`${r.round}-${r.raceName}`} className="py-1">
+              <RoundRow race={r} weekendHref={links.weekend(r.round)} mode={modeFor(r === latest, classificationHref)} classificationHref={classificationHref} />
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -290,12 +376,10 @@ function ImsaResultRow({ entry }: { entry: ImsaRaceEntry }) {
 
 function ImsaSeasonResultsPanel({
   rounds,
-  seriesSlug,
-  weekendRounds,
+  links,
 }: {
   rounds: ImsaRoundResults[];
-  seriesSlug?: string;
-  weekendRounds?: Set<number>;
+  links: RoundLinks;
 }) {
   // Flatten rounds × classes into one row per (round, class). IMSA_CLASSES
   // order (GTP → LMP2 → GTD Pro → GTD) drives within-round ordering, which
@@ -311,28 +395,31 @@ function ImsaSeasonResultsPanel({
       })).filter(item => item.entries.length > 0),
     );
 
+  // The latest round by date, then by round; its every class opens.
+  const latest = latestOf(rounds, r => r.date, r => r.round);
   return (
     <section className="border-y border-border py-4">
       <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         Season results
       </h2>
       <ul className="divide-y divide-border/60">
-        {items.map(item => (
-          <li key={`${item.round.round}-${item.cls}`} className="py-1">
-            <ImsaRoundClassCard
-              roundNumber={item.round.round}
-              eventName={item.round.eventName}
-              date={item.round.date}
-              cls={item.cls}
-              entries={item.entries}
-              weekendHref={
-                seriesSlug && weekendRounds?.has(item.round.round)
-                  ? `/series/${seriesSlug}/weekend/${item.round.round}`
-                  : undefined
-              }
-            />
-          </li>
-        ))}
+        {items.map(item => {
+          const classificationHref = links.classification(item.round.round, item.round.eventName);
+          return (
+            <li key={`${item.round.round}-${item.cls}`} className="py-1">
+              <ImsaRoundClassCard
+                roundNumber={item.round.round}
+                eventName={item.round.eventName}
+                date={item.round.date}
+                cls={item.cls}
+                entries={item.entries}
+                weekendHref={links.weekend(item.round.round)}
+                mode={modeFor(item.round === latest, classificationHref)}
+                classificationHref={classificationHref}
+              />
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -345,6 +432,8 @@ function ImsaRoundClassCard({
   cls,
   entries,
   weekendHref,
+  mode,
+  classificationHref,
 }: {
   roundNumber: number;
   eventName: string;
@@ -354,6 +443,8 @@ function ImsaRoundClassCard({
   cls: string;
   entries: ImsaRaceEntry[];
   weekendHref?: string;
+  mode: RoundMode;
+  classificationHref?: string;
 }) {
   const winner = entries[0];
   const winnerLabel = winner
@@ -361,8 +452,19 @@ function ImsaRoundClassCard({
       ? `${winner.drivers} — ${winner.team}`
       : winner.team
     : undefined;
+  if (mode === 'line') {
+    return (
+      <div className="flex items-start gap-3 py-2.5">
+        <RoundChip label={`R${roundNumber}`} />
+        <div className="flex-1 min-w-0">
+          <RaceTitle name={`${eventName} — ${cls}`} href={weekendHref} />
+          <RowMeta date={date} winner={winnerLabel} classificationHref={classificationHref} />
+        </div>
+      </div>
+    );
+  }
   return (
-    <details className="group">
+    <details className="group" open={mode === 'open'}>
       <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
         <RoundChip label={`R${roundNumber}`} />
         <div className="flex-1 min-w-0">
@@ -393,12 +495,10 @@ function ImsaRoundClassCard({
 // the display date: race day for the 6/8-hour rounds, the Sunday for Le Mans.
 function WecSeasonResultsPanel({
   rounds,
-  seriesSlug,
-  weekendRounds,
+  links,
 }: {
   rounds: WecRoundResults[];
-  seriesSlug?: string;
-  weekendRounds?: Set<number>;
+  links: RoundLinks;
 }) {
   const items = [...rounds]
     .sort((a, b) => b.round - a.round)
@@ -414,28 +514,31 @@ function WecSeasonResultsPanel({
       })).filter(item => item.entries.length > 0),
     );
 
+  // The latest round by its race day, then by round; its every class opens.
+  const latest = latestOf(rounds, r => r.dateEnd, r => r.round);
   return (
     <section className="border-y border-border py-4">
       <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         Season results
       </h2>
       <ul className="divide-y divide-border/60">
-        {items.map(item => (
-          <li key={`${item.round.round}-${item.cls}`} className="py-1">
-            <ImsaRoundClassCard
-              roundNumber={item.round.round}
-              eventName={item.round.eventName}
-              date={item.round.dateEnd}
-              cls={item.cls}
-              entries={item.entries}
-              weekendHref={
-                seriesSlug && weekendRounds?.has(item.round.round)
-                  ? `/series/${seriesSlug}/weekend/${item.round.round}`
-                  : undefined
-              }
-            />
-          </li>
-        ))}
+        {items.map(item => {
+          const classificationHref = links.classification(item.round.round, item.round.eventName);
+          return (
+            <li key={`${item.round.round}-${item.cls}`} className="py-1">
+              <ImsaRoundClassCard
+                roundNumber={item.round.round}
+                eventName={item.round.eventName}
+                date={item.round.dateEnd}
+                cls={item.cls}
+                entries={item.entries}
+                weekendHref={links.weekend(item.round.round)}
+                mode={modeFor(item.round === latest, classificationHref)}
+                classificationHref={classificationHref}
+              />
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -498,11 +601,15 @@ function GtWorldRoundClassCard({
   cup,
   entries,
   weekendHref,
+  mode,
+  classificationHref,
 }: {
   race: GtWorldRaceResult;
   cup: Cup;
   entries: GtWorldRaceResultEntry[];
   weekendHref?: string;
+  mode: RoundMode;
+  classificationHref?: string;
 }) {
   const winner = entries[0];
   const winnerLabel = winner
@@ -511,17 +618,25 @@ function GtWorldRoundClassCard({
   // Round numbers (and therefore weekend links) come from the curated
   // event-rounds.json map; unmapped events keep the championship-letter chip
   // and render unlinked.
-  return (
-    <details className="group">
-      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
-        <RoundChip
-          label={race.round ? `R${race.round}` : race.championship === 'endurance' ? 'E' : 'S'}
-        />
+  const chip = race.round ? `R${race.round}` : race.championship === 'endurance' ? 'E' : 'S';
+  const title = `${race.eventName} ${race.raceName} — ${gtWorldCupLabel(cup)}`;
+  if (mode === 'line') {
+    return (
+      <div className="flex items-start gap-3 py-2.5">
+        <RoundChip label={chip} />
         <div className="flex-1 min-w-0">
-          <RaceTitle
-            name={`${race.eventName} ${race.raceName} — ${gtWorldCupLabel(cup)}`}
-            href={weekendHref}
-          />
+          <RaceTitle name={title} href={weekendHref} />
+          <RowMeta winner={winnerLabel} classificationHref={classificationHref} />
+        </div>
+      </div>
+    );
+  }
+  return (
+    <details className="group" open={mode === 'open'}>
+      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
+        <RoundChip label={chip} />
+        <div className="flex-1 min-w-0">
+          <RaceTitle name={title} href={weekendHref} />
           <RowMeta winner={winnerLabel} />
         </div>
         <ChevronDown
@@ -543,12 +658,10 @@ function GtWorldRoundClassCard({
 
 function GtWorldSeasonResultsPanel({
   races,
-  seriesSlug,
-  weekendRounds,
+  links,
 }: {
   races: GtWorldRaceResult[];
-  seriesSlug?: string;
-  weekendRounds?: Set<number>;
+  links: RoundLinks;
 }) {
   // Flatten races × cups into one row per (race, cup). Races are kept in
   // the order they were fetched (the parser already groups by event +
@@ -561,29 +674,31 @@ function GtWorldSeasonResultsPanel({
     })).filter(item => item.entries.length > 0),
   );
 
+  // GT World’s results carry no dates: the latest race is the greatest curated round, else the last race in the
+  // feed’s order (the SRO pages list the season oldest first); its every cup opens.
+  const numbered = races.filter(r => r.round !== undefined);
+  const latest = numbered.length > 0 ? latestOf(numbered, () => undefined, r => r.round ?? 0) : races[races.length - 1];
   return (
     <section className="border-y border-border py-4">
       <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         Season results
       </h2>
       <ul className="divide-y divide-border/60">
-        {items.map(item => (
-          <li
-            key={`${item.race.raceId}-${item.cup}`}
-            className="py-1"
-          >
-            <GtWorldRoundClassCard
-              race={item.race}
-              cup={item.cup}
-              entries={item.entries}
-              weekendHref={
-                seriesSlug && item.race.round && weekendRounds?.has(item.race.round)
-                  ? `/series/${seriesSlug}/weekend/${item.race.round}`
-                  : undefined
-              }
-            />
-          </li>
-        ))}
+        {items.map(item => {
+          const classificationHref = item.race.round ? links.classification(item.race.round, item.race.raceName) : undefined;
+          return (
+            <li key={`${item.race.raceId}-${item.cup}`} className="py-1">
+              <GtWorldRoundClassCard
+                race={item.race}
+                cup={item.cup}
+                entries={item.entries}
+                weekendHref={item.race.round ? links.weekend(item.race.round) : undefined}
+                mode={modeFor(item.race === latest, classificationHref)}
+                classificationHref={classificationHref}
+              />
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -624,13 +739,10 @@ function LinkOutCard({ officialStandingsUrl }: { officialStandingsUrl: string })
 }
 
 export async function ResultsTab({ series }: { series: Series }) {
-  // Round numbers that resolve to a live weekend page (same grouping
-  // weekendFor() uses) — race rows only link where the URL exists, so a
-  // results round absent from the weekend grouping never 404s.
-  const slug = series.meta.slug;
-  const weekendRounds = new Set(
-    groupByWeekend(series.sessions, new Date(), series.rounds).map(w => w.round),
-  );
+  // The weekend page and the race session page of each round (the grouping
+  // weekendFor() uses), so a row links only where the page exists and a
+  // results round absent from the schedule never 404s.
+  const links = roundLinks(series);
 
   if (series.meta.slug === 'f1') {
     const [races, overrides] = await Promise.all([
@@ -649,7 +761,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     // chart-vs-standings invariant visible.
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} links={links} />
         <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
       </div>
     );
@@ -670,10 +782,10 @@ export async function ResultsTab({ series }: { series: Series }) {
     return (
       <div className="space-y-4">
         {feature.length > 0 ? (
-          <SeasonResultsPanel races={feature} heading="Feature races" seriesSlug={slug} weekendRounds={weekendRounds} />
+          <SeasonResultsPanel races={feature} heading="Feature races" links={links} />
         ) : null}
         {sprint.length > 0 ? (
-          <SeasonResultsPanel races={sprint} heading="Sprint races" seriesSlug={slug} weekendRounds={weekendRounds} />
+          <SeasonResultsPanel races={sprint} heading="Sprint races" links={links} />
         ) : null}
         <SourceLink
           href="https://www.fiaformula2.com/en/racing/2026"
@@ -696,7 +808,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} links={links} />
         <SourceLink
           href="https://www.fiaformula3.com/en/racing/2026"
           label="fiaformula3.com"
@@ -719,7 +831,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} links={links} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_IndyCar_Series"
           label="en.wikipedia.org (2026 IndyCar Series)"
@@ -758,7 +870,7 @@ export async function ResultsTab({ series }: { series: Series }) {
         : 'Race results — partial classification';
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} heading={heading} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} heading={heading} links={links} />
         <SourceLink
           href={FORMULA_E_SOURCE_URL}
           label="en.wikipedia.org (2025–26 Formula E)"
@@ -791,7 +903,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} links={links} />
         <SourceLink
           href={NASCAR_SOURCE_URL}
           label="Wikipedia (2026 NASCAR Cup Series)"
@@ -815,7 +927,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     // standings tab.
     return (
       <div className="space-y-4">
-        <GtWorldSeasonResultsPanel races={races} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <GtWorldSeasonResultsPanel races={races} links={links} />
         <SourceLink
           href={GT_WORLD_SOURCE_URL}
           label="gt-world-challenge-europe.com (2026)"
@@ -838,7 +950,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     // reconciliation work we haven't done. Standings tab is the authority.
     return (
       <div className="space-y-4">
-        <ImsaSeasonResultsPanel rounds={rounds} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <ImsaSeasonResultsPanel rounds={rounds} links={links} />
         <SourceLink
           href="https://imsa.results.alkamelcloud.com/"
           label="imsa.results.alkamelcloud.com (Al Kamel timing)"
@@ -859,7 +971,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     // against the standings tab. Standings remain the points authority.
     return (
       <div className="space-y-4">
-        <WecSeasonResultsPanel rounds={rounds} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <WecSeasonResultsPanel rounds={rounds} links={links} />
         <SourceLink
           href="https://www.fiawec.com/en/page/resultats-1"
           label="fiawec.com (official results)"
@@ -881,7 +993,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} links={links} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
           label="en.wikipedia.org (2026 WRC)"
@@ -903,7 +1015,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} preserveOrder seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} preserveOrder links={links} />
         <SourceLink
           href="https://www.motogp.com/en/Results+Statistics"
           label="motogp.com"
@@ -925,7 +1037,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} preserveOrder seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} preserveOrder links={links} />
         <SourceLink href="https://www.worldsbk.com/en/results" label="worldsbk.com" />
       </div>
     );
@@ -944,7 +1056,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} preserveOrder seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SeasonResultsPanel races={merged} preserveOrder links={links} />
         <SourceLink
           href={`https://www.motorsport.com/dtm/results/${series.meta.season}/`}
           label="motorsport.com"
@@ -974,8 +1086,7 @@ export async function ResultsTab({ series }: { series: Series }) {
         <SeasonResultsPanel
           races={merged}
           heading="Overall winners"
-          seriesSlug={slug}
-          weekendRounds={weekendRounds}
+          links={links}
         />
         <SourceLink href={NLS_SOURCE_URL} label="teilnehmer.vln.de (official documents)" />
       </div>
