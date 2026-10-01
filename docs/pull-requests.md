@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1113 · 1.0.231 · records · opened Thu 1 Oct 13:35 (10:35Z); the merge on the standing word
+**X9 on prod and done with the check; the learning track; the session-61 close.** Records only: the merge and prod measured, the slot closed; the baselines’ X9 section; the learning track decided and recorded; the handoff for session 62 and the learning session’s start prompt.
+- **Readers see:** nothing (the lighter pages are 1.0.230’s).
+- **Editors get:** nothing.
+- **Files (11):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · X9 DONE with prod’s numbers and Seobility’s verdict; the dated lines for X9 on prod and for the learning track.
+  - `docs/perf-baselines.md` · the X9 section: the method, the three pages before and after (testing and prod), the home’s files raw and wire, the Worker, Seobility’s verdict, the next lever.
+  - `docs/HANDOFF.md` · the LATEST block: the session-62 build prompt and the learning session’s start prompt; the previous block demoted.
+  - `SCHEDULE.md`, `IDEAS.md` · the session-61 items closed; the Inbox line for R17 (the home’s UTC times).
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · this entry and the trio, 1.0.231 (the lockfile’s own version field).
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 67 slots; npx vitest run lib/design/plan-ledger.test.ts lib/record-notes-integrity.test.ts → green; prod 1.0.230 measured at 09:36Z (15 · 17 · 15 script files with the beacon; the home’s 14 files 811 KiB raw / 256 KiB wire); Seobility’s live seo_check of prod’s home at 09:38Z without the JavaScript-files hint; the worktree `C:\Dev\Personal\Motorsport-learn` on branch `learn` with `npm ci` done.
+- **Review:** none; records.
+
 ## #1112 · 1.0.230 · X9 · opened Thu 1 Oct 12:10 (09:10Z); the merge on the word
 **The JavaScript count: the no-op browser Sentry leaves, one error boundary fewer.** Seobility counted 16 script files on the home; two of ours did nothing for a reader (the Sentry browser SDK with no DSN, a no-op on every page; `app/error.tsx`, a boundary above both root layouts that could never render inside one). Both leave, and with the last `@sentry/nextjs` import the server SDK the 0.288.0 diet had missed leaves the Worker bundle too. The review page: https://claude.ai/code/artifact/b9be6dd9-cd2e-416f-ac42-889da9e0522c.
 - **Readers see:** nothing on any page; one script file fewer and about 244 KiB less script (80 KiB on the wire) on every page. Only in a fault: a fault inside the chrome (the header, the consent modal, the toolbar) or on an admin screen now lands on the global error page's own styled document instead of a boundary that drew above the root layout without its stylesheet; page faults keep their in-layout boundary.

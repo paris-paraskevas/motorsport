@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.231 — 2026-10-01
+
+### Records — X9 on prod and done with the check; the learning track; the session-61 close
+
+Records only. `docs/plan/ledger.json`: X9 DONE (#1112 squash-merged 09:20:31Z as 0963aa9b on "Merge first then lets talk"; prod 1.0.230 by 09:36Z: the home 15 script files with the beacon against 16, the session page 17 against 18, the calendar 15 against 16; the home's own files 14 · 811 KiB raw · 256 KiB wire against 15 · 1,055 · 336; Seobility's live check of prod's home with no JavaScript-files hint, 100 credits); two dated lines (X9 on prod with the chrome's chunk experiment next on "lets go with default"; the learning track: the repository, 116,000 lines of code, 43,500 of tests and 23,000 of content, learned in fourteen parts in sessions of its own on the worktree `C:\Dev\Personal\Motorsport-learn`, branch `learn`, teacher and student, four proofs per part, while the building continues in the programme's sessions). `docs/perf-baselines.md`: the X9 section (the method, the three pages before and after on testing and prod, the home's files, the Worker, Seobility's verdict). `IDEAS.md`: the Inbox line for R17 (the home's This weekend boxes show session starts in UTC: `components/HomeLead.tsx:123` formats on the server with no time zone; the LocalTime piece is the fix). `SCHEDULE.md`: the session-61 items 1–10. `docs/HANDOFF.md`: the LATEST block with the session-62 build prompt (the chrome's chunk experiment first, then R17, B2, the AdSense decisions, P2.13 and the order) and the learning session's start prompt (the method, the fourteen parts, the first session's map and chapter). The worktree created on branch `learn` with its dependencies installed. Two memory pointers (the learning track; the programme's state).
+
 ## 1.0.230 — 2026-10-01
 
 ### X9 — The JavaScript count: the no-op browser Sentry leaves, one error boundary fewer
