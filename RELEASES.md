@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.236 — 2026-10-01
 
-The Formula 2 champions page now states, for every season since 2005, the champion’s points, wins and podiums, the runner-up and the margin, each figure checked against the official standings of that season and the season’s record; the “who won” answers for Formula 2 and GP2 name the title-winning points too.
+The Formula 2 champions page now states, for every season since 2005, the champion’s points and wins, the runner-up and the margin, each figure checked against the official standings of that season and the season’s record; the “who won” answers for Formula 2 and GP2 name the title-winning points too.
 
 ## 1.0.235 — 2026-10-01
 

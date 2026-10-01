@@ -547,9 +547,11 @@ const READERS: Readonly<Record<string, Reader>> = {
     const seriesName = meta?.name ?? null;
     const colour = meta?.color ?? null;
     const seasons = [...(file ?? [])].sort((a, b) => b.year - a.year);
-    const teamName = (name: string | undefined): string | null => (name ? name.replace(/\s*\((?:GP2|GP3) Series\)\s*$/, '').trim() || null : null);
+    // A row without the key answers Object's own `constructor`, never a string: only a string is a name.
+    const teamName = (name: unknown): string | null => (typeof name === 'string' ? name.replace(/\s*\((?:GP2|GP3) Series\)\s*$/, '').trim() || null : null);
     const link = (kind: 'driver' | 'team', name: string | null): string | null => (index && name ? (kind === 'driver' ? index.driver(slug, name) : index.team(slug, name)) : null);
-    // The running counts walk oldest first: the champion's title number, the teams' champion's title number and its run.
+    // The running counts walk oldest first: the champion's title number, the teams' champion's title number and its run
+    // (consecutive rows of the file; a season the file lacks is not a gap it knows about).
     const driverCount = new Map<string, number>();
     const teamsCount = new Map<string, number>();
     const derived = new Map<Champion, { driverTitles: number; teamsTitles: number | null; teamsRun: number | null }>();

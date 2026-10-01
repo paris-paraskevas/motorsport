@@ -81,7 +81,8 @@ export interface Champion {
   year: number;
   driver: string;
   /** The driver's team in their championship-winning season. A legacy " (GP2 Series)" suffix on the older Formula 2
-   * rows is ignored by the readers (R18); the `era` field carries that fact. */
+   * rows is stripped by the catalogue's Champions reader (R18), and printed as stored by the Learn answers; the `era`
+   * field carries that fact. */
   constructor?: string;
   /** The winning constructor in the same season's Constructors' Championship,
    * when distinct from `constructor`. Useful for F1, where the World
@@ -97,9 +98,9 @@ export interface Champion {
    * "Endurance Cup"). Falls back to "Secondary" if not provided. */
   secondaryLabel?: string;
   points?: number;
-  /** The champion's race wins this season. For Formula 1, Grand Prix wins only (Sprints run from 2021); for a series
-   * with a sprint race every weekend (Formula 2, GP2) every race of a weekend counts, feature and sprint, as the series
-   * counts them (R18). */
+  /** The champion's race wins this season: Grand Prix wins for Formula 1 (Sprints run from 2021) and MotoGP; for Formula 2
+   * and GP2, whose weekends run a sprint race too, every race of a weekend counts, feature and sprint, as the series counts
+   * them (R18). */
   wins?: number;
   /** The champion's podiums this season, counted as `wins` is: every race of a weekend for Formula 2 and GP2 (R18). */
   podiums?: number;
@@ -109,7 +110,7 @@ export interface Champion {
   runnerUp?: string;
   runnerUpTeam?: string;
   runnerUpPoints?: number;
-  /** The FIA's three-letter nationality code (lib/nationalities.ts names it), as the official entry lists carry it. */
+  /** The FIA's three-letter nationality code (lib/nationalities.ts names it), read from the season's entry table. */
   nationality?: string;
   /** True when the title came in the champion's first season of the series, sourced like every other field. */
   rookie?: boolean;

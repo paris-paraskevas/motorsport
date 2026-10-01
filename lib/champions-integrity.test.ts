@@ -27,6 +27,10 @@ interface Champion {
   sources?: string[];
 }
 
+// The series' official hosts (R18): a sourced row's points must come from one of them (an archive copy included).
+const OFFICIAL_HOSTS: Record<string, readonly string[]> = { f2: ['gp2series.com', 'fiaformula2.com'] };
+const officialHosts = (slug: string): readonly string[] => OFFICIAL_HOSTS[slug] ?? [];
+
 const files = readdirSync(ROOT)
   .map((slug) => ({ slug, file: path.join(ROOT, slug, 'champions.json') }))
   .filter(({ file }) => existsSync(file))
@@ -101,6 +105,8 @@ describe('champions.json integrity', () => {
     }
     const eras = rows.filter((r) => typeof r.era === 'string' && r.era.trim().length > 0).length;
     expect(eras === 0 || eras === rows.length, 'era on some rows only').toBe(true);
+    // Formula 2's eras split where lib/information/generated.ts seriesNameForYear splits them: 2017.
+    if (_slug === 'f2') for (const r of rows) expect(r.era, String(r.year)).toBe(r.year >= 2017 ? 'FIA Formula 2 Championship' : 'GP2 Series');
   });
 
   it.each(files.map((f) => [f.slug, f.rows] as const))('%s: a sourced row names https pages once each, an official one beside Wikipedia where it carries points', (_slug, rows) => {
@@ -109,7 +115,7 @@ describe('champions.json integrity', () => {
       expect(r.sources.length, `${r.year}: no sources`).toBeGreaterThan(0);
       expect(new Set(r.sources).size, `${r.year}: a source twice`).toBe(r.sources.length);
       for (const s of r.sources) expect(s, `${r.year}: ${s}`).toMatch(/^https:\/\//);
-      if (r.points != null) expect(r.sources.some((s) => !/wikipedia\.org/.test(s)), `${r.year}: points without an official source`).toBe(true);
+      if (r.points != null) expect(r.sources.some((s) => officialHosts(_slug).some((h) => s.includes(`${h}/`))), `${r.year}: points without an official source`).toBe(true);
     }
   });
 });
