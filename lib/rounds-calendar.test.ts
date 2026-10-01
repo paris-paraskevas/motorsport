@@ -111,7 +111,7 @@ describe('IndyCar 2026 calendar', () => {
 
   // An override block names its round; a block whose matchDate falls outside that
   // round's window would inject sessions the weekend grouping numbers differently.
-  it('keeps every session override inside its own round’s dates', () => {
+  it('keeps every session override’s match date inside its own round’s dates', () => {
     for (const block of indycarSessions.overrides) {
       const round = rounds.find(r => r.round === block.round);
       expect(round, `round ${block.round} for ${block.matchDate}`).toBeDefined();

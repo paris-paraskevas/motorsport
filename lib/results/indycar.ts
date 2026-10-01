@@ -49,7 +49,7 @@ const POINTS_LED_LAPS = 1;
 
 // 2026 IndyCar schedule keyed by Wikipedia abbreviation. Race name + date.
 // MIL is a doubleheader: MIL1 = Saturday race, MIL2 = Sunday race; they
-// share rounds.json round 15+16 respectively. Dates align to rounds.json
+// share rounds.json round 16+17 respectively (15+16 before Mid-Ohio was curated as round 11). Dates align to rounds.json
 // startDate at session checkpoint. If the Wikipedia table later adds /
 // removes a column (e.g. MOH cancelled mid-season), the corresponding
 // race in this map yields a placeholder dated June 30; the parser still

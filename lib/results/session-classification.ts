@@ -97,9 +97,9 @@ export function isRaceSession(slug: string, title: string, weekend?: Weekend | n
   return mainRaceSession(weekend, roundDates)?.title === title;
 }
 
-/** IndyCar's parser numbers races by their column in Wikipedia's table, which carries a round the curated schedule does
- *  not (Mid-Ohio), so from there on its numbers run one ahead: a race is keyed by the round whose dates hold its date,
- *  and a race in no window has none. */
+/** IndyCar's parser numbers races by their column in Wikipedia's table; the curated schedule once lacked one of them
+ *  (Mid-Ohio, curated as round 11 in 1.0.233), so from there on its numbers ran one ahead: a race is keyed by the round
+ *  whose dates hold its date, and a race in no window has none. */
 export function indycarRoundByDate(rounds: readonly SeriesRoundEntry[] | undefined, date: Date): number | null {
   if (!rounds?.length) return null;
   const t = date.getTime();
