@@ -24,7 +24,7 @@ import {
 import { COMPONENTS, SPLITS, componentDefaults, componentId, findComponent, recipeRegions, settingsSummary, type ComponentDefinition } from '@/lib/design/components';
 import { encodeSourceRef, parseSourceRef, sourceLabel, type SourceRef } from '@/lib/design/sources';
 import { adoptRecipe } from '@/lib/design/composed-page';
-import { DESTINATIONS, pageDest, resolveDestination, type PageDestinations } from '@/lib/design/destinations';
+import { DESTINATIONS, pageDest, resolveDestination, seriesDestinationOptions, type PageDestinations } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
 import type { EditableAsset } from '@/lib/design/assets';
 import { DEFAULT_REGION_TEMPLATE, regionTemplate, type RegionTemplateKey } from '@/lib/design/template-options';
@@ -228,7 +228,8 @@ export function addComponent(doc: PageDocument, key: string, where: Placement, c
 
 /** The components that replace a page's transitional body, when the catalogue has them: one key per recipe entry. */
 export function splitRecipe(path: string): readonly string[] | null {
-  return SPLITS[path]?.map(e => (typeof e === 'string' ? e : e.component)) ?? null;
+  // R18: a recipe may carry other region kinds; the split names its components.
+  return SPLITS[path]?.flatMap(e => (typeof e === 'string' ? [e] : e.kind === undefined || e.kind === 'component' ? [e.component] : [])) ?? null;
 }
 
 /**
@@ -243,7 +244,7 @@ export function splitBody(doc: PageDocument, path: string): PageDocument | null 
   const rest = doc.regions.filter(r => r.id !== legacy.id);
   // The recipe's regions take the body's seq plus fractions, so they sit where
   // it sat among the other regions; renumber tidies them into tens.
-  const recipe = recipeRegions(path, rest.map(r => r.id)).map((r, i, all) => ({ ...r, position: legacy.position, seq: legacy.seq + (i + 1) / (all.length + 1), authz: legacy.authz }) as ComponentRegion);
+  const recipe = recipeRegions(path, rest.map(r => r.id)).map((r, i, all) => ({ ...r, position: legacy.position, seq: legacy.seq + (i + 1) / (all.length + 1), authz: legacy.authz }) as Region);
   if (recipe.length === 0) return null;
   return { ...doc, regions: renumber([...rest, ...recipe]) };
 }
@@ -402,10 +403,14 @@ export function clampLayout(column: number, span: number): { column: number; spa
 
 // ------------------------------------------------------------ dynamic actions
 
-const GO_OPTIONS = Object.entries(DESTINATIONS)
-  .filter(([, d]) => d.kind !== 'action')
-  .map(([key, d]) => ({ key, label: d.label }))
-  .sort((a, b) => a.label.localeCompare(b.label));
+const GO_OPTIONS: { key: string; label: string; group?: 'Pages' | 'Series' }[] = [
+  ...Object.entries(DESTINATIONS)
+    .filter(([, d]) => d.kind !== 'action')
+    .map(([key, d]) => ({ key, label: d.label }))
+    .sort((a, b) => a.label.localeCompare(b.label)),
+  // The series tabs (R18), under their own group, in the catalogue's series order.
+  ...seriesDestinationOptions().map(o => ({ key: o.key, label: o.label, group: 'Series' as const })),
+];
 
 /** The live row pages by id, as resolveDestination takes them (P1.12 B2). The
  *  designer's pages are the live ones; a code page is never a destination. */
@@ -415,7 +420,7 @@ export function pageDestinationsOf(pages: readonly PageRow[] = []): PageDestinat
 
 /** The destinations a button or a `go` effect may name, by label: the
  *  catalogue's, then the row pages under their names (`group: 'Pages'`). */
-export function goOptions(pages: readonly PageRow[] = []): { key: string; label: string; group?: 'Pages' }[] {
+export function goOptions(pages: readonly PageRow[] = []): { key: string; label: string; group?: 'Pages' | 'Series' }[] {
   const own = Object.entries(pageDestinationsOf(pages))
     .map(([id, p]) => ({ key: pageDest(id), label: p.name, group: 'Pages' as const }))
     .sort((a, b) => a.label.localeCompare(b.label));

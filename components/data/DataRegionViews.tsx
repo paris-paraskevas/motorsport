@@ -18,6 +18,8 @@ import { FollowedRows, FollowedScope } from './FollowedRows';
 import { commonsSrcSet, commonsThumb } from '@/lib/commons-thumb';
 import { ChartFrame, type ChartData } from './ChartFrame';
 import { MapFrame, type MapData } from './MapFrame';
+import { countryName } from '@/lib/nationalities';
+import { CURRENT_SEASON } from '@/lib/design/sources';
 
 // The Data region's views (the components programme, P2.2). The Table draws a
 // preset's rows as the site's standings tables do (components/tabs/StandingsTab.tsx,
@@ -236,6 +238,8 @@ export interface DataRegionViewProps {
   master?: MasterSelect;
   /** Master-detail (P2.4 PR C): this region as the detail, the value its master chose and the way back to every row. */
   showing?: DetailShowing;
+  /** The rows the Rows count cut (R18), for a view that says how many more there are: the List's foot. */
+  more?: readonly PresetRow[];
 }
 
 /** A master's link per row (P2.4 PR C; APEX: Master Detail): the address that shows the row's value in the detail, the rest of
@@ -585,7 +589,7 @@ function RoundGroup({ shape, entries, highlight, master }: { shape: Shape; entri
   );
 }
 
-export function DataRegionList({ heading, level, shape, rows, highlight, region, master, showing }: DataRegionViewProps) {
+export function DataRegionList({ heading, level, shape, rows, highlight, region, master, showing, more }: DataRegionViewProps) {
   const H = level;
   if (shape.source !== 'results') {
     // A standings shape's compact list: the position, the name, the points; a shape without them (the posts, the headlines;
@@ -606,6 +610,7 @@ export function DataRegionList({ heading, level, shape, rows, highlight, region,
             </li>
           ))}
         </ul>
+        {more && more.length > 0 && <MoreFoot shape={shape} more={more} />}
       </section>
     );
   }
@@ -1517,6 +1522,225 @@ export function DataRegionLeader({ heading, rows }: DataRegionViewProps) {
           })}
         </ul>
       </div>
+    </section>
+  );
+}
+
+/** The List's foot for the rows the Rows count cut (R18): "+ n more"; a title tally names the teams and, when every one of
+ *  them holds a single title, says so, as the operator's design does. */
+function MoreFoot({ shape, more }: { shape: Shape; more: readonly PresetRow[] }) {
+  const n = more.length;
+  const words =
+    shape.key === 'title-rows'
+      ? `+ ${n} more ${n === 1 ? 'team' : 'teams'}${more.every(r => num(r.titles) === 1) ? ` with one title ${n === 1 ? 'more' : 'each'}` : ''}`
+      : `+ ${n} more`;
+  return <p className="mt-2 font-mono text-11 text-text-faint">{words.replace(' with one title more', ', one title')}</p>;
+}
+
+// R18: the champions page's two templates, ours (the operator's Claude Design page of the Formula 2 champions, 2026-10-01):
+// the newest season as a card with its tiles, and the seasons by decade as a ruled table from md and as cards below it,
+// over the Champions source's honour-rows shape alone; the site's faces, the Appearance corners (rounded-lg), as the operator
+// chose on the 1st ("B"). Every value is text React escapes.
+const CHIP_LINK = 'shrink-0 rounded-lg border border-border px-3 py-1 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text hover:border-brand';
+const TILE_LABEL = 'mt-0.5 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint';
+const ordinal = (n: number): string => {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
+};
+const linkOr = (href: string, label: string, cls: string) => (href ? <Link href={href} className={cls}>{label}</Link> : <span className={cls}>{label}</span>);
+
+export function DataRegionReigning({ heading, level, rows, series }: DataRegionViewProps) {
+  const r = rows[0];
+  if (!r) return null;
+  const H = level;
+  const profile = text(r.profile);
+  const team = text(r.team);
+  const code = text(r.nationality);
+  const country = code ? (countryName(code) ?? code) : '';
+  const margin = num(r.margin);
+  const runnerUp = text(r.runnerUp);
+  const tiles: { value: string; label: string; brand?: true }[] = [];
+  if (num(r.points) !== null) tiles.push({ value: text(r.points), label: 'Points' });
+  if (num(r.wins) !== null) tiles.push({ value: text(r.wins), label: 'Wins' });
+  if (num(r.podiums) !== null) tiles.push({ value: text(r.podiums), label: 'Podiums' });
+  if (margin !== null && runnerUp) tiles.push({ value: `+${margin}`, label: `Over ${runnerUp}`, brand: true });
+  const teams = text(r.teamsChampion);
+  const run = num(r.teamsRun) ?? 0;
+  const runWords = run === 2 ? 'a second title in a row' : run === 3 ? 'a third title in a row' : run > 3 ? `${ordinal(run)} title in a row` : null;
+  return (
+    <section aria-label={heading} className="flex h-full min-w-0 flex-col gap-6 rounded-lg border border-border bg-surface p-5 md:p-7">
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="rounded-sm bg-brand px-2 py-1 font-mono text-10 font-bold uppercase tracking-[0.14em] text-bg">{heading}</span>
+        {num(r.year) !== null && <span className="font-mono text-12 text-text-muted">{text(r.year)} season</span>}
+      </div>
+      <div>
+        <H className="font-serif text-34 font-medium leading-none tracking-[-0.02em] text-text md:text-40">{linkOr(profile, text(r.driver), 'hover:text-brand')}</H>
+        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-15 text-text-muted">
+          {country && <span>{country}</span>}
+          {team && linkOr(text(r.teamPage), team, 'underline decoration-border underline-offset-4 hover:text-text')}
+          {r.rookie === true && <span>Rookie season</span>}
+        </div>
+      </div>
+      {tiles.length > 0 && (
+        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
+          {tiles.map(t => (
+            <div key={t.label} className="bg-surface-elevated px-4 py-3">
+              <dd className={`font-mono text-26 font-semibold tabular-nums ${t.brand ? 'text-brand' : 'text-text'}`}>{t.value}</dd>
+              <dt className={TILE_LABEL}>{t.label}</dt>
+            </div>
+          ))}
+        </dl>
+      )}
+      {teams && (
+        <p className="text-sm text-text-muted">
+          Teams’ champion: {linkOr(text(r.teamsChampionPage), teams, 'font-semibold text-text hover:text-brand')}
+          {runWords ? `, ${runWords}.` : '.'}
+        </p>
+      )}
+      <div className="mt-auto flex flex-wrap items-center gap-3">
+        {profile && (
+          <Link href={profile} className="rounded-lg bg-brand px-4 py-2.5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-bg hover:bg-brand/90">
+            Driver profile
+          </Link>
+        )}
+        {series && (
+          <Link href={`/series/${series}/standings`} className="rounded-lg border border-border-strong px-4 py-2.5 font-mono text-11 font-semibold uppercase tracking-[0.14em] text-text hover:border-text">
+            {CURRENT_SEASON} title race →
+          </Link>
+        )}
+      </div>
+    </section>
+  );
+}
+
+export function DataRegionHonours({ heading, level, rows, region }: DataRegionViewProps) {
+  if (rows.length === 0) return null;
+  const H = level;
+  const prefix = region || 'honours';
+  // The decades in the order the rows arrive (newest first), each with its seasons.
+  const decades = new Map<string, PresetRow[]>();
+  for (const r of rows) {
+    const d = text(r.decade) || 'Undated';
+    decades.set(d, [...(decades.get(d) ?? []), r]);
+  }
+  // The era change: the first row whose era differs from the row before it; the rows from it on raced under the older name.
+  let eraAt: PresetRow | null = null;
+  let eraBefore: PresetRow | null = null;
+  for (let i = 1; i < rows.length; i++) {
+    if (text(rows[i].era) && text(rows[i].era) !== text(rows[i - 1].era)) {
+      eraAt = rows[i];
+      eraBefore = rows[i - 1];
+      break;
+    }
+  }
+  const olderEra = eraAt ? text(eraAt.era) : '';
+  const eraShort = olderEra.replace(/ Series$| Championship$/, '');
+  const count = (n: number) => `${n} ${n === 1 ? 'season' : 'seasons'}`;
+  const stat = (r: PresetRow) => [num(r.points) !== null ? `${text(r.points)} pts` : null, num(r.wins) !== null ? `${text(r.wins)} ${num(r.wins) === 1 ? 'win' : 'wins'}` : null, num(r.margin) !== null ? `+${text(r.margin)}` : null].filter(Boolean).join(' · ');
+  const nth = (r: PresetRow) => (num(r.teamsTitles) !== null ? `${ordinal(num(r.teamsTitles)!)} title` : '');
+  const who = (r: PresetRow, cls: string) => linkOr(text(r.profile), text(r.driver), cls);
+  const teamOf = (r: PresetRow) => (text(r.teamPage) ? <Link href={text(r.teamPage)} className="hover:text-text">{text(r.team)}</Link> : text(r.team));
+  const teamsOf = (r: PresetRow) => (text(r.teamsChampionPage) ? <Link href={text(r.teamsChampionPage)} className="hover:text-text">{text(r.teamsChampion)}</Link> : text(r.teamsChampion));
+  const COLS = 'md:grid-cols-[3.5rem_minmax(0,1.5fr)_3.75rem_3rem_4rem_minmax(0,1fr)_minmax(0,1.1fr)]';
+  const eraRow =
+    eraAt && eraBefore ? (
+      <div id={`${prefix}-era`} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 bg-surface-elevated px-5 py-3 scroll-mt-20">
+        <span className="font-mono text-10 font-bold uppercase tracking-[0.14em] text-brand">Era change</span>
+        <span className="text-sm font-semibold text-text">{`${text(eraBefore.year)}: ${olderEra} becomes the ${text(eraBefore.era)}`}</span>
+        <span className="text-13 text-text-muted">{`Seasons below raced as ${olderEra}`}</span>
+      </div>
+    ) : null;
+  return (
+    <section aria-label={heading} className="min-w-0">
+      <H className="sr-only">{heading}</H>
+      {/* The Jump-to bar sticks under the fixed header (the tab rail's precedent); the chips scroll inside it, so the bar itself never sits in an overflow box. */}
+      <div className="sticky top-14 z-20 -mx-4 border-y border-border bg-bg/95 backdrop-blur-xl md:-mx-6 lg:-mx-8">
+        <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap px-4 py-2 scrollbar-none md:px-6 lg:px-8">
+          <span className="mr-1 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint">Jump to</span>
+          {[...decades.keys()].map(d => (
+            <a key={d} href={`#${prefix}-${d}`} className={CHIP_LINK}>
+              {d}
+            </a>
+          ))}
+          {eraRow && (
+            <a href={`#${prefix}-era`} className={CHIP_LINK}>
+              {eraShort} era
+            </a>
+          )}
+          <span className="ml-auto pl-3 font-mono text-11 text-text-faint">{count(rows.length)}</span>
+        </div>
+      </div>
+      {[...decades.entries()].map(([decade, seasons]) => (
+        <section key={decade} id={`${prefix}-${decade}`} className="pt-8 scroll-mt-20">
+          <div className="mb-3 flex flex-wrap items-baseline gap-3">
+            <h3 className="font-serif text-26 font-medium leading-tight text-text">{decade}</h3>
+            <span className="font-mono text-11 text-text-faint">{count(seasons.length)}</span>
+          </div>
+          <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border">
+            <div className={`hidden gap-4 bg-surface-elevated px-5 py-2 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint md:grid ${COLS}`}>
+              <span>Year</span>
+              <span>Champion</span>
+              <span className="text-right">Pts</span>
+              <span className="text-right">Wins</span>
+              <span className="text-right">Margin</span>
+              <span>Runner-up</span>
+              <span>Teams’ champion</span>
+            </div>
+            {seasons.map(r => (
+              <Fragment key={text(r.year)}>
+                {eraAt === r && eraRow}
+                <div className={`hidden items-center gap-4 bg-surface px-5 py-4 transition-colors duration-(--duration-fast) hover:bg-surface-elevated md:grid ${COLS}`}>
+                  <span className="font-mono text-15 font-semibold tabular-nums text-brand">{text(r.year)}</span>
+                  <div className="min-w-0">
+                    <div className="flex items-baseline gap-2">
+                      {who(r, 'truncate font-serif text-16 font-semibold text-text hover:text-brand')}
+                      {text(r.nationality) && <span className="shrink-0 font-mono text-10 text-text-faint">{text(r.nationality)}</span>}
+                    </div>
+                    <div className="mt-0.5 text-13 text-text-muted">{teamOf(r)}</div>
+                  </div>
+                  <span className="text-right font-mono text-15 font-semibold tabular-nums text-text">{text(r.points)}</span>
+                  <span className="text-right font-mono text-15 tabular-nums text-text">{text(r.wins)}</span>
+                  <span className="text-right font-mono text-15 tabular-nums text-text-muted">{num(r.margin) !== null ? `+${text(r.margin)}` : ''}</span>
+                  <div className="min-w-0">
+                    <div className="truncate text-sm text-text">{text(r.runnerUp)}</div>
+                    {num(r.runnerUpPoints) !== null && <div className="mt-0.5 font-mono text-11 text-text-faint">{`${text(r.runnerUpPoints)} pts`}</div>}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="truncate text-sm text-text">{teamsOf(r)}</div>
+                    {nth(r) && <div className="mt-0.5 font-mono text-11 text-text-faint">{nth(r)}</div>}
+                  </div>
+                </div>
+                <div className="grid gap-3 bg-surface p-4 md:hidden">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="font-mono text-15 font-semibold tabular-nums text-brand">{text(r.year)}</span>
+                    <span className="font-mono text-11 tabular-nums text-text-muted">{stat(r)}</span>
+                  </div>
+                  <div>
+                    <div className="flex flex-wrap items-baseline gap-2">
+                      {who(r, 'font-serif text-18 font-semibold text-text')}
+                      {text(r.nationality) && <span className="font-mono text-10 text-text-faint">{text(r.nationality)}</span>}
+                    </div>
+                    <div className="mt-0.5 text-sm text-text-muted">{teamOf(r)}</div>
+                  </div>
+                  <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 border-t border-dashed border-border pt-3 text-13">
+                    <dt className="font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">Runner-up</dt>
+                    <dd className="text-text">
+                      {text(r.runnerUp)}
+                      {num(r.runnerUpPoints) !== null && <span className="text-text-faint">{` · ${text(r.runnerUpPoints)} pts`}</span>}
+                    </dd>
+                    <dt className="font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">Teams’</dt>
+                    <dd className="text-text">
+                      {teamsOf(r)}
+                      {nth(r) && <span className="text-text-faint">{` · ${nth(r)}`}</span>}
+                    </dd>
+                  </dl>
+                </div>
+              </Fragment>
+            ))}
+          </div>
+        </section>
+      ))}
     </section>
   );
 }

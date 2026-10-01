@@ -166,9 +166,14 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     // The site's masthead, as the pages the code drew had it (the Calendar's, moved as it was): the page's h1 when the region is
     // the first showing in the Body, an h2 of the same look otherwise (R13: Home's eight section headings drew eight h1s).
     const H = ctx.first ? 'h1' : 'h2';
+    // R18: the eyebrow as the series pages' season line, the standfirst as the blog page's.
+    const eyebrow = str(settings.eyebrow);
+    const standfirst = str(settings.standfirst);
     return (
       <header>
+        {eyebrow && <p className="mb-2 font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted">{eyebrow}</p>}
         <H className="font-serif text-34 font-medium leading-none tracking-[-0.02em] text-text md:text-40">{text}</H>
+        {standfirst && <p className="mt-3 max-w-[62ch] font-serif text-17 leading-relaxed text-text-muted">{standfirst}</p>}
       </header>
     );
   },
@@ -618,6 +623,8 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const lead = pinned ? read.rows.find(r => r.slug === pinned) : undefined;
     const ordered = lead ? [lead, ...read.rows.filter(r => r !== lead)] : read.rows;
     const rows = presetRows(ordered, preset, num(settings.rows, 10), state);
+    // The rows the count cut (R18): the List's foot says how many more there are.
+    const more = settings.view === 'list' ? presetRows(ordered, preset, Number.MAX_SAFE_INTEGER, state).slice(rows.length) : [];
     // The Card slots and the action zones (P2.2 B3): a slot names a column of the shape, else the preset's own; a zone follows
     // a link column of the row (`row:<key>`, the address the column's href names, leaving the site when the column does) or a
     // destination, external ones leaving the site. The pages are awaited here alone, so the other regions never wait for them.
@@ -680,7 +687,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
     const showing: DetailShowing | undefined =
       shown && urlState && ctx.controlsKey !== null ? { value: shown.value, reset: viewStateHref(ctx.href, { ...urlState, filters: urlState.filters.filter(f => f !== shown) }, ctx.controlsKey, ctx.view ?? '') } : undefined;
     const series = ctx.source.params.series;
-    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions, now: ctx.now, series: typeof series === 'string' && series ? series : undefined, controls, highlight, region: ctx.region, master, showing };
+    const props = { heading: str(settings.heading) || preset.name, level: ctx.first ? ('h1' as const) : ('h2' as const), shape, preset, rows, card, actions, now: ctx.now, series: typeof series === 'string' && series ? series : undefined, controls, highlight, region: ctx.region, master, showing, more };
     // Timeline stands on the results' dates (the parser refuses it elsewhere); a stored one on a standings shape draws the table.
     // Home's boxes as templates (P2.24 A) stand on their own shapes the same way; the Podium and the Leader (P2.24 B2) on one
     // shape of their source each (the podium rows, the driver rows), since Results and Standings have several.
@@ -705,7 +712,12 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
                         ? views.DataRegionPodium
                         : settings.view === 'leader' && shape.key === 'driver-rows'
                           ? views.DataRegionLeader
-                          : views.DataRegionTable;
+                          : // R18: the champions page's two templates, on the Champions source's roll-of-honour shape alone.
+                            settings.view === 'reigning' && shape.key === 'honour-rows'
+                            ? views.DataRegionReigning
+                            : settings.view === 'honours' && shape.key === 'honour-rows'
+                              ? views.DataRegionHonours
+                              : views.DataRegionTable;
     return <View {...props} />;
   },
 };

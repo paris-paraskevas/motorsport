@@ -60,7 +60,8 @@ vi.mock('next/navigation', () => ({
   },
 }));
 
-import { applyFrame, loadPageFrame, pageMetadata, resetPageFrameMemo, withPageGate } from './page-frame';
+import { applyFrame, composedBody, loadPageFrame, pageMetadata, resetPageFrameMemo, withPageGate } from './page-frame';
+import type { PageRow } from './pages';
 import { CodePageFrame, type RowPageData } from '@/components/page/RowPageView';
 import type { Region } from './page-document';
 
@@ -334,5 +335,33 @@ describe('withPageGate', () => {
     const roomy = { ...SHIPPED_PRESETS, standard: { ...SHIPPED_PRESETS.standard, spacing: 'SPACING_ROOMY' } };
     loadAppearance.mockResolvedValueOnce({ ...SHIPPED_APPEARANCE, templates: roomy });
     expect(dataOf(await gated(props)).templates).toEqual(roomy);
+  });
+});
+
+// R18: the assembly `framed` runs for a live revision, callable by a route composing a page from a recipe of its own
+// (components/tabs/ComposedTab.tsx): the regions drawn, the frame around nothing when the document is split, around the
+// caller's body when it keeps a transitional one; the page row the caller hands over; nothing without a row.
+describe('composedBody (R18)', () => {
+  const typeOf = (el: unknown) => (el as { type: unknown }).type;
+  const propsOf = (el: unknown) => (el as { props: Record<string, unknown> }).props;
+  const dataOf = (el: unknown) => (propsOf(el) as { d: RowPageData }).d;
+  const row: PageRow = { id: null, path: '/series/[slug]/[tab]', name: 'Series tab', kind: 'code', group: 'series', template: 'paddock-standard', authz: 'public', title: null, rendering: 'cached', indexable: true, comments: null, updatedAt: null };
+  const body = (id: string, over: Partial<Region> = {}): Region =>
+    ({ id, kind: 'component', component: 'data.region', settings: { preset: 'drivers', view: 'table', rows: 10, heading: '' }, title: '', position: 'body', seq: 10, column: 1, span: 12, newRow: true, hidden: false, authz: null, ...over }) as Region;
+
+  it('draws a split document’s regions in the frame for the page row given, the renderer told the concrete address and its parts; keeps the caller’s body around a transitional one; answers the body alone without a row', async () => {
+    const out = await composedBody('/series/f2/champions', { version: 1, regions: [body('a'), body('b', { seq: 20 })], actions: [] }, { slug: 'f2', tab: 'champions' }, { page: row });
+    expect(typeOf(out)).toBe(CodePageFrame);
+    expect(propsOf(out).children).toBeUndefined();
+    const d = dataOf(out);
+    expect(d.page).toBe(row);
+    expect(d.components).toEqual({ a: 'drawn a', b: 'drawn b' });
+    expect(d.document.regions.map(r => r.id)).toEqual(['a', 'b']);
+    expect(rendered).toMatchObject({ path: '/series/f2/champions', params: { slug: 'f2', tab: 'champions' } });
+    const legacy: Region = { id: 'code-body', kind: 'component', component: 'page.body', settings: {}, title: '', position: 'body', seq: 20, column: 1, span: 12, newRow: true, hidden: false, authz: null };
+    const kept = await composedBody('/calendar', { version: 1, regions: [body('a'), legacy], actions: [] }, {}, { page: row, body: async () => 'the code' });
+    expect(propsOf(kept).children).toBe('the code');
+    expect(await composedBody('/calendar', { version: 1, regions: [body('a')], actions: [] }, {}, { body: async () => 'the code' })).toBe('the code');
+    expect(await composedBody('/calendar', { version: 1, regions: [body('a')], actions: [] }, {})).toBeNull();
   });
 });

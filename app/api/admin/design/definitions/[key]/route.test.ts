@@ -91,7 +91,7 @@ describe('PUT /api/admin/design/definitions/[key]', () => {
     const body = (await res.json()) as { ok: boolean; definition: { key: string; updatedAt: string; definition: { settings: { key: string }[] } } };
     expect(body.ok).toBe(true);
     expect(body.definition.key).toBe('page.heading');
-    expect(body.definition.definition.settings.map(s => s.key)).toEqual(['text', 'accent']);
+    expect(body.definition.definition.settings.map(s => s.key)).toEqual(['text', 'eyebrow', 'standfirst', 'accent']);
   });
 
   it('a row created meanwhile is a conflict with the current list', async () => {

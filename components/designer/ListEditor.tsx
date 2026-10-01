@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, Loader2, RotateCcw } from 'lucide-react';
-import { DESTINATIONS, pageDest, pageIdOf, resolveDestination, resolveEntry, type ListRole, type NavEntry, type PageDestinations } from '@/lib/design/destinations';
+import { DESTINATIONS, pageDest, pageIdOf, resolveDestination, resolveEntry, seriesDestinationOptions, type ListRole, type NavEntry, type PageDestinations } from '@/lib/design/destinations';
 import type { PageRow } from '@/lib/design/pages';
 import { DEFAULT_TEXT, type ChromeText } from '@/lib/design/text-defaults';
 import type { EditableList } from '@/lib/design/lists';
@@ -40,9 +40,11 @@ const MV =
   'grid h-6 w-6 place-items-center border border-border-strong text-text-muted hover:border-text-muted hover:text-text disabled:cursor-default disabled:opacity-30';
 
 type DestOption = { key: string; label: string; kind: string; href: string };
-const CATALOGUE_OPTIONS: DestOption[] = Object.entries(DESTINATIONS)
-  .map(([key, d]) => ({ key, label: d.label, kind: d.kind, href: d.kind === 'action' ? d.action : d.href }))
-  .sort((a, b) => a.label.localeCompare(b.label));
+const CATALOGUE_OPTIONS: DestOption[] = [
+  ...Object.entries(DESTINATIONS).map(([key, d]) => ({ key, label: d.label, kind: d.kind, href: d.kind === 'action' ? d.action : d.href })),
+  // The series tabs (R18): the rule's keys, as the catalogue's.
+  ...seriesDestinationOptions().map(o => ({ key: o.key, label: o.label, kind: 'route', href: o.href })),
+].sort((a, b) => a.label.localeCompare(b.label));
 /** The row pages as options (P1.12 B1), by name, after the catalogue's. */
 const pageOptions = (pages: readonly PageRow[], suffix = ''): DestOption[] =>
   pages

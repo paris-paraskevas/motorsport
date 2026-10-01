@@ -21,6 +21,7 @@ import { NewsTab } from '@/components/tabs/NewsTab';
 import { BlogTab } from '@/components/tabs/BlogTab';
 import { TracksTab } from '@/components/tabs/TracksTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
+import { ComposedTab, hasComposedTab } from '@/components/tabs/ComposedTab';
 
 // The series sub-pages' shared Paper shell (Round-3 ⑤–⑦, operator 2026-08-20:
 // "these pages still havent changed. change NOW. its drivers, standings,
@@ -155,31 +156,70 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
     { key: 'news' as TabKey, label: 'News', href: `/series/${slug}/news` },
   ].filter(s => s.key !== activeTab);
 
-  return (
-    <div
-      className={PAGE_WIDE}
-      style={
-        {
-          '--tint': color, '--tint-fill': color,
-          '--series-color': color,
-        } as React.CSSProperties
-      }
+  const tint = { '--tint': color, '--tint-fill': color, '--series-color': color } as React.CSSProperties;
+  const crumbs = (
+    <JsonLd
+      data={breadcrumbLd([
+        { name: 'Home', url: SITE_URL },
+        { name: series.meta.name, url: `${SITE_URL}/series/${slug}` },
+        { name: title, url: `${SITE_URL}${seriesTabCanonical(slug, activeTab)}` },
+      ])}
+    />
+  );
+  const back = (
+    <Link
+      href={`/series/${slug}`}
+      className="font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
     >
-      <JsonLd
-        data={breadcrumbLd([
-          { name: 'Home', url: SITE_URL },
-          { name: series.meta.name, url: `${SITE_URL}/series/${slug}` },
-          { name: title, url: `${SITE_URL}${seriesTabCanonical(slug, activeTab)}` },
-        ])}
-      />
+      ← {series.meta.name}
+    </Link>
+  );
+  const foot = (
+    <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-border pt-3 font-mono text-10 font-semibold uppercase tracking-[0.14em]">
+      <span className="text-text-faint">More {series.meta.name}</span>
+      {siblings.map(s => (
+        <Link key={s.key} href={s.href} className="inline-flex min-h-6 items-center text-brand hover:underline">
+          {s.label}
+        </Link>
+      ))}
+    </div>
+  );
+
+  // R18: a tab composed from a recipe of its own address (the Formula 2 champions page first) draws its masthead and body
+  // through the frame's assembly, in the frame's own width; the shell keeps the back link, the structured data and the foot
+  // around it, and the series' tint over it. Every other tab is drawn exactly as before.
+  const path = `/series/${slug}/${activeTab}`;
+  if (hasComposedTab(path)) {
+    return (
+      <div style={tint}>
+        {crumbs}
+        <div className={`${PAGE_WIDE} pb-0`}>
+          {back}
+          <StaleBanner configured={series.configured} stale={series.stale} />
+        </div>
+        <Suspense
+          key={activeTab}
+          fallback={
+            <div className={`${PAGE_WIDE} py-0`}>
+              <TabLoading />
+            </div>
+          }
+        >
+          <ComposedTab path={path} pattern="/series/[slug]/[tab]" params={{ slug, tab: activeTab }}>
+            {renderTab(activeTab, series)}
+          </ComposedTab>
+        </Suspense>
+        <div className={`${PAGE_WIDE} pt-0`}>{foot}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={PAGE_WIDE} style={tint}>
+      {crumbs}
 
       <header className="mb-6 border-b border-border pb-5">
-        <Link
-          href={`/series/${slug}`}
-          className="font-mono text-11 font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
-        >
-          ← {series.meta.name}
-        </Link>
+        {back}
         <div className="mt-2 flex items-center gap-3">
           <span aria-hidden="true" className="h-9 w-[4px] shrink-0" style={{ backgroundColor: color }} />
           <h1 className="font-serif text-38 font-medium leading-none tracking-[-0.02em] text-text lg:text-46">
@@ -199,14 +239,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
         {renderTab(activeTab, series)}
       </Suspense>
 
-      <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-border pt-3 font-mono text-10 font-semibold uppercase tracking-[0.14em]">
-        <span className="text-text-faint">More {series.meta.name}</span>
-        {siblings.map(s => (
-          <Link key={s.key} href={s.href} className="inline-flex min-h-6 items-center text-brand hover:underline">
-            {s.label}
-          </Link>
-        ))}
-      </div>
+      {foot}
     </div>
   );
 }

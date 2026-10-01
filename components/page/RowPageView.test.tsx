@@ -11,8 +11,8 @@ vi.mock('next/link', () => ({
 }));
 // The stand-in for next/image renders a plain image element.
 vi.mock('next/image', () => ({
-  default: ({ src, alt, width, height, className }: { src: string; alt: string; width: number; height: number; className?: string }) =>
-    React.createElement('img', { src, alt, width, height, className }),
+  default: ({ src, alt, width, height, className, priority }: { src: string; alt: string; width: number; height: number; className?: string; priority?: boolean }) =>
+    React.createElement('img', { src, alt, width, height, className, ...(priority ? { 'data-priority': 'true' } : {}) }),
 }));
 
 import { CodePageFrame, RowPageView, type RowPageData } from './RowPageView';
@@ -501,5 +501,19 @@ describe('Region templates, the five looks (the components programme, P1.1)', ()
       </CodePageFrame>,
     );
     expect(boxOf(framed, 'above')).toContain('lg:-ml-8 lg:-mr-8');
+  });
+});
+
+// R18: the first photo of the Body loads eagerly (it is the largest thing above the fold on the champions page); the next stay lazy.
+describe('the first Body image (R18)', () => {
+  it('carries the priority flag; a second image region does not; an image outside the Body does not', () => {
+    const second = { ...document.regions.find(r => r.id === 'grid')!, id: 'second', seq: 25, column: 1, span: 12, newRow: true } as PageDocument['regions'][number];
+    const kicker = { ...document.regions.find(r => r.id === 'grid')!, id: 'top', position: 'header' as const, seq: 5 } as PageDocument['regions'][number];
+    const html = renderToStaticMarkup(<RowPageView {...data} document={{ ...document, regions: [kicker, ...document.regions, second] }} />);
+    const imgs = html.match(/<img [^>]*>/g) ?? [];
+    expect(imgs).toHaveLength(3);
+    expect(imgs.filter(i => i.includes('data-priority="true"'))).toHaveLength(1);
+    expect(html).toMatch(/id="region-grid"[\s\S]*?<img [^>]*data-priority="true"/);
+    expect(html).toMatch(/id="region-second"[\s\S]*?<img (?:(?!data-priority)[^>])*>/);
   });
 });

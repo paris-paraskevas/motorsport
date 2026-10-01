@@ -71,11 +71,12 @@ describe('the definitions loader', () => {
   it('merges the rows over the code: the heading gains its attribute, the wire stays the code’s; the component kinds are what the parser takes', async () => {
     const all = await loadDefinitions();
     expect(all).toHaveLength(DEFINITIONS.length);
-    expect(all.find(d => d.key === 'page.heading')?.settings.map(s => s.key)).toEqual(['text', 'accent']);
+    // R18: the heading carries its eyebrow and standfirst too.
+    expect(all.find(d => d.key === 'page.heading')?.settings.map(s => s.key)).toEqual(['text', 'eyebrow', 'standfirst', 'accent']);
     expect(all.find(d => d.key === 'series.live')).toBe(COMPONENTS.find(c => c.key === 'series.live'));
     const components = await loadComponents();
     expect(components.map(d => d.key)).toEqual(COMPONENTS.map(c => c.key));
-    expect(components.find(d => d.key === 'page.heading')?.settings).toHaveLength(2);
+    expect(components.find(d => d.key === 'page.heading')?.settings).toHaveLength(4);
   });
 
   it('counts Utilization from the pages’ newest revisions, the attribute keys from the newest and the live one', () => {
@@ -137,7 +138,7 @@ describe('the definitions loader', () => {
     expect(heading.updatedAt).toBe(STAMP);
     expect(heading.updatedBy).toBe('user_admin');
     expect(heading.overlay.attributes).toHaveLength(1);
-    expect(heading.definition.settings).toHaveLength(2);
+    expect(heading.definition.settings).toHaveLength(4);
     expect(heading.usedOn.map(p => p.name)).toEqual(['Calendar']);
     expect(heading.regions).toBe(1);
     const band = list!.find(d => d.key === 'series.live')!;
@@ -148,16 +149,16 @@ describe('the definitions loader', () => {
 
   it('never throws: a failing read is the code’s definitions, and the editable list is null', async () => {
     throwOn = 'component_definition';
-    expect((await loadDefinitions()).find(d => d.key === 'page.heading')?.settings).toHaveLength(1);
+    expect((await loadDefinitions()).find(d => d.key === 'page.heading')?.settings).toHaveLength(3);
     expect(await loadDefinitionsForEditing()).toBeNull();
   });
 
   it('remembers the rows for a minute, and forgets them on reset', async () => {
     await loadDefinitions();
     tables.component_definition = { data: [], error: null };
-    expect((await loadDefinitions()).find(d => d.key === 'page.heading')?.settings).toHaveLength(2);
+    expect((await loadDefinitions()).find(d => d.key === 'page.heading')?.settings).toHaveLength(4);
     resetDefinitionsMemo();
-    expect((await loadDefinitions()).find(d => d.key === 'page.heading')?.settings).toHaveLength(1);
+    expect((await loadDefinitions()).find(d => d.key === 'page.heading')?.settings).toHaveLength(3);
   });
 });
 
