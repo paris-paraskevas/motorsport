@@ -120,7 +120,12 @@ export function sessionClassCacheKey(
   round: number,
   sessionSlug: string,
 ): string {
-  return `paddock:session-class:${slug}:${season}:${round}:${sessionSlug}`;
+  // v3 (B2) for every series but F1: the IndyCar pages had pinned the wrong rounds' tables for seven days, and the
+  // testing Worker's first B2 build wrote v2 entries with the old time column into the shared store; a new version
+  // leaves both behind. F1's entries are left as they are: they carry past sessions through OpenF1's live-session
+  // lockouts, and a bump on a race weekend would send every F1 page back to a source that may be locked.
+  if (slug === 'f1') return `paddock:session-class:${slug}:${season}:${round}:${sessionSlug}`;
+  return `paddock:session-class:v3:${slug}:${season}:${round}:${sessionSlug}`;
 }
 
 /**

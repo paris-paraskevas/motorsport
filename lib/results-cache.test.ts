@@ -54,13 +54,13 @@ describe('seasonCacheKey', () => {
 });
 
 describe('sessionClassCacheKey', () => {
-  it('produces a stable key per series + season + round + session', () => {
+  it('produces a stable key per series + season + round + session (v3 since B2 for every series but F1, whose entries carry past sessions through OpenF1 lockouts)', () => {
     expect(sessionClassCacheKey('f1', 2026, 6, 'qualifying')).toBe(
       'paddock:session-class:f1:2026:6:qualifying',
     );
     // Round and session slug both vary the key independently.
     expect(sessionClassCacheKey('motogp', 2026, 3, 'fp1')).toBe(
-      'paddock:session-class:motogp:2026:3:fp1',
+      'paddock:session-class:v3:motogp:2026:3:fp1',
     );
     expect(sessionClassCacheKey('f1', 2026, 6, 'sprint')).not.toBe(
       sessionClassCacheKey('f1', 2026, 6, 'qualifying'),

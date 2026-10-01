@@ -26,6 +26,8 @@ const gt = vi.fn(async () => [] as unknown[]);
 const wrc = vi.fn(async (): Promise<RaceResult[]> => []);
 const dtm = vi.fn(async (): Promise<RaceResult[]> => []);
 const nls = vi.fn(async (): Promise<RaceResult[]> => []);
+const indycar = vi.fn(async (): Promise<RaceResult[]> => []);
+const nascar = vi.fn(async (): Promise<RaceResult[]> => []);
 vi.mock('@/lib/results/f1', () => ({ fetchF1SeasonResults: () => f1() }));
 vi.mock('@/lib/results/f2', () => ({ fetchF2SeasonResults: () => f2() }));
 vi.mock('@/lib/results/f3', () => ({ fetchF3SeasonResults: async () => [] }));
@@ -33,9 +35,9 @@ vi.mock('@/lib/results/formula-e', () => ({ fetchFormulaESeasonResults: async ()
 vi.mock('@/lib/results/gt-world', () => ({ fetchAllGtWorldSeasonRaces: () => gt() }));
 vi.mock('@/lib/results/imsa', () => ({ fetchImsaSeasonResults: async () => [] }));
 vi.mock('@/lib/results/wec', () => ({ fetchWecSeasonResults: () => wec(), WEC_RESULT_CLASSES: ['Hypercar', 'LMP2', 'LMGT3'] }));
-vi.mock('@/lib/results/indycar', () => ({ fetchIndyCarSeasonResults: async () => [] }));
+vi.mock('@/lib/results/indycar', () => ({ fetchIndyCarSeasonResults: () => indycar() }));
 vi.mock('@/lib/results/motogp', () => ({ fetchMotoGPSeasonResults: async () => [] }));
-vi.mock('@/lib/results/nascar-cup', () => ({ fetchNascarCupSeasonResults: async () => [] }));
+vi.mock('@/lib/results/nascar-cup', () => ({ fetchNascarCupSeasonResults: () => nascar() }));
 vi.mock('@/lib/results/wsbk', () => ({ fetchWsbkSeasonResults: async () => [] }));
 vi.mock('@/lib/results/wrc', () => ({ fetchWRCSeasonResults: () => wrc() }));
 vi.mock('@/lib/results/dtm', () => ({ fetchDTMSeasonResults: () => dtm() }));
@@ -52,8 +54,8 @@ const session = (seriesSlug: string, title: string, start: string, hours = 2) =>
   start: at(start),
   end: new Date(at(start).getTime() + hours * 3600 * 1000),
 });
-const series = (slug: string, name: string, sessions: ReturnType<typeof session>[]): Series =>
-  ({ meta: { slug, name, color: '#f00', icsUrl: '', season: 2026, category: 'single-seater' }, sessions, overview: '', drivers: '', significance: '', fetchedAt: new Date(), stale: false, configured: true }) as unknown as Series;
+const series = (slug: string, name: string, sessions: ReturnType<typeof session>[], rounds?: { round: number; name: string; startDate: string; endDate: string }[]): Series =>
+  ({ meta: { slug, name, color: '#f00', icsUrl: '', season: 2026, category: 'single-seater' }, sessions, overview: '', drivers: '', significance: '', fetchedAt: new Date(), stale: false, configured: true, rounds: rounds ? { season: 2026, rounds } : undefined }) as unknown as Series;
 const entry = (position: number, driverName: string, points = 25 - position) => ({ position, driverName, driverCode: driverName.slice(0, 3).toUpperCase(), team: 'Team', time: '1:30:00', status: 'Finished', points });
 const race = (round: number, raceName: string, date: string, drivers: string[]): RaceResult => ({ round, raceName, date: at(date), circuit: 'Circuit', results: drivers.map((d, i) => entry(i + 1, d)) });
 
@@ -175,7 +177,7 @@ describe('the results tab’s rows', () => {
     expect(h).toContain(`href="/series/gt-world/weekend/1/${sessionSlug('GTWCE - Race 2')}"`);
   });
 
-  it('keeps the accordion for a series whose race session page cannot show a classification (DTM has no per-race source), latest open', async () => {
+  it('lines DTM’s earlier races to their session pages now that the page reads the per-race source (B2), latest open', async () => {
     const dtmSeries = series('dtm', 'DTM', [
       session('dtm', 'DTM - Race 1', '2026-04-25T11:00:00Z', 1),
       session('dtm', 'DTM - Race 2', '2026-04-26T11:00:00Z', 1),
@@ -189,12 +191,57 @@ describe('the results tab’s rows', () => {
       race(2, 'Lausitzring — Race 2', '2026-05-24', ['Auer', 'Güven']),
     ]);
     const h = await html(dtmSeries);
-    expect(detailsCount(h)).toBe(4);
+    expect(detailsCount(h)).toBe(1);
     expect(openCount(h)).toBe(1);
     expect(h).toMatch(opens('Lausitzring — Race 2'));
-    expect(h).not.toContain('Classification →');
-    expect(h).toContain('Preining');
+    expect((h.match(/Classification →/g) ?? []).length).toBe(3);
+    expect(h).toContain(`href="/series/dtm/weekend/1/${sessionSlug('DTM - Race 1')}"`);
+    expect(h).toContain(`href="/series/dtm/weekend/1/${sessionSlug('DTM - Race 2')}"`);
+    expect(h).toContain(`href="/series/dtm/weekend/2/${sessionSlug('DTM - Race 1')}"`);
     expect(h).toContain('href="/series/dtm/weekend/1"');
+  });
+
+  it('lines NASCAR’s event-named races to their session pages (B2): the race is the weekend’s non-practice, non-qualifying session', async () => {
+    const nascarSeries = series('nascar-cup', 'NASCAR Cup', [
+      session('nascar-cup', 'NASCAR - Practice', '2026-09-19T18:00:00Z', 1),
+      session('nascar-cup', 'NASCAR - Qualifying', '2026-09-19T20:00:00Z', 1),
+      session('nascar-cup', 'NASCAR - South Point 400', '2026-09-20T23:00:00Z', 3),
+      session('nascar-cup', 'NASCAR - Hollywood Casino 400', '2026-09-27T19:00:00Z', 3),
+    ], [
+      { round: 29, name: 'South Point 400', startDate: '2026-09-19', endDate: '2026-09-20' },
+      { round: 30, name: 'Hollywood Casino 400', startDate: '2026-09-27', endDate: '2026-09-27' },
+    ]);
+    nascar.mockResolvedValueOnce([
+      race(29, 'South Point 400', '2026-09-20', ['Hamlin', 'Larson']),
+      race(30, 'Hollywood Casino 400', '2026-09-27', ['Larson', 'Bell']),
+    ]);
+    const h = await html(nascarSeries);
+    expect(detailsCount(h)).toBe(1);
+    expect(h).toMatch(opens('Hollywood Casino 400'));
+    expect((h.match(/Classification →/g) ?? []).length).toBe(1);
+    expect(h).toContain(`href="/series/nascar-cup/weekend/29/${sessionSlug('NASCAR - South Point 400')}"`);
+    expect(h).not.toContain(`/${sessionSlug('NASCAR - Qualifying')}"`);
+  });
+
+  it('lines IndyCar’s races to their session pages with the rounds keyed by date (B2): the Portland row reaches the Portland page', async () => {
+    const indySeries = series('indycar', 'IndyCar', [
+      session('indycar', 'IndyCar | Nashville', '2026-07-19T19:00:00Z', 3),
+      session('indycar', 'IndyCar | Portland', '2026-08-09T19:00:00Z', 3),
+    ], [
+      { round: 11, name: 'Music City', startDate: '2026-07-17', endDate: '2026-07-19' },
+      { round: 12, name: 'Portland', startDate: '2026-08-07', endDate: '2026-08-09' },
+    ]);
+    indycar.mockResolvedValueOnce([
+      race(11, 'Honda Indy 200 at Mid-Ohio', '2026-07-05', ['Palou', 'Dixon']),
+      race(12, 'Music City Grand Prix', '2026-07-19', ['Power', 'Palou']),
+      race(13, 'Grand Prix of Portland', '2026-08-09', ['Kirkwood', 'Palou']),
+    ]);
+    const h = await html(indySeries);
+    expect(h).toMatch(opens('Grand Prix of Portland'));
+    expect(h).toContain(`href="/series/indycar/weekend/11/${sessionSlug('IndyCar | Nashville')}"`);
+    // The fixture's rounds hold no window for the 5 July race (the curated file does since 1.0.233): a race in no window has no row.
+    expect(h).not.toContain('Mid-Ohio');
+    expect(h).not.toContain('href="/series/indycar/weekend/13"');
   });
 
   it('leaves a winners-only season (NLS) as flat rows without a classification link', async () => {

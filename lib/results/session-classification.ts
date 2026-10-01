@@ -7,9 +7,13 @@
 // session feeds). Every redesigned results surface builds on this module so
 // the shape is right once, not fifteen times.
 
-import { sessionSlug } from '@/lib/weekend';
-import type { RaceResult, Series } from '@/lib/types';
+import { sessionSlug, weekendFor } from '@/lib/weekend';
+import { classifySession } from '@/lib/calendar-grid';
+import type { RaceResult, Series, SeriesRoundEntry, Session, Weekend } from '@/lib/types';
 import type { OpenF1Session, SessionClassification } from '@/lib/results/openf1';
+import { fetchDTMSeasonResults } from '@/lib/results/dtm';
+import { applyResultsOverrides } from '@/lib/results/overrides';
+import { loadResultsOverrides } from '@/lib/series-content';
 import { fetchWecSeasonResults, WEC_RESULT_CLASSES } from '@/lib/results/wec';
 import { fetchImsaSeasonResults } from '@/lib/results/imsa';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
@@ -45,18 +49,97 @@ export function matchOpenF1Session(
 
 // Race-session classifications for non-F1 series (the per-round results the
 // series' own results tab renders). Real classifications only: WRC comes
-// from the per-rally articles (NOT the chart sub-totals), DTM has no
-// per-race source yet, IMSA/GTWC class shapes are a follow-up.
-// WRC is absent deliberately: rallies have stage itineraries, not a "race"
-// session — its per-rally classification lives on the results tab.
+// from the per-rally articles (NOT the chart sub-totals), DTM from the
+// per-race source its results tab reads (B2), IMSA/GTWC class shapes are a
+// follow-up. WRC is absent deliberately: rallies have stage itineraries, not
+// a "race" session — its per-rally classification lives on the results tab.
 export const RACE_SESSION_SERIES = new Set([
-  'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup',
+  'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'dtm',
 ]);
 
 export function isRaceLikeTitle(title: string): boolean {
   const cleaned = title.replace(/^.*?[-–—:]\s*/, '');
   if (/sprint\s*(qualifying|shootout)/i.test(cleaned)) return false;
   return /race|sprint|feature/i.test(cleaned);
+}
+
+// The series whose race session is named by the event ("NASCAR - Hollywood Casino 400", "IndyCar | Laguna Seca"), so
+// no word says race (B2): their race is chosen per weekend.
+export const EVENT_NAMED_RACE_SERIES = new Set(['nascar-cup', 'indycar']);
+
+type RoundDates = Pick<SeriesRoundEntry, 'endDate'> | null | undefined;
+
+/** The race of an event-named weekend: among the sessions the calendar's classifier calls neither practice nor
+ *  qualifying (the Indy 500 week's Fast Six and Pit Stop Challenge included), the one whose start is nearest the round's
+ *  end date; the latest start when the round is not curated. Null for a weekend of practice and qualifying alone. */
+export function mainRaceSession(weekend: Weekend, roundDates?: RoundDates): Session | null {
+  const candidates = weekend.sessions.filter(s => {
+    const kind = classifySession(s.title);
+    return kind !== 'practice' && kind !== 'qualifying';
+  });
+  if (candidates.length === 0) return null;
+  // Ranked by the day's distance from the round's end date, then a race by its words before any other session (the
+  // 500 over a same-day celebration), then the latest start.
+  const end = roundDates?.endDate ? Date.parse(`${roundDates.endDate}T12:00:00Z`) : NaN;
+  const rank = (s: Session): [number, number, number] => [
+    Number.isFinite(end) ? Math.abs(Math.round((s.start.getTime() - end) / 86_400_000)) : 0,
+    classifySession(s.title) === 'race' ? 0 : 1,
+    -s.start.getTime(),
+  ];
+  const before = (a: [number, number, number], b: [number, number, number]) => a[0] !== b[0] ? a[0] < b[0] : a[1] !== b[1] ? a[1] < b[1] : a[2] < b[2];
+  return candidates.reduce((best, s) => (before(rank(s), rank(best)) ? s : best));
+}
+
+/** Whether a session is the race: by its words for every series, and for the event-named ones the weekend's main race. */
+export function isRaceSession(slug: string, title: string, weekend?: Weekend | null, roundDates?: RoundDates): boolean {
+  if (isRaceLikeTitle(title)) return true;
+  if (!EVENT_NAMED_RACE_SERIES.has(slug) || !weekend) return false;
+  return mainRaceSession(weekend, roundDates)?.title === title;
+}
+
+/** IndyCar's parser numbers races by their column in Wikipedia's table; the curated schedule once lacked one of them
+ *  (Mid-Ohio, curated as round 11 in 1.0.233), so from there on its numbers ran one ahead: a race is keyed by the round
+ *  whose dates hold its date, and a race in no window has none. */
+export function indycarRoundByDate(rounds: readonly SeriesRoundEntry[] | undefined, date: Date): number | null {
+  if (!rounds?.length) return null;
+  const t = date.getTime();
+  for (const r of rounds) {
+    if (t >= Date.parse(`${r.startDate}T00:00:00Z`) && t <= Date.parse(`${r.endDate}T23:59:59Z`)) return r.round;
+  }
+  return null;
+}
+
+/** Every race result a series' pages read by round: the snapshot's races and extras, IndyCar's re-keyed by date, DTM's
+ *  from the per-race source its results tab reads (the snapshot holds DTM's chart data, points per round, not
+ *  classifications), the overrides applied as the tab applies them. */
+export async function raceResultPool(series: Series): Promise<RaceResult[]> {
+  const slug = series.meta.slug;
+  if (slug === 'dtm') {
+    const [races, overrides] = await Promise.all([
+      fetchDTMSeasonResults(series.meta.season, series.rounds?.rounds),
+      loadResultsOverrides(slug),
+    ]);
+    return applyResultsOverrides(races, overrides);
+  }
+  const source = await loadSnapshotSource(series);
+  if (!source) return [];
+  const pool: RaceResult[] = [...source.races, ...(source.extras ?? [])];
+  if (slug !== 'indycar' || !series.rounds?.rounds.length) return pool;
+  const rounds = series.rounds.rounds;
+  return pool.flatMap(r => {
+    const round = indycarRoundByDate(rounds, r.date);
+    return round === null ? [] : [{ ...r, round }];
+  });
+}
+
+/** The pool's race for a session of a round. A title that names a race number ("DTM - Race 2") takes only a race named
+ *  with that number, so the second race's page shows nothing while only the first is parsed, rather than the first. */
+export function raceFor(pool: RaceResult[], round: number, sessionTitle: string): RaceResult | null {
+  const number = /race\s*(\d)\b/i.exec(sessionTitle)?.[1];
+  const candidates = pool.filter(
+    r => r.round === round && (!number || new RegExp(`race\\s*${number}\\b`, 'i').test(r.raceName)),
+  );
+  return pickRaceForSession(candidates, sessionTitle);
 }
 
 // Multi-race rounds (Feature/Sprint, R1/Superpole/R2) — pick the candidate
@@ -224,22 +307,27 @@ export async function fetchRoundClassification(
   sessionTitle: string,
 ): Promise<SessionClassification | null> {
   const slug = series.meta.slug;
-  if (!RACE_SESSION_SERIES.has(slug) || !isRaceLikeTitle(sessionTitle)) return null;
-  const source = await loadSnapshotSource(series);
-  if (!source) return null;
-  const pool: RaceResult[] = [...source.races, ...(source.extras ?? [])];
-  const race = pickRaceForSession(pool.filter(r => r.round === round), sessionTitle);
+  if (!RACE_SESSION_SERIES.has(slug)) return null;
+  const roundDates = series.rounds?.rounds.find(r => r.round === round);
+  if (!isRaceSession(slug, sessionTitle, weekendFor(series, round), roundDates)) return null;
+  const race = raceFor(await raceResultPool(series), round, sessionTitle);
   if (!race || race.results.length <= 1) return null;
   return {
     isQualifying: false,
     isRace: true,
-    entries: race.results.map(e => ({
-      position: e.position,
-      driverName: e.driverName,
-      driverCode: e.driverCode,
-      team: e.team,
-      time: e.time ?? e.status,
-      points: e.points,
-    })),
+    entries: race.results.map(e => {
+      // The time column shows the time, else the status; a bare "Finished" or "Classified" (NASCAR's and IndyCar's
+      // status for every classified car) says nothing there, so the column stays empty for it.
+      const label = e.time ?? e.status;
+      return {
+        // The parsers' synthetic positions (DTM's 90 and above for a DNF, IndyCar's 0 for a non-finisher) are no position.
+        position: e.position > 0 && e.position < 90 ? e.position : null,
+        driverName: e.driverName,
+        driverCode: e.driverCode,
+        team: e.team,
+        time: label && !/^(finished|classified)$/i.test(label) ? label : undefined,
+        points: e.points,
+      };
+    }),
   };
 }
