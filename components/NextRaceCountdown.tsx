@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 interface CountdownParts {
   days: number;
@@ -31,11 +31,15 @@ function getTargetDate(target: string): Date {
 export function NextRaceCountdown({
   target,
   label,
+  labelNode,
   color,
   liveUntil,
 }: {
   target: string;
+  /** Names the session for the aria text; drawn above the digits unless `labelNode` is given. */
   label: string;
+  /** What is drawn above the digits when the label is not plain text (the home's box draws the start through LocalTime, R17). */
+  labelNode?: ReactNode;
   color?: string;
   /** Session end, ISO. Given it, the countdown becomes a LIVE pill between
    *  `target` and this instead of vanishing at zero. Liveness is decided HERE,
@@ -87,7 +91,7 @@ export function NextRaceCountdown({
       aria-label={`Time until ${label}`}
     >
       <span className="font-mono text-10 uppercase tracking-[0.16em] font-semibold text-text-faint">
-        {label}
+        {labelNode ?? label}
       </span>
       {/* suppressHydrationWarning: the server renders wall-clock seconds that
           are always a beat behind the client's first render. Without it React

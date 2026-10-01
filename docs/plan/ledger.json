@@ -699,6 +699,11 @@
    "date": "2026-10-01",
    "change": "The learning track (the operator, ~09:45Z–10:00Z: “I want the reigns on this project… I need a safe way to understand and know every nook and cranny… I have the capacity in my head to know it all and maintain it”): the repository (116,000 lines of code, 43,500 of tests, 23,000 of content) is learned in fourteen parts in dependency order, teacher and student, Socratic, each part proven four ways on the real code (explain it back, predict the test, find it, break it on purpose) and recorded in a progress file; the learning runs in its own Claude Code sessions on the worktree C:\\Dev\\Personal\\Motorsport-learn (branch learn, merged from main before each session), while the building continues in the programme’s sessions here; agents never build (rule 7 stands). The map of every part is the learning track’s first page; the documentation phase D follows the map, not the end of the programme.",
    "word": "“is there a way for us to do this together so i can ask away and learn? maybe in a socratic method…”; “The learning will need multiple sessions. Maybe we can do the learning in a worktree and let the actual session build here.” (~10:00Z on the 1st)"
+  },
+  {
+   "date": "2026-10-01",
+   "change": "The operator’s numbered words on the session’s open items (~10:20Z): R17 (the home’s weekend box times in the reader’s zone) enters the ledger as a quick-fix slot of the R group and STARTS (“1. yes”); the admin toolbar’s weight behind the admin check declined (“2. no”); B2 to be planned in plan mode first (“3. yes planned in plan mode first”); the AdSense reading to be republished under the current login (“4. republish”: the page of 30 September is unreachable from this login and the records hold only its two slot names, S1 index the writing and S2 finish what shows, so the reading is redone as its own item after B2’s plan); a new Seobility crawl started (“5. yes”; crawl 16021215 at ~10:20Z); the learning track’s three files on the word in the learning session (“6. yes there”), the worktree given copies of the memory files and the env file.",
+   "word": "“1. yes 2. no 3. yes planned in plan mode first 4. republish 5. yes 6. yes there (how do we set this up correctly?)” (~10:20Z on the 1st)"
   }
  ],
  "phases": {
@@ -1577,6 +1582,19 @@
    "acceptance": "At 390 px on the local server and then on prod: a Filters button opens the sheet, ticks are applied on Save and the address carries them (a two-series exclusion included), Reset clears; the month cells draw dots; the week and day views match the approved mockups; the desktop at 1440 px unchanged; a test per change rendered from a saved document; the dry run’s Total Upload quoted; a Sonnet reviewer per PR.",
    "status": "planned",
    "scopeHash": "f1dd77afa430"
+  },
+  {
+   "id": "R17",
+   "phase": "P2",
+   "title": "The home’s weekend box times in the reader’s zone",
+   "scope": "The home’s This weekend boxes draw each session’s start (the small time above the countdown’s digits, the Also <day> rows, the Also racing row) in the reader’s own time zone through the LocalTime piece, as every other session time on the site; the server render carries the fixed Athens time with its zone label until hydration. Before, components/HomeLead.tsx formatted the time on the server with no zone, so every reader saw the Worker’s clock (UTC: 04:30 for a 07:30 Athens start). The countdown’s aria text names the session instead of a time. Nothing else changes.",
+   "fixedBy": "the operator’s screenshot and question of 2026-10-01 ~08:45Z (“the times shown say 04:30 and 01:45 for f1 fp1 and motogp fp1. what are these times?”) and their word “1. yes” of ~10:20Z; the LocalTime piece (components/LocalTime.tsx) and its pattern on the weekend, session and calendar surfaces; the audit rule that a fixed-zone server time keeps its label",
+   "defaults": "NextRaceCountdown gains an optional labelNode drawn above the digits while label keeps feeding the aria text (the home passes the session’s name there, so the aria reads “Time until F1 Bahrain GP - Practice 1”); the weekday rides with the time (“Fri 07:30”) as LocalTime draws it everywhere, the Also <day> rows included; an unparsable start, unreachable today (the loader’s toISOString throws first), would draw the session’s name above the digits and nothing in the rows; west of UTC a late-night start can read as the previous weekday under an “Also <day>” heading that is bucketed in UTC, as the heading was before; a test case in components/HomeLead.test.tsx renders the box on the server with the clock pinned before the session and expects the Athens-fixed strings and no bare clock; one PR with the trio and the entry",
+   "needsWord": "the merge, after the phone-width screenshot (a look change on a live page)",
+   "acceptance": "On the local server at 390 px the box shows “Fri 07:30” for the 04:30Z start in an Athens browser and the Also rows their local times; the test case green; prod the same after the deploy.",
+   "status": "started",
+   "scopeHash": "671e2a2daf16",
+   "evidence": "STARTED 2026-10-01 ~10:25Z on “1. yes” (branch fix/r17-home-times): the test first (red: the Athens-fixed string absent from the server render), then NextRaceCountdown’s labelNode and HomeLead’s localTime helper through LocalTime · GATES after the last edit: tsc 0 · lint 0 errors (the two known) · vitest 271 files, 2,570 tests (one designer test timed out once at 5 s while the dev server compiled beside it, green twice alone) · DATA_SOURCE=db cf:build clean · wrangler deploy --dry-run Total Upload 39460.94 KiB / gzip 8574.37 KiB (60% of the ceiling) · LOCAL at 390 and 1440 in an Athens browser: “Fri 07:30” above the digits for the 04:30Z start, the Also Friday row “Fri 11:00”, Also racing “Fri 10:00”, the aria “Time until F1 Bahrain GP - Practice 1”; the review page https://claude.ai/code/artifact/1311f2a3-0012-4d55-a10e-5269a25bc678 (prod before, local after, at 390) · REVIEW: a fresh-context Sonnet reviewer (261,521 tokens): one blocking finding folded (the test’s clock pinned), three should-fixes and the nits folded · PR #1114 (1.0.232) opened; the merge on the word"
   },
   {
    "id": "O1",
