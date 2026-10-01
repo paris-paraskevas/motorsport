@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.232 — 2026-10-01
+
+### R17 — The home's weekend box times in the reader's zone
+
+The operator's screenshot of ~08:45Z: the home's This weekend boxes said "04:30" for F1's first practice and "01:45" for MotoGP's, while the calendar said 07:30 and 04:45 for the same sessions. The cause: `timeLabel` in `components/HomeLead.tsx` formatted the start on the server with `toLocaleTimeString` and no time zone, so every reader saw the Worker's clock (UTC); the calendar formats on the device.
+
+- The box's three times (the small label above the countdown's digits, the "Also <day>" rows, the "Also racing" row) now go through the `LocalTime` piece like every other session time on the site: the server render carries the fixed Athens time with its zone label ("Fri, 07:30 EEST") and the device's own time replaces it after hydration ("Fri 07:30"); an unparsable start, unreachable today (the loader's `toISOString` throws first), would draw the session's name above the digits and nothing in the rows. West of UTC a late-night start can read as the previous weekday under an "Also <day>" heading that is bucketed in UTC, as that heading was before.
+- `components/NextRaceCountdown.tsx` gains an optional `labelNode` drawn above the digits while `label` keeps feeding the aria text; the home passes the session's name there, so the aria reads "Time until F1 Bahrain GP - Practice 1" instead of a time. The Countdown component and the Coming weekends view pass no `labelNode` and draw as before.
+- Tests first: a case in `components/HomeLead.test.tsx` renders the box on the server with the clock pinned before the session (the countdown draws nothing once its target has passed; the reviewer's catch) and expects the Athens-fixed strings and no bare clock (red before the change, green after).
+- Records: the ledger's R17 slot (the R group of P2) and the dated line with the operator's numbered words of ~10:20Z (R17 yes; the admin toolbar's weight declined; B2 in plan mode first; the AdSense reading to be redone under the current login; a new Seobility crawl started, 16021215; the learning track's files on the word in the learning session); the chrome's chunk experiment's result in IDEAS and the schedule (the count stays at 14; no slot); the learning worktree's setup (its own memory folder, the env file).
+
 ## 1.0.231 — 2026-10-01
 
 ### Records — X9 on prod and done with the check; the learning track; the session-61 close

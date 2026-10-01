@@ -7,6 +7,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { ReactNode } from 'react';
+import { formatLocal } from '@/lib/date';
 
 vi.mock('next/link', () => ({
   default: ({ href, children, className }: { href: unknown; children: ReactNode; className?: string }) => (
@@ -67,5 +68,23 @@ describe('HomeLead', () => {
     expect(renderToStaticMarkup(<HomeThisWeekend liveWeekends={live} />)).toContain('Italian Grand Prix');
     expect(renderToStaticMarkup(<HomeThisWeekend liveWeekends={[]} alsoRacing={[]} />)).toBe('');
     expect(renderToStaticMarkup(<HomeWire wire={[]} />)).toBe('');
+  });
+
+  it('the This weekend box’s times go through LocalTime: the server render carries the fixed Athens time with its zone label, never the Worker’s bare clock (R17)', () => {
+    // The countdown reads the clock and draws nothing once its target has passed, so the clock is pinned before the session.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-01T10:00:00Z'));
+    try {
+      const weekend = [{ ...live[0], nextSession: { name: 'F1 Bahrain GP - Practice 1', startIso: '2026-10-02T04:30:00Z', endIso: '2026-10-02T05:30:00Z' }, alsoSameDay: [{ name: 'F1 Bahrain GP - Practice 2', startIso: '2026-10-02T08:00:00Z' }], alsoDayIso: '2026-10-02' }];
+      const also = [{ seriesSlug: 'motogp', seriesName: 'MotoGP', color: '#ff8000', eventName: 'Japanese Grand Prix', href: '/series/motogp/weekend/17', sessionName: 'MotoGP - FP1', startIso: '2026-10-02T01:45:00Z' }];
+      const html = renderToStaticMarkup(<HomeThisWeekend liveWeekends={weekend} alsoRacing={also} />);
+      expect(html).toContain(formatLocal(new Date('2026-10-02T04:30:00Z')));
+      expect(html).toContain(formatLocal(new Date('2026-10-02T08:00:00Z')));
+      expect(html).toContain(formatLocal(new Date('2026-10-02T01:45:00Z')));
+      expect(html).toContain('Time until F1 Bahrain GP - Practice 1');
+      expect(html).not.toMatch(/>0?4:30</);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

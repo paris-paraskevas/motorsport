@@ -4,6 +4,7 @@ import { seriesInk } from '@/lib/site';
 import { sessionSlug } from '@/lib/weekend';
 import type { PodiumEntry } from '@/lib/home-results';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
+import { LocalTime } from '@/components/LocalTime';
 import { SessionDayNote } from '@/components/SessionDayNote';
 import { commonsSrcSet, commonsThumb } from '@/lib/commons-thumb';
 
@@ -120,10 +121,12 @@ export interface HomeLeadAlsoRacing {
   startIso: string;
 }
 
-function timeLabel(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+// A session's start in the reader's own time zone (R17): the server render carries the fixed Athens time with its
+// zone label and the device's own time replaces it after hydration, as every other session time on the site; a bare
+// server-side format drew the Worker's clock (UTC) for everyone.
+function localTime(iso: string): React.ReactNode {
+  const instant = Date.parse(iso);
+  return Number.isFinite(instant) ? <LocalTime instant={instant} /> : null;
 }
 
 function SectionRule({ label, right }: { label: string; right?: string }) {
@@ -364,7 +367,8 @@ export function HomeThisWeekend({ liveWeekends, alsoRacing, className = '' }: { 
               </Link>
               <NextRaceCountdown
                 target={liveWeekend.nextSession.startIso}
-                label={timeLabel(liveWeekend.nextSession.startIso)}
+                label={liveWeekend.nextSession.name}
+                labelNode={localTime(liveWeekend.nextSession.startIso)}
                 color={liveWeekend.color}
                 liveUntil={liveWeekend.nextSession.endIso}
               />
@@ -389,7 +393,7 @@ export function HomeThisWeekend({ liveWeekends, alsoRacing, className = '' }: { 
                       {s.name}
                     </Link>
                     <span className="shrink-0 font-mono text-11 tabular-nums text-text-faint">
-                      {timeLabel(s.startIso)}
+                      {localTime(s.startIso)}
                     </span>
                   </li>
                 ))}
@@ -425,7 +429,7 @@ export function HomeThisWeekend({ liveWeekends, alsoRacing, className = '' }: { 
                   {item.seriesName}
                 </Link>
                 <span className="font-mono text-11 tabular-nums text-text-faint">
-                  {timeLabel(item.startIso)}
+                  {localTime(item.startIso)}
                 </span>
               </li>
             ))}
