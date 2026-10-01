@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1115 · 1.0.233 · B2 · opened Thu 1 Oct __OPENED__; the merge on the word
+## #1115 · 1.0.233 · B2 · opened Thu 1 Oct 15:12 (12:12Z); the merge on the word
 **The event-named races: NASCAR, IndyCar and DTM get their classifications.** The three results tabs X6 B left heavy take its shape, and the race session pages of the three series show their tables; IndyCar’s results are keyed by date against the curated rounds (its rows from round 12 on linked the wrong pages), DTM’s pages read the per-race source its tab reads. The review page: https://claude.ai/code/artifact/75d8a7b2-0e2a-491d-8869-23f78265c7c4.
 - **Readers see:** the NASCAR, IndyCar and DTM results tabs with the latest round open and every earlier round one line with Classification →; those series’ race session pages with the classification table (positions, drivers, teams, time or status, points) where they said practice and qualifying classifications are not published; the NASCAR and IndyCar weekend pages marking their race with the winner’s box; the DTM weekend page’s real race table in place of the chart-derived one; IndyCar’s tab rows from Music City (round 11) on reaching the right pages with the curated round numbers; Mid-Ohio, which the curated schedule has no round for, leaving the IndyCar tab’s rows; MotoGP’s and Formula E’s race pages showing no number on a DNF row (the parsers’ 100) as DTM’s and IndyCar’s do.
 - **Editors get:** nothing.
