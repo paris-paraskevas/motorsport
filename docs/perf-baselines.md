@@ -8,6 +8,20 @@ Time-series perf snapshot. **Append-only by date** — never overwrite prior row
 
 ---
 
+## 2026-10-01 — B2: the event-named races, the three tabs X6 B left (1.0.233)
+
+X6 B (1.0.227) could only give a round's row a "Classification →" line where the race session page could answer, and three series could not: NASCAR and IndyCar name the race by the event, DTM's session page read the chart data. B2 chooses the race per weekend for the event-named series, keys IndyCar's results by date against the curated rounds, gives DTM its per-race source, and (on the operator's word after the reviewer's finding) curates the Honda Indy 200 at Mid-Ohio as IndyCar round 11, the later rounds renumbered 12–18. The three tabs take X6 B's shape; the race session pages of the three series show their tables.
+
+**Method:** as X6's: `curl -s -o /dev/null -w '%{size_download}'` plain (the HTML), `--compressed` (the wire) and with `RSC: 1` (the flight payload), with a browser user agent, from Greece; the testing Worker on the PR's build before the merge, prod at 1.0.232 before and at 1.0.233 after (2026-10-01T13:32:12Z).
+
+| tab | before (prod 1.0.232) | after, testing (the curated build) | after, prod 1.0.233 |
+|---|---|---|---|
+| /series/nascar-cup/results | 2,161,913 · 55,964 · 1,157,139 | 225,024 · 19,000 · 114,691 | 225,755 · 18,910 · 114,691 |
+| /series/indycar/results | 826,895 · 29,417 · 442,454 | 155,861 · 16,791 · 78,447 (152,539 · 16,695 · 76,728 before Mid-Ohio's row) | 156,248 · 16,599 · 78,447 |
+| /series/dtm/results | 590,939 · 27,564 · 313,680 | 136,568 · 15,911 · 68,171 | 136,955 · 15,815 · 68,171 |
+
+The race session pages answer with their tables on prod: the Hollywood Casino 400 page 200 with its table, the Indianapolis 500 page 200 with its table, Mid-Ohio's race page 200 with its table and its weekend page 200 (“IndyCar · Honda Indy 200 at Mid-Ohio · Round 11”), round 18 200 (“IndyCar · WeatherTech Raceway Laguna Seca (Season Finale) ·…”), DTM's /series/dtm/weekend/1/race-2 200 with its table; the old Music City race address 404 (as named); the tabs' Classification occurrences 58 · 34 · 26 (two per earlier round), the IndyCar tab naming Mid-Ohio 3 times; every tab a cache HIT. The Worker: the dry run 39572.66 KiB / gzip 8600.58 KiB on B2's first build, 39523.55 / 8586.69 on the curated one (1.0.232: 39460.94 / 8574.37; 60% of the ceiling). The review page: https://claude.ai/code/artifact/75d8a7b2-0e2a-491d-8869-23f78265c7c4.
+
 ## 2026-10-01 — X9: the JavaScript count (1.0.230)
 
 Seobility's page-speed check of the home ("This page loads 16 JavaScript files", Very important; the crawl of 29 September, id 16008487, read through the Seobility MCP). Two of the site's own files did nothing for a reader: the Sentry browser SDK, shipped without a DSN so it initialised to a no-op, and `app/error.tsx`, a boundary above both root layouts. Both left in 1.0.230 (#1112), and the last `@sentry/nextjs` import took the server SDK out of the Worker bundle with it.
