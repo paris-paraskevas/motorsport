@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { CURRENT_SEASON } from './sources';
+import { parsePageDocument, type ComponentRegion, type Region } from './page-document';
 import { COMPONENTS, COMPONENT_KEY, SPLITS, componentDefaults, componentId, defaultDocument, findComponent, parseSettings, recipeRegions, settingsSummary, type ComponentDefinition } from './components';
 import { MAP_BACKGROUNDS } from './map-backgrounds';
 
@@ -127,6 +129,9 @@ describe('the component catalogue', () => {
       ['coming-weekends', "What's next"],
       ['podium', 'Latest result'],
       ['leader', 'What it changed'],
+      // R18: the champions page's two templates, ours.
+      ['reigning', 'Reigning champion'],
+      ['honours', 'Roll of honour'],
     ]);
     expect(region.settings[1].options!.find(o => o.key === 'coming-weekends')).toEqual({ key: 'coming-weekends', label: "What's next", only: { source: 'weekends' } });
     expect(parseSettings(region, { preset: 'whats-next', view: 'coming-weekends' }).settings.view).toBe('coming-weekends');
@@ -260,9 +265,9 @@ describe('the component catalogue', () => {
     expect(parseSettings(band, { series: 'motogp', also: false }).settings).toEqual({ series: 'motogp', also: false });
     expect(parseSettings(band, { series: 'nope' }).problems[0]).toMatch(/^Series must be one of Every series, /);
     expect(settingsSummary(band, { series: '', also: true })).toBe('Series Every series · Also racing yes');
-    expect(SPLITS['/'].map(e => (typeof e === 'string' ? e : `${e.id}:${e.component}`))).toEqual(['lead:data.region', 'live:series.live', 'result:data.region', 'changed:data.region', 'next:data.region', 'wire:data.region']);
-    expect(recipeRegions('/').find(r => r.component === 'series.live')).toMatchObject({ id: 'live', settings: { series: '', also: true } });
-    expect(recipeRegions('/').find(r => r.component === 'series.live')).not.toHaveProperty('source');
+    expect(SPLITS['/'].map(e => (typeof e === 'string' ? e : `${e.id}:${e.kind === undefined || e.kind === 'component' ? e.component : e.kind}`))).toEqual(['lead:data.region', 'live:series.live', 'result:data.region', 'changed:data.region', 'next:data.region', 'wire:data.region']);
+    expect(recipeRegions('/').find(r => r.kind === 'component' && r.component === 'series.live')).toMatchObject({ id: 'live', settings: { series: '', also: true } });
+    expect(recipeRegions('/').find(r => r.kind === 'component' && r.component === 'series.live')).not.toHaveProperty('source');
   });
 
   it('P2.8: the Countdown is a general component in the Series group with a Series choice (every series, or one), a Heading, the time at the track and the links as switches, reading no catalogue source; its tile names what is set', () => {
@@ -396,7 +401,8 @@ describe('the component catalogue', () => {
     ]);
     expect(findComponent('data.region')?.settings.find(s => s.key === 'rows')).toMatchObject({ min: 1, max: 150 });
     expect(findComponent('data.region')?.settings.find(s => s.key === 'view')).toMatchObject({ options: expect.arrayContaining([{ key: 'headlines', label: 'Headlines', only: { source: 'news' } }]) });
-    for (const recipe of Object.values(SPLITS)) for (const entry of recipe) expect(findComponent(typeof entry === 'string' ? entry : entry.component)).not.toBeNull();
+    // R18: a recipe entry may be a static, image, list or button region too (a model change: the component check applies to component entries).
+    for (const recipe of Object.values(SPLITS)) for (const entry of recipe) if (typeof entry === 'string' || entry.kind === undefined || entry.kind === 'component') expect(findComponent(typeof entry === 'string' ? entry : entry.component)).not.toBeNull();
   });
 
   it('lays a recipe out as Body regions: full rows, the two Home halves sharing one, ids from the keys, and a default document from it', () => {
@@ -410,7 +416,7 @@ describe('the component catalogue', () => {
       'wire:1/12:60',
     ]);
     // P2.24 C: Home's boxes are Data regions on their templates over the catalogue's sources; each entry names its id, settings and Source.
-    const at = (id: string) => home.find(r => r.id === id)!;
+    const at = (id: string) => componentRegion(home.find(r => r.id === id)!);
     expect(at('lead')).toMatchObject({ component: 'data.region', settings: { preset: 'lead-story', view: 'lead-story', rows: 4, heading: '', pinned: '' }, source: 'posts?count=10' });
     expect(at('live')).toMatchObject({ component: 'series.live', settings: { series: '', also: true } });
     expect(at('result')).toMatchObject({ component: 'data.region', settings: { preset: 'latest-result', view: 'podium', rows: 3 }, source: 'results?series=home&season=2026' });
@@ -422,7 +428,7 @@ describe('the component catalogue', () => {
     expect(recipeRegions('/nowhere')).toEqual([]);
     expect(componentId('page.body', [])).toBe('code-body');
     expect(componentId('data.region', ['region', 'region-2'])).toBe('region-3');
-    expect(defaultDocument('/calendar').regions.map(r => r.component)).toEqual(['page.heading', 'data.filters', 'calendar.month']);
+    expect(defaultDocument('/calendar').regions.map(r => componentRegion(r).component)).toEqual(['page.heading', 'data.filters', 'calendar.month']);
   });
 
   it('reads the colour, icon and link kinds, and leaves an application-scope attribute to Component Settings (P2.0)', () => {
@@ -607,5 +613,61 @@ describe('the Map component (P2.12; APEX: the Map region)', () => {
     expect(settingsSummary(map, { preset: 'circuit-guides', view: 'world' })).toBe('Preset Circuit guides · Canvas · World');
     expect(settingsSummary(map, componentDefaults(map))).toBe('Preset Circuit guides · Canvas · Automatic');
     expect(settingsSummary(map, { preset: 'circuits', title: 'name', rule: 'country.eq:IT', heading: 'Italy' })).toBe('Preset Circuits · Canvas · Automatic · Title Circuit · Row rule country.eq:IT · Heading Italy');
+  });
+});
+
+/** A recipe region that must be a component region (R18: the recipes carry other kinds too). */
+function componentRegion(r: Region): ComponentRegion {
+  if (r.kind !== 'component') throw new Error(`${r.id} is a ${r.kind} region`);
+  return r;
+}
+
+describe('the champions page’s recipe (R18)', () => {
+  it('lays the Formula 2 champions page out as the design has it: the heading with its eyebrow and standfirst, the Reigning champion card the full width (its photo half follows the upload), the roll of honour with its footnote, the teams’ heading, the two tally halves, the Keep exploring list, the boxed call-out with its button inside; every region kind, the templates and the parents carried', () => {
+    const regions = recipeRegions('/series/f2/champions');
+    expect(regions.map(r => `${r.id}:${r.kind}:${r.column}/${r.span}${r.newRow ? '' : ' same row'}${'parent' in r && r.parent ? ` in ${r.parent}` : ''}`)).toEqual([
+      'heading:component:1/12',
+      'reigning:component:1/12',
+      'honours:component:1/12',
+      'teams:static:1/12',
+      'drivers-titles:component:1/6',
+      'teams-titles:component:7/6 same row',
+      'explore:list:1/12',
+      'callout:static:1/12',
+      'open-calendar:button:1/12 in callout',
+    ]);
+    const at = (id: string) => regions.find(r => r.id === id)!;
+    expect(componentRegion(at('heading'))).toMatchObject({ component: 'page.heading', settings: { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: "Every drivers' and teams' champion since 2005, year by year, including the GP2 Series seasons (2005–2016)." } });
+    expect(componentRegion(at('reigning'))).toMatchObject({ component: 'data.region', settings: { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' }, source: 'champions?series=f2' });
+    expect(componentRegion(at('honours'))).toMatchObject({ component: 'data.region', settings: { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, source: 'champions?series=f2' });
+    expect(at('honours').footerText).toMatch(/^GP2 used a smaller points scale until 2011/);
+    expect(at('honours').footerText!.length).toBeLessThanOrEqual(300);
+    expect(at('teams')).toMatchObject({ kind: 'static', title: 'Most successful teams', text: 'Titles won since 2005, GP2 and F2 combined.', templateOptions: ['HEADING_HEADLINE'] });
+    expect(componentRegion(at('drivers-titles'))).toMatchObject({ settings: { preset: 'drivers-titles-by-team', view: 'list', rows: 5, heading: "Drivers' titles" }, source: 'champions?series=f2' });
+    expect(componentRegion(at('teams-titles'))).toMatchObject({ settings: { preset: 'teams-titles-by-team', view: 'list', rows: 5, heading: "Teams' titles" }, source: 'champions?series=f2' });
+    expect(at('explore')).toMatchObject({ kind: 'list', listKey: 'f2-keep-exploring', style: 'cards', title: 'Keep exploring', templateOptions: ['HEADING_HEADLINE'] });
+    expect(at('callout')).toMatchObject({ kind: 'static', title: 'Every F2 session in your time zone', text: `Follow the ${CURRENT_SEASON} season on the calendar. No account needed.`, template: 'boxed', templateOptions: ['HEADING_HEADLINE'] });
+    expect(at('open-calendar')).toMatchObject({ kind: 'button', label: 'Open calendar', dest: 'calendar', parent: 'callout' });
+    expect(Object.keys(componentRegion(at('honours')).settings).sort()).toEqual(Object.keys(componentDefaults(findComponent('data.region')!)).sort());
+    // The default document of the concrete path is the recipe; the pattern keys stay as they were.
+    expect(defaultDocument('/series/f2/champions').regions.map(r => r.id)).toEqual(regions.map(r => r.id));
+    expect(recipeRegions('/series/f3/champions')).toEqual([]);
+  });
+
+  it('is a document the parser takes whole: no problems, the same ids in order, the parents, the templates, the footers, the sources and the views bound to the Champions source', () => {
+    const parsed = parsePageDocument(defaultDocument('/series/f2/champions'));
+    expect(parsed.problems).toEqual([]);
+    const recipe = recipeRegions('/series/f2/champions');
+    expect(parsed.value.regions.map(r => r.id)).toEqual(recipe.map(r => r.id));
+    for (const r of recipe) expect(parsed.value.regions.find(x => x.id === r.id)).toEqual(r);
+  });
+
+  it('the heading’s tile names its words and its eyebrow, never its standfirst (an attribute summarised: false), so a sentence does not stretch the tile', () => {
+    const heading = findComponent('page.heading')!;
+    expect(heading.settings.find(s => s.key === 'standfirst')).toMatchObject({ summarised: false });
+    expect(heading.settings.find(s => s.key === 'eyebrow')?.summarised).toBeUndefined();
+    expect(settingsSummary(heading, { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: 'Every champion since 2005.' })).toBe('Words Formula 2 champions · Eyebrow Formula 2 · Roll of honour');
+    // Nothing set but the standfirst: the tile reads what the component holds, as every tile with nothing set does.
+    expect(settingsSummary(heading, { text: '', eyebrow: '', standfirst: 'Every champion since 2005.' })).toBe(heading.holds);
   });
 });

@@ -12,7 +12,7 @@ import { allowedKeys, currentVisitor, type Visitor } from './authz-evaluate';
 import { loadAssetsById, loadLiveFrame } from './live-page';
 import { loadDocumentLists, loadNavLists } from './lists';
 import { loadShortcuts } from './shortcuts';
-import { applyBuildOptions, applyConditions, conditionAsks, documentRefs, schemesAsked, splitsBody } from './page-document';
+import { applyBuildOptions, applyConditions, conditionAsks, documentRefs, schemesAsked, splitsBody, type PageDocument } from './page-document';
 import { loadBuildOptions } from './build-options';
 import { loadAppearance } from './appearance';
 import { raceWeekendNow, renderComponents } from './component-render';
@@ -154,40 +154,55 @@ async function framed(
   }
   if (!live || live.document.regions.length === 0) return body();
   try {
-    const stored = live.document;
-    const refs = documentRefs(stored);
-    // The page's own scheme was met at the gate; only the regions' matter here.
-    // The session is read when a region asks for a scheme or a condition needs
-    // it; the race-weekend fact is read when a condition asks for it.
-    const asked = schemesAsked(null, stored);
-    const asks = conditionAsks(stored);
-    const [shortcuts, assets, nav, rules, who, raceWeekend, buildOptions, appearance, pages] = await Promise.all([
-      loadShortcuts(),
-      loadAssetsById(refs.assets),
-      loadNavLists(),
-      asked.length > 0 ? (schemes ?? loadAuthzSchemes()) : Promise.resolve([] as readonly AuthzScheme[]),
-      asked.length > 0 || asks.visitor ? (visitor ?? currentVisitor()) : Promise.resolve(null),
-      asks.calendar ? raceWeekendNow() : Promise.resolve<boolean | null>(null),
-      loadBuildOptions(),
-      // The templates' presets (P1.2) for the regions around the code's page, as the catch-all reads them.
-      loadAppearance(),
-      // The live row pages the buttons and go effects name (P1.12 B2), as the catch-all reads them.
-      loadNamedPages(refs.dests),
-    ]);
-    // The frame is keyed by the route's pattern and knows neither the visited address nor its parts (P2.6): a fact not known shows the region.
-    const document = applyBuildOptions(applyConditions(stored, { signedIn: who ? who.signedIn : null, raceWeekend, params: null, path: null }), buildOptions);
-    const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
-    const messages: Record<string, string | null> = {};
-    for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
-    // The pages, read above for the Buttons, reach the cards' zones too (P2.2 B3). The address's parts reach the components
-    // (P2.17: a Breadcrumb knows which series and tab it stands on); the conditions above keep P2.6's rule.
-    const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path, params, pages })]);
-    // A split document draws its own Body (splitsBody, the rule CodePageFrame applies): the code's body is neither rendered nor placed.
-    const children = splitsBody(document) ? undefined : await body();
-    return createElement(CodePageFrame, { d: { page: frame.row, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages } }, children);
+    return await composedBody(path, live.document, params, { frame, body, visitor, schemes });
   } catch {
     return body();
   }
+}
+
+/** The frame's assembly for a document (R18): the loaders, the conditions, the build options, the regions drawn, the frame
+ *  around the caller's body when the document keeps a transitional one and around nothing when it is split. `framed` calls
+ *  it for a live revision; a route composing a page of its own calls it with a recipe's document and the registry's row for
+ *  its pattern (components/tabs/ComposedTab.tsx), the renderer told the concrete address and its parts. Not fail-soft itself:
+ *  the caller decides what stands in when it throws. Without a row there is nothing to frame: the body alone. */
+export async function composedBody(
+  path: string,
+  stored: PageDocument,
+  params: Readonly<Record<string, string>>,
+  opts: { frame?: PageFrame | null; page?: PageRow; body?: () => Promise<ReactNode>; visitor?: Visitor; schemes?: readonly AuthzScheme[] } = {},
+): Promise<ReactNode> {
+  const page = opts.frame?.row ?? opts.page;
+  if (!page) return opts.body ? opts.body() : null;
+  const refs = documentRefs(stored);
+  // The page's own scheme was met at the gate; only the regions' matter here.
+  // The session is read when a region asks for a scheme or a condition needs
+  // it; the race-weekend fact is read when a condition asks for it.
+  const asked = schemesAsked(null, stored);
+  const asks = conditionAsks(stored);
+  const [shortcuts, assets, nav, rules, who, raceWeekend, buildOptions, appearance, pages] = await Promise.all([
+    loadShortcuts(),
+    loadAssetsById(refs.assets),
+    loadNavLists(),
+    asked.length > 0 ? (opts.schemes ?? loadAuthzSchemes()) : Promise.resolve([] as readonly AuthzScheme[]),
+    asked.length > 0 || asks.visitor ? (opts.visitor ?? currentVisitor()) : Promise.resolve(null),
+    asks.calendar ? raceWeekendNow() : Promise.resolve<boolean | null>(null),
+    loadBuildOptions(),
+    // The templates' presets (P1.2) for the regions around the code's page, as the catch-all reads them.
+    loadAppearance(),
+    // The live row pages the buttons and go effects name (P1.12 B2), as the catch-all reads them.
+    loadNamedPages(refs.dests),
+  ]);
+  // The frame is keyed by the route's pattern and knows neither the visited address nor its parts (P2.6): a fact not known shows the region.
+  const document = applyBuildOptions(applyConditions(stored, { signedIn: who ? who.signedIn : null, raceWeekend, params: null, path: null }), buildOptions);
+  const allowed = asked.length > 0 && who ? allowedKeys(asked, rules, who) : new Set<string>();
+  const messages: Record<string, string | null> = {};
+  for (const key of asked) messages[key] = rules.find(s => s.key === key)?.message ?? null;
+  // The pages, read above for the Buttons, reach the cards' zones too (P2.2 B3). The address's parts reach the components
+  // (P2.17: a Breadcrumb knows which series and tab it stands on); the conditions above keep P2.6's rule.
+  const [lists, components] = await Promise.all([loadDocumentLists(refs.lists, nav), renderComponents(document, { path, params, pages })]);
+  // A split document draws its own Body (splitsBody, the rule CodePageFrame applies): the code's body is neither rendered nor placed.
+  const children = splitsBody(document) ? undefined : opts.body ? await opts.body() : undefined;
+  return createElement(CodePageFrame, { d: { page, document, shortcuts, assets, nav, lists, allowed, messages, components, templates: appearance.templates, pages } }, children);
 }
 
 /** The address's parts as Next hands them to a route (a promise since Next 15;

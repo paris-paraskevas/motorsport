@@ -74,6 +74,10 @@ describe('ListsEditor', () => {
     fireEvent.click(within(row).getByRole('button', { name: 'Open' }));
     expect(await screen.findByRole('heading', { name: 'Useful links' })).toBeTruthy();
     expect(screen.getByLabelText('Preview of the list')).toBeTruthy();
+    // R18: the series tabs in the catalogue select, flat by label among the rest (the designer's selects group them).
+    const add = screen.getByLabelText('Add an entry from the catalogue') as HTMLSelectElement;
+    expect(Array.from(add.options).map(o => o.textContent?.trim())).toContain('Formula 1 · Champions · /series/f1/champions');
+    expect(add.querySelector('optgroup')).toBeNull();
     expect(calls.find(c => c.method === 'GET')!.url).toBe('/api/admin/design/lists/useful-links');
     fireEvent.click(within(row).getByRole('button', { name: 'Delete useful-links' }));
     fireEvent.click(within(row).getByRole('button', { name: 'Yes' }));

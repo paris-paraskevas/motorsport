@@ -311,6 +311,14 @@ describe('destinations a button or a go effect may name (P1.12 B2)', () => {
     expect(goOptions().some(o => o.key === `page:${PAGE}`)).toBe(false);
     expect(goOptions(pages).find(o => o.key === `page:${PAGE}`)?.label).toBe('Monza, a history');
     expect(goOptions([{ ...pages[0], kind: 'code' }]).some(o => o.key.startsWith('page:'))).toBe(false);
+    // R18: the series tabs under a group of their own, after the catalogue's places and before the pages made here.
+    const series = goOptions(pages).filter(o => o.group === 'Series');
+    expect(series.length).toBe(15 + 14 * 6 + 2);
+    expect(series[0]).toEqual({ key: 'series:adac-ravenol-24h', label: 'ADAC Ravenol 24h Nürburgring', group: 'Series' });
+    expect(series.find(o => o.key === 'series:f1:champions')).toEqual({ key: 'series:f1:champions', label: 'Formula 1 · Champions', group: 'Series' });
+    const groups = goOptions(pages).map(o => o.group ?? '');
+    expect(groups.indexOf('Series')).toBeGreaterThan(groups.lastIndexOf(''));
+    expect(groups.lastIndexOf('Series')).toBeLessThan(groups.indexOf('Pages'));
     expect(destinationLabel(`page:${PAGE}`, pages)).toBe('Monza, a history');
     expect(destinationLabel(`page:${PAGE}`)).toBe(`page:${PAGE}`);
     expect(effectText({ action: 'go', dest: `page:${PAGE}` }, [], pages)).toBe('Navigate to Page · Monza, a history');

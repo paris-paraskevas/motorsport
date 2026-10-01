@@ -298,7 +298,7 @@ export interface Preset {
   /** The view the preset brings when picked: the standings tables, the results' Rounds layout (List), Home's boxes their own
    *  template (P2.24 A: lead-story, wire; B1: coming-weekends; B2: podium, leader); Timeline and Detail (P2.2 B2) are the
    *  operator's picks, no preset brings them. */
-  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire' | 'headlines' | 'coming-weekends' | 'podium' | 'leader';
+  view: 'table' | 'cards' | 'list' | 'timeline' | 'detail' | 'lead-story' | 'wire' | 'headlines' | 'coming-weekends' | 'podium' | 'leader' | 'reigning' | 'honours';
   /** The Rows the pick sets, where the site's box has a count of its own (P2.24 A: the lead and its three further posts, the
    *  wire's five); absent, the region's Rows stands. Ours: the counts were Application Settings of Home's pieces. */
   rows?: number;
@@ -397,9 +397,9 @@ export const PRESETS: readonly Preset[] = [
   // Every series, since neither source takes one (the posts' rule); the Table by default, as a preset must bring a view.
   { key: 'circuits', name: 'Circuits', group: 'circuits', source: 'tracks', shape: 'track-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Circuit', view: 'table' },
   { key: 'circuit-guides', name: 'Circuit guides', group: 'circuit-guides', source: 'guides', shape: 'guide-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Circuit', view: 'table' },
-  // The champions (R18): every season of a series' roll of honour (Rows 150, so a file is never cut; the Table until the Roll of
-  // honour view lands with PR B), and the two title tallies, five rows each, on the List. Every series carries a champions file.
-  { key: 'champions', name: 'Champions', group: 'champions', source: 'champions', shape: 'honour-rows', where: { kind: 'season' }, series: EVERY_SERIES, nameLabel: 'Champion', view: 'table', rows: 150 },
+  // The champions (R18): every season of a series' roll of honour (Rows 150, so a file is never cut) on the Roll of honour view,
+  // and the two title tallies, five rows each, on the List. Every series carries a champions file.
+  { key: 'champions', name: 'Champions', group: 'champions', source: 'champions', shape: 'honour-rows', where: { kind: 'season' }, series: EVERY_SERIES, nameLabel: 'Champion', view: 'honours', rows: 150 },
   { key: 'drivers-titles-by-team', name: "Drivers' titles", group: 'champions', source: 'champions', shape: 'title-rows', where: { kind: 'driver-titles' }, series: EVERY_SERIES, nameLabel: 'Team', view: 'list', rows: 5 },
   { key: 'teams-titles-by-team', name: "Teams' titles", group: 'champions', source: 'champions', shape: 'title-rows', where: { kind: 'team-titles' }, series: EVERY_SERIES, nameLabel: 'Team', view: 'list', rows: 5 },
 ];

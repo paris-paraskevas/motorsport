@@ -15,6 +15,8 @@
 import { PRESETS, PRESET_GROUPS, SHAPES, findPreset, type PresetColumn } from './presets';
 import { CURRENT_SEASON, SERIES_OPTIONS } from './sources';
 import { DEFAULT_MAP_BACKGROUND, MAP_BACKGROUNDS, findMapBackground } from './map-backgrounds';
+import type { Region } from './page-document';
+import type { RegionTemplateKey } from './template-options';
 
 export type SettingValue = string | number | boolean;
 
@@ -88,6 +90,8 @@ export interface AttributeDefinition {
   /** A text that is one condition on a row in the address's words (`position.lte:3`, P2.4): the parser binds it to the
    *  preset's shape as it binds a filter, the editor notes a text that does not read. */
   rule?: true;
+  /** Left out of the tile's summary (R18: a standfirst is a sentence, not a setting to read at a glance). */
+  summarised?: false;
 }
 /** APEX: Attribute Groups, named and sequenced sections of the Attributes tab. */
 export interface AttributeGroup {
@@ -205,8 +209,13 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     key: 'page.heading',
     name: 'Page heading',
     group: 'Page',
-    holds: 'the page’s heading in the site’s masthead style: its title, or words of your own',
-    settings: [{ key: 'text', label: 'Words', kind: 'text', default: '', maxLength: 120, help: 'Empty shows the page’s title, or its name when it has none.' }],
+    holds: 'the page’s heading in the site’s masthead style: its title, or words of your own; a kicker above it and a standfirst below it when you want them',
+    settings: [
+      { key: 'text', label: 'Words', kind: 'text', default: '', maxLength: 120, help: 'Empty shows the page’s title, or its name when it has none.' },
+      // R18, ours: the site's mastheads carry a kicker line (the series tabs' season line) and its editorial pages a standfirst (the blog's).
+      { key: 'eyebrow', label: 'Eyebrow', kind: 'text', default: '', maxLength: 60, help: 'A small capitals line above the heading (ours: the series pages’ season line; APEX has no kicker); empty draws none.' },
+      { key: 'standfirst', label: 'Standfirst', kind: 'text', default: '', maxLength: 200, summarised: false, help: 'One sentence under the heading, in the site’s prose (ours: the blog page’s standfirst; APEX has none); empty draws none.' },
+    ],
   },
   // The Breadcrumb (P2.17; APEX: the Breadcrumb region): the page's place in the
   // site from its address, derived and never edited (no entry tree, no source).
@@ -351,8 +360,11 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
           // renderer draws the Table for a stored one on another shape of the source.
           { key: 'podium', label: 'Latest result', only: { source: 'results' } },
           { key: 'leader', label: 'What it changed', only: { source: 'standings' } },
+          // The champions page's two templates (R18), ours: the newest season as a card, the seasons by decade as the operator's design draws them; each on the Champions source.
+          { key: 'reigning', label: 'Reigning champion', only: { source: 'champions' } },
+          { key: 'honours', label: 'Roll of honour', only: { source: 'champions' } },
         ],
-        help: 'How the rows are drawn (APEX: a report’s Template; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. Lead story (posts), The wire (news), What’s next (weekends), Latest result (results) and What it changed (standings) are Home’s boxes as templates: the lead with its cover, its age and its further reading; the headlines linked out with their source and age; the coming weekends, the nearest first with its countdown; the newest race’s headline, margin and podium; the championship after it, the leader’s headline and the table with the winner’s row marked; each brings its rows. Headlines (news) is the News page’s list: two columns of headlines linked out, each with its series, its source and its age, and the reader’s Everything or Yours only chips while they follow series. A preset brings its own view when picked.',
+        help: 'How the rows are drawn (APEX: a report’s Template; ours: one region with a View setting). List is the Rounds layout for results, a round per fold, and a compact list for standings. Timeline (APEX’s Timeline template) draws a race per entry on a rail with its date, its winner and the winner’s initials; results only, since a standings row has no date. Detail (APEX’s Value Attribute Pairs - Column) draws a block per row with its columns as label and value; it suits small row counts. Lead story (posts), The wire (news), What’s next (weekends), Latest result (results) and What it changed (standings) are Home’s boxes as templates: the lead with its cover, its age and its further reading; the headlines linked out with their source and age; the coming weekends, the nearest first with its countdown; the newest race’s headline, margin and podium; the championship after it, the leader’s headline and the table with the winner’s row marked; each brings its rows. Headlines (news) is the News page’s list: two columns of headlines linked out, each with its series, its source and its age, and the reader’s Everything or Yours only chips while they follow series. Reigning champion and Roll of honour (champions; ours, R18, the operator’s design of the Formula 2 champions page) draw the newest season as a card with its tiles and the seasons by decade as a ruled table, cards on phones. A preset brings its own view when picked.',
       },
       // The cap at 150 (P2.5 PR C): the News page shows its whole aggregate, ten per series, at once.
       { key: 'rows', label: 'Rows', kind: 'number', scope: 'report', default: 10, min: 1, max: 150, help: 'How many rows the region shows, from the top of the table; for results, how many races, newest first, each whole; for the Lead story, the lead and its further reading; the News page shows up to 150.' },
@@ -768,17 +780,29 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
   },
 ];
 
-/** One entry of a page's recipe (P2.24 C): the component, the region's id, the settings that differ from the
- *  component's defaults, its Source, and whether it is one of two halves sharing a row. A bare key is the shorthand
- *  for a component at its defaults, its id the key's last word. */
-export interface RecipeEntry {
+/** What every recipe entry carries (R18): the region's id and title, whether it is one of two halves sharing a row (the
+ *  second at column 7), its template and template options, its header and footer texts, and the region it sits inside. */
+interface RecipeBase {
   id: string;
-  component: string;
-  settings?: Readonly<Record<string, SettingValue>>;
-  source?: string;
+  title?: string;
   /** Two consecutive halves share one row, the second at column 7. */
   half?: true;
+  template?: RegionTemplateKey;
+  templateOptions?: readonly string[];
+  headerText?: string;
+  footerText?: string;
+  /** A sub region (P1.4): the id of the recipe entry it sits inside, drawn after that region's body. */
+  parent?: string;
 }
+/** One entry of a page's recipe (P2.24 C): a component with the settings that differ from its defaults and its Source (a
+ *  bare key is the shorthand for a component at its defaults, its id the key's last word); or, since R18, a static text, a
+ *  photo from the Assets store, a list from Shared Components or a button, the row-page regions the designer already knows. */
+export type RecipeEntry =
+  | (RecipeBase & { kind?: 'component'; component: string; settings?: Readonly<Record<string, SettingValue>>; source?: string })
+  | (RecipeBase & { kind: 'static'; text: string })
+  | (RecipeBase & { kind: 'image'; assetId: string; alt: string; showCaption?: boolean })
+  | (RecipeBase & { kind: 'list'; listKey: string; style?: 'links' | 'cards' })
+  | (RecipeBase & { kind: 'button'; label: string; dest?: string | null });
 
 /** How a page not yet split becomes components: the entries that replace its
  *  transitional body, in order. Only pages whose components exist appear here.
@@ -807,24 +831,34 @@ export const SPLITS: Readonly<Record<string, readonly (string | RecipeEntry)[]>>
     { id: 'filters', component: 'data.filters', settings: { filteredRegion: 'wire', facet1: 'seriesName' } },
     { id: 'wire', component: 'data.region', settings: { preset: 'wire', view: 'headlines', rows: 150 }, source: 'news?per=10' },
   ],
+  // R18: the Formula 2 champions page as the operator's design has it, keyed by the CONCRETE address (every other key is a
+  // registry pattern): the series tab route draws it for that address alone (components/tabs/ComposedTab.tsx) until the
+  // registry has a page per series tab. The masthead with its eyebrow and standfirst; the Reigning champion card the full
+  // width (the photo, an image half beside it, follows its upload to the Assets store); the roll of honour with the
+  // points-scale note as its footer; the teams' heading over the two tallies; the Keep
+  // exploring list the operator authors in Shared Components › Lists (absent until it exists); the calendar call-out, boxed,
+  // with its button inside.
+  '/series/f2/champions': [
+    { id: 'heading', component: 'page.heading', settings: { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: "Every drivers' and teams' champion since 2005, year by year, including the GP2 Series seasons (2005–2016)." } },
+    { id: 'reigning', component: 'data.region', settings: { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' }, source: 'champions?series=f2' },
+    {
+      id: 'honours',
+      component: 'data.region',
+      settings: { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' },
+      source: 'champions?series=f2',
+      footerText: 'GP2 used a smaller points scale until 2011, so margins from 2005–2011 are not directly comparable with later seasons. Sources: the official standings of each season (GP2 Series, FIA Formula 2) and Wikipedia’s season tables for wins and podiums.',
+    },
+    { id: 'teams', kind: 'static', title: 'Most successful teams', text: 'Titles won since 2005, GP2 and F2 combined.', templateOptions: ['HEADING_HEADLINE'] },
+    { id: 'drivers-titles', component: 'data.region', settings: { preset: 'drivers-titles-by-team', view: 'list', rows: 5, heading: "Drivers' titles" }, source: 'champions?series=f2', half: true },
+    { id: 'teams-titles', component: 'data.region', settings: { preset: 'teams-titles-by-team', view: 'list', rows: 5, heading: "Teams' titles" }, source: 'champions?series=f2', half: true },
+    { id: 'explore', kind: 'list', listKey: 'f2-keep-exploring', style: 'cards', title: 'Keep exploring', templateOptions: ['HEADING_HEADLINE'] },
+    { id: 'callout', kind: 'static', title: 'Every F2 session in your time zone', text: `Follow the ${CURRENT_SEASON} season on the calendar. No account needed.`, template: 'boxed', templateOptions: ['HEADING_HEADLINE'] },
+    { id: 'open-calendar', kind: 'button', label: 'Open calendar', dest: 'calendar', parent: 'callout' },
+  ],
 };
 
-/** A region of the document model for a component, as the recipes lay them out. */
-export interface RecipeRegion {
-  id: string;
-  kind: 'component';
-  component: string;
-  settings: Record<string, SettingValue>;
-  source?: string;
-  title: string;
-  position: 'body';
-  seq: number;
-  column: number;
-  span: number;
-  newRow: boolean;
-  authz: string | null;
-  hidden: boolean;
-}
+/** A region of the document model as the recipes lay them out: a component, or any of the row-page kinds (R18). */
+export type RecipeRegion = Region;
 
 /** `base`, or the first of `base-2`, `base-3`… not yet taken. */
 function uniqueId(base: string, taken: readonly string[]): string {
@@ -839,8 +873,8 @@ export function componentId(key: string, taken: readonly string[]): string {
   return uniqueId(key === 'page.body' ? 'code-body' : (key.split('.').pop() ?? 'component').replace(/[^a-z0-9-]/g, '-'), taken);
 }
 
-/** The recipe's components as Body regions, in order, renumbered by tens from
- *  `seqFrom`; two consecutive halves share one row. Empty for a path without a recipe. */
+/** The recipe's regions as Body regions, in order, renumbered by tens from `seqFrom`; two consecutive halves share one
+ *  row; a component the catalogue lacks is left out. Empty for a path without a recipe. */
 export function recipeRegions(path: string, taken: readonly string[] = [], seqFrom = 10, components: readonly ComponentDefinition[] = COMPONENTS): RecipeRegion[] {
   const recipe = SPLITS[path];
   if (!recipe) return [];
@@ -849,25 +883,35 @@ export function recipeRegions(path: string, taken: readonly string[] = [], seqFr
   let halves = 0;
   for (const item of recipe) {
     const entry: RecipeEntry = typeof item === 'string' ? { id: componentId(item, []), component: item } : item;
-    const spec = findComponent(entry.component, components);
-    if (!spec) continue;
     const second = entry.half === true && halves % 2 === 1;
     if (entry.half) halves++;
-    out.push({
+    const base = {
       id: uniqueId(entry.id, [...taken, ...out.map(r => r.id)]),
-      kind: 'component',
-      component: entry.component,
-      settings: { ...componentDefaults(spec), ...entry.settings },
-      ...(entry.source ? { source: entry.source } : {}),
-      title: '',
-      position: 'body',
+      title: entry.title ?? '',
+      position: 'body' as const,
       seq,
       column: second ? 7 : 1,
       span: entry.half ? 6 : 12,
       newRow: !second,
       authz: null,
       hidden: false,
-    });
+      ...(entry.template ? { template: entry.template } : {}),
+      ...(entry.templateOptions ? { templateOptions: [...entry.templateOptions] } : {}),
+      ...(entry.headerText ? { headerText: entry.headerText } : {}),
+      ...(entry.footerText ? { footerText: entry.footerText } : {}),
+      ...(entry.parent ? { parent: entry.parent } : {}),
+    };
+    let region: RecipeRegion;
+    if (entry.kind === undefined || entry.kind === 'component') {
+      const spec = findComponent(entry.component, components);
+      if (!spec) continue;
+      region = { ...base, kind: 'component', component: entry.component, settings: { ...componentDefaults(spec), ...entry.settings }, ...(entry.source ? { source: entry.source } : {}) };
+    } else if (entry.kind === 'static') region = { ...base, kind: 'static', text: entry.text };
+    else if (entry.kind === 'image') region = { ...base, kind: 'image', assetId: entry.assetId, alt: entry.alt, showCaption: entry.showCaption !== false };
+    else if (entry.kind === 'list') region = { ...base, kind: 'list', listKey: entry.listKey, style: entry.style ?? 'links' };
+    else if (entry.kind === 'button') region = { ...base, kind: 'button', label: entry.label, dest: entry.dest ?? null };
+    else continue;
+    out.push(region);
     seq += 10;
   }
   return out;
@@ -1016,6 +1060,7 @@ export function settingsSummary(spec: ComponentDefinition, settings: Readonly<Re
   }
   const parts = instanceAttributes(spec).flatMap(s => {
     const v = settings[s.key] ?? s.default;
+    if (s.summarised === false) return [];
     if (s.kind === 'text' && String(v).trim() === '') return [];
     // A region, a column or a facet not named says nothing (P2.5), nor does a grouped switch at its default: the tile names what is set.
     if (s.optionsFrom && v === '') return [];

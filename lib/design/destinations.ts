@@ -107,10 +107,68 @@ export const DESTINATIONS: Record<string, Destination> = {
   'action:cookies': { kind: 'action', action: 'cookies', label: 'Manage cookies' },
 };
 
-/** The catalogue's entry for a key; with the live row pages given, a page key's
- *  route (its path, its name) too. Null for anything else. */
+// The series tabs as destinations (R18): `series:<slug>` is a championship's hub, `series:<slug>:<tab>` one of its tabs,
+// resolved by a rule as page keys are, never a table, since this module rides every page's client JS. The slugs and names
+// are the catalogue's fifteen (lib/design/sources.ts SERIES_OPTIONS, which this module must not import; a test holds the
+// two equal), the single-event series the content's (its meta file; the same test), the tabs the six a list may point at
+// (the calendar is the hub itself, Rounds is coverage-gated per series), their labels the tab rail's (lib/tabs.ts TABS).
+export const SERIES_DESTINATION_SLUGS: Readonly<Record<string, string>> = {
+  'adac-ravenol-24h': 'ADAC Ravenol 24h Nürburgring',
+  dtm: 'DTM',
+  f1: 'Formula 1',
+  f2: 'Formula 2',
+  f3: 'Formula 3',
+  'formula-e': 'Formula E',
+  'gt-world': 'GT World Challenge',
+  imsa: 'IMSA',
+  indycar: 'IndyCar',
+  motogp: 'MotoGP',
+  'nascar-cup': 'NASCAR Cup',
+  nls: 'NLS Nürburgring',
+  wec: 'FIA WEC',
+  wrc: 'WRC',
+  wsbk: 'WorldSBK',
+};
+/** The series with one annual race, not a championship: their tab set is drivers and champions (lib/tabs.ts SINGLE_EVENT_TAB_KEYS). */
+export const SINGLE_EVENT_SLUGS: ReadonlySet<string> = new Set(['adac-ravenol-24h']);
+const SERIES_TAB_LABELS: Readonly<Record<string, string>> = { standings: 'Standings', results: 'Results', drivers: 'Drivers', champions: 'Champions', blog: 'Blog', news: 'News' };
+const SINGLE_EVENT_TABS: ReadonlySet<string> = new Set(['drivers', 'champions']);
+const SERIES_KEY = /^series:([a-z0-9-]+)(?::([a-z]+))?$/;
+
+/** The rule: a series key's destination, or null for a slug or a tab the series does not have. */
+function seriesDestination(key: string): Destination | null {
+  const m = SERIES_KEY.exec(key);
+  if (!m) return null;
+  const [, slug, tab] = m;
+  // By own key: the maps are plain objects, and `constructor` is no series.
+  if (!Object.prototype.hasOwnProperty.call(SERIES_DESTINATION_SLUGS, slug)) return null;
+  const name = SERIES_DESTINATION_SLUGS[slug];
+  if (!tab) return route(`/series/${slug}`, name);
+  if (!Object.prototype.hasOwnProperty.call(SERIES_TAB_LABELS, tab)) return null;
+  const label = SERIES_TAB_LABELS[tab];
+  const single = SINGLE_EVENT_SLUGS.has(slug);
+  if (single && !SINGLE_EVENT_TABS.has(tab)) return null;
+  return route(`/series/${slug}/${tab}`, `${name} · ${single && tab === 'champions' ? 'Past Winners' : label}`);
+}
+
+/** Every series destination the rule resolves, for the pickers: the hub, then the tabs, in the catalogue's series order. */
+export function seriesDestinationOptions(): { key: string; label: string; href: string }[] {
+  const out: { key: string; label: string; href: string }[] = [];
+  for (const slug of Object.keys(SERIES_DESTINATION_SLUGS)) {
+    for (const key of [`series:${slug}`, ...Object.keys(SERIES_TAB_LABELS).map(tab => `series:${slug}:${tab}`)]) {
+      const d = seriesDestination(key);
+      if (d && d.kind === 'route') out.push({ key, label: d.label, href: d.href });
+    }
+  }
+  return out;
+}
+
+/** The catalogue's entry for a key; a series tab's by the rule; with the live row
+ *  pages given, a page key's route (its path, its name) too. Null for anything else. */
 export function resolveDestination(key: string, pages?: PageDestinations): Destination | null {
   if (Object.prototype.hasOwnProperty.call(DESTINATIONS, key)) return DESTINATIONS[key];
+  const series = seriesDestination(key);
+  if (series) return series;
   const id = pageIdOf(key);
   if (id && pages && Object.prototype.hasOwnProperty.call(pages, id)) return { kind: 'route', href: pages[id].path, label: pages[id].name };
   return null;

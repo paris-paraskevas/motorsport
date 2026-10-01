@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.237 — 2026-10-01
+
+The Formula 2 champions page has a new shape: the reigning champion up top with their points, wins, podiums and winning margin, every season since 2005 by decade with the runner-up and the teams’ champion beside each name, the GP2 years marked, the teams with the most titles, and a jump bar that follows you down the page. Elsewhere, a list cut to its first few rows now says how many more there are.
+
 ## 1.0.236 — 2026-10-01
 
 The Formula 2 champions page now states, for every season since 2005, the champion’s points and wins, the runner-up and the margin, each figure checked against the official standings of that season and the season’s record; the “who won” answers for Formula 2 and GP2 name the title-winning points too.

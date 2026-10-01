@@ -524,10 +524,10 @@ describe('the circuits and the circuit guides (P2.12)', () => {
 });
 
 describe('the Champions presets (R18)', () => {
-  it('adds the twenty-fifth group and three presets over two shapes: the seasons (every row a season, newest first as the reader hands them, every row kept; the Table until the Roll of honour view lands) and the two tallies (five rows, the List), every series', () => {
+  it('adds the twenty-fifth group and three presets over two shapes: the seasons (every row a season, newest first as the reader hands them, every row kept; the Roll of honour view) and the two tallies (five rows, the List), every series', () => {
     expect(PRESET_GROUPS.at(-1)).toEqual({ key: 'champions', name: 'Champions', source: 'champions' });
     const seasons = findPreset('champions')!;
-    expect(seasons).toMatchObject({ name: 'Champions', group: 'champions', source: 'champions', shape: 'honour-rows', where: { kind: 'season' }, nameLabel: 'Champion', view: 'table', rows: 150 });
+    expect(seasons).toMatchObject({ name: 'Champions', group: 'champions', source: 'champions', shape: 'honour-rows', where: { kind: 'season' }, nameLabel: 'Champion', view: 'honours', rows: 150 });
     expect(seasons.series).toEqual(SERIES_OPTIONS.map(o => o.key));
     expect(findPreset('drivers-titles-by-team')).toMatchObject({ name: "Drivers' titles", group: 'champions', source: 'champions', shape: 'title-rows', where: { kind: 'driver-titles' }, nameLabel: 'Team', view: 'list', rows: 5 });
     expect(findPreset('teams-titles-by-team')).toMatchObject({ name: "Teams' titles", group: 'champions', source: 'champions', shape: 'title-rows', where: { kind: 'team-titles' }, nameLabel: 'Team', view: 'list', rows: 5 });

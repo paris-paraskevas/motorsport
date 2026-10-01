@@ -161,13 +161,14 @@ describe('a definition’s overlay (P2.0, PR B): what the operator adds to a shi
 
   it('merges shipped first, then the overlay; an empty overlay leaves the shipped definition as it is', () => {
     const merged = mergeDefinition(heading, parseOverlay(overlay, heading).value);
-    expect(merged.settings.map(s => s.key)).toEqual(['text', 'accent', 'badge']);
+    // R18: the shipped heading carries text, eyebrow and standfirst; the overlay's two follow.
+    expect(merged.settings.map(s => s.key)).toEqual(['text', 'eyebrow', 'standfirst', 'accent', 'badge']);
     expect(merged.groups).toEqual([{ key: 'colours', title: 'Colours', seq: 10 }]);
     expect(merged.name).toBe(heading.name);
     expect(mergeDefinition(heading, EMPTY_OVERLAY)).toBe(heading);
     const all = mergeDefinitions(DEFINITIONS, { 'page.heading': parseOverlay(overlay, heading).value });
     expect(all).toHaveLength(DEFINITIONS.length);
-    expect(all.find(d => d.key === 'page.heading')?.settings).toHaveLength(3);
+    expect(all.find(d => d.key === 'page.heading')?.settings).toHaveLength(5);
     expect(all.find(d => d.key === 'series.live')).toBe(DEFINITIONS.find(d => d.key === 'series.live'));
   });
 
@@ -175,6 +176,6 @@ describe('a definition’s overlay (P2.0, PR B): what the operator adds to a shi
     const list: EditableDefinition[] = DEFINITIONS.map(d => ({ key: d.key, definition: d.key === 'page.heading' ? mergeDefinition(d, parseOverlay(overlay, d).value) : d, overlay: EMPTY_OVERLAY, updatedAt: null, updatedBy: null, usedOn: [], regions: 0 }));
     const components = componentDefinitionsOf(list);
     expect(components.map(d => d.key)).toEqual(DEFINITIONS.filter(d => d.group !== 'Region').map(d => d.key));
-    expect(components.find(d => d.key === 'page.heading')?.settings).toHaveLength(3);
+    expect(components.find(d => d.key === 'page.heading')?.settings).toHaveLength(5);
   });
 });

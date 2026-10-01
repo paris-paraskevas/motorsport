@@ -288,6 +288,8 @@ function ownSlotLabel(shape: Shape, key: string): string {
 function DestinationOptions({ pages }: { pages: readonly PageRow[] }) {
   const options = goOptions(pages);
   const own = options.filter(o => o.group === 'Pages');
+  // The series tabs (R18) under a group of their own, between the catalogue's places and the pages made here.
+  const series = options.filter(o => o.group === 'Series');
   return (
     <>
       {options
@@ -297,6 +299,15 @@ function DestinationOptions({ pages }: { pages: readonly PageRow[] }) {
             {o.label}
           </option>
         ))}
+      {series.length > 0 && (
+        <optgroup label="Series">
+          {series.map(o => (
+            <option key={o.key} value={o.key}>
+              {o.label}
+            </option>
+          ))}
+        </optgroup>
+      )}
       {own.length > 0 && (
         <optgroup label="Pages">
           {own.map(o => (

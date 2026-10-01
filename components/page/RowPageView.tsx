@@ -305,6 +305,9 @@ function RegionBody({ d, region, parts }: { d: RowPageData; region: Region; part
   if (region.kind === 'image') {
     const asset = d.assets.get(region.assetId);
     if (!asset) return null;
+    // R18: the first photo of the Body is the largest thing above the fold on a page that opens with one; it loads eagerly, the rest lazily.
+    const first = d.document.regions.filter(r => r.kind === 'image' && r.position === 'body' && !r.hidden).sort((a, b) => a.seq - b.seq)[0];
+    const priority = first?.id === region.id;
     const credit = [asset.credit, asset.licence].filter(Boolean).join(' · ');
     return (
       <figure>
@@ -315,6 +318,7 @@ function RegionBody({ d, region, parts }: { d: RowPageData; region: Region; part
           width={asset.width ?? 1200}
           height={asset.height ?? 800}
           unoptimized
+          priority={priority}
           className="h-auto w-full border border-border bg-surface"
         />
         {region.showCaption && (asset.caption || credit) && (
