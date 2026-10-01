@@ -14,6 +14,42 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1119 · 1.0.237 · R18 PR B · opened Thu 1 Oct 22:35 (19:35Z); the merge on the word
+**The Formula 2 champions page in the operator’s design.** The second of R18’s two PRs: `/series/f2/champions` takes the shape of the operator’s Claude Design page in the site’s faces with the Appearance corners (“B”): the masthead with its eyebrow and standfirst, the Reigning champion card the full width (its photo half follows the upload), the roll of honour by decade with the era row and the sticky Jump-to bar, the two title tallies, the Keep exploring list (absent until the operator authors it) and the calendar call-out. Every piece is general and in the catalogue; the page is a recipe keyed by its concrete address, drawn by the tab route through the frame’s own assembly; the fourteen other champions tabs are byte-identical. The review page: https://claude.ai/code/artifact/c439f1f5-371e-4262-8e93-c7a533ce8c09
+- **Readers see:** the Formula 2 champions page in its new shape (the 1440, 800 and 390 px views on the review page); any list cut to its first rows says “+ n more”; nothing else changes (the parity below).
+- **Editors get:** the Page heading’s Eyebrow and Standfirst; the Data region’s Reigning champion and Roll of honour views over the Champions source; the series tabs as destinations in the Page Designer’s Target, link and go selects (under Series) and in the list editor’s selects.
+- **Files (37):**
+  - `lib/design/components.ts` · the heading’s eyebrow and standfirst (summarised: false; the help says ours); the View options reigning and honours; RecipeEntry a union over every region kind; recipeRegions; the F2 recipe (the card the full width, no photo half yet).
+  - `lib/design/presets.ts` · the Champions preset’s view honours; Preset['view'] knows the two.
+  - `lib/design/component-render.tsx` · the heading draws its eyebrow and standfirst; the dispatch of the two views on the honour-rows shape; the List’s `more`.
+  - `components/data/DataRegionViews.tsx` · DataRegionReigning (the strip sized to its tiles, dt before dd), DataRegionHonours (the table from lg, the cards below it, the nav, the era row clear of the bar, a card’s pair only with its value), MoreFoot.
+  - `lib/design/destinations.ts` · series:<slug> and series:<slug>:<tab> by rule, own-key lookups; seriesDestinationOptions.
+  - `components/designer/ListEditor.tsx` · the series tabs in the two selects, flat by label.
+  - `components/designer/page-designer-model.ts` · goOptions’ Series group; splitRecipe names component entries only.
+  - `components/designer/PageDesignerProperties.tsx` · DestinationOptions draws the Series group.
+  - `lib/design/page-frame.tsx` · composedBody out of framed.
+  - `components/tabs/ComposedTab.tsx` (new) · the composed tab between the shell’s nodes before and after; the children (the whole legacy layout) on the fault path.
+  - `components/SeriesPageView.tsx` · the composed branch around the frame’s assembly; the legacy layout one node, handed to ComposedTab whole.
+  - `components/page/RowPageView.tsx` · the first Body image’s priority.
+  - `scripts/parity-page.mts` (new) · the served body of an address before and after, normalised and compared, the footer’s release string masked.
+  - `components/SeriesPageView.test.tsx` (new) · the composed branch (the back link, one BreadcrumbList, the foot, no shell masthead), the fault path’s whole legacy layout with its h1, the F3 tab legacy.
+  - `components/tabs/ComposedTab.test.tsx` (new) · the F2 address composed between the nodes, the F3 one the children alone, the fallback on a throw and without a row.
+  - `lib/design/component-render.test.tsx` · the two views from a saved document; the List’s foot; the heading’s eyebrow and standfirst; the tiles’ order and count; the roll’s breakpoint, nav, era offset and the card’s pairs.
+  - `lib/design/components.test.ts` · the View options; the recipe check kind-aware; the F2 recipe with every kind; the round trip; the heading’s tile summary.
+  - `lib/design/destinations.test.ts` · the rule, the lists held equal to the catalogue’s and the content’s, every option a tab the series renders, own keys.
+  - `lib/design/page-frame.test.ts` · composedBody; the body-once invariant.
+  - `lib/design/presets.test.ts`, `lib/design/definitions.test.ts`, `lib/design/component-definitions.test.ts`, `app/api/admin/design/definitions/[key]/route.test.ts` · the Champions preset’s view; the heading’s pins move by two (named).
+  - `components/designer/page-designer-model.test.ts` · goOptions’ Series group after the catalogue’s and before the pages.
+  - `components/designer/PageDesigner.test.tsx` · the Target select’s Series group; the two greyed-option notes name the Champions views (a model change the review found).
+  - `components/designer/ListsEditor.test.tsx` · the list editor’s select lists the series tabs flat.
+  - `components/page/RowPageView.test.tsx` · the first Body image’s priority.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R18’s evidence with PR B’s gates and the review, corrected; 70 slots rehashed.
+  - `SCHEDULE.md`, `IDEAS.md` · the session-63 items 4–5; the recipe refs gap, describeTab’s champions line, the pieces left out, the bar’s offset and the table’s roles, the operator’s point on the page’s bottom.
+  - `docs/HANDOFF.md` · the mid-build pickup for the compaction and the review’s to-do.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · this entry and the trio, 1.0.237.
+- **Verified:** tests first (red, then green) for each piece and for each review finding; `npx tsc --noEmit` → 0; `npm run lint` → 0 errors (the two known warnings); `npx vitest run` → 273 files, 2,633 tests green at the default timeouts; `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` → Total Upload 39,847.02 KiB / gzip 8,671.81 KiB (1.0.236: 39,523.55 / 8,586.69; 61% of the 64 MiB ceiling); the local server at 1440, 800 and 390 (the card the full width with its four tiles, the cards below lg with no name cut, one h1, one BreadcrumbList, the foot); the testing Worker: /series/f2/champions 219,849 · 22,369 · 115,363 bytes of HTML · wire · flight against 163,666 · 17,781 · 82,840 on prod 1.0.236; `npx tsx scripts/parity-page.mts` on the fourteen other champions tabs, prod before against the testing Worker after → identical: 14 pages; `scripts/parity-home.mts` → identical: 35 regions; a tab page’s client JS 834,012 → 835,025 bytes over 15 files. The prod-after check follows the deploy.
+- **Review:** a fresh-context Sonnet reviewer (457,689 tokens): NOT MERGEABLE on one blocking finding, a correction of the author’s own (the two Page Designer cases failed on the greyed-option note’s new words, not at a timeout, and four records said otherwise); seven should-fixes (the photo half blank until the upload; the designer’s selects never drew the Series options; the table at md cut names; a hidden tile left a hole; the fallback lost the masthead; three tests missing) and the nits folded; two nits not taken and named (the bar’s offset and the table’s roles; the title-race link for a single-event series). The reviewer verified: tsc 0, lint 0, parity identical for the fourteen tabs and nine other tab kinds, Home identical, the testing page 200 with one h1 and one BreadcrumbList, every number equal to the content file, no test weakened.
+
 ## #1118 · 1.0.236 · R18 PR A · opened Thu 1 Oct 20:58 (17:58Z); the merge on the word
 **The Formula 2 roll of honour: the facts and the Champions source.** The first of R18’s two PRs: the 21 seasons’ points, wins, podiums, runner-up and margin, nationality, era and rookie note, every row citing the archived official standings page and the season article it was read from; the Champions source, its shapes, presets and reader in the catalogue. One difference from the operator’s design: 2014’s runner-up points (229 against 204).
 - **Readers see:** the Formula 2 champions tab’s depth line under each champion (“211 pts · 4 wins · beat Jak Crawford by 36”); the 21 Formula 2 “who won” Learn answers gaining “, clinching the title on N points”; the 2014 and 2017 answers’ notes reworded (the clinch totals were stated as the season’s).

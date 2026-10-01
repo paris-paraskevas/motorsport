@@ -185,36 +185,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
     </div>
   );
 
-  // R18: a tab composed from a recipe of its own address (the Formula 2 champions page first) draws its masthead and body
-  // through the frame's assembly, in the frame's own width; the shell keeps the back link, the structured data and the foot
-  // around it, and the series' tint over it. Every other tab is drawn exactly as before.
-  const path = `/series/${slug}/${activeTab}`;
-  if (hasComposedTab(path)) {
-    return (
-      <div style={tint}>
-        {crumbs}
-        <div className={`${PAGE_WIDE} pb-0`}>
-          {back}
-          <StaleBanner configured={series.configured} stale={series.stale} />
-        </div>
-        <Suspense
-          key={activeTab}
-          fallback={
-            <div className={`${PAGE_WIDE} py-0`}>
-              <TabLoading />
-            </div>
-          }
-        >
-          <ComposedTab path={path} pattern="/series/[slug]/[tab]" params={{ slug, tab: activeTab }}>
-            {renderTab(activeTab, series)}
-          </ComposedTab>
-        </Suspense>
-        <div className={`${PAGE_WIDE} pt-0`}>{foot}</div>
-      </div>
-    );
-  }
-
-  return (
+  const legacy = (
     <div className={PAGE_WIDE} style={tint}>
       {crumbs}
 
@@ -240,6 +211,44 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       </Suspense>
 
       {foot}
+    </div>
+  );
+
+  // R18: a tab composed from a recipe of its own address (the Formula 2 champions page first) draws its masthead and body
+  // through the frame's assembly, in the frame's own width; the shell keeps the back link, the structured data and the foot
+  // around it, and the series' tint over it, and hands ComposedTab the whole legacy layout, h1 included, to draw instead when
+  // the composition fails (an indexed page keeps its masthead on the fault path). Every other tab is the legacy layout itself,
+  // exactly as before.
+  const path = `/series/${slug}/${activeTab}`;
+  if (!hasComposedTab(path)) return legacy;
+  return (
+    <div style={tint}>
+      <Suspense
+        key={activeTab}
+        fallback={
+          <div className={`${PAGE_WIDE} py-0`}>
+            <TabLoading />
+          </div>
+        }
+      >
+        <ComposedTab
+          path={path}
+          pattern="/series/[slug]/[tab]"
+          params={{ slug, tab: activeTab }}
+          before={
+            <>
+              {crumbs}
+              <div className={`${PAGE_WIDE} pb-0`}>
+                {back}
+                <StaleBanner configured={series.configured} stale={series.stale} />
+              </div>
+            </>
+          }
+          after={<div className={`${PAGE_WIDE} pt-0`}>{foot}</div>}
+        >
+          {legacy}
+        </ComposedTab>
+      </Suspense>
     </div>
   );
 }

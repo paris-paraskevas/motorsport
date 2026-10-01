@@ -107,8 +107,6 @@ export const DESTINATIONS: Record<string, Destination> = {
   'action:cookies': { kind: 'action', action: 'cookies', label: 'Manage cookies' },
 };
 
-/** The catalogue's entry for a key; with the live row pages given, a page key's
- *  route (its path, its name) too. Null for anything else. */
 // The series tabs as destinations (R18): `series:<slug>` is a championship's hub, `series:<slug>:<tab>` one of its tabs,
 // resolved by a rule as page keys are, never a table, since this module rides every page's client JS. The slugs and names
 // are the catalogue's fifteen (lib/design/sources.ts SERIES_OPTIONS, which this module must not import; a test holds the
@@ -142,11 +140,12 @@ function seriesDestination(key: string): Destination | null {
   const m = SERIES_KEY.exec(key);
   if (!m) return null;
   const [, slug, tab] = m;
+  // By own key: the maps are plain objects, and `constructor` is no series.
+  if (!Object.prototype.hasOwnProperty.call(SERIES_DESTINATION_SLUGS, slug)) return null;
   const name = SERIES_DESTINATION_SLUGS[slug];
-  if (!name) return null;
   if (!tab) return route(`/series/${slug}`, name);
+  if (!Object.prototype.hasOwnProperty.call(SERIES_TAB_LABELS, tab)) return null;
   const label = SERIES_TAB_LABELS[tab];
-  if (!label) return null;
   const single = SINGLE_EVENT_SLUGS.has(slug);
   if (single && !SINGLE_EVENT_TABS.has(tab)) return null;
   return route(`/series/${slug}/${tab}`, `${name} · ${single && tab === 'champions' ? 'Past Winners' : label}`);
@@ -164,6 +163,8 @@ export function seriesDestinationOptions(): { key: string; label: string; href: 
   return out;
 }
 
+/** The catalogue's entry for a key; a series tab's by the rule; with the live row
+ *  pages given, a page key's route (its path, its name) too. Null for anything else. */
 export function resolveDestination(key: string, pages?: PageDestinations): Destination | null {
   if (Object.prototype.hasOwnProperty.call(DESTINATIONS, key)) return DESTINATIONS[key];
   const series = seriesDestination(key);

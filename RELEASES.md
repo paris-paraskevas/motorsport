@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.237 — 2026-10-01
 
-The Formula 2 champions page has a new shape: the reigning champion up top with their points, wins, podiums and winning margin, every season since 2005 by decade with the runner-up and the teams’ champion beside each name, the GP2 years marked, the teams with the most titles, and a jump bar that follows you down the page.
+The Formula 2 champions page has a new shape: the reigning champion up top with their points, wins, podiums and winning margin, every season since 2005 by decade with the runner-up and the teams’ champion beside each name, the GP2 years marked, the teams with the most titles, and a jump bar that follows you down the page. Elsewhere, a list cut to its first few rows now says how many more there are.
 
 ## 1.0.236 — 2026-10-01
 

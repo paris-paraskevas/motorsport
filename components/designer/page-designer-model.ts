@@ -419,7 +419,8 @@ export function pageDestinationsOf(pages: readonly PageRow[] = []): PageDestinat
 }
 
 /** The destinations a button or a `go` effect may name, by label: the
- *  catalogue's, then the row pages under their names (`group: 'Pages'`). */
+ *  catalogue's, the series tabs (`group: 'Series'`, R18), then the row pages
+ *  under their names (`group: 'Pages'`). */
 export function goOptions(pages: readonly PageRow[] = []): { key: string; label: string; group?: 'Pages' | 'Series' }[] {
   const own = Object.entries(pageDestinationsOf(pages))
     .map(([id, p]) => ({ key: pageDest(id), label: p.name, group: 'Pages' as const }))

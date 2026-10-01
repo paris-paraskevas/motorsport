@@ -213,8 +213,8 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
     settings: [
       { key: 'text', label: 'Words', kind: 'text', default: '', maxLength: 120, help: 'Empty shows the page’s title, or its name when it has none.' },
       // R18, ours: the site's mastheads carry a kicker line (the series tabs' season line) and its editorial pages a standfirst (the blog's).
-      { key: 'eyebrow', label: 'Eyebrow', kind: 'text', default: '', maxLength: 60, help: 'A small capitals line above the heading, as the series pages carry their season line; empty draws none.' },
-      { key: 'standfirst', label: 'Standfirst', kind: 'text', default: '', maxLength: 200, summarised: false, help: 'One sentence under the heading, in the site’s prose; empty draws none.' },
+      { key: 'eyebrow', label: 'Eyebrow', kind: 'text', default: '', maxLength: 60, help: 'A small capitals line above the heading (ours: the series pages’ season line; APEX has no kicker); empty draws none.' },
+      { key: 'standfirst', label: 'Standfirst', kind: 'text', default: '', maxLength: 200, summarised: false, help: 'One sentence under the heading, in the site’s prose (ours: the blog page’s standfirst; APEX has none); empty draws none.' },
     ],
   },
   // The Breadcrumb (P2.17; APEX: the Breadcrumb region): the page's place in the
@@ -804,10 +804,6 @@ export type RecipeEntry =
   | (RecipeBase & { kind: 'list'; listKey: string; style?: 'links' | 'cards' })
   | (RecipeBase & { kind: 'button'; label: string; dest?: string | null });
 
-/** The Formula 2 champions page's photo (R18): the asset's id in the Assets store, once the operator has uploaded it there;
- *  until then a placeholder the frame finds no asset for, so the figure draws nothing (fail-soft). */
-export const F2_CHAMPION_PHOTO = '00000000-0000-4000-8000-000000000000';
-
 /** How a page not yet split becomes components: the entries that replace its
  *  transitional body, in order. Only pages whose components exist appear here.
  *  For a page whose route file has left the code, this is also its default
@@ -837,14 +833,14 @@ export const SPLITS: Readonly<Record<string, readonly (string | RecipeEntry)[]>>
   ],
   // R18: the Formula 2 champions page as the operator's design has it, keyed by the CONCRETE address (every other key is a
   // registry pattern): the series tab route draws it for that address alone (components/tabs/ComposedTab.tsx) until the
-  // registry has a page per series tab. The masthead with its eyebrow and standfirst; the Reigning champion card beside the
-  // photo; the roll of honour with the points-scale note as its footer; the teams' heading over the two tallies; the Keep
+  // registry has a page per series tab. The masthead with its eyebrow and standfirst; the Reigning champion card the full
+  // width (the photo, an image half beside it, follows its upload to the Assets store); the roll of honour with the
+  // points-scale note as its footer; the teams' heading over the two tallies; the Keep
   // exploring list the operator authors in Shared Components › Lists (absent until it exists); the calendar call-out, boxed,
   // with its button inside.
   '/series/f2/champions': [
     { id: 'heading', component: 'page.heading', settings: { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: "Every drivers' and teams' champion since 2005, year by year, including the GP2 Series seasons (2005–2016)." } },
-    { id: 'reigning', component: 'data.region', settings: { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' }, source: 'champions?series=f2', half: true },
-    { id: 'photo', kind: 'image', assetId: F2_CHAMPION_PHOTO, alt: 'Leonardo Fornaroli in the Invicta Racing car at the Red Bull Ring, 2025', showCaption: true, half: true },
+    { id: 'reigning', component: 'data.region', settings: { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' }, source: 'champions?series=f2' },
     {
       id: 'honours',
       component: 'data.region',

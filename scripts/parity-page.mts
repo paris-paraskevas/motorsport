@@ -33,6 +33,8 @@ function normalise(html: string): string {
     .replace(/(\bin\s|\bLIVE\b|\bstarts\s)(\d+\s?(?:d|h|m|min|s)\b\s?)+/g, m => m.replace(/\d/g, '#'))
     .replace(/(<span class="[^"]*\btabular-nums text-lg\b[^"]*">)([^<]*)(<\/span>)/g, (_, a: string, b: string, c: string) => `${a}${b.replace(/\d/g, '#')}${c}`)
     .replace(/ class=""/g, '')
+    // The footer prints the release (v1.0.237): every release changes it, so it is no difference of the page.
+    .replace(/\bv\d+\.\d+\.\d+\b/g, 'v#')
     .replace(/\b(\d+|an?)\s?(min|mins|minute|minutes|h|hr|hrs|hour|hours|d|day|days|w|week|weeks)\s+ago\b/g, '#ago')
     .replace(/\bjust now\b/g, '#ago')
     .replace(/\b(id|for|aria-describedby|aria-labelledby)="(?:B|S|P|R|_R_)[:_][^"]*"/g, '$1="#"')

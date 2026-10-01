@@ -42,7 +42,7 @@ const MV =
 type DestOption = { key: string; label: string; kind: string; href: string };
 const CATALOGUE_OPTIONS: DestOption[] = [
   ...Object.entries(DESTINATIONS).map(([key, d]) => ({ key, label: d.label, kind: d.kind, href: d.kind === 'action' ? d.action : d.href })),
-  // The series tabs (R18): the rule's keys, as the catalogue's.
+  // The series tabs (R18): the rule's keys, flat among the catalogue's by label (the designer's selects group them).
   ...seriesDestinationOptions().map(o => ({ key: o.key, label: o.label, kind: 'route', href: o.href })),
 ].sort((a, b) => a.label.localeCompare(b.label));
 /** The row pages as options (P1.12 B1), by name, after the catalogue's. */

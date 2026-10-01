@@ -616,6 +616,10 @@ describe('PageDesigner', () => {
     const options = Array.from(target.options).map(o => [o.value, o.textContent?.trim()]);
     expect(options).toContainEqual([`page:${page.id}`, 'Monza, a history']);
     expect(options.some(([value]) => value === `page:${codePage.id}`)).toBe(false);
+    // R18: the series tabs under a Series group of their own, between the catalogue's places and the pages.
+    expect(Array.from(target.querySelectorAll('optgroup[label="Series"] > option')).map(o => (o as HTMLOptionElement).value)).toContain('series:f1:champions');
+    expect(options).toContainEqual(['series:f1:champions', 'Formula 1 · Champions']);
+    expect(Array.from(target.querySelectorAll('optgroup')).map(g => g.label)).toEqual(['Series', 'Pages']);
     fireEvent.change(target, { target: { value: `page:${page.id}` } });
     expect(screen.getByText(/→ Monza, a history/)).toBeTruthy();
     expect(status()).toMatch(/Target set\./);

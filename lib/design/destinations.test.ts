@@ -91,6 +91,10 @@ describe('series destinations (R18)', () => {
     expect(resolveDestination('series:nope:standings')).toBeNull();
     expect(resolveDestination('series:')).toBeNull();
     expect(resolveDestination('series:f1:champions:x')).toBeNull();
+    // Object's own keys are no series and no tab (the maps are plain objects).
+    expect(resolveDestination('series:constructor')).toBeNull();
+    expect(resolveDestination('series:f1:constructor')).toBeNull();
+    expect(resolveDestination('series:f1:hasOwnProperty')).toBeNull();
     // The catalogue's own keys still win, and a page key still resolves against the map.
     expect(resolveDestination('series')).toEqual(DESTINATIONS.series);
     expect(resolveEntry({ label: 'F1 champions', dest: 'series:f1:champions' })).toEqual({ kind: 'route', href: '/series/f1/champions', label: 'Formula 1 · Champions' });

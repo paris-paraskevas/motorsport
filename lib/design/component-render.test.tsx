@@ -1074,6 +1074,10 @@ describe('renderComponents', () => {
     const own = await renderComponents(doc([region('heading', 'page.heading', { text: 'Every session' })]), { path: '/calendar', page });
     expect(html(own.heading)).toContain('>Every session<');
     expect(html(own.heading)).toMatch(/<h1 class="font-serif text-34[^"]*">Every session<\/h1>/);
+    expect(html(own.heading)).not.toContain('<p');
+    // R18: the eyebrow above the heading in the series pages' season-line face, the standfirst below it in the blog's prose face.
+    const dressed = await renderComponents(doc([region('heading', 'page.heading', { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: 'Every champion since 2005.' })]), { path: '/calendar', page });
+    expect(html(dressed.heading)).toMatch(/^<header><p class="mb-2 font-mono[^"]*">Formula 2 · Roll of honour<\/p><h1[^>]*>Formula 2 champions<\/h1><p class="mt-3[^"]*font-serif[^"]*">Every champion since 2005\.<\/p><\/header>$/);
     // R13 (the SEO check of 2026-09-27): a heading region that is not the first showing in the Body is an h2 of the same look;
     // Home's eight section headings drew eight h1s.
     const second = await renderComponents(doc([region('month', 'calendar.month', {}, { seq: 10 }), region('heading', 'page.heading', { text: 'Below the month' }, { seq: 20 })]), { path: '/calendar', params: {}, page });
@@ -1780,7 +1784,9 @@ describe('the champions page’s views (R18)', () => {
     expect(card).toContain('>Italy<');
     expect(card).toMatch(/<a href="\/teams\/invicta-racing"[^>]*>Invicta Racing<\/a>/);
     expect(card).toContain('>Rookie season<');
-    for (const [value, label] of [['211', 'Points'], ['4', 'Wins'], ['9', 'Podiums'], ['+36', 'Over Jak Crawford']]) expect(card, label).toMatch(new RegExp(`>${value.replace('+', '\\+')}<[^<]*<[^>]*>${label}<`));
+    // The tiles: a term then its value (dt before dd, the value drawn on top), the strip sized to the tiles it holds.
+    expect(card).toContain('style="--tiles:4"');
+    for (const [value, label] of [['211', 'Points'], ['4', 'Wins'], ['9', 'Podiums'], ['+36', 'Over Jak Crawford']]) expect(card, label).toMatch(new RegExp(`<dt[^>]*>${label}<\\/dt><dd[^>]*>${value.replace('+', '\\+')}<\\/dd>`));
     expect(card).toContain('Teams’ champion: ');
     expect(card).toContain(', a second title in a row.');
     expect(card).toMatch(/<a href="\/drivers\/leonardo-fornaroli"[^>]*>Driver profile<\/a>/);
@@ -1791,6 +1797,7 @@ describe('the champions page’s views (R18)', () => {
     expect(second).toContain('>2024 season<');
     expect(second).toContain('>Gabriel Bortoleto<');
     expect(second).not.toContain('Podiums');
+    expect(second).toContain('style="--tiles:3"');
     expect(second).not.toContain('Driver profile');
     expect(second).toContain('>Brazil<');
     expect(second).toContain('>Rookie season<');
@@ -1804,6 +1811,7 @@ describe('the champions page’s views (R18)', () => {
   it('the Roll of honour template: the seasons by decade, newest first, each decade a section with its count; the sticky Jump-to bar with the decades, the older era and the count of seasons; the table’s seven columns and the cards’ stat line; the era row where the era changes; the nationality code, the runner-up’s points, the teams’ champion’s title number', async () => {
     const roll = await draw(SEASONS, { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
     expect(roll).toContain('aria-label="Every season"');
+    expect(roll).toMatch(/<nav aria-label="Jump to" class="sticky top-14 /);
     expect(roll).toMatch(/>Jump to</);
     expect(roll).toMatch(/<a href="#honours-2020s"[^>]*>2020s<\/a>/);
     expect(roll).toMatch(/<a href="#honours-2010s"[^>]*>2010s<\/a>/);
@@ -1812,6 +1820,11 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toMatch(/id="honours-2020s"[\s\S]*>2020s<[\s\S]*>2 seasons</);
     expect(roll).toMatch(/id="honours-2010s"[\s\S]*>2010s<[\s\S]*>2 seasons</);
     for (const label of ['Year', 'Champion', 'Pts', 'Wins', 'Margin', 'Runner-up', 'Teams’ champion']) expect(roll, label).toContain(`>${label}<`);
+    // The table from lg, the cards below it (the review of the 1st: at md the names were cut).
+    expect(roll).toContain(' lg:grid lg:grid-cols-[');
+    expect(roll).toContain(' lg:hidden"');
+    expect(roll).not.toContain('md:grid');
+    expect(roll).not.toContain('md:hidden');
     expect(roll).toContain('>2025<');
     expect(roll).toMatch(/<a href="\/drivers\/leonardo-fornaroli"[^>]*>Leonardo Fornaroli<\/a>/);
     expect(roll).toContain('>ITA<');
@@ -1820,9 +1833,15 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toContain('>1st title<');
     // The era row sits between 2017 and 2016, with the older era below it.
     expect(roll).toMatch(/>2017<[\s\S]*id="honours-era"[\s\S]*>Era change<[\s\S]*>2017: GP2 Series becomes the FIA Formula 2 Championship<[\s\S]*>Seasons below raced as GP2 Series<[\s\S]*>2016</);
-    // The cards below md carry the stat line.
+    expect(roll).toMatch(/id="honours-era" class="[^"]*scroll-mt-28/);
+    // The cards below lg carry the stat line and the two pairs; a season without a runner-up on record draws no empty pair.
     expect(roll).toContain('>211 pts · 4 wins · +36<');
     expect(roll).toContain('>282 pts · 7 wins · +72<');
+    expect(roll).toMatch(/<dt[^>]*>Runner-up<\/dt><dd[^>]*>Jak Crawford<span[^>]*> · 175 pts<\/span><\/dd>/);
+    const bare = await draw([season({ runnerUp: null, runnerUpPoints: null, margin: null })], { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
+    expect(bare).not.toMatch(/<dt[^>]*>Runner-up<\/dt>/);
+    expect(bare).toMatch(/<dt[^>]*>Teams’<\/dt>/);
+    expect(bare).toContain('>211 pts · 4 wins<');
     expect(roll).not.toContain('<table');
     // A stored honours view over another source's shape draws the Table (the parser refuses it; the renderer stands).
     readSource.mockResolvedValueOnce({ columns: [], total: 1, rows: [{ kind: 'driver', position: 1, name: 'A', code: 'A', team: 'T', points: 1, wins: 0, class: null }], provenance: { ref: { source: 'standings', params: { series: 'f1', season: 2026 } }, label: 'Standings', tier: 'rows', keys: [], rows: 1, ms: 1 } });

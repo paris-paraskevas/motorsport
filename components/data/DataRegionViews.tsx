@@ -1538,7 +1538,7 @@ function MoreFoot({ shape, more }: { shape: Shape; more: readonly PresetRow[] })
 }
 
 // R18: the champions page's two templates, ours (the operator's Claude Design page of the Formula 2 champions, 2026-10-01):
-// the newest season as a card with its tiles, and the seasons by decade as a ruled table from md and as cards below it,
+// the newest season as a card with its tiles, and the seasons by decade as a ruled table from lg and as cards below it,
 // over the Champions source's honour-rows shape alone; the site's faces, the Appearance corners (rounded-lg), as the operator
 // chose on the 1st ("B"). Every value is text React escapes.
 const CHIP_LINK = 'shrink-0 rounded-lg border border-border px-3 py-1 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text hover:border-brand';
@@ -1583,11 +1583,16 @@ export function DataRegionReigning({ heading, level, rows, series }: DataRegionV
         </div>
       </div>
       {tiles.length > 0 && (
-        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
+        // The strip holds as many columns as tiles, so a tile left out leaves no hole; on phones two per row, an odd last one the
+        // full width. Each tile is its term then its value (dt, dd), the value drawn on top.
+        <dl
+          className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-[repeat(var(--tiles),minmax(0,1fr))] [&>:last-child:nth-child(odd)]:col-span-2 sm:[&>:last-child:nth-child(odd)]:col-span-1"
+          style={{ '--tiles': tiles.length } as CSSProperties}
+        >
           {tiles.map(t => (
-            <div key={t.label} className="bg-surface-elevated px-4 py-3">
-              <dd className={`font-mono text-26 font-semibold tabular-nums ${t.brand ? 'text-brand' : 'text-text'}`}>{t.value}</dd>
+            <div key={t.label} className="flex flex-col-reverse bg-surface-elevated px-4 py-3">
               <dt className={TILE_LABEL}>{t.label}</dt>
+              <dd className={`font-mono text-26 font-semibold tabular-nums ${t.brand ? 'text-brand' : 'text-text'}`}>{t.value}</dd>
             </div>
           ))}
         </dl>
@@ -1642,10 +1647,11 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
   const who = (r: PresetRow, cls: string) => linkOr(text(r.profile), text(r.driver), cls);
   const teamOf = (r: PresetRow) => (text(r.teamPage) ? <Link href={text(r.teamPage)} className="hover:text-text">{text(r.team)}</Link> : text(r.team));
   const teamsOf = (r: PresetRow) => (text(r.teamsChampionPage) ? <Link href={text(r.teamsChampionPage)} className="hover:text-text">{text(r.teamsChampion)}</Link> : text(r.teamsChampion));
-  const COLS = 'md:grid-cols-[3.5rem_minmax(0,1.5fr)_3.75rem_3rem_4rem_minmax(0,1fr)_minmax(0,1.1fr)]';
+  // The table from lg (at md the names were cut, the review of the 1st), the cards below it.
+  const COLS = 'lg:grid-cols-[3.5rem_minmax(0,1.5fr)_3.75rem_3rem_4rem_minmax(0,1fr)_minmax(0,1.1fr)]';
   const eraRow =
     eraAt && eraBefore ? (
-      <div id={`${prefix}-era`} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 bg-surface-elevated px-5 py-3 scroll-mt-20">
+      <div id={`${prefix}-era`} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 bg-surface-elevated px-5 py-3 scroll-mt-28">
         <span className="font-mono text-10 font-bold uppercase tracking-[0.14em] text-brand">Era change</span>
         <span className="text-sm font-semibold text-text">{`${text(eraBefore.year)}: ${olderEra} becomes the ${text(eraBefore.era)}`}</span>
         <span className="text-13 text-text-muted">{`Seasons below raced as ${olderEra}`}</span>
@@ -1655,7 +1661,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
     <section aria-label={heading} className="min-w-0">
       <H className="sr-only">{heading}</H>
       {/* The Jump-to bar sticks under the fixed header (the tab rail's precedent); the chips scroll inside it, so the bar itself never sits in an overflow box. */}
-      <div className="sticky top-14 z-20 -mx-4 border-y border-border bg-bg/95 backdrop-blur-xl md:-mx-6 lg:-mx-8">
+      <nav aria-label="Jump to" className="sticky top-14 z-20 -mx-4 border-y border-border bg-bg/95 backdrop-blur-xl md:-mx-6 lg:-mx-8">
         <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap px-4 py-2 scrollbar-none md:px-6 lg:px-8">
           <span className="mr-1 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint">Jump to</span>
           {[...decades.keys()].map(d => (
@@ -1670,7 +1676,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
           )}
           <span className="ml-auto pl-3 font-mono text-11 text-text-faint">{count(rows.length)}</span>
         </div>
-      </div>
+      </nav>
       {[...decades.entries()].map(([decade, seasons]) => (
         <section key={decade} id={`${prefix}-${decade}`} className="pt-8 scroll-mt-20">
           <div className="mb-3 flex flex-wrap items-baseline gap-3">
@@ -1678,7 +1684,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
             <span className="font-mono text-11 text-text-faint">{count(seasons.length)}</span>
           </div>
           <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border">
-            <div className={`hidden gap-4 bg-surface-elevated px-5 py-2 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint md:grid ${COLS}`}>
+            <div className={`hidden gap-4 bg-surface-elevated px-5 py-2 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint lg:grid ${COLS}`}>
               <span>Year</span>
               <span>Champion</span>
               <span className="text-right">Pts</span>
@@ -1690,7 +1696,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
             {seasons.map(r => (
               <Fragment key={text(r.year)}>
                 {eraAt === r && eraRow}
-                <div className={`hidden items-center gap-4 bg-surface px-5 py-4 transition-colors duration-(--duration-fast) hover:bg-surface-elevated md:grid ${COLS}`}>
+                <div className={`hidden items-center gap-4 bg-surface px-5 py-4 transition-colors duration-(--duration-fast) hover:bg-surface-elevated lg:grid ${COLS}`}>
                   <span className="font-mono text-15 font-semibold tabular-nums text-brand">{text(r.year)}</span>
                   <div className="min-w-0">
                     <div className="flex items-baseline gap-2">
@@ -1711,7 +1717,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
                     {nth(r) && <div className="mt-0.5 font-mono text-11 text-text-faint">{nth(r)}</div>}
                   </div>
                 </div>
-                <div className="grid gap-3 bg-surface p-4 md:hidden">
+                <div className="grid gap-3 bg-surface p-4 lg:hidden">
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="font-mono text-15 font-semibold tabular-nums text-brand">{text(r.year)}</span>
                     <span className="font-mono text-11 tabular-nums text-text-muted">{stat(r)}</span>
@@ -1724,16 +1730,24 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
                     <div className="mt-0.5 text-sm text-text-muted">{teamOf(r)}</div>
                   </div>
                   <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 border-t border-dashed border-border pt-3 text-13">
-                    <dt className="font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">Runner-up</dt>
-                    <dd className="text-text">
-                      {text(r.runnerUp)}
-                      {num(r.runnerUpPoints) !== null && <span className="text-text-faint">{` · ${text(r.runnerUpPoints)} pts`}</span>}
-                    </dd>
-                    <dt className="font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">Teams’</dt>
-                    <dd className="text-text">
-                      {teamsOf(r)}
-                      {nth(r) && <span className="text-text-faint">{` · ${nth(r)}`}</span>}
-                    </dd>
+                    {text(r.runnerUp) && (
+                      <>
+                        <dt className="font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">Runner-up</dt>
+                        <dd className="text-text">
+                          {text(r.runnerUp)}
+                          {num(r.runnerUpPoints) !== null && <span className="text-text-faint">{` · ${text(r.runnerUpPoints)} pts`}</span>}
+                        </dd>
+                      </>
+                    )}
+                    {text(r.teamsChampion) && (
+                      <>
+                        <dt className="font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">Teams’</dt>
+                        <dd className="text-text">
+                          {teamsOf(r)}
+                          {nth(r) && <span className="text-text-faint">{` · ${nth(r)}`}</span>}
+                        </dd>
+                      </>
+                    )}
                   </dl>
                 </div>
               </Fragment>

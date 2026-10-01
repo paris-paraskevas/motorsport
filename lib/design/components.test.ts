@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CURRENT_SEASON } from './sources';
 import { parsePageDocument, type ComponentRegion, type Region } from './page-document';
-import { COMPONENTS, COMPONENT_KEY, F2_CHAMPION_PHOTO, SPLITS, componentDefaults, componentId, defaultDocument, findComponent, parseSettings, recipeRegions, settingsSummary, type ComponentDefinition } from './components';
+import { COMPONENTS, COMPONENT_KEY, SPLITS, componentDefaults, componentId, defaultDocument, findComponent, parseSettings, recipeRegions, settingsSummary, type ComponentDefinition } from './components';
 import { MAP_BACKGROUNDS } from './map-backgrounds';
 
 // The component catalogue: every key well formed and unique, settings read
@@ -623,12 +623,11 @@ function componentRegion(r: Region): ComponentRegion {
 }
 
 describe('the champions page’s recipe (R18)', () => {
-  it('lays the Formula 2 champions page out as the design has it: the heading with its eyebrow and standfirst, the Reigning champion half beside the photo, the roll of honour with its footnote, the teams’ heading, the two tally halves, the Keep exploring list, the boxed call-out with its button inside; every region kind, the templates and the parents carried', () => {
+  it('lays the Formula 2 champions page out as the design has it: the heading with its eyebrow and standfirst, the Reigning champion card the full width (its photo half follows the upload), the roll of honour with its footnote, the teams’ heading, the two tally halves, the Keep exploring list, the boxed call-out with its button inside; every region kind, the templates and the parents carried', () => {
     const regions = recipeRegions('/series/f2/champions');
     expect(regions.map(r => `${r.id}:${r.kind}:${r.column}/${r.span}${r.newRow ? '' : ' same row'}${'parent' in r && r.parent ? ` in ${r.parent}` : ''}`)).toEqual([
       'heading:component:1/12',
-      'reigning:component:1/6',
-      'photo:image:7/6 same row',
+      'reigning:component:1/12',
       'honours:component:1/12',
       'teams:static:1/12',
       'drivers-titles:component:1/6',
@@ -640,7 +639,6 @@ describe('the champions page’s recipe (R18)', () => {
     const at = (id: string) => regions.find(r => r.id === id)!;
     expect(componentRegion(at('heading'))).toMatchObject({ component: 'page.heading', settings: { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: "Every drivers' and teams' champion since 2005, year by year, including the GP2 Series seasons (2005–2016)." } });
     expect(componentRegion(at('reigning'))).toMatchObject({ component: 'data.region', settings: { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' }, source: 'champions?series=f2' });
-    expect(at('photo')).toMatchObject({ kind: 'image', assetId: F2_CHAMPION_PHOTO, alt: 'Leonardo Fornaroli in the Invicta Racing car at the Red Bull Ring, 2025', showCaption: true });
     expect(componentRegion(at('honours'))).toMatchObject({ component: 'data.region', settings: { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, source: 'champions?series=f2' });
     expect(at('honours').footerText).toMatch(/^GP2 used a smaller points scale until 2011/);
     expect(at('honours').footerText!.length).toBeLessThanOrEqual(300);
@@ -662,5 +660,14 @@ describe('the champions page’s recipe (R18)', () => {
     const recipe = recipeRegions('/series/f2/champions');
     expect(parsed.value.regions.map(r => r.id)).toEqual(recipe.map(r => r.id));
     for (const r of recipe) expect(parsed.value.regions.find(x => x.id === r.id)).toEqual(r);
+  });
+
+  it('the heading’s tile names its words and its eyebrow, never its standfirst (an attribute summarised: false), so a sentence does not stretch the tile', () => {
+    const heading = findComponent('page.heading')!;
+    expect(heading.settings.find(s => s.key === 'standfirst')).toMatchObject({ summarised: false });
+    expect(heading.settings.find(s => s.key === 'eyebrow')?.summarised).toBeUndefined();
+    expect(settingsSummary(heading, { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: 'Every champion since 2005.' })).toBe('Words Formula 2 champions · Eyebrow Formula 2 · Roll of honour');
+    // Nothing set but the standfirst: the tile reads what the component holds, as every tile with nothing set does.
+    expect(settingsSummary(heading, { text: '', eyebrow: '', standfirst: 'Every champion since 2005.' })).toBe(heading.holds);
   });
 });
