@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1114 · 1.0.232 · R17 · opened Thu 1 Oct 14:40 (11:40Z); the merge on the word
+## #1114 · 1.0.232 · R17 · opened Thu 1 Oct 13:48 (10:48Z); the merge on the word
 **The home’s weekend box times in the reader’s zone.** The This weekend boxes drew each session’s start in the server’s clock (UTC: “04:30” for a 07:30 Athens start); now the three times go through the LocalTime piece as every other session time on the site. The review page: https://claude.ai/code/artifact/1311f2a3-0012-4d55-a10e-5269a25bc678.
 - **Readers see:** the home’s This weekend boxes with the session’s start in their own time zone and the weekday beside it (“Fri 07:30”), the server’s first paint carrying the Athens time with its zone label until the page is interactive.
 - **Editors get:** nothing.
