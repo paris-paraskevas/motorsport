@@ -203,7 +203,7 @@ const SESSION_KIND_LABELS: Readonly<Record<(typeof SESSION_KINDS)[number], strin
 export const LATEST_ROUND_OPTION = { key: 'latest', label: 'Latest captured' } as const;
 const ROUND_OPTIONS = [LATEST_ROUND_OPTION, ...Array.from({ length: 24 }, (_, i) => ({ key: String(i + 1), label: `Round ${i + 1}` }))];
 
-/** The thirteen, in the order the changes line of 2026-09-17 names them; then Weekends (P2.24 B1), the fourteenth; Session results (P2.25), the fifteenth; Season trend (P2.11), the sixteenth. */
+/** The thirteen, in the order the changes line of 2026-09-17 names them; then Weekends (P2.24 B1), the fourteenth; Session results (P2.25), the fifteenth; Season trend (P2.11), the sixteenth; Circuit guides (P2.12), the seventeenth; Champions (R18), the eighteenth. */
 export const SOURCES: readonly SourceDefinition[] = [
   {
     key: 'series',
@@ -437,6 +437,48 @@ export const SOURCES: readonly SourceDefinition[] = [
     load: 'none',
     pagination: 'none',
     reads: ['content:information'],
+  },
+  // The champions (R18): a series' curated roll of honour (content/series/<slug>/champions.json) as season rows, newest first,
+  // with the derived columns (the margin, the running title counts, the teams' run, the decade), then its two title tallies
+  // (the champions' teams, the teams' champions) as rows of their own kinds; the links from the rosters. Deployed with the site.
+  {
+    key: 'champions',
+    name: 'Champions',
+    holds: 'a series’ roll of honour: every season’s champion with nationality, team, points, wins, podiums, the runner-up and the margin, the teams’ champion and its title count, the era; then the title tallies by team',
+    parameters: [seriesParam(ALL_SERIES)],
+    columns: [
+      col('kind', 'Kind', 'text'),
+      col('year', 'Year', 'number'),
+      col('driver', 'Champion', 'text'),
+      col('profile', 'Driver page', 'link'),
+      col('nationality', 'Nationality', 'text'),
+      col('team', 'Team', 'text'),
+      col('teamPage', 'Team page', 'link'),
+      col('points', 'Points', 'number'),
+      col('wins', 'Wins', 'number'),
+      col('podiums', 'Podiums', 'number'),
+      col('margin', 'Margin', 'number'),
+      col('runnerUp', 'Runner-up', 'text'),
+      col('runnerUpTeam', 'Runner-up’s team', 'text'),
+      col('runnerUpPoints', 'Runner-up’s points', 'number'),
+      col('teamsChampion', 'Teams’ champion', 'text'),
+      col('teamsChampionPage', 'Teams’ champion’s page', 'link'),
+      col('teamsTitles', 'Teams’ title number', 'number'),
+      col('teamsRun', 'Teams’ run', 'number'),
+      col('driverTitles', 'Title number', 'number'),
+      col('era', 'Era', 'text'),
+      col('decade', 'Decade', 'text'),
+      col('rookie', 'Rookie season', 'boolean'),
+      col('name', 'Team (tally)', 'text'),
+      col('titles', 'Titles', 'number'),
+      col('page', 'Page (tally)', 'link'),
+      col('seriesName', 'Series', 'text'),
+      col('colour', 'Series colour', 'colour'),
+    ],
+    fresh: 'content',
+    load: 'none',
+    pagination: 'none',
+    reads: ['content:series'],
   },
 ];
 

@@ -55,6 +55,15 @@ describe('generateInfoEntries (champions-derived, verified)', () => {
     expect(g.some((x) => x.slug === 'who-won-the-2010-formula-2-championship')).toBe(false);
   });
 
+  // R18: the Formula 2 rows carry points now, so the generated answers clinch the title on them, in both eras.
+  it('clinches a Formula 2 title on the curated points, in the F2 era and the GP2 era', async () => {
+    const g = await generateInfoEntries();
+    const f2 = g.find((x) => x.slug === 'who-won-the-2025-formula-2-championship');
+    expect(f2?.bodyMarkdown).toContain('clinching the title on **211** points');
+    const gp2 = g.find((x) => x.slug === 'who-won-the-2010-gp2-series-championship');
+    expect(gp2?.bodyMarkdown).toContain('clinching the title on **87** points');
+  });
+
   it('generates per-series record pages', async () => {
     const g = await generateInfoEntries();
     expect(g.some((e) => e.slug === 'most-formula-1-championships')).toBe(true);

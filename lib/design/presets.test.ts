@@ -13,7 +13,7 @@ const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home']
 // results presets declared and waiting for the Rounds view (PR B).
 
 describe('the preset catalogue', () => {
-  it('holds the twenty-four groups in the drawn order and forty-three presets: twenty-seven standings over two shapes, eight results over four, one session (P2.25), two season trends (P2.11), the circuits and the circuit guides (P2.12), the site’s tables drawn as the Rounds layout by default (P2.2 B1), and Home’s five boxes as templates (P2.24 A, B1, B2)', () => {
+  it('holds the twenty-five groups in the drawn order and forty-six presets: twenty-seven standings over two shapes, eight results over four, one session (P2.25), two season trends (P2.11), the circuits and the circuit guides (P2.12), the site’s tables drawn as the Rounds layout by default (P2.2 B1), and Home’s five boxes as templates (P2.24 A, B1, B2)', () => {
     expect(PRESET_GROUPS.map(g => g.name)).toEqual([
       'Drivers',
       'Constructors',
@@ -39,8 +39,9 @@ describe('the preset catalogue', () => {
       'Season trend',
       'Circuits',
       'Circuit guides',
+      'Champions',
     ]);
-    expect(PRESETS).toHaveLength(43);
+    expect(PRESETS).toHaveLength(46);
     const standings = PRESETS.filter(p => p.source === 'standings');
     expect(standings).toHaveLength(27);
     expect(new Set(standings.map(p => p.shape))).toEqual(new Set(['driver-rows', 'team-rows']));
@@ -79,7 +80,7 @@ describe('the preset catalogue', () => {
     expect(SHAPES['car-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'date', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'manufacturer', 'laps', 'status', 'gap']);
     expect(SHAPES['cup-rows'].columns.map(c => c.key)).toEqual(['round', 'race', 'class', 'position', 'car', 'driver', 'team', 'vehicle', 'laps', 'gap']);
     expect(SHAPES['car-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'gap', badge: 'car' });
-    expect(new Set(PRESETS.map(p => p.key)).size).toBe(43);
+    expect(new Set(PRESETS.map(p => p.key)).size).toBe(46);
     const groups = new Set(PRESET_GROUPS.map(g => g.key));
     const slugs = new Set(SERIES_OPTIONS.map(o => o.key));
     for (const p of PRESETS) {
@@ -475,7 +476,8 @@ describe('the Season trend presets and the chart mappings (P2.11)', () => {
 
 describe('the circuits and the circuit guides (P2.12)', () => {
   it('adds two groups and two presets over two shapes with a map mapping each: the circuits of content/circuits.json and the information hub’s circuit guides with their pages; every series, since the sources take none', () => {
-    expect(PRESET_GROUPS.slice(-2)).toEqual([
+    // The two sit before the Champions group, the last since R18.
+    expect(PRESET_GROUPS.slice(-3, -1)).toEqual([
       { key: 'circuits', name: 'Circuits', source: 'tracks' },
       { key: 'circuit-guides', name: 'Circuit guides', source: 'guides' },
     ]);
@@ -518,5 +520,34 @@ describe('the circuits and the circuit guides (P2.12)', () => {
       { slug: 'a', name: 'A', lat: 3, lon: 4 },
     ];
     expect(presetRows(rows, findPreset('circuits')!, 10).map(r => r.slug)).toEqual(['b', 'a']);
+  });
+});
+
+describe('the Champions presets (R18)', () => {
+  it('adds the twenty-fifth group and three presets over two shapes: the seasons (every row a season, newest first as the reader hands them, every row kept; the Table until the Roll of honour view lands) and the two tallies (five rows, the List), every series', () => {
+    expect(PRESET_GROUPS.at(-1)).toEqual({ key: 'champions', name: 'Champions', source: 'champions' });
+    const seasons = findPreset('champions')!;
+    expect(seasons).toMatchObject({ name: 'Champions', group: 'champions', source: 'champions', shape: 'honour-rows', where: { kind: 'season' }, nameLabel: 'Champion', view: 'table', rows: 150 });
+    expect(seasons.series).toEqual(SERIES_OPTIONS.map(o => o.key));
+    expect(findPreset('drivers-titles-by-team')).toMatchObject({ name: "Drivers' titles", group: 'champions', source: 'champions', shape: 'title-rows', where: { kind: 'driver-titles' }, nameLabel: 'Team', view: 'list', rows: 5 });
+    expect(findPreset('teams-titles-by-team')).toMatchObject({ name: "Teams' titles", group: 'champions', source: 'champions', shape: 'title-rows', where: { kind: 'team-titles' }, nameLabel: 'Team', view: 'list', rows: 5 });
+    expect(SHAPES['honour-rows'].columns.map(c => c.key)).toEqual(['year', 'driver', 'nationality', 'team', 'points', 'wins', 'podiums', 'margin', 'runnerUp', 'runnerUpTeam', 'runnerUpPoints', 'teamsChampion', 'teamsTitles', 'teamsRun', 'driverTitles', 'era', 'decade']);
+    expect(SHAPES['honour-rows'].columns.find(c => c.key === 'driver')).toEqual({ key: 'driver', label: 'Champion', type: 'link', href: 'profile' });
+    expect(SHAPES['honour-rows'].columns.find(c => c.key === 'teamsChampion')).toEqual({ key: 'teamsChampion', label: "Teams' champion", type: 'link', href: 'teamsChampionPage' });
+    expect(SHAPES['honour-rows'].card).toEqual({ title: 'driver', subtitle: 'team', body: 'points', badge: 'year' });
+    expect(SHAPES['title-rows'].columns.map(c => [c.key, c.type])).toEqual([['name', 'link'], ['titles', 'number']]);
+    expect(SHAPES['title-rows'].card).toEqual({ title: 'name', body: 'titles', badge: '' });
+    // The rows: a season row has no position, so the reader's order (newest first) stands and every row is kept; the tallies keep theirs.
+    const rows = [
+      { kind: 'season', year: 2025, driver: 'A' },
+      { kind: 'season', year: 2024, driver: 'B' },
+      { kind: 'driver-titles', name: 'T1', titles: 2 },
+      { kind: 'driver-titles', name: 'T2', titles: 1 },
+      { kind: 'team-titles', name: 'T1', titles: 1 },
+    ];
+    expect(presetRows(rows, seasons, 150).map(r => r.year)).toEqual([2025, 2024]);
+    expect(presetRows(rows, findPreset('drivers-titles-by-team')!, 5).map(r => r.name)).toEqual(['T1', 'T2']);
+    expect(presetRows(rows, findPreset('drivers-titles-by-team')!, 1).map(r => r.name)).toEqual(['T1']);
+    expect(presetRows(rows, findPreset('teams-titles-by-team')!, 5).map(r => r.name)).toEqual(['T1']);
   });
 });

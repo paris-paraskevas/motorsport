@@ -15,9 +15,9 @@
 
 import type { ViewFilter, ViewState } from './view-state';
 
-export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends' | 'session-results' | 'trend' | 'tracks' | 'guides';
+export type PresetSource = 'standings' | 'results' | 'posts' | 'news' | 'weekends' | 'session-results' | 'trend' | 'tracks' | 'guides' | 'champions';
 /** The `kind` a standings row carries (lib/design/source-read.ts). */
-export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver';
+export type RowKind = 'driver' | 'constructor' | 'team' | 'manufacturer' | 'co-driver' | 'season' | 'driver-titles' | 'team-titles';
 /** The column types a view draws (APEX: a report's column types). The image column arrived with P2.24 A, where the posts
  *  source (the one with a picture column) met the Data region: a thumbnail in a table cell, the picture in a card's Media
  *  box; the other template components (Content Row, Timeline, Avatar, Badge) are drawn by the views, not declared as
@@ -32,7 +32,7 @@ export interface PresetColumn {
   /** For a link whose address leaves the site (the news headlines): drawn in a new tab, as an external destination is. */
   external?: true;
 }
-export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows' | 'session-rows' | 'trend-rows' | 'track-rows' | 'guide-rows';
+export type ShapeKey = 'driver-rows' | 'team-rows' | 'race-rows' | 'car-rows' | 'cup-rows' | 'podium-rows' | 'post-rows' | 'news-rows' | 'weekend-rows' | 'session-rows' | 'trend-rows' | 'track-rows' | 'guide-rows' | 'honour-rows' | 'title-rows';
 export interface Shape {
   key: ShapeKey;
   source: PresetSource;
@@ -204,6 +204,41 @@ export const SHAPES: Readonly<Record<ShapeKey, Shape>> = {
     card: { title: 'name', subtitle: 'country', body: 'category', badge: 'countryCode' },
     map: { latitude: 'lat', longitude: 'lon', title: 'name', body: 'country', link: 'page', colour: 'colour' },
   },
+  // The roll of honour (R18): a season per row, the champion linked to the profile the rosters hold, the teams' champion to
+  // its page; no position column, so the reader's order (newest first) stands. The title tallies: a team per row.
+  'honour-rows': {
+    key: 'honour-rows',
+    source: 'champions',
+    columns: [
+      { key: 'year', label: 'Year', type: 'number' },
+      { key: 'driver', label: 'Champion', type: 'link', href: 'profile' },
+      { key: 'nationality', label: 'Nat.', type: 'badge' },
+      { key: 'team', label: 'Team', type: 'link', href: 'teamPage' },
+      points,
+      wins,
+      { key: 'podiums', label: 'Podiums', type: 'number' },
+      { key: 'margin', label: 'Margin', type: 'number' },
+      { key: 'runnerUp', label: 'Runner-up', type: 'text' },
+      { key: 'runnerUpTeam', label: 'Runner-up’s team', type: 'text' },
+      { key: 'runnerUpPoints', label: 'Runner-up’s pts', type: 'number' },
+      { key: 'teamsChampion', label: "Teams' champion", type: 'link', href: 'teamsChampionPage' },
+      { key: 'teamsTitles', label: 'Title no.', type: 'number' },
+      { key: 'teamsRun', label: 'Run', type: 'number' },
+      { key: 'driverTitles', label: 'Driver’s title no.', type: 'number' },
+      { key: 'era', label: 'Era', type: 'text' },
+      { key: 'decade', label: 'Decade', type: 'text' },
+    ],
+    card: { title: 'driver', subtitle: 'team', body: 'points', badge: 'year' },
+  },
+  'title-rows': {
+    key: 'title-rows',
+    source: 'champions',
+    columns: [
+      { key: 'name', label: 'Team', type: 'link', href: 'page' },
+      { key: 'titles', label: 'Titles', type: 'number' },
+    ],
+    card: { title: 'name', body: 'titles', badge: '' },
+  },
 };
 
 export interface PresetGroup {
@@ -242,6 +277,8 @@ export const PRESET_GROUPS: readonly PresetGroup[] = [
   // The circuits and the circuit guides (P2.12): the Map's two sources, a group of one preset each.
   { key: 'circuits', name: 'Circuits', source: 'tracks' },
   { key: 'circuit-guides', name: 'Circuit guides', source: 'guides' },
+  // The champions (R18): the roll of honour and the two title tallies over the Champions source.
+  { key: 'champions', name: 'Champions', source: 'champions' },
 ];
 
 export interface Preset {
@@ -360,6 +397,11 @@ export const PRESETS: readonly Preset[] = [
   // Every series, since neither source takes one (the posts' rule); the Table by default, as a preset must bring a view.
   { key: 'circuits', name: 'Circuits', group: 'circuits', source: 'tracks', shape: 'track-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Circuit', view: 'table' },
   { key: 'circuit-guides', name: 'Circuit guides', group: 'circuit-guides', source: 'guides', shape: 'guide-rows', where: {}, series: EVERY_SERIES, nameLabel: 'Circuit', view: 'table' },
+  // The champions (R18): every season of a series' roll of honour (Rows 150, so a file is never cut; the Table until the Roll of
+  // honour view lands with PR B), and the two title tallies, five rows each, on the List. Every series carries a champions file.
+  { key: 'champions', name: 'Champions', group: 'champions', source: 'champions', shape: 'honour-rows', where: { kind: 'season' }, series: EVERY_SERIES, nameLabel: 'Champion', view: 'table', rows: 150 },
+  { key: 'drivers-titles-by-team', name: "Drivers' titles", group: 'champions', source: 'champions', shape: 'title-rows', where: { kind: 'driver-titles' }, series: EVERY_SERIES, nameLabel: 'Team', view: 'list', rows: 5 },
+  { key: 'teams-titles-by-team', name: "Teams' titles", group: 'champions', source: 'champions', shape: 'title-rows', where: { kind: 'team-titles' }, series: EVERY_SERIES, nameLabel: 'Team', view: 'list', rows: 5 },
 ];
 
 export function findPreset(key: string): Preset | null {

@@ -33,7 +33,7 @@ describe('the component catalogue', () => {
   });
 
   it('P2.1: the Data region reads standings and results (P2.2), posts and news (P2.24 A), weekends (P2.24 B1), session results (P2.25) and the season trend (P2.11); no other definition but the Metric cards and the Chart reads one (What it changed left with Home’s six, P2.24 C)', () => {
-    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides']);
+    expect(findComponent('data.region')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides', 'champions']);
     // P2.7: the Metric cards read the same seven; the Chart (P2.11) the four whose rows carry a number to draw.
     expect(findComponent('data.metrics')?.sources).toEqual(['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides']);
     expect(findComponent('data.map')?.sources).toEqual(['tracks', 'guides']);
@@ -78,7 +78,7 @@ describe('the component catalogue', () => {
     // P2.2 B3: a preset's pick resets the Card slots and the action zones to its own mapping; a results preset aims Full Card at the row's race page.
     const RESET = { cardTitle: '', cardSubtitle: '', cardBody: '', cardMedia: '', cardBadge: '', actionFullCard: '', actionTitle: '', actionSubtitle: '', actionMedia: '', actionButton: '', actionButtonLabel: 'Open' };
     const preset = region.settings[0];
-    expect(preset.options).toHaveLength(43);
+    expect(preset.options).toHaveLength(46);
     expect(preset.options![0]).toEqual({
       key: 'drivers',
       label: 'Drivers',
@@ -114,7 +114,7 @@ describe('the component catalogue', () => {
       sets: { view: 'leader', rows: 5, ...RESET },
     });
     // P2.25: the Session preset sets thirty rows too, a full classification without a Rows edit.
-    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(['lead-story', 'wire', 'whats-next', 'latest-result', 'what-it-changed', 'session'].includes(o.key));
+    for (const o of preset.options!) expect(Object.keys(o.sets ?? {}).includes('rows'), o.key).toBe(['lead-story', 'wire', 'whats-next', 'latest-result', 'what-it-changed', 'session', 'champions', 'drivers-titles-by-team', 'teams-titles-by-team'].includes(o.key));
     expect(region.settings[1].options!.map(o => [o.key, o.label])).toEqual([
       ['table', 'Table'],
       ['cards', 'Cards'],
