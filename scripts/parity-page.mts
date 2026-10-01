@@ -14,15 +14,13 @@ async function capture(arg: string): Promise<string> {
   return res.text();
 }
 
-/** The page's <main>; the whole body when the page has none. */
+/** The page's body: the App Router streams a Suspense boundary's content after </main> as hidden segments, so <main> alone
+ *  holds only the loading shell; the body carries both. The whole document when the page has no body tag. */
 function main(html: string): string {
-  const open = html.indexOf('<main');
-  const close = html.lastIndexOf('</main>');
-  if (open < 0 || close < open) {
-    const b = html.indexOf('<body');
-    return b < 0 ? html : html.slice(b);
-  }
-  return html.slice(open, close + '</main>'.length);
+  const open = html.indexOf('<body');
+  const close = html.lastIndexOf('</body>');
+  if (open < 0 || close < open) return html;
+  return html.slice(open, close + '</body>'.length);
 }
 
 /** What two honest renders of one page may differ in (parity-home.mts's rule). */
