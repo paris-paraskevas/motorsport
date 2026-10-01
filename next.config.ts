@@ -170,10 +170,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Sentry's build wrapper (and the server SDK) came off in 0.288.0
-// (operator-approved worker-size diet): the server runtime alone was ~1.4 MB
-// of a bundle Cloudflare rejects above 10 MiB gzipped — every deploy since
-// 0.275.0 failed on exactly that. Browser errors still report via
-// instrumentation-client.ts (the client SDK ships in the browser bundle, not
-// the worker).
+// Sentry left in two steps: the build wrapper and the server config in 0.288.0
+// (the Worker's size: its runtime was ~1.4 MB of a bundle Cloudflare rejects
+// above 10 MiB gzipped), the browser SDK and the last import in 1.0.230 (X9: no
+// DSN was ever set, so it reported nothing, and that import had kept the server
+// SDK inside the Worker bundle). A fault is visible in the browser console and
+// in Cloudflare's logs, nowhere else.
 export default withSerwist(nextConfig);

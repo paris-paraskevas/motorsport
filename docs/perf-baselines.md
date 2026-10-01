@@ -45,7 +45,7 @@ NASCAR, IndyCar and WRC name their race sessions by event and DTM's session page
 
 | page | before | after, testing | after, prod |
 |---|---|---|---|
-| /calendar | 544,891 · 54,510 · 454,014 | 442,552 · 43,456 · 352,739 | the cache’s previous entry still served at 06:30Z (544,934; the ISR window was counting down, the new Worker renders it next); measure again next session |
+| /calendar | 544,891 · 54,510 · 454,014 | 442,552 · 43,456 · 352,739 | 442,552 · 43,446 · 352,739 (measured 06:45Z on the 1st in session 61, the edge cache hit; this cell replaces the placeholder written at the close of session 60, when the previous build’s entry of 544,934 was still served until its window ended) |
 
 The plan's estimate for the calendar (a flight under 300 kB, the HTML under 400 kB) was optimistic by about 50 kB: the uids ran shorter than assumed and the rest is the sessions' own fields, which the views read. A further cut, not built: a table of the fifteen series referenced by index from each entry, about 60 kB more.
 
