@@ -1,6 +1,5 @@
 'use client';
 import { useEffect } from 'react';
-import * as Sentry from '@sentry/nextjs';
 
 // Root global error boundary. Next App Router invokes this ONLY when the root
 // layout (or template) itself throws, so it replaces the root layout entirely
@@ -16,8 +15,8 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
+    // The console and Cloudflare's logs are the only places a fault is visible: no error service is wired.
     console.error('[paddock] global error', error);
-    Sentry.captureException(error);
   }, [error]);
 
   return (

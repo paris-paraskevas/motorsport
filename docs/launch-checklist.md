@@ -74,7 +74,7 @@ The pre-flight gate + launch-day runbook + rollback plan for taking Paddock out 
 ### A8 · Monitoring
 - [x] **Cloudflare Worker observability enabled** (`wrangler.jsonc` → `observability`, `head_sampling_rate: 1`). Without it a production 500 leaves no trace at all, so this is the log path for the first 48h.
 - [x] **`/api/cron/health`** — summary endpoint exists.
-- [ ] **Server-side error reporting is a KNOWN GAP, accept it or close it before launch.** The Sentry build wrapper and server SDK came off in 0.288.0 for Worker size; browser errors still report via `instrumentation-client.ts`, but a server-side exception surfaces only in Cloudflare's logs. `app/error.tsx` reports to nothing. Decide: reintroduce reporting, or launch knowing this and watch the logs.
+- [ ] **Server-side error reporting is a KNOWN GAP, accept it or close it before launch.** The Sentry build wrapper and server SDK came off in 0.288.0 for Worker size, and the browser SDK in 1.0.230 (X9: it had no DSN and reported nothing); an exception surfaces only in Cloudflare's logs and the browser console. `app/(app)/error.tsx` and `app/global-error.tsx` report to nothing. Decide: reintroduce reporting, or launch knowing this and watch the logs.
 
 ---
 
