@@ -364,9 +364,9 @@ function RegionBody({ d, region, parts }: { d: RowPageData; region: Region; part
     <nav aria-label={title || region.id}>
       {title && <h2 className={parts.heading}>{title}</h2>}
       {region.style === 'cards' ? (
-        // Three to a row from lg for a wide body region (R18 PR C); two in an aside or a narrow one, where a third would be
-        // too narrow to read.
-        <div className={`grid gap-3 sm:grid-cols-2${region.span >= 9 && region.position !== 'right' ? ' lg:grid-cols-3' : ''}`}>
+        // Three to a row from lg for a wide body region on a page without an aside (R18 PR C); two in an aside, beside one
+        // (the body is eight columns there) or in a narrow region, where a third would be too narrow to read.
+        <div className={`grid gap-3 sm:grid-cols-2${region.span >= 9 && region.position !== 'right' && !d.document.regions.some(r => r.position === 'right' && isDrawn(d, r)) ? ' lg:grid-cols-3' : ''}`}>
           {entries.map((e, i) => (
             <ListCard key={`${e.dest}-${i}`} entry={e} />
           ))}

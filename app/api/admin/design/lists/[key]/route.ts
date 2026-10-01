@@ -7,6 +7,7 @@ import { isProductionWorker } from '@/lib/env';
 import { resolveDestination, type NavEntry, type PageDestinations } from '@/lib/design/destinations';
 import { LIST_NOTE_MAX } from '@/lib/design/list-edit';
 import { APPLICATION_KEY, BAR_MAX, BAR_MIN, loadListForEditing, resetNavListsMemo } from '@/lib/design/lists';
+import { SPLITS } from '@/lib/design/components';
 import { loadAuthzSchemes } from '@/lib/design/authz';
 import { loadPageDestinations } from '@/lib/design/pages';
 
@@ -188,6 +189,11 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ key: 
   if (!list) return new Response('not found', { status: 404 });
   if (list.role !== 'generic') {
     return NextResponse.json({ error: 'The shell’s lists cannot be deleted; edit their entries instead.' }, { status: 400 });
+  }
+  // R18 PR C: a list a page's code recipe names (lib/design/components.ts SPLITS) is not in the refs table, so the foreign key
+  // below cannot hold it: refused here in the same words.
+  if (Object.values(SPLITS).some(entries => entries.some(e => typeof e !== 'string' && e.kind === 'list' && e.listKey === key))) {
+    return NextResponse.json({ error: 'A page’s recipe names this list, so the list stays. Empty its entries if it should show nothing.' }, { status: 409 });
   }
 
   try {

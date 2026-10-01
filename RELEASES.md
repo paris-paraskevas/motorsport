@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.238 — 2026-10-01
 
-The foot of the Formula 2 champions page now opens doors: a row of cards to the series’ own pages (the title race, the grid, the results, the season, the blog, the wire) and a row to the rest of the site (the calendar in your time zone, the plain-language guides, this weekend, the Formula 1 and Formula 3 champions, past seasons), each with a line on what you will find there. The editors’ lists can carry that line on any entry.
+The foot of the Formula 2 champions page now opens doors: a row of cards to the series’ own pages (the title race, the grid, the results, the season, the blog, the wire) and a row to the rest of the site (the calendar in your time zone, the plain-language guides, this weekend, the Formula 1 and Formula 3 champions, the season archive), each with a line on what you will find there. The editors’ lists can carry that line on any entry.
 
 ## 1.0.237 — 2026-10-01
 

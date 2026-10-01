@@ -7,9 +7,9 @@ import { registryPageRow } from '@/lib/design/pages';
 // champions page first), drawn through the frame's own assembly (lib/design/page-frame.tsx composedBody) with the registry's
 // row for the tab pattern, the renderer told the address and its parts, after the shell's node `before` it. The children
 // are the WHOLE legacy layout (the shell's masthead and h1 included): drawn as they are for an address without a recipe, and
-// when the composition throws, so an indexed page never answers 500, nor loses its h1, for a fault of the recipe. The frame module is imported on demand: lib/sitemap-data.ts imports SeriesPageView, and the frame's graph (the
-// database client, the session) must not reach the sitemap. The recipe is the page's composition until the registry has a
-// page per series tab.
+// when the composition throws, so an indexed page never answers 500, nor loses its h1, for a fault of the recipe. The frame
+// module is imported on demand: lib/sitemap-data.ts imports SeriesPageView, and the frame's graph (the database client, the
+// session) must not reach the sitemap. The recipe is the page's composition until the registry has a page per series tab.
 
 /** Whether the address has a recipe of its own. */
 export function hasComposedTab(path: string): boolean {

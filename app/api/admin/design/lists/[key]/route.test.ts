@@ -250,6 +250,14 @@ describe('DELETE /api/admin/design/lists/[key]', () => {
     expect(((await shell.json()) as { error: string }).error).toMatch(/shell/);
   });
 
+  it('refuses, in words, to delete a list a page’s code recipe names, since the refs table does not hold it (R18 PR C)', async () => {
+    listRow = { data: { key: 'f2-more', role: 'generic', label: 'More Formula 2', updated_at: STAMP }, error: null };
+    const res = await del('f2-more', { updatedAt: STAMP });
+    expect(res.status).toBe(409);
+    expect(((await res.json()) as { error: string }).error).toBe('A page’s recipe names this list, so the list stays. Empty its entries if it should show nothing.');
+    expect(deleting).toBe(false);
+  });
+
   it('deletes a list of the operator’s own on its stamp, and answers 409 with the current list when the stamp moved', async () => {
     const res = await del('useful-links', { updatedAt: STAMP });
     expect(res.status).toBe(200);

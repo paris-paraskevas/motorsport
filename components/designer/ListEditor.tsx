@@ -6,7 +6,8 @@ import { DESTINATIONS, pageDest, pageIdOf, resolveDestination, resolveEntry, ser
 import type { PageRow } from '@/lib/design/pages';
 import { DEFAULT_TEXT, type ChromeText } from '@/lib/design/text-defaults';
 import type { EditableList } from '@/lib/design/lists';
-import { LIST_NOTE_MAX,
+import {
+  LIST_NOTE_MAX,
   addEntry,
   canAdd,
   canRemove,
