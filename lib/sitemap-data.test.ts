@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { buildSitemapEntries, blogLastModified } from './sitemap-data';
 import { NOINDEX_TABS, TRACKS_TAB_SLUGS } from './tabs';
 import { loadSeries, loadAllSeriesMeta } from './series';
@@ -9,6 +9,24 @@ import { weekendLabel } from './weekend';
 import { circuitLayoutFor } from './circuit-layout';
 import { listPostSlugs } from './posts';
 import { SITE_URL } from './site';
+import { RELEASE_INDEX } from './content-bundle.generated';
+
+// The sitemap is regenerated on the Worker every six hours, where RELEASES.md does not exist (it stays out of the
+// content bundle); here every read of the file fails as it does there, and the release pages must still be listed
+// from the bundled index (X6 A).
+vi.mock('./content-fs', async importOriginal => {
+  const actual = await importOriginal<typeof import('./content-fs')>();
+  const refuse = (p: unknown) => String(p).replace(/\\/g, '/').endsWith('/RELEASES.md');
+  const readFile: typeof actual.readFile = async (p, enc) => {
+    if (refuse(p)) throw new Error('RELEASES.md is not on the Worker');
+    return actual.readFile(p, enc);
+  };
+  const readFileSync: typeof actual.readFileSync = (p, enc) => {
+    if (refuse(p)) throw new Error('RELEASES.md is not on the Worker');
+    return actual.readFileSync(p, enc);
+  };
+  return { ...actual, readFile, readFileSync, default: { ...actual.default, readFile, readFileSync } };
+});
 
 describe('buildSitemapEntries', () => {
   // ONE call, shared. buildSitemapEntries() takes no arguments and is
@@ -183,6 +201,15 @@ describe('buildSitemapEntries', () => {
   });
 });
 
+describe('the release pages (X6 A)', () => {
+  it('advertises a page for every release of the bundled index right after /changelog, with RELEASES.md unreadable', async () => {
+    expect(RELEASE_INDEX.length).toBeGreaterThanOrEqual(16);
+    const list = (await buildSitemapEntries()).map(u => u.url);
+    const at = list.indexOf(`${SITE_URL}/changelog`);
+    expect(at).toBeGreaterThan(0);
+    expect(list.slice(at + 1, at + 1 + RELEASE_INDEX.length)).toEqual(RELEASE_INDEX.map(r => `${SITE_URL}/changelog/${r.slug}`));
+  }, 120_000);
+});
 describe('blogLastModified', () => {
   const iso = '2026-08-24T06:30:00.000Z';
 

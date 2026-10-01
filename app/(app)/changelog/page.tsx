@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
-import { loadReleaseGroups, releasesFilePath } from './releases';
+import { EYEBROW, ReleaseHeading, ReleaseUpdates } from '@/components/changelog/ReleaseEntries';
+import { loadReleaseGroups, releaseSlug, releasesFilePath } from './releases';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 export const dynamic = 'force-static';
@@ -15,29 +17,10 @@ const BASE_METADATA: Metadata = {
 };
 export const generateMetadata = pageMetadata('/changelog', BASE_METADATA);
 
-// Prose treatment for each body. Mirrors the tokens the page used when it
-// rendered RELEASES.md as one blob, minus the heading rules (the release name
-// and the version are chrome now, and the bodies are prose + bullet lists only).
-const RELEASE_PROSE =
-  'prose prose-sm dark:prose-invert prose-zinc max-w-none ' +
-  'prose-p:my-0 prose-p:text-text-muted prose-p:leading-relaxed ' +
-  'prose-ul:my-2 prose-li:my-1 prose-li:text-text-muted ' +
-  'prose-strong:text-text prose-a:text-tint';
-
-const EYEBROW = 'font-mono text-10 font-semibold uppercase tracking-[0.16em]';
-
-// Compact per-entry date, e.g. "2026-07-01" → "1 Jul". The release header
-// already carries the span, so an entry only needs the day and month; the full
-// ISO stays in the <time dateTime>/title for machines and hover. UTC to match.
-function formatDay(dateISO: string): string {
-  const d = new Date(`${dateISO}T00:00:00Z`);
-  if (Number.isNaN(d.getTime())) return dateISO;
-  return d.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC',
-  });
-}
+/** The newest release shows this many of its newest updates here; every update
+ *  of every release lives on the release's own page (X6 A: the page carried
+ *  all 1,014 updates twice, as markup and as the flight payload, 2.1 MB). */
+const NEWEST_INLINE = 30;
 
 async function ChangelogPage() {
   const releases = await loadReleaseGroups(releasesFilePath());
@@ -69,13 +52,11 @@ async function ChangelogPage() {
       ) : (
         <div className="border-t border-text">
           {releases.map((release, i) => {
-            // The running version lives in exactly one release; badge that one so
-            // a reader can see which release they are on without opening it. The
-            // per-entry badge below is what pins the precise push.
-            const isRunning = release.entries.some(e => e.version === APP_VERSION);
             const count = release.entries.length;
+            const href = `/changelog/${releaseSlug(release)}`;
+            const newest = i === 0;
             return (
-              <details key={release.key} open={i === 0} className="group border-b border-border">
+              <details key={release.key} open={newest} className="group border-b border-border">
                 <summary className="flex cursor-pointer list-none select-none items-start gap-3 py-5 [&::-webkit-details-marker]:hidden">
                   <svg
                     aria-hidden="true"
@@ -89,87 +70,21 @@ async function ChangelogPage() {
                   >
                     <path d="M9 6l6 6-6 6" />
                   </svg>
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <span className={`${EYEBROW} text-text-muted`}>{release.key}</span>
-                      {release.dateRange && (
-                        <span className={`${EYEBROW} text-text-faint tnum`}>{release.dateRange}</span>
-                      )}
-                      {isRunning && (
-                        <span
-                          className={`${EYEBROW} inline-flex items-center gap-1.5 border border-brand/50 bg-brand-fill/10 px-2 py-0.5 text-brand`}
-                        >
-                          <span aria-hidden="true" className="h-1.5 w-1.5 bg-brand-fill" />
-                          Running
-                        </span>
-                      )}
-                    </div>
-                    <h2 className="font-serif text-22 font-semibold leading-snug text-text">
-                      {release.label}
-                    </h2>
-                    {release.storyHtml && (
-                      <div
-                        className={`${RELEASE_PROSE} mt-1.5`}
-                        dangerouslySetInnerHTML={{ __html: release.storyHtml }}
-                      />
-                    )}
-                    <div className={`${EYEBROW} mt-2 text-text-faint tnum`}>
-                      {release.versionSpan}
-                      {count > 0 && ` · ${count} ${count === 1 ? 'update' : 'updates'}`}
-                    </div>
-                  </div>
+                  <ReleaseHeading release={release} level="h2" />
                 </summary>
 
                 {count > 0 && (
-                  <details className="group/all mb-5 ml-7 border-l border-border pl-4">
-                    <summary
-                      className={`${EYEBROW} inline-flex cursor-pointer list-none select-none items-center gap-1.5 py-1 text-text-muted hover:text-text [&::-webkit-details-marker]:hidden`}
-                    >
-                      <span aria-hidden="true" className="group-open/all:hidden">
-                        +
-                      </span>
-                      <span aria-hidden="true" className="hidden group-open/all:inline">
-                        –
-                      </span>
-                      Every update in this release
-                    </summary>
-                    <ul className="mt-2 space-y-4">
-                      {release.entries.map(e => {
-                        const entryRunning = e.version === APP_VERSION;
-                        return (
-                          <li key={e.version}>
-                            <div className="mb-1 flex items-baseline gap-3 flex-wrap">
-                              <h3
-                                className={
-                                  'font-mono text-sm font-semibold tracking-tight tnum ' +
-                                  (entryRunning ? 'text-brand' : 'text-text')
-                                }
-                              >
-                                {/* Only a real version number takes the "v"
-                                    prefix: the oldest entry is "Pre-0.8.0". */}
-                                {/^\d/.test(e.version) ? `v${e.version}` : e.version}
-                              </h3>
-                              {e.dateISO && (
-                                <time
-                                  dateTime={e.dateISO}
-                                  title={e.dateISO}
-                                  className={`${EYEBROW} text-text-faint tnum`}
-                                >
-                                  {formatDay(e.dateISO)}
-                                </time>
-                              )}
-                            </div>
-                            {e.bodyHtml && (
-                              <div
-                                className={RELEASE_PROSE}
-                                dangerouslySetInnerHTML={{ __html: e.bodyHtml }}
-                              />
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </details>
+                  <div className="mb-5 ml-7 border-l border-border pl-4">
+                    {newest && <ReleaseUpdates release={release} limit={NEWEST_INLINE} />}
+                    {(!newest || count > NEWEST_INLINE) && (
+                      <Link
+                        href={href}
+                        className={`${EYEBROW} inline-flex items-center gap-1.5 py-1 text-text-muted hover:text-text ${newest ? 'mt-4' : ''}`}
+                      >
+                        {newest ? `All ${count} updates` : 'Every update in this release'} →
+                      </Link>
+                    )}
+                  </div>
                 )}
               </details>
             );

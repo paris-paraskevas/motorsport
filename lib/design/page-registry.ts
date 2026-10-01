@@ -103,6 +103,7 @@ export const CODE_PAGES: readonly CodePage[] = [
   P('/authors', 'Authors', 'editorial', 'cached', true),
   P('/authors/[slug]', 'Author profile', 'editorial', 'cached', true),
   P('/changelog', 'Changelog', 'editorial', 'cached', true),
+  P('/changelog/[release]', 'Release notes', 'editorial', 'cached', true, 'public', 'one release’s every update, prerendered at build from RELEASES.md (X6 A)'),
   P('/write-for-us', 'Write for us', 'editorial', 'cached', true),
   P('/contribute', 'Contribute', 'editorial', 'cached', false),
   P('/studio', 'Studio', 'editorial', 'cached', true, 'contributor', 'the code sets no robots rule on the studio pages; they are for approved writers'),
@@ -164,6 +165,7 @@ export const OWN_BREADCRUMB_LD: ReadonlySet<string> = new Set([
   '/authors',
   '/authors/[slug]',
   '/changelog',
+  '/changelog/[release]',
   '/write-for-us',
   '/about',
 ]);

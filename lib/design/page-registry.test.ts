@@ -138,7 +138,7 @@ describe('the page registry', () => {
       if (prints(path.join(process.cwd(), 'lib', 'design', 'families', `${p.path.slice(1)}.tsx`))) owning.add(p.path);
     }
     expect([...OWN_BREADCRUMB_LD].sort()).toEqual([...owning].sort());
-    expect(OWN_BREADCRUMB_LD.size).toBe(18);
+    expect(OWN_BREADCRUMB_LD.size).toBe(19);
     for (const p of OWN_BREADCRUMB_LD) expect(CODE_PAGES.some(c => c.path === p), p).toBe(true);
   });
 });

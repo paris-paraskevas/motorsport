@@ -2,6 +2,7 @@ import path from 'path';
 import fs from '@/lib/content-fs';
 import matter from 'gray-matter';
 import { renderMarkdown } from '@/lib/content';
+import { releaseHeader, releaseSlug } from '@/lib/release-index';
 
 // ── Changelog parsing/grouping ──────────────────────────────────────────────
 // RELEASES.md is two levels, newest first:
@@ -57,13 +58,8 @@ export interface ReleaseGroup {
   entries: ReleaseEntry[];
 }
 
-// `^#\s` cannot match `## ` (the second char is `#`, not whitespace), so the two
-// header levels are unambiguous without a lookahead.
-const RELEASE_RE = /^#\s+(.+?)\s*$/;
 // The version capture is non-greedy so a trailing " — date" isn't swallowed.
 const ENTRY_RE = /^##\s+(.+?)(?:\s+—\s+(\d{4}-\d{2}-\d{2}))?\s*$/;
-/** Separator between a release's identity token and its name (U+00B7). */
-const KEY_SEPARATOR = ' · ';
 
 interface RawEntry {
   version: string;
@@ -120,20 +116,10 @@ export function splitReleases(markdown: string): RawRelease[] {
   };
 
   for (const line of markdown.split(/\r?\n/)) {
-    const rel = RELEASE_RE.exec(line);
-    if (rel) {
+    const header = releaseHeader(line);
+    if (header) {
       flushRelease();
-      const raw = rel[1].trim();
-      const at = raw.indexOf(KEY_SEPARATOR);
-      release =
-        at === -1
-          ? { key: raw, label: raw, story: '', entries: [] }
-          : {
-              key: raw.slice(0, at).trim(),
-              label: raw.slice(at + KEY_SEPARATOR.length).trim(),
-              story: '',
-              entries: [],
-            };
+      release = { ...header, story: '', entries: [] };
       continue;
     }
     const ent = ENTRY_RE.exec(line);
@@ -239,4 +225,12 @@ export async function loadReleaseGroups(filePath: string): Promise<ReleaseGroup[
 /** Absolute path to RELEASES.md at the repo root, resolved from cwd. */
 export function releasesFilePath(): string {
   return path.join(process.cwd(), 'RELEASES.md');
+}
+
+/** The address segment of a release (lib/release-index: the label’s slug, the key’s when the label yields nothing). */
+export { releaseSlug };
+
+/** The release at an address, or null. */
+export function findRelease(groups: ReleaseGroup[], slug: string): ReleaseGroup | null {
+  return groups.find(g => releaseSlug(g) === slug) ?? null;
 }
