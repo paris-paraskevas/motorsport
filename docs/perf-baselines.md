@@ -8,6 +8,31 @@ Time-series perf snapshot. **Append-only by date** — never overwrite prior row
 
 ---
 
+## 2026-10-01 — X9: the JavaScript count (1.0.230)
+
+Seobility's page-speed check of the home ("This page loads 16 JavaScript files", Very important; the crawl of 29 September, id 16008487, read through the Seobility MCP). Two of the site's own files did nothing for a reader: the Sentry browser SDK, shipped without a DSN so it initialised to a no-op, and `app/error.tsx`, a boundary above both root layouts. Both left in 1.0.230 (#1112), and the last `@sentry/nextjs` import took the server SDK out of the Worker bundle with it.
+
+**Method:** the page fetched with a browser user agent (so the edge injects Cloudflare's beacon, as Seobility sees it), its `<script src>` files counted; each of the home's own files fetched plain and `--compressed` for the raw and the wire bytes; the browser's list after idle (Playwright at 1440, the performance resource entries) quoted apart because it adds the router's prefetches of linked routes, Google's scripts and, right after a deploy, the previous build's stale chunk names; `wrangler deploy --dry-run` for the Worker; Seobility's live `seo_check` of the home for its own verdict.
+
+| page | before (prod 1.0.229, 07:50Z): script files in the HTML | after, testing (08:55Z) | after, prod 1.0.230 (09:36Z) |
+|---|---|---|---|
+| / | 16 (15 ours + the beacon) | 15 (14 + 1) | 15 (14 + 1) |
+| /series/f1/weekend/15/qualifying | 18 (17 + 1) | 17 (16 + 1) | 17 (16 + 1) |
+| /calendar | 16 (15 + 1) | 15 (14 + 1) | 15 (14 + 1) |
+
+| the home's own script files | before | after, testing | after, prod |
+|---|---|---|---|
+| files · raw · wire | 15 · 1,055 KiB · 336 KiB | 14 · 811 KiB · 256 KiB | 14 · 811 KiB · 256 KiB |
+| the browser after idle (ours loaded · stale 404s) | 14 · 12 (prod, right after the morning's deploy) | 20 · 1 (the prefetches included) | after the windows: next session |
+
+**The Worker:** `wrangler deploy --dry-run` Total Upload 41338.39 KiB / gzip 8982.35 (main at 1.0.229) → 39433.18 KiB / gzip 8564.55 (−1,905 KiB; 60% of the 64 MiB ceiling): the server SDK, OpenTelemetry and the database instrumentation that `app/global-error.tsx`'s import had kept since the 0.288.0 diet.
+
+**Seobility's verdict:** the live single-page check of the home raises no JavaScript-files hint any more (testing at 09:00Z, prod at 09:38Z; 100–105 credits each); its page-speed section flags only the HTML response time (2.26 s on prod from Seobility's crawler, "performance_html_slow_crit"), the next thing to read beside X7's edge cache. The scores: 79 on prod (the home's three hints: a title word, duplicate headlines, the response time).
+
+**Known and accepted:** the count is the bundler's (five framework files, the nomodule polyfill, three error boundaries, three for the chrome, one page chunk, one main entry); no Next config merges chunks; the next lever is the chrome's optional pieces behind dynamic imports, a throwaway build on the operator's word of ~09:10Z, the count reported before anything is built.
+
+---
+
 ## 2026-10-01 — X6: page weight, three PRs (1.0.226, 1.0.227, 1.0.228)
 
 Seobility's "Big HTML pages": `/changelog` 2.1 MB, the results tabs 1.1–2.4 MB, `/calendar` 532 kB. The App Router ships every server-rendered element twice, as HTML and again inside the inline flight payload, so a page weighs about twice its markup and folds hide but do not lighten; the lever was how much markup a page carries.
