@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.234 — 2026-10-01
+
+Internal only: the record of the three results tabs and the race pages checked on the live site. Nothing changes for readers.
+
 ## 1.0.233 — 2026-10-01
 
 NASCAR, IndyCar and DTM race pages now show the full classification, their results tabs open the latest round and list the earlier ones in one line each with a link to the result (the pages are between a tenth and a quarter of their old size), and IndyCar's calendar gains the Honda Indy 200 at Mid-Ohio as round 11, so the rounds from Music City on move up one number, their addresses with them (the old addresses of those race pages no longer answer; the results tab links the new ones), and every IndyCar row links the right race.
