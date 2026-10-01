@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import type {
   Series,
+  SeriesRoundEntry,
   Session,
   RaceResult,
   RaceResultEntry,
@@ -25,16 +26,15 @@ import {
   WEC_RESULT_CLASSES,
   type WecRoundResults,
 } from '@/lib/results/wec';
-import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
 import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
 import { fetchDTMSeasonResults } from '@/lib/results/dtm';
 import { fetchNlsSeasonResults, NLS_SOURCE_URL } from '@/lib/results/nls';
-import { CLASS_RESULT_SERIES, isRaceLikeTitle, RACE_SESSION_SERIES } from '@/lib/results/session-classification';
+import { CLASS_RESULT_SERIES, isRaceSession, RACE_SESSION_SERIES, raceResultPool } from '@/lib/results/session-classification';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
-import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
+import { loadResultsOverrides } from '@/lib/series-content';
 import { applyResultsOverrides } from '@/lib/results/overrides';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -148,7 +148,9 @@ function RaceTitle({ name, href }: { name: string; href?: string }) {
 // alone opens with its classification; every earlier round is one line whose
 // "Classification →" leads to the race session page, which shows every class;
 // a round without a race session page keeps its closed accordion, so nothing
-// becomes unreachable.
+// becomes unreachable. B2: the event-named series (NASCAR, IndyCar) find their
+// race per weekend, and DTM's page reads its per-race source, so their rows
+// link too.
 type RoundMode = 'open' | 'line' | 'fold';
 
 type RoundLinks = {
@@ -161,9 +163,10 @@ type RoundLinks = {
 const cleanTitle = (title: string) => title.replace(/^.*?[-–—:]\s*/, '').toLowerCase();
 
 /** The weekend’s race session that a results row names: sprint, superpole, race 1 or 2 by their word, else the main
- *  race (the last race-like session that is none of those); null without a race-like session. */
-export function raceSessionFor(weekend: Weekend, raceName: string): Session | null {
-  const races = weekend.sessions.filter(s => isRaceLikeTitle(s.title));
+ *  race (the last race-like session that is none of those); null without a race-like session. For the event-named
+ *  series the race is the weekend’s main race (B2), the round’s dates deciding it. */
+export function raceSessionFor(weekend: Weekend, raceName: string, roundDates?: Pick<SeriesRoundEntry, 'endDate'> | null): Session | null {
+  const races = weekend.sessions.filter(s => isRaceSession(s.seriesSlug, s.title, weekend, roundDates));
   if (races.length === 0) return null;
   const name = raceName.toLowerCase();
   const pick = (test: (t: string) => boolean) => races.find(s => test(cleanTitle(s.title))) ?? null;
@@ -177,8 +180,8 @@ export function raceSessionFor(weekend: Weekend, raceName: string): Session | nu
 
 /** The round links of a series, the weekends grouped once (the grouping weekendFor() uses). A classification link is
  *  given only where the race session page can answer it: F1 through OpenF1, the class series per class, the series of
- *  RACE_SESSION_SERIES from their season feed (the session page’s own three paths); DTM’s page has no per-race source,
- *  so its rows keep the accordion. */
+ *  RACE_SESSION_SERIES from their season feed or, for DTM, the per-race source (the session page’s own paths); the
+ *  winners-only series (NLS, WRC) keep their flat rows. */
 function roundLinks(series: Series): RoundLinks {
   const byRound = new Map(groupByWeekend(series.sessions, new Date(), series.rounds).map(w => [w.round, w]));
   const slug = series.meta.slug;
@@ -188,7 +191,7 @@ function roundLinks(series: Series): RoundLinks {
     classification: (round, raceName) => {
       if (!pageAnswers) return undefined;
       const weekend = byRound.get(round);
-      const session = weekend ? raceSessionFor(weekend, raceName) : null;
+      const session = weekend ? raceSessionFor(weekend, raceName, series.rounds?.rounds.find(r => r.round === round)) : null;
       return session ? `/series/${slug}/weekend/${round}/${sessionSlug(session.title)}` : undefined;
     },
   };
@@ -818,17 +821,14 @@ export async function ResultsTab({ series }: { series: Series }) {
   }
 
   if (series.meta.slug === 'indycar') {
-    const [drivers, overrides] = await Promise.all([
-      loadCuratedDrivers(series.meta.slug),
-      loadResultsOverrides(series.meta.slug),
-    ]);
-    const races = await fetchIndyCarSeasonResults({ drivers });
-    if (races.length === 0) {
+    // The pool the session and weekend pages read too (B2): the races re-keyed by date against the curated rounds, so a
+    // row's number, its link and its page agree; the overrides applied by the snapshot source.
+    const merged = await raceResultPool(series);
+    if (merged.length === 0) {
       return (
         <EmptyState message="Results are temporarily unavailable. Check back shortly." />
       );
     }
-    const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
         <SeasonResultsPanel races={merged} links={links} />

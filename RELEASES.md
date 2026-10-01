@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.233 — 2026-10-01
+
+NASCAR, IndyCar and DTM race pages now show the full classification, their results tabs open the latest round and list the earlier ones in one line each with a link to the result (the pages are a tenth of their old size), and IndyCar's rows from Portland on link to the right race.
+
 ## 1.0.232 — 2026-10-01
 
 The home's This weekend boxes now show each session's start in your own time zone, as the calendar does; they used to show the server's clock.

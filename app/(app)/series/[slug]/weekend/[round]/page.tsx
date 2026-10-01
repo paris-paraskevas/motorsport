@@ -10,11 +10,12 @@ import { groupByDay, groupByWeekend } from '@/lib/group';
 import { LocalTime } from '@/components/LocalTime';
 import {
   isRaceLikeTitle,
-  pickRaceForSession,
+  isRaceSession,
+  raceFor,
+  raceResultPool,
   CLASS_RESULT_SERIES,
   fetchClassClassifications,
 } from '@/lib/results/session-classification';
-import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
 import type { RaceResult, RaceResultEntry, Session } from '@/lib/types';
 import { circuitLayoutFor } from '@/lib/circuit-layout';
@@ -304,12 +305,10 @@ async function ReportBody({
     if (CLASS_RESULT_SERIES.has(slug)) {
       classBlocks = await fetchClassClassifications(series, round, raceSession.title).catch(() => []);
     } else {
-      const source = await loadSnapshotSource(series).catch(() => null);
-      if (source) {
-        const pool: RaceResult[] = [...source.races, ...(source.extras ?? [])];
-        const race = pickRaceForSession(pool.filter(r => r.round === round), raceSession.title);
-        if (race && race.results.length > 1) raceEntries = race.results;
-      }
+      // The pool the session page reads (B2): IndyCar's races keyed by date, DTM's from its per-race source.
+      const pool = await raceResultPool(series).catch(() => [] as RaceResult[]);
+      const race = raceFor(pool, round, raceSession.title);
+      if (race && race.results.length > 1) raceEntries = race.results;
     }
   }
   const winner = raceEntries[0] ?? classBlocks[0]?.data.entries[0] ?? null;
@@ -486,8 +485,8 @@ async function ReportBody({
                   {day.label}
                 </div>
                 {day.sessions.map((s: Session) => {
-                  const decisive = isRaceLikeTitle(s.title) || /qualifying|superpole|hyperpole|shootout|pole/i.test(s.title);
                   const isTheRace = raceSession != null && s.uid === raceSession.uid;
+                  const decisive = isTheRace || isRaceLikeTitle(s.title) || /qualifying|superpole|hyperpole|shootout|pole/i.test(s.title);
                   const label = s.title.replace(/^.*?[-–—:|]\s*/, '').trim() || s.title;
                   const href = sessionLinkBase ? `${sessionLinkBase}/${sessionSlug(s.title)}` : null;
                   const inner = (
@@ -726,8 +725,9 @@ async function WeekendPage({
       url: `${SITE_URL}/series/${slug}/weekend/${round}/${sessionSlug(s.title)}`,
     }));
 
+  // The weekend's race: by its words, or for the event-named series the main race the round's dates decide (B2).
   const raceSession = [...weekend.sessions]
-    .filter(s => isRaceLikeTitle(s.title))
+    .filter(s => isRaceSession(slug, s.title, weekend, roundMeta))
     .sort((a, b) => b.start.getTime() - a.start.getTime())[0];
 
   // The round that follows this one — the report rail's Next round block and

@@ -25,6 +25,7 @@ import {
 import {
   matchOpenF1Session,
   isRaceLikeTitle,
+  isRaceSession,
   CLASS_RESULT_SERIES,
   FORMULA_SESSION_SERIES,
   fetchClassClassifications,
@@ -567,13 +568,13 @@ async function SessionBody({
   let practice: PracticeData | null = null;
   if (slug === 'f1' && isPast && !session.dateOnly) {
     const isQualifyingSession = /qualifying|superpole|shootout/i.test(sessionName);
-    const isRaceSession = isRaceLikeTitle(session.title);
+    const isRaceTitle = isRaceLikeTitle(session.title);
     // Practice = the FP1/FP2/FP3 sessions (and any "Practice N"); a sprint
     // weekend's single practice counts too. Quali/race titles are matched
     // first above, so this only catches the genuine practice sessions.
     const isPracticeSession =
-      !isQualifyingSession && !isRaceSession && /practice|^fp\s*\d/i.test(sessionName);
-    if (isQualifyingSession || isRaceSession || isPracticeSession) {
+      !isQualifyingSession && !isRaceTitle && /practice|^fp\s*\d/i.test(sessionName);
+    if (isQualifyingSession || isRaceTitle || isPracticeSession) {
       const { start, end } = weekendStartEnd(weekend);
       const candidates = await fetchOpenF1WeekendSessions(start, end);
       const match = matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
@@ -586,10 +587,10 @@ async function SessionBody({
         // the underlying OpenF1 calls.
         const [decoder, story, traps, pit, ot, prac] = await Promise.all([
           isQualifyingSession ? buildDecoderSummary(sk, 'f1') : Promise.resolve(null),
-          isRaceSession ? buildRaceStory(sk, 'f1') : Promise.resolve(null),
+          isRaceTitle ? buildRaceStory(sk, 'f1') : Promise.resolve(null),
           buildSpeedTrapLeaderboard(sk, 'f1'),
-          isRaceSession ? buildPitStopLeague(sk, 'f1') : Promise.resolve(null),
-          isRaceSession ? buildOvertakesBoard(sk, 'f1') : Promise.resolve(null),
+          isRaceTitle ? buildPitStopLeague(sk, 'f1') : Promise.resolve(null),
+          isRaceTitle ? buildOvertakesBoard(sk, 'f1') : Promise.resolve(null),
           isPracticeSession ? buildPracticeAnalysis(sk, 'f1') : Promise.resolve(null),
         ]);
         if (decoder && decoder.laps.length > 0) decoderSummary = decoder;
@@ -605,11 +606,13 @@ async function SessionBody({
   // Embedded highlights for this session, where curated (any series). The race
   // session falls back to the round's headline clip.
   const media = await loadMedia(slug);
+  // The race of this weekend: by its words, or for the event-named series the weekend's main race (B2).
+  const isTheRace = isRaceSession(slug, session.title, weekend, series.rounds?.rounds?.find(r => r.round === round));
   const sessionVid = videoForSession(
     media,
     round,
     sessionSlug(session.title),
-    isRaceLikeTitle(session.title),
+    isTheRace,
   );
 
   // The classification foot states the data's provenance where it has one
@@ -663,7 +666,7 @@ async function SessionBody({
               ? 'Timing for this session usually lands shortly after it ends. Nothing published yet, so it is worth a look back in a little while.'
               : slug === 'wrc'
                 ? 'The full field for this stage isn’t published yet. The rally result and season standings live on the series page.'
-                : isRaceLikeTitle(session.title)
+                : isTheRace
                   ? 'Timing for this race usually lands shortly after it ends, so it may only be a matter of minutes. Season results live on the series page.'
                   : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
           </p>

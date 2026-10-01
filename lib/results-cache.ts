@@ -120,7 +120,9 @@ export function sessionClassCacheKey(
   round: number,
   sessionSlug: string,
 ): string {
-  return `paddock:session-class:${slug}:${season}:${round}:${sessionSlug}`;
+  // v3 (B2): the IndyCar pages had pinned the wrong rounds' tables for seven days, and the testing Worker's first B2
+  // build wrote v2 entries with the old time column into the shared store; a new version leaves both behind.
+  return `paddock:session-class:v3:${slug}:${season}:${round}:${sessionSlug}`;
 }
 
 /**
