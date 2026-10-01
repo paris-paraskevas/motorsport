@@ -8,13 +8,11 @@ export function WeekView({
   anchor,
   now,
   buckets,
-  roundByKey,
   onSelectDay,
 }: {
   anchor: Date;
   now: Date;
   buckets: Map<string, CalendarEntry[]>;
-  roundByKey?: Record<string, number>;
   onSelectDay: (d: Date) => void;
 }) {
   const days = weekDays(anchor, now);
@@ -42,7 +40,7 @@ export function WeekView({
                   <SessionPill
                     key={`${e.seriesSlug}-${e.session.uid}`}
                     entry={e}
-                    round={roundByKey?.[`${e.seriesSlug}:${e.session.uid}`]}
+                    round={e.round}
                   />
                 ))}
               </div>

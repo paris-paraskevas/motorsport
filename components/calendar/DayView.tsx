@@ -11,12 +11,10 @@ export function DayView({
   anchor,
   now,
   buckets,
-  roundByKey,
 }: {
   anchor: Date;
   now: Date;
   buckets: Map<string, CalendarEntry[]>;
-  roundByKey?: Record<string, number>;
 }) {
   const [orderBy, setOrderBy] = useState<OrderBy>('time');
 
@@ -56,7 +54,7 @@ export function DayView({
       key={`${e.seriesSlug}-${e.session.uid}`}
       session={e.session}
       color={e.color}
-      round={roundByKey?.[`${e.seriesSlug}:${e.session.uid}`]}
+      round={e.round}
       now={now}
     />
   );

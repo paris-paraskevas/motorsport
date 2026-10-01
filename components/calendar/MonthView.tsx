@@ -101,7 +101,7 @@ function collapseRuns(entries: CalendarEntry[], href: string): CellLine[] {
 
 // Summarise a day's entries into cell lines: per series, deciders stay
 // individual (bold), practice-like runs collapse. Order follows clock time.
-function summariseDay(entries: CalendarEntry[], roundByKey?: Record<string, number>): CellLine[] {
+function summariseDay(entries: CalendarEntry[]): CellLine[] {
   const bySeries = new Map<string, CalendarEntry[]>();
   for (const e of entries) {
     const arr = bySeries.get(e.seriesSlug);
@@ -110,7 +110,7 @@ function summariseDay(entries: CalendarEntry[], roundByKey?: Record<string, numb
   }
   const lines: CellLine[] = [];
   for (const [slug, list] of bySeries) {
-    const round = roundByKey?.[`${slug}:${list[0].session.uid}`];
+    const round = list[0].round;
     const href = round ? `/series/${slug}/weekend/${round}` : `/series/${slug}`;
     const deciders = list.filter(e => {
       const k = classifySession(e.session.title);
@@ -126,9 +126,7 @@ function summariseDay(entries: CalendarEntry[], roundByKey?: Record<string, numb
         label: cleanTitle(d.session.title),
         time: timeLabel(d.session),
         decides: true,
-        href: roundByKey?.[`${slug}:${d.session.uid}`]
-          ? `/series/${slug}/weekend/${roundByKey[`${slug}:${d.session.uid}`]}`
-          : href,
+        href: d.round ? `/series/${slug}/weekend/${d.round}` : href,
       });
     }
   }
@@ -149,13 +147,12 @@ interface WeekBanner {
 function bannersForWeek(
   week: DayCell[],
   buckets: Map<string, CalendarEntry[]>,
-  roundByKey?: Record<string, number>,
   roundNames?: Record<string, string>,
 ): WeekBanner[] {
   const groups = new Map<string, { name: string; color: string; slug: string; round: number; days: Set<number> }>();
   week.forEach((cell, idx) => {
     for (const e of buckets.get(cell.key) ?? []) {
-      const round = roundByKey?.[`${e.seriesSlug}:${e.session.uid}`];
+      const round = e.round;
       if (!round) continue;
       const key = `${e.seriesSlug}:${round}`;
       let g = groups.get(key);
@@ -188,14 +185,12 @@ export function MonthView({
   anchor,
   now,
   buckets,
-  roundByKey,
   roundNames,
   onSelectDay,
 }: {
   anchor: Date;
   now: Date;
   buckets: Map<string, CalendarEntry[]>;
-  roundByKey?: Record<string, number>;
   roundNames?: Record<string, string>;
   onSelectDay: (d: Date) => void;
 }) {
@@ -220,7 +215,7 @@ export function MonthView({
       </div>
       <div>
       {weeks.map((week, wi) => {
-        const banners = bannersForWeek(week, buckets, roundByKey, roundNames);
+        const banners = bannersForWeek(week, buckets, roundNames);
         return (
           <div key={wi}>
             {/* The weekend bars: one object, named once, spanning its days. */}
@@ -242,7 +237,7 @@ export function MonthView({
             <div className="grid grid-cols-7 border-l border-border">
               {week.map(cell => {
                 const entries = buckets.get(cell.key) ?? [];
-                const lines = summariseDay(entries, roundByKey);
+                const lines = summariseDay(entries);
                 // Cap the cell at three lines so the whole month fits a screen
                 // (round-2 ⑥) — deciders always survive the cap (§4.2 rule),
                 // the rest go behind "+N more", which opens the day view.

@@ -2,7 +2,7 @@ import 'server-only';
 import { cache } from 'react';
 import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
-import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
+import { buildRoundLookupAcrossSeries, roundFor } from '@/lib/weekend';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
@@ -34,7 +34,6 @@ const METADATA: Metadata = {
 
 export interface CalendarModel {
   items: CalendarEntry[];
-  roundByKey: Record<string, number>;
   roundNames: Record<string, string>;
   serverNow: string;
 }
@@ -44,24 +43,28 @@ export const loadCalendarModel = cache(async (): Promise<CalendarModel> => {
   const all = await loadAllSeries();
   const now = new Date();
 
-  const items = all
+  // Pass the whole season (past + future), not just upcoming — otherwise the
+  // month navigator has no past months to page into. It defaults to the
+  // current month (pickDefaultMonth) and the ← button steps back through the
+  // season; past sessions render with their past/finished styling.
+  //
+  // X6 C: the payload carries what the views read. Each entry brings its round
+  // (resolved here through the lookup the views once received whole, as a map
+  // keyed by the feed’s ids) and a short key in place of the ICS uid, which
+  // travelled twice per session; the map and the ids were a third of 454 kB.
+  const roundLookup = buildRoundLookupAcrossSeries(all, now);
+  const items: CalendarEntry[] = all
     .flatMap(s =>
       s.sessions.map(session => ({
         session,
         color: s.meta.color,
         seriesSlug: s.meta.slug,
         seriesName: s.meta.name,
+        round: roundFor(roundLookup, s.meta.slug, session.uid),
       })),
     )
-    .sort((a, b) => a.session.start.getTime() - b.session.start.getTime());
-
-  // Pass the whole season (past + future), not just upcoming — otherwise the
-  // month navigator has no past months to page into. It defaults to the
-  // current month (pickDefaultMonth) and the ← button steps back through the
-  // season; past sessions render with their past/finished styling.
-  const roundLookup = buildRoundLookupAcrossSeries(all, now);
-  const roundByKey: Record<string, number> = {};
-  for (const [k, v] of roundLookup) roundByKey[k] = v;
+    .sort((a, b) => a.session.start.getTime() - b.session.start.getTime())
+    .map((e, i) => ({ ...e, session: { ...e.session, uid: String(i) } }));
 
   // Round display names for the weekend banners, keyed `${slug}:${round}` —
   // far smaller than a per-session map. Curated rounds.json names only; a
@@ -73,7 +76,7 @@ export const loadCalendarModel = cache(async (): Promise<CalendarModel> => {
     }
   }
 
-  return { items, roundByKey, roundNames, serverNow: now.toISOString() };
+  return { items, roundNames, serverNow: now.toISOString() };
 });
 
 export const family: PageFamily = {

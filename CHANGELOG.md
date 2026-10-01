@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.228 — 2026-10-01
+
+### X6 C — The calendar’s payload carries what the views read
+
+The third of three PRs of X6 (page weight). `/calendar` weighed 545 kB, 454 kB of it the inline flight payload: the whole season of every series reaches the client as the calendar’s entries (`lib/design/families/calendar.tsx`), and with them travelled a map of every session’s round keyed by the feed’s ids (`roundByKey`, `${slug}:${uid}` for about 1,500 sessions) and each session’s ICS uid a second time; the views read the uid only as a key and the map only to find a session’s round.
+
+**The change:** each entry brings its `round` (`components/calendar/types.ts`), resolved on the server through the same lookup (`buildRoundLookupAcrossSeries`, `roundFor`), and a short key (the entry’s position) in place of the uid; the map leaves the model (`CalendarModel` is `items`, `roundNames`, `serverNow`). The views (`CalendarView`, `MonthView`, `WeekView`, `DayView`, `SeasonView`) read `e.round` where they looked the map up and drop the `roundByKey` prop; the season view’s FINALE badge derives its per-series last round from the entries; `lib/design/component-render.tsx` hands the calendar no map. The session’s title, start, end, date-only flag, location and significance stay (the Day view’s cards draw the pin, the tier and the note). One difference from the plan’s letter: the entry keeps its nested `session` rather than flattening; the saving is the same and `SessionCard` and `lib/calendar-grid.ts` needed no change.
+
+**Tests:** `components/calendar/MonthView.test.tsx` (a round on the entry links the decider’s weekend page and draws the week banner); `components/calendar/DayView.test.tsx` (NEW: the cards’ pin, tier and note from the entry, the link from its round); `lib/design/component-render.test.tsx` (the calendar receives the rounds on its entries and no lookup; the real loader from a fixture season: the round per entry, the short keys, the feed’s ids nowhere in the model, the location kept, a bound of 300 bytes per session). Written before the code (three cases red), then green.
+
+**Measured:** on the testing Worker (version 6419fe15) /calendar 544,934 → 442,552 bytes of HTML, the flight 454,014 → 352,739: a fifth. The plan’s estimate (a flight under 300 kB, the HTML under 400 kB) was optimistic by about 50 kB; the uids ran shorter than assumed and the rest is the sessions’ own fields, which the views read. A further cut, not built: a table of the fifteen series referenced by index from each entry, about 60 kB more.
+
+**Readers see:** the same calendar. PR B (#1109, the results tabs) merged 2026-10-01 05:52:40Z on the operator’s word.
 ## 1.0.227 — 2026-10-01
 
 ### X6 B — The results tabs: the latest round open, the earlier rounds one line each

@@ -36,7 +36,6 @@ function parseMonthParam(m: string | null): number | null {
 
 type CalendarViewProps = {
   items: CalendarEntry[];
-  roundByKey?: Record<string, number>;
   roundNames?: Record<string, string>;
   serverNow: string;
   /** The Filters region's picks (P2.5 PR B): the series by name, the sessions by kind; null or absent narrows nothing. */
@@ -60,7 +59,7 @@ export function CalendarView(props: CalendarViewProps) {
   );
 }
 
-function CalendarInner({ items, roundByKey, roundNames, serverNow, seriesNames = null, sessionKinds = null }: CalendarViewProps) {
+function CalendarInner({ items, roundNames, serverNow, seriesNames = null, sessionKinds = null }: CalendarViewProps) {
   const { followed, hydrated } = useFollowedSeries();
   const { now, clock } = useNow(serverNow);
   const [view, setView] = useState<CalendarViewMode>('month');
@@ -116,11 +115,8 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow, seriesNames =
 
   // Per-series last known round, for the season view's derived FINALE badge.
   const maxRoundBySlug: Record<string, number> = {};
-  if (roundByKey) {
-    for (const [k, r] of Object.entries(roundByKey)) {
-      const slug = k.slice(0, k.indexOf(':'));
-      if ((maxRoundBySlug[slug] ?? 0) < r) maxRoundBySlug[slug] = r;
-    }
+  for (const e of items) {
+    if (e.round !== undefined && (maxRoundBySlug[e.seriesSlug] ?? 0) < e.round) maxRoundBySlug[e.seriesSlug] = e.round;
   }
 
   // Month-picker options: every month spanned by the season's sessions, always
@@ -143,7 +139,7 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow, seriesNames =
 
   return (
     <>
-      <ThisWeekend items={filtered} now={now} roundByKey={roundByKey} roundNames={roundNames} />
+      <ThisWeekend items={filtered} now={now} roundNames={roundNames} />
       <CalendarToolbar
         view={view}
         onView={setView}
@@ -156,17 +152,16 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow, seriesNames =
         onPickMonth={ms => setAnchorMs(ms)}
       />
       {view === 'month' && (
-        <MonthView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} roundNames={roundNames} onSelectDay={selectDay} />
+        <MonthView anchor={anchor} now={now} buckets={buckets} roundNames={roundNames} onSelectDay={selectDay} />
       )}
       {view === 'week' && (
-        <WeekView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} onSelectDay={selectDay} />
+        <WeekView anchor={anchor} now={now} buckets={buckets} onSelectDay={selectDay} />
       )}
-      {view === 'day' && <DayView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} />}
+      {view === 'day' && <DayView anchor={anchor} now={now} buckets={buckets} />}
       {view === 'season' && (
         <SeasonView
           entries={shown}
           now={now}
-          roundByKey={roundByKey}
           roundNames={roundNames}
           maxRoundBySlug={maxRoundBySlug}
         />
@@ -190,12 +185,10 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow, seriesNames =
 function ThisWeekend({
   items,
   now,
-  roundByKey,
   roundNames,
 }: {
   items: CalendarEntry[];
   now: Date;
-  roundByKey?: Record<string, number>;
   roundNames?: Record<string, string>;
 }) {
   const horizon = now.getTime() + 4 * 24 * 3600 * 1000;
@@ -207,7 +200,7 @@ function ThisWeekend({
     const start = e.session.start.getTime();
     const end = e.session.end.getTime();
     if (end < now.getTime() - 12 * 3600 * 1000 || start > horizon) continue;
-    const round = roundByKey?.[`${e.seriesSlug}:${e.session.uid}`];
+    const round = e.round;
     if (!round) continue;
     const key = `${e.seriesSlug}:${round}`;
     const g = groups.get(key);
