@@ -835,9 +835,10 @@ export const SPLITS: Readonly<Record<string, readonly (string | RecipeEntry)[]>>
   // registry pattern): the series tab route draws it for that address alone (components/tabs/ComposedTab.tsx) until the
   // registry has a page per series tab. The masthead with its eyebrow and standfirst; the Reigning champion card the full
   // width (the photo, an image half beside it, follows its upload to the Assets store); the roll of honour with the
-  // points-scale note as its footer; the teams' heading over the two tallies; the Keep
-  // exploring list the operator authors in Shared Components › Lists (absent until it exists); the calendar call-out, boxed,
-  // with its button inside.
+  // points-scale note as its footer; the teams' heading over the two tallies; the two doorway lists, More Formula 2 and
+  // Around the site (PR C: cards with a sentence each over lists seeded with the design's words, the operator's to edit in
+  // Shared Components › Lists; they replace the shell's mono foot on this page); the calendar call-out, boxed, with its
+  // button inside.
   '/series/f2/champions': [
     { id: 'heading', component: 'page.heading', settings: { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: "Every drivers' and teams' champion since 2005, year by year, including the GP2 Series seasons (2005–2016)." } },
     { id: 'reigning', component: 'data.region', settings: { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' }, source: 'champions?series=f2' },
@@ -851,7 +852,8 @@ export const SPLITS: Readonly<Record<string, readonly (string | RecipeEntry)[]>>
     { id: 'teams', kind: 'static', title: 'Most successful teams', text: 'Titles won since 2005, GP2 and F2 combined.', templateOptions: ['HEADING_HEADLINE'] },
     { id: 'drivers-titles', component: 'data.region', settings: { preset: 'drivers-titles-by-team', view: 'list', rows: 5, heading: "Drivers' titles" }, source: 'champions?series=f2', half: true },
     { id: 'teams-titles', component: 'data.region', settings: { preset: 'teams-titles-by-team', view: 'list', rows: 5, heading: "Teams' titles" }, source: 'champions?series=f2', half: true },
-    { id: 'explore', kind: 'list', listKey: 'f2-keep-exploring', style: 'cards', title: 'Keep exploring', templateOptions: ['HEADING_HEADLINE'] },
+    { id: 'more-f2', kind: 'list', listKey: 'f2-more', style: 'cards', title: 'More Formula 2', templateOptions: ['HEADING_HEADLINE'] },
+    { id: 'around', kind: 'list', listKey: 'around-the-site', style: 'cards', title: 'Around the site', templateOptions: ['HEADING_HEADLINE'] },
     { id: 'callout', kind: 'static', title: 'Every F2 session in your time zone', text: `Follow the ${CURRENT_SEASON} season on the calendar. No account needed.`, template: 'boxed', templateOptions: ['HEADING_HEADLINE'] },
     { id: 'open-calendar', kind: 'button', label: 'Open calendar', dest: 'calendar', parent: 'callout' },
   ],

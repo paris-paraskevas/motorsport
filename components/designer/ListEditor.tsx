@@ -6,7 +6,7 @@ import { DESTINATIONS, pageDest, pageIdOf, resolveDestination, resolveEntry, ser
 import type { PageRow } from '@/lib/design/pages';
 import { DEFAULT_TEXT, type ChromeText } from '@/lib/design/text-defaults';
 import type { EditableList } from '@/lib/design/lists';
-import {
+import { LIST_NOTE_MAX,
   addEntry,
   canAdd,
   canRemove,
@@ -110,6 +110,8 @@ export function ListEditor({
   // The footer shows every entry to everyone; the doors, the bar and a list of
   // the operator's own (shown by a List region) may hide an entry behind a scheme.
   const withAuthz = role === 'menu' || role === 'bar' || role === 'generic';
+  // The sentence a card draws (R18 PR C), on a list of the operator's own; the shell's lists draw none.
+  const withNote = role === 'generic';
 
   async function save(expected: string) {
     if (busy) return;
@@ -146,7 +148,7 @@ export function ListEditor({
   }
 
   const bound = maxEntries(role);
-  const columns = 3 + (isBar ? 1 : 0) + (withAuthz ? 1 : 0) + 1;
+  const columns = 3 + (isBar ? 1 : 0) + (withAuthz ? 1 : 0) + (withNote ? 1 : 0) + 1;
   // Row pages as destinations (P1.12 B1): the live pages are offered; a stored
   // entry to a deleted page keeps its option, named deleted, so the row reads
   // right and Remove is at hand; the preview hides it as the shell does.
@@ -168,7 +170,7 @@ export function ListEditor({
       <h2 className="m-0 mb-1 text-20 font-bold text-text">{title}</h2>
       <p className="m-0 mb-4 max-w-[70ch] text-13 text-text-muted">{sub}</p>
 
-      <div className="border border-border-strong bg-surface">
+      <div className="overflow-x-auto border border-border-strong bg-surface">
         <table className="w-full border-collapse text-12">
           <thead>
             <tr className="text-left text-text-faint">
@@ -177,6 +179,7 @@ export function ListEditor({
               <th className="px-2.5 py-2 font-semibold">Destination</th>
               {isBar && <th className="px-2.5 py-2 font-semibold">Icon</th>}
               {withAuthz && <th className="px-2.5 py-2 font-semibold">Authorization</th>}
+              {withNote && <th className="px-2.5 py-2 font-semibold">Note</th>}
               <th className="w-24 px-2.5 py-2" />
             </tr>
           </thead>
@@ -269,6 +272,20 @@ export function ListEditor({
                       </select>
                     </td>
                   )}
+                  {withNote && (
+                    <td className="px-2.5 py-1.5">
+                      <input
+                        type="text"
+                        value={entry.note ?? ''}
+                        maxLength={LIST_NOTE_MAX}
+                        disabled={readOnly}
+                        aria-label={`Note of entry ${i + 1}`}
+                        placeholder="One sentence a card shows"
+                        className={`${FIELD} w-64`}
+                        onChange={e => setEntries(list => updateEntry(list, i, { note: e.target.value }))}
+                      />
+                    </td>
+                  )}
                   <td className="px-2.5 py-1.5 text-right">
                     <button
                       type="button"
@@ -352,6 +369,7 @@ export function ListEditor({
                   {e.label}
                   {dest && dest.kind !== 'action' && <span className="ml-2 font-mono text-10 no-underline text-text-faint">{dest.href}</span>}
                   {e.authz && <span className="ml-2 font-mono text-9 uppercase tracking-[0.12em] text-text-faint">{e.authz}</span>}
+                  {e.note && <span className="ml-2 font-sans text-12 no-underline text-text-muted">{e.note}</span>}
                 </li>
               );
             })}

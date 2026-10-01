@@ -95,7 +95,7 @@ describe('page destinations in the lists (P1.12 B1)', () => {
 });
 
 describe('parseEntries — fail-soft matrix', () => {
-  it('maps rows, keeping icon and authz when present', () => {
+  it('maps rows, keeping icon, authz and the note when present', () => {
     const out = parseEntries(
       [
         { label: 'Home', dest_key: 'home', icon: 'house' },
@@ -108,12 +108,17 @@ describe('parseEntries — fail-soft matrix', () => {
       [
         { label: 'Home', dest_key: 'home', icon: 'house' },
         { label: ' Calendar ', dest_key: 'calendar', authz_key: 'signed_in' },
+        // R18 PR C: the sentence a card draws, trimmed; a row without one carries none.
+        { label: 'Learn', dest_key: 'learn', note: ' Plain answers to the questions fans ask. ' },
+        { label: 'Blog', dest_key: 'blog', note: '' },
       ],
       'menu',
     );
     expect(menu).toEqual([
       { label: 'Home', dest: 'home', icon: 'house' },
       { label: 'Calendar', dest: 'calendar', authz: 'signed_in' },
+      { label: 'Learn', dest: 'learn', note: 'Plain answers to the questions fans ask.' },
+      { label: 'Blog', dest: 'blog' },
     ]);
   });
 

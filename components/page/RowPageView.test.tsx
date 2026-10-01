@@ -118,6 +118,22 @@ describe('RowPageView', () => {
     expect(html).not.toContain('Contact');
   });
 
+  it('R18 PR C: a card draws the destination’s name in mono when it differs from the entry’s words, the words in serif, the sentence and the Open cue; a wide body list takes three columns from lg, an aside or a narrow one two', () => {
+    const doorways = [
+      { label: 'The 2026 title race', dest: 'series:f2:standings', note: 'Drivers and teams, updated after every round.' },
+      { label: 'Calendar', dest: 'calendar' },
+    ];
+    const wide = { id: 'doorways', kind: 'list', title: 'More Formula 2', position: 'body', seq: 90, column: 1, span: 12, newRow: true, hidden: false, authz: null, listKey: 'f2-more', style: 'cards' } as (typeof document)['regions'][number];
+    const half = { ...wide, id: 'half', span: 6, listKey: 'f2-more' } as (typeof document)['regions'][number];
+    const out = renderToStaticMarkup(<RowPageView {...data} document={{ ...document, regions: [...document.regions, wide, half] }} lists={{ 'f2-more': doorways }} />);
+    expect(out).toMatch(/<a href="\/series\/f2\/standings"[^>]*><span class="[^"]*font-mono[^"]*">Formula 2 · Standings<\/span><span class="[^"]*font-serif[^"]*">The 2026 title race<\/span><span class="[^"]*">Drivers and teams, updated after every round\.<\/span><span class="[^"]*font-mono[^"]*">Open →<\/span><\/a>/);
+    // The entry whose words are the destination's name draws no mono line and, without a note, no sentence.
+    expect(out).toMatch(/<a href="\/calendar"[^>]*><span class="[^"]*font-serif[^"]*">Calendar<\/span><span class="[^"]*font-mono[^"]*">Open →<\/span><\/a>/);
+    expect(out).toMatch(/aria-label="More Formula 2"><h2[^>]*>More Formula 2<\/h2><div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">/);
+    // The half-width copy and the aside's cards stay two to a row.
+    expect(out.match(/lg:grid-cols-3/g)).toHaveLength(1);
+  });
+
   it('renders a list entry to a row page through the href the loader carried, and skips a page entry the loader could not resolve (P1.12 B1)', () => {
     const PAGE = 'a1b2c3d4-0000-4000-8000-000000000010';
     const withPages = renderToStaticMarkup(

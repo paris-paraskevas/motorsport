@@ -149,6 +149,28 @@ describe('/api/admin/design/lists/[key]', () => {
     expect(res.status).toBe(200);
   });
 
+  it('PUT takes a note on an entry of a list of the operator’s own (trimmed, at most 120 characters, sent only when present) and refuses one on the shell’s lists or one that is not text (R18 PR C)', async () => {
+    listRow = { data: { key: 'useful-links', role: 'generic', label: 'Useful links', updated_at: STAMP }, error: null };
+    let res = await put('useful-links', { entries: [{ label: 'Calendar', dest: 'calendar', note: '  Every session, your time.  ' }, { label: 'Learn', dest: 'learn', note: '' }], updatedAt: STAMP });
+    expect(res.status).toBe(200);
+    const [, args] = rpc.mock.calls[0] as [string, { p_entries: unknown }];
+    expect(args.p_entries).toEqual([
+      { label: 'Calendar', dest_key: 'calendar', icon: null, authz_key: null, note: 'Every session, your time.' },
+      { label: 'Learn', dest_key: 'learn', icon: null, authz_key: null },
+    ]);
+    res = await put('useful-links', { entries: [{ label: 'Calendar', dest: 'calendar', note: 'x'.repeat(121) }], updatedAt: STAMP });
+    expect(res.status).toBe(400);
+    expect(((await res.json()) as { error: string }).error).toBe('entry 1: notes are at most 120 characters');
+    res = await put('useful-links', { entries: [{ label: 'Calendar', dest: 'calendar', note: 7 }], updatedAt: STAMP });
+    expect(res.status).toBe(400);
+    expect(((await res.json()) as { error: string }).error).toBe('entry 1: the note must be text');
+    listRow = { data: { key: 'doors', role: 'menu', label: 'Header doors', updated_at: STAMP }, error: null };
+    res = await put('doors', { entries: [{ label: 'Calendar', dest: 'calendar', note: 'A sentence.' }], updatedAt: STAMP });
+    expect(res.status).toBe(400);
+    expect(((await res.json()) as { error: string }).error).toBe('entry 1: the shell’s lists carry no note');
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
   it('PUT saves through design_save_list with the stamp verbatim, then refreshes every page', async () => {
     const res = await put('doors', {
       entries: [

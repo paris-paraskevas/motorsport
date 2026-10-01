@@ -623,7 +623,7 @@ function componentRegion(r: Region): ComponentRegion {
 }
 
 describe('the champions page’s recipe (R18)', () => {
-  it('lays the Formula 2 champions page out as the design has it: the heading with its eyebrow and standfirst, the Reigning champion card the full width (its photo half follows the upload), the roll of honour with its footnote, the teams’ heading, the two tally halves, the Keep exploring list, the boxed call-out with its button inside; every region kind, the templates and the parents carried', () => {
+  it('lays the Formula 2 champions page out as the design has it: the heading with its eyebrow and standfirst, the Reigning champion card the full width (its photo half follows the upload), the roll of honour with its footnote, the teams’ heading, the two tally halves, the two doorway lists (More Formula 2, Around the site), the boxed call-out with its button inside; every region kind, the templates and the parents carried', () => {
     const regions = recipeRegions('/series/f2/champions');
     expect(regions.map(r => `${r.id}:${r.kind}:${r.column}/${r.span}${r.newRow ? '' : ' same row'}${'parent' in r && r.parent ? ` in ${r.parent}` : ''}`)).toEqual([
       'heading:component:1/12',
@@ -632,7 +632,8 @@ describe('the champions page’s recipe (R18)', () => {
       'teams:static:1/12',
       'drivers-titles:component:1/6',
       'teams-titles:component:7/6 same row',
-      'explore:list:1/12',
+      'more-f2:list:1/12',
+      'around:list:1/12',
       'callout:static:1/12',
       'open-calendar:button:1/12 in callout',
     ]);
@@ -645,7 +646,8 @@ describe('the champions page’s recipe (R18)', () => {
     expect(at('teams')).toMatchObject({ kind: 'static', title: 'Most successful teams', text: 'Titles won since 2005, GP2 and F2 combined.', templateOptions: ['HEADING_HEADLINE'] });
     expect(componentRegion(at('drivers-titles'))).toMatchObject({ settings: { preset: 'drivers-titles-by-team', view: 'list', rows: 5, heading: "Drivers' titles" }, source: 'champions?series=f2' });
     expect(componentRegion(at('teams-titles'))).toMatchObject({ settings: { preset: 'teams-titles-by-team', view: 'list', rows: 5, heading: "Teams' titles" }, source: 'champions?series=f2' });
-    expect(at('explore')).toMatchObject({ kind: 'list', listKey: 'f2-keep-exploring', style: 'cards', title: 'Keep exploring', templateOptions: ['HEADING_HEADLINE'] });
+    expect(at('more-f2')).toMatchObject({ kind: 'list', listKey: 'f2-more', style: 'cards', title: 'More Formula 2', templateOptions: ['HEADING_HEADLINE'] });
+    expect(at('around')).toMatchObject({ kind: 'list', listKey: 'around-the-site', style: 'cards', title: 'Around the site', templateOptions: ['HEADING_HEADLINE'] });
     expect(at('callout')).toMatchObject({ kind: 'static', title: 'Every F2 session in your time zone', text: `Follow the ${CURRENT_SEASON} season on the calendar. No account needed.`, template: 'boxed', templateOptions: ['HEADING_HEADLINE'] });
     expect(at('open-calendar')).toMatchObject({ kind: 'button', label: 'Open calendar', dest: 'calendar', parent: 'callout' });
     expect(Object.keys(componentRegion(at('honours')).settings).sort()).toEqual(Object.keys(componentDefaults(findComponent('data.region')!)).sort());

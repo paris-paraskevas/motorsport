@@ -4,9 +4,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { ReactNode } from 'react';
 import type { Series } from '@/lib/types';
 
-// R18: the series tab shell's two branches. A tab with a recipe of its own address keeps the back link, the BreadcrumbList and
-// the foot around the composed body (the recipe's heading is the h1) and hands ComposedTab the WHOLE legacy layout, masthead
-// and h1 included, to draw instead when the composition fails; every other tab is the legacy layout itself.
+// R18: the series tab shell's two branches. A tab with a recipe of its own address keeps the back link and the BreadcrumbList
+// before the composed body (the recipe's heading is the h1; its doorway cards replace the shell's mono foot, PR C) and hands
+// ComposedTab the WHOLE legacy layout, masthead and h1 included, to draw instead when the composition fails; every other tab
+// is the legacy layout itself.
 vi.mock('next/link', () => ({ default: ({ href, children, ...rest }: { href: string; children: ReactNode; className?: string }) => <a href={href} {...rest}>{children}</a> }));
 vi.mock('next/navigation', () => ({
   notFound: () => {
@@ -24,6 +25,7 @@ vi.mock('@/components/tabs/ComposedTab', async () => {
   const actual = await vi.importActual<typeof import('@/components/tabs/ComposedTab')>('@/components/tabs/ComposedTab');
   return {
     hasComposedTab: actual.hasComposedTab,
+    // The mock draws whatever the shell hands it before and after the body, so the shell's own choice shows in the markup.
     ComposedTab: ({ path, before, after, children }: { path: string; before?: ReactNode; after?: ReactNode; children: ReactNode }) =>
       composition === 'drawn' ? (
         <>
@@ -47,14 +49,14 @@ describe('SeriesPageView (R18)', () => {
     composition = 'drawn';
   });
 
-  it('a tab with a recipe: the back link and the structured data before the composed body, the foot after it, no masthead of the shell’s (the recipe’s heading is the h1)', async () => {
+  it('a tab with a recipe: the back link and the structured data before the composed body, no masthead and no mono foot of the shell’s (the recipe’s heading is the h1, its doorway cards the foot)', async () => {
     const html = await draw('f2');
     expect(html).toContain('data-composed="/series/f2/champions"');
     expect(count(html, '"BreadcrumbList"')).toBe(1);
-    expect(html).toMatch(/<a href="\/series\/f2"[^>]*>← Formula 2<\/a>[\s\S]*data-composed="\/series\/f2\/champions"[\s\S]*>More Formula 2</);
+    expect(html).toMatch(/<a href="\/series\/f2"[^>]*>← Formula 2<\/a>[\s\S]*data-composed="\/series\/f2\/champions"/);
     expect(html).not.toContain('<h1');
     expect(html).not.toContain('<header');
-    expect(count(html, '>More Formula 2<')).toBe(1);
+    expect(count(html, 'More Formula 2')).toBe(0);
     expect(html).not.toContain('data-tab=');
   });
 

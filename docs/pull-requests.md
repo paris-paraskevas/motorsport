@@ -14,6 +14,27 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #__PR__ · 1.0.238 · R18 PR C · opened __OPENED__; the apply on “apply 20261001213000”, then the merge
+**The doorways at the foot of the Formula 2 champions page.** The operator’s point of the 1st, drawn as three options and chosen as C: two card lists under their own headings, “More Formula 2” and “Around the site”, each card with a sentence written in the list editor; the shell’s mono foot leaves the composed page; the calendar box stays as the closing call. A sentence on a list entry is a new column, applied to prod before the merge.
+- **Readers see:** the foot of /series/f2/champions as two rows of cards with a line each (the review page); nothing else (the parity below).
+- **Editors get:** a Note on every entry of a list of their own (Shared Components › Lists), shown in the preview and drawn by the cards style.
+- **Files (28):**
+  - `supabase/migrations/20261001213000_list_entry_note.sql` (new) · the column with its cap; design_save_list re-created with it.
+  - `lib/design/destinations.ts` · NavEntry.note.
+  - `lib/design/list-edit.ts` · LIST_NOTE_MAX; the emptied note leaves; sameEntries compares it.
+  - `lib/design/lists.ts` · parseEntries carries the note; the editor’s read and the pages’ lists select it; the shell’s loader does not.
+  - `app/api/admin/design/lists/[key]/route.ts` · the note validated by role, trimmed, capped in words, sent only when present.
+  - `components/designer/ListEditor.tsx`, `components/designer/ListsEditor.tsx` · the Note column, the preview, the sideways scroll; the help.
+  - `components/page/RowPageView.tsx` · the card’s four parts; three columns from lg for a wide body list.
+  - `lib/design/components.ts` · the recipe’s two doorway lists.
+  - `components/SeriesPageView.tsx`, `components/tabs/ComposedTab.tsx` · no mono foot on the composed page; the node before alone.
+  - `lib/design/lists.test.ts`, `lib/design/list-edit.test.ts`, `app/api/admin/design/lists/[key]/route.test.ts`, `components/designer/ListsEditor.test.tsx`, `components/page/RowPageView.test.tsx`, `lib/design/components.test.ts`, `components/SeriesPageView.test.tsx`, `components/tabs/ComposedTab.test.tsx` · the tests above, first red.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · PR B merged and checked on prod; R18’s scope with PR C, the dated line with the operator’s words, the evidence; 70 slots rehashed.
+  - `SCHEDULE.md`, `IDEAS.md` · the session-63 item 11; the operator’s point closed into PR C.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · this entry and the trio, 1.0.238.
+- **Verified:** tests first (seven red across six files, then green); the full suite (npx vitest run) → 273 files, 2,635 tests green at the default timeouts; `npx tsc --noEmit` → 0; `npm run lint` → 0 errors (the two known warnings); the local server with the migration and the seed applied: /series/f2/champions at 1440 and 390 (the two card rows with their sentences, the call-out, no mono foot); the Note column stands on its test (the local designer needs the operator’s sign-in); `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` → Total Upload 39,849.49 KiB / gzip 8,672.57 KiB (1.0.237: 39,847.02 / 8,671.81; 61% of the 64 MiB ceiling); the testing Worker: /series/f2/champions 217,984 · 22,150 · 114,422 bytes of HTML · wire · flight (the two list regions present and empty, no mono foot, the call-out) (prod’s design rows, the lists absent until the apply); `npx tsx scripts/parity-page.mts` on the fourteen other champions tabs → identical: 14 pages (the release string masked); the prod rehearsal in begin…rollback: the column, two lists, twelve entries with twelve notes, nothing stuck after the rollback.
+- **Review:** __REVIEW__
+
 ## #1119 · 1.0.237 · R18 PR B · opened Thu 1 Oct 22:35 (19:35Z); the merge on the word
 **The Formula 2 champions page in the operator’s design.** The second of R18’s two PRs: `/series/f2/champions` takes the shape of the operator’s Claude Design page in the site’s faces with the Appearance corners (“B”): the masthead with its eyebrow and standfirst, the Reigning champion card the full width (its photo half follows the upload), the roll of honour by decade with the era row and the sticky Jump-to bar, the two title tallies, the Keep exploring list (absent until the operator authors it) and the calendar call-out. Every piece is general and in the catalogue; the page is a recipe keyed by its concrete address, drawn by the tab route through the frame’s own assembly; the fourteen other champions tabs are byte-identical. The review page: https://claude.ai/code/artifact/c439f1f5-371e-4262-8e93-c7a533ce8c09
 - **Readers see:** the Formula 2 champions page in its new shape (the 1440, 800 and 390 px views on the review page); any list cut to its first rows says “+ n more”; nothing else changes (the parity below).

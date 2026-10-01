@@ -4,6 +4,8 @@ import { BAR_MAX, BAR_MIN, NAV_LIST_KEYS, pageIdOf, resolveDestination, type Lis
 // Lists page (which greys Create out) and the collection route (which refuses).
 export const LIST_KEY_MAX = 40;
 export const LIST_LABEL_MAX = 60;
+/** A card's sentence (R18 PR C): about three lines on a phone-width card. */
+export const LIST_NOTE_MAX = 120;
 const LIST_KEY = /^[a-z0-9][a-z0-9-]{0,39}$/;
 
 /** Why a key cannot name a new list, or null. The shell's four keys are taken. */
@@ -64,6 +66,7 @@ export function updateEntry(entries: NavEntry[], index: number, patch: Partial<N
     // An emptied optional field is removed, not kept as ''.
     if (!next.icon) delete next.icon;
     if (!next.authz) delete next.authz;
+    if (!next.note) delete next.note;
     return next;
   });
 }
@@ -91,6 +94,6 @@ export function sameEntries(a: NavEntry[], b: NavEntry[]): boolean {
   if (a.length !== b.length) return false;
   return a.every((e, i) => {
     const o = b[i];
-    return e.label === o.label && e.dest === o.dest && (e.icon ?? '') === (o.icon ?? '') && (e.authz ?? '') === (o.authz ?? '');
+    return e.label === o.label && e.dest === o.dest && (e.icon ?? '') === (o.icon ?? '') && (e.authz ?? '') === (o.authz ?? '') && (e.note ?? '') === (o.note ?? '');
   });
 }

@@ -27,7 +27,7 @@ beforeEach(() => {
     calls.push({ url, method, body: init?.body ? JSON.parse(String(init.body)) : null });
     if (method === 'POST') return json(201, { ok: true, list: { key: 'more-links', role: 'generic', label: 'More links', updatedAt: STAMP, entries: [] } });
     if (method === 'DELETE') return json(200, { ok: true, key: 'useful-links' });
-    return json(200, { key: 'useful-links', role: 'generic', label: 'Useful links', updatedAt: STAMP, entries: [{ label: 'Calendar', dest: 'calendar' }, { label: 'Blog', dest: 'blog' }] });
+    return json(200, { key: 'useful-links', role: 'generic', label: 'Useful links', updatedAt: STAMP, entries: [{ label: 'Calendar', dest: 'calendar', note: 'Every session, your time.' }, { label: 'Blog', dest: 'blog' }] });
   });
   vi.stubGlobal('fetch', fetchMock);
 });
@@ -74,6 +74,12 @@ describe('ListsEditor', () => {
     fireEvent.click(within(row).getByRole('button', { name: 'Open' }));
     expect(await screen.findByRole('heading', { name: 'Useful links' })).toBeTruthy();
     expect(screen.getByLabelText('Preview of the list')).toBeTruthy();
+    // R18 PR C: the Note column (a sentence a card draws), with its cap, shown in the preview.
+    const note = screen.getByLabelText('Note of entry 1') as HTMLInputElement;
+    expect(note.value).toBe('Every session, your time.');
+    expect(note.maxLength).toBe(120);
+    expect((screen.getByLabelText('Note of entry 2') as HTMLInputElement).value).toBe('');
+    expect(within(screen.getByLabelText('Preview of the list')).getByText('Every session, your time.')).toBeTruthy();
     // R18: the series tabs in the catalogue select, flat by label among the rest (the designer's selects group them).
     const add = screen.getByLabelText('Add an entry from the catalogue') as HTMLSelectElement;
     expect(Array.from(add.options).map(o => o.textContent?.trim())).toContain('Formula 1 · Champions · /series/f1/champions');
