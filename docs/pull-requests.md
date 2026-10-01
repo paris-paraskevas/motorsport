@@ -14,6 +14,33 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1109 · 1.0.227 · X6 B · opened Thu 1 Oct 02:05 (23:05Z on the 30th); the merge on the word
+**The results tabs: the latest round open, the earlier rounds one line each.** A results tab carried every round’s full classification in the page, folded but shipped twice (NASCAR 2.38 MB); the latest round now opens with its classification and every earlier round is one line with “Classification →” to the race session page where that page can answer, the accordion kept where it cannot. PR B of three of X6 (page weight).
+- **Readers see:** the results tab with the latest round open and the earlier rounds one line each (the round, the race to its weekend page, the date, the winner, “Classification →”); NASCAR, IndyCar, DTM and WRC as before (their rounds keep the accordion).
+- **Editors get:** nothing.
+- **Files (8):**
+  - `components/tabs/ResultsTab.tsx` · `latestOf`, `raceSessionFor`, `roundLinks`, the mode on `RoundRow` and the two class cards, the link in `RowMeta`, the panels over one `links` object.
+  - `components/tabs/ResultsTab.test.tsx` · NEW: nine cases from fixture seasons (F1, F2, WEC, GT World, DTM, NLS, WRC, the order, the picker).
+  - `lib/results/session-classification.ts` · `RACE_SESSION_SERIES` exported (the set the link rule shares with the session page).
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · X6’s evidence: A on prod and its row applied, B’s trio.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.227.
+- **Verified:** the tests written before the code (six cases red), green after it, the DTM case red before the reviewer’s fix and green after; tsc 0; lint 0 errors (the two known warnings); vitest 268 files, 2553 tests; `DATA_SOURCE=db npm run cf:build` exit 0 (twice, the second with the fix); `npx wrangler deploy --dry-run` Total Upload 41206.52 KiB / gzip 8954.77 KiB (the build’s own variation under X7’s figure; 63% of the ceiling). The local server at 1440 and 390: /series/f1/results (round 15 open, fourteen lines), /series/wec/results (the latest round’s classes open), /series/gt-world/results (the latest race’s cups open), /series/nascar-cup/results with its accordions; the review page https://claude.ai/code/artifact/41419d05-d1b2-4cf9-9bc4-933de9bccb3f. The testing Worker (version bf63dd38), bytes, before → after:
+
+  | tab | before: html · gzip · flight | after: html · gzip · flight | why |
+  |---|---|---|---|
+  | /series/nascar-cup/results | 2,383,067 · 59,362 · 1,276,083 | 2,162,042 · 56,515 · 1,157,139 | the accordions stay: the rounds are named by event, no race session page shows their classification (the question above) |
+  | /series/motogp/results | 1,262,093 · 43,555 · 676,610 | 190,816 · 17,181 · 96,536 |  |
+  | /series/f1/results | 756,661 · 30,045 · 401,266 | 146,401 · 16,593 · 73,185 |  |
+  | /series/wec/results | 530,430 · 26,136 · 277,389 | 161,970 · 18,096 · 81,137 | the latest round’s every class open |
+  | /series/imsa/results | 481,653 · 28,475 · 249,709 | 145,095 · 17,275 · 71,892 |  |
+  | /series/gt-world/results | 1,146,361 · 46,684 · 600,214 | 282,585 · 20,990 · 143,538 | the latest race’s cups open; the season listed oldest first as the feed does |
+  | /series/f2/results | 1,173,920 · 39,360 · 625,210 | 219,925 · 18,355 · 112,229 | the feature and the sprint panels each open their latest |
+  | /series/indycar/results | 867,764 · 30,072 · 464,564 | 826,895 · 29,795 · 442,454 | the accordions stay: the rounds are named by event (the question above) |
+  | /series/dtm/results | 590,622 · 27,357 · 313,405 (prod) | 590,982 · 27,954 · 313,680 | the accordions stay: the session page has no per-race source for DTM (the reviewer’s finding; the question above) |
+  | /series/wrc/results | 351,617 · 21,157 · 182,961 | 351,864 · 21,502 · 183,176 | rallies: the classification lives on the tab, under the bar already |
+
+  curl -s -o /dev/null -w '%{size_download}': plain (the HTML), --compressed (the wire), with RSC: 1 (the flight payload). Before: the testing Worker on the previous build (the tabs as prod has them); after: the testing Worker on this PR’s build (version bf63dd38, the build with the reviewer’s fix), the tabs rendered on demand. Every tab whose rounds carry a race session falls under the slot’s 400 kB (F1 146 kB from 757, MotoGP 191 kB from 1.26 MB, F2 220 kB from 1.17 MB, GT World 283 kB from 1.15 MB, WEC 162 kB, IMSA 145 kB); NASCAR, IndyCar and DTM keep their accordions and their weight until the question above is answered; prod is measured the same way after the merge.
+- **Review:** a fresh-context Sonnet reviewer (208,548 tokens, 35 reads and runs: the plan, the whole results tab and its test, the session page’s classification paths, the weekend grouping, the results feeds’ race names, the test file, tsc and eslint): REQUIREMENT GAP, one blocking finding folded: DTM’s earlier rounds linked a race session page that can never show a classification (DTM is outside RACE_SESSION_SERIES, “no per-race source yet”), a dead end where the accordion had the rows; the classification link is now given only where the session page answers (F1 through OpenF1, the class series per class, the RACE_SESSION_SERIES from their season feed), DTM keeps its accordions, a DTM case red before the fix and green after; its should-fix folded (an NLS case beside WRC’s); its scope check of the event-named series (no other series shares the NASCAR/IndyCar/WRC naming; a “Raceway” title reads as a race by accident but the session page it links answers with the round’s one race, no mislink found); its nit recorded (isRaceLikeTitle is a substring test, pre-existing).
 ## #1108 · 1.0.226 · X6 A · opened Thu 1 Oct 01:15 (22:15Z); the merge on the word
 **The changelog on pages of its own releases.** /changelog carried all 1,014 updates twice (markup and flight payload), 2.1 MB; it now lists the releases with the newest release’s 30 newest updates inline, and every release has a page of its own with every update, prerendered at build and listed in the sitemap from a bundled release index (RELEASES.md stays out of the Worker). PR A of three of X6 (page weight).
 - **Readers see:** the changelog’s releases as before, the newest release’s 30 newest updates inline and “All 226 updates →”, a page per release (`/changelog/lights-out`, `/changelog/the-finishing-pass`, …) with every update; an unknown address under /changelog answers the site’s 404.
