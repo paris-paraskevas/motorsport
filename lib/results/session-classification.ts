@@ -78,9 +78,16 @@ export function mainRaceSession(weekend: Weekend, roundDates?: RoundDates): Sess
     return kind !== 'practice' && kind !== 'qualifying';
   });
   if (candidates.length === 0) return null;
-  const end = roundDates?.endDate ? Date.parse(`${roundDates.endDate}T23:59:59Z`) : NaN;
-  const distance = (s: Session) => (Number.isFinite(end) ? Math.abs(s.start.getTime() - end) : -s.start.getTime());
-  return candidates.reduce((best, s) => (distance(s) < distance(best) ? s : best));
+  // Ranked by the day's distance from the round's end date, then a race by its words before any other session (the
+  // 500 over a same-day celebration), then the latest start.
+  const end = roundDates?.endDate ? Date.parse(`${roundDates.endDate}T12:00:00Z`) : NaN;
+  const rank = (s: Session): [number, number, number] => [
+    Number.isFinite(end) ? Math.abs(Math.round((s.start.getTime() - end) / 86_400_000)) : 0,
+    classifySession(s.title) === 'race' ? 0 : 1,
+    -s.start.getTime(),
+  ];
+  const before = (a: [number, number, number], b: [number, number, number]) => a[0] !== b[0] ? a[0] < b[0] : a[1] !== b[1] ? a[1] < b[1] : a[2] < b[2];
+  return candidates.reduce((best, s) => (before(rank(s), rank(best)) ? s : best));
 }
 
 /** Whether a session is the race: by its words for every series, and for the event-named ones the weekend's main race. */

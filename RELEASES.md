@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.233 — 2026-10-01
 
-NASCAR, IndyCar and DTM race pages now show the full classification, their results tabs open the latest round and list the earlier ones in one line each with a link to the result (the pages are a tenth of their old size), and IndyCar's rows from Portland on link to the right race.
+NASCAR, IndyCar and DTM race pages now show the full classification, their results tabs open the latest round and list the earlier ones in one line each with a link to the result (the pages are between a tenth and a quarter of their old size), and IndyCar's rows from Music City on link to the right race and carry the right round numbers.
 
 ## 1.0.232 — 2026-10-01
 

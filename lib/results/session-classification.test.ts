@@ -79,9 +79,15 @@ describe('mainRaceSession and isRaceSession (B2)', () => {
       s('nascar-cup', 'NASCAR - Qualifying', '2026-02-11T20:00:00Z'),
       s('nascar-cup', 'NASCAR - Bluegreen Vacations Duel 1', '2026-02-12T23:00:00Z'),
       s('nascar-cup', 'NASCAR - 68th Daytona 500', '2026-02-15T19:30:00Z'),
+      // A later same-day session that is no race by its words: the 500 still wins, with or without the round's dates.
+      s('nascar-cup', 'NASCAR - Victory Lane Celebration', '2026-02-15T23:00:00Z'),
     ], 1);
     expect(mainRaceSession(daytona, { endDate: '2026-02-15' })?.title).toBe('NASCAR - 68th Daytona 500');
     expect(mainRaceSession(daytona)?.title).toBe('NASCAR - 68th Daytona 500');
+    // The round's end date decides between two race-like sessions on different days.
+    const twoRaces = weekendOf([s('nascar-cup', 'NASCAR - Duel 500', '2026-02-12T23:00:00Z'), s('nascar-cup', 'NASCAR - 68th Daytona 500', '2026-02-15T19:30:00Z')], 1);
+    expect(mainRaceSession(twoRaces, { endDate: '2026-02-12' })?.title).toBe('NASCAR - Duel 500');
+    expect(mainRaceSession(twoRaces, { endDate: '2026-02-15' })?.title).toBe('NASCAR - 68th Daytona 500');
     expect(isRaceSession('nascar-cup', 'NASCAR - Bluegreen Vacations Duel 1', daytona, { endDate: '2026-02-15' })).toBe(false);
     const one = weekendOf([s('nascar-cup', 'NASCAR - Hollywood Casino 400', '2026-09-27T19:00:00Z')], 30);
     expect(isRaceSession('nascar-cup', 'NASCAR - Hollywood Casino 400', one, { endDate: '2026-09-27' })).toBe(true);
@@ -152,6 +158,11 @@ describe('fetchRoundClassification (B2)', () => {
     const r1 = await fetchRoundClassification(dtm, 2, 'DTM - Race 1');
     expect(r1?.entries.map(e => [e.position, e.driverName])).toEqual([[1, 'Güven'], [2, 'Auer'], [null, 'Engel']]);
     expect(snapshot).not.toHaveBeenCalled();
+    dtmResults.mockResolvedValue([
+      { round: 2, raceName: 'Lausitzring — Race 1', date: new Date('2026-05-23'), circuit: '', results: [entry(1, 'Güven', '1:02:00'), entry(2, 'Auer', '+1.2')] },
+      { round: 2, raceName: 'Lausitzring — Race 2', date: new Date('2026-05-24'), circuit: '', results: [entry(1, 'Auer', '58:14.005'), entry(2, 'Dörr', '+6.377')] },
+    ]);
+    expect((await fetchRoundClassification(dtm, 2, 'DTM - Race 2'))?.entries[0].driverName).toBe('Auer');
   });
 });
 
