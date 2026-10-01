@@ -177,7 +177,8 @@ describe('DataWorkspace', () => {
     await screen.findByRole('heading', { name: /^Object Browser/ });
     await waitFor(() => expect(urls).toContain('/api/admin/design/data/sources'));
     await screen.findByRole('button', { name: 'Open Standings' });
-    expect(screen.getAllByRole('row').slice(1)).toHaveLength(17);
+    // Eighteen since R18 (the Champions source).
+    expect(screen.getAllByRole('row').slice(1)).toHaveLength(18);
     fireEvent.click(screen.getByRole('button', { name: 'Open Standings' }));
     expect(screen.getByRole('region', { name: 'Data Source: Standings' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Data' }));

@@ -14,15 +14,15 @@ import { MAX_PER_SERIES_AGGREGATE } from '@/lib/news';
 // and a reader; a ref is one string a region carries; the loader's keys read
 // back in the catalogue's words.
 
-const SEVENTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results', 'trend', 'guides'];
+const EIGHTEEN = ['series', 'season', 'standings', 'results', 'rounds', 'sessions', 'drivers', 'teams', 'posts', 'news', 'authors', 'releases', 'tracks', 'weekends', 'session-results', 'trend', 'guides', 'champions'];
 const PARAMETER_KINDS = ['series', 'season', 'number', 'choice', 'text'];
 const COLUMN_TYPES = ['text', 'number', 'date', 'boolean', 'link', 'image', 'colour'];
 /** P2.24 B2: the two Series values the readers resolve rather than read (Home's series, the Latest result), each on its source alone. */
 const SPECIAL: Readonly<Record<string, readonly string[]>> = { results: ['home'], standings: ['latest'] };
 
 describe('the source catalogue', () => {
-  it('holds the seventeen in the changes line’s order (Weekends the fourteenth, P2.24 B1; Session results the fifteenth, P2.25; Season trend the sixteenth, P2.11; Circuit guides the seventeenth, P2.12), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
-    expect(SOURCES.map(s => s.key)).toEqual(SEVENTEEN);
+  it('holds the eighteen in the changes line’s order (Weekends the fourteenth, P2.24 B1; Session results the fifteenth, P2.25; Season trend the sixteenth, P2.11; Circuit guides the seventeenth, P2.12; Champions the eighteenth, R18), each well formed: parameters of a known kind with usable defaults, unique columns, a tier and a loading method', () => {
+    expect(SOURCES.map(s => s.key)).toEqual(EIGHTEEN);
     const contentSlugs = readdirSync(path.join(process.cwd(), 'content', 'series'), { withFileTypes: true })
       .filter(e => e.isDirectory())
       .map(e => e.name)
@@ -302,5 +302,46 @@ describe('the Circuit guides source (P2.12)', () => {
     expect(sourceLabel({ source: 'guides', params: {} })).toBe('Circuit guides');
     expect(parseSourceRef('guides').value).toEqual({ source: 'guides', params: {} });
     expect(parseSourceRef('guides?series=f1').problems).toEqual(['Circuit guides has no parameter called series']);
+  });
+});
+
+describe('the Champions source (R18)', () => {
+  it('is the eighteenth: a series’ curated roll of honour and its title tallies, every series, deployed with the site; the season rows’ columns, the tally rows’ columns, the derived ones', () => {
+    const champions = findSource('champions')!;
+    expect(champions).toMatchObject({ name: 'Champions', fresh: 'content', load: 'none', pagination: 'none', reads: ['content:series'] });
+    expect(champions.holds).toMatch(/^a series’ roll of honour/);
+    expect(champions.parameters.map(p => [p.key, p.kind, p.required ?? false, p.default])).toEqual([['series', 'series', true, 'f1']]);
+    expect(champions.parameters[0].options!.map(o => o.key)).toEqual(SERIES_OPTIONS.map(o => o.key));
+    expect(champions.columns.map(c => [c.key, c.type])).toEqual([
+      ['kind', 'text'],
+      ['year', 'number'],
+      ['driver', 'text'],
+      ['profile', 'link'],
+      ['nationality', 'text'],
+      ['team', 'text'],
+      ['teamPage', 'link'],
+      ['points', 'number'],
+      ['wins', 'number'],
+      ['podiums', 'number'],
+      ['margin', 'number'],
+      ['runnerUp', 'text'],
+      ['runnerUpTeam', 'text'],
+      ['runnerUpPoints', 'number'],
+      ['teamsChampion', 'text'],
+      ['teamsChampionPage', 'link'],
+      ['teamsTitles', 'number'],
+      ['teamsRun', 'number'],
+      ['driverTitles', 'number'],
+      ['era', 'text'],
+      ['decade', 'text'],
+      ['rookie', 'boolean'],
+      ['name', 'text'],
+      ['titles', 'number'],
+      ['page', 'link'],
+      ['seriesName', 'text'],
+      ['colour', 'colour'],
+    ]);
+    expect(parseSourceRef('champions?series=f2').problems).toEqual([]);
+    expect(parseSourceRef('champions').problems).toEqual(['Champions needs a series']);
   });
 });

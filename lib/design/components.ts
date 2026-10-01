@@ -418,7 +418,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
       { key: 'highlight', title: 'Highlight', seq: 40 },
       { key: 'detail', title: 'Master Detail', seq: 50 },
     ],
-    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides'],
+    sources: ['standings', 'results', 'posts', 'news', 'weekends', 'session-results', 'trend', 'tracks', 'guides', 'champions'],
   },
   // Filters (P2.5; APEX: Smart Filters, the chips above a report): a panel over another Data region of the page, its facets
   // that region's columns, each value a link that narrows the rows through the address (one `in` filter per facet under the

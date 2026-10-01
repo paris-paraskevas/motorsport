@@ -98,8 +98,20 @@ vi.mock('@/lib/results/dtm', () => ({ fetchDTMSeasonResults: (...a: unknown[]) =
 const comingWeekend = (sessions: { start: Date; end: Date }[]) => [{ round: 1, key: 'w1', isPast: false, dateRangeLabel: '5–7 Mar', sessions }];
 const groupByWeekend = vi.fn(comingWeekend);
 vi.mock('@/lib/group', () => ({ groupByWeekend: (...a: Parameters<typeof groupByWeekend>) => groupByWeekend(...a) }));
-vi.mock('@/lib/series-content', () => ({
+// R18: the champions of a two-era series (the suffix the F2 file carries on its GP2 rows), newest first as the files are kept; f2 reads the real file.
+const champions = [
+  { year: 2025, driver: 'Leonardo Fornaroli', constructor: 'Invicta Racing', constructorChampion: 'Invicta Racing', points: 211, wins: 4, podiums: 9, runnerUp: 'Jak Crawford', runnerUpTeam: 'DAMS', runnerUpPoints: 175, nationality: 'ITA', era: 'FIA Formula 2 Championship', rookie: true, sources: ['https://web.archive.org/x', 'https://en.wikipedia.org/x'] },
+  { year: 2024, driver: 'Gabriel Bortoleto', constructor: 'Invicta Racing', constructorChampion: 'Invicta Racing', points: 214.5, wins: 2, runnerUp: 'Isack Hadjar', runnerUpPoints: 192, nationality: 'BRA', era: 'FIA Formula 2 Championship' },
+  { year: 2017, driver: 'Charles Leclerc', constructor: 'Prema Racing', constructorChampion: 'Russian Time', points: 282, wins: 7, runnerUp: 'Artem Markelov', runnerUpPoints: 210, nationality: 'MON', era: 'FIA Formula 2 Championship' },
+  { year: 2016, driver: 'Pierre Gasly', constructor: 'Prema Racing (GP2 Series)', constructorChampion: 'Prema Racing', nationality: 'FRA', era: 'GP2 Series' },
+  { year: 2015, driver: 'Stoffel Vandoorne', constructor: 'ART Grand Prix (GP2 Series)', constructorChampion: 'ART Grand Prix', nationality: 'BEL', era: 'GP2 Series' },
+  // The roster's two names (the mock above links them), and a repeat champion three rows down, so the running counts and the links are asserted.
+  { year: 2013, driver: 'Kimi Antonelli', constructor: 'Mercedes', constructorChampion: 'Mercedes', era: 'GP2 Series' },
+  { year: 2012, driver: 'Stoffel Vandoorne', constructor: 'ART Grand Prix (GP2 Series)', constructorChampion: 'ART Grand Prix', era: 'GP2 Series' },
+];
+vi.mock('@/lib/series-content', async () => ({
   loadCuratedDrivers: async () => ({ teams: [{ name: 'Mercedes', color: '#00d2be', drivers: [{ name: 'Kimi Antonelli', code: 'ANT', number: 12 }, { name: 'George Russell', code: 'RUS', number: 63 }] }, { name: 'Ferrari', drivers: [{ name: 'Charles Leclerc' }] }] }),
+  loadCuratedChampions: async (slug: string) => (slug === 'f2' ? (await vi.importActual<typeof import('@/lib/series-content')>('@/lib/series-content')).loadCuratedChampions('f2') : slug === 'f1' ? champions : null),
 }));
 const post = (slug: string, seriesSlug: string | null, publishedAt: string | null, over: Record<string, unknown> = {}) => ({ id: slug, slug, title: `Post ${slug}`, summary: 'Words.', body: '', seriesSlug, tags: seriesSlug ? [seriesSlug] : [], originalUrl: null, status: 'published', authorId: 'u', authorName: 'Paris', publishAt: null, publishedAt, heroImage: slug === 'a' ? 'https://example.com/a.jpg' : null, learnTopic: null, createdAt: publishedAt ?? '2026-09-01T00:00:00Z', updatedAt: null, ...over });
 // The published posts the reader sees; a test may swap the list and put it back.
@@ -674,5 +686,45 @@ describe('the Circuit guides reader (P2.12)', () => {
     expect(read.rows).toEqual([
       { slug: 'autodromo-nazionale-monza', name: 'Autodromo Nazionale Monza', country: 'Italy', countryCode: 'IT', category: 'f1', categories: 'f1, endurance', lat: 45.6156, lon: 9.2811, page: '/information/tracks/autodromo-nazionale-monza', colour: '#ff4136' },
     ]);
+  });
+});
+
+describe('the Champions reader (R18)', () => {
+  it('answers a series’ roll of honour newest first with the derived columns (the margin, the decade, the running title counts, the teams’ run, the era) and the two tallies after it, the GP2 suffix stripped from every team name, every declared column on every row, the links from the rosters', async () => {
+    const read = await readSource({ source: 'champions', params: { series: 'f1' } });
+    expect(read.provenance).toMatchObject({ tier: 'content', label: 'Champions · Formula 1', rows: 16 });
+    expect(read.provenance.error).toBeUndefined();
+    const seasons = read.rows.filter(r => r.kind === 'season');
+    expect(seasons.map(r => r.year)).toEqual([2025, 2024, 2017, 2016, 2015, 2013, 2012]);
+    expect(seasons[0]).toMatchObject({ driver: 'Leonardo Fornaroli', nationality: 'ITA', team: 'Invicta Racing', teamPage: null, points: 211, wins: 4, podiums: 9, margin: 36, runnerUp: 'Jak Crawford', runnerUpTeam: 'DAMS', runnerUpPoints: 175, teamsChampion: 'Invicta Racing', teamsTitles: 2, teamsRun: 2, driverTitles: 1, era: 'FIA Formula 2 Championship', decade: '2020s', rookie: true, name: null, titles: null, page: null, seriesName: 'Formula 1' });
+    expect(seasons[1]).toMatchObject({ year: 2024, margin: 22.5, podiums: null, teamsTitles: 1, teamsRun: 1, rookie: false, runnerUpTeam: null });
+    expect(seasons[2]).toMatchObject({ year: 2017, team: 'Prema Racing', teamsChampion: 'Russian Time', teamsTitles: 1, teamsRun: 1, driverTitles: 1 });
+    // The suffix the file carries on the GP2 rows leaves the team names; the running counts walk oldest first.
+    expect(seasons[3]).toMatchObject({ year: 2016, team: 'Prema Racing', teamsChampion: 'Prema Racing', teamsTitles: 1, teamsRun: 1, margin: null, points: null });
+    // Vandoorne's second title and ART's second teams' title (2012 and 2015; Mercedes between them, so no run); the roster's names link.
+    expect(seasons[4]).toMatchObject({ year: 2015, team: 'ART Grand Prix', teamsChampion: 'ART Grand Prix', teamsTitles: 2, teamsRun: 1, driverTitles: 2 });
+    expect(seasons[5]).toMatchObject({ year: 2013, driver: 'Kimi Antonelli', profile: '/drivers/kimi-antonelli', team: 'Mercedes', teamPage: '/teams/mercedes', teamsChampion: 'Mercedes', teamsChampionPage: '/teams/mercedes', teamsTitles: 1, teamsRun: 1, driverTitles: 1 });
+    expect(seasons[6]).toMatchObject({ year: 2012, driver: 'Stoffel Vandoorne', driverTitles: 1, teamsTitles: 1, teamsRun: 1 });
+    // The tallies: the champions’ teams, then the teams’ champions, most titles first, a tie by name; every season key null on them.
+    expect(read.rows.filter(r => r.kind === 'driver-titles').map(r => [r.name, r.titles, r.page])).toEqual([['ART Grand Prix', 2, null], ['Invicta Racing', 2, null], ['Prema Racing', 2, null], ['Mercedes', 1, '/teams/mercedes']]);
+    expect(read.rows.filter(r => r.kind === 'team-titles').map(r => [r.name, r.titles])).toEqual([['ART Grand Prix', 2], ['Invicta Racing', 2], ['Mercedes', 1], ['Prema Racing', 1], ['Russian Time', 1]]);
+    const tally = read.rows.find(r => r.kind === 'driver-titles')!;
+    expect(tally).toMatchObject({ year: null, driver: null, page: null, seriesName: 'Formula 1' });
+    for (const row of read.rows) for (const c of SOURCES.find(s => s.key === 'champions')!.columns) expect(Object.keys(row), `${String(row.year ?? row.name)}.${c.key}`).toContain(c.key);
+    // A series without a file answers no rows and no error.
+    const none = await readSource({ source: 'champions', params: { series: 'wec' } });
+    expect(none.rows).toEqual([]);
+    expect(none.provenance.error).toBeUndefined();
+  });
+
+  it('reads the real Formula 2 file: twenty-one seasons 2025 back to 2005, no parenthesis in any team name or tally, the GP2 era on the twelve older rows', async () => {
+    const read = await readSource({ source: 'champions', params: { series: 'f2' } });
+    const seasons = read.rows.filter(r => r.kind === 'season');
+    expect(seasons).toHaveLength(21);
+    expect(seasons[0].year).toBe(2025);
+    expect(seasons[20].year).toBe(2005);
+    for (const r of read.rows) for (const key of ['team', 'teamsChampion', 'name']) if (typeof r[key] === 'string') expect(r[key], `${String(r.year ?? r.kind)}.${key}`).not.toMatch(/\(/);
+    expect(seasons.filter(r => r.era === 'GP2 Series').map(r => r.year)).toEqual([2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005]);
+    expect(read.rows.filter(r => r.kind === 'driver-titles').slice(0, 2).map(r => [r.name, r.titles])).toEqual([['ART Grand Prix', 7], ['Prema Racing', 4]]);
   });
 });

@@ -3,7 +3,7 @@ import path from 'path';
 import { cache } from 'react';
 import { HOME_RESULTS_SERIES, HOME_SERIES_OPTION, LATEST_RESULT_OPTION, SERIES_OPTIONS, findSource, sourceLabel, type SourceColumn, type SourceFresh, type SourceParams, type SourceRef } from './sources';
 import type { SnapshotMeta } from '@/lib/source-snapshot';
-import type { RaceResult, RaceResultEntry, Series } from '@/lib/types';
+import type { Champion, RaceResult, RaceResultEntry, Series } from '@/lib/types';
 import type { SeasonTrendData } from '@/lib/season-trend';
 import { trackColour } from '@/lib/information/types';
 
@@ -529,6 +529,88 @@ const READERS: Readonly<Record<string, Reader>> = {
     const { loadCuratedDrivers } = await import('@/lib/series-content');
     const file = await loadCuratedDrivers(String(params.series));
     return { tier: 'content', rows: (file?.teams ?? []).map(t => ({ name: t.name, colour: t.color ?? null, drivers: t.drivers.map(d => d.name).join(', '), count: t.drivers.length })) };
+  },
+  // The champions (R18): the curated roll of honour as season rows, newest first as the files are kept, with the derived
+  // columns, then the two title tallies as rows of their own kinds. The legacy " (GP2 Series)" suffix on the older Formula 2
+  // rows' team leaves every team name here (the era column carries the fact; the Learn answers print the field as stored).
+  // The links come from the rosters as the legacy tab's did, so a champion outside the current grid stays plain text. Every
+  // declared column is on every row, null where it does not apply.
+  async champions(params) {
+    const slug = String(params.series);
+    const [{ loadCuratedChampions }, { loadAllSeriesMeta }, index] = await Promise.all([
+      import('@/lib/series-content'),
+      import('@/lib/series'),
+      import('@/lib/people').then(m => m.peopleIndex()).catch(() => null),
+    ]);
+    const [file, metas] = await Promise.all([loadCuratedChampions(slug), loadAllSeriesMeta()]);
+    const meta = metas.find(m => m.slug === slug);
+    const seriesName = meta?.name ?? null;
+    const colour = meta?.color ?? null;
+    const seasons = [...(file ?? [])].sort((a, b) => b.year - a.year);
+    // A row without the key answers Object's own `constructor`, never a string: only a string is a name.
+    const teamName = (name: unknown): string | null => (typeof name === 'string' ? name.replace(/\s*\((?:GP2|GP3) Series\)\s*$/, '').trim() || null : null);
+    const link = (kind: 'driver' | 'team', name: string | null): string | null => (index && name ? (kind === 'driver' ? index.driver(slug, name) : index.team(slug, name)) : null);
+    // The running counts walk oldest first: the champion's title number, the teams' champion's title number and its run
+    // (consecutive rows of the file; a season the file lacks is not a gap it knows about).
+    const driverCount = new Map<string, number>();
+    const teamsCount = new Map<string, number>();
+    const derived = new Map<Champion, { driverTitles: number; teamsTitles: number | null; teamsRun: number | null }>();
+    let previous: string | null = null;
+    let run = 0;
+    for (const c of [...seasons].reverse()) {
+      const driverTitles = (driverCount.get(c.driver) ?? 0) + 1;
+      driverCount.set(c.driver, driverTitles);
+      const teams = teamName(c.constructorChampion);
+      let teamsTitles: number | null = null;
+      let teamsRun: number | null = null;
+      if (teams) {
+        teamsTitles = (teamsCount.get(teams) ?? 0) + 1;
+        teamsCount.set(teams, teamsTitles);
+        run = teams === previous ? run + 1 : 1;
+        teamsRun = run;
+      } else run = 0;
+      previous = teams;
+      derived.set(c, { driverTitles, teamsTitles, teamsRun });
+    }
+    const blank = (kind: string): SourceRow => ({ kind, year: null, driver: null, profile: null, nationality: null, team: null, teamPage: null, points: null, wins: null, podiums: null, margin: null, runnerUp: null, runnerUpTeam: null, runnerUpPoints: null, teamsChampion: null, teamsChampionPage: null, teamsTitles: null, teamsRun: null, driverTitles: null, era: null, decade: null, rookie: null, name: null, titles: null, page: null, seriesName, colour });
+    const seasonRows: SourceRow[] = seasons.map(c => {
+      const team = teamName(c.constructor);
+      const teams = teamName(c.constructorChampion);
+      const d = derived.get(c)!;
+      const points = num(c.points);
+      const runnerUpPoints = num(c.runnerUpPoints);
+      return {
+        ...blank('season'),
+        year: c.year,
+        driver: c.driver,
+        profile: link('driver', c.driver),
+        nationality: str(c.nationality),
+        team,
+        teamPage: link('team', team),
+        points,
+        wins: num(c.wins),
+        podiums: num(c.podiums),
+        margin: points !== null && runnerUpPoints !== null ? Math.round((points - runnerUpPoints) * 10) / 10 : null,
+        runnerUp: str(c.runnerUp),
+        runnerUpTeam: str(c.runnerUpTeam),
+        runnerUpPoints,
+        teamsChampion: teams,
+        teamsChampionPage: link('team', teams),
+        teamsTitles: d.teamsTitles,
+        teamsRun: d.teamsRun,
+        driverTitles: d.driverTitles,
+        era: str(c.era),
+        decade: `${Math.floor(c.year / 10) * 10}s`,
+        rookie: c.rookie === true,
+      };
+    });
+    // The tallies: the most titles first, a tie by name; a season without the name counts for nothing.
+    const tally = (kind: 'driver-titles' | 'team-titles', names: readonly (string | null)[]): SourceRow[] => {
+      const counts = new Map<string, number>();
+      for (const n of names) if (n) counts.set(n, (counts.get(n) ?? 0) + 1);
+      return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([name, titles]) => ({ ...blank(kind), name, titles, page: link('team', name) }));
+    };
+    return { tier: 'content', rows: [...seasonRows, ...tally('driver-titles', seasons.map(c => teamName(c.constructor))), ...tally('team-titles', seasons.map(c => teamName(c.constructorChampion)))] };
   },
   async posts(params) {
     const [{ publishedPosts, readMinutes }, { loadAllSeriesMeta }] = await Promise.all([import('@/lib/blog'), import('@/lib/series')]);
