@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #__RECORDS_PR__ · 1.0.234 · records · opened __OPENED__; the merge on the standing word
+## #1116 · 1.0.234 · records · opened Thu 1 Oct 16:34 (13:34Z); the merge on the standing word
 **B2 on prod and done with the check; the session-62 close.** Records only: the merge and prod measured, the slot closed; the baselines’ B2 section; the two follow-ups for the word in the Inbox; the handoff for session 63.
 - **Readers see:** nothing (the classifications and the lighter tabs are 1.0.233’s).
 - **Editors get:** nothing.
