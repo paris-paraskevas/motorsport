@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.229 — 2026-10-01
+
+### Records — X6 on prod and done with the check; the perf baselines; the session-60 close
+
+Records only. `docs/plan/ledger.json`: X6’s three PRs merged on the operator’s word of ~05:49Z on the 1st (“A: merge and apply 20260930212400, B: merge, C: merge”): #1108 (1.0.226) 05:50:47Z and the release page’s registry row applied on prod 05:50:48Z, #1109 (1.0.227) 05:52:40Z, #1110 (1.0.228) 05:54:01Z; prod 1.0.228 by ~06:03Z (1.0.227); 1.0.228 built with success by ~06:15Z, its cached pages rolling over; the three families measured on prod after the deploy (/changelog 163,229 · 17,576 · 81,292 bytes of HTML · wire · flight, from 2,127,898 · 172,469 · 1,089,877; the results tabs with a race session page under 400 kB, F1 146,831 · 16,502 · 73,185 from 756,661, MotoGP 191,547 · 17,048 · 96,536 from 1,262,093; /calendar 544,934 · 54,555 · 454,014 from 544,891 · 54,510 · 454,014); X6 DONE; a dated line. `docs/perf-baselines.md`: the X6 section (the three PRs, the testing Worker and prod before and after, the method, the deploy window, the B2 question, the PSI note). `IDEAS.md`: two Inbox lines (B2: the event-named series and DTM; the calendar’s series table). `docs/HANDOFF.md`: the LATEST block and the pickup prompt for session 61 (X9 first, in plan mode with a critic). `SCHEDULE.md`: the minutes.
 ## 1.0.228 — 2026-10-01
 
 ### X6 C — The calendar’s payload carries what the views read

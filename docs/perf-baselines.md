@@ -8,6 +8,53 @@ Time-series perf snapshot. **Append-only by date** — never overwrite prior row
 
 ---
 
+## 2026-10-01 — X6: page weight, three PRs (1.0.226, 1.0.227, 1.0.228)
+
+Seobility's "Big HTML pages": `/changelog` 2.1 MB, the results tabs 1.1–2.4 MB, `/calendar` 532 kB. The App Router ships every server-rendered element twice, as HTML and again inside the inline flight payload, so a page weighs about twice its markup and folds hide but do not lighten; the lever was how much markup a page carries.
+
+**Method:** `curl -s -o /dev/null -w '%{size_download}'` plain (the HTML), `--compressed` (the wire) and with `RSC: 1` (the flight payload), from Greece; the testing Worker on the PR's build before the merge, prod at 1.0.225 before and after each deploy.
+
+**A — the changelog on pages of its own releases (#1108):** `/changelog` lists the releases with the newest release's 30 newest updates inline; every release has a page of its own (`/changelog/<label slug>`, prerendered at build, listed in the sitemap from a bundled release index).
+
+| page | before (html · gzip · flight) | after, testing | after, prod |
+|---|---|---|---|
+| /changelog | 2,127,898 · 172,469 · 1,089,877 | 163,003 · 17,652 · 81,179 | 163,229 · 17,576 · 81,292 |
+| /changelog/lights-out | 404 | 456,152 · 35,102 · 233,853 | 459,681 · 35,308 · 235,689 |
+| /changelog/the-finishing-pass | 404 | 381,498 · 36,765 · 193,082 | 381,498 · 36,739 · 193,082 |
+| /changelog/first-light | 404 | 49,925 · 11,206 · 22,475 | 49,925 · 11,193 · 22,475 |
+| /changelog/no-such-release | 404 | 404 · 23,492 | 23,535 · 6,482 · 17,993 (404) |
+
+**B — the results tabs: the latest round open, the earlier rounds one line each (#1109):** the latest round keeps its accordion, open; every earlier round is one line with "Classification →" to the race session page where that page can answer (F1, the class series, the series of `RACE_SESSION_SERIES`); a round without such a page keeps its closed accordion.
+
+| tab | before | after, testing | after, prod |
+|---|---|---|---|
+| /series/nascar-cup/results | 2,383,067 · 59,230 · 1,276,083 | 2,162,042 · 56,515 · 1,157,139 | 2,161,913 · 55,964 · 1,157,139 |
+| /series/motogp/results | 1,262,093 · 43,522 · 676,610 | 190,816 · 17,181 · 96,536 | 191,547 · 17,048 · 96,536 |
+| /series/f1/results | 756,661 · 29,954 · 401,266 | 146,401 · 16,593 · 73,185 | 146,831 · 16,502 · 73,185 |
+| /series/wec/results | 530,384 · 25,878 · 277,386 | 161,970 · 18,096 · 81,137 | 162,228 · 18,002 · 81,137 |
+| /series/imsa/results | 481,653 · 28,475 · 249,709 (testing) | 145,095 · 17,275 · 71,892 | 145,482 · 17,233 · 71,892 |
+| /series/gt-world/results | 1,146,361 · 46,684 · 600,214 (testing) | 282,585 · 20,990 · 143,538 | 283,574 · 20,590 · 143,538 |
+| /series/f2/results | 1,173,920 · 39,360 · 625,210 (testing) | 219,925 · 18,355 · 112,229 | 220,570 · 18,245 · 112,229 |
+| /series/indycar/results | 867,764 · 30,072 · 464,564 | 826,895 · 29,795 · 442,454 | 826,895 · 29,417 · 442,454 |
+| /series/dtm/results | 590,622 · 27,357 · 313,405 | 590,982 · 27,954 · 313,680 | 590,939 · 27,564 · 313,680 |
+| /series/wrc/results | 351,617 · 21,157 · 182,961 | 351,864 · 21,502 · 183,176 | 351,864 · 21,199 · 183,176 |
+
+NASCAR, IndyCar and WRC name their race sessions by event and DTM's session page has no per-race source, so their rounds keep the accordion and their tabs their weight: a follow-up (B2, the weekend's main session as the race for NASCAR and IndyCar in the session page's classification rule) awaits the operator's word.
+
+**C — the calendar's payload (#1110):** each entry carries its round and a short key; the round map keyed by the feed's ids and the ICS uids left the flight payload.
+
+| page | before | after, testing | after, prod |
+|---|---|---|---|
+| /calendar | 544,891 · 54,510 · 454,014 | 442,552 · 43,456 · 352,739 | the cache’s previous entry still served at 06:30Z (544,934; the ISR window was counting down, the new Worker renders it next); measure again next session |
+
+The plan's estimate for the calendar (a flight under 300 kB, the HTML under 400 kB) was optimistic by about 50 kB: the uids ran shorter than assumed and the rest is the sessions' own fields, which the views read. A further cut, not built: a table of the fifteen series referenced by index from each entry, about 60 kB more.
+
+**The deploy window on prod:** the first request of /changelog after the deploy answered with the release list (the populate had landed before the switch); the measurement above is the request that followed.
+
+**PSI:** the API's daily quota was spent on the anonymous key during the build; the operator's pagespeed.web.dev runs on mobile for `/changelog`, `/series/nascar-cup/results` and `/calendar` are the before-and-after Lighthouse record (the operator's home runs of 2026-10-01 00:11 local: 68 on mobile, 89 on desktop, the gap the emulated phone on slow 4G and the lead image).
+
+---
+
 ## 2026-09-30 — X7: the session pages and the designer-made pages join the edge cache (1.0.224)
 
 Two route families had never been in the cache: every session page (`/series/<slug>/weekend/<round>/<session>`) and every page the catch-all serves (`/calendar`, `/news`, a row page made in the designer). Both answered `Cache-Control: private, no-cache, no-store` and rendered per visitor. The cause was not a hidden request API but a missing export: a route without `generateStaticParams` is rendered dynamically whatever the page does, and the prerender manifest that OpenNext's cache interception keys on listed neither route. 1.0.224 adds `revalidate = 300` and an empty `generateStaticParams` to both (the drivers' and weekend pages' model) and drops the session route's `force-dynamic`.

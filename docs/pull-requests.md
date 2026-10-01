@@ -14,6 +14,17 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1111 · 1.0.229 · records · opened Thu 1 Oct 09:35 (06:35Z); the merge on the standing word
+**X6 on prod and done with the check; the perf baselines; the session-60 close.** Records only: the three merges and the apply, prod measured, the slot closed; the baselines’ X6 section; the two Inbox follow-ups; the handoff for session 61; the board regenerated.
+- **Readers see:** nothing (the lighter pages are 1.0.226–1.0.228’s).
+- **Editors get:** the Release notes row in the App Builder (the correction applied on prod at 05:50:48Z).
+- **Files (10):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · X6 DONE (the three PRs on prod, the apply, prod’s numbers); a dated line for the word.
+  - `docs/perf-baselines.md` · the X6 section: the three PRs, the testing Worker and prod before and after.
+  - `docs/HANDOFF.md`, `SCHEDULE.md`, `IDEAS.md` · the pickup for session 61 (X9 first in plan mode; B2 and the AdSense decisions pending), the minutes, the two Inbox lines.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json` · this entry and the trio, 1.0.229.
+- **Verified:** node docs/plan/render-ledger.mjs → 66 slots; npx vitest run lib/design/plan-ledger.test.ts lib/record-notes-integrity.test.ts → green; prod /changelog 1.0.228 by ~06:03Z (1.0.227); 1.0.228 built with success by ~06:15Z, its cached pages rolling over; the three families measured on prod (the tables in docs/perf-baselines.md); the board https://claude.ai/code/artifact/e48d9f01-f919-42c8-b726-3f413692f45e (53 of 66 done).
+- **Review:** none; records.
 ## #1110 · 1.0.228 · X6 C · opened Thu 1 Oct 02:40 (23:40Z on the 30th); the merge on the word
 **The calendar’s payload carries what the views read.** The round map keyed by the feed’s ids and each session’s ICS uid left the flight payload; each entry brings its round and a short key. PR C of three of X6 (page weight).
 - **Readers see:** nothing new: the same calendar, lighter.
