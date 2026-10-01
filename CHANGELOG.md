@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.235 — 2026-10-01
+
+### Records — R18, the champions page from the operator’s design, enters the ledger
+
+Records only. `docs/plan/ledger.json`: R18 (phase P2, planned) with its decision scan: the Formula 2 champions page takes the shape of the operator’s Claude Design page “F2 Champions” (project 34cbb7ba-f580-4ab7-91fb-ebc33074c6c4, the file F2 Champions.dc.html): a masthead, a Reigning champion card with four tiles, a sticky Jump-to bar, the seasons by decade as a ruled table above 820 px and cards below with an Era change row at 2017, two team tallies, six link cards and the calendar call-out; built from general components over a Champions source in the catalogue, the 21 seasons’ facts curated into `content/series/f2/champions.json` from primary sources first (the file holds year, driver, constructor and the teams’ champion only; the design’s numbers are not a source); the other fourteen tabs unchanged in the slot. Four questions wait for the word: its place in the order (the default next, before P2.13), the faces and corners (the design’s Manrope and JetBrains Mono with rounded corners, or the site’s Plex and Newsreader with the Appearance corners, the default), the reach (F2 alone, the default, or every series), the photo (none until a licensed one is in the Assets store, the default). The design was read through the design-sync reads after `/design-login`; the `claude_design` MCP that Claude Design’s prompt names is not configured here. `SCHEDULE.md`: the session-63 block (the time plan, the won’t-touch line). The trio 1.0.235.
+
 ## 1.0.234 — 2026-10-01
 
 ### Records — B2 on prod and done with the check; the session-62 close
