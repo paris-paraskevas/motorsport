@@ -14,6 +14,16 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1117 · 1.0.235 · records · opened Thu 1 Oct 16:48 (13:48Z); the merge on the standing word
+**R18, the champions page from the operator’s design, enters the ledger.** Records only: the slot with its decision scan (four questions for the word), the session-63 block in the schedule, the trio.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (8):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · the R18 slot (phase P2, planned) with its scan: the Formula 2 champions page in the shape of the operator’s Claude Design page, from general components over a Champions source, the 21 seasons’ facts curated first; the dated line with the operator’s word; 70 slots rehashed.
+  - `SCHEDULE.md` · the session-63 block: the time plan, the won’t-touch line, the Active line.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · this entry and the trio, 1.0.235 (the lockfile’s two version fields).
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 70 slots; npx vitest run lib/design/plan-ledger.test.ts → green; the design read after /design-login: get_project (F2 Champions Layout Design, PROJECT_TYPE_PROJECT, canEdit), list_files (five paths), get_file for the page, image-slot.js, support.js and .image-slots.state.json (the photo as a 67 KiB webp data URL with no credit).
+- **Review:** none; records.
 ## #1116 · 1.0.234 · records · opened Thu 1 Oct 16:34 (13:34Z); the merge on the standing word
 **B2 on prod and done with the check; the session-62 close.** Records only: the merge and prod measured, the slot closed; the baselines’ B2 section; the two follow-ups for the word in the Inbox; the handoff for session 63.
 - **Readers see:** nothing (the classifications and the lighter tabs are 1.0.233’s).

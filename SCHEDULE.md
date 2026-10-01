@@ -2239,3 +2239,14 @@ Active: ~4h 25m on the 30th from ~19:25Z to ~23:50Z (the words at ~19:55Z, ~20:2
 18. **The session-62 close** (~13:30Z–13:55Z): the baselines’ B2 section, B2 DONE in the ledger with the dated line, the two B2 follow-ups to the Inbox for the word (the seven redirects, the archive re-capture), the handoff for session 63, the memory; the records PR 1.0.234 (#1116) on the standing word. → done
 Won’t touch this session: any slot beyond its decision scan and its approved plan; the week and day views’ shape before the operator’s two screenshots; Home’s document; any prod design row; branch deletions; any prod Supabase write without “apply <id>”; any push to `main`; agents on Fable; agents building; a new dependency.
 Active: from ~06:40Z (the operator’s `[+Nm]` prefixes, else the wall clock of the prompts)
+
+### Thu 2026-10-01 — session 63 (the operator present at the words) — R18 into the ledger; the two B2 follow-ups; X9’s idle count; the AdSense reading
+1. **The session start** (~13:38Z): the rules, the ledger, the handoff, the Inbox, the schedule, the perf baselines and the memory rules read; the time plan and the won’t-touch line. → done
+2. **The operator’s design “F2 Champions” into the ledger** (~13:41Z–, on “have a look at this please and place it in ledger”): /design-login by the operator; the project 34cbb7ba-f580-4ab7-91fb-ebc33074c6c4 read through the design-sync reads (the page, image-slot.js, support.js, the photo’s state); R18 written with its decision scan (four questions); the records PR (1.0.235) on the standing word; then the questions one at a time, the order first. → in progress
+3. **The two B2 follow-ups on the word** (the seven redirects; the archive re-capture), each with its own decision scan.
+4. **X9’s idle count on prod** (the baselines’ empty cell).
+5. **The AdSense reading redone**, then its decisions, S1 and S2.
+6. **P2.13 Embed and the Phase 2 order** in plan mode with a Sonnet critic; the rest as the handoff’s agenda (the Seobility crawl 16021215 read before any X slot).
+7. **The close**: the ledger’s evidence, the Inbox triage, the handoff for session 64, the records PR.
+Won’t touch this session: any slot beyond its decision scan and its approved plan; the two B2 follow-ups before the word; Home’s document; any prod design row; branch deletions; any prod Supabase write without “apply <id>”; any push to `main`; agents on Fable; agents building; a new dependency; the learning track’s files and worktree.
+Active: from ~13:38Z (the operator’s `[+Nm]` prefixes, else the wall clock of the prompts)
