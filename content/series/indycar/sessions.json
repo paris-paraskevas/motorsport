@@ -115,8 +115,19 @@
       ]
     },
     {
-      "matchDate": "2026-07-18",
+      "matchDate": "2026-07-05",
       "round": 11,
+      "sessions": [
+        { "title": "IndyCar - Practice 1", "start": "2026-07-03T19:00:00Z", "end": "2026-07-03T20:25:00Z", "location": "Mid-Ohio Sports Car Course, Lexington, OH" },
+        { "title": "IndyCar - Practice 2", "start": "2026-07-04T14:00:00Z", "end": "2026-07-04T15:25:00Z", "location": "Mid-Ohio Sports Car Course, Lexington, OH" },
+        { "title": "IndyCar - Qualifying", "start": "2026-07-04T18:30:00Z", "end": "2026-07-04T20:00:00Z", "location": "Mid-Ohio Sports Car Course, Lexington, OH" },
+        { "title": "IndyCar - Warm-up", "start": "2026-07-05T13:00:00Z", "end": "2026-07-05T13:35:00Z", "location": "Mid-Ohio Sports Car Course, Lexington, OH" },
+        { "title": "IndyCar - Honda Indy 200 at Mid-Ohio", "start": "2026-07-05T16:30:00Z", "end": "2026-07-05T18:45:00Z", "location": "Mid-Ohio Sports Car Course, Lexington, OH" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-18",
+      "round": 12,
       "sessions": [
         { "title": "IndyCar - Practice 1", "start": "2026-07-18T14:00:00Z", "end": "2026-07-18T15:15:00Z", "location": "Nashville Superspeedway, Lebanon, TN" },
         { "title": "IndyCar - Qualifying", "start": "2026-07-18T19:00:00Z", "end": "2026-07-18T20:00:00Z", "location": "Nashville Superspeedway, Lebanon, TN" },
@@ -126,14 +137,14 @@
     },
     {
       "matchDate": "2026-08-29",
-      "round": 15,
+      "round": 16,
       "sessions": [
         { "title": "IndyCar - Hy-Vee Milwaukee Mile Race 1", "start": "2026-08-29T18:30:00Z", "end": "2026-08-29T21:00:00Z", "location": "Milwaukee Mile, West Allis, WI" }
       ]
     },
     {
       "matchDate": "2026-08-30",
-      "round": 16,
+      "round": 17,
       "sessions": [
         { "title": "IndyCar - Hy-Vee Milwaukee Mile Race 2", "start": "2026-08-30T17:00:00Z", "end": "2026-08-30T19:30:00Z", "location": "Milwaukee Mile, West Allis, WI" }
       ]

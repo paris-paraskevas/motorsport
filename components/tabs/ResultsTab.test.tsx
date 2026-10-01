@@ -239,6 +239,7 @@ describe('the results tab’s rows', () => {
     const h = await html(indySeries);
     expect(h).toMatch(opens('Grand Prix of Portland'));
     expect(h).toContain(`href="/series/indycar/weekend/11/${sessionSlug('IndyCar | Nashville')}"`);
+    // The fixture's rounds hold no window for the 5 July race (the curated file does since 1.0.233): a race in no window has no row.
     expect(h).not.toContain('Mid-Ohio');
     expect(h).not.toContain('href="/series/indycar/weekend/13"');
   });

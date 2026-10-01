@@ -11,6 +11,7 @@ import {
 import { shortSessionLabel, weekendSessionNav } from '@/lib/weekend';
 import type { RaceResult, Series, Session, Weekend } from '@/lib/types';
 import type { GtWorldRaceResult } from '@/lib/results/gt-world';
+import indycarRounds from '../../content/series/indycar/rounds.json';
 
 // B2: the snapshot source and DTM's per-race source are mocked per case; the overrides are empty.
 const snapshot = vi.fn(async (): Promise<{ races: RaceResult[]; extras?: RaceResult[] } | null> => null);
@@ -107,11 +108,17 @@ describe('indycarRoundByDate (B2)', () => {
     { round: 11, name: 'Music City', startDate: '2026-07-17', endDate: '2026-07-19' },
     { round: 12, name: 'Portland', startDate: '2026-08-07', endDate: '2026-08-09' },
   ];
-  it('keys a race by the round whose dates hold its date; a race in no window (Mid-Ohio) has none', () => {
+  it('keys a race by the round whose dates hold its date; a race in no window has none', () => {
     expect(indycarRoundByDate(rounds, new Date('2026-08-09T00:00:00Z'))).toBe(12);
     expect(indycarRoundByDate(rounds, new Date('2026-07-19T00:00:00Z'))).toBe(11);
     expect(indycarRoundByDate(rounds, new Date('2026-07-05T00:00:00Z'))).toBeNull();
     expect(indycarRoundByDate(undefined, new Date('2026-08-09T00:00:00Z'))).toBeNull();
+  });
+  // The curated 2026 file: every race the pool carries has a window of its own, Mid-Ohio's included since 1.0.233.
+  it('keys the 2026 pool’s race dates to the curated rounds: Mid-Ohio 11, Music City 12, Laguna Seca 18', () => {
+    expect(indycarRoundByDate(indycarRounds.rounds, new Date('2026-07-05T00:00:00Z'))).toBe(11);
+    expect(indycarRoundByDate(indycarRounds.rounds, new Date('2026-07-19T00:00:00Z'))).toBe(12);
+    expect(indycarRoundByDate(indycarRounds.rounds, new Date('2026-09-06T00:00:00Z'))).toBe(18);
   });
 });
 
