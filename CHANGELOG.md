@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.239 — 2026-10-02
+
+### Records — the session-63 close: R18’s three PRs on prod, the operator’s six points of the 2nd
+
+Records only. `docs/plan/ledger.json`: R18’s evidence with the apply of 20261001213000 (the note column and the two seeded lists on prod through the Management API, ~01:29Z on “apply 20261001213000 and merge pr c”), PR C’s merge (#1120, 1.0.238, 01:31:08Z as b2b4ff27) and the prod check (the two card rows with their twelve sentences, no mono foot, the fourteen other champions tabs identical); the slot’s needsWord with the words the next steps wait for. `IDEAS.md`: the operator’s six points of ~01:20Z, one line each (the phone cards of the roll of honour redrawn, the standings tab’s season trend chart short of the pole and fastest-lap points for Formula 2, the back link’s strip off the composed page, the driver database’s expansion, the champions linking to their pages across every roster) and the ESPA page https://claude.ai/code/artifact/4d0297c1-c301-4537-9f8e-b3ddb2961f68. `SCHEDULE.md`: the session-63 item 12. `docs/HANDOFF.md`: the session-64 pickup block brought to the close.
+
 ## 1.0.238 — 2026-10-01
 
 ### R18 PR C — The doorways at the foot of the Formula 2 champions page
