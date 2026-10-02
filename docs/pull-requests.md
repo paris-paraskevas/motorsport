@@ -14,6 +14,20 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #__PR__ · 1.0.240 · R18 PR D · opened __OPENED__; the merge on the word
+**Fornaroli’s photo beside the Reigning champion card; the phone card after the operator’s drawing.** Two words of the 2nd: “also upload it” (the photo went to prod by the build session’s hand: the file into the media bucket, the asset row through the Management API after a rehearsal) and the drawing of the roll of honour’s phone card (a season band with points and wins, the two champions side by side, the runner-up’s row with points and margin, every cell ruled).
+- **Readers see:** the photo beside the reigning champion from lg (the halves stack below it); on phones every season’s card in the drawn shape; nothing else (the parity below).
+- **Editors get:** nothing new (the photo is an asset of the store like any other, with its caption, credit and licence).
+- **Files (11):**
+  - `lib/design/components.ts` · `F2_CHAMPION_PHOTO` the uploaded asset’s id; `reigning` a half, the `photo` image half beside it.
+  - `components/data/DataRegionViews.tsx` · the Roll of honour’s card below lg after the drawing; the stat line gone; `CARD_LABEL`.
+  - `lib/design/components.test.ts`, `lib/design/component-render.test.tsx` · the halves and the pinned id; the cards’ bands, champions, rookie lines and runner-up rows, the bare season.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R18’s evidence with PR D; needsWord; 70 slots rehashed.
+  - `SCHEDULE.md`, `IDEAS.md` · the session-63 item 13; the phone card line closed into PR D with the data gap named.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · this entry and the trio, 1.0.240.
+- **Verified:** tests first (two red, then green); the full suite (npx vitest run) → 273 files, 2,637 tests green at the default timeouts; `npx tsc --noEmit` → 0; `npm run lint` → 0 errors (the two known warnings); the local server (the asset row mirrored into the local database): /series/f2/champions at 390 (the cards: the band, the two champions, the runner-up’s row, measured 346 px wide) and 1440 (the two halves, the figure with its caption; the image itself answers 404 locally, no bucket); `DATA_SOURCE=db npm run cf:build` clean; `npx wrangler deploy --dry-run` → Total Upload 39,853.15 KiB / gzip 8,673.15 KiB (1.0.239: 39,849.49 / 8,672.57; 61% of the 64 MiB ceiling); the testing Worker: version 37803c92: /series/f2/champions 296,281 · 25,620 · 156,593 bytes of HTML · wire · flight, the photo drawn beside the Reigning champion card with its caption, credit and licence, the 21 phone cards in the drawn shape, a 200; `npx tsx scripts/parity-page.mts` on the fourteen other champions tabs → identical: 14 pages; the photo on prod: https://paddock-tracker.com/media/2026/10/4923cb28-fb30-4faf-8baf-1ef2f3862be1.jpg answers 200 image/jpeg, immutable; the asset row read back (id 56d86c87-b357-4355-a45f-80be810b7401, 1200 × 675, 175,571 bytes).
+- **Review:** __REVIEW__
+
 ## #1121 · 1.0.239 · records · opened Fri 2 Oct 04:43 (01:43Z); the merge on the standing word
 **The session-63 close: R18’s three PRs on prod, the operator’s six points of the 2nd.** Records only: the ledger’s evidence with the apply and PR C’s merge and prod check, the Inbox’s six lines, the schedule’s item 12, the handoff’s pickup block for session 64, the trio.
 - **Readers see:** nothing.
