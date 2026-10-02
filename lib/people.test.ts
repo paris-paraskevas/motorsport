@@ -67,6 +67,36 @@ describe('the people index', () => {
     expect(index.driver('f1', '')).toBeNull();
   });
 
+  it('answers a driver’s page across every roster (R18 PR E, the champions who race elsewhere now): the series’ own roster by the drift rule first, then an exact slug on any roster, the bare slug the owner holds; never a drift match across rosters', () => {
+    const index = buildPeopleIndex(
+      [
+        driver('Kimi Antonelli', 'f1'),
+        driver('Max Verstappen', 'f1'),
+        driver('Max Verstappen', 'adac-ravenol-24h', 'max-verstappen-24h'),
+        driver('Mick Schumacher', 'wec'),
+        driver('Ralf Schumacher', 'wec'),
+        driver('Nyck de Vries', 'formula-e'),
+        driver('Nyck de Vries', 'wec', 'nyck-de-vries-wec'),
+        driver('Timo Glock', 'dtm'),
+        driver('Timo Glock', 'nls', 'timo-glock-nls'),
+        driver('Emerson Fittipaldi Jr.', 'f2', 'emerson-fittipaldi-jr'),
+      ],
+      [],
+    );
+    expect(index.driverAnywhere('f2', 'Mick Schumacher')).toBe('/drivers/mick-schumacher');
+    expect(index.driverAnywhere('f2', 'Nyck de Vries')).toBe('/drivers/nyck-de-vries');
+    expect(index.driverAnywhere('f2', 'Timo Glock')).toBe('/drivers/timo-glock');
+    expect(index.driverAnywhere('adac-ravenol-24h', 'Max Verstappen')).toBe('/drivers/max-verstappen-24h');
+    expect(index.driverAnywhere('f2', 'Max Verstappen')).toBe('/drivers/max-verstappen');
+    // The series' own roster takes the drift rule; another roster takes an exact slug alone.
+    expect(index.driverAnywhere('f1', 'Andrea Kimi Antonelli')).toBe('/drivers/kimi-antonelli');
+    expect(index.driverAnywhere('f2', 'Andrea Kimi Antonelli')).toBeNull();
+    expect(index.driverAnywhere('f1', 'Emerson Fittipaldi')).toBeNull();
+    expect(index.driverAnywhere('f2', 'Schumacher')).toBeNull();
+    expect(index.driverAnywhere('f2', 'Lando Norris')).toBeNull();
+    expect(index.driverAnywhere('f2', '')).toBeNull();
+  });
+
   it('answers a team’s page only where its slug opens that series’ own team: a slug two series share opens the first listed', () => {
     const index = buildPeopleIndex([], [team('Campos Racing', 'f2'), team('Campos Racing', 'f3'), team('Mercedes', 'f1'), team('Red Bull Racing', 'f1')]);
     expect(index.team('f1', 'Mercedes')).toBe('/teams/mercedes');

@@ -68,6 +68,8 @@ vi.mock('@/lib/standings/wrc', () => ({ fetchWRCStandings: () => fetchWRCStandin
 vi.mock('@/lib/people', () => ({
   peopleIndex: async () => ({
     driver: (series: string, name: string) => (series === 'f1' && name.endsWith('Antonelli') ? '/drivers/kimi-antonelli' : series === 'imsa' || series === 'wrc' ? `/drivers/${series}-any` : null),
+    // R18 PR E: a champion's page from any roster (the champions race elsewhere now).
+    driverAnywhere: (series: string, name: string) => (name.endsWith('Antonelli') ? '/drivers/kimi-antonelli' : name === 'Charles Leclerc' ? '/drivers/charles-leclerc' : null),
     team: (series: string, name: string) => (series === 'f1' && name === 'Mercedes' ? '/teams/mercedes' : series === 'imsa' || series === 'wrc' ? `/teams/${series}-any` : null),
   }),
 }));
@@ -698,7 +700,8 @@ describe('the Champions reader (R18)', () => {
     expect(seasons.map(r => r.year)).toEqual([2025, 2024, 2017, 2016, 2015, 2013, 2012]);
     expect(seasons[0]).toMatchObject({ driver: 'Leonardo Fornaroli', nationality: 'ITA', team: 'Invicta Racing', teamPage: null, points: 211, wins: 4, podiums: 9, margin: 36, runnerUp: 'Jak Crawford', runnerUpTeam: 'DAMS', runnerUpPoints: 175, teamsChampion: 'Invicta Racing', teamsTitles: 2, teamsRun: 2, driverTitles: 1, era: 'FIA Formula 2 Championship', decade: '2020s', rookie: true, name: null, titles: null, page: null, seriesName: 'Formula 1' });
     expect(seasons[1]).toMatchObject({ year: 2024, margin: 22.5, podiums: null, teamsTitles: 1, teamsRun: 1, rookie: false, runnerUpTeam: null });
-    expect(seasons[2]).toMatchObject({ year: 2017, team: 'Prema Racing', teamsChampion: 'Russian Time', teamsTitles: 1, teamsRun: 1, driverTitles: 1 });
+    // The champion's page from any roster (R18 PR E): Leclerc is on no Formula 1 fixture roster here, and links all the same.
+    expect(seasons[2]).toMatchObject({ year: 2017, profile: '/drivers/charles-leclerc', team: 'Prema Racing', teamsChampion: 'Russian Time', teamsTitles: 1, teamsRun: 1, driverTitles: 1 });
     // The suffix the file carries on the GP2 rows leaves the team names; the running counts walk oldest first.
     expect(seasons[3]).toMatchObject({ year: 2016, team: 'Prema Racing', teamsChampion: 'Prema Racing', teamsTitles: 1, teamsRun: 1, margin: null, points: null });
     // Vandoorne's second title and ART's second teams' title (2012 and 2015; Mercedes between them, so no run); the roster's names link.
@@ -723,6 +726,7 @@ describe('the Champions reader (R18)', () => {
     expect(seasons).toHaveLength(21);
     expect(seasons[0].year).toBe(2025);
     expect(seasons[20].year).toBe(2005);
+    expect(seasons.find(r => r.year === 2017)).toMatchObject({ driver: 'Charles Leclerc', profile: '/drivers/charles-leclerc' });
     for (const r of read.rows) for (const key of ['team', 'teamsChampion', 'name']) if (typeof r[key] === 'string') expect(r[key], `${String(r.year ?? r.kind)}.${key}`).not.toMatch(/\(/);
     expect(seasons.filter(r => r.era === 'GP2 Series').map(r => r.year)).toEqual([2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005]);
     expect(read.rows.filter(r => r.kind === 'driver-titles').slice(0, 2).map(r => [r.name, r.titles])).toEqual([['ART Grand Prix', 7], ['Prema Racing', 4]]);

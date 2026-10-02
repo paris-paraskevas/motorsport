@@ -583,7 +583,9 @@ const READERS: Readonly<Record<string, Reader>> = {
         ...blank('season'),
         year: c.year,
         driver: c.driver,
-        profile: link('driver', c.driver),
+        // R18 PR E: a champion's page from any roster: the Formula 2 champions race in Formula 1, WEC, Formula E, IndyCar and DTM
+        // today, and their pages live under those rosters.
+        profile: index && c.driver ? index.driverAnywhere(slug, c.driver) : null,
         nationality: str(c.nationality),
         team,
         teamPage: link('team', team),
