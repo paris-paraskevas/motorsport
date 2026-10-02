@@ -15,7 +15,7 @@ import type { NewsItem, Series } from '@/lib/types';
 import { loadDriverPortraits, loadDriverBios, type DriverBio } from '@/lib/series-content';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { withSocialMeta } from '@/lib/seo';
-import { PAGE_WIDE } from '@/lib/site';
+import { fitDescription, PAGE_WIDE } from '@/lib/site';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 import { commonsThumb } from '@/lib/commons-thumb';
 
@@ -39,8 +39,14 @@ async function baseMetadata({
   // notFound() in metadata, not a fallback title: the streamed shell flushes
   // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
   if (!driver) notFound();
-  // ~190 chars: Bing WMT flagged the old one-liner as too short (2026-08-20).
-  const description = `${driver.name} — ${driver.team} in ${driver.seriesName}. Season form and race-by-race results with championship position after every round, points, podiums, the next session countdown and the latest news mentions.`;
+  // X10: within Seobility's width (the longest team names reach 190 characters on the old sentence) and above the floor
+  // Bing flagged in August: the first variant that fits (lib/site.ts).
+  const description = fitDescription([
+    `${driver.name}, ${driver.team}, ${driver.seriesName}: season form, every result with the championship position after each round, points, podiums and the next session.`,
+    `${driver.name}, ${driver.team}, ${driver.seriesName}: every result with the championship position after each round, points and podiums.`,
+    `${driver.name}, ${driver.team}, ${driver.seriesName}: every result and the championship position after each round.`,
+    `${driver.name}, ${driver.team}, ${driver.seriesName}: results and the championship position.`,
+  ]);
   return {
     title: driver.name,
     description,

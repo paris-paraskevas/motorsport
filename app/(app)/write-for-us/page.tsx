@@ -8,9 +8,9 @@ import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 export const revalidate = 300;
 
 const BASE_METADATA: Metadata = {
-  title: 'Write for Paddock',
+  title: 'Write for us',
   description:
-    'Pitch motorsport writing to Paddock Tracker: race analysis, championship deep-dives and paddock commentary with a byline and a public author page of your own.',
+    'Pitch motorsport writing to Paddock Tracker: race analysis, championship deep-dives and paddock commentary, with a byline and an author page of your own.',
   alternates: { canonical: '/write-for-us' },
 };
 export const generateMetadata = pageMetadata('/write-for-us', BASE_METADATA);

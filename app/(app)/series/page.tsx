@@ -13,7 +13,7 @@ export const revalidate = 300;
 const BASE_METADATA: Metadata = {
   title: 'Series',
   description:
-    'Every championship Paddock tracks — F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more. Schedules, standings, results and news per series.',
+    'Every championship Paddock tracks: F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA and DTM, with schedules, standings, results and news.',
   alternates: { canonical: '/series' },
 };
 export const generateMetadata = pageMetadata('/series', BASE_METADATA);

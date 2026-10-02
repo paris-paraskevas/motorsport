@@ -1,3 +1,5 @@
+import { fitDescription, fitTitle } from './site';
+
 export const TABS = [
   { key: 'calendar',  label: 'Calendar' },
   { key: 'news',      label: 'News' },
@@ -119,62 +121,78 @@ export function describeTab(
   key: TabKey,
   seriesName: string,
   season: number,
+  singleEvent = false,
 ): { title: string; description: string } {
-  // Descriptions target ~150–200 chars: Bing WMT flagged the old one-liners
-  // as "too short" (33 pages, 2026-08-20) — search engines want 150–160.
+  // X10 (the Seobility crawl of 1 October 2026): every title fitted under the layout's suffix (lib/site.ts fitTitle, the
+  // shorter variant for the longest series names), no word twice, "Paddock" left to the suffix; every description within
+  // Seobility's width and above Bing's floor (fitDescription).
+  const s = seriesName;
+  const y = season;
+  const t = (...variants: string[]) => fitTitle(variants);
+  const d = (text: string) => fitDescription(text);
   switch (key) {
     case 'calendar':
       return {
-        title: `${seriesName} ${season} — calendar, schedule, race weekends`,
-        // "in your local timezone" was false here — calendar times render in
-        // a labeled fixed zone until the device-local upgrade lands with
-        // home v3 (audit 1b-9 / 2-1).
-        description: `The full ${season} ${seriesName} calendar — practice, qualifying, sprint and race sessions with time-zoned start times, weekend grouping, venue weather, round numbers and a subscribable feed, updated from official schedules.`,
+        title: t(`${s} ${y} calendar`, `${s} calendar`),
+        description: d(`The ${y} ${s} calendar: every session with its start in your time zone, weekend by weekend. The venue weather and the round numbers beside them.`),
       };
     case 'news':
       return {
-        title: `${seriesName} news — latest stories and recaps`,
-        description: `The latest ${seriesName} news in one wire — race weekend coverage, driver and team stories, technical and regulatory updates, aggregated from motorsport.com and linked straight to the source.`,
+        title: t(`${s} news`),
+        description: d(`The latest ${s} news in one wire: race weekend coverage, driver and team stories, technical and rule updates. From motorsport.com and other sources.`),
       };
     case 'blog':
       return {
-        title: `${seriesName} analysis and race reports from Paddock`,
-        description: `Paddock's own ${seriesName} writing — race weekend previews, reports, lap-by-lap chronologies and analysis, written and fact-checked in house rather than aggregated, newest first.`,
+        title: t(`${s} race reports and analysis`, `${s} analysis`),
+        description: d(`Paddock’s own ${s} writing: previews, race reports, lap-by-lap chronologies and analysis. Written and fact-checked in house rather than aggregated.`),
       };
     case 'standings':
       return {
-        title: `${seriesName} ${season} standings — drivers and constructors`,
-        description: `Live ${season} ${seriesName} standings — the full drivers' and constructors' championship tables with points, wins and gaps, plus a season trend chart, refreshed automatically from official sources.`,
+        title: t(`${s} ${y} standings`, `${s} standings`),
+        description: d(`The ${y} ${s} standings: the drivers’ and teams’ championship tables with points, wins and gaps. The season trend chart beside them, refreshed automatically.`),
       };
     case 'results':
       return {
-        title: `${seriesName} ${season} results — race by race`,
-        description: `Every ${season} ${seriesName} race result — round-by-round finishing order, points and retirements, with links to each weekend's full classification, updated automatically as the season runs.`,
+        title: t(`${s} ${y} results`, `${s} results`),
+        description: d(`Every ${y} ${s} race result round by round: the finishing order, points and retirements. Each weekend’s full classification a click away.`),
       };
     case 'drivers':
       return {
-        title: `${seriesName} ${season} drivers and teams`,
-        description: `The full ${season} ${seriesName} grid, team by team — every driver with car number, championship position, points and wins from the live standings, plus links to individual driver profiles.`,
+        title: t(`${s} ${y} drivers and teams`, `${s} drivers`),
+        description: d(`The ${y} ${s} grid team by team: every driver with car number, championship position, points and wins. The live standings, and a page for each driver.`),
       };
     case 'tracks':
       return {
-        title: `${seriesName} ${season} rounds — every circuit mapped`,
-        description: `All ${season} ${seriesName} circuits in one place — every round's track layout mapped, with venue locations and links to each race weekend's schedule, preview and full report.`,
+        title: t(`${s} ${y} circuits`, `${s} circuits`),
+        description: d(`Every ${y} ${s} circuit mapped: each round’s track layout and venue. The weekend’s schedule, preview and full results a click away.`),
       };
     case 'about':
       return {
-        title: `About ${seriesName} — data sources and notes`,
-        description: `How Paddock Tracker covers ${seriesName} — where the calendar, results and standings data comes from, how fresh it is, and what is curated by hand versus fetched live from official sources.`,
+        title: t(`${s}: data sources and notes`, `About ${s}`),
+        description: d(`How Paddock Tracker covers ${s}: where the calendar, results and standings come from, and how fresh they are. What is curated by hand rather than fetched live.`),
       };
     case 'history':
       return {
-        title: `${seriesName} history — origin, eras, defining moments`,
-        description: `The history of ${seriesName} — its origin and founding era, the defining seasons and championship deciders, and the drivers, teams and figures who shaped the series into what it is today.`,
+        title: t(`The history of ${s}`, `${s} history`),
+        description: d(`The history of ${s}: its origin and founding era, the defining seasons and championship deciders. The drivers, teams and figures who shaped it.`),
       };
     case 'champions':
-      return {
-        title: `${seriesName} champions — full list, year by year`,
-        description: `Every ${seriesName} champion year by year — the complete drivers' roll of honour and the team champions on their own tab, with points, wins and title margins for the seasons on record.`,
-      };
+      return singleEvent
+        ? {
+            title: t(`${s} past winners`, `${s} winners`),
+            description: d(`Every ${s} winner year by year: the overall winners with their cars and teams. The margins where they are known, and the record holders.`),
+          }
+        : {
+            title: t(`${s} champions, every season`, `${s} champions`),
+            description: d(`Every ${s} champion season by season: the drivers’ roll of honour with points, wins and title margins. The teams’ champions beside them.`),
+          };
   }
+}
+
+/** The series hub’s own title and description (the tab route reads describeTab; the hub is the series’ front page). */
+export function describeHub(seriesName: string, season: number): { title: string; description: string } {
+  return {
+    title: fitTitle([`${seriesName} ${season} season`, seriesName]),
+    description: fitDescription(`${seriesName} in ${season} on Paddock Tracker: the next session, where the title stands, the latest results and news, and the full calendar.`),
+  };
 }

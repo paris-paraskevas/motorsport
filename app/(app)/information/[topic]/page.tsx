@@ -10,7 +10,7 @@ import { ContributorPosts } from '@/components/information/ContributorPosts';
 import { learnFeaturedPosts } from '@/lib/blog';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL, PAGE_WIDE } from '@/lib/site';
+import { fitDescription, fitTitle, PAGE_WIDE, SITE_URL } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
@@ -30,10 +30,16 @@ async function baseMetadata({
   const { topic } = await params;
   const t = getTopic(topic);
   if (!t) return { title: 'Not found' };
-  const title = `${t.label} — Motorsport Answers`;
+  // X10: the label with its answers, fitted beside the layout's suffix (lib/site.ts).
+  const title = fitTitle([`${t.label}: motorsport answers`, `${t.label} answers`, t.label]);
   // The blurb alone is UI-length, not SERP-length — Bing WMT flagged these as
   // too short (2026-08-20); compose it with what the hub actually offers.
-  const description = `${t.blurb} Browse every ${t.label} answer on Paddock Tracker — rules, history, champions and how-it-works explainers, written plainly and checked against primary sources.`;
+  // X10: the blurb and the index's own sentence within Seobility's width (lib/site.ts).
+  const description = fitDescription([
+    `${t.blurb} Every ${t.label} answer on Paddock Tracker: rules, history, champions and how it works, written plainly and checked against primary sources.`,
+    `${t.blurb} Every ${t.label} answer on Paddock Tracker: rules, history, champions and how it works.`,
+    `${t.blurb} Every ${t.label} answer: rules, history, champions, how it works.`,
+  ]);
   const indexable = await isTopicIndexable(topic);
   return {
     title,

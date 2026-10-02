@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { fitDescription } from '@/lib/site';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ExternalLink } from 'lucide-react';
@@ -45,8 +46,13 @@ async function baseMetadata({
   // notFound() in metadata, not a fallback title: the streamed shell flushes
   // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
   if (!team) notFound();
-  // ~190 chars: Bing WMT flagged the old one-liner as too short (2026-08-20).
-  const description = `${team.name} in ${team.seriesName} — the current driver lineup with numbers and codes, championship form and points for every driver, race-by-race results and the latest team news, updated through the season.`;
+  // X10: within Seobility's width (the old sentence ran 191–254 characters on every team) and above the floor Bing flagged
+  // in August: the first variant that fits (lib/site.ts).
+  const description = fitDescription([
+    `${team.name} in ${team.seriesName}: the driver lineup with numbers, championship form and points for every driver, race-by-race results and the latest team news.`,
+    `${team.name} in ${team.seriesName}: the driver lineup, championship form and points for every driver, and race-by-race results.`,
+    `${team.name} in ${team.seriesName}: the drivers, their points and their results through the season.`,
+  ]);
   return {
     title: team.name,
     description,

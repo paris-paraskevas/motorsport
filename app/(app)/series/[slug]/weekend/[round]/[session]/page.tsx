@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { sessionPageTitle } from '@/lib/weekend';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
@@ -145,12 +146,13 @@ async function baseMetadata(
   // notFound() in metadata, not a fallback title: the streamed shell flushes
   // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
   if (!ctx) notFound();
-  const { title: weekendTitle } = weekendLabel(ctx.weekend, ctx.round);
-  const base = `${ctx.series.meta.name} · ${weekendTitle} · ${ctx.session.title.replace(/^.*?-\s*/, '')}`;
-  const title = base.length > 60 ? `${base.slice(0, 59)}…` : base;
+  const { title: weekendTitle, subtitle: weekendPlace } = weekendLabel(ctx.weekend, ctx.round);
   const hasFullClassification =
     ['f1', 'f2', 'f3', 'motogp', 'wsbk'].includes(ctx.slug);
   const metaSessionName = ctx.session.title.replace(/^.*?[-–—:]\s*/, '').trim() || ctx.session.title;
+  // X10: the session, the round and the series as they fit under the layout's suffix, never cut mid-word (lib/weekend.ts).
+  const feedCode = /^(.*?)\s*[-–—:]\s/.exec(ctx.session.title)?.[1];
+  const title = sessionPageTitle(ctx.series.meta.name, weekendTitle, metaSessionName, ctx.round, weekendPlace, feedCode);
   const description = `What time is ${metaSessionName} at the ${ctx.series.meta.name} ${weekendTitle}? Start time shown in your local time zone${hasFullClassification ? ', plus full classification and results' : ''}.`;
   const path = `/series/${ctx.slug}/weekend/${ctx.round}/${ctx.sessionParam}`;
   return {

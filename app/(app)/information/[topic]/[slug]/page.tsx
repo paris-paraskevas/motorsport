@@ -9,7 +9,7 @@ import { renderMarkdown } from '@/lib/content';
 import { POST_ARTICLE_CLASS } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, qaPageLd, guideArticleLd } from '@/lib/json-ld';
-import { SITE_URL } from '@/lib/site';
+import { fitDescription, SITE_URL, titleFits } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
@@ -32,21 +32,20 @@ async function baseMetadata({
   const entry = await getInfoEntry(topic, slug);
   if (!entry) return { title: 'Not found' };
   const indexed = await isEntryIndexed(entry);
-  // Short frontmatter summaries get SERP context appended — Bing WMT flagged
-  // a dozen of these as under-length (2026-08-20); summaries that already
-  // carry enough pass through untouched.
-  const description =
-    entry.summary.length >= 140
-      ? entry.summary
-      : `${entry.summary} A sourced Paddock Tracker explainer — the short answer up front, the detail underneath, checked against primary records.`;
+  // X10: the summary within Seobility's width (a long one cut at a sentence end) and above Bing's floor (a short one gets
+  // the explainer tail); the social card keeps the whole summary.
+  const description = fitDescription(entry.summary);
+  // X10: a question that does not fit beside the layout's suffix keeps its every word and drops the suffix instead (the
+  // question is the page; a cut would change what it asks).
+  const title = titleFits(entry.question) ? entry.question : { absolute: entry.question };
   return {
-    title: entry.question,
+    title,
     description,
     alternates: { canonical: `/information/${topic}/${slug}` },
     ...(indexed ? {} : { robots: { index: false, follow: true } }),
     ...withSocialMeta({
       title: entry.question,
-      description,
+      description: entry.summary,
       path: `/information/${topic}/${slug}`,
       // The colocated opengraph-image.tsx leads with the question itself.
       ownCard: true,

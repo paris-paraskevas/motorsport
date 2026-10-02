@@ -102,7 +102,8 @@ describe('the release page from a fixture file', () => {
   it('names the release in its metadata and 404s an unknown slug', async () => {
     const meta = await generateMetadata(params('lights-out'));
     expect(meta.title).toBe('Lights out — release notes');
-    expect(meta.description).toBe('Paddock is out of early access.');
+    // X10: a one-line story is under the description floor, so the release notes' own sentence follows it.
+    expect(meta.description).toBe('Paddock is out of early access. The release notes of Lights out, update by update.');
     await expect(ReleasePage(params('no-such-release'))).rejects.toBe(NOT_FOUND);
   });
 });
