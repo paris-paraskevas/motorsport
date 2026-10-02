@@ -1815,7 +1815,7 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toMatch(/>Jump to</);
     // R18 PR E: the root marked for the search box; the box and the count in the bar; the chips marked for their targets; each
     // season a wrapper with its slugified haystack; the decades marked with their counts; the empty line hidden until a query.
-    expect(roll).toMatch(/^<section data-honours="" aria-label="Every season"/);
+    expect(roll).toMatch(/^<section data-honours="" aria-label="Every season" class="min-w-0 scroll-mt-14">/);
     expect(roll).toMatch(/<input[^>]*type="search"[^>]*placeholder="Find a season or a driver"/);
     expect(roll).toMatch(/<span role="status"[^>]*>4 seasons<\/span>/);
     expect(roll).toMatch(/<a href="#honours-2020s" data-chip="honours-2020s"/);

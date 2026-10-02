@@ -1675,7 +1675,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
       </div>
     ) : null;
   return (
-    <section data-honours="" aria-label={heading} className="min-w-0">
+    <section data-honours="" aria-label={heading} className="min-w-0 scroll-mt-14">
       <H className="sr-only">{heading}</H>
       {/* The Jump-to bar sticks under the fixed header (the tab rail's precedent): the chips scroll in a strip of their own, so the
           bar itself never sits in an overflow box; the search box (a client island) and the count sit at its right from sm and on

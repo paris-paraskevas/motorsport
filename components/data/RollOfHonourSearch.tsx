@@ -28,6 +28,8 @@ export function RollOfHonourSearch({ total }: { total: number }) {
     const root = input.current?.closest<HTMLElement>('[data-honours]');
     if (!root) return;
     const active = raw.trim() !== '';
+    // Read before the toggles: whether the reader has scrolled into the roll (its top above the viewport's top).
+    const scrolledIn = root.getBoundingClientRect().top < 0;
     let visible = 0;
     for (const season of root.querySelectorAll<HTMLElement>('[data-season]')) {
       const hit = !active || matches(season.dataset.search ?? '', raw);
@@ -46,6 +48,9 @@ export function RollOfHonourSearch({ total }: { total: number }) {
     for (const el of root.querySelectorAll<HTMLElement>('[data-era], [data-chip-era]')) el.hidden = active;
     const empty = root.querySelector<HTMLElement>('[data-empty]');
     if (empty) empty.hidden = !(active && visible === 0);
+    // A roll made shorter under its sticky bar: the browser anchors the content after it, so the bar rides up out of view
+    // with the box in it. The roll's top (the bar under the header, the root's scroll margin) is brought back, instantly.
+    if (active && scrolledIn) root.scrollIntoView({ block: 'start', behavior: 'instant' });
     setShown(visible);
   };
   const active = query.trim() !== '';
@@ -61,6 +66,10 @@ export function RollOfHonourSearch({ total }: { total: number }) {
         type="search"
         value={query}
         onChange={e => apply(e.target.value)}
+        // Enter has nothing to submit: it closes the phone keyboard over the seasons left.
+        onKeyDown={e => {
+          if (e.key === 'Enter') e.currentTarget.blur();
+        }}
         placeholder="Find a season or a driver"
         autoComplete="off"
         autoCorrect="off"

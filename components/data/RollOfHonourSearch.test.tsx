@@ -76,6 +76,29 @@ describe('the Roll of honour’s search box (R18 PR E)', () => {
     expect(document.activeElement).toBe(box);
   });
 
+  it('brings the roll’s top back under the header when the reader types from inside it (the shorter roll would carry the bar out of view), never from above it; Enter closes the keyboard', () => {
+    render(view());
+    const box = screen.getByLabelText('Find a season or a driver') as HTMLInputElement;
+    const root = document.querySelector('[data-honours]') as HTMLElement;
+    const scrolled = vi.fn();
+    root.scrollIntoView = scrolled;
+    let top = 200;
+    vi.spyOn(root, 'getBoundingClientRect').mockImplementation(() => ({ top }) as DOMRect);
+    fireEvent.change(box, { target: { value: 'gasly' } });
+    expect(visible()).toEqual(['2016']);
+    expect(scrolled).not.toHaveBeenCalled();
+    top = -400;
+    fireEvent.change(box, { target: { value: 'gasl' } });
+    expect(scrolled).toHaveBeenCalledTimes(1);
+    expect(scrolled).toHaveBeenCalledWith({ block: 'start', behavior: 'instant' });
+    fireEvent.change(box, { target: { value: '' } });
+    expect(scrolled).toHaveBeenCalledTimes(1);
+    box.focus();
+    expect(document.activeElement).toBe(box);
+    fireEvent.keyDown(box, { key: 'Enter' });
+    expect(document.activeElement).not.toBe(box);
+  });
+
   it('two regions on one page stay apart: typing in one leaves the other whole', () => {
     render(
       <>
