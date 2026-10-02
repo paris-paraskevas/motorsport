@@ -84,7 +84,7 @@ async function baseMetadata({
     // X10: the tab and the snippet get the headline's first clause and the summary's first sentence (lib/site.ts); the
     // page's h1 and the social cards keep the whole headline and summary.
     title: shortTitle(post.frontmatter.title),
-    description: fitDescription(post.frontmatter.summary),
+    description: fitDescription(post.frontmatter.summary, { tail: '' }),
     // An imported article canonicalizes to its ORIGINAL off-site URL, so the
     // import adds no indexable page of ours — the original keeps the equity.
     // Original writing sets no canonical here, exactly as before.

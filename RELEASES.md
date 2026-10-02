@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.243 — 2026-10-02
+
+A tidy of the new tab titles after a close reading: no title ends in a stray dot, a race named after its event says it is the race so its page and its weekend page read apart, long team and release names fit the tab, and the Greek headline fits too.
+
 ## 1.0.242 — 2026-10-02
 
 Every page’s browser-tab title and search snippet now fit the width search engines show: the session pages name the session, the round and the series without cutting a word short, the series tabs and the driver and team pages say the same in fewer words, and the blog posts carry their headline’s first clause in the tab. Nothing on the pages themselves changes.

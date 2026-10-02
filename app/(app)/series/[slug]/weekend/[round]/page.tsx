@@ -28,7 +28,7 @@ import { BETTABLE_SERIES } from '@/lib/betting/constants';
 import { NEWS_SLUG_MAP, fetchNews } from '@/lib/news';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
-import { SITE_URL, PAGE_WIDE } from '@/lib/site';
+import { fitDescription, PAGE_WIDE, SITE_URL } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { Tv, ArrowUpRight, MapPin } from 'lucide-react';
 import { VideoEmbed } from '@/components/VideoEmbed';
@@ -83,7 +83,7 @@ async function baseMetadata(
   const indexed = hasWeekendNote(await loadWeekendNotes(slug), series.meta.season, round);
   // X10: the round once, the series once, fitted under the layout's suffix (lib/weekend.ts).
   const fullTitle = weekendPageTitle(series.meta.name, label, round, place);
-  const description = `${series.meta.name} Round ${round} — ${label}. ${weekend.dateRangeLabel}. Schedule, weather, standings, news. Where to watch live.`;
+  const description = fitDescription(`${series.meta.name} Round ${round} — ${label}. ${weekend.dateRangeLabel}. Schedule, weather, standings, news. Where to watch live.`);
   return {
     title: fullTitle,
     description,

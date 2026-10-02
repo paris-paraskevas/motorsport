@@ -4,7 +4,7 @@ import { loadAllSeriesMeta } from '@/lib/series';
 import { topicForSeries, aboutGuideForSeries } from '@/lib/information/topics';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL, PAGE_WIDE } from '@/lib/site';
+import { fitDescription, fitTitle, PAGE_WIDE, SITE_URL } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
@@ -15,9 +15,11 @@ import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 // over the dynamic /information/[topic] and is indexed via the sitemap.
 export const revalidate = 3600;
 
-const TITLE = 'Series guides — every motorsport championship explained';
-const DESCRIPTION =
-  'Guides to every championship we cover — what each series is, its full history, and how the racing and points work: F1, MotoGP, NASCAR, WEC, IndyCar, WRC, F2, F3 and more.';
+// X10b: within Seobility's widths (the old title measured 705 px, the description 1,109).
+const TITLE = fitTitle(['Series guides: every championship explained', 'Series guides, every championship', 'Series guides']);
+const DESCRIPTION = fitDescription(
+  'Guides to every championship we cover: what each series is, its history, and how the racing and points work, from F1 and MotoGP to WEC, IndyCar and WRC.',
+);
 
 const BASE_METADATA: Metadata = {
   title: TITLE,

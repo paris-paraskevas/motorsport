@@ -212,10 +212,12 @@ export function roundShortLabel(label: string): string {
 /** The names a session page may carry beside its session: the series' full name, then the feed's own short code ("F2" from
  *  "F2 - Qualifying": the support series share Formula 1's round names, so the series must survive where the full name
  *  does not fit), each with and without the round's name. */
-export function sessionPageTitle(seriesName: string, weekendTitle: string, sessionName: string, round: number, place?: string, seriesShort?: string): string {
+export function sessionPageTitle(seriesName: string, weekendTitle: string, sessionName: string, round: number, place?: string, seriesShort?: string, kind?: 'race' | 'none'): string {
   const roundShort = roundShortLabel(weekendTitle);
-  const session = sessionName.trim();
-  const short = seriesShort?.trim() && seriesShort.trim().toLowerCase() !== seriesName.toLowerCase() ? seriesShort.trim() : undefined;
+  // The session's own name loses the feed's series prefix too ("IndyCar | Laguna Seca"); a code is one word of letters.
+  const session = roundShortLabel(sessionName) || sessionName.trim();
+  const code = seriesShort?.trim();
+  const short = code && /^[A-Za-z0-9]{1,8}$/.test(code) && code.toLowerCase() !== seriesName.toLowerCase() ? code : undefined;
   const names = short ? [seriesName, short] : [seriesName];
   const withRound = (label: string, s = session) => [...names.map(n => `${s}, ${label} — ${n}`), ...names.map(n => `${s} · ${n} round ${round}`), `${s}, ${label}`, `${s} · round ${round}`];
   const spotName = place?.trim() && place.trim().toLowerCase() !== roundShort.toLowerCase() ? place.trim() : undefined;
@@ -230,7 +232,16 @@ export function sessionPageTitle(seriesName: string, weekendTitle: string, sessi
   const own = a.includes(b) ? session.replace(new RegExp(`\\(?[^()]*${roundShort.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^()]*\\)?`, 'i'), '').replace(/\s+/g, ' ').trim().replace(/^\((.*)\)$/, '$1') : session;
   if (!own || b.includes(a)) {
     const [longer, shorter] = roundShort.length >= session.length ? [roundShort, session] : [session, roundShort];
-    return fitTitle([...names.map(n => `${longer} — ${n}`), ...names.map(n => `${shorter} — ${n}`), longer, shorter]);
+    // An event-named session IS the race in every series but a rally's (the feeds name IndyCar's, NASCAR's and IMSA's race
+    // after the event, with or without the word): it says so, and its title never equals its weekend page's.
+    const word = kind === 'none' ? undefined : 'race';
+    const said = word ? [...names.map(n => `${shorter} ${word} — ${n}`), `${shorter} ${word}`, ...names.map(n => `${shorter} ${word} · ${n} round ${round}`)] : [];
+    // When even the event's name with the word is too wide, the race keeps the series and the round number before the bare
+    // name is allowed, so the pair still reads apart.
+    const bare = word ? [...names.map(n => `${word[0].toUpperCase()}${word.slice(1)} · ${n} round ${round}`)] : [];
+    const weekendTitleHere = weekendPageTitle(seriesName, weekendTitle, round, place);
+    const own2 = [...said, ...names.map(n => `${longer} — ${n}`), ...names.map(n => `${shorter} — ${n}`), longer, shorter].filter(v => v !== weekendTitleHere);
+    return fitTitle([...own2, ...bare]);
   }
   const variants = withRound(roundShort, own);
   const spot = spotName ? [...names.map(n => `${own}, ${spotName} — ${n}`), `${own}, ${spotName}`] : [];

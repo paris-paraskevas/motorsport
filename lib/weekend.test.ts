@@ -100,8 +100,27 @@ describe('X10: sessionPageTitle', () => {
     expect(sessionPageTitle('FIA WEC', 'FIA WEC | 6 Hours of Fuji', '6 Hours of Fuji (Race)', 6)).toBe('Race, 6 Hours of Fuji — FIA WEC');
     expect(sessionPageTitle('NLS Nürburgring', '71st ADAC Westfalenfahrt', 'Free Training (NLS1 71st ADAC Westfalenfahrt)', 1, 'Nürburgring', 'NLS')).toBe('Free Training · NLS Nürburgring round 1');
     expect(sessionPageTitle('NLS Nürburgring', '71st ADAC Westfalenfahrt', 'Race 4h (NLS1 71st ADAC Westfalenfahrt)', 1, 'Nürburgring', 'NLS')).toBe('Race 4h · NLS Nürburgring round 1');
-    expect(sessionPageTitle('WRC', 'WRC | Rally Italia Sardegna', 'Rally Italia Sardegna', 13)).toBe('Rally Italia Sardegna — WRC');
-    expect(sessionPageTitle('NASCAR Cup', 'Bass Pro Shops Night Race (Bristol)', 'Bass Pro Shops Night Race', 29)).toBe('Bass Pro Shops Night Race (Bristol)');
+    // X10b: an event-named race (the session IS the round) says what it is, so it never shares its weekend page’s title.
+    expect(sessionPageTitle('IndyCar', 'Firestone Grand Prix of St. Petersburg', 'Firestone Grand Prix of St. Petersburg', 1, 'St. Petersburg', 'IndyCar', 'race')).toBe('Firestone Grand Prix of St. Petersburg race');
+    expect(sessionPageTitle('NASCAR Cup', '68th Daytona 500', '68th Daytona 500', 1, 'Daytona', 'NASCAR', 'race')).toBe('68th Daytona 500 race — NASCAR Cup');
+    for (const [series, round, n, place, code] of [['IndyCar', 'Firestone Grand Prix of St. Petersburg', 1, 'St. Petersburg', 'IndyCar'], ['NASCAR Cup', '68th Daytona 500', 1, 'Daytona', 'NASCAR'], ['IndyCar', 'Sonsio Grand Prix at the Brickyard', 6, 'Indianapolis', 'IndyCar']] as const) {
+      expect(sessionPageTitle(series, round, round, n, place, code, 'race')).not.toBe(weekendPageTitle(series, round, n, place));
+    }
+    // The feed’s prefix on the session’s own name goes too (“IndyCar | Laguna Seca”), and a code with spaces is no code.
+    expect(sessionPageTitle('IndyCar', 'Laguna Seca', 'IndyCar | Laguna Seca', 18, 'Monterey', 'IndyCar', 'race')).toBe('Laguna Seca race — IndyCar');
+    expect(sessionPageTitle('Formula E', 'Monaco E-Prix', 'FP3', 10, 'Monaco', 'FE Monaco E-Prix R10')).toBe('FP3, Monaco E-Prix — Formula E');
+    // No cut leaves a separator behind.
+    expect(sessionPageTitle('WRC', 'Rallye Monte-Carlo', 'SS1 Toudon / Saint-Antonin (Monte Carlo) with a very long stage name', 1, 'Monaco', 'WRC')).not.toMatch(/[·|/&,:;–—-]\s*$/);
+    expect(sessionPageTitle('WRC', 'WRC | Rally Italia Sardegna', 'Rally Italia Sardegna', 13, 'Olbia', 'WRC', 'none')).toBe('Rally Italia Sardegna — WRC');
+    // Without the kind, a session that is its round is the race: the feeds name a race after its event, with or without the word.
+    expect(sessionPageTitle('IndyCar', 'Chevrolet Detroit Grand Prix', 'Chevrolet Detroit Grand Prix', 8, 'Detroit', 'IndyCar')).toBe('Chevrolet Detroit Grand Prix race');
+    // Too wide even for "… race": the race keeps the series and the round number rather than fall to the weekend's bare name.
+    expect(sessionPageTitle('IndyCar', 'Ontario Honda Dealers Indy at Markham', 'Ontario Honda Dealers Indy at Markham', 14, undefined, 'IndyCar')).toBe('Race · IndyCar round 14');
+    expect(weekendPageTitle('IndyCar', 'Ontario Honda Dealers Indy at Markham', 14)).toBe('Ontario Honda Dealers Indy at Markham');
+    expect(sessionPageTitle('IndyCar', 'Chevrolet Detroit Grand Prix', 'Chevrolet Detroit Grand Prix', 8, 'Detroit', 'IndyCar')).not.toBe(weekendPageTitle('IndyCar', 'Chevrolet Detroit Grand Prix', 8, 'Detroit'));
+    // The weekend page already holds the bare event name (nothing wider fits), so the session takes the next form.
+    expect(weekendPageTitle('NASCAR Cup', 'Bass Pro Shops Night Race (Bristol)', 29)).toBe('Bass Pro Shops Night Race (Bristol)');
+    expect(sessionPageTitle('NASCAR Cup', 'Bass Pro Shops Night Race (Bristol)', 'Bass Pro Shops Night Race', 29)).toBe('Bass Pro Shops Night Race');
     expect(sessionPageTitle('Formula 1', 'Round 7', 'Qualifying', 7)).toBe('Qualifying · Formula 1 round 7');
     expect(sessionPageTitle('FIA WEC', 'TotalEnergies 6 Hours of Spa-Francorchamps', 'Hypercar Qualifying', 2, 'Spa-Francorchamps')).toBe('Hypercar Qualifying · FIA WEC round 2');
     expect(sessionPageTitle('FIA WEC', 'TotalEnergies 6 Hours of Spa-Francorchamps', 'Hypercar Qualifying', 2, 'Spa-Francorchamps', 'WEC')).toBe('Hypercar Qualifying · FIA WEC round 2');
