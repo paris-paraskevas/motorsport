@@ -85,6 +85,8 @@ describe('SeriesPageView (R18)', () => {
     expect(html).toContain('>Formula 2 · 2026 season<');
     expect(count(html, '"BreadcrumbList"')).toBe(1);
     expect(count(html, '>More Formula 2<')).toBe(1);
+    // X12: every foot link names its series after the label (Seobility reads the hidden span; "Season overview" alone led to fifteen hubs).
+    expect(html).toContain('>Season overview<span class="sr-only"> — Formula 2</span></a>');
     expect(html).toContain('← Formula 2');
     expect(html).toContain('data-tab="champions f2"');
   });

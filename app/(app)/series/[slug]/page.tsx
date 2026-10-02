@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import { groupByWeekend } from '@/lib/group';
-import { weekendLabel } from '@/lib/weekend';
+import { weekendAnchorName, weekendLabel } from '@/lib/weekend';
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
 import { fetchLatestPodium, homeResultsSupported } from '@/lib/home-results';
 import { seriesTabMetadata } from '@/components/SeriesPageView';
@@ -65,11 +65,13 @@ async function ChampionshipBlock({
   season,
   complete,
   seasonOver,
+  seriesName,
 }: {
   slug: string;
   season: number;
   complete: number;
   seasonOver: boolean;
+  seriesName: string;
 }) {
   const brief = isEligibleStandingsSeries(slug)
     ? await fetchStandingsBrief(slug, season).catch(() => null)
@@ -87,7 +89,7 @@ async function ChampionshipBlock({
             href={`/series/${slug}/standings`}
             className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
           >
-            Standings →
+            {seriesName} standings →
           </Link>
         </div>
       </>
@@ -134,7 +136,7 @@ async function ChampionshipBlock({
           href={`/series/${slug}/standings`}
           className="font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
         >
-          Full table →
+          {seriesName} standings, the full table →
         </Link>
       </div>
     </>
@@ -295,7 +297,7 @@ async function SeriesPage({
               title={l.blurb}
               className="inline-flex min-h-10 items-center justify-center border border-border px-2 text-center font-mono text-11 font-semibold uppercase tracking-[0.1em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
             >
-              {l.label}
+              {l.label}<span className="sr-only">{` — ${meta.name}`}</span>
             </Link>
           ))}
         </nav>
@@ -331,7 +333,7 @@ async function SeriesPage({
                   </div>
                 }
               >
-                <ChampionshipBlock slug={slug} season={meta.season} complete={complete} seasonOver={seasonOver} />
+                <ChampionshipBlock slug={slug} season={meta.season} complete={complete} seasonOver={seasonOver} seriesName={meta.name} />
               </Suspense>
             )}
           </section>
@@ -350,7 +352,7 @@ async function SeriesPage({
                   href={`/series/${slug}/weekend/${lastW.round}`}
                   className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
                 >
-                  Report →
+                  Report →<span className="sr-only">{` — ${weekendAnchorName(meta.name, lastW.roundName ?? weekendLabel(lastW, lastW.round).title, lastW.round)}`}</span>
                 </Link>
               </div>
             )}
@@ -367,7 +369,7 @@ async function SeriesPage({
                   href={`/series/${slug}/weekend/${nextW.round}`}
                   className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
                 >
-                  Preview →
+                  Preview →<span className="sr-only">{` — ${weekendAnchorName(meta.name, nextW.roundName ?? weekendLabel(nextW, nextW.round).title, nextW.round)}`}</span>
                 </Link>
               </div>
             )}
@@ -390,7 +392,7 @@ async function SeriesPage({
                 href={`/api/calendar/${slug}.ics`}
                 className="ml-4 font-mono text-10 uppercase tracking-[0.14em] text-text-faint hover:text-text-muted"
               >
-                .ics
+                .ics<span className="sr-only">{` — ${meta.name} calendar`}</span>
               </a>
             </div>
           </aside>
@@ -483,7 +485,7 @@ async function SeriesPage({
                 href={l.href}
                 className="group flex flex-col gap-0.5 bg-surface-elevated px-3 py-2.5 transition-colors duration-(--duration-fast) hover:bg-surface"
               >
-                <span className="font-serif text-15 font-semibold text-text">{l.label}</span>
+                <span className="font-serif text-15 font-semibold text-text">{l.label}<span className="sr-only">{` — ${meta.name}`}</span></span>
                 <span className="font-mono text-9 uppercase tracking-[0.12em] text-text-faint">{l.blurb}</span>
               </Link>
             ))}

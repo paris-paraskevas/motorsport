@@ -86,7 +86,7 @@ At championship level, points are then awarded on top of the individual event re
 
 ## The WRC and other kinds of rallying
 
-The **[World Rally Championship](/information/rally/what-is-the-wrc)** is the pinnacle of the sport. Run by the **FIA** and contested since **1973**, it visits roughly a dozen countries a season and awards separate titles to drivers, co-drivers and manufacturers. Below it sits a clear ladder: the **European Rally Championship (ERC)**, the oldest international rally championship, and a network of **national championships** where most crews begin. For the shape of a top-level event, see [how a WRC rally weekend works](/information/rally/how-a-wrc-rally-weekend-works).
+The **World Rally Championship** ([what the WRC is](/information/rally/what-is-the-wrc)) is the pinnacle of the sport. Run by the **FIA** and contested since **1973**, it visits roughly a dozen countries a season and awards separate titles to drivers, co-drivers and manufacturers. Below it sits a clear ladder: the **European Rally Championship (ERC)**, the oldest international rally championship, and a network of **national championships** where most crews begin. For the shape of a top-level event, see [how a WRC rally weekend works](/information/rally/how-a-wrc-rally-weekend-works).
 
 "Rally" is also an umbrella term for several related disciplines that work quite differently:
 

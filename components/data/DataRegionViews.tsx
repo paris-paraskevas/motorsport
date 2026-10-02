@@ -1230,7 +1230,7 @@ export function DataRegionCircuit({ heading, level, data, every, weekendTitle }:
       )}
       {data.guide !== null && (
         <Link href={data.guide} className="mt-3 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline">
-          Circuit guide →
+          Circuit guide →<span className="sr-only">{` — ${data.name}`}</span>
         </Link>
       )}
     </section>
@@ -1447,7 +1447,7 @@ export function DataRegionPodium({ heading, level, rows }: DataRegionViewProps) 
           )}
           {href && (
             <Link href={href} className="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline">
-              Full weekend report →
+              Full weekend report →<span className="sr-only">{` — ${seriesName} ${raceName}`}</span>
             </Link>
           )}
         </div>

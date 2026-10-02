@@ -81,7 +81,7 @@ async function ChangelogPage() {
                         href={href}
                         className={`${EYEBROW} inline-flex items-center gap-1.5 py-1 text-text-muted hover:text-text ${newest ? 'mt-4' : ''}`}
                       >
-                        {newest ? `All ${count} updates` : 'Every update in this release'} →
+                        {newest ? `All ${count} updates` : `Every update in ${release.label}`} →
                       </Link>
                     )}
                   </div>

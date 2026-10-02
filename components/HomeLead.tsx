@@ -168,6 +168,8 @@ export function HomeLeadStory({ blog, suggested }: { blog: HomeLeadBlog; suggest
           tabIndex={-1}
           className="block border-b-[1.5px] border-text lg:border-b-0 lg:border-r-[1.5px]"
         >
+          {/* X12: the title in a hidden span gives a crawler the cover link's words (an empty anchor otherwise). */}
+          <span className="sr-only">{blog.title}</span>
           {blog.heroImage ? (
             // 8/5 = 1.6:1, operator's call: tall and dominant rather than a
             // letterbox. width/height carry the SAME ratio so the reserved
@@ -426,7 +428,7 @@ export function HomeThisWeekend({ liveWeekends, alsoRacing, className = '' }: { 
                   href={item.href}
                   className="font-serif text-15 text-text-muted hover:text-text hover:underline"
                 >
-                  {item.seriesName}
+                  {item.seriesName} · {item.eventName}
                 </Link>
                 <span className="font-mono text-11 tabular-nums text-text-faint">
                   {localTime(item.startIso)}
@@ -512,7 +514,7 @@ export function HomeLatestResult({
             href={result.weekendHref}
             className="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
           >
-            Full weekend report →
+            Full weekend report →<span className="sr-only">{` — ${result.seriesName} ${result.raceName}`}</span>
           </Link>
         </div>
         <div className="min-w-0">

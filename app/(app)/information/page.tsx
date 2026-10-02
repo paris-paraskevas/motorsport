@@ -140,7 +140,7 @@ async function InformationHub() {
                       className="inline-flex min-h-11 items-center gap-2 border border-border-strong px-3 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
                     >
                       <span aria-hidden="true" className="h-[13px] w-[3px] shrink-0" style={{ backgroundColor: c.color }} />
-                      {c.name}
+                      {c.name}<span className="sr-only"> — how a race weekend works</span>
                     </Link>
                   ))}
                 </div>
@@ -227,7 +227,7 @@ async function InformationHub() {
                       href={`/information/${topicForSeries(s.slug)}/the-history-of-${s.slug}`}
                       className="truncate py-0.5 font-mono text-10 uppercase tracking-[0.1em] text-text-faint hover:text-text"
                     >
-                      {s.name}
+                      {s.name}<span className="sr-only"> — the history</span>
                     </Link>
                   ))}
               </div>

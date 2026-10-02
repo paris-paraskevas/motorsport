@@ -868,7 +868,7 @@ describe('renderComponents', () => {
     expect(podium).toContain('Round 13 · Sunday 6 September');
     expect(podium).toMatch(/<h1 class="mt-3 font-serif font-semibold leading-\[1\.1\] text-text text-30 lg:text-40">Andrea Kimi Antonelli wins the Italian Grand Prix<\/h1>/);
     expect(podium).toContain('Winning margin <span class="text-text">+3.857</span>');
-    expect(podium).toContain('<a href="/series/f1/weekend/13" class="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline">Full weekend report →</a>');
+    expect(podium).toContain('<a href="/series/f1/weekend/13" class="mt-4 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline">Full weekend report →<span class="sr-only"> — Formula 1 Italian Grand Prix</span></a>');
     expect(podium).toContain('>Classification<');
     expect((podium.match(/<li class="flex items-baseline gap-3 border-b border-border py-2">/g) ?? []).length).toBe(3);
     expect(podium).toContain('>Charles Leclerc<');
@@ -1415,7 +1415,7 @@ describe('the Circuit (P2.15; ours by name: the round’s venue)', () => {
       expect(madring).toContain('data-map-background="canvas"');
       expect(madring).toContain('style="height:280px"');
       expect(madring).toMatch(/<ul class="sr-only"[^>]*><li><a href="\/information\/tracks\/madring">Madring<\/a> · Spain<\/li><\/ul>/);
-      expect(madring).toContain('Circuit guide →');
+      expect(madring).toContain('Circuit guide →<span class="sr-only"> — Madring</span>');
       expect(info).toHaveBeenCalledWith('tracks', 'madring');
       // Round 15: Baku's drawing with the credit its licence asks, the map, the facts and the guide across the bridge (the slugs differ).
       const baku = html(await draw({ heading: 'Where they race' }, { path: '/series/[slug]/weekend/[round]/[session]', params: { slug: 'f1', round: '15', session: 'race' } }));

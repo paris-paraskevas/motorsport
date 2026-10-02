@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { sessionPageTitle } from '@/lib/weekend';
+import { sessionAnchorName, sessionPageTitle, weekendAnchorName } from '@/lib/weekend';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
@@ -169,26 +169,32 @@ export const generateMetadata = pageMetadata('/series/[slug]/weekend/[round]/[se
 // one lit — the row reads as a weekend rather than a menu. A session that does
 // not exist is absent, and for F1 the row says so ("No sprint at this round")
 // rather than leaving the absence ambiguous.
-function SessionChips({ items, noSprint }: {
+function SessionChips({ items, noSprint, anchorOf }: {
   items: ReturnType<typeof weekendSessionNav>['items'];
   noSprint: boolean;
+  // X12: the words a chip carries after its label for a crawler and a screen reader (the session's title and its
+  // weekend), since Seobility judges "FP1" once across the site. The current session is not a link: a reader gains
+  // nothing from a page linking to itself.
+  anchorOf: (sessionTitle: string) => string;
 }) {
   return (
     <nav aria-label="Weekend sessions" className="mb-6">
       <div className="flex flex-wrap items-center gap-2">
-        {items.map(item => (
+        {items.map(item => item.isCurrent ? (
+          <span
+            key={item.uid}
+            aria-current="page"
+            className="inline-flex min-h-[38px] items-center border border-text bg-surface-elevated px-3 font-mono text-10 font-semibold uppercase tracking-[0.14em] whitespace-nowrap text-text"
+          >
+            {item.label}
+          </span>
+        ) : (
           <Link
             key={item.uid}
             href={item.href}
-            aria-current={item.isCurrent ? 'page' : undefined}
-            title={item.title}
-            className={`inline-flex min-h-[38px] items-center border px-3 font-mono text-10 font-semibold uppercase tracking-[0.14em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
-              item.isCurrent
-                ? 'border-text bg-surface-elevated text-text'
-                : 'border-border-strong text-text-muted hover:text-text'
-            }`}
+            className="inline-flex min-h-[38px] items-center border border-border-strong px-3 font-mono text-10 font-semibold uppercase tracking-[0.14em] whitespace-nowrap text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
           >
-            {item.label}
+            {item.label}<span className="sr-only">{` — ${anchorOf(item.title)}`}</span>
           </Link>
         ))}
         {noSprint && (
@@ -204,9 +210,11 @@ function SessionChips({ items, noSprint }: {
 function SessionPager({
   prev,
   next,
+  anchorOf,
 }: {
-  prev: { href: string; label: string } | null;
-  next: { href: string; label: string } | null;
+  prev: { href: string; label: string; title: string } | null;
+  next: { href: string; label: string; title: string } | null;
+  anchorOf: (sessionTitle: string) => string;
 }) {
   if (!prev && !next) return null;
   return (
@@ -216,7 +224,7 @@ function SessionPager({
           href={prev.href}
           className="inline-flex items-center gap-1.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
         >
-          <span aria-hidden>&larr;</span> {prev.label}
+          <span aria-hidden>&larr;</span> {prev.label}<span className="sr-only">{` — ${anchorOf(prev.title)}`}</span>
         </Link>
       ) : (
         <span />
@@ -226,7 +234,7 @@ function SessionPager({
           href={next.href}
           className="inline-flex items-center gap-1.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
         >
-          {next.label} <span aria-hidden>&rarr;</span>
+          {next.label}<span className="sr-only">{` — ${anchorOf(next.title)}`}</span> <span aria-hidden>&rarr;</span>
         </Link>
       ) : (
         <span />
@@ -676,7 +684,7 @@ async function SessionBody({
             href={`/series/${slug}/results`}
             className="mt-3 inline-block font-mono text-11 uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
           >
-            Season results →
+            {series.meta.name} season results →
           </Link>
         </section>
       ) : (
@@ -699,7 +707,7 @@ async function SessionBody({
           data-heatmap-id="session:back-to-weekend"
           className="font-semibold text-brand transition-colors duration-(--duration-fast) hover:text-text"
         >
-          Back to the weekend →
+          Back to the {weekendAnchorName(series.meta.name, weekendTitle, round)} weekend →
         </Link>
         {sourceLine && <span className="text-text-faint">{sourceLine}</span>}
       </div>
@@ -760,6 +768,7 @@ async function SessionPage({
   const sessionName = session.title.replace(/^.*?[-–—:]\s*/, '').trim() || session.title;
 
   const nav = weekendSessionNav(weekend, slug, round, session.uid);
+  const anchorOf = (sessionTitle: string) => sessionAnchorName(series.meta.name, weekendTitle, round, sessionTitle);
   const watch = series.meta.watch;
 
   // roundMeta first: a curated `venue` overrides name-based circuit resolution
@@ -872,7 +881,7 @@ async function SessionPage({
             data-heatmap-id="session:masthead:weekend"
             className="font-mono text-11 font-semibold uppercase tracking-[0.14em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
           >
-            Back to the weekend →
+            Back to the {weekendAnchorName(series.meta.name, weekendTitle, round)} weekend →
           </Link>
         </div>
 
@@ -946,7 +955,7 @@ async function SessionPage({
         )}
       </section>
 
-      <SessionChips items={nav.items} noSprint={noSprint} />
+      <SessionChips items={nav.items} noSprint={noSprint} anchorOf={anchorOf} />
 
       <Suspense fallback={<BodySkeleton />}>
         <SessionBody
@@ -962,7 +971,7 @@ async function SessionPage({
         />
       </Suspense>
 
-      <SessionPager prev={nav.prev} next={nav.next} />
+      <SessionPager prev={nav.prev} next={nav.next} anchorOf={anchorOf} />
     </div>
   );
 }

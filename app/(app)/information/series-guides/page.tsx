@@ -82,7 +82,7 @@ async function SeriesGuidesPage() {
                     href={l.href}
                     className="text-text-faint hover:text-tint transition-colors duration-(--duration-fast)"
                   >
-                    {l.label} →
+                    {l.label} →<span className="sr-only">{` — ${s.name}`}</span>
                   </Link>
                 ))}
               </div>
