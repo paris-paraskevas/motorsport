@@ -1813,32 +1813,63 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toContain('aria-label="Every season"');
     expect(roll).toMatch(/<nav aria-label="Jump to" class="sticky top-14 /);
     expect(roll).toMatch(/>Jump to</);
+    // R18 PR E: the root marked for the search box; the box and the count in the bar; the chips marked for their targets; each
+    // season a wrapper with its slugified haystack; the decades marked with their counts; the empty line hidden until a query.
+    expect(roll).toMatch(/^<section data-honours="" aria-label="Every season" class="min-w-0 scroll-mt-14">/);
+    expect(roll).toMatch(/<input[^>]*type="search"[^>]*placeholder="Find a season or a driver"/);
+    expect(roll).toMatch(/<span role="status"[^>]*>4 seasons<\/span>/);
+    expect(roll).toMatch(/<a href="#honours-2020s" data-chip="honours-2020s"/);
+    expect(roll).toMatch(/<a href="#honours-era" data-chip-era=""/);
+    expect(roll).toMatch(/<section id="honours-2020s" data-decade=""/);
+    expect(roll).toMatch(/<span data-decade-count=""[^>]*>2 seasons<\/span>/);
+    expect(roll).toMatch(/<div data-season="" data-search="2025-leonardo-fornaroli-invicta-racing-jak-crawford-invicta-racing-ita-italy-fia-formula-2-championship-2020s"/);
+    expect(roll).toMatch(/data-search="2016-pierre-gasly-prema-racing-antonio-giovinazzi-prema-racing-fra-france-gp2-series-2010s"/);
+    expect(roll).toMatch(/<p data-empty="" hidden=""[^>]*>No season matches what you typed\.<\/p>/);
     expect(roll).toMatch(/<a href="#honours-2020s"[^>]*>2020s<\/a>/);
     expect(roll).toMatch(/<a href="#honours-2010s"[^>]*>2010s<\/a>/);
     expect(roll).toMatch(/<a href="#honours-era"[^>]*>GP2 era<\/a>/);
     expect(roll).toContain('>4 seasons<');
     expect(roll).toMatch(/id="honours-2020s"[\s\S]*>2020s<[\s\S]*>2 seasons</);
     expect(roll).toMatch(/id="honours-2010s"[\s\S]*>2010s<[\s\S]*>2 seasons</);
-    for (const label of ['Year', 'Champion', 'Pts', 'Wins', 'Margin', 'Runner-up', 'Teams’ champion']) expect(roll, label).toContain(`>${label}<`);
-    // The table from lg, the cards below it (the review of the 1st: at md the names were cut).
-    expect(roll).toContain(' lg:grid lg:grid-cols-[');
+    // R18 PR E: from lg each season is a strip (the operator's D): one card the full width ruled into the table's cells, the
+    // season, the champion, the three figures with their labels above the values, the runner-up, the teams' champion; every
+    // strip draws all seven cells, blank where a value is missing, so the columns align down the page.
+    const seasonsMarkup = roll.split('<div data-season="" data-search="').slice(1);
+    expect(seasonsMarkup).toHaveLength(4);
+    const stripOf = (s: string) => s.slice(0, s.indexOf('class="rounded-lg border border-border bg-surface lg:hidden"'));
+    const strip0 = stripOf(seasonsMarkup[0]);
+    expect(strip0).toContain('class="hidden lg:grid grid-cols-[136px_minmax(0,1.6fr)_84px_72px_84px_minmax(0,1.1fr)_minmax(0,1.1fr)] divide-x divide-border overflow-hidden rounded-lg border border-border bg-surface"');
+    expect(strip0).toMatch(/>2025 season<\/div><div[^>]*>FIA Formula 2<\/div>/);
+    expect(strip0).toMatch(/>Drivers’ champion<\/div>[\s\S]*?<a href="\/drivers\/leonardo-fornaroli"[^>]*>Leonardo Fornaroli<\/a>/);
+    expect(strip0).toMatch(/>Points<\/div><div[^>]*>211<\/div>/);
+    expect(strip0).toMatch(/>Wins<\/div><div[^>]*>4<\/div>/);
+    expect(strip0).toMatch(/>Margin<\/div><div[^>]*>\+36<\/div>/);
+    expect(strip0).toMatch(/>Runner-up<\/div><div[^>]*>Jak Crawford<\/div><div[^>]*>175 pts<\/div>/);
+    expect(strip0).toMatch(/>Teams’ champion<\/div><div[^>]*><a href="\/teams\/invicta-racing"[^>]*>Invicta Racing<\/a><\/div><div[^>]*>2nd title<\/div>/);
+    expect(strip0).toContain('>Rookie season<');
+    expect(stripOf(seasonsMarkup[3])).toMatch(/>2016 season<\/div><div[^>]*>GP2<\/div>/);
+    // No header row: the labels sit in every strip; the decade's container spaces its cards at every width.
+    for (const label of ['Year', 'Pts']) expect(roll, label).not.toContain(`>${label}<`);
+    expect(roll).toContain('class="grid gap-3"');
+    expect(roll).not.toContain('lg:gap-px');
     expect(roll).toContain(' lg:hidden"');
     expect(roll).not.toContain('md:grid');
     expect(roll).not.toContain('md:hidden');
-    expect(roll).toContain('>2025<');
+    expect(roll).toContain('>2025 season<');
     expect(roll).toMatch(/<a href="\/drivers\/leonardo-fornaroli"[^>]*>Leonardo Fornaroli<\/a>/);
     expect(roll).toContain('>ITA<');
     expect(roll).toContain('>175 pts<');
     expect(roll).toContain('>2nd title<');
     expect(roll).toContain('>1st title<');
     // The era row sits between 2017 and 2016, with the older era below it.
-    expect(roll).toMatch(/>2017<[\s\S]*id="honours-era"[\s\S]*>Era change<[\s\S]*>2017: GP2 Series becomes the FIA Formula 2 Championship<[\s\S]*>Seasons below raced as GP2 Series<[\s\S]*>2016</);
-    expect(roll).toMatch(/id="honours-era" class="[^"]*rounded-lg border border-border[^"]*scroll-mt-28 lg:rounded-none lg:border-0"/);
+    expect(roll).toMatch(/>2017 season<[\s\S]*id="honours-era"[\s\S]*>Era change<[\s\S]*>2017: GP2 Series becomes the FIA Formula 2 Championship<[\s\S]*>Seasons below raced as GP2 Series<[\s\S]*>2016 season</);
+    expect(roll).toMatch(/id="honours-era" data-era="" class="[^"]*rounded-lg border border-border[^"]*scroll-mt-40 sm:scroll-mt-32"/);
+    // The decade sections’ scroll margins allow for the taller bar (two rows on phones), as the era row’s do.
+    expect(roll).toMatch(/<section id="honours-2020s" data-decade="" class="pt-8 scroll-mt-40 sm:scroll-mt-28">/);
     // The cards below lg follow the operator's drawing of the 2nd: a band with the season, the points and the wins; the two
     // champions side by side with their labels; the runner-up's row with their points and the margin; every cell ruled.
-    // Each card its own rounded box with space between (the operator's second look); the ruled strip is the table's from lg.
-    expect(roll).toContain('class="grid gap-3 lg:gap-px lg:overflow-hidden lg:rounded-lg lg:border lg:border-border lg:bg-border"');
-    const cards = roll.split('class="rounded-lg border border-border bg-surface lg:hidden"').slice(1);
+    // Each card its own rounded box with space between (the operator's second look), read per season from its wrapper.
+    const cards = seasonsMarkup.map(s => s.slice(s.indexOf('class="rounded-lg border border-border bg-surface lg:hidden"')));
     expect(cards).toHaveLength(4);
     const [first, second, third] = cards;
     // The season in red bold capitals, the points figure in red.
@@ -1869,10 +1900,13 @@ describe('the champions page’s views (R18)', () => {
     expect(third).toMatch(/>Teams’ champion<\/div><div[^>]*>Russian Time<\/div>/);
     expect(third).toMatch(/<div class="[^"]*\[overflow-wrap:anywhere\][^"]*">Artem Markelov<\/div>/);
     // Three of the four champions were rookies.
-    expect(roll.match(/>Rookie season</g)).toHaveLength(3);
+    expect(roll.match(/>Rookie season</g)).toHaveLength(6); // the strip and the card each
     // A season without a runner-up on record draws no runner-up row; the band and the champions stay.
     const bare = await draw([season({ runnerUp: null, runnerUpPoints: null, margin: null, wins: null })], { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
     const bareCard = bare.split('class="rounded-lg border border-border bg-surface lg:hidden"')[1];
+    // The strip keeps its seven cells, blank where the season has no figure or runner-up.
+    expect(bare.split('<div data-season="" data-search="')[1]).toMatch(/>Wins<\/div><div[^>]*><\/div>/);
+    expect(bare.split('<div data-season="" data-search="')[1]).toMatch(/>Runner-up<\/div><div[^>]*><\/div>/);
     expect(bareCard).not.toContain('>Runner-up<');
     expect(bareCard).toMatch(/>PTS<\/span><span[^>]*>211<\/span>/);
     // A cell only with its value (the review of the 2nd: a series whose file has no wins draws no WINS cell with nothing in it).

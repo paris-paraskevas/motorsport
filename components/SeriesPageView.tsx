@@ -215,10 +215,11 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
   );
 
   // R18: a tab composed from a recipe of its own address (the Formula 2 champions page first) draws its masthead and body
-  // through the frame's assembly, in the frame's own width; the shell keeps the back link and the structured data before it
-  // and the series' tint over it (the recipe's doorway cards replace the shell's mono foot, PR C), and hands ComposedTab the
-  // whole legacy layout, h1 included, to draw instead when the composition fails (an indexed page keeps its masthead and its
-  // foot on the fault path). Every other tab is the legacy layout itself, exactly as before.
+  // through the frame's assembly, in the frame's own width; the shell keeps the structured data before it and the series' tint
+  // over it (the recipe's breadcrumb and heading lead the page, its doorway cards close it: the shell's back link and mono foot
+  // are the legacy layout's alone, PR C and PR E), draws the stale banner's strip only when it has something to say, and hands
+  // ComposedTab the whole legacy layout, h1 included, to draw instead when the composition fails (an indexed page keeps its
+  // masthead and its foot on the fault path). Every other tab is the legacy layout itself, exactly as before.
   const path = `/series/${slug}/${activeTab}`;
   if (!hasComposedTab(path)) return legacy;
   return (
@@ -238,10 +239,11 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
           before={
             <>
               {crumbs}
-              <div className={`${PAGE_WIDE} pb-0`}>
-                {back}
-                <StaleBanner configured={series.configured} stale={series.stale} />
-              </div>
+              {(series.stale || !series.configured) && (
+                <div className={`${PAGE_WIDE} pb-0`}>
+                  <StaleBanner configured={series.configured} stale={series.stale} />
+                </div>
+              )}
             </>
           }
         >

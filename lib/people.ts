@@ -148,6 +148,10 @@ export interface PeopleIndex {
   /** A driver's page, matched by the site's drift rule (namesMatch): an exact name first, else the one roster name that contains
    *  the feed's or that it contains; none, or two, is null. */
   driver(series: string, name: string): string | null;
+  /** A driver's page from any roster (R18 PR E: a series' champions race elsewhere in time): the series' own roster by the
+   *  drift rule first, else the one roster entry whose slug is exactly the name's (the bare slug the owner holds; a shared name
+   *  on two rosters resolves to it), never a drift match across rosters (Fittipaldi is not Fittipaldi Jr.). */
+  driverAnywhere(series: string, name: string): string | null;
   /** A team's page by the same rule, only where its slug opens that series' own team (findTeamBySlug answers the first listed). */
   team(series: string, name: string): string | null;
 }
@@ -180,6 +184,14 @@ export function buildPeopleIndex(drivers: readonly DriverDetail[], teams: readon
   const teamsIn = bySeries(teams);
   return {
     driver: (series, name) => pick(driversIn.get(series), driverOwner, name, '/drivers'),
+    driverAnywhere: (series, name) => {
+      const own = pick(driversIn.get(series), driverOwner, name, '/drivers');
+      if (own) return own;
+      const want = slugify(name);
+      if (!want) return null;
+      const exact = drivers.filter(x => x.slug === want);
+      return exact.length === 1 ? `/drivers/${exact[0].slug}` : null;
+    },
     team: (series, name) => pick(teamsIn.get(series), teamOwner, name, '/teams'),
   };
 }

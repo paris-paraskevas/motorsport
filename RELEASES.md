@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.241 — 2026-10-02
+
+The Formula 2 champions page gains a search box in its jump bar: type a driver, a team or a year and the seasons that match stay, the counts following. On wide screens every season is now a strip of its own, ruled into cells that line up down the page; the champions who race elsewhere today (fourteen of the twenty-one) link to their driver pages; the stray back link under the tabs is gone.
+
 ## 1.0.240 — 2026-10-02
 
 The Formula 2 champions page gets its photograph: Leonardo Fornaroli at the Red Bull Ring beside the reigning champion’s card. On phones, every season’s card is redrawn with ruled cells and its own box, space between the cards and the season in bold capitals: the season with its points and wins on a band, the drivers’ and the teams’ champions side by side, the runner-up with their points and the margin.
