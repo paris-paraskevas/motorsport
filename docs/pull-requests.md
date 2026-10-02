@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #__PR__ · 1.0.241 · R18 PR E · opened __OPENED__; the merge on the word
+## #1123 · 1.0.241 · R18 PR E · opened 2026-10-02 11:55:50Z; the merge on the word
 **The search box, the champions’ links across every roster, the back-link strip, the desktop season strip.** The operator’s words of the 2nd: “search box next”, the two defaults let stand, and “D but the words points wins and margin should be above the value”. A Sonnet plan critic before code; its two blocking findings folded (the island’s root, the lookup’s fourteen). Stacked on #1122 (PR D): the branch is rebased onto main after D’s squash, the trio union-resolved. New files (the law): the island and its test, named in the plan; the merge word covers them.
 - **Readers see:** a search box in the roll of honour’s bar (type a driver, a team or a year); on wide screens every season as a strip of its own with the cells aligned down the page; fourteen champions’ names linking to their driver pages; no stray “← Formula 2” under the tabs; nothing else (the parity below).
 - **Editors get:** nothing new (the Roll of honour view carries the box and the strip for any series composed over the Champions source).
