@@ -1725,14 +1725,14 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
                 <div className="rounded-lg border border-border bg-surface lg:hidden">
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] divide-x divide-border border-b border-border">
                     <div className="px-4 py-2 font-mono text-12 font-bold uppercase tracking-[0.12em] tabular-nums text-brand">{text(r.year)} season</div>
-                    <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">PTS</span><span className="font-bold text-brand">{text(r.points)}</span></div>
-                    <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">WINS</span><span className="font-semibold text-text">{text(r.wins)}</span></div>
+                    {num(r.points) !== null && <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">PTS</span><span className="font-bold text-brand">{text(r.points)}</span></div>}
+                    {num(r.wins) !== null && <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">WINS</span><span className="font-semibold text-text">{text(r.wins)}</span></div>}
                   </div>
                   <div className={`grid divide-x divide-border${text(r.teamsChampion) ? ' grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]' : ''}${text(r.runnerUp) ? ' border-b border-border' : ''}`}>
                     <div className="min-w-0 px-4 py-3">
                       <div className={CARD_LABEL}>Drivers’ champion</div>
                       <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
-                        {who(r, 'font-serif text-20 font-semibold leading-tight text-text')}
+                        {who(r, 'font-serif text-20 font-semibold leading-tight text-text [overflow-wrap:anywhere]')}
                         {text(r.nationality) && <span className="font-mono text-10 text-text-faint">{text(r.nationality)}</span>}
                       </div>
                       <div className="mt-0.5 text-13 text-text-muted">{teamOf(r)}</div>
@@ -1747,19 +1747,24 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
                     )}
                   </div>
                   {text(r.runnerUp) && (
-                    <div className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)] divide-x divide-border">
+                    // The row holds the cells the season has (a file without the runner-up's points draws no empty Points cell).
+                    <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `minmax(0,1.3fr)${' minmax(0,1fr)'.repeat((num(r.runnerUpPoints) !== null ? 1 : 0) + (num(r.margin) !== null ? 1 : 0))}` }}>
                       <div className="min-w-0 px-4 py-3">
                         <div className={CARD_LABEL}>Runner-up</div>
-                        <div className="mt-1 font-serif text-16 font-semibold leading-tight text-text">{text(r.runnerUp)}</div>
+                        <div className="mt-1 font-serif text-16 font-semibold leading-tight text-text [overflow-wrap:anywhere]">{text(r.runnerUp)}</div>
                       </div>
-                      <div className="px-3 py-3">
-                        <div className={CARD_LABEL}>Points</div>
-                        <div className="mt-1 font-mono text-15 tabular-nums text-text">{text(r.runnerUpPoints)}</div>
-                      </div>
-                      <div className="px-3 py-3">
-                        <div className={CARD_LABEL}>Margin</div>
-                        <div className="mt-1 font-mono text-15 tabular-nums text-text">{num(r.margin) !== null ? `−${text(r.margin)}` : ''}</div>
-                      </div>
+                      {num(r.runnerUpPoints) !== null && (
+                        <div className="px-3 py-3">
+                          <div className={CARD_LABEL}>Points</div>
+                          <div className="mt-1 font-mono text-15 tabular-nums text-text">{text(r.runnerUpPoints)}</div>
+                        </div>
+                      )}
+                      {num(r.margin) !== null && (
+                        <div className="px-3 py-3">
+                          <div className={CARD_LABEL}>Margin</div>
+                          <div className="mt-1 font-mono text-15 tabular-nums text-text">{`−${text(r.margin)}`}</div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.240 — 2026-10-02
 
-The Formula 2 champions page gets its photograph: Leonardo Fornaroli at the Red Bull Ring beside the reigning champion’s card. On phones, every season’s card is redrawn with ruled cells: the season with its points and wins on a band, the drivers’ and the teams’ champions side by side, the runner-up with their points and the margin.
+The Formula 2 champions page gets its photograph: Leonardo Fornaroli at the Red Bull Ring beside the reigning champion’s card. On phones, every season’s card is redrawn with ruled cells and its own box, space between the cards and the season in bold capitals: the season with its points and wins on a band, the drivers’ and the teams’ champions side by side, the runner-up with their points and the margin.
 
 ## 1.0.239 — 2026-10-02
 

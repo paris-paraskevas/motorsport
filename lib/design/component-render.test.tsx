@@ -1764,7 +1764,7 @@ describe('the champions page’s views (R18)', () => {
   });
   const SEASONS = [
     season(),
-    season({ year: 2024, driver: 'Gabriel Bortoleto', profile: null, nationality: 'BRA', podiums: null, margin: 22.5, runnerUp: 'Isack Hadjar', runnerUpPoints: 192, teamsTitles: 1, teamsRun: 1 }),
+    season({ year: 2024, driver: 'Gabriel Bortoleto', profile: null, nationality: 'BRA', points: 214.5, podiums: null, margin: 22.5, runnerUp: 'Isack Hadjar', runnerUpPoints: 192, teamsTitles: 1, teamsRun: 1 }),
     season({ year: 2017, driver: 'Charles Leclerc', profile: null, nationality: 'MON', team: 'Prema Racing', teamPage: null, points: 282, wins: 7, podiums: 10, margin: 72, runnerUp: 'Artem Markelov', runnerUpPoints: 210, teamsChampion: 'Russian Time', teamsChampionPage: null, teamsTitles: 2, teamsRun: 1, decade: '2010s', rookie: true }),
     season({ year: 2016, driver: 'Pierre Gasly', profile: null, nationality: 'FRA', team: 'Prema Racing', teamPage: null, points: 219, wins: 4, podiums: 9, margin: 8, runnerUp: 'Antonio Giovinazzi', runnerUpPoints: 211, teamsChampion: 'Prema Racing', teamsChampionPage: null, teamsTitles: 1, teamsRun: 1, era: 'GP2 Series', decade: '2010s', rookie: false }),
   ];
@@ -1808,7 +1808,7 @@ describe('the champions page’s views (R18)', () => {
     expect(await draw([], { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' })).toBe('');
   });
 
-  it('the Roll of honour template: the seasons by decade, newest first, each decade a section with its count; the sticky Jump-to bar with the decades, the older era and the count of seasons; the table’s seven columns and the cards’ stat line; the era row where the era changes; the nationality code, the runner-up’s points, the teams’ champion’s title number', async () => {
+  it('the Roll of honour template: the seasons by decade, newest first, each decade a section with its count; the sticky Jump-to bar with the decades, the older era and the count of seasons; the table’s seven columns and the cards after the operator’s drawing; the era row where the era changes; the nationality code, the runner-up’s points, the teams’ champion’s title number', async () => {
     const roll = await draw(SEASONS, { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
     expect(roll).toContain('aria-label="Every season"');
     expect(roll).toMatch(/<nav aria-label="Jump to" class="sticky top-14 /);
@@ -1833,14 +1833,14 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toContain('>1st title<');
     // The era row sits between 2017 and 2016, with the older era below it.
     expect(roll).toMatch(/>2017<[\s\S]*id="honours-era"[\s\S]*>Era change<[\s\S]*>2017: GP2 Series becomes the FIA Formula 2 Championship<[\s\S]*>Seasons below raced as GP2 Series<[\s\S]*>2016</);
-    expect(roll).toMatch(/id="honours-era" class="[^"]*scroll-mt-28/);
+    expect(roll).toMatch(/id="honours-era" class="[^"]*rounded-lg border border-border[^"]*scroll-mt-28 lg:rounded-none lg:border-0"/);
     // The cards below lg follow the operator's drawing of the 2nd: a band with the season, the points and the wins; the two
     // champions side by side with their labels; the runner-up's row with their points and the margin; every cell ruled.
     // Each card its own rounded box with space between (the operator's second look); the ruled strip is the table's from lg.
     expect(roll).toContain('class="grid gap-3 lg:gap-px lg:overflow-hidden lg:rounded-lg lg:border lg:border-border lg:bg-border"');
     const cards = roll.split('class="rounded-lg border border-border bg-surface lg:hidden"').slice(1);
     expect(cards).toHaveLength(4);
-    const [first, second] = cards;
+    const [first, second, third] = cards;
     // The season in red bold capitals, the points figure in red.
     expect(first).toMatch(/<div class="[^"]*uppercase[^"]*text-brand[^"]*">2025 season<\/div>/);
     expect(first).toMatch(/>PTS<\/span><span class="[^"]*text-brand[^"]*">211<\/span>/);
@@ -1857,19 +1857,34 @@ describe('the champions page’s views (R18)', () => {
     expect(first).toMatch(/>Margin<\/div><div[^>]*>−36<\/div>/);
     // The second season: no profile (a span), a first teams' title, a half-point margin.
     expect(second).toContain('>2024 season<');
-    expect(second).toMatch(/>PTS<\/span><span[^>]*>211<\/span>/);
+    expect(second).toMatch(/>PTS<\/span><span[^>]*>214.5<\/span>/);
     expect(second).toMatch(/<span class="[^"]*font-serif[^"]*">Gabriel Bortoleto<\/span>/);
     expect(second).toContain('>1st title<');
     expect(second).toMatch(/>Runner-up<\/div><div[^>]*>Isack Hadjar<\/div>/);
     expect(second).toMatch(/>Margin<\/div><div[^>]*>−22.5<\/div>/);
+    // The third card: the champion's own team under the name, the teams' champion another team; the names wrap anywhere.
+    expect(third).toContain('>2017 season<');
+    expect(third).toMatch(/<span class="[^"]*\[overflow-wrap:anywhere\][^"]*">Charles Leclerc<\/span>/);
+    expect(third).toMatch(/>Prema Racing<\/div>/);
+    expect(third).toMatch(/>Teams’ champion<\/div><div[^>]*>Russian Time<\/div>/);
+    expect(third).toMatch(/<div class="[^"]*\[overflow-wrap:anywhere\][^"]*">Artem Markelov<\/div>/);
     // Three of the four champions were rookies.
     expect(roll.match(/>Rookie season</g)).toHaveLength(3);
     // A season without a runner-up on record draws no runner-up row; the band and the champions stay.
-    const bare = await draw([season({ runnerUp: null, runnerUpPoints: null, margin: null })], { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
+    const bare = await draw([season({ runnerUp: null, runnerUpPoints: null, margin: null, wins: null })], { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
     const bareCard = bare.split('class="rounded-lg border border-border bg-surface lg:hidden"')[1];
     expect(bareCard).not.toContain('>Runner-up<');
     expect(bareCard).toMatch(/>PTS<\/span><span[^>]*>211<\/span>/);
+    // A cell only with its value (the review of the 2nd: a series whose file has no wins draws no WINS cell with nothing in it).
+    expect(bareCard).not.toContain('>WINS<');
     expect(bareCard).toContain('>Teams’ champion<');
+    // A runner-up named without their points: the row holds the name and the margin, two cells wide.
+    const thin = await draw([season({ runnerUpPoints: null })], { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
+    const thinCard = thin.split('class="rounded-lg border border-border bg-surface lg:hidden"')[1];
+    expect(thinCard).toContain('>Runner-up<');
+    expect(thinCard).not.toContain('>Points<');
+    expect(thinCard).toMatch(/style="grid-template-columns:minmax\(0,1.3fr\) minmax\(0,1fr\)"/);
+    expect(thinCard).toMatch(/>Margin<\/div><div[^>]*>−36<\/div>/);
     expect(roll).not.toContain('<table');
     // A stored honours view over another source's shape draws the Table (the parser refuses it; the renderer stands).
     readSource.mockResolvedValueOnce({ columns: [], total: 1, rows: [{ kind: 'driver', position: 1, name: 'A', code: 'A', team: 'T', points: 1, wins: 0, class: null }], provenance: { ref: { source: 'standings', params: { series: 'f1', season: 2026 } }, label: 'Standings', tier: 'rows', keys: [], rows: 1, ms: 1 } });

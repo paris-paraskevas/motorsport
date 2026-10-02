@@ -804,8 +804,9 @@ export type RecipeEntry =
   | (RecipeBase & { kind: 'list'; listKey: string; style?: 'links' | 'cards' })
   | (RecipeBase & { kind: 'button'; label: string; dest?: string | null });
 
-/** The Formula 2 champions page's photo (R18 PR D): the asset the operator had uploaded on the 2nd ("upload it": the file into
- *  the media bucket and the row on prod by the build session's hand), drawn beside the Reigning champion card. */
+/** The Formula 2 champions page's photo (R18 PR D): the id of an asset row that exists on prod alone (uploaded on the 2nd on the
+ *  operator's "upload it"). The frame draws the half from the row; without the row (another database, or the asset deleted in
+ *  Shared Components, which checks no recipe) the half is empty and the card stays half width. */
 export const F2_CHAMPION_PHOTO = '56d86c87-b357-4355-a45f-80be810b7401';
 
 /** How a page not yet split becomes components: the entries that replace its
