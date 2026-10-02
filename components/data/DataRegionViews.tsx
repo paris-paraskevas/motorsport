@@ -1538,11 +1538,14 @@ function MoreFoot({ shape, more }: { shape: Shape; more: readonly PresetRow[] })
 }
 
 // R18: the champions page's two templates, ours (the operator's Claude Design page of the Formula 2 champions, 2026-10-01):
-// the newest season as a card with its tiles, and the seasons by decade as a ruled table from lg and as cards below it,
+// the newest season as a card with its tiles, and the seasons by decade as a ruled table from lg and, below it, as cards
+// after the operator's drawing of 2026-10-02 (a band with the season, the points and the wins; the drivers' and the teams'
+// champions side by side; the runner-up's row with their points and the margin; every cell ruled),
 // over the Champions source's honour-rows shape alone; the site's faces, the Appearance corners (rounded-lg), as the operator
 // chose on the 1st ("B"). Every value is text React escapes.
 const CHIP_LINK = 'shrink-0 rounded-lg border border-border px-3 py-1 font-mono text-11 font-semibold uppercase tracking-[0.12em] text-text hover:border-brand';
 const TILE_LABEL = 'mt-0.5 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint';
+const CARD_LABEL = 'font-mono text-9 font-semibold uppercase tracking-[0.14em] text-text-faint';
 const ordinal = (n: number): string => {
   const s = ['th', 'st', 'nd', 'rd'];
   const v = n % 100;
@@ -1642,7 +1645,6 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
   const olderEra = eraAt ? text(eraAt.era) : '';
   const eraShort = olderEra.replace(/ Series$| Championship$/, '');
   const count = (n: number) => `${n} ${n === 1 ? 'season' : 'seasons'}`;
-  const stat = (r: PresetRow) => [num(r.points) !== null ? `${text(r.points)} pts` : null, num(r.wins) !== null ? `${text(r.wins)} ${num(r.wins) === 1 ? 'win' : 'wins'}` : null, num(r.margin) !== null ? `+${text(r.margin)}` : null].filter(Boolean).join(' · ');
   const nth = (r: PresetRow) => (num(r.teamsTitles) !== null ? `${ordinal(num(r.teamsTitles)!)} title` : '');
   const who = (r: PresetRow, cls: string) => linkOr(text(r.profile), text(r.driver), cls);
   const teamOf = (r: PresetRow) => (text(r.teamPage) ? <Link href={text(r.teamPage)} className="hover:text-text">{text(r.team)}</Link> : text(r.team));
@@ -1651,7 +1653,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
   const COLS = 'lg:grid-cols-[3.5rem_minmax(0,1.5fr)_3.75rem_3rem_4rem_minmax(0,1fr)_minmax(0,1.1fr)]';
   const eraRow =
     eraAt && eraBefore ? (
-      <div id={`${prefix}-era`} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 bg-surface-elevated px-5 py-3 scroll-mt-28">
+      <div id={`${prefix}-era`} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-lg border border-border bg-surface-elevated px-5 py-3 scroll-mt-28 lg:rounded-none lg:border-0">
         <span className="font-mono text-10 font-bold uppercase tracking-[0.14em] text-brand">Era change</span>
         <span className="text-sm font-semibold text-text">{`${text(eraBefore.year)}: ${olderEra} becomes the ${text(eraBefore.era)}`}</span>
         <span className="text-13 text-text-muted">{`Seasons below raced as ${olderEra}`}</span>
@@ -1683,7 +1685,9 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
             <h3 className="font-serif text-26 font-medium leading-tight text-text">{decade}</h3>
             <span className="font-mono text-11 text-text-faint">{count(seasons.length)}</span>
           </div>
-          <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border">
+          {/* Below lg each season is a card of its own with space between (the operator's second look of the 2nd); from lg the
+              rows share one ruled strip. */}
+          <div className="grid gap-3 lg:gap-px lg:overflow-hidden lg:rounded-lg lg:border lg:border-border lg:bg-border">
             <div className={`hidden gap-4 bg-surface-elevated px-5 py-2 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint lg:grid ${COLS}`}>
               <span>Year</span>
               <span>Champion</span>
@@ -1717,38 +1721,52 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
                     {nth(r) && <div className="mt-0.5 font-mono text-11 text-text-faint">{nth(r)}</div>}
                   </div>
                 </div>
-                <div className="grid gap-3 bg-surface p-4 lg:hidden">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-mono text-15 font-semibold tabular-nums text-brand">{text(r.year)}</span>
-                    <span className="font-mono text-11 tabular-nums text-text-muted">{stat(r)}</span>
+                {/* The card below lg, after the operator's drawing: the season band, the two champions, the runner-up's row. */}
+                <div className="rounded-lg border border-border bg-surface lg:hidden">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] divide-x divide-border border-b border-border">
+                    <div className="px-4 py-2 font-mono text-12 font-bold uppercase tracking-[0.12em] tabular-nums text-brand">{text(r.year)} season</div>
+                    {num(r.points) !== null && <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">PTS</span><span className="font-bold text-brand">{text(r.points)}</span></div>}
+                    {num(r.wins) !== null && <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">WINS</span><span className="font-semibold text-text">{text(r.wins)}</span></div>}
                   </div>
-                  <div>
-                    <div className="flex flex-wrap items-baseline gap-2">
-                      {who(r, 'font-serif text-18 font-semibold text-text')}
-                      {text(r.nationality) && <span className="font-mono text-10 text-text-faint">{text(r.nationality)}</span>}
+                  <div className={`grid divide-x divide-border${text(r.teamsChampion) ? ' grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]' : ''}${text(r.runnerUp) ? ' border-b border-border' : ''}`}>
+                    <div className="min-w-0 px-4 py-3">
+                      <div className={CARD_LABEL}>Drivers’ champion</div>
+                      <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
+                        {who(r, 'font-serif text-20 font-semibold leading-tight text-text [overflow-wrap:anywhere]')}
+                        {text(r.nationality) && <span className="font-mono text-10 text-text-faint">{text(r.nationality)}</span>}
+                      </div>
+                      <div className="mt-0.5 text-13 text-text-muted">{teamOf(r)}</div>
+                      {r.rookie === true && <div className="mt-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-brand">Rookie season</div>}
                     </div>
-                    <div className="mt-0.5 text-sm text-text-muted">{teamOf(r)}</div>
-                  </div>
-                  <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 border-t border-dashed border-border pt-3 text-13">
-                    {text(r.runnerUp) && (
-                      <>
-                        <dt className="font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">Runner-up</dt>
-                        <dd className="text-text">
-                          {text(r.runnerUp)}
-                          {num(r.runnerUpPoints) !== null && <span className="text-text-faint">{` · ${text(r.runnerUpPoints)} pts`}</span>}
-                        </dd>
-                      </>
-                    )}
                     {text(r.teamsChampion) && (
-                      <>
-                        <dt className="font-mono text-10 font-semibold uppercase tracking-[0.12em] text-text-faint">Teams’</dt>
-                        <dd className="text-text">
-                          {teamsOf(r)}
-                          {nth(r) && <span className="text-text-faint">{` · ${nth(r)}`}</span>}
-                        </dd>
-                      </>
+                      <div className="min-w-0 px-4 py-3">
+                        <div className={CARD_LABEL}>Teams’ champion</div>
+                        <div className="mt-1 text-15 font-semibold leading-tight text-text">{teamsOf(r)}</div>
+                        {nth(r) && <div className="mt-0.5 text-13 text-text-muted">{nth(r)}</div>}
+                      </div>
                     )}
-                  </dl>
+                  </div>
+                  {text(r.runnerUp) && (
+                    // The row holds the cells the season has (a file without the runner-up's points draws no empty Points cell).
+                    <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `minmax(0,1.3fr)${' minmax(0,1fr)'.repeat((num(r.runnerUpPoints) !== null ? 1 : 0) + (num(r.margin) !== null ? 1 : 0))}` }}>
+                      <div className="min-w-0 px-4 py-3">
+                        <div className={CARD_LABEL}>Runner-up</div>
+                        <div className="mt-1 font-serif text-16 font-semibold leading-tight text-text [overflow-wrap:anywhere]">{text(r.runnerUp)}</div>
+                      </div>
+                      {num(r.runnerUpPoints) !== null && (
+                        <div className="px-3 py-3">
+                          <div className={CARD_LABEL}>Points</div>
+                          <div className="mt-1 font-mono text-15 tabular-nums text-text">{text(r.runnerUpPoints)}</div>
+                        </div>
+                      )}
+                      {num(r.margin) !== null && (
+                        <div className="px-3 py-3">
+                          <div className={CARD_LABEL}>Margin</div>
+                          <div className="mt-1 font-mono text-15 tabular-nums text-text">{`−${text(r.margin)}`}</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </Fragment>
             ))}
