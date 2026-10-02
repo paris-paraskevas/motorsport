@@ -105,6 +105,8 @@ export function parseEntries(raw: unknown, role: ListRole, pages?: PageDestinati
     if (icon) entry.icon = icon;
     const authz = text(row.authz_key) ?? text(row.authz);
     if (authz) entry.authz = authz;
+    const note = text(row.note);
+    if (note) entry.note = note;
     out.push(entry);
   }
   if (out.length === 0) return null;
@@ -187,7 +189,7 @@ export async function loadListForEditing(key: string): Promise<EditableList | nu
     const [{ data: rows, error: rowsError }, pages] = await Promise.all([
       betDb()
         .from('list_entry')
-        .select('seq, label, dest_key, icon, authz_key')
+        .select('seq, label, dest_key, icon, authz_key, note')
         .eq('application_key', APPLICATION_KEY)
         .eq('list_key', key)
         .order('seq', { ascending: true }),
@@ -264,7 +266,9 @@ export async function loadDocumentLists(keys: readonly string[], nav: NavLists):
     const [{ data, error }, pages] = await Promise.all([
       betDb()
         .from('list_entry')
-        .select('list_key, seq, label, dest_key, icon, authz_key')
+        // The note (R18 PR C) is read for the editor and the pages' own lists alone: the shell's loader above names no column
+        // the shell does not draw, so a column missing on the database can fail a page's list, never every page's chrome.
+        .select('list_key, seq, label, dest_key, icon, authz_key, note')
         .eq('application_key', APPLICATION_KEY)
         .in('list_key', own)
         .order('seq', { ascending: true }),

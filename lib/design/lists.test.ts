@@ -7,13 +7,18 @@ let entryRows: { data: unknown; error: { message: string } | null } = { data: []
 let listRow: { data: unknown; error: { message: string } | null } = { data: null, error: null };
 // The row pages a page: destination may name (P1.12 B1); `.is('deleted_at', null)` keeps the live ones.
 let pageRows: { data: { id: string; path: string; name: string; deleted_at?: string | null }[]; error: { message: string } | null } = { data: [], error: null };
+// The columns each read names (R18 PR C): the shell's loader must never name one the shell does not draw.
+let selected: string[] = [];
 vi.mock('@/lib/betting/client', () => ({
   isBettingConfigured: () => configured,
   betDb: () => ({
     from: (table: string) => {
       let liveOnly = false;
       const q = {
-        select: () => q,
+        select: (cols?: string) => {
+          selected.push(String(cols));
+          return q;
+        },
         eq: () => q,
         in: () => q,
         order: () => q,
@@ -37,6 +42,7 @@ import {
   BAR_MAX,
   BAR_MIN,
   DEFAULT_NAV,
+  loadDocumentLists,
   loadListForEditing,
   loadNavLists,
   parseEntries,
@@ -92,10 +98,31 @@ describe('page destinations in the lists (P1.12 B1)', () => {
       { label: 'About', dest: 'about' },
     ]);
   });
+
+  it('R18 PR C: the shell’s loader never names the note column (a column missing on the database could not fail every page’s chrome); the editor’s read and the pages’ own lists do, and a stored note comes through', async () => {
+    const entryRead = () => selected.find(s => s.includes('dest_key'));
+    selected = [];
+    entryRows = { data: [{ list_key: 'footer-site', seq: 10, label: 'About', dest_key: 'about', note: 'A sentence the shell leaves out.' }], error: null };
+    const nav = await loadNavLists();
+    expect(entryRead()).toBeDefined();
+    expect(entryRead()).not.toContain('note');
+    expect(nav.footerSite).toEqual([{ label: 'About', dest: 'about', note: 'A sentence the shell leaves out.' }]);
+    selected = [];
+    listRow = { data: { key: 'f2-more', role: 'generic', label: 'More Formula 2', updated_at: '2026-09-08T06:34:16.728382+00:00' }, error: null };
+    entryRows = { data: [{ seq: 10, label: 'The 2026 title race', dest_key: 'series:f2:standings', note: 'Drivers and teams.' }], error: null };
+    const list = await loadListForEditing('f2-more');
+    expect(entryRead()).toContain('note');
+    expect(list?.entries).toEqual([{ label: 'The 2026 title race', dest: 'series:f2:standings', note: 'Drivers and teams.' }]);
+    selected = [];
+    entryRows = { data: [{ list_key: 'f2-more', seq: 10, label: 'The 2026 title race', dest_key: 'series:f2:standings', note: 'Drivers and teams.' }], error: null };
+    const lists = await loadDocumentLists(['f2-more'], DEFAULT_NAV);
+    expect(entryRead()).toContain('note');
+    expect(lists['f2-more']).toEqual([{ label: 'The 2026 title race', dest: 'series:f2:standings', note: 'Drivers and teams.' }]);
+  });
 });
 
 describe('parseEntries — fail-soft matrix', () => {
-  it('maps rows, keeping icon and authz when present', () => {
+  it('maps rows, keeping icon, authz and the note when present', () => {
     const out = parseEntries(
       [
         { label: 'Home', dest_key: 'home', icon: 'house' },
@@ -108,12 +135,17 @@ describe('parseEntries — fail-soft matrix', () => {
       [
         { label: 'Home', dest_key: 'home', icon: 'house' },
         { label: ' Calendar ', dest_key: 'calendar', authz_key: 'signed_in' },
+        // R18 PR C: the sentence a card draws, trimmed; a row without one carries none.
+        { label: 'Learn', dest_key: 'learn', note: ' Plain answers to the questions fans ask. ' },
+        { label: 'Blog', dest_key: 'blog', note: '' },
       ],
       'menu',
     );
     expect(menu).toEqual([
       { label: 'Home', dest: 'home', icon: 'house' },
       { label: 'Calendar', dest: 'calendar', authz: 'signed_in' },
+      { label: 'Learn', dest: 'learn', note: 'Plain answers to the questions fans ask.' },
+      { label: 'Blog', dest: 'blog' },
     ]);
   });
 

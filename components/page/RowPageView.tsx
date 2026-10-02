@@ -364,7 +364,9 @@ function RegionBody({ d, region, parts }: { d: RowPageData; region: Region; part
     <nav aria-label={title || region.id}>
       {title && <h2 className={parts.heading}>{title}</h2>}
       {region.style === 'cards' ? (
-        <div className="grid gap-3 sm:grid-cols-2">
+        // Three to a row from lg for a wide body region on a page without an aside (R18 PR C); two in an aside, beside one
+        // (the body is eight columns there) or in a narrow region, where a third would be too narrow to read.
+        <div className={`grid gap-3 sm:grid-cols-2${region.span >= 9 && region.position !== 'right' && !d.document.regions.some(r => r.position === 'right' && isDrawn(d, r)) ? ' lg:grid-cols-3' : ''}`}>
           {entries.map((e, i) => (
             <ListCard key={`${e.dest}-${i}`} entry={e} />
           ))}
@@ -407,10 +409,14 @@ const CARD =
 function ListCard({ entry }: { entry: NavEntry }) {
   const dest = resolveEntry(entry);
   if (!dest || dest.kind === 'action') return null;
+  // R18 PR C: the card as the operator's design draws it: the destination's name in mono when the entry's words differ from
+  // it, the words in serif, the sentence when the entry carries one, the cue.
   const body = (
     <>
-      <span className="block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted">{entry.label}</span>
-      {dest.label !== entry.label && <span className="mt-1 block font-serif text-15 text-text-faint">{dest.label}</span>}
+      {dest.label !== entry.label && <span className="block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-text-muted">{dest.label}</span>}
+      <span className="mt-1 block font-serif text-17 text-text">{entry.label}</span>
+      {entry.note && <span className="mt-1.5 block text-13 leading-snug text-text-muted">{entry.note}</span>}
+      <span className="mt-3 block font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand">Open →</span>
     </>
   );
   if (dest.kind === 'external') {

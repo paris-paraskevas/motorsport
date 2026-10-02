@@ -20,6 +20,9 @@ export interface NavEntry {
   icon?: string;
   /** Authorization scheme key; unset means everyone. Enforced from Phase 3. */
   authz?: string;
+  /** The sentence a card draws under the entry's words (R18 PR C; APEX: a card's Body; ours: on the list entry, written in
+   *  the list editor, at most LIST_NOTE_MAX characters); the links style and the shell's lists leave it out. */
+  note?: string;
   /** A page entry's address, resolved by the loader against the live row pages
    *  (P1.12 B1), so the shell's browser components need no map. Never stored;
    *  the write path keeps the key alone. */

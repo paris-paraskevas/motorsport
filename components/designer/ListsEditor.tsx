@@ -262,7 +262,7 @@ export function ListsEditor({
               role="generic"
               list={opened.list}
               title={opened.list.label}
-              sub={`Your own list, key “${opened.key}”. A List region shows it as links or cards; an entry with an authorization is left out for a visitor who fails it.`}
+              sub={`Your own list, key “${opened.key}”. A List region shows it as links or cards; a card shows the note under the entry’s words; an entry with an authorization is left out for a visitor who fails it.`}
               readOnly={readOnly}
               schemes={schemes}
               pages={pages}

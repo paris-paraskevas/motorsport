@@ -51,6 +51,9 @@ describe('updateEntry', () => {
   it('patches one entry and drops an emptied optional field', () => {
     const out = updateEntry(four, 1, { label: 'Races', icon: '' });
     expect(out[1]).toEqual({ label: 'Races', dest: 'calendar' });
+    // R18 PR C: the note is an optional like the others.
+    expect(updateEntry(four, 1, { note: 'Every session, your time.' })[1]).toEqual({ ...four[1], note: 'Every session, your time.' });
+    expect(updateEntry(updateEntry(four, 1, { note: 'A line.' }), 1, { note: '' })[1]).toEqual(four[1]);
     expect(out[0]).toBe(four[0]);
     expect(updateEntry(four, 9, { label: 'x' })).toBe(four);
   });
@@ -89,6 +92,8 @@ describe('sameEntries', () => {
     expect(sameEntries(four, four.map(e => ({ ...e })))).toBe(true);
     expect(sameEntries(four, updateEntry(four, 0, { label: 'Start' }))).toBe(false);
     expect(sameEntries([{ label: 'A', dest: 'home' }], [{ label: 'A', dest: 'home', icon: '' }])).toBe(true);
+    expect(sameEntries([{ label: 'A', dest: 'home' }], [{ label: 'A', dest: 'home', note: '' }])).toBe(true);
+    expect(sameEntries([{ label: 'A', dest: 'home' }], [{ label: 'A', dest: 'home', note: 'A sentence.' }])).toBe(false);
     expect(sameEntries(four, four.slice(0, 3))).toBe(false);
   });
 });
