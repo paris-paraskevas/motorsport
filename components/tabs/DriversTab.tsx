@@ -90,7 +90,7 @@ export async function DriversTab({ series }: { series: Series }) {
               href={`/series/${series.meta.slug}/standings`}
               className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
             >
-              Full standings →
+              {series.meta.name} standings →
             </Link>
           )}
         </div>

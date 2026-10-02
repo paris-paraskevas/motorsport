@@ -95,10 +95,14 @@ describe('the results tab’s rows', () => {
     expect(h).not.toContain('Stroll');
     expect(h).not.toContain('Hadjar');
     expect(h).toContain('href="/series/f1/weekend/1"');
+    // X12: the race title's hidden words name the series (Formula 2 and Formula 3 share their race names).
+    expect(h).toContain(' — open the Formula 1 race weekend</span>');
     expect(h).toContain(`href="/series/f1/weekend/1/${sessionSlug('F1 - Race')}"`);
     expect(h).toContain(`href="/series/f1/weekend/2/${sessionSlug('F1 - Race')}"`);
     expect(h).toContain(`href="/series/f1/weekend/3/${sessionSlug('F1 - Race')}"`);
-    expect((h.match(/Classification →/g) ?? []).length).toBe(3);
+    // X12: the link's words name the series, the round and the race after the arrow (Seobility reads the hidden span).
+    expect((h.match(/Classification →<span class="sr-only"> — Formula 1 round \d, /g) ?? []).length).toBe(3);
+    expect(h).toContain('Classification →<span class="sr-only"> — Formula 1 round 1, Australian Grand Prix</span></a>');
     expect(h).toContain('WIN</span> <span class="text-text-muted normal-case">Norris — Team');
   });
 
@@ -194,7 +198,8 @@ describe('the results tab’s rows', () => {
     expect(detailsCount(h)).toBe(1);
     expect(openCount(h)).toBe(1);
     expect(h).toMatch(opens('Lausitzring — Race 2'));
-    expect((h.match(/Classification →/g) ?? []).length).toBe(3);
+    expect((h.match(/Classification →<span class="sr-only"> — DTM round \d, /g) ?? []).length).toBe(3);
+    expect(h).toContain('Classification →<span class="sr-only"> — DTM round 1, Oschersleben — Race 2</span></a>');
     expect(h).toContain(`href="/series/dtm/weekend/1/${sessionSlug('DTM - Race 1')}"`);
     expect(h).toContain(`href="/series/dtm/weekend/1/${sessionSlug('DTM - Race 2')}"`);
     expect(h).toContain(`href="/series/dtm/weekend/2/${sessionSlug('DTM - Race 1')}"`);
@@ -219,6 +224,7 @@ describe('the results tab’s rows', () => {
     expect(detailsCount(h)).toBe(1);
     expect(h).toMatch(opens('Hollywood Casino 400'));
     expect((h.match(/Classification →/g) ?? []).length).toBe(1);
+    expect(h).toContain('Classification →<span class="sr-only"> — NASCAR Cup round 29, South Point 400</span></a>');
     expect(h).toContain(`href="/series/nascar-cup/weekend/29/${sessionSlug('NASCAR - South Point 400')}"`);
     expect(h).not.toContain(`/${sessionSlug('NASCAR - Qualifying')}"`);
   });

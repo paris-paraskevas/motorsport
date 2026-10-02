@@ -33,4 +33,4 @@ Every team races the same spec chassis — the **"Next Gen"** car introduced in 
 
 A season spans **36 championship races**, opening each February with the sport's biggest race, the **Daytona 500**, and running through to a November finale that decides the title. Along the way, each race is split into **stages**, and results feed a season-long points battle that culminates in a **16-driver playoff**.
 
-To go deeper, see [how a race weekend works](/information/stock-cars/how-a-nascar-cup-race-weekend-works) and [how the points and playoffs work](/information/stock-cars/how-nascar-cup-points-and-playoffs-work).
+To go deeper, see [how a NASCAR Cup race weekend works](/information/stock-cars/how-a-nascar-cup-race-weekend-works) and [how the points and playoffs work](/information/stock-cars/how-nascar-cup-points-and-playoffs-work).

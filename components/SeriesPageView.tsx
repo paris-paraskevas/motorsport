@@ -180,7 +180,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       <span className="text-text-faint">More {series.meta.name}</span>
       {siblings.map(s => (
         <Link key={s.key} href={s.href} className="inline-flex min-h-6 items-center text-brand hover:underline">
-          {s.label}
+          {s.label}<span className="sr-only">{` — ${series.meta.name}`}</span>
         </Link>
       ))}
     </div>

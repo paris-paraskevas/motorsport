@@ -6,7 +6,7 @@ import { ExternalLink } from 'lucide-react';
 import { findDriverBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { groupByWeekend } from '@/lib/group';
-import { weekendLabel } from '@/lib/weekend';
+import { weekendAnchorName, weekendLabel } from '@/lib/weekend';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import { driverSeasonForm, type DriverSeasonForm } from '@/lib/profile-stats';
 import { fetchWikipediaBio, ageFromISO, flagEmoji, type WikipediaBio } from '@/lib/wikipedia-bio';
@@ -495,7 +495,7 @@ async function DriverBody({
                 href={`/series/${driver.seriesSlug}/weekend/${nextW.round}`}
                 className="mt-1 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
               >
-                Preview →
+                Preview →<span className="sr-only">{` — ${weekendAnchorName(driver.seriesName, nextW.roundName ?? weekendLabel(nextW, nextW.round).title, nextW.round)}`}</span>
               </Link>
             </div>
           ) : (
@@ -511,7 +511,7 @@ async function DriverBody({
                 data-heatmap-id="driver:compare"
                 className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
               >
-                Compare with a team-mate →
+                Compare with a team-mate →<span className="sr-only">{` — ${driver.name}`}</span>
               </Link>
             </div>
           )}

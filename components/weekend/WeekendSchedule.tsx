@@ -9,12 +9,16 @@ export function WeekendSchedule({
   weekend,
   color,
   sessionLinkBase,
+  weekendName,
 }: {
   weekend: Weekend;
   color: string;
   // When set, each session row links to its page under
   // `${sessionLinkBase}/<session-slug>` (W1c — F1 first).
   sessionLinkBase?: string;
+  // X12: the weekend's identity after each linked row's title, for a crawler and a screen reader (the feed's
+  // "F1 - Practice 1" is the same text on every Formula 1 weekend page).
+  weekendName?: string;
 }) {
   const now = new Date();
   const byDay = groupByDay(weekend.sessions);
@@ -55,6 +59,7 @@ export function WeekendSchedule({
                             <span className="text-text text-sm font-medium truncate group-hover/sess:text-tint underline-offset-4 group-hover/sess:underline transition-colors duration-(--duration-fast)">
                               {s.title}
                             </span>
+                            {weekendName && <span className="sr-only">{` — ${weekendName}`}</span>}
                             <ArrowUpRight size={12} aria-hidden className="shrink-0 text-text-faint group-hover/sess:text-tint transition-colors duration-(--duration-fast)" />
                           </Link>
                         ) : (

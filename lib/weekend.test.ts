@@ -1,5 +1,7 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { nextSessionAcross, nextWeekend, sessionPageTitle, weekendPageTitle } from './weekend';
+import { nextSessionAcross, nextWeekend, sessionAnchorName, sessionPageTitle, weekendAnchorName, weekendPageTitle } from './weekend';
 import type { Series, Session } from './types';
 
 // P2.8, the Countdown: the next session of one series or the nearest across several, from the same grouping the weekend
@@ -139,5 +141,57 @@ describe('X10: weekendPageTitle', () => {
     expect(weekendPageTitle('Formula 1', 'Round 7', 7)).toBe('Formula 1 round 7');
     expect(weekendPageTitle('DTM', 'Red Bull Ring Round', 1)).toBe('Red Bull Ring — DTM round 1');
     expect(sessionPageTitle('WorldSBK', 'Phillip Island Round', 'Race 1', 1)).toBe('Race 1, Phillip Island — WorldSBK');
+  });
+});
+
+// X12 (Seobility's "link anchor text duplicates for different pages"): the identity a link to a weekend or a session page
+// carries after its visible label. Seobility judges a link text site-wide, so two pages may never share one.
+describe('X12: weekendAnchorName and sessionAnchorName', () => {
+  it('names the series and the round, the feed’s prefix stripped, the number when the label is only “Round n”', () => {
+    expect(weekendAnchorName('Formula 1', 'Azerbaijan Grand Prix', 15)).toBe('Formula 1 Azerbaijan Grand Prix');
+    expect(weekendAnchorName('WRC', 'WRC | Rally Italia Sardegna', 13)).toBe('WRC Rally Italia Sardegna');
+    expect(weekendAnchorName('IndyCar', 'IndyCar | Grand Prix of Washington', 15)).toBe('IndyCar Grand Prix of Washington');
+    expect(weekendAnchorName('Formula 1', 'Round 7', 7)).toBe('Formula 1 round 7');
+    expect(weekendAnchorName('DTM', 'Red Bull Ring Round', 1)).toBe('DTM Red Bull Ring');
+    // The round names the support series share with Formula 1 differ by the series.
+    expect(weekendAnchorName('Formula 2', 'Italian Grand Prix', 12)).not.toBe(weekendAnchorName('Formula 1', 'Italian Grand Prix', 16));
+  });
+
+  it('names a session by the feed’s title whole, then its weekend: the title is what tells two qualifyings apart', () => {
+    expect(sessionAnchorName('Formula 1', 'Azerbaijan Grand Prix', 15, 'F1 - Qualifying')).toBe('F1 - Qualifying, Formula 1 Azerbaijan Grand Prix');
+    expect(sessionAnchorName('DTM', 'Red Bull Ring Round', 1, 'DTM - Qualifying 2')).not.toBe(sessionAnchorName('DTM', 'Red Bull Ring Round', 1, 'DTM - Qualifying 1'));
+    expect(sessionAnchorName('Formula 1', 'Round 7', 7, ' F1 - Race ')).toBe('F1 - Race, Formula 1 round 7');
+  });
+
+  // Data-driven: every curated weekend and session (content/series/*/rounds.json and sessions.json) through the helpers.
+  // No two weekends share a name across the site, no two sessions do, and so no two sessions of one weekend.
+  it('is injective over every curated weekend and session', () => {
+    const root = path.resolve(process.cwd(), 'content', 'series');
+    const read = (f: string) => (fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : null);
+    const weekends = new Map<string, string>();
+    const sessions = new Map<string, string>();
+    for (const slug of fs.readdirSync(root)) {
+      const dir = path.join(root, slug);
+      const meta = read(path.join(dir, 'meta.json')) as { name: string } | null;
+      if (!meta) continue;
+      const rounds = ((read(path.join(dir, 'rounds.json')) as { rounds?: { round: number; name: string }[] } | null)?.rounds ?? []);
+      const nameOf = (round: number) => rounds.find(r => r.round === round)?.name ?? `Round ${round}`;
+      for (const r of rounds) {
+        const key = weekendAnchorName(meta.name, r.name, r.round);
+        expect(weekends.get(key), `“${key}” names ${weekends.get(key)} and ${slug} r${r.round}`).toBeUndefined();
+        weekends.set(key, `${slug} r${r.round}`);
+      }
+      const overrides = ((read(path.join(dir, 'sessions.json')) as { overrides?: { round?: number; sessions?: { title?: string }[] }[] } | null)?.overrides ?? []);
+      for (const o of overrides) {
+        const round = o.round ?? 0;
+        for (const s of o.sessions ?? []) {
+          const key = sessionAnchorName(meta.name, nameOf(round), round, s.title ?? '');
+          expect(sessions.get(key), `“${key}” names ${sessions.get(key)} and ${slug} r${round}`).toBeUndefined();
+          sessions.set(key, `${slug} r${round}`);
+        }
+      }
+    }
+    expect(weekends.size).toBeGreaterThan(150);
+    expect(sessions.size).toBeGreaterThan(800);
   });
 });

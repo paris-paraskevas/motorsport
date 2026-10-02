@@ -253,3 +253,18 @@ export function weekendPageTitle(seriesName: string, label: string, round: numbe
   if (!short || ROUND_ONLY_RE.test(short)) return fitTitle([...spot, `${seriesName} round ${round}`]);
   return fitTitle([`${short} — ${seriesName} round ${round}`, `${short} — ${seriesName}`, `${short} — round ${round}`, ...spot, short, `${seriesName} round ${round}`]);
 }
+
+// X12 (the Seobility crawl's "link anchor text duplicates for different pages"): the identity a link to a weekend or a
+// session page carries for a crawler and a screen reader, printed after the visible label in a visually hidden span.
+// Seobility judges a link text site-wide, so "FP1" leading to 97 pages is one fault on every page that carries the rail.
+// A weekend is its series and its round's name ("Formula 1 Azerbaijan Grand Prix": 17 round names are shared by two to
+// four series), the number when the label is only "Round n"; a session is the feed's title whole, then its weekend
+// ("F1 - Qualifying, Formula 1 Azerbaijan Grand Prix": the title is what tells DTM's two qualifyings apart).
+export function weekendAnchorName(seriesName: string, weekendTitle: string, round: number): string {
+  const short = roundShortLabel(weekendTitle);
+  if (!short || ROUND_ONLY_RE.test(short)) return `${seriesName} round ${round}`;
+  return short.toLowerCase().startsWith(`${seriesName.toLowerCase()} `) ? short : `${seriesName} ${short}`;
+}
+export function sessionAnchorName(seriesName: string, weekendTitle: string, round: number, sessionTitle: string): string {
+  return `${sessionTitle.trim()}, ${weekendAnchorName(seriesName, weekendTitle, round)}`;
+}

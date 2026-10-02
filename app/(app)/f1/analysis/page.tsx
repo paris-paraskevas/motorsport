@@ -176,13 +176,13 @@ async function F1AnalysisPage() {
                     href={`/series/f1/weekend/${r.round}/qualifying`}
                     className="font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
                   >
-                    Qualifying →
+                    Qualifying →<span className="sr-only">{` — ${r.name}`}</span>
                   </Link>
                   <Link
                     href={`/series/f1/weekend/${r.round}/race`}
                     className="font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
                   >
-                    Race story →
+                    Race story →<span className="sr-only">{` — ${r.name}`}</span>
                   </Link>
                 </span>
               ) : (

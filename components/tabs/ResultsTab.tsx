@@ -120,7 +120,7 @@ function RoundChip({ label }: { label: string }) {
   );
 }
 
-function RaceTitle({ name, href }: { name: string; href?: string }) {
+function RaceTitle({ name, href, seriesName }: { name: string; href?: string; seriesName?: string }) {
   if (!href) {
     return (
       <span className="font-display text-15 font-bold uppercase tracking-wide leading-snug text-text">
@@ -138,7 +138,7 @@ function RaceTitle({ name, href }: { name: string; href?: string }) {
         aria-hidden
         className="ml-1 inline-block align-[-1px] text-text-faint group-hover/wknd:text-tint transition-colors duration-(--duration-fast)"
       />
-      <span className="sr-only"> — open race weekend</span>
+      <span className="sr-only">{seriesName ? ` — open the ${seriesName} race weekend` : ' — open race weekend'}</span>
     </Link>
   );
 }
@@ -154,6 +154,8 @@ function RaceTitle({ name, href }: { name: string; href?: string }) {
 type RoundMode = 'open' | 'line' | 'fold';
 
 type RoundLinks = {
+  /** The series’ name: the words a classification link carries after its arrow name the series, the round and the race. */
+  seriesName: string;
   /** The weekend page of a round the schedule knows, else undefined. */
   weekend: (round: number) => string | undefined;
   /** The race session page of a round for one race name, else undefined. */
@@ -187,6 +189,7 @@ function roundLinks(series: Series): RoundLinks {
   const slug = series.meta.slug;
   const pageAnswers = slug === 'f1' || CLASS_RESULT_SERIES.has(slug) || RACE_SESSION_SERIES.has(slug);
   return {
+    seriesName: series.meta.name,
     weekend: round => (byRound.has(round) ? `/series/${slug}/weekend/${round}` : undefined),
     classification: (round, raceName) => {
       if (!pageAnswers) return undefined;
@@ -215,7 +218,9 @@ function latestOf<T>(items: T[], date: (item: T) => Date | undefined, round: (it
 
 const modeFor = (latest: boolean, classificationHref: string | undefined): RoundMode => (latest ? 'open' : classificationHref ? 'line' : 'fold');
 
-function RowMeta({ date, winner, classificationHref }: { date?: Date; winner?: string; classificationHref?: string }) {
+// X12: "Classification →" led to 76 pages as one text; the span after the arrow names the series, the round and the race
+// for a crawler and a screen reader (the meta line truncates on a phone, so the words are not visible ones).
+function RowMeta({ date, winner, classificationHref, classificationOf }: { date?: Date; winner?: string; classificationHref?: string; classificationOf?: string }) {
   if (!date && !winner && !classificationHref) return null;
   return (
     <div className="mt-0.5 sm:truncate font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
@@ -231,7 +236,7 @@ function RowMeta({ date, winner, classificationHref }: { date?: Date; winner?: s
         <>
           {date || winner ? ' · ' : null}
           <Link href={classificationHref} className="font-semibold text-tint hover:underline">
-            Classification →
+            Classification →{classificationOf && <span className="sr-only">{` — ${classificationOf}`}</span>}
           </Link>
         </>
       ) : null}
@@ -244,11 +249,16 @@ function RoundRow({
   weekendHref,
   mode,
   classificationHref,
+  classificationOf,
+  seriesName,
 }: {
   race: RaceResult;
   weekendHref?: string;
   mode: RoundMode;
   classificationHref?: string;
+  classificationOf?: string;
+  // X12: the series in the race title's hidden words ("Italy Feature Race" is a Formula 2 and a Formula 3 weekend).
+  seriesName?: string;
 }) {
   const winner = race.results.find(r => r.position === 1) ?? race.results[0];
   const winnerLabel = winner ? `${winner.driverName} — ${winner.team}` : undefined;
@@ -266,8 +276,8 @@ function RoundRow({
       <div className="flex items-start gap-3 py-2.5">
         <RoundChip label={`R${race.round}`} />
         <div className="flex-1 min-w-0">
-          <RaceTitle name={race.raceName} href={weekendHref} />
-          <RowMeta date={race.date} winner={winnerLabel} classificationHref={isWinnersOnly ? undefined : classificationHref} />
+          <RaceTitle name={race.raceName} href={weekendHref} seriesName={seriesName} />
+          <RowMeta date={race.date} winner={winnerLabel} classificationHref={isWinnersOnly ? undefined : classificationHref} classificationOf={classificationOf} />
         </div>
       </div>
     );
@@ -278,7 +288,7 @@ function RoundRow({
       <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
         <RoundChip label={`R${race.round}`} />
         <div className="flex-1 min-w-0">
-          <RaceTitle name={race.raceName} href={weekendHref} />
+          <RaceTitle name={race.raceName} href={weekendHref} seriesName={seriesName} />
           <RowMeta date={race.date} winner={winnerLabel} />
         </div>
         <ChevronDown
@@ -337,7 +347,7 @@ function SeasonResultsPanel({
             // F3) emit multiple RaceResults per round (Race 1 / Superpole / Race
             // 2 — or Feature / Sprint) sharing the same round number.
             <li key={`${r.round}-${r.raceName}`} className="py-1">
-              <RoundRow race={r} weekendHref={links.weekend(r.round)} mode={modeFor(r === latest, classificationHref)} classificationHref={classificationHref} />
+              <RoundRow race={r} weekendHref={links.weekend(r.round)} mode={modeFor(r === latest, classificationHref)} classificationHref={classificationHref} classificationOf={`${links.seriesName} round ${r.round}, ${r.raceName}`} seriesName={links.seriesName} />
             </li>
           );
         })}
@@ -419,6 +429,8 @@ function ImsaSeasonResultsPanel({
                 weekendHref={links.weekend(item.round.round)}
                 mode={modeFor(item.round === latest, classificationHref)}
                 classificationHref={classificationHref}
+                classificationOf={`${links.seriesName} round ${item.round.round}, ${item.round.eventName} ${item.cls}`}
+                seriesName={links.seriesName}
               />
             </li>
           );
@@ -437,6 +449,8 @@ function ImsaRoundClassCard({
   weekendHref,
   mode,
   classificationHref,
+  classificationOf,
+  seriesName,
 }: {
   roundNumber: number;
   eventName: string;
@@ -448,6 +462,9 @@ function ImsaRoundClassCard({
   weekendHref?: string;
   mode: RoundMode;
   classificationHref?: string;
+  classificationOf?: string;
+  // X12: the series in the race title's hidden words ("Italy Feature Race" is a Formula 2 and a Formula 3 weekend).
+  seriesName?: string;
 }) {
   const winner = entries[0];
   const winnerLabel = winner
@@ -460,8 +477,8 @@ function ImsaRoundClassCard({
       <div className="flex items-start gap-3 py-2.5">
         <RoundChip label={`R${roundNumber}`} />
         <div className="flex-1 min-w-0">
-          <RaceTitle name={`${eventName} — ${cls}`} href={weekendHref} />
-          <RowMeta date={date} winner={winnerLabel} classificationHref={classificationHref} />
+          <RaceTitle name={`${eventName} — ${cls}`} href={weekendHref} seriesName={seriesName} />
+          <RowMeta date={date} winner={winnerLabel} classificationHref={classificationHref} classificationOf={classificationOf} />
         </div>
       </div>
     );
@@ -471,7 +488,7 @@ function ImsaRoundClassCard({
       <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
         <RoundChip label={`R${roundNumber}`} />
         <div className="flex-1 min-w-0">
-          <RaceTitle name={`${eventName} — ${cls}`} href={weekendHref} />
+          <RaceTitle name={`${eventName} — ${cls}`} href={weekendHref} seriesName={seriesName} />
           <RowMeta date={date} winner={winnerLabel} />
         </div>
         <ChevronDown
@@ -538,6 +555,8 @@ function WecSeasonResultsPanel({
                 weekendHref={links.weekend(item.round.round)}
                 mode={modeFor(item.round === latest, classificationHref)}
                 classificationHref={classificationHref}
+                classificationOf={`${links.seriesName} round ${item.round.round}, ${item.round.eventName} ${item.cls}`}
+                seriesName={links.seriesName}
               />
             </li>
           );
@@ -606,6 +625,8 @@ function GtWorldRoundClassCard({
   weekendHref,
   mode,
   classificationHref,
+  classificationOf,
+  seriesName,
 }: {
   race: GtWorldRaceResult;
   cup: Cup;
@@ -613,6 +634,9 @@ function GtWorldRoundClassCard({
   weekendHref?: string;
   mode: RoundMode;
   classificationHref?: string;
+  classificationOf?: string;
+  // X12: the series in the race title's hidden words ("Italy Feature Race" is a Formula 2 and a Formula 3 weekend).
+  seriesName?: string;
 }) {
   const winner = entries[0];
   const winnerLabel = winner
@@ -628,8 +652,8 @@ function GtWorldRoundClassCard({
       <div className="flex items-start gap-3 py-2.5">
         <RoundChip label={chip} />
         <div className="flex-1 min-w-0">
-          <RaceTitle name={title} href={weekendHref} />
-          <RowMeta winner={winnerLabel} classificationHref={classificationHref} />
+          <RaceTitle name={title} href={weekendHref} seriesName={seriesName} />
+          <RowMeta winner={winnerLabel} classificationHref={classificationHref} classificationOf={classificationOf} />
         </div>
       </div>
     );
@@ -639,7 +663,7 @@ function GtWorldRoundClassCard({
       <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
         <RoundChip label={chip} />
         <div className="flex-1 min-w-0">
-          <RaceTitle name={title} href={weekendHref} />
+          <RaceTitle name={title} href={weekendHref} seriesName={seriesName} />
           <RowMeta winner={winnerLabel} />
         </div>
         <ChevronDown
@@ -698,6 +722,8 @@ function GtWorldSeasonResultsPanel({
                 weekendHref={item.race.round ? links.weekend(item.race.round) : undefined}
                 mode={modeFor(item.race === latest, classificationHref)}
                 classificationHref={classificationHref}
+                classificationOf={`${links.seriesName} round ${item.race.round}, ${item.race.eventName} ${item.race.raceName} — ${gtWorldCupLabel(item.cup)}`}
+                seriesName={links.seriesName}
               />
             </li>
           );
