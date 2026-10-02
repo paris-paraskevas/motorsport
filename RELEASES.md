@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.242 — 2026-10-02
+
+Every page’s browser-tab title and search snippet now fit the width search engines show: the session pages name the session, the round and the series without cutting a word short, the series tabs and the driver and team pages say the same in fewer words, and the blog posts carry their headline’s first clause in the tab. Nothing on the pages themselves changes.
+
 ## 1.0.241 — 2026-10-02
 
 The Formula 2 champions page gains a search box in its jump bar: type a driver, a team or a year and the seasons that match stay, the counts following. On wide screens every season is now a strip of its own, ruled into cells that line up down the page; the champions who race elsewhere today (fourteen of the twenty-one) link to their driver pages; the stray back link under the tabs is gone.

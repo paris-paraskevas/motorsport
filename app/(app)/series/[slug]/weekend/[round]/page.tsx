@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import { hasWeekendNote, loadWeekendNotes, weekendNoteKey } from '@/lib/series-content';
 import { WeekendNote } from '@/components/weekend/WeekendNote';
-import { sessionSlug, weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
+import { sessionSlug, weekendFor, weekendLabel, weekendPageTitle, weekendStartEnd } from '@/lib/weekend';
 import { groupByDay, groupByWeekend } from '@/lib/group';
 import { LocalTime } from '@/components/LocalTime';
 import {
@@ -76,19 +76,13 @@ async function baseMetadata(
   }
   const weekend = weekendFor(series, round);
   if (!weekend) notFound();
-  const { title: label } = weekendLabel(weekend, round);
+  const { title: label, subtitle: place } = weekendLabel(weekend, round);
   // R14 (2026-09-28): a weekend page is indexed only when it carries an authored "How it was won" note; without one
   // it is a schedule, a classification and headlines, which Google's refusal page calls "not only headlines". The
   // sitemap reads the same predicate (lib/sitemap-data.ts). follow stays on: the page serves readers and its links carry.
   const indexed = hasWeekendNote(await loadWeekendNotes(slug), series.meta.season, round);
-  const baseTitle = label === `Round ${round}`
-    ? `${series.meta.name} · Round ${round}`
-    : `${series.meta.name} · ${label} · Round ${round}`;
-  // Google's title display caps around 60 chars and the layout appends
-  // " — Paddock Tracker" (17 chars) so dynamic portion budget is ~43 chars.
-  // Cap conservatively at 60 to leave room for the suffix without ellipsis
-  // ever showing on common combinations.
-  const fullTitle = baseTitle.length > 60 ? `${baseTitle.slice(0, 59)}…` : baseTitle;
+  // X10: the round once, the series once, fitted under the layout's suffix (lib/weekend.ts).
+  const fullTitle = weekendPageTitle(series.meta.name, label, round, place);
   const description = `${series.meta.name} Round ${round} — ${label}. ${weekend.dateRangeLabel}. Schedule, weather, standings, news. Where to watch live.`;
   return {
     title: fullTitle,

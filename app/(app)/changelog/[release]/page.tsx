@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL, PAGE_WIDE } from '@/lib/site';
+import { fitDescription, PAGE_WIDE, SITE_URL } from '@/lib/site';
 import { RELEASE_INDEX } from '@/lib/content-bundle.generated';
 import { EYEBROW, ReleaseHeading, ReleaseUpdates } from '@/components/changelog/ReleaseEntries';
 import { findRelease, loadReleaseGroups, releaseSlug, releasesFilePath } from '../releases';
@@ -44,7 +44,8 @@ async function baseMetadata({ params }: { params: Params }): Promise<Metadata> {
   if (!release) return { title: 'Release not found' };
   return {
     title: `${release.label} — release notes`,
-    description: storySummary(release.storyHtml, release.label, release.key),
+    // X10: a one-line story gets the release notes' own sentence so the description clears Bing's floor.
+    description: fitDescription(storySummary(release.storyHtml, release.label, release.key), { tail: `The release notes of ${release.label}, update by update.` }),
     alternates: { canonical: `${SITE_URL}/changelog/${releaseSlug(release)}` },
   };
 }

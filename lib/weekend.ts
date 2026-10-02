@@ -1,5 +1,6 @@
 import { Series, Session, Weekend } from './types';
 import { groupByWeekend } from './group';
+import { fitTitle } from './site';
 
 const SESSION_SUFFIX_RE =
   /[\s\-–—|:]+\s*(practice\s*\d*|fp\s*\d|free practice\s*\d*|qualifying|qualif\.?|sprint(?:\s+(?:race|qualifying|qualif\.?))?|race(?:\s*\d)?|warm[\s-]?up|test|tt)\s*\d*\s*$/i;
@@ -194,4 +195,50 @@ export function weekendSessionNav(
     prev: idx > 0 ? items[idx - 1] : null,
     next: idx >= 0 && idx < items.length - 1 ? items[idx + 1] : null,
   };
+}
+
+// X10 (the Seobility crawl of 1 October 2026): the <title> of a session page and of a weekend page, fitted under the
+// layout's suffix by lib/site.ts (the round once, the series once, never a word twice, never cut mid-word). A label the feed
+// prefixed with its own series name ("WRC | Rally Italia Sardegna") loses the prefix; a label too wide for the budget gives
+// way to the weekend's place ("Spa-Francorchamps" for "TotalEnergies 6 Hours of Spa-Francorchamps"); a label that is only
+// "Round n" names the series and the number instead.
+const LABEL_PREFIX_RE = /^(?:f[123]|formula\s*[123e]|fia\s+wec|wec|gt\s*world(?:\s+challenge)?|gtwce|imsa|indycar|nascar(?:\s+cup)?|dtm|nls(?:\s+nürburgring)?|wsbk|worldsbk|motogp|wrc|adac(?:\s+ravenol)?(?:\s+24h)?(?:\s+nürburgring)?)\s*[:|\-–—·]\s*/i;
+const ROUND_ONLY_RE = /^round\s+\d+$/i;
+/** A round's label without the feed's series prefix, a leading "Round n ·" or a trailing " Round" (DTM's and WorldSBK's
+ *  "Red Bull Ring Round", which would repeat the word beside the round number). */
+export function roundShortLabel(label: string): string {
+  return label.replace(LABEL_PREFIX_RE, '').replace(/^round\s+\d+\s*[:|\-–—·]\s*/i, '').replace(/\s+round$/i, '').trim();
+}
+/** The names a session page may carry beside its session: the series' full name, then the feed's own short code ("F2" from
+ *  "F2 - Qualifying": the support series share Formula 1's round names, so the series must survive where the full name
+ *  does not fit), each with and without the round's name. */
+export function sessionPageTitle(seriesName: string, weekendTitle: string, sessionName: string, round: number, place?: string, seriesShort?: string): string {
+  const roundShort = roundShortLabel(weekendTitle);
+  const session = sessionName.trim();
+  const short = seriesShort?.trim() && seriesShort.trim().toLowerCase() !== seriesName.toLowerCase() ? seriesShort.trim() : undefined;
+  const names = short ? [seriesName, short] : [seriesName];
+  const withRound = (label: string, s = session) => [...names.map(n => `${s}, ${label} — ${n}`), ...names.map(n => `${s} · ${n} round ${round}`), `${s}, ${label}`, `${s} · round ${round}`];
+  const spotName = place?.trim() && place.trim().toLowerCase() !== roundShort.toLowerCase() ? place.trim() : undefined;
+  if (!roundShort || ROUND_ONLY_RE.test(roundShort)) {
+    return fitTitle([...(spotName ? names.map(n => `${session}, ${spotName} — ${n}`) : []), ...names.map(n => `${session} · ${n} round ${round}`), ...(spotName ? [`${session}, ${spotName}`] : []), `${session} · round ${round}`]);
+  }
+  const a = session.toLowerCase();
+  const b = roundShort.toLowerCase();
+  // The round's name inside the session's ("6 Hours of Fuji (Race)", "Free Training (NLS1 71st ADAC Westfalenfahrt)"): the
+  // session keeps what is its own ("Race", "Free Training"); a session that IS the round ("Rally Italia Sardegna") or sits
+  // inside the round's name ("Bass Pro Shops Night Race" in "… (Bristol)") lets the round speak for it.
+  const own = a.includes(b) ? session.replace(new RegExp(`\\(?[^()]*${roundShort.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^()]*\\)?`, 'i'), '').replace(/\s+/g, ' ').trim().replace(/^\((.*)\)$/, '$1') : session;
+  if (!own || b.includes(a)) {
+    const [longer, shorter] = roundShort.length >= session.length ? [roundShort, session] : [session, roundShort];
+    return fitTitle([...names.map(n => `${longer} — ${n}`), ...names.map(n => `${shorter} — ${n}`), longer, shorter]);
+  }
+  const variants = withRound(roundShort, own);
+  const spot = spotName ? [...names.map(n => `${own}, ${spotName} — ${n}`), `${own}, ${spotName}`] : [];
+  return fitTitle([...variants.slice(0, names.length * 2), ...spot, ...variants.slice(names.length * 2)]);
+}
+export function weekendPageTitle(seriesName: string, label: string, round: number, place?: string): string {
+  const short = roundShortLabel(label);
+  const spot = place?.trim() && place.trim().toLowerCase() !== short.toLowerCase() ? [`${place.trim()} — ${seriesName} round ${round}`, `${place.trim()} — ${seriesName}`] : [];
+  if (!short || ROUND_ONLY_RE.test(short)) return fitTitle([...spot, `${seriesName} round ${round}`]);
+  return fitTitle([`${short} — ${seriesName} round ${round}`, `${short} — ${seriesName}`, `${short} — round ${round}`, ...spot, short, `${seriesName} round ${round}`]);
 }

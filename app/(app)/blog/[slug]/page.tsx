@@ -14,7 +14,7 @@ import { PostArticle } from '@/components/blog/PostArticle';
 import { POST_ARTICLE_CLASS, PostHeader, PostHero } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL } from '@/lib/site';
+import { fitDescription, shortTitle, SITE_URL } from '@/lib/site';
 import type { Post } from '@/lib/types';
 import { loadSeriesMeta } from '@/lib/series';
 import type { TocItem } from '@/lib/toc';
@@ -81,8 +81,10 @@ async function baseMetadata({
   // (node_modules/next/dist/docs/…/generate-metadata.md, "File-based metadata
   // has the higher priority").
   return {
-    title: post.frontmatter.title,
-    description: post.frontmatter.summary,
+    // X10: the tab and the snippet get the headline's first clause and the summary's first sentence (lib/site.ts); the
+    // page's h1 and the social cards keep the whole headline and summary.
+    title: shortTitle(post.frontmatter.title),
+    description: fitDescription(post.frontmatter.summary),
     // An imported article canonicalizes to its ORIGINAL off-site URL, so the
     // import adds no indexable page of ours — the original keeps the equity.
     // Original writing sets no canonical here, exactly as before.

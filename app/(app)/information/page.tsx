@@ -19,7 +19,7 @@ export const revalidate = 3600;
 
 const TITLE = 'Motorsport Answers & Information';
 const DESCRIPTION =
-  'Clear, sourced answers to motorsport questions — champions, records, rules, tracks and the junior ladder, across F1, MotoGP, endurance, rally, stock cars and more.';
+  'Clear, sourced answers to motorsport questions: champions, records, rules, tracks and the junior ladder, across F1, MotoGP, endurance, rally and more.';
 
 const BASE_METADATA: Metadata = {
   title: TITLE,
