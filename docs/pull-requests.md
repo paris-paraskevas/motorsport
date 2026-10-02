@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1121 · 1.0.239 · records · opened Fri 2 Oct 04:43 (01:43Z); the merge on the standing word
+**The session-63 close: R18’s three PRs on prod, the operator’s six points of the 2nd.** Records only: the ledger’s evidence with the apply and PR C’s merge and prod check, the Inbox’s six lines, the schedule’s item 12, the handoff’s pickup block for session 64, the trio.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (10):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R18’s evidence (the apply at ~01:29Z with its counts, #1120 merged 01:31:08Z as b2b4ff27, prod checked ~01:42Z: 235,517 · 23,338 · 123,637 bytes of HTML · wire · flight, the two card rows, no mono foot, the fourteen tabs identical) and its needsWord (the phone card’s drawing, “upload it”, the trend chart slot’s place); 70 slots rehashed.
+  - `IDEAS.md` · the six points of ~01:20Z on the 2nd, one line each, with the ESPA page.
+  - `SCHEDULE.md` · the session-63 item 12.
+  - `docs/HANDOFF.md` · the session-64 pickup block: R18’s three PRs on prod, the words the next steps wait for, the recipe of the photo’s upload by my hand, the defaults PR, the trend chart and driver database slots.
+  - `docs/pull-requests.md`, `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · this entry and the trio, 1.0.239 (the lockfile’s two version fields).
+- **Verified:** node docs/plan/render-ledger.mjs --rehash → 70 slots; npx vitest run lib/design/plan-ledger.test.ts → 6 green; prod’s /series/f2/champions fetched after the merge (the twelve cards with their sentences, the archive card’s new words, a cache HIT); scripts/parity-page.mts on the fourteen other champions tabs → identical: 14 pages.
+- **Review:** none; records.
+
 ## #1120 · 1.0.238 · R18 PR C · opened Fri 2 Oct 00:56 (21:56Z on the 1st); the apply on “apply 20261001213000”, then the merge
 **The doorways at the foot of the Formula 2 champions page.** The operator’s point of the 1st, drawn as three options and chosen as C: two card lists under their own headings, “More Formula 2” and “Around the site”, each card with a sentence written in the list editor; the shell’s mono foot leaves the composed page; the calendar box stays as the closing call. A sentence on a list entry is a new column, applied to prod before the merge.
 - **Readers see:** the foot of /series/f2/champions as two rows of cards with a line each (the review page); nothing else (the parity below).
