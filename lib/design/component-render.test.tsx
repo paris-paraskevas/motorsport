@@ -1836,11 +1836,14 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toMatch(/id="honours-era" class="[^"]*scroll-mt-28/);
     // The cards below lg follow the operator's drawing of the 2nd: a band with the season, the points and the wins; the two
     // champions side by side with their labels; the runner-up's row with their points and the margin; every cell ruled.
-    const cards = roll.split('class="bg-surface lg:hidden"').slice(1);
+    // Each card its own rounded box with space between (the operator's second look); the ruled strip is the table's from lg.
+    expect(roll).toContain('class="grid gap-3 lg:gap-px lg:overflow-hidden lg:rounded-lg lg:border lg:border-border lg:bg-border"');
+    const cards = roll.split('class="rounded-lg border border-border bg-surface lg:hidden"').slice(1);
     expect(cards).toHaveLength(4);
     const [first, second] = cards;
-    expect(first).toContain('>2025 season<');
-    expect(first).toMatch(/>PTS<\/span><span[^>]*>211<\/span>/);
+    // The season in red bold capitals, the points figure in red.
+    expect(first).toMatch(/<div class="[^"]*uppercase[^"]*text-brand[^"]*">2025 season<\/div>/);
+    expect(first).toMatch(/>PTS<\/span><span class="[^"]*text-brand[^"]*">211<\/span>/);
     expect(first).toMatch(/>WINS<\/span><span[^>]*>4<\/span>/);
     expect(first).toContain('>Drivers’ champion<');
     expect(first).toMatch(/<a href="\/drivers\/leonardo-fornaroli"[^>]*>Leonardo Fornaroli<\/a>/);
@@ -1863,7 +1866,7 @@ describe('the champions page’s views (R18)', () => {
     expect(roll.match(/>Rookie season</g)).toHaveLength(3);
     // A season without a runner-up on record draws no runner-up row; the band and the champions stay.
     const bare = await draw([season({ runnerUp: null, runnerUpPoints: null, margin: null })], { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
-    const bareCard = bare.split('class="bg-surface lg:hidden"')[1];
+    const bareCard = bare.split('class="rounded-lg border border-border bg-surface lg:hidden"')[1];
     expect(bareCard).not.toContain('>Runner-up<');
     expect(bareCard).toMatch(/>PTS<\/span><span[^>]*>211<\/span>/);
     expect(bareCard).toContain('>Teams’ champion<');

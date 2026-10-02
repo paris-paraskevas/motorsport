@@ -1653,7 +1653,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
   const COLS = 'lg:grid-cols-[3.5rem_minmax(0,1.5fr)_3.75rem_3rem_4rem_minmax(0,1fr)_minmax(0,1.1fr)]';
   const eraRow =
     eraAt && eraBefore ? (
-      <div id={`${prefix}-era`} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 bg-surface-elevated px-5 py-3 scroll-mt-28">
+      <div id={`${prefix}-era`} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-lg border border-border bg-surface-elevated px-5 py-3 scroll-mt-28 lg:rounded-none lg:border-0">
         <span className="font-mono text-10 font-bold uppercase tracking-[0.14em] text-brand">Era change</span>
         <span className="text-sm font-semibold text-text">{`${text(eraBefore.year)}: ${olderEra} becomes the ${text(eraBefore.era)}`}</span>
         <span className="text-13 text-text-muted">{`Seasons below raced as ${olderEra}`}</span>
@@ -1685,7 +1685,9 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
             <h3 className="font-serif text-26 font-medium leading-tight text-text">{decade}</h3>
             <span className="font-mono text-11 text-text-faint">{count(seasons.length)}</span>
           </div>
-          <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border">
+          {/* Below lg each season is a card of its own with space between (the operator's second look of the 2nd); from lg the
+              rows share one ruled strip. */}
+          <div className="grid gap-3 lg:gap-px lg:overflow-hidden lg:rounded-lg lg:border lg:border-border lg:bg-border">
             <div className={`hidden gap-4 bg-surface-elevated px-5 py-2 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint lg:grid ${COLS}`}>
               <span>Year</span>
               <span>Champion</span>
@@ -1720,10 +1722,10 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
                   </div>
                 </div>
                 {/* The card below lg, after the operator's drawing: the season band, the two champions, the runner-up's row. */}
-                <div className="bg-surface lg:hidden">
+                <div className="rounded-lg border border-border bg-surface lg:hidden">
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] divide-x divide-border border-b border-border">
-                    <div className="px-4 py-2 font-mono text-13 font-bold tabular-nums text-brand">{text(r.year)} season</div>
-                    <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">PTS</span><span className="font-semibold text-text">{text(r.points)}</span></div>
+                    <div className="px-4 py-2 font-mono text-12 font-bold uppercase tracking-[0.12em] tabular-nums text-brand">{text(r.year)} season</div>
+                    <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">PTS</span><span className="font-bold text-brand">{text(r.points)}</span></div>
                     <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">WINS</span><span className="font-semibold text-text">{text(r.wins)}</span></div>
                   </div>
                   <div className={`grid divide-x divide-border${text(r.teamsChampion) ? ' grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]' : ''}${text(r.runnerUp) ? ' border-b border-border' : ''}`}>
