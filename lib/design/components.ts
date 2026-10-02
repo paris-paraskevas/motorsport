@@ -804,6 +804,10 @@ export type RecipeEntry =
   | (RecipeBase & { kind: 'list'; listKey: string; style?: 'links' | 'cards' })
   | (RecipeBase & { kind: 'button'; label: string; dest?: string | null });
 
+/** The Formula 2 champions page's photo (R18 PR D): the asset the operator had uploaded on the 2nd ("upload it": the file into
+ *  the media bucket and the row on prod by the build session's hand), drawn beside the Reigning champion card. */
+export const F2_CHAMPION_PHOTO = '56d86c87-b357-4355-a45f-80be810b7401';
+
 /** How a page not yet split becomes components: the entries that replace its
  *  transitional body, in order. Only pages whose components exist appear here.
  *  For a page whose route file has left the code, this is also its default
@@ -833,15 +837,16 @@ export const SPLITS: Readonly<Record<string, readonly (string | RecipeEntry)[]>>
   ],
   // R18: the Formula 2 champions page as the operator's design has it, keyed by the CONCRETE address (every other key is a
   // registry pattern): the series tab route draws it for that address alone (components/tabs/ComposedTab.tsx) until the
-  // registry has a page per series tab. The masthead with its eyebrow and standfirst; the Reigning champion card the full
-  // width (the photo, an image half beside it, follows its upload to the Assets store); the roll of honour with the
+  // registry has a page per series tab. The masthead with its eyebrow and standfirst; the Reigning champion card beside the
+  // photo (the two halves side by side from lg); the roll of honour with the
   // points-scale note as its footer; the teams' heading over the two tallies; the two doorway lists, More Formula 2 and
   // Around the site (PR C: cards with a sentence each over lists seeded with the design's words, the operator's to edit in
   // Shared Components › Lists; they replace the shell's mono foot on this page); the calendar call-out, boxed, with its
   // button inside.
   '/series/f2/champions': [
     { id: 'heading', component: 'page.heading', settings: { text: 'Formula 2 champions', eyebrow: 'Formula 2 · Roll of honour', standfirst: "Every drivers' and teams' champion since 2005, year by year, including the GP2 Series seasons (2005–2016)." } },
-    { id: 'reigning', component: 'data.region', settings: { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' }, source: 'champions?series=f2' },
+    { id: 'reigning', component: 'data.region', settings: { preset: 'champions', view: 'reigning', rows: 1, heading: 'Reigning champion' }, source: 'champions?series=f2', half: true },
+    { id: 'photo', kind: 'image', assetId: F2_CHAMPION_PHOTO, alt: 'Leonardo Fornaroli in the Invicta Racing car at the Red Bull Ring, 2025', showCaption: true, half: true },
     {
       id: 'honours',
       component: 'data.region',

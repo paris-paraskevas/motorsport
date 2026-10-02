@@ -1834,14 +1834,39 @@ describe('the champions page’s views (R18)', () => {
     // The era row sits between 2017 and 2016, with the older era below it.
     expect(roll).toMatch(/>2017<[\s\S]*id="honours-era"[\s\S]*>Era change<[\s\S]*>2017: GP2 Series becomes the FIA Formula 2 Championship<[\s\S]*>Seasons below raced as GP2 Series<[\s\S]*>2016</);
     expect(roll).toMatch(/id="honours-era" class="[^"]*scroll-mt-28/);
-    // The cards below lg carry the stat line and the two pairs; a season without a runner-up on record draws no empty pair.
-    expect(roll).toContain('>211 pts · 4 wins · +36<');
-    expect(roll).toContain('>282 pts · 7 wins · +72<');
-    expect(roll).toMatch(/<dt[^>]*>Runner-up<\/dt><dd[^>]*>Jak Crawford<span[^>]*> · 175 pts<\/span><\/dd>/);
+    // The cards below lg follow the operator's drawing of the 2nd: a band with the season, the points and the wins; the two
+    // champions side by side with their labels; the runner-up's row with their points and the margin; every cell ruled.
+    const cards = roll.split('class="bg-surface lg:hidden"').slice(1);
+    expect(cards).toHaveLength(4);
+    const [first, second] = cards;
+    expect(first).toContain('>2025 season<');
+    expect(first).toMatch(/>PTS<\/span><span[^>]*>211<\/span>/);
+    expect(first).toMatch(/>WINS<\/span><span[^>]*>4<\/span>/);
+    expect(first).toContain('>Drivers’ champion<');
+    expect(first).toMatch(/<a href="\/drivers\/leonardo-fornaroli"[^>]*>Leonardo Fornaroli<\/a>/);
+    expect(first).toContain('>ITA<');
+    expect(first).toMatch(/<a href="\/teams\/invicta-racing"[^>]*>Invicta Racing<\/a>/);
+    expect(first).toContain('>Rookie season<');
+    expect(first).toContain('>Teams’ champion<');
+    expect(first).toContain('>2nd title<');
+    expect(first).toMatch(/>Runner-up<\/div><div[^>]*>Jak Crawford<\/div>/);
+    expect(first).toMatch(/>Points<\/div><div[^>]*>175<\/div>/);
+    expect(first).toMatch(/>Margin<\/div><div[^>]*>−36<\/div>/);
+    // The second season: no profile (a span), a first teams' title, a half-point margin.
+    expect(second).toContain('>2024 season<');
+    expect(second).toMatch(/>PTS<\/span><span[^>]*>211<\/span>/);
+    expect(second).toMatch(/<span class="[^"]*font-serif[^"]*">Gabriel Bortoleto<\/span>/);
+    expect(second).toContain('>1st title<');
+    expect(second).toMatch(/>Runner-up<\/div><div[^>]*>Isack Hadjar<\/div>/);
+    expect(second).toMatch(/>Margin<\/div><div[^>]*>−22.5<\/div>/);
+    // Three of the four champions were rookies.
+    expect(roll.match(/>Rookie season</g)).toHaveLength(3);
+    // A season without a runner-up on record draws no runner-up row; the band and the champions stay.
     const bare = await draw([season({ runnerUp: null, runnerUpPoints: null, margin: null })], { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
-    expect(bare).not.toMatch(/<dt[^>]*>Runner-up<\/dt>/);
-    expect(bare).toMatch(/<dt[^>]*>Teams’<\/dt>/);
-    expect(bare).toContain('>211 pts · 4 wins<');
+    const bareCard = bare.split('class="bg-surface lg:hidden"')[1];
+    expect(bareCard).not.toContain('>Runner-up<');
+    expect(bareCard).toMatch(/>PTS<\/span><span[^>]*>211<\/span>/);
+    expect(bareCard).toContain('>Teams’ champion<');
     expect(roll).not.toContain('<table');
     // A stored honours view over another source's shape draws the Table (the parser refuses it; the renderer stands).
     readSource.mockResolvedValueOnce({ columns: [], total: 1, rows: [{ kind: 'driver', position: 1, name: 'A', code: 'A', team: 'T', points: 1, wins: 0, class: null }], provenance: { ref: { source: 'standings', params: { series: 'f1', season: 2026 } }, label: 'Standings', tier: 'rows', keys: [], rows: 1, ms: 1 } });
