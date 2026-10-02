@@ -67,7 +67,8 @@ export function RollOfHonourSearch({ total }: { total: number }) {
         autoCapitalize="off"
         spellCheck={false}
         enterKeyHint="search"
-        className="h-9 w-full min-w-0 rounded-lg border border-border-strong bg-surface px-3 font-sans text-16 text-text placeholder:text-text-faint focus:border-brand focus:outline-none sm:h-8 sm:w-60 sm:text-13"
+        // 16 px up to lg: a touch browser zooms a smaller field on focus, and tablets sit between sm and lg.
+        className="h-9 w-full min-w-0 rounded-lg border border-border-strong bg-surface px-3 font-sans text-16 text-text placeholder:text-text-faint focus:border-brand focus:outline-none sm:h-8 sm:w-60 lg:text-13"
       />
       <span role="status" className="shrink-0 font-mono text-11 text-text-faint">
         {words}

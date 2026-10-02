@@ -1654,8 +1654,9 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
   const who = (r: PresetRow, cls: string) => linkOr(text(r.profile), text(r.driver), cls);
   const teamOf = (r: PresetRow) => (text(r.teamPage) ? <Link href={text(r.teamPage)} className="hover:text-text">{text(r.team)}</Link> : text(r.team));
   const teamsOf = (r: PresetRow) => (text(r.teamsChampionPage) ? <Link href={text(r.teamsChampionPage)} className="hover:text-text">{text(r.teamsChampion)}</Link> : text(r.teamsChampion));
-  // The strip from lg (at md the names were cut, the review of the 1st), the cards below it; the strip's seven cells.
-  const STRIP = 'grid-cols-[136px_minmax(0,1.6fr)_84px_72px_84px_minmax(0,1.1fr)_minmax(0,1.1fr)] divide-x divide-border rounded-lg border border-border bg-surface';
+  // The strip from lg (at md the names were cut, the review of the 1st), the cards below it; the strip's seven cells. The box
+  // clips its first cell's fill, which would otherwise show square at the rounded corners.
+  const STRIP = 'grid-cols-[136px_minmax(0,1.6fr)_84px_72px_84px_minmax(0,1.1fr)_minmax(0,1.1fr)] divide-x divide-border overflow-hidden rounded-lg border border-border bg-surface';
   const eraOf = (r: PresetRow) => text(r.era).replace(/ Series$| Championship$/, '');
   // The search box's haystack (R18 PR E): the words a reader may type for a season, slugified as the box slugifies its query.
   const haystack = (r: PresetRow) => slugify([text(r.year), text(r.driver), text(r.team), text(r.runnerUp), text(r.teamsChampion), text(r.nationality), text(r.nationality) ? (countryName(text(r.nationality)) ?? '') : '', text(r.era), text(r.decade)].filter(Boolean).join(' '));
@@ -1674,7 +1675,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
       </div>
     ) : null;
   return (
-    <section id={`region-${prefix}-roll`} data-honours="" aria-label={heading} className="min-w-0">
+    <section data-honours="" aria-label={heading} className="min-w-0">
       <H className="sr-only">{heading}</H>
       {/* The Jump-to bar sticks under the fixed header (the tab rail's precedent): the chips scroll in a strip of their own, so the
           bar itself never sits in an overflow box; the search box (a client island) and the count sit at its right from sm and on
@@ -1715,85 +1716,85 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
               <Fragment key={text(r.year)}>
                 {eraAt === r && eraRow}
                 <div data-season="" data-search={haystack(r)}>
-                {/* The strip from lg (the operator's D): the season, the champion, the three figures with their labels above
-                    the values, the runner-up, the teams' champion; every cell ruled, all seven drawn. */}
-                <div className={`hidden lg:grid ${STRIP}`}>
-                  <div className="flex flex-col justify-center bg-surface-elevated px-4 py-3">
-                    <div className="font-mono text-13 font-bold uppercase tracking-[0.12em] tabular-nums text-brand">{text(r.year)} season</div>
-                    {eraOf(r) && <div className="mt-1 font-mono text-9 uppercase tracking-[0.1em] text-text-faint">{eraOf(r)}</div>}
-                  </div>
-                  <div className="min-w-0 px-4 py-3">
-                    <div className={CARD_LABEL}>Drivers’ champion</div>
-                    <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
-                      {who(r, 'font-serif text-20 font-semibold leading-tight text-text [overflow-wrap:anywhere] hover:text-brand')}
-                      {text(r.nationality) && <span className="font-mono text-10 text-text-faint">{text(r.nationality)}</span>}
+                  {/* The strip from lg (the operator's D): the season, the champion, the three figures with their labels above
+                      the values, the runner-up, the teams' champion; every cell ruled, all seven drawn. */}
+                  <div className={`hidden lg:grid ${STRIP}`}>
+                    <div className="flex flex-col justify-center bg-surface-elevated px-4 py-3">
+                      <div className="font-mono text-13 font-bold uppercase tracking-[0.12em] tabular-nums text-brand">{text(r.year)} season</div>
+                      {eraOf(r) && <div className="mt-1 font-mono text-9 uppercase tracking-[0.1em] text-text-faint">{eraOf(r)}</div>}
                     </div>
-                    <div className="mt-0.5 text-13 text-text-muted">
-                      {teamOf(r)}
-                      {r.rookie === true && <span className="ml-2 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-brand">Rookie season</span>}
-                    </div>
-                  </div>
-                  {figure('Points', text(r.points), true)}
-                  {figure('Wins', text(r.wins))}
-                  {figure('Margin', num(r.margin) !== null ? `+${text(r.margin)}` : '')}
-                  <div className="min-w-0 px-4 py-3">
-                    <div className={CARD_LABEL}>Runner-up</div>
-                    <div className="mt-1 font-serif text-15 font-semibold leading-tight text-text [overflow-wrap:anywhere]">{text(r.runnerUp)}</div>
-                    {num(r.runnerUpPoints) !== null && <div className="mt-0.5 font-mono text-11 text-text-faint">{`${text(r.runnerUpPoints)} pts`}</div>}
-                  </div>
-                  <div className="min-w-0 px-4 py-3">
-                    <div className={CARD_LABEL}>Teams’ champion</div>
-                    <div className="mt-1 text-15 font-semibold leading-tight text-text [overflow-wrap:anywhere]">{teamsOf(r)}</div>
-                    {nth(r) && <div className="mt-0.5 font-mono text-11 text-text-faint">{nth(r)}</div>}
-                  </div>
-                </div>
-                {/* The card below lg, after the operator's drawing: the season band, the two champions, the runner-up's row. */}
-                <div className="rounded-lg border border-border bg-surface lg:hidden">
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] divide-x divide-border border-b border-border">
-                    <div className="px-4 py-2 font-mono text-12 font-bold uppercase tracking-[0.12em] tabular-nums text-brand">{text(r.year)} season</div>
-                    {num(r.points) !== null && <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">PTS</span><span className="font-bold text-brand">{text(r.points)}</span></div>}
-                    {num(r.wins) !== null && <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">WINS</span><span className="font-semibold text-text">{text(r.wins)}</span></div>}
-                  </div>
-                  <div className={`grid divide-x divide-border${text(r.teamsChampion) ? ' grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]' : ''}${text(r.runnerUp) ? ' border-b border-border' : ''}`}>
                     <div className="min-w-0 px-4 py-3">
                       <div className={CARD_LABEL}>Drivers’ champion</div>
                       <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
-                        {who(r, 'font-serif text-20 font-semibold leading-tight text-text [overflow-wrap:anywhere]')}
+                        {who(r, 'font-serif text-20 font-semibold leading-tight text-text [overflow-wrap:anywhere] hover:text-brand')}
                         {text(r.nationality) && <span className="font-mono text-10 text-text-faint">{text(r.nationality)}</span>}
                       </div>
-                      <div className="mt-0.5 text-13 text-text-muted">{teamOf(r)}</div>
-                      {r.rookie === true && <div className="mt-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-brand">Rookie season</div>}
+                      <div className="mt-0.5 text-13 text-text-muted">
+                        {teamOf(r)}
+                        {r.rookie === true && <span className="ml-2 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-brand">Rookie season</span>}
+                      </div>
                     </div>
-                    {text(r.teamsChampion) && (
+                    {figure('Points', text(r.points), true)}
+                    {figure('Wins', text(r.wins))}
+                    {figure('Margin', num(r.margin) !== null ? `+${text(r.margin)}` : '')}
+                    <div className="min-w-0 px-4 py-3">
+                      <div className={CARD_LABEL}>Runner-up</div>
+                      <div className="mt-1 font-serif text-15 font-semibold leading-tight text-text [overflow-wrap:anywhere]">{text(r.runnerUp)}</div>
+                      {num(r.runnerUpPoints) !== null && <div className="mt-0.5 font-mono text-11 text-text-faint">{`${text(r.runnerUpPoints)} pts`}</div>}
+                    </div>
+                    <div className="min-w-0 px-4 py-3">
+                      <div className={CARD_LABEL}>Teams’ champion</div>
+                      <div className="mt-1 text-15 font-semibold leading-tight text-text [overflow-wrap:anywhere]">{teamsOf(r)}</div>
+                      {nth(r) && <div className="mt-0.5 font-mono text-11 text-text-faint">{nth(r)}</div>}
+                    </div>
+                  </div>
+                  {/* The card below lg, after the operator's drawing: the season band, the two champions, the runner-up's row. */}
+                  <div className="rounded-lg border border-border bg-surface lg:hidden">
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] divide-x divide-border border-b border-border">
+                      <div className="px-4 py-2 font-mono text-12 font-bold uppercase tracking-[0.12em] tabular-nums text-brand">{text(r.year)} season</div>
+                      {num(r.points) !== null && <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">PTS</span><span className="font-bold text-brand">{text(r.points)}</span></div>}
+                      {num(r.wins) !== null && <div className="px-3 py-2 font-mono text-11 tabular-nums"><span className="mr-1.5 text-text-faint">WINS</span><span className="font-semibold text-text">{text(r.wins)}</span></div>}
+                    </div>
+                    <div className={`grid divide-x divide-border${text(r.teamsChampion) ? ' grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]' : ''}${text(r.runnerUp) ? ' border-b border-border' : ''}`}>
                       <div className="min-w-0 px-4 py-3">
-                        <div className={CARD_LABEL}>Teams’ champion</div>
-                        <div className="mt-1 text-15 font-semibold leading-tight text-text">{teamsOf(r)}</div>
-                        {nth(r) && <div className="mt-0.5 text-13 text-text-muted">{nth(r)}</div>}
+                        <div className={CARD_LABEL}>Drivers’ champion</div>
+                        <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
+                          {who(r, 'font-serif text-20 font-semibold leading-tight text-text [overflow-wrap:anywhere]')}
+                          {text(r.nationality) && <span className="font-mono text-10 text-text-faint">{text(r.nationality)}</span>}
+                        </div>
+                        <div className="mt-0.5 text-13 text-text-muted">{teamOf(r)}</div>
+                        {r.rookie === true && <div className="mt-1 font-mono text-10 font-semibold uppercase tracking-[0.12em] text-brand">Rookie season</div>}
+                      </div>
+                      {text(r.teamsChampion) && (
+                        <div className="min-w-0 px-4 py-3">
+                          <div className={CARD_LABEL}>Teams’ champion</div>
+                          <div className="mt-1 text-15 font-semibold leading-tight text-text">{teamsOf(r)}</div>
+                          {nth(r) && <div className="mt-0.5 text-13 text-text-muted">{nth(r)}</div>}
+                        </div>
+                      )}
+                    </div>
+                    {text(r.runnerUp) && (
+                      // The row holds the cells the season has (a file without the runner-up's points draws no empty Points cell).
+                      <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `minmax(0,1.3fr)${' minmax(0,1fr)'.repeat((num(r.runnerUpPoints) !== null ? 1 : 0) + (num(r.margin) !== null ? 1 : 0))}` }}>
+                        <div className="min-w-0 px-4 py-3">
+                          <div className={CARD_LABEL}>Runner-up</div>
+                          <div className="mt-1 font-serif text-16 font-semibold leading-tight text-text [overflow-wrap:anywhere]">{text(r.runnerUp)}</div>
+                        </div>
+                        {num(r.runnerUpPoints) !== null && (
+                          <div className="px-3 py-3">
+                            <div className={CARD_LABEL}>Points</div>
+                            <div className="mt-1 font-mono text-15 tabular-nums text-text">{text(r.runnerUpPoints)}</div>
+                          </div>
+                        )}
+                        {num(r.margin) !== null && (
+                          <div className="px-3 py-3">
+                            <div className={CARD_LABEL}>Margin</div>
+                            <div className="mt-1 font-mono text-15 tabular-nums text-text">{`−${text(r.margin)}`}</div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                  {text(r.runnerUp) && (
-                    // The row holds the cells the season has (a file without the runner-up's points draws no empty Points cell).
-                    <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `minmax(0,1.3fr)${' minmax(0,1fr)'.repeat((num(r.runnerUpPoints) !== null ? 1 : 0) + (num(r.margin) !== null ? 1 : 0))}` }}>
-                      <div className="min-w-0 px-4 py-3">
-                        <div className={CARD_LABEL}>Runner-up</div>
-                        <div className="mt-1 font-serif text-16 font-semibold leading-tight text-text [overflow-wrap:anywhere]">{text(r.runnerUp)}</div>
-                      </div>
-                      {num(r.runnerUpPoints) !== null && (
-                        <div className="px-3 py-3">
-                          <div className={CARD_LABEL}>Points</div>
-                          <div className="mt-1 font-mono text-15 tabular-nums text-text">{text(r.runnerUpPoints)}</div>
-                        </div>
-                      )}
-                      {num(r.margin) !== null && (
-                        <div className="px-3 py-3">
-                          <div className={CARD_LABEL}>Margin</div>
-                          <div className="mt-1 font-mono text-15 tabular-nums text-text">{`−${text(r.margin)}`}</div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
                 </div>
               </Fragment>
             ))}

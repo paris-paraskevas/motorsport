@@ -1815,7 +1815,7 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toMatch(/>Jump to</);
     // R18 PR E: the root marked for the search box; the box and the count in the bar; the chips marked for their targets; each
     // season a wrapper with its slugified haystack; the decades marked with their counts; the empty line hidden until a query.
-    expect(roll).toMatch(/^<section id="region-honours-roll" data-honours="" aria-label="Every season"/);
+    expect(roll).toMatch(/^<section data-honours="" aria-label="Every season"/);
     expect(roll).toMatch(/<input[^>]*type="search"[^>]*placeholder="Find a season or a driver"/);
     expect(roll).toMatch(/<span role="status"[^>]*>4 seasons<\/span>/);
     expect(roll).toMatch(/<a href="#honours-2020s" data-chip="honours-2020s"/);
@@ -1838,7 +1838,7 @@ describe('the champions page’s views (R18)', () => {
     expect(seasonsMarkup).toHaveLength(4);
     const stripOf = (s: string) => s.slice(0, s.indexOf('class="rounded-lg border border-border bg-surface lg:hidden"'));
     const strip0 = stripOf(seasonsMarkup[0]);
-    expect(strip0).toContain('class="hidden lg:grid grid-cols-[136px_minmax(0,1.6fr)_84px_72px_84px_minmax(0,1.1fr)_minmax(0,1.1fr)] divide-x divide-border rounded-lg border border-border bg-surface"');
+    expect(strip0).toContain('class="hidden lg:grid grid-cols-[136px_minmax(0,1.6fr)_84px_72px_84px_minmax(0,1.1fr)_minmax(0,1.1fr)] divide-x divide-border overflow-hidden rounded-lg border border-border bg-surface"');
     expect(strip0).toMatch(/>2025 season<\/div><div[^>]*>FIA Formula 2<\/div>/);
     expect(strip0).toMatch(/>Drivers’ champion<\/div>[\s\S]*?<a href="\/drivers\/leonardo-fornaroli"[^>]*>Leonardo Fornaroli<\/a>/);
     expect(strip0).toMatch(/>Points<\/div><div[^>]*>211<\/div>/);
@@ -1864,6 +1864,8 @@ describe('the champions page’s views (R18)', () => {
     // The era row sits between 2017 and 2016, with the older era below it.
     expect(roll).toMatch(/>2017 season<[\s\S]*id="honours-era"[\s\S]*>Era change<[\s\S]*>2017: GP2 Series becomes the FIA Formula 2 Championship<[\s\S]*>Seasons below raced as GP2 Series<[\s\S]*>2016 season</);
     expect(roll).toMatch(/id="honours-era" data-era="" class="[^"]*rounded-lg border border-border[^"]*scroll-mt-40 sm:scroll-mt-32"/);
+    // The decade sections’ scroll margins allow for the taller bar (two rows on phones), as the era row’s do.
+    expect(roll).toMatch(/<section id="honours-2020s" data-decade="" class="pt-8 scroll-mt-40 sm:scroll-mt-28">/);
     // The cards below lg follow the operator's drawing of the 2nd: a band with the season, the points and the wins; the two
     // champions side by side with their labels; the runner-up's row with their points and the margin; every cell ruled.
     // Each card its own rounded box with space between (the operator's second look), read per season from its wrapper.

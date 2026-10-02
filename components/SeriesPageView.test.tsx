@@ -17,7 +17,8 @@ vi.mock('next/navigation', () => ({
 const name = (slug: string) => (slug === 'f2' ? 'Formula 2' : 'Formula 3');
 const meta = (slug: string) => ({ slug, name: name(slug), color: '#38bdf8', icsUrl: '', season: 2026, category: 'formula' as const });
 let stale = false;
-const series = (slug: string): Series => ({ meta: meta(slug), sessions: [], overview: '', drivers: '', significance: '', fetchedAt: new Date('2026-10-01T12:00:00Z'), stale, configured: true });
+let configured = true;
+const series = (slug: string): Series => ({ meta: meta(slug), sessions: [], overview: '', drivers: '', significance: '', fetchedAt: new Date('2026-10-01T12:00:00Z'), stale, configured });
 vi.mock('@/lib/series', () => ({ loadSeries: async (slug: string) => series(slug), loadSeriesMeta: async (slug: string) => meta(slug) }));
 vi.mock('@/lib/blog', () => ({ seriesPublishedPostCount: async () => 0 }));
 vi.mock('@/components/tabs/ChampionsTab', () => ({ ChampionsTab: ({ series: s }: { series: Series }) => <div data-tab={`champions ${s.meta.slug}`} /> }));
@@ -49,6 +50,7 @@ describe('SeriesPageView (R18)', () => {
   beforeEach(() => {
     composition = 'drawn';
     stale = false;
+    configured = true;
   });
 
   it('a tab with a recipe: the structured data before the composed body and nothing else of the shell’s (no masthead, no back link, no mono foot: the recipe’s breadcrumb and heading lead, its doorway cards close); the stale banner only when it has something to say', async () => {
@@ -66,6 +68,12 @@ describe('SeriesPageView (R18)', () => {
     expect(warned).toContain('pb-0');
     expect(warned).toMatch(/stale|out of date|last updated|cached/i);
     expect(warned).not.toContain('← Formula 2');
+    stale = false;
+    configured = false;
+    const unconfigured = await draw('f2');
+    expect(unconfigured).toContain('pb-0');
+    expect(unconfigured).toContain('No live feed is configured');
+    expect(unconfigured).not.toContain('← Formula 2');
   });
 
   it('the same tab when the composition fails: the whole legacy layout, masthead and h1 included, once', async () => {
@@ -77,6 +85,7 @@ describe('SeriesPageView (R18)', () => {
     expect(html).toContain('>Formula 2 · 2026 season<');
     expect(count(html, '"BreadcrumbList"')).toBe(1);
     expect(count(html, '>More Formula 2<')).toBe(1);
+    expect(html).toContain('← Formula 2');
     expect(html).toContain('data-tab="champions f2"');
   });
 
