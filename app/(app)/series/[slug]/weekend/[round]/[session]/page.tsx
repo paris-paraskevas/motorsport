@@ -66,7 +66,7 @@ import { buildPracticeAnalysis, type PracticeAnalysis as PracticeData } from '@/
 import { PracticeAnalysis } from '@/components/f1/PracticeAnalysis';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
 import { SessionClassChips } from '@/components/weekend/SessionClassChips';
-import { PAGE_WIDE, SITE_URL } from '@/lib/site';
+import { fitDescription, PAGE_WIDE, SITE_URL } from '@/lib/site';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
 // ISR (X7): the session pages edge-cache like the weekend page, revalidated every
@@ -152,8 +152,8 @@ async function baseMetadata(
   const metaSessionName = ctx.session.title.replace(/^.*?[-–—:]\s*/, '').trim() || ctx.session.title;
   // X10: the session, the round and the series as they fit under the layout's suffix, never cut mid-word (lib/weekend.ts).
   const feedCode = /^(.*?)\s*[-–—:]\s/.exec(ctx.session.title)?.[1];
-  const title = sessionPageTitle(ctx.series.meta.name, weekendTitle, metaSessionName, ctx.round, weekendPlace, feedCode);
-  const description = `What time is ${metaSessionName} at the ${ctx.series.meta.name} ${weekendTitle}? Start time shown in your local time zone${hasFullClassification ? ', plus full classification and results' : ''}.`;
+  const title = sessionPageTitle(ctx.series.meta.name, weekendTitle, metaSessionName, ctx.round, weekendPlace, feedCode, ctx.slug === 'wrc' ? 'none' : isRaceLikeTitle(ctx.session.title) ? 'race' : undefined);
+  const description = fitDescription(`What time is ${metaSessionName} at the ${ctx.series.meta.name} ${weekendTitle}? Start time shown in your local time zone${hasFullClassification ? ', plus full classification and results' : ''}.`);
   const path = `/series/${ctx.slug}/weekend/${ctx.round}/${ctx.sessionParam}`;
   return {
     title,

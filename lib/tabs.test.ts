@@ -63,5 +63,10 @@ describe('X10: describeTab fits every series', () => {
     }
     expect(describeTab('champions', 'Formula 2', 2026).title).toBe('Formula 2 champions, every season');
     expect(describeTab('champions', 'Formula 2', 2026).description).not.toContain('their own tab');
+    // X10b: one source, said so (the content law); the single-event hub has no title to stand.
+    expect(describeTab('news', 'Formula 1', 2026).description).toContain('From motorsport.com.');
+    expect(describeTab('news', 'Formula 1', 2026).description).not.toContain('other sources');
+    expect(describeHub('ADAC Ravenol 24h Nürburgring', 2026, true).description).not.toContain('where the title stands');
+    expect(describeHub('Formula 1', 2026).description).toContain('where the title stands');
   });
 });

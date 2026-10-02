@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries, loadSeriesMeta } from '@/lib/series';
-import { resolveTab, labelForTab, describeTab, seriesSubPages, tabIsIndexed, type TabKey } from '@/lib/tabs';
+import { resolveTab, labelForTab, describeHub, describeTab, seriesSubPages, tabIsIndexed, type TabKey } from '@/lib/tabs';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -22,7 +22,6 @@ import { BlogTab } from '@/components/tabs/BlogTab';
 import { TracksTab } from '@/components/tabs/TracksTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 import { ComposedTab, hasComposedTab } from '@/components/tabs/ComposedTab';
-import { describeHub } from '@/lib/tabs';
 
 // The series sub-pages' shared Paper shell (Round-3 ⑤–⑦, operator 2026-08-20:
 // "these pages still havent changed. change NOW. its drivers, standings,
@@ -73,7 +72,7 @@ export async function seriesTabMetadata(slug: string, rawTab: string | undefined
     const meta = await loadSeriesMeta(slug);
     const tab = resolveTab(rawTab, meta.singleEvent, slug);
     // X10: the hub (no tab in the address) speaks for the series; a tab speaks for itself, the single-event roll as past winners.
-    const { title, description } = rawTab === undefined ? describeHub(meta.name, meta.season) : describeTab(tab, meta.name, meta.season, meta.singleEvent);
+    const { title, description } = rawTab === undefined ? describeHub(meta.name, meta.season, meta.singleEvent) : describeTab(tab, meta.name, meta.season, meta.singleEvent);
     const canonical = seriesTabCanonical(slug, tab);
     return {
       title,

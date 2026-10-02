@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { fitDescription } from '@/lib/site';
+import { fitDescription, fitTitle } from '@/lib/site';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ExternalLink } from 'lucide-react';
@@ -54,7 +54,8 @@ async function baseMetadata({
     `${team.name} in ${team.seriesName}: the drivers, their points and their results through the season.`,
   ]);
   return {
-    title: team.name,
+    // X10b: a long entry name ("Mercedes-AMG Team Verstappen Racing #3 (SP9 Pro)") loses its car number and class for the tab.
+    title: fitTitle([team.name, team.name.replace(/\s*#\d+\s*(\([^)]*\))?\s*$/, '')]),
     description,
     ...withSocialMeta({ title: team.name, description, path: `/teams/${slug}` }),
   };

@@ -9,7 +9,7 @@ import { renderMarkdown } from '@/lib/content';
 import { POST_ARTICLE_CLASS } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, qaPageLd, guideArticleLd } from '@/lib/json-ld';
-import { fitDescription, SITE_URL, titleFits } from '@/lib/site';
+import { fitDescription, SITE_URL, TITLE_MAX_PX, TITLE_PX, TITLE_SUFFIX, textWidth } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 
@@ -37,7 +37,7 @@ async function baseMetadata({
   const description = fitDescription(entry.summary);
   // X10: a question that does not fit beside the layout's suffix keeps its every word and drops the suffix instead (the
   // question is the page; a cut would change what it asks).
-  const title = titleFits(entry.question) ? entry.question : { absolute: entry.question };
+  const title = textWidth(entry.question + TITLE_SUFFIX, TITLE_PX) <= TITLE_MAX_PX ? entry.question : { absolute: entry.question };
   return {
     title,
     description,

@@ -139,7 +139,7 @@ export function describeTab(
     case 'news':
       return {
         title: t(`${s} news`),
-        description: d(`The latest ${s} news in one wire: race weekend coverage, driver and team stories, technical and rule updates. From motorsport.com and other sources.`),
+        description: d(`The latest ${s} news in one wire: race weekend coverage, driver and team stories, technical and rule updates. From motorsport.com.`),
       };
     case 'blog':
       return {
@@ -190,9 +190,13 @@ export function describeTab(
 }
 
 /** The series hub’s own title and description (the tab route reads describeTab; the hub is the series’ front page). */
-export function describeHub(seriesName: string, season: number): { title: string; description: string } {
+export function describeHub(seriesName: string, season: number, singleEvent = false): { title: string; description: string } {
   return {
     title: fitTitle([`${seriesName} ${season} season`, seriesName]),
-    description: fitDescription(`${seriesName} in ${season} on Paddock Tracker: the next session, where the title stands, the latest results and news, and the full calendar.`),
+    description: fitDescription(
+      singleEvent
+        ? `${seriesName} in ${season} on Paddock Tracker: the next session, the entry, the latest results and news, and the full schedule.`
+        : `${seriesName} in ${season} on Paddock Tracker: the next session, where the title stands, the latest results and news, and the full calendar.`,
+    ),
   };
 }

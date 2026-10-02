@@ -83,18 +83,20 @@ const GLYPH: Record<string, number> = {
   A: 667, B: 667, C: 722, D: 722, E: 667, F: 611, G: 778, H: 722, I: 278, J: 500, K: 667, L: 556, M: 833, N: 722, O: 778, P: 667, Q: 778, R: 722, S: 667, T: 611, U: 722, V: 667, W: 944, X: 667, Y: 667, Z: 611,
   '[': 278, '\\': 278, ']': 278, '^': 469, _: 556, '`': 333,
   a: 556, b: 556, c: 500, d: 556, e: 556, f: 278, g: 556, h: 556, i: 222, j: 222, k: 500, l: 222, m: 833, n: 556, o: 556, p: 556, q: 556, r: 333, s: 500, t: 278, u: 556, v: 500, w: 722, x: 500, y: 500, z: 500,
-  '{': 334, '|': 260, '}': 334, '~': 584, '—': 1000, '–': 556, '·': 278, '’': 222, '‘': 222, '“': 333, '”': 333, '…': 1000, '•': 350, '€': 556, '°': 400, '£': 556, '×': 584, '→': 1000, '←': 1000,
+  '{': 334, '|': 260, '}': 334, '~': 584, '—': 1000, '–': 556, '·': 333, '’': 222, '‘': 222, '“': 333, '”': 333, '…': 1000, '•': 350, '€': 556, '°': 400, '£': 556, '×': 584, '→': 1000, '←': 1000,
 };
+const OWN: Record<string, number> = { í: 278, ì: 278, î: 278, ï: 278, ı: 278, ø: 611, Ø: 778, ß: 611, æ: 889, Æ: 1000, œ: 944, Œ: 1000 };
 const BASE: Record<string, string> = { à: 'a', á: 'a', â: 'a', ã: 'a', ä: 'a', å: 'a', ç: 'c', è: 'e', é: 'e', ê: 'e', ë: 'e', ì: 'i', í: 'i', î: 'i', ï: 'i', ñ: 'n', ò: 'o', ó: 'o', ô: 'o', õ: 'o', ö: 'o', ø: 'o', ù: 'u', ú: 'u', û: 'u', ü: 'u', ý: 'y', ÿ: 'y', À: 'A', Á: 'A', Â: 'A', Ä: 'A', Å: 'A', Ç: 'C', È: 'E', É: 'E', Ê: 'E', Ë: 'E', Ì: 'I', Í: 'I', Î: 'I', Ï: 'I', Ñ: 'N', Ò: 'O', Ó: 'O', Ô: 'O', Ö: 'O', Ø: 'O', Ù: 'U', Ú: 'U', Û: 'U', Ü: 'U', Ý: 'Y', ß: 's', æ: 'a', œ: 'o', Æ: 'A', Œ: 'O', č: 'c', ć: 'c', š: 's', ž: 'z', ł: 'l', ą: 'a', ę: 'e', ő: 'o', ű: 'u', ğ: 'g', ı: 'i', ş: 's', İ: 'I' };
-/** The width of `text` in Arial at `px` pixels; a glyph the table lacks counts as a lowercase letter. */
+/** The width of `text` in Arial at `px` pixels; a glyph the table lacks counts as a lowercase letter, or as a capital
+ *  (667, Arial’s Greek and Cyrillic capitals average 647–677) when it has a different lowercase form. */
 export function textWidth(text: string, px: number): number {
   let units = 0;
-  for (const ch of text) units += GLYPH[ch] ?? GLYPH[BASE[ch] ?? ''] ?? 556;
+  for (const ch of text) units += GLYPH[ch] ?? OWN[ch] ?? GLYPH[BASE[ch] ?? ''] ?? (ch !== ch.toLowerCase() ? 667 : 556);
   return (units * px) / 1000;
 }
 export const TITLE_PX = 20;
 export const TITLE_MAX_PX = 570;
-export const TITLE_SUFFIX = ' — Paddock Tracker';
+export const TITLE_SUFFIX = ` — ${SITE_TITLE}`;
 export const DESCRIPTION_PX = 14;
 export const DESCRIPTION_MAX_PX = 985;
 export const DESCRIPTION_MIN_PX = 440;
@@ -118,13 +120,14 @@ function cutAtWord(text: string, budget: number, px: number): string {
       cut += ch;
     }
   }
-  cut = cut.replace(/\s*\([^)]*$/, '');
+  const closed = cut.replace(/\s*\([^)]*$/, '');
+  if (closed.trim()) cut = closed;
   while (STOP_WORDS.test(cut)) cut = cut.replace(/\s\S+$/, '');
-  return cut.replace(/[\s,:;–—-]+$/, '');
+  return cut.replace(/[\s,:;·|/&–—-]+$/, '');
 }
-/** The words (three characters or more) a title uses twice. */
-export function repeatedWords(text: string): string[] {
-  const words: string[] = text.toLowerCase().match(/[\p{L}\p{N}]{3,}/gu) ?? [];
+/** The words (three characters or more) a title uses twice, the layout's suffix included when `withSuffix`. */
+export function repeatedWords(text: string, withSuffix = false): string[] {
+  const words: string[] = (withSuffix ? text + TITLE_SUFFIX : text).toLowerCase().match(/[\p{L}\p{N}]{3,}/gu) ?? [];
   return [...new Set(words.filter((w, i) => words.indexOf(w) !== i))];
 }
 /** The first variant that fits the title's budget without a repeated word, else the first that fits, else the last cut at a
@@ -133,13 +136,9 @@ export function fitTitle(variants: readonly string[], maxPx = TITLE_MAX_PX): str
   const budget = maxPx - textWidth(TITLE_SUFFIX, TITLE_PX);
   const clean = variants.map(squeeze).filter(Boolean);
   const fits = clean.filter(v => textWidth(v, TITLE_PX) <= budget);
-  return fits.find(v => repeatedWords(v).length === 0) ?? fits[0] ?? cutAtWord(clean[clean.length - 1] ?? '', budget, TITLE_PX);
+  return fits.find(v => repeatedWords(v, true).length === 0) ?? fits[0] ?? cutAtWord(clean[clean.length - 1] ?? '', budget, TITLE_PX);
 }
-const CLAUSE_ENDS: ReadonlyArray<readonly [string, number]> = [[': ', 0], [' — ', 0], [' – ', 0], [' - ', 0], [', and ', 0], [', ', 0], ['; ', 0], ['? ', 1], ['! ', 1]];
-/** Whether a whole title with the layout's suffix fits Seobility's width. */
-export function titleFits(pagePart: string, maxPx = TITLE_MAX_PX): boolean {
-  return textWidth(pagePart + TITLE_SUFFIX, TITLE_PX) <= maxPx;
-}
+const CLAUSE_ENDS: ReadonlyArray<readonly [string, number]> = [[': ', 0], [' — ', 0], [' – ', 0], [' - ', 0], [', and ', 0], [', ', 0], ['; ', 0], ['. ', 0], ['? ', 1], ['! ', 1]];
 /** An editorial headline for the tab: the longest clause before a delimiter that fits and is at least `minChars` long (a
  *  clause without a repeated word before one with), the headline itself when it fits, else a cut at a word. */
 export function shortTitle(title: string, maxPx = TITLE_MAX_PX, minChars = 15): string {
@@ -154,7 +153,7 @@ export function shortTitle(title: string, maxPx = TITLE_MAX_PX, minChars = 15): 
     }
   }
   const longest = (list: string[]) => list.reduce((a, b) => (b.length > a.length ? b : a), '');
-  return longest(clauses.filter(c => repeatedWords(c).length === 0)) || longest(clauses) || cutAtWord(t, budget, TITLE_PX);
+  return longest(clauses.filter(c => repeatedWords(c, true).length === 0)) || longest(clauses) || cutAtWord(t, budget, TITLE_PX);
 }
 /** A meta description within Seobility's width. One text: left alone when it fits (the tail appended under the floor),
  *  else the longest prefix ending at a sentence end above the floor, else a cut at a word with an ellipsis. Several
@@ -171,8 +170,8 @@ export function fitDescription(text: string | readonly string[], opts: { maxPx?:
   const t = squeeze(text);
   const width = textWidth(t, DESCRIPTION_PX);
   if (width <= max) {
-    if (width >= min) return t;
-    const withTail = `${t} ${tail}`;
+    if (width >= min || !tail) return t;
+    const withTail = t ? `${t} ${tail}` : tail;
     return textWidth(withTail, DESCRIPTION_PX) <= max ? withTail : t;
   }
   let best = '';
