@@ -75,8 +75,9 @@ export function seriesInk(colour: string): string {
 // title that uses a word twice. The widths below are Helvetica's advance widths per 1,000 units of the em, which Arial
 // matches; the crawl's own rows reproduce within one per cent (its 586 px title measures 582 here), so the budgets keep a
 // margin: 570 px for a whole title, 985 px for a description, with a floor of 440 px (about seventy characters: Bing flagged
-// one-line descriptions in August 2026) under which a tail is appended. The social cards keep the full strings; these rules
-// shape the browser tab and the search snippet only.
+// one-line descriptions in August 2026) under which a tail is appended. The social cards carry what each template passes
+// them: the fitted descriptions everywhere and the fitted titles on most pages (the team card keeps the full name, the
+// answer card the whole summary).
 const GLYPH: Record<string, number> = {
   ' ': 278, '!': 278, '"': 355, '#': 556, '$': 556, '%': 889, '&': 667, "'": 191, '(': 333, ')': 333, '*': 389, '+': 584, ',': 278, '-': 333, '.': 278, '/': 278,
   '0': 556, '1': 556, '2': 556, '3': 556, '4': 556, '5': 556, '6': 556, '7': 556, '8': 556, '9': 556, ':': 278, ';': 278, '<': 584, '=': 584, '>': 584, '?': 556, '@': 1015,
@@ -123,7 +124,8 @@ function cutAtWord(text: string, budget: number, px: number): string {
   const closed = cut.replace(/\s*\([^)]*$/, '');
   if (closed.trim()) cut = closed;
   while (STOP_WORDS.test(cut)) cut = cut.replace(/\s\S+$/, '');
-  return cut.replace(/[\s,:;·|/&–—-]+$/, '');
+  // A cut that lands between "round" and its number leaves "· round" behind: the stub goes with its separator.
+  return cut.replace(/\s*[·|/&–—-]\s*round$/i, '').replace(/[\s,:;·|/&–—-]+$/, '');
 }
 /** The words (three characters or more) a title uses twice, the layout's suffix included when `withSuffix`. */
 export function repeatedWords(text: string, withSuffix = false): string[] {

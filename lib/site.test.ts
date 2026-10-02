@@ -8,6 +8,9 @@ import { DESCRIPTION_TAIL, SITE_TITLE, TITLE_SUFFIX, fitDescription, fitTitle, s
 // of 440 px under which a tail is appended.
 
 describe('fitTitle', () => {
+  it('drops a “· round” stub when the cut lands between the word and its number (the second reviewer’s finding)', () => {
+    expect(fitTitle(['Indianapolis 500 Top 12 Qualifying · round 7'])).toBe('Indianapolis 500 Top 12 Qualifying');
+  });
   it('takes the first variant that fits, and only when none does cuts the last one at a word', () => {
     expect(fitTitle(['Sprint Race, Barcelona Sprint — GT World Challenge', 'Sprint Race, Barcelona Sprint'])).toBe('Sprint Race, Barcelona Sprint');
     expect(fitTitle(['Race, Azerbaijan Grand Prix — Formula 1'])).toBe('Race, Azerbaijan Grand Prix — Formula 1');

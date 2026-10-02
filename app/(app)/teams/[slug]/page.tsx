@@ -54,8 +54,10 @@ async function baseMetadata({
     `${team.name} in ${team.seriesName}: the drivers, their points and their results through the season.`,
   ]);
   return {
-    // X10b: a long entry name ("Mercedes-AMG Team Verstappen Racing #3 (SP9 Pro)") loses its car number and class for the tab.
-    title: fitTitle([team.name, team.name.replace(/\s*#\d+\s*(\([^)]*\))?\s*$/, '')]),
+    // X10b: a long entry name ("Corvette Racing by Pratt Miller #3 (GTD Pro)") loses its class for the tab, then its car
+    // number too; the one pair this leaves alike (Mercedes-AMG Team Verstappen Racing #3 in GT World Challenge and in NLS,
+    // 582 px with the number) is named in the records rather than widened past the budget.
+    title: fitTitle([team.name, team.name.replace(/\s*\([^)]*\)\s*$/, ''), team.name.replace(/\s*#\d+\s*(\([^)]*\))?\s*$/, '')]),
     description,
     ...withSocialMeta({ title: team.name, description, path: `/teams/${slug}` }),
   };
