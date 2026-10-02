@@ -14,13 +14,13 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #__PR__ · 1.0.240 · R18 PR D · opened __OPENED__; the merge on the word
+## #1122 · 1.0.240 · R18 PR D · opened Fri 2 Oct 12:17 (09:17Z); the merge on the word
 **Fornaroli’s photo beside the Reigning champion card; the phone card after the operator’s drawing.** Two words of the 2nd: “also upload it” (the photo went to prod by the build session’s hand: the file into the media bucket, the asset row through the Management API after a rehearsal) and the drawing of the roll of honour’s phone card (a season band with points and wins, the two champions side by side, the runner-up’s row with points and margin, every cell ruled).
 - **Readers see:** the photo beside the reigning champion from lg (the halves stack below it); on phones every season’s card in the drawn shape; nothing else (the parity below).
 - **Editors get:** nothing new (the photo is an asset of the store like any other, with its caption, credit and licence).
 - **Files (11):**
   - `lib/design/components.ts` · `F2_CHAMPION_PHOTO` the uploaded asset’s id; `reigning` a half, the `photo` image half beside it.
-  - `components/data/DataRegionViews.tsx` · the Roll of honour’s card below lg after the drawing; the stat line gone; `CARD_LABEL`.
+  - `components/data/DataRegionViews.tsx` · the Roll of honour’s card below lg after the drawing, then the operator’s second look (each card its own rounded box with space between, the season band in red bold capitals, the points in red); the stat line gone; `CARD_LABEL`.
   - `lib/design/components.test.ts`, `lib/design/component-render.test.tsx` · the halves and the pinned id; the cards’ bands, champions, rookie lines and runner-up rows, the bare season.
   - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · R18’s evidence with PR D; needsWord; 70 slots rehashed.
   - `SCHEDULE.md`, `IDEAS.md` · the session-63 item 13; the phone card line closed into PR D with the data gap named.
