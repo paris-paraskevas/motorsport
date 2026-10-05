@@ -240,9 +240,10 @@ export function buildConstructorsTrendData(
   const sorted = [...races].sort((a, b) => a.round - b.round);
   const rounds = [...new Set(sorted.map(r => r.round))].sort((a, b) => a - b);
 
+  // The point's name is the round's last race's, as the drivers' builder names it (B3).
   const snapshots = rounds.map(round => ({
     round,
-    raceName: sorted.find(r => r.round === round)?.raceName ?? `Round ${round}`,
+    raceName: sorted.filter(r => r.round === round).at(-1)?.raceName ?? `Round ${round}`,
     standings: buildStandingsAtRound(races, round, extras).constructors,
   }));
 

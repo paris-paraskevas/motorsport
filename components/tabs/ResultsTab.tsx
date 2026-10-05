@@ -200,7 +200,8 @@ function roundLinks(series: Series): RoundLinks {
   };
 }
 
-/** The latest item: the greatest date, then the greatest round; undefined for none. */
+/** The latest item: the greatest date, then the greatest round, then the later item (a round's second feature shares
+ *  the first's date, B3); undefined for none. */
 function latestOf<T>(items: T[], date: (item: T) => Date | undefined, round: (item: T) => number): T | undefined {
   let best: T | undefined;
   for (const item of items) {
@@ -211,7 +212,7 @@ function latestOf<T>(items: T[], date: (item: T) => Date | undefined, round: (it
     const a = date(item)?.getTime() ?? NaN;
     const b = date(best)?.getTime() ?? NaN;
     const later = Number.isNaN(a) || Number.isNaN(b) ? 0 : a - b;
-    if (later > 0 || (later === 0 && round(item) > round(best))) best = item;
+    if (later > 0 || (later === 0 && round(item) >= round(best))) best = item;
   }
   return best;
 }

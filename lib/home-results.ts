@@ -88,7 +88,9 @@ export function latestRaceFromFlat(races: RaceResult[], nowMs: number): LatestRa
   const finished = races
     .map(r => ({ r, t: r.date instanceof Date ? r.date.getTime() : new Date(r.date).getTime() }))
     .filter(({ r, t }) => Number.isFinite(t) && t <= nowMs && r.results && r.results.length > 0)
-    .sort((a, b) => b.t - a.t);
+    // Two races of one date (a round's second feature carries the meeting's date, B3): the later one in feed order.
+    .map((x, i) => ({ ...x, i }))
+    .sort((a, b) => b.t - a.t || b.i - a.i);
   const latest = finished[0]?.r;
   if (!latest) return null;
   const podium = latest.results

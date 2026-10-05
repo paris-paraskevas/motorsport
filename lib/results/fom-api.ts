@@ -4,7 +4,7 @@ import { fetchUpstream } from '@/lib/fetch-upstream';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
 import { withSourceSnapshot } from '@/lib/source-snapshot';
 import type { SeriesRoundEntry } from '@/lib/types';
-import fs from '@/lib/content-fs';
+import { loadRounds } from '@/lib/rounds-loader';
 import path from 'path';
 
 export type { RaceResult, RaceResultEntry };
@@ -41,7 +41,7 @@ export type FomBrand = 'f2' | 'f3';
 // ---- API response shapes (only the fields we read) ----------------------
 
 export interface FomRaceSession {
-  description?: string; // "SPRINT RACE" | "FEATURE RACE"
+  description?: string; // "Sprint Race" | "Feature Race" | "Feature Race 2" (a feature carried over, B3)
   sessionNumber?: number;
 }
 
@@ -63,7 +63,8 @@ export interface FomStandingRow {
   driverShortName?: string;
   driverTLA?: string;
   championshipPoints?: number;
-  // Per-round [sprint, feature] canonical points. Column index = round-1.
+  // Per-round canonical points, one cell per race session in the meeting's order ([sprint, feature], three for a
+  // carried-over race). Column index = the meeting's position in the manifest - 1 (B3).
   // Validated: summing these equals championshipPoints for every driver, so
   // this — NOT the per-session `racePoints` field, which omits pole/fastest-lap
   // bonuses — is the canonical points source.
@@ -101,7 +102,7 @@ export interface FomSessionResponse {
   // Round metadata for the session's meeting (circuit/country/dates). NOTE the
   // API carries NO F2/F3 round number here — the only round number present
   // anywhere is the F1 GP number, which differs (F2/F3 skip some GPs). The
-  // championship round is the meeting's index in the manifest (see below).
+  // championship round is the curated calendar's by date overlap, else the meeting's position (roundOfMeeting, B3).
   meeting?: {
     circuitOfficialName?: string;
     meetingCountryName?: string;
@@ -320,8 +321,10 @@ export interface FomSeasonBundle {
 
 const EMPTY_BUNDLE: FomSeasonBundle = { feature: [], sprint: [], qualifying: [], practice: [] };
 
+// v2 (B3): the bundle's shape changed (every race of a meeting, the curated round), so a bundle the old reader cached
+// within the three-hour window is never served or re-persisted by the new one.
 function bundleCacheKey(brand: FomBrand, season: number): string {
-  return `paddock:results:fom:${brand}:season:${season}`;
+  return `paddock:results:fom:v2:${brand}:season:${season}`;
 }
 
 async function mapWithLimit<T>(items: T[], limit: number, fn: (item: T) => Promise<void>): Promise<void> {
@@ -338,12 +341,6 @@ async function mapWithLimit<T>(items: T[], limit: number, fn: (item: T) => Promi
   );
 }
 
-/**
- * Fetch a full F2/F3 season from the FOM API: one manifest call for the meeting
- * list + canonical points, then per-completed-round session fan-out. Fail-soft
- * throughout (empty bundle on any failure). Cached under a season key so the
- * fan-out runs at most once per 3-hour window.
- */
 /** The feed's session description as a race name: "FEATURE RACE 2" → "Feature Race 2". */
 function raceSessionName(description: string | undefined, kind: 'feature' | 'sprint'): string {
   const words = (description ?? '').trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
@@ -362,7 +359,13 @@ export function roundOfMeeting(meeting: FomMeeting, position: number, rounds?: r
   return position;
 }
 
-async function fetchFomSeasonLive(brand: FomBrand, season: number, rounds?: readonly SeriesRoundEntry[]): Promise<FomSeasonBundle> {
+/**
+ * Fetch a full F2/F3 season from the FOM API: one manifest call for the meeting
+ * list + canonical points, then per-completed-round session fan-out. Fail-soft
+ * throughout (empty bundle on any failure). Cached under a season key so the
+ * fan-out runs at most once per 3-hour window.
+ */
+async function fetchFomSeasonLive(brand: FomBrand, season: number): Promise<FomSeasonBundle> {
   const cacheKey = bundleCacheKey(brand, season);
   const cached = await readResultsCache<FomSeasonBundle>(cacheKey);
   if (cached) return cached;
@@ -376,12 +379,14 @@ async function fetchFomSeasonLive(brand: FomBrand, season: number, rounds?: read
 
   const points = buildPointsLookup(manifest?.standings);
   const done = completedRounds(manifest?.standings);
-  const calendar = rounds ?? (await curatedRounds(brand));
+  // The curated calendar (content/series/<brand>/rounds.json, the loader the series pages use) numbers the rounds;
+  // without the file the meeting's position stands.
+  const calendar = (await loadRounds(path.join(process.cwd(), 'content', 'series', brand)))?.rounds;
 
   const bundle: FomSeasonBundle = { feature: [], sprint: [], qualifying: [], practice: [] };
 
-  // Round = manifest index + 1 (the F2/F3 championship round; validated against
-  // the points columns, which align 1:1 with meeting order).
+  // The meeting's position in the manifest keys its points cells (they align 1:1 with meeting order); its championship
+  // round is the curated calendar's by date overlap, else the position (Formula 3 skipped its round 2 in 2026).
   const targets = meetings
     .map((meeting, i) => ({ meeting, position: i + 1, round: roundOfMeeting(meeting, i + 1, calendar) }))
     .filter(({ position }) => done.has(position));
@@ -432,25 +437,13 @@ async function fetchFomSeasonLive(brand: FomBrand, season: number, rounds?: read
  * `RaceResult.date` is a `Date`; jsonb stores it as an ISO string, so the read
  * path rehydrates it (the F2/F3 tabs call `.toLocaleDateString` on it).
  */
-export async function fetchFomSeason(brand: FomBrand, season: number, rounds?: readonly SeriesRoundEntry[]): Promise<FomSeasonBundle> {
+export async function fetchFomSeason(brand: FomBrand, season: number): Promise<FomSeasonBundle> {
   const bundle = await withSourceSnapshot<FomSeasonBundle>(
     `results:fom:${brand}:${season}`,
-    () => fetchFomSeasonLive(brand, season, rounds),
+    () => fetchFomSeasonLive(brand, season),
     v => v == null || (v.feature.length === 0 && v.sprint.length === 0),
   );
   return reviveBundleDates(bundle);
-}
-
-/** The curated calendar of the brand (content/series/<slug>/rounds.json, through the content file system the series
- *  loader reads), read when the caller passes none; nothing when the file is missing, so the meeting's position stands. */
-async function curatedRounds(brand: FomBrand): Promise<readonly SeriesRoundEntry[] | undefined> {
-  try {
-    const raw = await fs.readFile(path.join(process.cwd(), 'content', 'series', brand, 'rounds.json'), 'utf-8');
-    const parsed = JSON.parse(raw) as { rounds?: SeriesRoundEntry[] };
-    return Array.isArray(parsed.rounds) ? parsed.rounds : undefined;
-  } catch {
-    return undefined;
-  }
 }
 
 /** jsonb round-trips `Date` → ISO string; restore it on every race row. */
