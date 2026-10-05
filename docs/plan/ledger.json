@@ -764,6 +764,11 @@
    "date": "2026-10-05",
    "change": "The performance programme’s file placed at docs/perf-handoff.md (the operator’s file of the 5th, verbatim); the Phase 2 design picked: D, Workers Cache, the experiment on the testing Worker first, C behind it, A the fallback; the order of the evening: the fixes first (X14’s six changes and the crawl’s five title and description leftovers), then the front cache for the new numbers, then the next step from there; the Seobility re-crawl deferred until after the front cache.",
    "word": "the operator, 2026-10-05 ~19:25Z: “wont do seobility check yet, lets first complete all fixes then make the worker so we can see new ms numbers and then see whats next from there”; “phase 2 pick: D, place the per handoff in docs if its not there and start”"
+  },
+  {
+   "date": "2026-10-05",
+   "change": "The performance programme enters the ledger as phase PF with the slots PF0–PF6 from docs/perf-handoff.md: PF0 started on the 5th’s measurements; PF2 on design D (Workers Cache), PR B on the testing Worker first; PF5 pulled forward after The Two Bills page; X16’s first step folded into PF3.",
+   "word": "the operator’s file of the 5th (20:09Z); “phase 2 pick: D, place the per handoff in docs if its not there and start” and “lets first complete all fixes then make the worker so we can see new ms numbers” (~19:25Z); the fixes merged 21:52Z and 22:02Z"
   }
  ],
  "phases": {
@@ -798,6 +803,10 @@
   "PO": {
    "title": "Phase O — Operations",
    "note": "The site’s running costs and limits, at the ledger’s end by the operator’s word: each slot a dated deadline, measured first, cut second, a paid plan only on the word."
+  },
+  "PF": {
+   "title": "Phase F — The performance programme (docs/perf-handoff.md)",
+   "note": "The operator’s file of 5 October is the plan: measure, then the front cache, then fewer and cheaper renders, then page weight. Every slot’s acceptance is the file’s gate; the testing Worker before prod; every PR appends its numbers to docs/perf-baselines.md."
   }
  },
  "slots": [
@@ -1810,6 +1819,97 @@
    "status": "planned",
    "scopeHash": "4e69ba3afb19",
    "evidence": "PLANNED on the plan page of the 2nd (last of the seven)."
+  },
+  {
+   "scopeHash": "5034f491fec2",
+   "evidence": "STARTED 2026-10-05 ~17:15Z: perf-phase0-baselines.md (the ttfb table cold and warm on testing and prod), perf-phase0-meta.txt and perf-phase0-size.txt (the breakdown) in the paddock-x10 scratch directory; the Worker Startup Time 40 ms (the X13 deploy) and 26 ms (B3’s): the cold cost is the first render and the first R2 read, not the script’s start, which favours Phase 2 over Phase 4. The gate waits for the word and the field numbers.",
+   "id": "PF0",
+   "title": "Measure",
+   "status": "started",
+   "scope": "Phase 0 of the file: the ttfb script cold and warm on prod and testing, the Worker startup time, the top-20 size breakdown of the bundle, the field numbers (PageSpeed Insights mobile and desktop for the home, one article, /series/f1/standings and /calendar; Cloudflare Workers observability requests, wall time p50/p90/p99 and CPU time for 7 days).",
+   "fixedBy": "the file (the operator’s word of the 5th, 20:09Z); the baselines file docs/perf-baselines.md, append-only",
+   "defaults": "the scratch directory holds the measurements until the gate’s word; the startup time read from the deploy logs",
+   "needsWord": "the gate: the numbers pasted into docs/perf-baselines.md (default yes); the field numbers by the operator’s hand",
+   "acceptance": "The cold and warm table, the startup time, the top-20 breakdown and the field numbers in docs/perf-baselines.md; the operator picks the order of Phases 2 and 4 from them.",
+   "phase": "PF"
+  },
+  {
+   "scopeHash": "52a51e90c12a",
+   "evidence": "",
+   "id": "PF1",
+   "title": "The articles cached",
+   "status": "planned",
+   "scope": "Phase 1 of the file (PR A): the blog post route leaves force-dynamic for a revalidate window; the admin preview through Draft Mode and a preview route handler; publishing revalidates the post, the blog index and the home; the share counts and reactions stay client-side.",
+   "fixedBy": "the file; the law that a new file (the preview route handler) needs the word",
+   "defaults": "revalidate 3600; the Studio’s preview links pointed at the handler",
+   "needsWord": "the new route handler app/api/preview/route.ts",
+   "acceptance": "On testing a live article answers x-opennext-cache HIT on its second request with s-maxage; an unpublished post still 404s signed out; an admin’s preview shows it; a scheduled publish appears within the tag window; the article’s TTFB before and after in the baselines.",
+   "phase": "PF"
+  },
+  {
+   "scopeHash": "1144eae207f8",
+   "evidence": "",
+   "id": "PF2",
+   "title": "The front cache, design D",
+   "status": "planned",
+   "scope": "Phase 2 of the file (PRs B and C) with the design picked on the 5th: Workers Cache, `\"cache\": { \"enabled\": true }` in the Worker’s configuration, the cache Cloudflare keeps in front of the Worker. PR B on the testing Worker: the setting; `no-store` on the middleware’s redirects (the www and http 301, the ?tab=, history and about 308s); every dev.-host response private; a Cache-Tag on cacheable responses and a purge by path where the app revalidates, where the runtime offers it; the eight checks of the Four Front Caches page; the Phase 0 script cold and warm. PR C on prod: the same line in wrangler.jsonc, the rollback written (the line removed, one deploy), the first-minute checks (www, dev., a redirect, a cron).",
+   "fixedBy": "the file’s Phase 2 goal and acceptance; the pick “D” (the operator, 5 October ~19:25Z); the Four Front Caches page’s facts (the key ignores the hostname; heuristic freshness without Cache-Control; service-binding and loopback calls cached)",
+   "defaults": "HTML and RSC payloads cached as their own headers say; the tag shape path:<pathname>; the stale window the page’s own s-maxage; testing first, prod on its own word",
+   "needsWord": "PR C, “front cache on prod”, after PR B’s numbers",
+   "acceptance": "PR B: on testing five pages after fifteen idle minutes answer Cf-Cache-Status HIT in under 0.3 s TTFB; /calendar?series=f1 and /calendar two entries; no redirect from the cache; the API and cron routes never cached; a page whose window ends re-renders; the loader’s purge reaches readers; a signed-in reader’s pages private and no Set-Cookie ever cached; a new deploy serves no stale chunk. PR C: the Phase 0 script on prod cold and warm, cold TTFB on cached pages under 0.5 s; the app Worker’s request count down in observability.",
+   "phase": "PF"
+  },
+  {
+   "scopeHash": "fbdbbc35114d",
+   "evidence": "",
+   "id": "PF3",
+   "title": "Revalidate on change, longer windows",
+   "status": "planned",
+   "scope": "Phase 3 of the file (PR D) with X16’s step 1 folded in: each cron route compares its data with the stored hash and revalidates only what changed; the windows lengthened (weekend, session, series tabs, driver and team pages to 3600 or more; the home’s window the operator’s word); the regional tag answer kept 300 s instead of 5; R2 Class A operations within the free tier.",
+   "fixedBy": "the file; X16’s slot (the plan page of the 2nd); the R2 free tier noted in open-next.config.ts",
+   "defaults": "the hash check per cron; the regional TTL 300 s",
+   "needsWord": "the home’s window (the plan page’s default was 300 → 1,800 s)",
+   "acceptance": "Render counts per page per hour fall in observability; a new result appears within one cron cycle; R2 operations for a day quoted; no getTagData call on a warm hit on testing.",
+   "phase": "PF"
+  },
+  {
+   "scopeHash": "448439e436aa",
+   "evidence": "",
+   "id": "PF4",
+   "title": "A smaller Worker",
+   "status": "planned",
+   "scope": "Phase 4 of the file (PRs E…), only what Phase 0’s breakdown justifies: the crons out of the app Worker where they alone import their modules; heavy client libraries proven out of the server bundle; the admin and designer on their own deployment if the breakdown shows them a large share.",
+   "fixedBy": "the file; the Phase 0 breakdown (perf-phase0-meta.txt: the handler 27.74 MiB, 79 % in .next/server/chunks)",
+   "defaults": "nothing until the breakdown names a share",
+   "needsWord": "whether the admin and designer move to their own deployment this round",
+   "acceptance": "Each PR quotes the dry-run size and the startup time before and after, and the Phase 0 cold numbers for the routes that still reach the app.",
+   "phase": "PF"
+  },
+  {
+   "scopeHash": "0b5f55c01317",
+   "evidence": "",
+   "id": "PF5",
+   "title": "One design snapshot",
+   "status": "planned",
+   "scope": "Phase 5 of the file (PR F), pulled forward by the cost reading of the 5th: the layout’s eight designer loaders and the page registry’s reads as one snapshot, cached across isolates with a tag through Next’s data cache and revalidated by the design saves; the 60 s in-isolate memo kept as the first layer.",
+   "fixedBy": "the file; The Two Bills page (96 % of the Supabase gateway rows are the designer’s reads per render)",
+   "defaults": "one tag design-snapshot; the admin design routes revalidate it on save",
+   "needsWord": "its plan in plan mode (its own decision scan) before code",
+   "acceptance": "A cold render’s trace shows one design read instead of eight; a design change shows within the tag window; the gateway rows per render from about twenty to one or two on a snapshot miss and none on a hit.",
+   "phase": "PF"
+  },
+  {
+   "scopeHash": "64c7eaa3207a",
+   "evidence": "",
+   "id": "PF6",
+   "title": "Page weight",
+   "status": "planned",
+   "scope": "Phase 6 of the file (PRs G…): the lead image as WebP or JPEG at three widths in the MEDIA bucket with the Wikimedia thumbnail as the fallback and the credit kept, fetchpriority and sizes on the LCP image, no cover preloads the home never draws; the fonts with the redesign’s global layer; the JavaScript budgets; the HTML cuts.",
+   "fixedBy": "the file; the redesign mapping docs/redesign/mapping.md",
+   "defaults": "nothing until its turn",
+   "needsWord": "the existing posts’ covers converted and stored in R2 (a content write)",
+   "acceptance": "Mobile LCP toward 2.5 s and PSI toward 90 on the four pages, measured in the baselines.",
+   "phase": "PF"
   }
  ]
 }

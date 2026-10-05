@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { browserSafeCacheControl, withBrowserSafeCache } from './cache-headers';
+import { browserSafeCacheControl, edgeCacheRules, withBrowserSafeCache, withEdgeCacheRules } from './cache-headers';
 
 // The header OpenNext emits lets a browser reuse a stale page or payload for a
 // month; after a deploy that means the previous build's chunk names and content.
@@ -68,5 +68,55 @@ describe('withBrowserSafeCache', () => {
     expect(out.headers.get('vary')).toBe('rsc, next-router-state-tree');
     expect(out.headers.get('x-opennext')).toBe('1');
     expect(await out.text()).toBe('<html>');
+  });
+});
+
+// PF2: the rules a cache in front of the Worker needs. Workers Cache keys by path and query, not the hostname, and
+// may keep a response without Cache-Control on heuristic freshness.
+describe('edgeCacheRules', () => {
+  it('makes every response of the dev. host private', () => {
+    expect(edgeCacheRules('dev.paddock-tracker.com', '/series/f1', 's-maxage=300, max-age=0, must-revalidate')).toEqual({
+      cacheControl: 'private, no-store',
+    });
+    expect(edgeCacheRules('dev.paddock-tracker.com', '/admin/designer', null)).toEqual({ cacheControl: 'private, no-store' });
+  });
+
+  it('says no-store where nothing was said: a redirect, a route handler without a header', () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/series/f1', null)).toEqual({ cacheControl: 'no-store' });
+  });
+
+  it('tags a cacheable page with its path and leaves its header alone', () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=128, max-age=0, must-revalidate')).toEqual({
+      cacheTag: 'path:/calendar',
+    });
+  });
+
+  it('touches nothing private, no-store or merely public', () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/blog/x', 'private, no-cache, no-store, max-age=0, must-revalidate')).toEqual({});
+    expect(edgeCacheRules('paddock-tracker.com', '/api/search', 'public, max-age=3600, stale-while-revalidate=86400')).toEqual({});
+  });
+});
+
+describe('withEdgeCacheRules', () => {
+  it('returns the same response object when nothing applies', () => {
+    const res = new Response('x', { headers: { 'cache-control': 'private, no-store' } });
+    expect(withEdgeCacheRules(new Request('https://paddock-tracker.com/settings'), res)).toBe(res);
+  });
+
+  it('copies the response and sets the header or the tag', async () => {
+    const res = new Response('<html>', {
+      status: 200,
+      headers: { 'cache-control': 's-maxage=300, max-age=0, must-revalidate', 'content-type': 'text/html' },
+    });
+    const out = withEdgeCacheRules(new Request('https://paddock-tracker.com/series/f1'), res);
+    expect(out.headers.get('cache-tag')).toBe('path:/series/f1');
+    expect(out.headers.get('cache-control')).toBe('s-maxage=300, max-age=0, must-revalidate');
+    expect(await out.text()).toBe('<html>');
+    const dev = withEdgeCacheRules(
+      new Request('https://dev.paddock-tracker.com/series/f1'),
+      new Response('y', { headers: { 'cache-control': 's-maxage=300' } }),
+    );
+    expect(dev.headers.get('cache-control')).toBe('private, no-store');
+    expect(dev.headers.get('cache-tag')).toBeNull();
   });
 });

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.253 — 2026-10-05
+
+### PF2 — The front cache on the testing Worker (design D, PR B)
+
+The operator’s pick of the 5th for Phase 2 of the performance programme: Workers Cache, `"cache": { "enabled": true }` in `wrangler.testing.jsonc`, the cache Cloudflare keeps in front of the Worker, keyed by path and query and governed by the response’s own Cache-Control; a hit runs no code and bills no CPU. The rules its hostname-blind key needs live in `lib/cache-headers.ts` (`edgeCacheRules`, `withEdgeCacheRules`) and run in `worker.ts` on every response: the dev. host private, a response without Cache-Control marked no-store (the middleware’s and Next’s redirects, bare route handlers), a cacheable page tagged `path:<pathname>`; the loader’s revalidate route purges those tags best-effort through the Worker’s execution context (`app/api/cron/revalidate/route.ts`). Prod untouched: PR C on the word, with the rollback written. The performance programme enters the ledger as phase PF (PF0–PF6) with the dated change line.
+
 ## 1.0.252 — 2026-10-05
 
 ### X10’s leftovers — the titles and descriptions the crawl of the 5th still flagged

@@ -55,3 +55,41 @@ export function withBrowserSafeCache(res: Response): Response {
   out.headers.set('cache-control', fixed);
   return out;
 }
+
+/**
+ * The rules a cache in front of the Worker needs (PF2, Workers Cache). Its key
+ * is the path and query, not the hostname, and a response without Cache-Control
+ * may be kept on heuristic freshness, so three things are decided here, once,
+ * on the way out:
+ * - every response of the dev. host is private, so an admin's page can never be
+ *   served to the apex;
+ * - a response with no Cache-Control at all says no-store (the middleware's
+ *   redirects, Next's own redirects, route handlers that set nothing): none of
+ *   them was ever meant for a shared cache;
+ * - a cacheable page (an s-maxage that is not private or no-store) carries a
+ *   Cache-Tag naming its path, so a purge by tag can follow a revalidation.
+ * Static assets never pass here: the assets binding answers them first.
+ */
+export function edgeCacheRules(
+  hostname: string,
+  pathname: string,
+  cacheControl: string | null,
+): { cacheControl?: string; cacheTag?: string } {
+  if (hostname.startsWith('dev.')) return { cacheControl: 'private, no-store' };
+  if (!cacheControl) return { cacheControl: 'no-store' };
+  if (/\bs-maxage=\d+/.test(cacheControl) && !/\b(private|no-store)\b/.test(cacheControl)) {
+    return { cacheTag: `path:${pathname}` };
+  }
+  return {};
+}
+
+/** The handler's response with the edge rules applied, or the very same response when none applies. */
+export function withEdgeCacheRules(request: Request, res: Response): Response {
+  const url = new URL(request.url);
+  const rules = edgeCacheRules(url.hostname, url.pathname, res.headers.get('cache-control'));
+  if (!rules.cacheControl && !rules.cacheTag) return res;
+  const out = new Response(res.body, res);
+  if (rules.cacheControl) out.headers.set('cache-control', rules.cacheControl);
+  if (rules.cacheTag) out.headers.set('cache-tag', rules.cacheTag);
+  return out;
+}

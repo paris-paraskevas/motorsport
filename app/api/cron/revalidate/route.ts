@@ -1,6 +1,20 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
+
+type EdgeCache = { purge?: (options: { tags: string[] }) => Promise<unknown> };
+
+async function purgeEdgeTags(tags: string[]): Promise<boolean> {
+  try {
+    const ctx = getCloudflareContext().ctx as unknown as { cache?: EdgeCache };
+    if (typeof ctx.cache?.purge !== 'function') return false;
+    await ctx.cache.purge({ tags });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -44,5 +58,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'paths required: root-relative, no query, at most 50' }, { status: 400 });
   }
   for (const p of paths) revalidatePath(p);
-  return NextResponse.json({ ok: true, revalidated: paths, at: new Date().toISOString() });
+  // PF2: the cache in front of the Worker (Workers Cache) keeps a copy of each page under the tag path:<pathname>
+  // (worker.ts); purging those tags makes the loader's refresh visible at once instead of at the window's end.
+  // Best effort: the purge rides on the Worker's execution context where the runtime offers it, and a refusal never
+  // fails the revalidation.
+  const edgePurged = await purgeEdgeTags(paths.map(p => `path:${p}`));
+  return NextResponse.json({ ok: true, revalidated: paths, edgePurged, at: new Date().toISOString() });
 }
