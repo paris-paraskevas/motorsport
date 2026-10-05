@@ -303,7 +303,7 @@ async function loadRisingStars(): Promise<InfoEntry[]> {
       kind: 'watchlist',
       topic: 'feeder-series',
       slug: 'up-and-coming-drivers-to-watch',
-      question: 'Which up-and-coming drivers should you watch in the feeder series?',
+      question: 'Which up-and-coming drivers should you watch?',
       summary:
         'A curated watchlist of rising stars on the junior single-seater and karting ladder.',
       keywords: [
