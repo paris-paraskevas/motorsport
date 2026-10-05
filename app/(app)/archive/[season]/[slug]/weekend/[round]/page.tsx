@@ -53,7 +53,9 @@ async function baseMetadata({
     title,
     description,
     alternates: {
-      canonical: live
+      // X14: round 0 (a weekend no curated round covers) has no live page, so its canonical stays here rather than
+      // pointing at a 404 (seven canonical errors in Seobility's crawl of 5 October).
+      canonical: live && weekend.round >= 1
         ? `/series/${slug}/weekend/${weekend.round}`
         : `/archive/${season}/${slug}/weekend/${weekend.round}`,
     },
@@ -111,7 +113,7 @@ async function ArchiveWeekendPage({
         {titleOf(weekend)}
       </h1>
 
-      {live ? (
+      {live && weekend.round >= 1 ? (
         <p className="mt-2 text-sm leading-relaxed text-text-muted">
           The {archive.season} season is still running.{' '}
           <Link href={`/series/${slug}/weekend/${weekend.round}`} className="text-brand hover:underline">

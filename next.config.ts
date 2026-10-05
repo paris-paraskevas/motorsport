@@ -63,6 +63,10 @@ const CSP = [
   // Styles: self + inline (Tailwind utilities, inline style attributes).
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style",
   "font-src 'self' data: https://fonts.gstatic.com",
+  // Team radio: the F1 recordings live on livetiming.formula1.com. Without a
+  // media-src the default-src refused them and the player was mute (found by
+  // X14's browser check on 2026-10-05).
+  "media-src 'self' https://livetiming.formula1.com",
   // Images: self + data/blob + https (account photos, Google's pictures, F1/OpenF1
   // headshots, ad + analytics pixels). Broad on purpose for a first pass.
   "img-src 'self' data: blob: https:",

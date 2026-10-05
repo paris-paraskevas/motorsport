@@ -345,15 +345,20 @@ async function SeriesPage({
                 <p className="font-serif text-19 font-semibold leading-tight text-text">
                   {lastW.roundName ?? weekendLabel(lastW, lastW.round).title}
                 </p>
-                <Suspense fallback={null}>
-                  <LastPodiumLine slug={slug} round={lastW.round} />
-                </Suspense>
-                <Link
-                  href={`/series/${slug}/weekend/${lastW.round}`}
-                  className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
-                >
-                  Report →<span className="sr-only">{` — ${weekendAnchorName(meta.name, lastW.roundName ?? weekendLabel(lastW, lastW.round).title, lastW.round)}`}</span>
-                </Link>
+                {/* X14: a round-0 weekend (a test) has no page and no podium. */}
+                {lastW.round >= 1 && (
+                  <>
+                    <Suspense fallback={null}>
+                      <LastPodiumLine slug={slug} round={lastW.round} />
+                    </Suspense>
+                    <Link
+                      href={`/series/${slug}/weekend/${lastW.round}`}
+                      className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+                    >
+                      Report →<span className="sr-only">{` — ${weekendAnchorName(meta.name, lastW.roundName ?? weekendLabel(lastW, lastW.round).title, lastW.round)}`}</span>
+                    </Link>
+                  </>
+                )}
               </div>
             )}
             {nextW && (
@@ -365,12 +370,14 @@ async function SeriesPage({
                 <p className="mt-0.5 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                   {fmtRange(nextW)}
                 </p>
-                <Link
-                  href={`/series/${slug}/weekend/${nextW.round}`}
-                  className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
-                >
-                  Preview →<span className="sr-only">{` — ${weekendAnchorName(meta.name, nextW.roundName ?? weekendLabel(nextW, nextW.round).title, nextW.round)}`}</span>
-                </Link>
+                {nextW.round >= 1 && (
+                  <Link
+                    href={`/series/${slug}/weekend/${nextW.round}`}
+                    className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+                  >
+                    Preview →<span className="sr-only">{` — ${weekendAnchorName(meta.name, nextW.roundName ?? weekendLabel(nextW, nextW.round).title, nextW.round)}`}</span>
+                  </Link>
+                )}
               </div>
             )}
             {seasonOver && (
@@ -409,14 +416,11 @@ async function SeriesPage({
                 const relocated = rm?.rescheduleNote
                   ? (/relocated to ([^,]+)/i.exec(rm.rescheduleNote)?.[1] ?? 'relocated').toUpperCase()
                   : null;
-                return (
-                  <Link
-                    key={w.key}
-                    href={`/series/${slug}/weekend/${w.round}`}
-                    className={`flex min-h-11 items-center gap-3 border-b border-border py-1.5 transition-colors duration-(--duration-fast) hover:bg-surface lg:break-inside-avoid ${
-                      isNext ? 'border-[1.5px] border-text bg-surface-elevated px-2' : ''
-                    }`}
-                  >
+                const rowClass = `flex min-h-11 items-center gap-3 border-b border-border py-1.5 transition-colors duration-(--duration-fast) hover:bg-surface lg:break-inside-avoid ${
+                  isNext ? 'border-[1.5px] border-text bg-surface-elevated px-2' : ''
+                }`;
+                const row = (
+                  <>
                     <span className="w-6 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                       {w.round >= 1 ? w.round : '–'}
                     </span>
@@ -436,9 +440,20 @@ async function SeriesPage({
                         w.isPast ? 'text-brand' : isNext ? 'text-text' : 'text-text-faint'
                       }`}
                     >
-                      {w.isPast ? 'Report →' : isNext ? 'Preview →' : 'Scheduled'}
+                      {w.round < 1 ? '' : w.isPast ? 'Report →' : isNext ? 'Preview →' : 'Scheduled'}
                     </span>
+                  </>
+                );
+                // X14: a weekend no curated round covers (a test, an exhibition) sits at round 0 and has no page
+                // (lib/rounds.ts); the row stays, the link goes (eight /weekend/0 404s in Seobility's crawl of 5 October).
+                return w.round >= 1 ? (
+                  <Link key={w.key} href={`/series/${slug}/weekend/${w.round}`} className={rowClass}>
+                    {row}
                   </Link>
+                ) : (
+                  <div key={w.key} className={rowClass}>
+                    {row}
+                  </div>
                 );
               })}
             </div>

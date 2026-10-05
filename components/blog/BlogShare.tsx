@@ -72,7 +72,9 @@ export function BlogShare({ url, title, slug }: { url: string; title: string; sl
 
   const xHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
   const fbHref = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-  const waHref = `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`;
+  // X14: wa.me answers with a redirect to api.whatsapp.com, which Seobility's crawl counted as a "host change" on every
+  // post page; the final address is linked directly.
+  const waHref = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${title} ${url}`)}`;
   const btn =
     'inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text';
 

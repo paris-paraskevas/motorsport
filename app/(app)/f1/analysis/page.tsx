@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import { seriesInk } from '@/lib/site';
 import { dateRangeLabel } from '@/lib/rounds';
+import { sessionSlug, weekendFor } from '@/lib/weekend';
+import { looksLikeQualifying, looksLikeRaceSession } from '@/lib/results-ready';
 import { withSocialMeta } from '@/lib/seo';
 import { OpenF1Attribution } from '@/components/f1/OpenF1Attribution';
 import type { SeriesRoundEntry } from '@/lib/types';
@@ -58,6 +60,22 @@ async function F1AnalysisPage() {
   // The latest weekend's tools lead — nobody browses to round 4 of a finished
   // season (design handoff §4.14, panel 11e).
   const latest = pastRounds[pastRounds.length - 1];
+  // X14: the session pages are addressed by their titles' slugs, event-named at
+  // some rounds (bahrain-gp-qualifying, bahrain-gp-race), not by a fixed word;
+  // the links resolve them from the weekend's sessions and draw nothing when a
+  // session is missing (four 404 links in Seobility's crawl of 5 October).
+  const sessionHref = (round: number, pick: 'qualifying' | 'race'): string | null => {
+    const weekend = weekendFor(series, round);
+    if (!weekend) return null;
+    const session = weekend.sessions.find(s =>
+      pick === 'qualifying'
+        ? looksLikeQualifying(s.title)
+        : looksLikeRaceSession(s.title) && !/\bsprint\b/i.test(s.title),
+    );
+    return session ? `/series/f1/weekend/${round}/${sessionSlug(session.title)}` : null;
+  };
+  const latestQualifying = latest ? sessionHref(latest.round, 'qualifying') : null;
+  const latestRace = latest ? sessionHref(latest.round, 'race') : null;
 
   return (
     <div
@@ -104,28 +122,32 @@ async function F1AnalysisPage() {
             </span>
           </div>
           <div className="grid gap-2 sm:grid-cols-3">
-            <Link
-              href={`/series/f1/weekend/${latest.round}/qualifying`}
-              className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
-            >
-              <span className="block font-serif text-17 font-semibold leading-tight text-text">
-                How pole was taken
-              </span>
-              <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
-                Qualifying Analysis →
-              </span>
-            </Link>
-            <Link
-              href={`/series/f1/weekend/${latest.round}/race`}
-              className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
-            >
-              <span className="block font-serif text-17 font-semibold leading-tight text-text">
-                How the race was won
-              </span>
-              <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
-                Race Story →
-              </span>
-            </Link>
+            {latestQualifying && (
+              <Link
+                href={latestQualifying}
+                className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
+              >
+                <span className="block font-serif text-17 font-semibold leading-tight text-text">
+                  How pole was taken
+                </span>
+                <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
+                  Qualifying Analysis →
+                </span>
+              </Link>
+            )}
+            {latestRace && (
+              <Link
+                href={latestRace}
+                className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
+              >
+                <span className="block font-serif text-17 font-semibold leading-tight text-text">
+                  How the race was won
+                </span>
+                <span className="mt-1 block font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
+                  Race Story →
+                </span>
+              </Link>
+            )}
             <Link
               href="/f1/compare"
               className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
@@ -154,6 +176,8 @@ async function F1AnalysisPage() {
         {allRounds.map(r => {
           const range = dateRangeLabel(roundDate(r.startDate), roundDate(r.endDate));
           const past = isPastRound(r, today);
+          const qualifying = past ? sessionHref(r.round, 'qualifying') : null;
+          const race = past ? sessionHref(r.round, 'race') : null;
           return (
             <div
               key={r.round}
@@ -172,18 +196,22 @@ async function F1AnalysisPage() {
                 </span>
               ) : past ? (
                 <span className="flex shrink-0 gap-3">
-                  <Link
-                    href={`/series/f1/weekend/${r.round}/qualifying`}
-                    className="font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
-                  >
-                    Qualifying →<span className="sr-only">{` — ${r.name}`}</span>
-                  </Link>
-                  <Link
-                    href={`/series/f1/weekend/${r.round}/race`}
-                    className="font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
-                  >
-                    Race story →<span className="sr-only">{` — ${r.name}`}</span>
-                  </Link>
+                  {qualifying && (
+                    <Link
+                      href={qualifying}
+                      className="font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+                    >
+                      Qualifying →<span className="sr-only">{` — ${r.name}`}</span>
+                    </Link>
+                  )}
+                  {race && (
+                    <Link
+                      href={race}
+                      className="font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+                    >
+                      Race story →<span className="sr-only">{` — ${r.name}`}</span>
+                    </Link>
+                  )}
                 </span>
               ) : (
                 <span className="shrink-0 font-mono text-9 uppercase tracking-[0.12em] text-text-faint">

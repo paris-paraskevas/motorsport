@@ -20,10 +20,21 @@ export function TeamRadioPlayer({ src, label }: { src: string; label?: string })
   const [t, setT] = useState(0);
   const [duration, setDuration] = useState(0);
 
+  // X14: the mp3 address stays out of the HTML (Seobility's crawl of 5 October
+  // counted 259 "unretrievable file sources": livetiming.formula1.com refuses
+  // crawlers) and is attached on the first play, inside the click so iOS
+  // Safari allows it. Set imperatively, never through a prop, so React never
+  // re-sets src and restarts the load mid-play.
+  const armed = useRef(false);
+
   const toggle = () => {
     const el = ref.current;
     if (!el) return;
     if (el.paused) {
+      if (!armed.current) {
+        el.src = src;
+        armed.current = true;
+      }
       // Autoplay may be blocked without a recent gesture; the click IS a
       // gesture, but mobile can still reject — swallow it like PushSoundPlayer.
       el.play()
@@ -62,8 +73,7 @@ export function TeamRadioPlayer({ src, label }: { src: string; label?: string })
 
       <audio
         ref={ref}
-        src={src}
-        preload="metadata"
+        preload="none"
         onTimeUpdate={e => setT(e.currentTarget.currentTime)}
         onLoadedMetadata={e => setDuration(e.currentTarget.duration)}
         onEnded={() => {
