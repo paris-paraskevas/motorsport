@@ -14,6 +14,14 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1133 · 1.0.250 · docs · opened 2026-10-05 19:30:32Z; the merge on the word of the evening (“place the per handoff in docs if its not there and start”)
+**The performance programme’s file in the repo, and the Phase 2 pick recorded.** The operator’s file of 5 October placed verbatim at `docs/perf-handoff.md` (26,929 bytes, byte-identical to the Downloads copy); the ledger’s dated change line records the Phase 2 design D (Workers Cache: the experiment on the testing Worker first, C behind it, A the fallback) and the evening’s order (the fixes first, then the front cache for the new numbers, then the next step; the Seobility re-crawl after the front cache).
+- **Readers see:** nothing; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (7):** `docs/perf-handoff.md` · new, the operator’s file verbatim. `docs/plan/ledger.json`, `docs/plan/components-programme.md` · the dated change line with the words; the rendered plan page. `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.250.
+- **Verified:** `cmp` of the two files → identical; `node docs/plan/render-ledger.mjs` → 79 slots; `npx vitest run lib/design/plan-ledger.test.ts` → 6 green; no code changed.
+- **Review:** none; a verbatim document and a ledger line.
+
 ## #1132 · 1.0.249 · records · opened 2026-10-05 19:19:08Z; the merge on the standing word
 **The crawl of the 5th read against the slots.** The operator’s export (2026-10-05_venture-full-export.pdf; the MCP still without credits) read slot by slot on the page c1eeffaf: Tech. & Meta 84 % (+17), Structure 54 % (+11), Content 57 % (+5); X10 (X10b folded into it) DONE on titles 982 → 3, descriptions 1,500 → 2, duplicate titles 31 → 2, the five leftovers and the duplicate team named for X17; X12 and X13 not judged (the crawl ran from about 08:30Z, before their deploys) with the next crawl as their acceptance; the baselines for X14 (seven archive round-0 canonical errors folded into its plan, the page f4b91e27 updated) and X16 (the response times during the flood).
 - **Readers see:** nothing; the release notes carry one line.
