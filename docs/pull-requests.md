@@ -14,6 +14,14 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1132 · 1.0.249 · records · opened 2026-10-05 19:19:08Z; the merge on the standing word
+**The crawl of the 5th read against the slots.** The operator’s export (2026-10-05_venture-full-export.pdf; the MCP still without credits) read slot by slot on the page c1eeffaf: Tech. & Meta 84 % (+17), Structure 54 % (+11), Content 57 % (+5); X10 (X10b folded into it) DONE on titles 982 → 3, descriptions 1,500 → 2, duplicate titles 31 → 2, the five leftovers and the duplicate team named for X17; X12 and X13 not judged (the crawl ran from about 08:30Z, before their deploys) with the next crawl as their acceptance; the baselines for X14 (seven archive round-0 canonical errors folded into its plan, the page f4b91e27 updated) and X16 (the response times during the flood).
+- **Readers see:** nothing; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (9):** `docs/plan/ledger.json`, `docs/plan/components-programme.md` · X10 done with the crawl’s numbers; X12, X13, X14 and X16 evidence; the rendered plan page. `SCHEDULE.md` · item 8 of session 65. `docs/HANDOFF.md` · the words list (the next crawl by the operator’s hand) and the ledger line of the pickup prompt. `docs/pull-requests.md` · this entry. `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.249.
+- **Verified:** `node docs/plan/render-ledger.mjs` → 79 slots; `npx vitest run lib/design/plan-ledger.test.ts` → 6 green; no code changed.
+- **Review:** none; records.
+
 ## #1131 · 1.0.248 · records · opened 2026-10-05 19:05:58Z; the merge on the standing word
 **X14’s plan written.** The decision-free overnight task of the handoff: the crawl’s broken files, pages and links re-checked on prod, six changes with their files and tests, the acceptance, the pre-mortem and the decision scan, in x14-plan.md (the paddock-x10 scratch directory) and on the page f4b91e27; built on “x14 go” after Phase 2.
 - **Readers see:** nothing; the release notes carry one line.
