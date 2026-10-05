@@ -115,7 +115,7 @@ async function ArchiveWeekendPage({
         <p className="mt-2 text-sm leading-relaxed text-text-muted">
           The {archive.season} season is still running.{' '}
           <Link href={`/series/${slug}/weekend/${weekend.round}`} className="text-brand hover:underline">
-            The live page for this weekend
+            The live page for the {archive.seriesName} {titleOf(weekend)} weekend
           </Link>{' '}
           has results, standings and times in your own zone.
         </p>

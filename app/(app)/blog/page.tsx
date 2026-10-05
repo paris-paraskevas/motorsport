@@ -103,7 +103,7 @@ function PostRow({ post, lead = false, lazy = false }: { post: Card; lead?: bool
               The cap holds the lead at roughly 2x a row image: still clearly the
               largest, no longer the whole screen. */}
           {post.heroImage && (
-            <Link href={`/blog/${post.slug}`} className="block md:w-[42%] md:max-w-[520px] md:shrink-0">
+            <Link href={`/blog/${post.slug}`} aria-hidden="true" tabIndex={-1} className="block md:w-[42%] md:max-w-[520px] md:shrink-0">
               {/* Plain <img>: next/image is configured unoptimized on this
                   runtime, so it would add markup and buy nothing. The
                   eslint-disable matches PostHero, which renders this same asset
@@ -118,6 +118,9 @@ function PostRow({ post, lead = false, lazy = false }: { post: Card; lead?: bool
                 height={630}
                 className="aspect-[1200/630] w-full border border-border bg-surface object-cover"
               />
+              {/* X12: the cover is a second link to the post; the title in a hidden span gives a crawler its words, and
+                  aria-hidden keeps a screen reader from hearing the headline twice (Home's rule). */}
+              <span className="sr-only">{post.title}</span>
             </Link>
           )}
           <div className="flex min-w-0 flex-1 gap-3">
@@ -148,7 +151,7 @@ function PostRow({ post, lead = false, lazy = false }: { post: Card; lead?: bool
           No cover → this element is absent entirely and the text spans the full
           width; nothing reserves space for a picture that isn't there. */}
       {post.heroImage && (
-        <Link href={`/blog/${post.slug}`} className="block sm:order-2 sm:w-[220px] sm:shrink-0 lg:w-[260px]">
+        <Link href={`/blog/${post.slug}`} aria-hidden="true" tabIndex={-1} className="block sm:order-2 sm:w-[220px] sm:shrink-0 lg:w-[260px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={commonsThumb(post.heroImage, 500)}
@@ -158,6 +161,7 @@ function PostRow({ post, lead = false, lazy = false }: { post: Card; lead?: bool
             loading={lazy ? 'lazy' : undefined}
             className="aspect-[21/9] w-full border border-border bg-surface object-cover sm:aspect-[1200/630]"
           />
+          <span className="sr-only">{post.title}</span>
         </Link>
       )}
       <div className="flex min-w-0 flex-1 gap-3 sm:order-1">

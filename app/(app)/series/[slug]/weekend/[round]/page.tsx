@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import { hasWeekendNote, loadWeekendNotes, weekendNoteKey } from '@/lib/series-content';
 import { WeekendNote } from '@/components/weekend/WeekendNote';
-import { sessionSlug, weekendFor, weekendLabel, weekendPageTitle, weekendStartEnd } from '@/lib/weekend';
+import { sessionSlug, weekendAnchorName, weekendFor, weekendLabel, weekendPageTitle, weekendStartEnd } from '@/lib/weekend';
 import { groupByDay, groupByWeekend } from '@/lib/group';
 import { LocalTime } from '@/components/LocalTime';
 import {
@@ -130,7 +130,7 @@ const ANCHOR_OFFSET = 'scroll-mt-[62px] lg:scroll-mt-[74px]';
 
 // Panel 3b: the preview rail's "Going in" factbox — the championship's top
 // three as the weekend starts. Network fetch, so it streams behind Suspense.
-async function GoingIn({ slug, season }: { slug: string; season: number }) {
+async function GoingIn({ slug, season, seriesName }: { slug: string; season: number; seriesName: string }) {
   if (!isEligibleStandingsSeries(slug)) return null;
   const brief = await fetchStandingsBrief(slug, season).catch(() => null);
   if (!brief || brief.top.length === 0) return null;
@@ -152,7 +152,7 @@ async function GoingIn({ slug, season }: { slug: string; season: number }) {
         href={`/series/${slug}/standings`}
         className="mt-1 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
       >
-        Full table →
+        {seriesName} standings, the full table →
       </Link>
     </div>
   );
@@ -161,7 +161,7 @@ async function GoingIn({ slug, season }: { slug: string; season: number }) {
 // Round-2 ⑦: the preview surfaces the series wire on the page — five rows in
 // the main column ("bring news here"), with the full feed one link away. The
 // News tab keeps the complete list. Network fetch, so it streams.
-async function PreviewNews({ slug }: { slug: string }) {
+async function PreviewNews({ slug, seriesName }: { slug: string; seriesName: string }) {
   const items = (await fetchNews(slug).catch(() => [])).slice(0, 5);
   if (items.length === 0) return null;
   return (
@@ -174,7 +174,7 @@ async function PreviewNews({ slug }: { slug: string }) {
           href={`/series/${slug}/news`}
           className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
         >
-          All news →
+          {seriesName}: all news →
         </Link>
       </div>
       <ul>
@@ -289,6 +289,8 @@ async function ReportBody({
     weekendNoteKey(series.meta.season, round)
   ];
   const watch = series.meta.watch;
+  // X12: the weekend's identity after the labels of the links that lead out of it (Seobility judges a link text site-wide).
+  const weekendName = weekendAnchorName(series.meta.name, weekendTitleLabel, round);
 
   let raceEntries: RaceResult['results'] = [];
   let classBlocks: Awaited<ReturnType<typeof fetchClassClassifications>> = [];
@@ -414,7 +416,7 @@ async function ReportBody({
               </span>
               {raceHref && (
                 <Link href={raceHref} className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:underline">
-                  Race page →
+                  Race page →<span className="sr-only">{` — ${weekendName}`}</span>
                 </Link>
               )}
             </div>
@@ -454,7 +456,7 @@ async function ReportBody({
             {classBlocks.length > 1 && raceHref && (
               <p className="mt-1 font-mono text-9 uppercase tracking-[0.14em] text-text-faint">
                 {classBlocks.slice(1).map(b => b.cls).join(' · ')} — per-class tables on the{' '}
-                <Link href={raceHref} className="text-brand hover:underline">race page</Link>
+                <Link href={raceHref} className="text-brand hover:underline">{weekendName} race page</Link>
               </p>
             )}
           </section>
@@ -501,6 +503,9 @@ async function ReportBody({
                           Result →
                         </span>
                       )}
+                      {/* The race row already carries its winner and margin, which tell it apart; the weekend's name would
+                          push the row's text past Seobility's length (the reviewer's finding on the endurance rows). */}
+                      {href && !(isTheRace && winner) && <span className="sr-only">{` — ${weekendName}`}</span>}
                     </>
                   );
                   const rowClass = `flex min-h-10 items-baseline gap-3 border-b border-border py-1.5 ${
@@ -544,7 +549,7 @@ async function ReportBody({
             )}
             {trackInfoSlug && (
               <Link href={`/information/tracks/${trackInfoSlug}`} className="mt-1 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline">
-                Circuit guide →
+                Circuit guide →<span className="sr-only">{` — ${circuitMatch?.circuit.name ?? weekendName}`}</span>
               </Link>
             )}
             {watch && (
@@ -565,7 +570,7 @@ async function ReportBody({
                   Round {nextRound.round} · {nextRound.dateRangeLabel}
                 </p>
                 <Link href={`/series/${slug}/weekend/${nextRound.round}`} className="mt-1 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline">
-                  Preview →
+                  Preview →<span className="sr-only">{` — ${weekendAnchorName(series.meta.name, nextRound.roundName ?? weekendLabel(nextRound, nextRound.round).title, nextRound.round)}`}</span>
                 </Link>
               </div>
             )}
@@ -578,7 +583,7 @@ async function ReportBody({
                 Round {round} of the {series.meta.season} season
               </p>
               <Link href={`/series/${slug}/news`} className="mt-1 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-text-muted hover:text-text">
-                News for this series →
+                {series.meta.name} news →
               </Link>
             </div>
           </aside>
@@ -590,7 +595,7 @@ async function ReportBody({
             <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
               <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">What it changed</span>
               <Link href={`/series/${slug}/standings`} className="font-mono text-10 font-semibold uppercase tracking-[0.14em] text-brand hover:underline">
-                Full standings →
+                {series.meta.name} standings →
               </Link>
             </div>
             <ul>
@@ -764,14 +769,14 @@ async function WeekendPage({
   if (NEWS_SLUG_MAP[slug] != null) {
     footerItems.push(
       <Link key="news" href={`/series/${slug}/news`} className="inline-flex min-h-6 items-center text-text-muted hover:text-text transition-colors duration-(--duration-fast)">
-        News for this series →
+        {series.meta.name} news →
       </Link>,
     );
   }
   if (nextRound) {
     footerItems.push(
       <Link key="next" href={`/series/${slug}/weekend/${nextRound.round}`} className="inline-flex min-h-6 items-center text-brand hover:text-text transition-colors duration-(--duration-fast)">
-        Next round: {nextRound.roundName ?? weekendLabel(nextRound, nextRound.round).title} →
+        Next round: {weekendAnchorName(series.meta.name, nextRound.roundName ?? weekendLabel(nextRound, nextRound.round).title, nextRound.round)} →
       </Link>,
     );
   }
@@ -897,7 +902,7 @@ async function WeekendPage({
                         stays in the rail. */}
                     <div id="schedule" className={`grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(300px,400px)] ${ANCHOR_OFFSET}`}>
                       <div className="min-w-0">
-                        <WeekendSchedule weekend={weekend} color={color} sessionLinkBase={sessionLinkBase} />
+                        <WeekendSchedule weekend={weekend} color={color} sessionLinkBase={sessionLinkBase} weekendName={weekendAnchorName(series.meta.name, weekendTitleLabel, round)} />
                       </div>
                       {circuitLayout && (
                         <figure className="hidden xl:block">
@@ -936,7 +941,7 @@ async function WeekendPage({
                     {NEWS_SLUG_MAP[slug] != null && (
                       <div id="the-wire" className={ANCHOR_OFFSET}>
                         <Suspense fallback={null}>
-                          <PreviewNews slug={slug} />
+                          <PreviewNews slug={slug} seriesName={series.meta.name} />
                         </Suspense>
                       </div>
                     )}
@@ -1003,7 +1008,7 @@ async function WeekendPage({
                   href={`/api/calendar/${slug}.ics`}
                   className="ml-3 font-mono text-10 uppercase tracking-[0.14em] text-text-faint hover:text-text-muted"
                 >
-                  .ics
+                  .ics<span className="sr-only">{` — ${series.meta.name} calendar`}</span>
                 </a>
               </div>
 
@@ -1016,7 +1021,7 @@ async function WeekendPage({
                   </div>
                 }
               >
-                <GoingIn slug={slug} season={series.meta.season} />
+                <GoingIn slug={slug} season={series.meta.season} seriesName={series.meta.name} />
               </Suspense>
 
               {/* The venue, with the map (3b). */}
