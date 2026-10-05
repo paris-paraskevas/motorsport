@@ -38,7 +38,7 @@ vi.mock('./shortcuts', () => ({ loadShortcuts: async () => ({ 'times.local': 'Al
 const loadAppearance = vi.fn(async () => SHIPPED_APPEARANCE);
 vi.mock('./appearance', () => ({ loadAppearance: () => loadAppearance() }));
 vi.mock('./lists', () => ({
-  loadNavLists: async () => ({ doors: [], bar: [], footerSite: [], footerLegal: [] }),
+  loadNavLists: async () => ({ doors: [], bar: [], footerSite: [], footerLegal: [], footerSeries: [] }),
   loadDocumentLists: async (keys: string[]) => Object.fromEntries(keys.map(k => [k, []])),
 }));
 const currentAccount = vi.fn();

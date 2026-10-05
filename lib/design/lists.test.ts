@@ -48,7 +48,7 @@ import {
   parseEntries,
   resetNavListsMemo,
 } from './lists';
-import { pageDest } from './destinations';
+import { SERIES_DESTINATION_SLUGS, pageDest } from './destinations';
 
 const MONZA = 'a1b2c3d4-0000-4000-8000-000000000010';
 const IMOLA = 'a1b2c3d4-0000-4000-8000-000000000021';
@@ -215,6 +215,8 @@ describe('loadNavLists — the code is the fallback', () => {
     expect(nav.bar).toEqual(DEFAULT_NAV.bar);
     expect(nav.footerSite).toEqual(DEFAULT_NAV.footerSite);
     expect(nav.footerLegal).toEqual([{ label: 'Privacy', dest: 'privacy' }]);
+    // No rows for the Series list (prod's state until its seed): the shipped fifteen (X13).
+    expect(nav.footerSeries).toEqual(DEFAULT_NAV.footerSeries);
   });
 
   it('memoises for a minute and forgets on reset', async () => {
@@ -318,5 +320,18 @@ describe('lists of the operator’s own', () => {
     });
     configured = false;
     expect(await loadDocumentLists(['useful-links'], DEFAULT_NAV)).toEqual({ 'useful-links': [] });
+  });
+});
+
+describe('X13: the footer’s Series list', () => {
+  it('names each of the fifteen championships once, every entry its hub, in the drawn order', () => {
+    const slugs = DEFAULT_NAV.footerSeries.map(e => e.dest.replace(/^series:/, ''));
+    expect(slugs).toHaveLength(15);
+    expect([...new Set(slugs)].sort()).toEqual(Object.keys(SERIES_DESTINATION_SLUGS).sort());
+    for (const e of DEFAULT_NAV.footerSeries) {
+      expect(e.dest, e.label).toMatch(/^series:[a-z0-9-]+$/);
+      expect(e.label).toBe(SERIES_DESTINATION_SLUGS[e.dest.slice('series:'.length)]);
+    }
+    expect(slugs.slice(0, 4)).toEqual(['f1', 'f2', 'f3', 'formula-e']);
   });
 });

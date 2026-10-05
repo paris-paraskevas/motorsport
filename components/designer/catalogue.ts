@@ -2,7 +2,7 @@ import type { NavListKey } from '@/lib/design/lists';
 
 // The Shared Components catalogue, APEX's ten groups mapped to what Paddock has
 // (Paddock Designer Field Guide §02). Every entry is listed so the operator sees
-// the whole shape from day one; the four navigation lists (Phase 2 step 2), Text
+// the whole shape from day one; the five navigation lists (Phase 2 step 2; the Series column since X13), Text
 // Messages (step 3), Build Options (step 4), Application Settings (step 5),
 // Authorization Schemes (step 6), Themes (step 7), Appearance (step 8, APEX's
 // User Interface Attributes), Shortcuts (step 9), Assets (step 10, APEX's
@@ -70,6 +70,7 @@ export const CATALOGUE: CatalogueGroup[] = [
       { key: 'bar', label: 'Navigation Bar List', listKey: 'bar' },
       { key: 'footer-site', label: 'Footer: Site', listKey: 'footer-site' },
       { key: 'footer-legal', label: 'Footer: Legal', listKey: 'footer-legal' },
+      { key: 'footer-series', label: 'Footer: Series', listKey: 'footer-series' },
       { key: 'searchhints', label: 'Search Hints', editor: 'searchhints' },
       { key: 'search', label: 'Search Configurations', later: 'Phase 6' },
     ],
@@ -137,5 +138,9 @@ export const LIST_COPY: Record<NavListKey, { title: string; sub: string }> = {
   'footer-legal': {
     title: 'Footer: Legal',
     sub: 'The second column of the footer on every page.',
+  },
+  'footer-series': {
+    title: 'Footer: Series',
+    sub: 'The third column of the footer on every page: the championships, each entry its hub.',
   },
 };

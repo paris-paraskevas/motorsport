@@ -5,7 +5,7 @@ import { loadSeries, loadAllSeriesMeta } from './series';
 import { hasWeekendNote, loadDriverBios, loadChampionNotes, loadCuratedChampions, loadWeekendNotes } from './series-content';
 import { loadAllDrivers } from './people';
 import { groupByWeekend } from './group';
-import { weekendLabel } from './weekend';
+import { sessionBySlug, sessionSlug, weekendFor, weekendLabel } from './weekend';
 import { circuitLayoutFor } from './circuit-layout';
 import { listPostSlugs } from './posts';
 import { SITE_URL } from './site';
@@ -64,11 +64,27 @@ describe('buildSitemapEntries', () => {
       .filter((w) => w.round >= 1 && hasWeekendNote(notes, f1.meta.season, w.round))
       .map((w) => `${SITE_URL}/series/f1/weekend/${w.round}`)
       .sort();
-    const f1Weekends = urls.filter((u) => u.url.includes('/series/f1/weekend/')).map((u) => u.url).sort();
+    const f1Weekends = urls.filter((u) => /\/series\/f1\/weekend\/\d+$/.test(u.url)).map((u) => u.url).sort();
     expect(f1Weekends).toEqual(expected);
     expect(expected.length).toBeGreaterThanOrEqual(12); // rounds 1–12 of 2026 carry a note today
     expect(await loadWeekendNotes('formula-e')).toBeNull();
-    expect(urls.some((u) => u.url.includes('/series/formula-e/weekend/'))).toBe(false);
+    expect(urls.some((u) => /\/series\/formula-e\/weekend\/\d+$/.test(u.url))).toBe(false);
+  });
+
+  it('advertises every session page of a series whose schedule links them (X13): F1 round 1 one URL per session slug, DTM too, NLS none', async () => {
+    const f1 = await loadSeries('f1');
+    const first = weekendFor(f1, 1);
+    expect(first).toBeTruthy();
+    const expected = [...new Set(first!.sessions.map((s) => sessionSlug(s.title)))].map((slug) => `${SITE_URL}/series/f1/weekend/1/${slug}`).sort();
+    const listed = urls.filter((u) => u.url.startsWith(`${SITE_URL}/series/f1/weekend/1/`)).map((u) => u.url).sort();
+    expect(listed).toEqual(expected);
+    expect(expected.length).toBeGreaterThanOrEqual(5);
+    // Page reality: every listed slug resolves through the session route's own lookup, and no two share a slug.
+    const slugs = listed.map((u) => u.slice(`${SITE_URL}/series/f1/weekend/1/`.length));
+    expect(new Set(slugs).size).toBe(slugs.length);
+    for (const slug of slugs) expect(sessionBySlug(first!, slug), slug).not.toBeNull();
+    expect(urls.some((u) => /\/series\/dtm\/weekend\/\d+\/[a-z0-9-]+$/.test(u.url))).toBe(true);
+    expect(urls.some((u) => /\/series\/nls\/weekend\/\d+\/[a-z0-9-]+$/.test(u.url))).toBe(false);
   });
 
   it('advertises no tab of the noindex list (news, blog, standings, results, drivers) and keeps every champions tab', async () => {

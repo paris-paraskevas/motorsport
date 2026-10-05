@@ -26,9 +26,9 @@ export interface RowPageData {
   /** The photos the document names, by id. */
   assets: ReadonlyMap<string, EditableAsset>;
   nav: NavLists;
-  /** The entries of every list the document names, by key: the shell's four and
+  /** The entries of every list the document names, by key: the shell's five and
    *  the operator's own (lib/design/lists.ts loadDocumentLists). A key missing
-   *  here falls back to `nav` for the four and to nothing for the rest. */
+   *  here falls back to `nav` for the five and to nothing for the rest. */
   lists?: Readonly<Record<string, readonly NavEntry[]>>;
   /** The scheme keys the visitor passes; a region asking for another is left out. */
   allowed: ReadonlySet<string>;
@@ -53,6 +53,7 @@ const LIST_FIELD: Record<string, keyof NavLists> = {
   bar: 'bar',
   'footer-site': 'footerSite',
   'footer-legal': 'footerLegal',
+  'footer-series': 'footerSeries',
 };
 
 /** Header Text and a caption's lead keep the site's prose; a region's own body

@@ -55,7 +55,7 @@ const loadAppearance = vi.fn(async () => SHIPPED_APPEARANCE);
 vi.mock('@/lib/design/appearance', () => ({ loadAppearance: () => loadAppearance() }));
 vi.mock('@/lib/design/lists', async () => {
   const actual = await vi.importActual<typeof import('@/lib/design/lists')>('@/lib/design/lists');
-  const field: Record<string, keyof typeof actual.DEFAULT_NAV> = { doors: 'doors', bar: 'bar', 'footer-site': 'footerSite', 'footer-legal': 'footerLegal' };
+  const field: Record<string, keyof typeof actual.DEFAULT_NAV> = { doors: 'doors', bar: 'bar', 'footer-site': 'footerSite', 'footer-legal': 'footerLegal', 'footer-series': 'footerSeries' };
   return {
     loadNavLists: async () => actual.DEFAULT_NAV,
     loadDocumentLists: async (keys: string[]) => Object.fromEntries(keys.map(k => [k, field[k] ? actual.DEFAULT_NAV[field[k]] : []])),

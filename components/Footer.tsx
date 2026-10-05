@@ -18,15 +18,19 @@ const HEATMAP_ID: Record<string, string> = { home: 'footer:landing', 'external:s
 function FooterLink({
   href,
   dataHeatmapId,
+  prefetch,
   children,
 }: {
   href: string;
   dataHeatmapId?: string;
+  /** false keeps a column of heavy pages (the fifteen hubs, X13) from prefetching on every footer view. */
+  prefetch?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
+      prefetch={prefetch}
       data-heatmap-id={dataHeatmapId}
       className="block py-1 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
     >
@@ -44,13 +48,13 @@ function ColumnHeading({ children }: { children: React.ReactNode }) {
 // One footer entry from the list: a route is a link, the support link opens in a
 // new tab, and the two actions place components that carry their own text and
 // behaviour (the entry's label is the designer's name for them, not the button's).
-function FooterEntry({ entry }: { entry: NavEntry }) {
+function FooterEntry({ entry, prefetch }: { entry: NavEntry; prefetch?: boolean }) {
   const dest = resolveEntry(entry);
   if (!dest) return null;
   const heat = HEATMAP_ID[entry.dest] ?? `footer:${entry.dest}`;
   if (dest.kind === 'route') {
     return (
-      <FooterLink href={dest.href} dataHeatmapId={heat}>
+      <FooterLink href={dest.href} dataHeatmapId={heat} prefetch={prefetch}>
         {entry.label}
       </FooterLink>
     );
@@ -71,10 +75,11 @@ function FooterEntry({ entry }: { entry: NavEntry }) {
   return dest.action === 'contact' ? <ContactFooterButton /> : <ManageCookiesButton />;
 }
 
-// Two-column footer — Site | Legal side by side, each a short vertical link list,
-// over a thin version / copyright line. No tall brand strip (that's what made the
-// original run a full screen). Since Phase 2 the two columns are the
-// `footer-site` and `footer-legal` lists (lib/design/lists.ts).
+// Three-column footer — Site | Legal | Series side by side on a laptop, the Series
+// column under the other two on a phone, each a short vertical link list over a
+// thin version / copyright line. No tall brand strip (that's what made the
+// original run a full screen). Since Phase 2 the columns are the `footer-site`,
+// `footer-legal` and (X13) `footer-series` lists (lib/design/lists.ts).
 // The headings, the blurb and the install label are text messages (lib/design/text.ts).
 // An entry asking for an authorization scheme shows only to a visitor who
 // passes it (Phase 3 step 4); with no schemes given (the designer's preview)
@@ -82,6 +87,7 @@ function FooterEntry({ entry }: { entry: NavEntry }) {
 export function Footer({
   site,
   legal,
+  series,
   text,
   schemes,
   wordmark = null,
@@ -90,6 +96,7 @@ export function Footer({
 }: {
   site: NavEntry[];
   legal: NavEntry[];
+  series: NavEntry[];
   text: ChromeText;
   schemes?: readonly AuthzScheme[];
   /** From the Application Definition: null keeps the shipped Paddock•Tracker. */
@@ -102,10 +109,11 @@ export function Footer({
   const year = 2026;
   const visibleSite = useVisibleEntries(site, schemes);
   const visibleLegal = useVisibleEntries(legal, schemes);
+  const visibleSeries = useVisibleEntries(series, schemes);
   return (
     <footer className="border-t border-border mt-12 bg-bg">
       <div className="w-full px-4 md:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-2 gap-6 text-xs sm:gap-8">
+        <div className="grid grid-cols-2 gap-6 text-xs sm:grid-cols-3 sm:gap-8">
           <div>
             <ColumnHeading>{text['footer.site']}</ColumnHeading>
             {visibleSite.map((entry, i) => (
@@ -117,6 +125,17 @@ export function Footer({
             {visibleLegal.map((entry, i) => (
               <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
             ))}
+          </div>
+          <div className="col-span-2 sm:col-span-1">
+            <ColumnHeading>{text['footer.series']}</ColumnHeading>
+            {/* The plan's drawing: two columns of the fifteen on a phone, one beside the other two on a laptop. The hubs
+                are heavy pages, so these links do not prefetch on every footer view (the reviewer's note; flip it on
+                the operator's word). */}
+            <div className="columns-2 gap-6 sm:columns-1">
+              {visibleSeries.map((entry, i) => (
+                <FooterEntry key={`${entry.dest}-${i}`} entry={entry} prefetch={false} />
+              ))}
+            </div>
           </div>
         </div>
         {/* Install, and the one line saying what this is.

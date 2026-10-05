@@ -60,22 +60,22 @@ export function ListEditor({
   title,
   sub,
   readOnly,
-  otherFooter,
+  footerColumns,
   text = DEFAULT_TEXT,
   schemes = DEFAULT_AUTHZ_SCHEMES,
   pages = [],
   deleted = [],
   onSaved,
 }: {
-  /** One of the shell's four keys, or the key of a list of the operator's own. */
+  /** One of the shell's five keys, or the key of a list of the operator's own. */
   listKey: string;
   role: ListRole;
   list: EditableList;
   title: string;
   sub: string;
   readOnly: boolean;
-  /** For the footer preview: the other column, as currently stored. */
-  otherFooter?: NavEntry[];
+  /** For the footer preview: the footer's columns as currently stored, by list key (the one being edited is drawn from the editor). */
+  footerColumns?: Partial<Record<string, NavEntry[]>>;
   /** For the footer preview: the chrome's strings as currently stored. */
   text?: ChromeText;
   /** The authorization schemes an entry may name, as currently stored. */
@@ -353,8 +353,9 @@ export function ListEditor({
         {role === 'footer' && (
           <div className="overflow-hidden border border-border-strong [&_footer]:mt-0">
             <Footer
-              site={listKey === 'footer-site' ? previewEntries : (otherFooter ?? [])}
-              legal={listKey === 'footer-legal' ? previewEntries : (otherFooter ?? [])}
+              site={listKey === 'footer-site' ? previewEntries : (footerColumns?.['footer-site'] ?? [])}
+              legal={listKey === 'footer-legal' ? previewEntries : (footerColumns?.['footer-legal'] ?? [])}
+              series={listKey === 'footer-series' ? previewEntries : (footerColumns?.['footer-series'] ?? [])}
               text={text}
             />
           </div>

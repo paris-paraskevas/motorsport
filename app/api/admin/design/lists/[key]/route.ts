@@ -14,7 +14,7 @@ import { loadPageDestinations } from '@/lib/design/pages';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// The one route that reads and writes a list for the designer: the shell's four
+// The one route that reads and writes a list for the designer: the shell's five
 // and, since Phase 3, the operator's own (created by ../route.ts).
 //
 // GET    /api/admin/design/lists/<key>  → { key, role, label, updatedAt, entries }
@@ -155,7 +155,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
   }
 }
 
-// Deleting a list of the operator's own. The shell's four are refused (400):
+// Deleting a list of the operator's own. The shell's five are refused (400):
 // the site renders them. The stamp is the version check (409 with the current
 // list when it moved); the entries go with the list (on delete cascade); a list
 // any page revision names, live or superseded, is refused by the foreign key on
