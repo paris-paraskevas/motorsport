@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.245 — 2026-10-05
+
+Formula 2 ran three races at Baku and Formula 3 three at Madrid, and the second feature race of each had been missing from the season charts, the results lists and the win counts; it is back, with its own page. Formula 3’s results also sit under their right round numbers again after a skipped round had shifted them one along since June.
+
 ## 1.0.244 — 2026-10-05
 
 Every link on the site now says where it goes, in words a screen reader hears and a search engine reads: the session rail’s chips carry their weekend’s name, the back links name the weekend, the hubs’ and tabs’ calls to action name their series, and the classification links in the results name the round and the race. The rails look the same; the home’s “Also racing” row names each weekend beside its series.

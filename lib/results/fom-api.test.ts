@@ -6,6 +6,7 @@ import {
   completedRounds,
   fetchFomSeason,
   fetchFomStandings,
+  roundOfMeeting,
   type FomSessionResponse,
   type FomMeeting,
   type FomStandingRow,
@@ -279,5 +280,75 @@ describe('fetchFomStandings', () => {
   it('returns null when both breakdown tables are empty', async () => {
     mockApi({});
     expect(await fetchFomStandings('f2', 2026)).toBeNull();
+  });
+});
+
+// B3 (2026-10-05): Formula 2 at Baku and Formula 3 at Madrid ran three races (a feature carried over); the manifest
+// lists three race sessions and three points cells per round. Formula 3 also skipped its round 2, so the feed's
+// meeting order and the curated calendar's round numbers part company from Monaco on.
+describe('B3: a round with three races, and the curated round numbers', () => {
+  const BAKU: FomMeeting = {
+    meetingKey: 1295,
+    meetingCountryName: 'Azerbaijan',
+    meetingLocation: 'Baku',
+    meetingStartDate: '2026-09-24',
+    meetingEndDate: '2026-09-26',
+    raceSessions: [
+      { description: 'Sprint Race', sessionNumber: 1 },
+      { description: 'Feature Race 1', sessionNumber: 2 },
+      { description: 'Feature Race 2', sessionNumber: 3 },
+    ],
+  };
+  const THREE_CELLS: FomStandingRow[] = [
+    { driverReference: 'RAFCAM01', driverFirstName: 'Rafael', driverLastName: 'Câmara', championshipPoints: 37, points: [[0, 12, 25]] },
+    { driverReference: 'ALEDUN01', driverFirstName: 'Alexander', driverLastName: 'Dunne', championshipPoints: 50, points: [[7, 28, 15]] },
+  ];
+  const row = (ref: string, first: string, last: string, pos: string) => ({ positionNumber: pos, completionStatusCode: 'OK', driverReference: ref, driverFirstName: first, driverLastName: last, teamName: 'Team' });
+  const meta = { meetingCountryName: 'Azerbaijan', meetingEndDate: '2026-09-26' };
+
+  it('keeps every points cell of a round and reads each race at its own index', () => {
+    const lookup = buildPointsLookup(THREE_CELLS);
+    expect(lookup.get('RAFCAM01')).toEqual([[0, 12, 25]]);
+    const second = mapRaceResult(sessionResponse([row('RAFCAM01', 'Rafael', 'Câmara', '1'), row('ALEDUN01', 'Alexander', 'Dunne', '3')], meta), 12, 'feature', BAKU, lookup, { index: 2, name: 'Feature Race 2' }, 1);
+    expect(second?.raceName).toBe('Azerbaijan Feature Race 2');
+    expect(second?.results.map(r => r.points)).toEqual([25, 15]);
+    const first = mapRaceResult(sessionResponse([row('ALEDUN01', 'Alexander', 'Dunne', '1'), row('RAFCAM01', 'Rafael', 'Câmara', '4')], meta), 12, 'feature', BAKU, lookup, { index: 1, name: 'Feature Race 1' }, 1);
+    expect(first?.raceName).toBe('Azerbaijan Feature Race 1');
+    expect(first?.results.map(r => r.points)).toEqual([28, 12]);
+  });
+
+  it('fetches all three race sessions of a meeting and files both features under the round', async () => {
+    const originalFetch = globalThis.fetch;
+    const manifest = { season: '2026', meetings: [BAKU], standings: THREE_CELLS };
+    globalThis.fetch = vi.fn(async (url: string | URL) => {
+      const u = String(url);
+      const body = u.includes('driver-standings-breakdown') ? manifest
+        : u.includes('session=1') ? sessionResponse([row('ALEDUN01', 'Alexander', 'Dunne', '1')], meta)
+        : u.includes('session=2') ? sessionResponse([row('ALEDUN01', 'Alexander', 'Dunne', '1'), row('RAFCAM01', 'Rafael', 'Câmara', '4')], meta)
+        : u.includes('session=3') ? sessionResponse([row('RAFCAM01', 'Rafael', 'Câmara', '1'), row('ALEDUN01', 'Alexander', 'Dunne', '3')], meta)
+        : { sessionResults: { results: [] } };
+      return { ok: true, status: 200, json: async () => body } as Response;
+    }) as unknown as typeof fetch;
+    try {
+      const bundle = await fetchFomSeason('f2', 2026, [{ round: 12, name: 'Azerbaijan Grand Prix', startDate: '2026-09-24', endDate: '2026-09-26' }]);
+      expect(bundle.sprint.map(r => [r.round, r.raceName])).toEqual([[12, 'Azerbaijan Sprint Race']]);
+      expect(bundle.feature.map(r => [r.round, r.raceName])).toEqual([[12, 'Azerbaijan Feature Race 1'], [12, 'Azerbaijan Feature Race 2']]);
+      const camara = bundle.feature.flatMap(r => r.results).filter(e => e.driverName === 'Rafael Câmara').map(e => e.points);
+      expect(camara).toEqual([12, 25]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('numbers a meeting by the curated round whose dates hold it, else by its position (Formula 3 skipped round 2)', () => {
+    const rounds = [
+      { round: 1, name: 'Australian Grand Prix', startDate: '2026-03-06', endDate: '2026-03-08' },
+      { round: 3, name: 'Monaco Grand Prix', startDate: '2026-06-05', endDate: '2026-06-07' },
+    ];
+    expect(roundOfMeeting({ meetingStartDate: '2026-06-04', meetingEndDate: '2026-06-07' }, 2, rounds)).toBe(3);
+    expect(roundOfMeeting({ meetingStartDate: '2026-05-01', meetingEndDate: '2026-05-03' }, 2, rounds)).toBe(2);
+    expect(roundOfMeeting({ meetingStartDate: '2026-06-05' }, 2, rounds)).toBe(3);
+    expect(roundOfMeeting({ meetingStartDate: '2026-03-06' }, 1, rounds)).toBe(1);
+    expect(roundOfMeeting({ meetingStartDate: '2026-09-11' }, 9)).toBe(9);
   });
 });

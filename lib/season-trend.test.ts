@@ -214,3 +214,18 @@ describe('buildStandingsAtRound', () => {
     expect(snap.throughRound).toBe(0);
   });
 });
+
+// B3 (2026-10-05): two races of one round (Baku's two features) are one point on the x-axis, their points summed.
+describe('B3: two races in one round', () => {
+  it('folds races that share a round into one point', () => {
+    const data = buildSeasonTrendData([
+      race(11, 'Spain Feature Race', [{ driverName: 'Câmara', team: 'Invicta', points: 25 }]),
+      race(12, 'Azerbaijan Feature Race 1', [{ driverName: 'Câmara', team: 'Invicta', points: 12 }]),
+      race(12, 'Azerbaijan Feature Race 2', [{ driverName: 'Câmara', team: 'Invicta', points: 25 }]),
+    ]);
+    expect(data.data.map(p => p.round)).toEqual([11, 12]);
+    expect(data.data[1].raceName).toBe('Azerbaijan Feature Race 2');
+    expect(data.data[1]['Câmara']).toBe(62);
+    expect(data.totalsByDriver['Câmara']).toBe(62);
+  });
+});
