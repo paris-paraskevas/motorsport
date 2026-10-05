@@ -55,6 +55,10 @@ export function sessionBySlug(weekend: Weekend, slug: string): Session | null {
   return weekend.sessions.find(s => sessionSlug(s.title) === slug) ?? null;
 }
 
+/** The series whose weekend schedules link their session pages, and whose session pages the sitemap lists (X13). The
+ *  session route answers every series; NLS and the ADAC 24h have no race session pages worth a link and stay off. */
+export const SESSION_PAGE_SERIES = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world', 'wrc', 'dtm'] as const;
+
 function lookupKey(seriesSlug: string, uid: string): string {
   return `${seriesSlug}:${uid}`;
 }

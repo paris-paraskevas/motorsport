@@ -168,7 +168,7 @@ export function AppShell({
           </p>
         )}
         <div className="flex-1">{children}</div>
-        <Footer site={nav.footerSite} legal={nav.footerLegal} text={text} schemes={schemes} wordmark={definition.wordmark} installPrompt={definition.installPrompt} siteName={definition.name} />
+        <Footer site={nav.footerSite} legal={nav.footerLegal} series={nav.footerSeries} text={text} schemes={schemes} wordmark={definition.wordmark} installPrompt={definition.installPrompt} siteName={definition.name} />
       </main>
 
       <BottomBar entries={nav.bar} schemes={schemes} />

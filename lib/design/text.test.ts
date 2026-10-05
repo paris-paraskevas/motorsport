@@ -83,7 +83,7 @@ describe('loadTextForEditing', () => {
     };
     const rows = await loadTextForEditing();
     expect(rows).not.toBeNull();
-    expect(rows).toHaveLength(6);
+    expect(rows).toHaveLength(7);
     const site = rows!.find(r => r.key === 'footer.site')!;
     expect(site).toEqual({ key: 'footer.site', text: 'Around the site', where: 'Footer · heading', updatedAt: '2026-09-08T07:25:42.505502+00:00' });
     const skip = rows!.find(r => r.key === 'a11y.skip')!;

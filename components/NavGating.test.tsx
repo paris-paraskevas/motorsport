@@ -83,9 +83,11 @@ describe('navigation entries and authorization schemes', () => {
     expect(screen.getByText('Home')).toBeTruthy();
     expect(screen.queryByText('Account')).toBeNull();
     cleanup();
-    render(<Footer site={[{ label: 'About', dest: 'about' }, { label: 'Threads', dest: 'threads', authz: 'signed_in' }]} legal={[{ label: 'Privacy', dest: 'privacy' }]} text={text} schemes={DEFAULT_AUTHZ_SCHEMES} />);
+    render(<Footer site={[{ label: 'About', dest: 'about' }, { label: 'Threads', dest: 'threads', authz: 'signed_in' }]} legal={[{ label: 'Privacy', dest: 'privacy' }]} series={[{ label: 'Formula 1', dest: 'series:f1' }, { label: 'Formula 2', dest: 'series:f2', authz: 'signed_in' }]} text={text} schemes={DEFAULT_AUTHZ_SCHEMES} />);
     expect(screen.getByText('About')).toBeTruthy();
     expect(screen.getByText('Privacy')).toBeTruthy();
+    expect(screen.getByText('Formula 1')).toBeTruthy();
+    expect(screen.queryByText('Formula 2')).toBeNull();
     expect(screen.queryByText('Threads')).toBeNull();
   });
 });

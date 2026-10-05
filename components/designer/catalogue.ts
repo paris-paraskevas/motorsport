@@ -70,6 +70,7 @@ export const CATALOGUE: CatalogueGroup[] = [
       { key: 'bar', label: 'Navigation Bar List', listKey: 'bar' },
       { key: 'footer-site', label: 'Footer: Site', listKey: 'footer-site' },
       { key: 'footer-legal', label: 'Footer: Legal', listKey: 'footer-legal' },
+      { key: 'footer-series', label: 'Footer: Series', listKey: 'footer-series' },
       { key: 'searchhints', label: 'Search Hints', editor: 'searchhints' },
       { key: 'search', label: 'Search Configurations', later: 'Phase 6' },
     ],
@@ -137,5 +138,9 @@ export const LIST_COPY: Record<NavListKey, { title: string; sub: string }> = {
   'footer-legal': {
     title: 'Footer: Legal',
     sub: 'The second column of the footer on every page.',
+  },
+  'footer-series': {
+    title: 'Footer: Series',
+    sub: 'The third column of the footer on every page: the championships, each entry its hub.',
   },
 };

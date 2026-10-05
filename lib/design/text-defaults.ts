@@ -3,7 +3,7 @@
 // Client-safe: the designer's editor lists them, the server loader (text.ts)
 // falls back to them, and the components render them.
 
-export const TEXT_KEYS = ['a11y.skip', 'nav.search', 'footer.site', 'footer.legal', 'footer.blurb', 'footer.install'] as const;
+export const TEXT_KEYS = ['a11y.skip', 'nav.search', 'footer.site', 'footer.legal', 'footer.series', 'footer.blurb', 'footer.install'] as const;
 export type TextKey = (typeof TEXT_KEYS)[number];
 
 /** Every key resolved to a string; what the shell renders from. */
@@ -18,6 +18,7 @@ export const TEXT_DEFAULTS: Record<TextKey, { text: string; where: string }> = {
   'nav.search': { text: 'Browse the site, or search it', where: 'The header search field on desktop, and its spoken label everywhere' },
   'footer.site': { text: 'Site', where: 'Footer · heading of the first column' },
   'footer.legal': { text: 'Legal', where: 'Footer · heading of the second column' },
+  'footer.series': { text: 'Series', where: 'Footer · heading of the third column' },
   'footer.blurb': {
     text: 'Independent motorsport companion, built in the open. Fifteen championships, every session in your own time zone. No account needed to browse.',
     where: 'Footer · the one paragraph saying what the site is',

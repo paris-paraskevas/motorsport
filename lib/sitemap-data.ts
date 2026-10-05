@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { loadAllSeriesMeta, loadSeries } from './series';
 import { groupByWeekend } from './group';
+import { SESSION_PAGE_SERIES, sessionSlug } from './weekend';
 import { tabIsIndexed, tabsFor } from './tabs';
 import { tabIsEmpty } from '@/components/SeriesPageView';
 import { listArchivePairs, loadSeasonArchive, isArchiveLiveSeason } from './season-archive';
@@ -136,11 +137,23 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
         // the page answers noindex without one (the weekend route reads the same
         // predicate), and a sitemap must not submit a noindex URL.
         const notes = await loadWeekendNotes(m.slug);
-        return groupByWeekend(series.sessions, now, series.rounds)
-          .filter((w) => w.round >= 1 && hasWeekendNote(notes, series.meta.season, w.round))
+        const weekends = groupByWeekend(series.sessions, now, series.rounds).filter((w) => w.round >= 1);
+        const weekendUrls = weekends
+          .filter((w) => hasWeekendNote(notes, series.meta.season, w.round))
           .map((w) => ({
             url: `${SITE_URL}/series/${m.slug}/weekend/${w.round}`,
           }));
+        // X13: the session pages of the series whose schedules link them. The session route answers any session of a
+        // weekend by its slug with no note needed, and the first session of a slug is the page (sessionBySlug), so each
+        // slug of a weekend is listed once.
+        const sessionUrls = !(SESSION_PAGE_SERIES as readonly string[]).includes(m.slug)
+          ? []
+          : weekends.flatMap((w) =>
+              [...new Set(w.sessions.map((s) => sessionSlug(s.title)).filter(Boolean))].map((slug) => ({
+                url: `${SITE_URL}/series/${m.slug}/weekend/${w.round}/${slug}`,
+              })),
+            );
+        return [...weekendUrls, ...sessionUrls];
       } catch {
         return [];
       }

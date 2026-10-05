@@ -71,12 +71,13 @@ type Loaded =
   | { state: 'error'; message: string }
   | { state: 'ready'; list: EditableList };
 
-const LIST_KEYS: NavListKey[] = ['doors', 'bar', 'footer-site', 'footer-legal'];
+const LIST_KEYS: NavListKey[] = ['doors', 'bar', 'footer-site', 'footer-legal', 'footer-series'];
 const ROLE_OF: Record<NavListKey, 'menu' | 'bar' | 'footer'> = {
   doors: 'menu',
   bar: 'bar',
   'footer-site': 'footer',
   'footer-legal': 'footer',
+  'footer-series': 'footer',
 };
 
 type LoadedText =
@@ -1171,8 +1172,11 @@ export function Designer({
             if (loaded.state === 'error') {
               return <p className="text-12 text-negative">{loaded.message}</p>;
             }
-            const other: NavListKey | null =
-              listKey === 'footer-site' ? 'footer-legal' : listKey === 'footer-legal' ? 'footer-site' : null;
+            // The footer preview draws the other columns as stored (the edited one comes from the editor).
+            const footerColumns =
+              ROLE_OF[listKey] === 'footer'
+                ? { 'footer-site': stored('footer-site'), 'footer-legal': stored('footer-legal'), 'footer-series': stored('footer-series') }
+                : undefined;
             return (
               <ListEditor
                 key={listKey}
@@ -1182,7 +1186,7 @@ export function Designer({
                 title={LIST_COPY[listKey].title}
                 sub={LIST_COPY[listKey].sub}
                 readOnly={readOnly}
-                otherFooter={other ? stored(other) : undefined}
+                footerColumns={footerColumns}
                 text={chromeText}
                 schemes={schemes}
                 pages={pages.state === 'ready' ? pages.pages : []}

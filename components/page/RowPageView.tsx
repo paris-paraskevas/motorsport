@@ -53,6 +53,7 @@ const LIST_FIELD: Record<string, keyof NavLists> = {
   bar: 'bar',
   'footer-site': 'footerSite',
   'footer-legal': 'footerLegal',
+  'footer-series': 'footerSeries',
 };
 
 /** Header Text and a caption's lead keep the site's prose; a region's own body

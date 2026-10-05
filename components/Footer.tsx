@@ -71,10 +71,11 @@ function FooterEntry({ entry }: { entry: NavEntry }) {
   return dest.action === 'contact' ? <ContactFooterButton /> : <ManageCookiesButton />;
 }
 
-// Two-column footer — Site | Legal side by side, each a short vertical link list,
-// over a thin version / copyright line. No tall brand strip (that's what made the
-// original run a full screen). Since Phase 2 the two columns are the
-// `footer-site` and `footer-legal` lists (lib/design/lists.ts).
+// Three-column footer — Site | Legal | Series side by side on a laptop, the Series
+// column under the other two on a phone, each a short vertical link list over a
+// thin version / copyright line. No tall brand strip (that's what made the
+// original run a full screen). Since Phase 2 the columns are the `footer-site`,
+// `footer-legal` and (X13) `footer-series` lists (lib/design/lists.ts).
 // The headings, the blurb and the install label are text messages (lib/design/text.ts).
 // An entry asking for an authorization scheme shows only to a visitor who
 // passes it (Phase 3 step 4); with no schemes given (the designer's preview)
@@ -82,6 +83,7 @@ function FooterEntry({ entry }: { entry: NavEntry }) {
 export function Footer({
   site,
   legal,
+  series,
   text,
   schemes,
   wordmark = null,
@@ -90,6 +92,7 @@ export function Footer({
 }: {
   site: NavEntry[];
   legal: NavEntry[];
+  series: NavEntry[];
   text: ChromeText;
   schemes?: readonly AuthzScheme[];
   /** From the Application Definition: null keeps the shipped Paddock•Tracker. */
@@ -102,10 +105,11 @@ export function Footer({
   const year = 2026;
   const visibleSite = useVisibleEntries(site, schemes);
   const visibleLegal = useVisibleEntries(legal, schemes);
+  const visibleSeries = useVisibleEntries(series, schemes);
   return (
     <footer className="border-t border-border mt-12 bg-bg">
       <div className="w-full px-4 md:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-2 gap-6 text-xs sm:gap-8">
+        <div className="grid grid-cols-2 gap-6 text-xs sm:grid-cols-3 sm:gap-8">
           <div>
             <ColumnHeading>{text['footer.site']}</ColumnHeading>
             {visibleSite.map((entry, i) => (
@@ -115,6 +119,12 @@ export function Footer({
           <div>
             <ColumnHeading>{text['footer.legal']}</ColumnHeading>
             {visibleLegal.map((entry, i) => (
+              <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
+            ))}
+          </div>
+          <div className="col-span-2 sm:col-span-1">
+            <ColumnHeading>{text['footer.series']}</ColumnHeading>
+            {visibleSeries.map((entry, i) => (
               <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
             ))}
           </div>

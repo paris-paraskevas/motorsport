@@ -53,19 +53,20 @@ export function pageIdOf(key: string): string | null {
   return PAGE_DEST.exec(key)?.[1] ?? null;
 }
 
-/** The four lists the shell renders, resolved to entries. */
+/** The five lists the shell renders, resolved to entries. */
 export interface NavLists {
   doors: NavEntry[];
   bar: NavEntry[];
   footerSite: NavEntry[];
   footerLegal: NavEntry[];
+  footerSeries: NavEntry[];
 }
 
 /** Where a list renders (the `list.role` column). */
 export type ListRole = 'menu' | 'bar' | 'footer' | 'reference' | 'generic';
 
-/** The four lists the shell renders; their keys are fixed and never reused. */
-export const NAV_LIST_KEYS = ['doors', 'bar', 'footer-site', 'footer-legal'] as const;
+/** The five lists the shell renders; their keys are fixed and never reused. */
+export const NAV_LIST_KEYS = ['doors', 'bar', 'footer-site', 'footer-legal', 'footer-series'] as const;
 export type NavListKey = (typeof NAV_LIST_KEYS)[number];
 
 /** The phone bar is equal cells and cannot fit fewer than three or more than

@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import { hasWeekendNote, loadWeekendNotes, weekendNoteKey } from '@/lib/series-content';
 import { WeekendNote } from '@/components/weekend/WeekendNote';
-import { sessionSlug, weekendAnchorName, weekendFor, weekendLabel, weekendPageTitle, weekendStartEnd } from '@/lib/weekend';
+import { SESSION_PAGE_SERIES, sessionSlug, weekendAnchorName, weekendFor, weekendLabel, weekendPageTitle, weekendStartEnd } from '@/lib/weekend';
 import { groupByDay, groupByWeekend } from '@/lib/group';
 import { LocalTime } from '@/components/LocalTime';
 import {
@@ -679,7 +679,7 @@ async function WeekendPage({
   // classifications; WEC/IMSA/GT World render per-class tables; WRC stage pages
   // show the curated per-stage overall classification (0.229.0). Passed straight
   // to the Schedule so each session ROW links to its page.
-  const sessionLinkBase = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world', 'wrc'].includes(slug)
+  const sessionLinkBase = (SESSION_PAGE_SERIES as readonly string[]).includes(slug)
     ? `/series/${slug}/weekend/${round}`
     : undefined;
 

@@ -376,7 +376,7 @@ export function PageDesigner({
   ];
   const shared: Record<SharedKey, string> = {
     doors: `${listCounts.doors ?? 0} doors`,
-    footer: `${(listCounts['footer-site'] ?? 0) + (listCounts['footer-legal'] ?? 0)} links`,
+    footer: `${(listCounts['footer-site'] ?? 0) + (listCounts['footer-legal'] ?? 0) + (listCounts['footer-series'] ?? 0)} links`,
     bar: `${listCounts.bar ?? 0} cells`,
   };
   // A selection whose component went away falls back to the page; a set of

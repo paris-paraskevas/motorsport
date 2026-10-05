@@ -62,6 +62,24 @@ export const DEFAULT_NAV: NavLists = {
     { label: 'Do Not Sell or Share', dest: 'do-not-sell' },
     { label: 'Imprint', dest: 'imprint' },
   ],
+  // X13: the footer's third column, every championship's hub one click from any page, in the series index's order.
+  footerSeries: [
+    { label: 'Formula 1', dest: 'series:f1' },
+    { label: 'Formula 2', dest: 'series:f2' },
+    { label: 'Formula 3', dest: 'series:f3' },
+    { label: 'Formula E', dest: 'series:formula-e' },
+    { label: 'MotoGP', dest: 'series:motogp' },
+    { label: 'FIA WEC', dest: 'series:wec' },
+    { label: 'IMSA', dest: 'series:imsa' },
+    { label: 'GT World Challenge', dest: 'series:gt-world' },
+    { label: 'DTM', dest: 'series:dtm' },
+    { label: 'IndyCar', dest: 'series:indycar' },
+    { label: 'NASCAR Cup', dest: 'series:nascar-cup' },
+    { label: 'WorldSBK', dest: 'series:wsbk' },
+    { label: 'WRC', dest: 'series:wrc' },
+    { label: 'ADAC Ravenol 24h Nürburgring', dest: 'series:adac-ravenol-24h' },
+    { label: 'NLS Nürburgring', dest: 'series:nls' },
+  ],
 };
 
 const FIELD: Record<NavListKey, keyof NavLists> = {
@@ -69,6 +87,7 @@ const FIELD: Record<NavListKey, keyof NavLists> = {
   bar: 'bar',
   'footer-site': 'footerSite',
   'footer-legal': 'footerLegal',
+  'footer-series': 'footerSeries',
 };
 
 const ROLE: Record<NavListKey, ListRole> = {
@@ -76,6 +95,7 @@ const ROLE: Record<NavListKey, ListRole> = {
   bar: 'bar',
   'footer-site': 'footer',
   'footer-legal': 'footer',
+  'footer-series': 'footer',
 };
 
 const text = (v: unknown): string | undefined => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
@@ -125,7 +145,7 @@ export function resetNavListsMemo(): void {
   memo = null;
 }
 
-/** The four lists for the shell, from rows where they are usable and from the
+/** The five lists for the shell, from rows where they are usable and from the
  *  defaults where they are not. Never throws. */
 export async function loadNavLists(): Promise<NavLists> {
   if (!isBettingConfigured()) return DEFAULT_NAV;
@@ -212,7 +232,7 @@ export async function loadListForEditing(key: string): Promise<EditableList | nu
 // Lists of the operator's own (Phase 3 of the designer plan, the catalogue's
 // Lists entry): rows of `list` with role `generic`, created and deleted through
 // app/api/admin/design/lists, their entries saved through design_save_list()
-// like the shell's four. A List region on any page may name one by key.
+// like the shell's five. A List region on any page may name one by key.
 
 /** A list as the Lists page and the Page Designer's picker see it. */
 export interface ListSummary {
@@ -250,7 +270,7 @@ export async function loadListsForEditing(): Promise<ListSummary[] | null> {
   }
 }
 
-/** The entries of the lists a document names, by key: the shell's four from the
+/** The entries of the lists a document names, by key: the shell's five from the
  *  memoised set it was given, the operator's own read now (a page is rendered
  *  far less often than the shell), a key with nothing usable empty. Never throws. */
 export async function loadDocumentLists(keys: readonly string[], nav: NavLists): Promise<Record<string, NavEntry[]>> {
