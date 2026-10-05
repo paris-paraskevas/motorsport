@@ -685,7 +685,7 @@ const READERS: Readonly<Record<string, Reader>> = {
     const extras = slug === 'motogp' ? [...(snapshot.extras ?? []), ...snapshot.races.filter(sprint)] : (snapshot.extras ?? []);
     // One row per driver and round: a round with several races (F3's sprint and feature, WorldSBK's three) keeps the total
     // after its last race, since the axis means "after this round" (the F1 sprint's rule in lib/season-trend.ts); the builder
-    // hands one point per race object, in round order.
+    // hands one point per round since B3, named after the round's last race, in round order.
     const flatten = (trend: SeasonTrendData, kind: 'driver' | 'constructor'): SourceRow[] => {
       const lastByRound = new Map<number, SeasonTrendData['data'][number]>();
       for (const point of trend.data) lastByRound.set(point.round, point);

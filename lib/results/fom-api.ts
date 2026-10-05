@@ -3,6 +3,9 @@ import type { SessionClassification, SessionClassificationEntry } from '@/lib/re
 import { fetchUpstream } from '@/lib/fetch-upstream';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
 import { withSourceSnapshot } from '@/lib/source-snapshot';
+import type { SeriesRoundEntry } from '@/lib/types';
+import { loadRounds } from '@/lib/rounds-loader';
+import path from 'path';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -38,7 +41,7 @@ export type FomBrand = 'f2' | 'f3';
 // ---- API response shapes (only the fields we read) ----------------------
 
 export interface FomRaceSession {
-  description?: string; // "SPRINT RACE" | "FEATURE RACE"
+  description?: string; // "Sprint Race" | "Feature Race" | "Feature Race 2" (a feature carried over, B3)
   sessionNumber?: number;
 }
 
@@ -60,7 +63,8 @@ export interface FomStandingRow {
   driverShortName?: string;
   driverTLA?: string;
   championshipPoints?: number;
-  // Per-round [sprint, feature] canonical points. Column index = round-1.
+  // Per-round canonical points, one cell per race session in the meeting's order ([sprint, feature], three for a
+  // carried-over race). Column index = the meeting's position in the manifest - 1 (B3).
   // Validated: summing these equals championshipPoints for every driver, so
   // this — NOT the per-session `racePoints` field, which omits pole/fastest-lap
   // bonuses — is the canonical points source.
@@ -98,7 +102,7 @@ export interface FomSessionResponse {
   // Round metadata for the session's meeting (circuit/country/dates). NOTE the
   // API carries NO F2/F3 round number here — the only round number present
   // anywhere is the F1 GP number, which differs (F2/F3 skip some GPs). The
-  // championship round is the meeting's index in the manifest (see below).
+  // championship round is the curated calendar's by date overlap, else the meeting's position (roundOfMeeting, B3).
   meeting?: {
     circuitOfficialName?: string;
     meetingCountryName?: string;
@@ -129,8 +133,11 @@ async function fetchFomJson<T>(brand: FomBrand, path: string): Promise<T | null>
 
 // ---- Points lookup ------------------------------------------------------
 
-type PointsLookup = Map<string, Array<[number | null, number | null]>>;
-type SessionIndex = 0 | 1; // 0 = sprint (SR), 1 = feature (FR) — validated ordering.
+// Every race of a meeting, in the manifest's order: [sprint, feature] in an ordinary weekend, [sprint, feature 1,
+// feature 2] when a race is carried over (Formula 2 at Baku and Formula 3 at Madrid in 2026). The cells of a driver's
+// per-round `points` follow the same order, so a race's points are read at its own index.
+type PointsLookup = Map<string, Array<Array<number | null>>>;
+type SessionIndex = number; // the race's index among the meeting's race sessions: 0 = sprint, 1 = the (first) feature.
 
 export function buildPointsLookup(standings: FomStandingRow[] | undefined): PointsLookup {
   const map: PointsLookup = new Map();
@@ -138,11 +145,7 @@ export function buildPointsLookup(standings: FomStandingRow[] | undefined): Poin
     if (!row.driverReference || !Array.isArray(row.points)) continue;
     map.set(
       row.driverReference,
-      row.points.map(pair => {
-        const sr = Array.isArray(pair) && typeof pair[0] === 'number' ? pair[0] : null;
-        const fr = Array.isArray(pair) && typeof pair[1] === 'number' ? pair[1] : null;
-        return [sr, fr];
-      }),
+      row.points.map(cells => (Array.isArray(cells) ? cells.map(c => (typeof c === 'number' ? c : null)) : [])),
     );
   }
   return map;
@@ -157,7 +160,7 @@ export function completedRounds(standings: FomStandingRow[] | undefined): Set<nu
   const out = new Set<number>();
   for (const row of standings ?? []) {
     row.points?.forEach((pair, i) => {
-      if (Array.isArray(pair) && (pair[0] !== null || pair[1] !== null)) out.add(i + 1);
+      if (Array.isArray(pair) && pair.some(c => c !== null)) out.add(i + 1);
     });
   }
   return out;
@@ -199,6 +202,11 @@ export function mapRaceResult(
   kind: 'feature' | 'sprint',
   meeting: FomMeeting,
   points: PointsLookup,
+  // The race's place among the meeting's race sessions and the feed's own name for it ("Feature Race 2"); the two-race
+  // defaults when absent. `pointsRound` is the meeting's position in the manifest, which keys the points cells; it
+  // equals `round` unless the curated calendar numbers the rounds differently (Formula 3 skipped its round 2 in 2026).
+  session?: { index: number; name: string },
+  pointsRound: number = round,
 ): RaceResult | null {
   const rows = data?.sessionResults?.results;
   if (!rows || rows.length === 0) return null;
@@ -211,8 +219,8 @@ export function mapRaceResult(
   const date = dateStr ? new Date(`${dateStr}T00:00:00Z`) : null;
   if (!date || Number.isNaN(date.getTime())) return null;
 
-  const raceName = `${country} ${kind === 'feature' ? 'Feature Race' : 'Sprint Race'}`;
-  const sessionIdx: SessionIndex = kind === 'feature' ? 1 : 0;
+  const raceName = `${country} ${session?.name ?? (kind === 'feature' ? 'Feature Race' : 'Sprint Race')}`;
+  const sessionIdx: SessionIndex = session?.index ?? (kind === 'feature' ? 1 : 0);
 
   const classified = rows
     .filter(isClassified)
@@ -233,7 +241,7 @@ export function mapRaceResult(
       // "DNS") otherwise — falling back to the display label ("NC").
       status: finished ? 'Finished' : r.completionStatusCode || r.displayPosition || 'DNF',
       time: r.displayTime ?? undefined,
-      points: pointsFor(points, r.driverReference, round, sessionIdx),
+      points: pointsFor(points, r.driverReference, pointsRound, sessionIdx),
     };
   };
 
@@ -313,8 +321,10 @@ export interface FomSeasonBundle {
 
 const EMPTY_BUNDLE: FomSeasonBundle = { feature: [], sprint: [], qualifying: [], practice: [] };
 
+// v2 (B3): the bundle's shape changed (every race of a meeting, the curated round), so a bundle the old reader cached
+// within the three-hour window is never served or re-persisted by the new one.
 function bundleCacheKey(brand: FomBrand, season: number): string {
-  return `paddock:results:fom:${brand}:season:${season}`;
+  return `paddock:results:fom:v2:${brand}:season:${season}`;
 }
 
 async function mapWithLimit<T>(items: T[], limit: number, fn: (item: T) => Promise<void>): Promise<void> {
@@ -329,6 +339,24 @@ async function mapWithLimit<T>(items: T[], limit: number, fn: (item: T) => Promi
   await Promise.all(
     Array.from({ length: Math.min(limit, items.length) }, () => worker()),
   );
+}
+
+/** The feed's session description as a race name: "FEATURE RACE 2" → "Feature Race 2". */
+function raceSessionName(description: string | undefined, kind: 'feature' | 'sprint'): string {
+  const words = (description ?? '').trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  return words || (kind === 'feature' ? 'Feature Race' : 'Sprint Race');
+}
+
+/** The site's round number of a meeting: the curated round whose dates overlap the meeting's (the feed opens a
+ *  weekend a day before the curated calendar does, Monaco's Thursday), else the meeting's position in the feed. */
+export function roundOfMeeting(meeting: FomMeeting, position: number, rounds?: readonly SeriesRoundEntry[]): number {
+  const start = meeting.meetingStartDate;
+  const end = meeting.meetingEndDate ?? start;
+  if (start && end && rounds) {
+    const hit = rounds.find(r => r.startDate <= end && start <= r.endDate);
+    if (hit) return hit.round;
+  }
+  return position;
 }
 
 /**
@@ -351,40 +379,45 @@ async function fetchFomSeasonLive(brand: FomBrand, season: number): Promise<FomS
 
   const points = buildPointsLookup(manifest?.standings);
   const done = completedRounds(manifest?.standings);
+  // The curated calendar (content/series/<brand>/rounds.json, the loader the series pages use) numbers the rounds;
+  // without the file the meeting's position stands.
+  const calendar = (await loadRounds(path.join(process.cwd(), 'content', 'series', brand)))?.rounds;
 
   const bundle: FomSeasonBundle = { feature: [], sprint: [], qualifying: [], practice: [] };
 
-  // Round = manifest index + 1 (the F2/F3 championship round; validated against
-  // the points columns, which align 1:1 with meeting order).
+  // The meeting's position in the manifest keys its points cells (they align 1:1 with meeting order); its championship
+  // round is the curated calendar's by date overlap, else the position (Formula 3 skipped its round 2 in 2026).
   const targets = meetings
-    .map((meeting, i) => ({ meeting, round: i + 1 }))
-    .filter(({ round }) => done.has(round));
+    .map((meeting, i) => ({ meeting, position: i + 1, round: roundOfMeeting(meeting, i + 1, calendar) }))
+    .filter(({ position }) => done.has(position));
 
-  await mapWithLimit(targets, MAX_CONCURRENT_MEETINGS, async ({ meeting, round }) => {
+  await mapWithLimit(targets, MAX_CONCURRENT_MEETINGS, async ({ meeting, position, round }) => {
     const key = meeting.meetingKey;
     if (key == null) return;
-    const feature = (meeting.raceSessions ?? []).find(s => /FEATURE/i.test(s.description ?? ''));
-    const sprint = (meeting.raceSessions ?? []).find(s => /SPRINT/i.test(s.description ?? ''));
+    // Every race session of the meeting, in the feed's order; a third race (a feature carried over) is one more.
+    const races = (meeting.raceSessions ?? [])
+      .map((s, index) => ({ s, index, kind: /SPRINT/i.test(s.description ?? '') ? ('sprint' as const) : /FEATURE/i.test(s.description ?? '') ? ('feature' as const) : null }))
+      .filter((r): r is { s: FomRaceSession; index: number; kind: 'feature' | 'sprint' } => r.kind !== null);
 
-    const [featData, sprData, qualData, pracData] = await Promise.all([
-      feature ? fetchFomJson<FomSessionResponse>(brand, `/race?meeting=${key}&session=${feature.sessionNumber}`) : Promise.resolve(null),
-      sprint ? fetchFomJson<FomSessionResponse>(brand, `/race?meeting=${key}&session=${sprint.sessionNumber}`) : Promise.resolve(null),
+    const [raceData, qualData, pracData] = await Promise.all([
+      Promise.all(races.map(r => fetchFomJson<FomSessionResponse>(brand, `/race?meeting=${key}&session=${r.s.sessionNumber}`))),
       fetchFomJson<FomSessionResponse>(brand, `/qualifying?meeting=${key}`),
       fetchFomJson<FomSessionResponse>(brand, `/practice?meeting=${key}&session=0`),
     ]);
 
-    const fr = mapRaceResult(featData, round, 'feature', meeting, points);
-    if (fr) bundle.feature.push(fr);
-    const sr = mapRaceResult(sprData, round, 'sprint', meeting, points);
-    if (sr) bundle.sprint.push(sr);
+    races.forEach((r, i) => {
+      const mapped = mapRaceResult(raceData[i], round, r.kind, meeting, points, { index: r.index, name: raceSessionName(r.s.description, r.kind) }, position);
+      if (mapped) (r.kind === 'feature' ? bundle.feature : bundle.sprint).push(mapped);
+    });
     const q = mapClassification(qualData);
     if (q) bundle.qualifying.push({ round, data: q });
     const p = mapClassification(pracData);
     if (p) bundle.practice.push({ round, data: p });
   });
 
-  bundle.feature.sort((a, b) => a.round - b.round);
-  bundle.sprint.sort((a, b) => a.round - b.round);
+  const byRoundThenName = (a: RaceResult, b: RaceResult) => a.round - b.round || a.raceName.localeCompare(b.raceName);
+  bundle.feature.sort(byRoundThenName);
+  bundle.sprint.sort(byRoundThenName);
   bundle.qualifying.sort((a, b) => a.round - b.round);
   bundle.practice.sort((a, b) => a.round - b.round);
 
@@ -459,7 +492,9 @@ function parseOrdinal(pos: string | undefined): number | null {
 const FEATURE_WIN_MIN = 25;
 function countFeatureWins(points: Array<Array<number | null>> | undefined): number {
   if (!Array.isArray(points)) return 0;
-  return points.filter(p => Array.isArray(p) && typeof p[1] === 'number' && (p[1] as number) >= FEATURE_WIN_MIN).length;
+  // A feature win scores at least 25; no sprint cell can (a sprint win with the fastest lap is 11), so every cell of
+  // a round counts, the carried-over third race included.
+  return points.reduce((n, cells) => n + (Array.isArray(cells) ? cells.filter(c => typeof c === 'number' && c >= FEATURE_WIN_MIN).length : 0), 0);
 }
 
 // The driver-standings breakdown carries NO team, so join driverReference ->

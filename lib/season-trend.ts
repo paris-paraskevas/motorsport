@@ -63,7 +63,17 @@ export function buildSeasonTrendData(
   const running: Record<string, number> = {};
   for (const d of drivers) running[d.name] = 0;
 
-  const data: SeasonTrendPoint[] = sorted.map(race => {
+  // One point per round: the races of one round (Baku's three, B3) fold into the same x position, as the extras do,
+  // and the point keeps the last race's name, since the axis means "after this round" (the trend reader's rule).
+  const rounds: { round: number; raceName: string; results: RaceResultEntry[] }[] = [];
+  for (const race of sorted) {
+    const last = rounds[rounds.length - 1];
+    if (last && last.round === race.round) {
+      last.results.push(...race.results);
+      last.raceName = race.raceName;
+    } else rounds.push({ round: race.round, raceName: race.raceName, results: [...race.results] });
+  }
+  const data: SeasonTrendPoint[] = rounds.map(race => {
     for (const r of race.results) {
       running[r.driverName] = (running[r.driverName] ?? 0) + r.points;
     }
@@ -230,9 +240,10 @@ export function buildConstructorsTrendData(
   const sorted = [...races].sort((a, b) => a.round - b.round);
   const rounds = [...new Set(sorted.map(r => r.round))].sort((a, b) => a - b);
 
+  // The point's name is the round's last race's, as the drivers' builder names it (B3).
   const snapshots = rounds.map(round => ({
     round,
-    raceName: sorted.find(r => r.round === round)?.raceName ?? `Round ${round}`,
+    raceName: sorted.filter(r => r.round === round).at(-1)?.raceName ?? `Round ${round}`,
     standings: buildStandingsAtRound(races, round, extras).constructors,
   }));
 

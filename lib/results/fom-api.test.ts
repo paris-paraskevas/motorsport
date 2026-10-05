@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import path from 'path';
 import {
   mapRaceResult,
   mapClassification,
@@ -6,10 +7,16 @@ import {
   completedRounds,
   fetchFomSeason,
   fetchFomStandings,
+  roundOfMeeting,
   type FomSessionResponse,
   type FomMeeting,
   type FomStandingRow,
 } from './fom-api';
+
+// B3: the curated calendar the reader numbers rounds by (lib/rounds-loader.ts), nothing (the meeting's position) unless
+// a test hands one over.
+vi.mock('../rounds-loader', () => ({ loadRounds: vi.fn(async () => undefined) }));
+import { loadRounds } from '../rounds-loader';
 
 // In-memory KV stand-in — cache path is a no-op unless env vars are set.
 const kvStore = new Map<string, unknown>();
@@ -181,7 +188,7 @@ describe('fetchFomSeason', () => {
     });
 
     it('short-circuits on a cache hit without touching the API', async () => {
-      kvStore.set('paddock:results:fom:f2:season:2026', {
+      kvStore.set('paddock:results:fom:v2:f2:season:2026', {
         feature: [{ round: 1, raceName: 'Cached', date: new Date('2026-03-08T00:00:00Z'), circuit: 'C', results: [] }],
         sprint: [], qualifying: [], practice: [],
       });
@@ -202,14 +209,14 @@ describe('fetchFomSeason', () => {
         'practice?meeting=1279': null,
       });
       await fetchFomSeason('f2', 2026);
-      const stored = kvStore.get('paddock:results:fom:f2:season:2026') as { feature: unknown[] } | undefined;
+      const stored = kvStore.get('paddock:results:fom:v2:f2:season:2026') as { feature: unknown[] } | undefined;
       expect(stored?.feature.length).toBe(1);
     });
 
     it('does not cache an empty bundle', async () => {
       mockApi({});
       await fetchFomSeason('f2', 2026);
-      expect(kvStore.has('paddock:results:fom:f2:season:2026')).toBe(false);
+      expect(kvStore.has('paddock:results:fom:v2:f2:season:2026')).toBe(false);
     });
   });
 });
@@ -279,5 +286,127 @@ describe('fetchFomStandings', () => {
   it('returns null when both breakdown tables are empty', async () => {
     mockApi({});
     expect(await fetchFomStandings('f2', 2026)).toBeNull();
+  });
+});
+
+// B3 (2026-10-05): Formula 2 at Baku and Formula 3 at Madrid ran three races (a feature carried over); the manifest
+// lists three race sessions and three points cells per round. Formula 3 also skipped its round 2, so the feed's
+// meeting order and the curated calendar's round numbers part company from Monaco on.
+describe('B3: a round with three races, and the curated round numbers', () => {
+  const BAKU: FomMeeting = {
+    meetingKey: 1295,
+    meetingCountryName: 'Azerbaijan',
+    meetingLocation: 'Baku',
+    meetingStartDate: '2026-09-24',
+    meetingEndDate: '2026-09-26',
+    raceSessions: [
+      { description: 'Sprint Race', sessionNumber: 1 },
+      { description: 'Feature Race 1', sessionNumber: 2 },
+      { description: 'Feature Race 2', sessionNumber: 3 },
+    ],
+  };
+  const THREE_CELLS: FomStandingRow[] = [
+    { driverReference: 'RAFCAM01', driverFirstName: 'Rafael', driverLastName: 'Câmara', championshipPoints: 37, points: [[0, 12, 25]] },
+    { driverReference: 'ALEDUN01', driverFirstName: 'Alexander', driverLastName: 'Dunne', championshipPoints: 50, points: [[7, 28, 15]] },
+  ];
+  const row = (ref: string, first: string, last: string, pos: string) => ({ positionNumber: pos, completionStatusCode: 'OK', driverReference: ref, driverFirstName: first, driverLastName: last, teamName: 'Team' });
+  const meta = { meetingCountryName: 'Azerbaijan', meetingEndDate: '2026-09-26' };
+
+  it('keeps every points cell of a round and reads each race at its own index', () => {
+    const lookup = buildPointsLookup(THREE_CELLS);
+    expect(lookup.get('RAFCAM01')).toEqual([[0, 12, 25]]);
+    const second = mapRaceResult(sessionResponse([row('RAFCAM01', 'Rafael', 'Câmara', '1'), row('ALEDUN01', 'Alexander', 'Dunne', '3')], meta), 12, 'feature', BAKU, lookup, { index: 2, name: 'Feature Race 2' }, 1);
+    expect(second?.raceName).toBe('Azerbaijan Feature Race 2');
+    expect(second?.results.map(r => r.points)).toEqual([25, 15]);
+    const first = mapRaceResult(sessionResponse([row('ALEDUN01', 'Alexander', 'Dunne', '1'), row('RAFCAM01', 'Rafael', 'Câmara', '4')], meta), 12, 'feature', BAKU, lookup, { index: 1, name: 'Feature Race 1' }, 1);
+    expect(first?.raceName).toBe('Azerbaijan Feature Race 1');
+    expect(first?.results.map(r => r.points)).toEqual([28, 12]);
+  });
+
+  it('fetches all three race sessions of a meeting and files both features under the round', async () => {
+    const originalFetch = globalThis.fetch;
+    const manifest = { season: '2026', meetings: [BAKU], standings: THREE_CELLS };
+    globalThis.fetch = vi.fn(async (url: string | URL) => {
+      const u = String(url);
+      const body = u.includes('driver-standings-breakdown') ? manifest
+        : u.includes('session=1') ? sessionResponse([row('ALEDUN01', 'Alexander', 'Dunne', '1')], meta)
+        : u.includes('session=2') ? sessionResponse([row('ALEDUN01', 'Alexander', 'Dunne', '1'), row('RAFCAM01', 'Rafael', 'Câmara', '4')], meta)
+        : u.includes('session=3') ? sessionResponse([row('RAFCAM01', 'Rafael', 'Câmara', '1'), row('ALEDUN01', 'Alexander', 'Dunne', '3')], meta)
+        : { sessionResults: { results: [] } };
+      return { ok: true, status: 200, json: async () => body } as Response;
+    }) as unknown as typeof fetch;
+    try {
+      vi.mocked(loadRounds).mockResolvedValueOnce({ season: 2026, rounds: [{ round: 12, name: 'Azerbaijan Grand Prix', startDate: '2026-09-24', endDate: '2026-09-26' }] });
+      const bundle = await fetchFomSeason('f2', 2026);
+      expect(vi.mocked(loadRounds).mock.calls.at(-1)?.[0]).toBe(path.join(process.cwd(), 'content', 'series', 'f2'));
+      expect(bundle.sprint.map(r => [r.round, r.raceName])).toEqual([[12, 'Azerbaijan Sprint Race']]);
+      expect(bundle.feature.map(r => [r.round, r.raceName])).toEqual([[12, 'Azerbaijan Feature Race 1'], [12, 'Azerbaijan Feature Race 2']]);
+      const camara = bundle.feature.flatMap(r => r.results).filter(e => e.driverName === 'Rafael Câmara').map(e => e.points);
+      expect(camara).toEqual([12, 25]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('numbers a meeting by the curated round whose dates hold it, else by its position (Formula 3 skipped round 2)', () => {
+    const rounds = [
+      { round: 1, name: 'Australian Grand Prix', startDate: '2026-03-06', endDate: '2026-03-08' },
+      { round: 3, name: 'Monaco Grand Prix', startDate: '2026-06-05', endDate: '2026-06-07' },
+    ];
+    expect(roundOfMeeting({ meetingStartDate: '2026-06-04', meetingEndDate: '2026-06-07' }, 2, rounds)).toBe(3);
+    expect(roundOfMeeting({ meetingStartDate: '2026-05-01', meetingEndDate: '2026-05-03' }, 2, rounds)).toBe(2);
+    expect(roundOfMeeting({ meetingStartDate: '2026-06-05' }, 2, rounds)).toBe(3);
+    expect(roundOfMeeting({ meetingStartDate: '2026-03-06' }, 1, rounds)).toBe(1);
+    expect(roundOfMeeting({ meetingStartDate: '2026-09-11' }, 9)).toBe(9);
+  });
+
+  it('numbers a season by the calendar the rounds loader reads: Formula 3’s Monaco meeting, second in the feed, is round 3 on its feature, its sprint and its qualifying, with the points of the second cell', async () => {
+    const MONACO: FomMeeting = { meetingKey: 1290, meetingCountryName: 'Monaco', meetingLocation: 'Monaco', meetingStartDate: '2026-06-04', meetingEndDate: '2026-06-07', raceSessions: [{ description: 'Sprint Race', sessionNumber: 1 }, { description: 'Feature Race', sessionNumber: 2 }] };
+    const standings: FomStandingRow[] = [{ driverReference: 'RAFCAM01', driverFirstName: 'Rafael', driverLastName: 'Câmara', championshipPoints: 50, points: [[10, 25], [0, 15]] }];
+    vi.mocked(loadRounds).mockResolvedValueOnce({ season: 2026, rounds: [
+      { round: 1, name: 'Australian Grand Prix', startDate: '2026-03-06', endDate: '2026-03-08' },
+      { round: 3, name: 'Monaco Grand Prix', startDate: '2026-06-05', endDate: '2026-06-07' },
+    ] });
+    const monaco = { meetingCountryName: 'Monaco', meetingEndDate: '2026-06-07' };
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn(async (url: string | URL) => {
+      const u = String(url);
+      const body = u.includes('driver-standings-breakdown') ? { season: '2026', meetings: [MELBOURNE, MONACO], standings }
+        : u.includes('meeting=1290') && !u.includes('practice') ? sessionResponse([row('RAFCAM01', 'Rafael', 'Câmara', '1')], monaco)
+        : u.includes('qualifying') || u.includes('practice') ? { sessionResults: { results: [] } }
+        : sessionResponse([row('RAFCAM01', 'Rafael', 'Câmara', '1')], { meetingCountryName: 'Australia', meetingEndDate: '2026-03-08' });
+      return { ok: true, status: 200, json: async () => body } as Response;
+    }) as unknown as typeof fetch;
+    try {
+      const bundle = await fetchFomSeason('f3', 2026);
+      expect(vi.mocked(loadRounds).mock.calls.at(-1)?.[0]).toBe(path.join(process.cwd(), 'content', 'series', 'f3'));
+      expect(bundle.feature.map(r => [r.round, r.raceName])).toEqual([[1, 'Australia Feature Race'], [3, 'Monaco Feature Race']]);
+      expect(bundle.sprint.map(r => r.round)).toEqual([1, 3]);
+      expect(bundle.qualifying.map(q => q.round)).toEqual([3]);
+      expect(bundle.feature[1].results[0].points).toBe(15);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('counts a feature win in any cell of 25 or more, the third cell included, and none below it', async () => {
+    const originalFetch = globalThis.fetch;
+    const standings: FomStandingRow[] = [
+      { position: '1st', championshipPoints: 63, driverReference: 'RAFCAM01', driverFirstName: 'Rafael', driverLastName: 'Câmara', driverTLA: 'CAM', points: [[11, 27, 25]] },
+      { position: '2nd', championshipPoints: 11, driverReference: 'ALEDUN01', driverFirstName: 'Alexander', driverLastName: 'Dunne', driverTLA: 'DUN', points: [[11, 0, 0]] },
+    ];
+    globalThis.fetch = vi.fn(async (url: string | URL) => {
+      const u = String(url);
+      const body = u.includes('driver-standings-breakdown') ? { season: '2026', meetings: [BAKU], standings }
+        : u.includes('constructor-standings-breakdown') ? { standings: [] }
+        : sessionResponse([row('RAFCAM01', 'Rafael', 'Câmara', '1'), row('ALEDUN01', 'Alexander', 'Dunne', '2')], meta);
+      return { ok: true, status: 200, json: async () => body } as Response;
+    }) as unknown as typeof fetch;
+    try {
+      const s = (await fetchFomStandings('f2', 2026))!;
+      expect(s.drivers.map(d => [d.driverName, d.wins])).toEqual([['Rafael Câmara', 2], ['Alexander Dunne', 0]]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });

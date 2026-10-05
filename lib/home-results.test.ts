@@ -53,6 +53,14 @@ describe('latestRaceFromFlat', () => {
     expect(result?.podium[0].detail).toBe('Team A');
   });
 
+  it('takes the later race in feed order when two share a date (a round’s second feature carries the meeting’s date, B3)', () => {
+    const races = [
+      race(12, 'Azerbaijan Feature Race 1', '2026-06-14T00:00:00Z', [entry(1, 'Dunne', 'Team A')]),
+      race(12, 'Azerbaijan Feature Race 2', '2026-06-14T00:00:00Z', [entry(1, 'Câmara', 'Team B')]),
+    ];
+    expect(latestRaceFromFlat(races, NOW)?.raceName).toBe('Azerbaijan Feature Race 2');
+  });
+
   it('ignores races that have not happened yet', () => {
     const races = [
       race(1, 'Done', '2026-06-10T14:00:00Z', [entry(1, 'Won', 'T')]),

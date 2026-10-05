@@ -75,8 +75,11 @@ export const FIELD_SOURCES: Record<string, () => Promise<DriverForm[] | null>> =
   },
 };
 
-/** Season classification per series for settlement — exactly one RaceResult per
- *  round (the headline race), same names as FIELD_SOURCES (gates a + b + c). */
+/** Season classification per series for settlement — one RaceResult per round in the
+ *  ordinary case (the headline race); a carried-over round (F2 Baku 2026: Feature Race 1
+ *  and 2, B3) carries both, and settlement takes the round's first feature (automation.ts's
+ *  `races.find`), which is what the old reader fetched; changing that is the operator's call.
+ *  Same names as FIELD_SOURCES (gates a + b + c). */
 export const RESULT_SOURCES: Record<string, () => Promise<RaceResult[]>> = {
   f1: () => fetchF1SeasonResults(),
   // FEATURE races only — the explicit gate-(b) pick. fetchF2SeasonResults
