@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #__PR__ · 1.0.245 · B3 · opened __OPENED__; the merge on the word
+## #1128 · 1.0.245 · B3 · opened 2026-10-05 14:46:35Z; the merge on the word
 **A round with three races, and Formula 3’s round numbers.** The operator’s word “fix f2” of the 5th on the ESPA page: the F2 trend chart stopped one race short because Baku ran three races and the FOM reader assumed two; reading the reader found Formula 3’s results one round low since its skipped round 2. The standings tables were right throughout.
 - **Readers see:** the F2 and F3 season charts ending on the tables’ totals and the results tabs listing Baku’s and Madrid’s three races once the loader has run the reader (the warm workflow after the merge); Formula 3’s results under their right rounds with their links on the right weekend pages; Baku’s weekend page with its three races and their times, the second feature race with a page of its own (/series/f2/weekend/12/feature-race-2; the old /feature-race address goes, for X14’s redirects).
 - **Editors get:** nothing new.
