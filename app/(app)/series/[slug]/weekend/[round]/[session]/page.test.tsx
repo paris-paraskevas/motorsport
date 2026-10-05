@@ -31,7 +31,11 @@ describe('the session page’s cache declaration', () => {
 describe('X14: the renumbered IndyCar rounds redirect', () => {
   it('asks the weekend helpers for a moved session and redirects permanently before any 404', () => {
     expect(src).toMatch(/renumberedSessionTarget/);
+    expect(src).toMatch(/splitSessionTarget/);
     expect(src).toMatch(/permanentRedirect\(/);
-    expect(src.indexOf('permanentRedirect(')).toBeLessThan(src.indexOf('return { series, weekend, session, round, slug, sessionParam }'));
+    // The renumbering runs before the weekend is resolved (an old round may not exist), the split after it and before
+    // the session lookup that would 404.
+    expect(src.indexOf('renumberedSessionTarget(series')).toBeLessThan(src.indexOf('const weekend = weekendFor(series, round)'));
+    expect(src.indexOf('splitSessionTarget(weekend')).toBeLessThan(src.indexOf('const session = sessionBySlug(weekend, sessionParam)'));
   });
 });

@@ -480,7 +480,7 @@ async function DriverBody({
                 {nextW.roundName ?? weekendLabel(nextW, nextW.round).title}
               </p>
               <p className="mt-0.5 font-mono text-9 uppercase tracking-[0.12em] text-text-faint">
-                Round {nextW.round} · {nextW.dateRangeLabel}
+                {nextW.round >= 1 ? `Round ${nextW.round} · ` : ''}{nextW.dateRangeLabel}
               </p>
               {nextSession && (
                 <div className="mt-2">
@@ -491,12 +491,15 @@ async function DriverBody({
                   />
                 </div>
               )}
+              {/* X14: a round-0 weekend (a test) has no page to preview. */}
+              {nextW.round >= 1 && (
               <Link
                 href={`/series/${driver.seriesSlug}/weekend/${nextW.round}`}
                 className="mt-1 inline-block font-mono text-9 font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
               >
                 Preview →<span className="sr-only">{` — ${weekendAnchorName(driver.seriesName, nextW.roundName ?? weekendLabel(nextW, nextW.round).title, nextW.round)}`}</span>
               </Link>
+              )}
             </div>
           ) : (
             <p className="mt-2 font-serif text-15 italic text-text-muted">Season complete.</p>

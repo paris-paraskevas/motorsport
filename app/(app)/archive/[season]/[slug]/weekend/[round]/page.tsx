@@ -113,7 +113,7 @@ async function ArchiveWeekendPage({
         {titleOf(weekend)}
       </h1>
 
-      {live ? (
+      {live && weekend.round >= 1 ? (
         <p className="mt-2 text-sm leading-relaxed text-text-muted">
           The {archive.season} season is still running.{' '}
           <Link href={`/series/${slug}/weekend/${weekend.round}`} className="text-brand hover:underline">

@@ -345,15 +345,20 @@ async function SeriesPage({
                 <p className="font-serif text-19 font-semibold leading-tight text-text">
                   {lastW.roundName ?? weekendLabel(lastW, lastW.round).title}
                 </p>
-                <Suspense fallback={null}>
-                  <LastPodiumLine slug={slug} round={lastW.round} />
-                </Suspense>
-                <Link
-                  href={`/series/${slug}/weekend/${lastW.round}`}
-                  className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
-                >
-                  Report →<span className="sr-only">{` — ${weekendAnchorName(meta.name, lastW.roundName ?? weekendLabel(lastW, lastW.round).title, lastW.round)}`}</span>
-                </Link>
+                {/* X14: a round-0 weekend (a test) has no page and no podium. */}
+                {lastW.round >= 1 && (
+                  <>
+                    <Suspense fallback={null}>
+                      <LastPodiumLine slug={slug} round={lastW.round} />
+                    </Suspense>
+                    <Link
+                      href={`/series/${slug}/weekend/${lastW.round}`}
+                      className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+                    >
+                      Report →<span className="sr-only">{` — ${weekendAnchorName(meta.name, lastW.roundName ?? weekendLabel(lastW, lastW.round).title, lastW.round)}`}</span>
+                    </Link>
+                  </>
+                )}
               </div>
             )}
             {nextW && (
@@ -365,12 +370,14 @@ async function SeriesPage({
                 <p className="mt-0.5 font-mono text-10 uppercase tracking-[0.14em] text-text-faint">
                   {fmtRange(nextW)}
                 </p>
-                <Link
-                  href={`/series/${slug}/weekend/${nextW.round}`}
-                  className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
-                >
-                  Preview →<span className="sr-only">{` — ${weekendAnchorName(meta.name, nextW.roundName ?? weekendLabel(nextW, nextW.round).title, nextW.round)}`}</span>
-                </Link>
+                {nextW.round >= 1 && (
+                  <Link
+                    href={`/series/${slug}/weekend/${nextW.round}`}
+                    className="mt-1 inline-block font-mono text-10 font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+                  >
+                    Preview →<span className="sr-only">{` — ${weekendAnchorName(meta.name, nextW.roundName ?? weekendLabel(nextW, nextW.round).title, nextW.round)}`}</span>
+                  </Link>
+                )}
               </div>
             )}
             {seasonOver && (

@@ -262,7 +262,8 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
       if (!archive) return [] as MetadataRoute.Sitemap;
       return [
         { url: `${SITE_URL}/archive/${season}/${slug}` },
-        ...archive.weekends.map((w) => ({
+        // X14: a weekend outside the curated rounds sits at round 0 and the archive's season page no longer lists it.
+        ...archive.weekends.filter((w) => w.round >= 1).map((w) => ({
           url: `${SITE_URL}/archive/${season}/${slug}/weekend/${w.round}`,
         })),
       ];

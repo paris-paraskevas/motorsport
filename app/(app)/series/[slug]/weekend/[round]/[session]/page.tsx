@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { renumberedSessionTarget, sessionAnchorName, sessionPageTitle, weekendAnchorName } from '@/lib/weekend';
+import { renumberedSessionTarget, sessionAnchorName, sessionPageTitle, splitSessionTarget, weekendAnchorName } from '@/lib/weekend';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
@@ -139,6 +139,10 @@ async function resolve(params: Promise<{ slug: string; round: string; session: s
   if (moved) permanentRedirect(`/series/${slug}/weekend/${moved}/${sessionParam}`);
   const weekend = weekendFor(series, round);
   if (!weekend) return null;
+  // X14: a race split in two after its page was linked (Baku's Formula 2 feature race, B3) sends its old slug to the
+  // first race, from the weekend's own sessions, so no season-bound redirect sits in next.config.ts.
+  const split = splitSessionTarget(weekend, sessionParam);
+  if (split) permanentRedirect(`/series/${slug}/weekend/${round}/${split}`);
   const session = sessionBySlug(weekend, sessionParam);
   if (!session) return null;
   return { series, weekend, session, round, slug, sessionParam };

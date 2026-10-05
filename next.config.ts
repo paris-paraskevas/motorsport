@@ -63,6 +63,10 @@ const CSP = [
   // Styles: self + inline (Tailwind utilities, inline style attributes).
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style",
   "font-src 'self' data: https://fonts.gstatic.com",
+  // Team radio: the F1 recordings live on livetiming.formula1.com. Without a
+  // media-src the default-src refused them and the player was mute (found by
+  // X14's browser check on 2026-10-05).
+  "media-src 'self' https://livetiming.formula1.com",
   // Images: self + data/blob + https (account photos, Google's pictures, F1/OpenF1
   // headshots, ad + analytics pixels). Broad on purpose for a first pass.
   "img-src 'self' data: blob: https:",
@@ -125,11 +129,6 @@ const nextConfig: NextConfig = {
       // Permanent, because /app was in the sitemap, is the PWA's old start_url,
       // and is bookmarked — every one of those has to keep working.
       { source: "/app", destination: "/", permanent: true },
-      // X14: Baku 2026 ran two Formula 2 feature races (B3), so the single
-      // feature-race address became feature-race-1 and the old one answered
-      // 404 (Seobility's crawl of 5 October). Permanent: the race page was
-      // index, follow, and Search Console may hold it.
-      { source: "/series/f2/weekend/12/feature-race", destination: "/series/f2/weekend/12/feature-race-1", permanent: true },
       // The console is retired (operator, 2026-09-09 ~01:45Z, looking at it on
       // dev.paddock-tracker.com: "im confident i only want to keep the
       // designer"). The designer at /admin/designer is the admin area; the old

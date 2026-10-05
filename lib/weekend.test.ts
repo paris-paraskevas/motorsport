@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { RENUMBERED_ROUNDS, nextSessionAcross, nextWeekend, renumberedSessionTarget, sessionAnchorName, sessionPageTitle, weekendAnchorName, weekendPageTitle } from './weekend';
+import { RENUMBERED_ROUNDS, nextSessionAcross, nextWeekend, renumberedSessionTarget, sessionAnchorName, sessionPageTitle, splitSessionTarget, weekendAnchorName, weekendFor, weekendPageTitle } from './weekend';
 import type { Series, Session } from './types';
 
 // P2.8, the Countdown: the next session of one series or the nearest across several, from the same grouping the weekend
@@ -208,9 +208,14 @@ describe('X14: the renumbered IndyCar rounds', () => {
     { title: 'IndyCar - Honda Indy 200 at Mid-Ohio', start: at('2026-07-05T17:00:00Z'), end: at('2026-07-05T19:00:00Z'), location: 'Mid-Ohio' },
     { title: 'IndyCar - Practice', start: at('2026-07-18T15:00:00Z'), end: at('2026-07-18T16:00:00Z'), location: 'Nashville' },
     { title: 'IndyCar - Music City Grand Prix', start: at('2026-07-19T17:00:00Z'), end: at('2026-07-19T19:00:00Z'), location: 'Nashville' },
+    { title: 'IndyCar - Practice', start: at('2026-08-29T15:00:00Z'), end: at('2026-08-29T16:00:00Z'), location: 'Milwaukee' },
+    { title: 'IndyCar - Hy-Vee Milwaukee Mile Race 2', start: at('2026-08-30T17:00:00Z'), end: at('2026-08-30T19:00:00Z'), location: 'Milwaukee' },
+    { title: 'IndyCar - Grand Prix of Portland', start: at('2026-09-06T19:00:00Z'), end: at('2026-09-06T21:00:00Z'), location: 'Portland' },
   ], [
     { round: 11, name: 'Honda Indy 200 at Mid-Ohio', startDate: '2026-07-03', endDate: '2026-07-05' },
     { round: 12, name: 'Music City Grand Prix', startDate: '2026-07-17', endDate: '2026-07-19' },
+    { round: 17, name: 'Hy-Vee Milwaukee Mile', startDate: '2026-08-28', endDate: '2026-08-30' },
+    { round: 18, name: 'Grand Prix of Portland', startDate: '2026-09-04', endDate: '2026-09-06' },
   ]);
   const now = at('2026-08-01T00:00:00Z');
 
@@ -227,8 +232,37 @@ describe('X14: the renumbered IndyCar rounds', () => {
     expect(renumberedSessionTarget(f1, 1, 'race', now)).toBeNull();
   });
 
-  it('covers only the renumbered rounds', () => {
-    expect(RENUMBERED_ROUNDS.indycar).toEqual({ from: 11, to: 17, shift: 1 });
+  it('covers only the renumbered rounds, to the span’s last round', () => {
+    expect(RENUMBERED_ROUNDS.indycar).toEqual({ season: 2026, from: 11, to: 17, shift: 1 });
     expect(renumberedSessionTarget(indycar, 3, 'indycar-music-city-grand-prix', now)).toBeNull();
+    expect(renumberedSessionTarget(indycar, 12, 'indycar-music-city-grand-prix', now)).toBeNull();
+    expect(renumberedSessionTarget(indycar, 17, 'indycar-grand-prix-of-portland', now)).toBe(18);
+    expect(renumberedSessionTarget(indycar, 18, 'indycar-grand-prix-of-portland', now)).toBeNull();
+  });
+
+  it('is inert in another season', () => {
+    const next = { ...indycar, rounds: { ...indycar.rounds!, season: 2027 } } as typeof indycar;
+    expect(renumberedSessionTarget(next, 11, 'indycar-music-city-grand-prix', now)).toBeNull();
+  });
+});
+
+describe('X14: a race split in two keeps its old address', () => {
+  // Baku 2026: Formula 2's feature race became feature-race-1 and feature-race-2 (B3) and the old slug answered 404;
+  // the rule reads the weekend's own sessions, so it holds for any season and never fires where the slug exists.
+  const f2 = series('f2', 'Formula 2', [
+    { title: 'F2 - Sprint Race', start: at('2026-09-26T10:00:00Z'), end: at('2026-09-26T11:00:00Z'), location: 'Baku City Circuit' },
+    { title: 'F2 - Feature Race 1', start: at('2026-09-26T13:00:00Z'), end: at('2026-09-26T14:00:00Z'), location: 'Baku City Circuit' },
+    { title: 'F2 - Feature Race 2', start: at('2026-09-27T09:00:00Z'), end: at('2026-09-27T10:00:00Z'), location: 'Baku City Circuit' },
+  ], [{ round: 12, name: 'Azerbaijan', startDate: '2026-09-25', endDate: '2026-09-27' }]);
+  const baku = weekendFor(f2, 12, at('2026-10-01T00:00:00Z'))!;
+
+  it('sends the old single-race slug to the first race', () => {
+    expect(splitSessionTarget(baku, 'feature-race')).toBe('feature-race-1');
+  });
+
+  it('leaves existing slugs and unknown ones alone', () => {
+    expect(splitSessionTarget(baku, 'feature-race-1')).toBeNull();
+    expect(splitSessionTarget(baku, 'sprint-race')).toBeNull();
+    expect(splitSessionTarget(baku, 'qualifying')).toBeNull();
   });
 });
