@@ -1,6 +1,6 @@
 ---
 topic: endurance
-question: What do the GT driver ratings (Platinum, Gold, Silver, Bronze) mean?
+question: What do GT driver ratings mean?
 summary: The FIA driver categorisation rates every GT and endurance driver as Platinum, Gold, Silver or Bronze based on age, experience and results. Series use those ratings to force balanced crews and to split one grid into fair sub-classes — like GT World Challenge's Pro, Gold, Silver and Bronze cups.
 keywords:
   - gt driver ratings explained

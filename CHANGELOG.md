@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.252 — 2026-10-05
+
+### X10’s leftovers — the titles and descriptions the crawl of the 5th still flagged
+
+Seobility’s crawl of 5 October left five pages over its measures after X10 and X10b: the GT driver ratings answer’s question (615 px bare, its suffix already dropped) and Toyota Gazoo Racing’s endurance history (578 px) against the 570 px title ceiling, the up-and-coming drivers watchlist, and the descriptions of /social/threads (1,148 px) and /f1/analysis (1,115 px) at 14 px against 985 px. The three questions are shortened (`content/information/answers/what-do-gt-driver-ratings-mean.md`, `content/information/team-histories.json`, the watchlist’s in `lib/information/curated.ts`; the four rating names stay in the lead), the two descriptions rewritten (`app/(app)/social/threads/page.tsx`, `app/(app)/f1/analysis/page.tsx`), each measured with `textWidth` from `lib/site.ts`. The team listed twice as “Mercedes-AMG Team Verstappen Racing” (#3 in GT World Challenge and #3 in the Nürburgring series) keeps its duplicate title for X17: the fix is a title rule for colliding names, not a text edit.
 ## 1.0.251 — 2026-10-05
 
 ### X14 — Nothing broken

@@ -4,6 +4,9 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.252 — 2026-10-05
+
+Two explainer titles and two page descriptions trimmed so search results show them whole.
 ## 1.0.251 — 2026-10-05
 
 Loose ends tied: the old addresses of IndyCar’s renumbered rounds and of Baku’s first Formula 2 feature race now lead to the right pages, the Formula 1 analysis page’s links reach the right sessions, a pre-season test no longer links to a page that does not exist, team radio loads only when you press play, and the WhatsApp share button goes straight to WhatsApp.

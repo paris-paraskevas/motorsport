@@ -20,8 +20,9 @@ import { pageMetadata, withPageGate } from '@/lib/design/page-frame';
 export const revalidate = 3600;
 
 const TITLE = 'F1 Telemetry & Analysis';
+// 811 px at 14 px by lib/site.ts textWidth (Seobility’s 985 px ceiling; the crawl of 5 October measured the old one at 1,108).
 const DESCRIPTION =
-  'Analyse every 2026 Formula 1 weekend — lap-by-lap Qualifying Analysis pole breakdowns and full Race Story strategy timelines, free, for every Grand Prix once the cars have run.';
+  'Every 2026 Formula 1 weekend analysed: pole laps corner by corner and the race’s strategy timeline, free, once the cars have run.';
 
 async function baseMetadata(): Promise<Metadata> {
   return {
