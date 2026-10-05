@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.250 — 2026-10-05
+
+### The performance programme’s file, and the Phase 2 pick
+
+- `docs/perf-handoff.md` placed verbatim (the operator’s file of 5 October: the diagnosis, Phases 0–6 with their gates, the laws, the questions), on the word of the evening. The ledger’s dated change line records the Phase 2 pick (D, Workers Cache: the experiment on the testing Worker first, C behind it, A the fallback) and the evening’s order (the fixes first, then the front cache for the new numbers, then the next step; the Seobility re-crawl after the front cache). No code changed.
+
 ## 1.0.249 — 2026-10-05
 
 ### Records — session 65, night
