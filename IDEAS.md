@@ -338,6 +338,9 @@ The ingest exists as of 0.334.103: `npm run upgrades:draft` does discovery, fetc
 - (2026-09-23, session 56, R7) A long designer test (PageDesigner.test.tsx, the P2.24 A case) timed out at vitest's 5 s when the suite ran beside the foreground `cf:build`; the clean run passed. A `testTimeout` for the designer file, or the rule "the suite alone, then the build", for the recipe.
 - (2026-09-23, session 56, P2.3) The APEX study has no end-user click map of a running Interactive Report (ux-map.jsonl is the Page Designer's own paths, README:19); P2.3's controls follow the notes' words (the Actions menu toggles, the column heading menu, the four tiers) and the browser run stands in for the click map.
 - (2026-09-23, session 56, P2.3) The site does not use Cache Components; the day a route needs `searchParams` on the server without going dynamic, the flip to `cacheComponents: true` is a slot of its own (every route's caching semantics change; `dynamicParams`, `revalidate` and `dynamic` exports leave) — the URL state travels as a rewritten path variant until then.
+- (2026-10-05, session 64, X10) The session pages of one weekend take two title shapes when one fits the width budget and the other does not (“Sprint Race, Azerbaijan Grand Prix — F2” beside “Feature Race 1 · Formula 2 round 12”): the fit rule could prefer one shape per weekend.
+- (2026-10-05, session 64, X13) The `footer-series` list row and its fifteen entries need a seed migration (on the word) so the designer can edit the Series column; readers see the shipped default meanwhile.
+- (2026-10-05, session 64, the small worker) The plan at https://claude.ai/code/artifact/931d9046-a3f5-4949-9e65-09fc738b77a5 waits for “go”; its two hands-on parts are the measurement protocol on the testing pair and the prod wiring (a second Workers Builds project, the routes moved).
 
 ## A "connection is secure" interstitial — operator ask, 2026-08-22, RECOMMEND AGAINST as asked
 
