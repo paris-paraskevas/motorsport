@@ -14,6 +14,21 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1136 · 1.0.253 · PF2 (PR B) · opened 2026-10-05 22:13:24Z; the merge on the word
+**Workers Cache on the testing Worker.** Phase 2 of the performance programme (docs/perf-handoff.md), design D picked by the operator on the 5th: the cache Cloudflare keeps in front of the Worker, keyed by path and query (not the hostname), governed by the response’s own Cache-Control; a hit runs no code and bills no CPU. Testing only; prod is PR C on the word.
+- **Readers see:** nothing on prod. On testing.paddock-tracker.com, cached pages answer from Cloudflare’s cache with `Cf-Cache-Status: HIT`.
+- **Editors get:** nothing new.
+- **Files (11):**
+  - `wrangler.testing.jsonc` · `"cache": { "enabled": true }` with the reason beside it.
+  - `lib/cache-headers.ts`, `lib/cache-headers.test.ts` · `edgeCacheRules` and `withEdgeCacheRules`: the dev. host private, no Cache-Control means no-store, a cacheable page tagged `path:<pathname>`; thirteen tests.
+  - `worker.ts` · the rules applied to every response after `withBrowserSafeCache`.
+  - `app/api/cron/revalidate/route.ts` · the loader’s revalidation purges the tags best-effort through the Worker’s execution context.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · the phase PF with PF0–PF6 and the dated change line; PF2 started; the rendered plan page.
+  - `SCHEDULE.md`, `docs/HANDOFF.md`, `docs/pull-requests.md` · item 11; the LATEST; this entry.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.253.
+- **Verified:** tests first for the rules (13 green); `npx tsc --noEmit` → 0; eslint on the four code files clean; `npx wrangler deploy --dry-run -c wrangler.testing.jsonc` accepts the cache key (Total Upload 40,666.23 KiB, 39.7 MiB, 62.0 % of the 64 MiB ceiling). On the testing Worker, version 381f21ee (22:20Z): a session page’s first request MISS at 5.36 s (a render), the second and third HIT at 0.28 s and 0.15 s from Cloudflare’s cache with no Worker run; /calendar MISS 6.2 s then HIT 0.14 s and /calendar?series=f1 MISS 1.4 s then HIT 0.13 s, two entries; /settings BYPASS (private); the ?tab= 308 BYPASS with `Cache-Control: no-store` and /api/cron/health BYPASS with no-store (the edge rules); the RSC payload a variant of its own (MISS then HIT) and the HTML and RSC variants coexisting after a single miss when a new variant is first stored (H MISS·HIT, R MISS, H MISS, R HIT, H HIT·HIT; a prefetch variant the same); the loader’s purge: POST /api/cron/revalidate answered `edgePurged: true` and the page came back MISS once, then HIT. The Phase 0 script cold and warm: below, before the merge.
+- **Review:** a fresh-context Sonnet reviewer reads the diff from git refs (pf2-review.md); its findings are folded before the merge.
+
 ## #1135 · 1.0.252 · X10 (the leftovers) · opened 2026-10-05 21:02:34Z; rebased onto main after X14’s squash (the two commits replayed; CHANGELOG, RELEASES, package.json and this file union-resolved, 1.0.252 over 1.0.251; the four files’ line endings restored to LF after the resolve wrote CRLF, b1ad7bbf), the tests, tsc and lint re-run green, `DATA_SOURCE=db npm run cf:build` clean and `npx wrangler deploy --dry-run` → Total Upload 40,665.17 KiB (39.7 MiB, 62.0 % of the 64 MiB ceiling; gzip 8,881.54 KiB); the merge on the word “merge leftovers”
 **The titles and descriptions the crawl of the 5th still flagged.** Five pages after X10 and X10b (the operator’s “lets first complete all fixes”): the GT driver ratings question (615 px bare, its suffix already dropped) and Toyota Gazoo Racing’s endurance history (578 px) against 570 px, the up-and-coming drivers watchlist, the descriptions of /social/threads (1,148 px) and /f1/analysis (1,115 px) at 14 px against 985 px.
 - **Readers see:** three shorter questions as the pages’ titles and headings (“What do GT driver ratings mean?”, “What is Toyota Gazoo Racing’s endurance history?”, “Which up-and-coming drivers should you watch?”) and two shorter descriptions in search results.
