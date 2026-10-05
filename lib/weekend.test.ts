@@ -161,6 +161,9 @@ describe('X12: weekendAnchorName and sessionAnchorName', () => {
     expect(sessionAnchorName('Formula 1', 'Azerbaijan Grand Prix', 15, 'F1 - Qualifying')).toBe('F1 - Qualifying, Formula 1 Azerbaijan Grand Prix');
     expect(sessionAnchorName('DTM', 'Red Bull Ring Round', 1, 'DTM - Qualifying 2')).not.toBe(sessionAnchorName('DTM', 'Red Bull Ring Round', 1, 'DTM - Qualifying 1'));
     expect(sessionAnchorName('Formula 1', 'Round 7', 7, ' F1 - Race ')).toBe('F1 - Race, Formula 1 round 7');
+    // A session named after its event says the weekend once (the reviewer's "too long" finding on Nashville's rail).
+    expect(sessionAnchorName('IndyCar', 'Big Machine Music City Grand Prix', 13, 'IndyCar - Big Machine Music City Grand Prix')).toBe('IndyCar - Big Machine Music City Grand Prix');
+    expect(sessionAnchorName('NASCAR Cup', 'South Point 400', 29, 'South Point 400')).toBe('South Point 400, NASCAR Cup');
   });
 
   // Data-driven: every curated weekend and session (content/series/*/rounds.json and sessions.json) through the helpers.

@@ -503,7 +503,9 @@ async function ReportBody({
                           Result →
                         </span>
                       )}
-                      {href && <span className="sr-only">{` — ${weekendName}`}</span>}
+                      {/* The race row already carries its winner and margin, which tell it apart; the weekend's name would
+                          push the row's text past Seobility's length (the reviewer's finding on the endurance rows). */}
+                      {href && !(isTheRace && winner) && <span className="sr-only">{` — ${weekendName}`}</span>}
                     </>
                   );
                   const rowClass = `flex min-h-10 items-baseline gap-3 border-b border-border py-1.5 ${

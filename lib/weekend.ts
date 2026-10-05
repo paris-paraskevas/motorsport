@@ -266,5 +266,12 @@ export function weekendAnchorName(seriesName: string, weekendTitle: string, roun
   return short.toLowerCase().startsWith(`${seriesName.toLowerCase()} `) ? short : `${seriesName} ${short}`;
 }
 export function sessionAnchorName(seriesName: string, weekendTitle: string, round: number, sessionTitle: string): string {
-  return `${sessionTitle.trim()}, ${weekendAnchorName(seriesName, weekendTitle, round)}`;
+  const title = sessionTitle.trim();
+  const short = roundShortLabel(weekendTitle);
+  // A session named after its event ("IndyCar - Big Machine Music City Grand Prix") already carries the weekend: the
+  // name is not said twice (Seobility flags a link text over about 120 characters as too long).
+  if (short && !ROUND_ONLY_RE.test(short) && title.toLowerCase().includes(short.toLowerCase())) {
+    return title.toLowerCase().includes(seriesName.toLowerCase()) ? title : `${title}, ${seriesName}`;
+  }
+  return `${title}, ${weekendAnchorName(seriesName, weekendTitle, round)}`;
 }
