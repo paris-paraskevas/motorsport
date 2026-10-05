@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.247 — 2026-10-05
+
+### Records — session 65
+
+- B3 (#1128) merged as c2e09e63 at 17:34:49Z and DONE: the loader’s run 37350209256 after prod carried 1.0.245, the F2 trend on 207 and the F3 on 159, the results tabs with Baku’s and Madrid’s three races. X13 (#1129) rebased onto main with `git rebase --onto`, re-gated (the suite 2,669 green, the dry run 40,361.10 KiB) and merged as 3050910c at 18:34:11Z; prod 18:40:31Z; the sitemap 2,028 URLs, a 39-page sample 200 and indexable, the footer photographed at 390 and 1440; X13 stays started until the Seobility re-crawl.
+- The ledger (B3’s evidence and status, X13’s evidence), the schedule (session 65), the pull-request records, the Inbox (the sign-up pop-up; the two bills) and the handoff (the session-65 LATEST: the Four Front Caches page with Workers Cache as design D, The Two Bills page with the logs’ reading, the words open).
+
 ## 1.0.246 — 2026-10-05
 
 ### X13 — Three clicks to any session
