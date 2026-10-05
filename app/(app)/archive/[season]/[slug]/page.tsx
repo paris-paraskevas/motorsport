@@ -78,7 +78,10 @@ async function ArchiveSeasonPage({
           Race weekends
         </h2>
         <ul className="mt-3 border-t border-border">
-          {archive.weekends.map(w => (
+          {/* X14: a weekend outside the curated rounds (a test, an exhibition) sits at round 0 and has no page, live
+              or archived, worth a link (lib/rounds.ts); the crawl of 5 October found the archive's round-0 pages
+              with canonicals to a 404. */}
+          {archive.weekends.filter(w => w.round >= 1).map(w => (
             <li key={w.round} className="border-b border-border">
               <Link
                 href={`/archive/${season}/${slug}/weekend/${w.round}`}

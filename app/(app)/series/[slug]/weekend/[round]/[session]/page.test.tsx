@@ -27,3 +27,11 @@ describe('the session page’s cache declaration', () => {
     expect(src).not.toMatch(/^export const fetchCache\b/m);
   });
 });
+
+describe('X14: the renumbered IndyCar rounds redirect', () => {
+  it('asks the weekend helpers for a moved session and redirects permanently before any 404', () => {
+    expect(src).toMatch(/renumberedSessionTarget/);
+    expect(src).toMatch(/permanentRedirect\(/);
+    expect(src.indexOf('permanentRedirect(')).toBeLessThan(src.indexOf('return { series, weekend, session, round, slug, sessionParam }'));
+  });
+});

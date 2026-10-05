@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { sessionAnchorName, sessionPageTitle, weekendAnchorName } from '@/lib/weekend';
-import { notFound } from 'next/navigation';
+import { renumberedSessionTarget, sessionAnchorName, sessionPageTitle, weekendAnchorName } from '@/lib/weekend';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { ArrowUpRight, Tv } from 'lucide-react';
@@ -132,6 +132,11 @@ async function resolve(params: Promise<{ slug: string; round: string; session: s
   } catch {
     return null;
   }
+  // X14: an address from before B2's IndyCar renumbering names the same session one round early; it is sent on
+  // permanently (308) instead of answering 404 (eight such addresses in Seobility's crawl of 5 October). It runs from
+  // generateMetadata too, before the shell streams, the way notFound() does below.
+  const moved = renumberedSessionTarget(series, round, sessionParam);
+  if (moved) permanentRedirect(`/series/${slug}/weekend/${moved}/${sessionParam}`);
   const weekend = weekendFor(series, round);
   if (!weekend) return null;
   const session = sessionBySlug(weekend, sessionParam);

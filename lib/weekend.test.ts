@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { nextSessionAcross, nextWeekend, sessionAnchorName, sessionPageTitle, weekendAnchorName, weekendPageTitle } from './weekend';
+import { RENUMBERED_ROUNDS, nextSessionAcross, nextWeekend, renumberedSessionTarget, sessionAnchorName, sessionPageTitle, weekendAnchorName, weekendPageTitle } from './weekend';
 import type { Series, Session } from './types';
 
 // P2.8, the Countdown: the next session of one series or the nearest across several, from the same grouping the weekend
@@ -196,5 +196,39 @@ describe('X12: weekendAnchorName and sessionAnchorName', () => {
     }
     expect(weekends.size).toBeGreaterThan(150);
     expect(sessions.size).toBeGreaterThan(800);
+  });
+});
+
+describe('X14: the renumbered IndyCar rounds', () => {
+  // B2 put the Honda Indy 200 at Mid-Ohio at round 11 and moved the rounds from Music City on to 12–18, so the old
+  // address of each of those session pages is the same slug one round later. The lookup answers the new round only
+  // when the slug is missing at the asked round and present at the next; a slug both rounds share (a practice) stays.
+  const indycar = series('indycar', 'IndyCar', [
+    { title: 'IndyCar - Practice', start: at('2026-07-04T15:00:00Z'), end: at('2026-07-04T16:00:00Z'), location: 'Mid-Ohio' },
+    { title: 'IndyCar - Honda Indy 200 at Mid-Ohio', start: at('2026-07-05T17:00:00Z'), end: at('2026-07-05T19:00:00Z'), location: 'Mid-Ohio' },
+    { title: 'IndyCar - Practice', start: at('2026-07-18T15:00:00Z'), end: at('2026-07-18T16:00:00Z'), location: 'Nashville' },
+    { title: 'IndyCar - Music City Grand Prix', start: at('2026-07-19T17:00:00Z'), end: at('2026-07-19T19:00:00Z'), location: 'Nashville' },
+  ], [
+    { round: 11, name: 'Honda Indy 200 at Mid-Ohio', startDate: '2026-07-03', endDate: '2026-07-05' },
+    { round: 12, name: 'Music City Grand Prix', startDate: '2026-07-17', endDate: '2026-07-19' },
+  ]);
+  const now = at('2026-08-01T00:00:00Z');
+
+  it('sends an event-named slug asked one round early to its new round', () => {
+    expect(renumberedSessionTarget(indycar, 11, 'indycar-music-city-grand-prix', now)).toBe(12);
+  });
+
+  it('leaves a slug both rounds share where it is', () => {
+    expect(renumberedSessionTarget(indycar, 11, 'indycar-practice', now)).toBeNull();
+  });
+
+  it('leaves a slug that exists nowhere, and every other series, alone', () => {
+    expect(renumberedSessionTarget(indycar, 11, 'no-such-session', now)).toBeNull();
+    expect(renumberedSessionTarget(f1, 1, 'race', now)).toBeNull();
+  });
+
+  it('covers only the renumbered rounds', () => {
+    expect(RENUMBERED_ROUNDS.indycar).toEqual({ from: 11, to: 17, shift: 1 });
+    expect(renumberedSessionTarget(indycar, 3, 'indycar-music-city-grand-prix', now)).toBeNull();
   });
 });

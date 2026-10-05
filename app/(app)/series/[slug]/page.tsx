@@ -409,14 +409,11 @@ async function SeriesPage({
                 const relocated = rm?.rescheduleNote
                   ? (/relocated to ([^,]+)/i.exec(rm.rescheduleNote)?.[1] ?? 'relocated').toUpperCase()
                   : null;
-                return (
-                  <Link
-                    key={w.key}
-                    href={`/series/${slug}/weekend/${w.round}`}
-                    className={`flex min-h-11 items-center gap-3 border-b border-border py-1.5 transition-colors duration-(--duration-fast) hover:bg-surface lg:break-inside-avoid ${
-                      isNext ? 'border-[1.5px] border-text bg-surface-elevated px-2' : ''
-                    }`}
-                  >
+                const rowClass = `flex min-h-11 items-center gap-3 border-b border-border py-1.5 transition-colors duration-(--duration-fast) hover:bg-surface lg:break-inside-avoid ${
+                  isNext ? 'border-[1.5px] border-text bg-surface-elevated px-2' : ''
+                }`;
+                const row = (
+                  <>
                     <span className="w-6 shrink-0 text-right font-mono text-11 tabular-nums text-text-faint">
                       {w.round >= 1 ? w.round : '–'}
                     </span>
@@ -436,9 +433,20 @@ async function SeriesPage({
                         w.isPast ? 'text-brand' : isNext ? 'text-text' : 'text-text-faint'
                       }`}
                     >
-                      {w.isPast ? 'Report →' : isNext ? 'Preview →' : 'Scheduled'}
+                      {w.round < 1 ? '' : w.isPast ? 'Report →' : isNext ? 'Preview →' : 'Scheduled'}
                     </span>
+                  </>
+                );
+                // X14: a weekend no curated round covers (a test, an exhibition) sits at round 0 and has no page
+                // (lib/rounds.ts); the row stays, the link goes (eight /weekend/0 404s in Seobility's crawl of 5 October).
+                return w.round >= 1 ? (
+                  <Link key={w.key} href={`/series/${slug}/weekend/${w.round}`} className={rowClass}>
+                    {row}
                   </Link>
+                ) : (
+                  <div key={w.key} className={rowClass}>
+                    {row}
+                  </div>
                 );
               })}
             </div>

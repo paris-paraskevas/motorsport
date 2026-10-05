@@ -55,6 +55,25 @@ export function sessionBySlug(weekend: Weekend, slug: string): Session | null {
   return weekend.sessions.find(s => sessionSlug(s.title) === slug) ?? null;
 }
 
+/** B2 put the Honda Indy 200 at Mid-Ohio at IndyCar's round 11 and moved the rounds from Music City on to 12–18, so an
+ *  address written before it names the same session one round early; the session page sends it on (X14). The table
+ *  names the renumbered span per series; nothing else is touched. */
+export const RENUMBERED_ROUNDS: Readonly<Record<string, { from: number; to: number; shift: number }>> = {
+  indycar: { from: 11, to: 17, shift: 1 },
+};
+
+/** The round a session slug moved to, or null: only for a series in RENUMBERED_ROUNDS, a round inside its span, a slug
+ *  absent at the asked round (or an unknown round) and present at the shifted one. A slug both rounds share (a practice)
+ *  stays where it was asked. */
+export function renumberedSessionTarget(series: Series, round: number, slug: string, now: Date = new Date()): number | null {
+  const rule = RENUMBERED_ROUNDS[series.meta.slug];
+  if (!rule || round < rule.from || round > rule.to) return null;
+  const asked = weekendFor(series, round, now);
+  if (asked && sessionBySlug(asked, slug)) return null;
+  const moved = weekendFor(series, round + rule.shift, now);
+  return moved && sessionBySlug(moved, slug) ? round + rule.shift : null;
+}
+
 /** The series whose weekend schedules link their session pages, and whose session pages the sitemap lists (X13). The
  *  session route answers every series; NLS and the ADAC 24h have no race session pages worth a link and stay off. */
 export const SESSION_PAGE_SERIES = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world', 'wrc', 'dtm'] as const;

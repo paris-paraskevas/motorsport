@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.251 — 2026-10-05
+
+### X14 — Nothing broken
+
+Seobility’s crawls of 1 and 5 October listed the site’s broken things: 259 then 214 unretrievable file sources, 45 then 9 pages with technical problems, seven canonical errors, 40 host changes, and four dead links found by X13’s reviewer. Every fact was re-checked on prod on the evening of the 5th (x14-plan.md; the plan page f4b91e27) before the fix.
+
+- The F1 team-radio player (`components/f1/TeamRadioPlayer.tsx`) no longer prints the mp3 address into the HTML: `preload="none"`, the `src` attached on the first play inside the click (so iOS Safari allows it), set imperatively so React never re-sets it mid-play. livetiming.formula1.com refuses crawlers, which was the whole “unretrievable file sources” count.
+- A weekend no curated round covers (a test, an exhibition) sits at round 0 and has no page (lib/rounds.ts): the series hub’s season list (`app/(app)/series/[slug]/page.tsx`) renders its row without a link, and the archive’s season page skips such weekends while the archive weekend page keeps its own address as canonical when the live round is 0 (the eight `/weekend/0` 404s and the seven canonical errors).
+- IndyCar’s pre-B2 addresses: `RENUMBERED_ROUNDS` and `renumberedSessionTarget` in `lib/weekend.ts` (rounds 11–17 shifted by one since Mid-Ohio became round 11); the session page sends an old address on with a permanent redirect when the slug is absent at the asked round and present at the next, from generateMetadata too. A slug both rounds share stays put. Tests in `lib/weekend.test.ts` and the session page’s source test.
+- `/series/f2/weekend/12/feature-race` → `/feature-race-1`, a permanent redirect in `next.config.ts` (the second Baku feature race of B3 gave the first its number).
+- The F1 analysis page resolves the qualifying and race links from each weekend’s sessions through `sessionSlug` (the slugs are event-named at some rounds, bahrain-gp-qualifying and bahrain-gp-race) and draws nothing when a session is missing.
+- The post pages’ WhatsApp share link points at api.whatsapp.com directly (`components/blog/BlogShare.tsx`), the host wa.me redirected to.
+- Named and kept: the 200 third-party links that block crawlers; the fia.com links (every one answers 200 to a browser); the Formula E weekend 14 and the IMSA pages (renders); the session slugs that drop accented letters (a slot of its own, slug stability being a law).
+
 ## 1.0.250 — 2026-10-05
 
 ### The performance programme’s file, and the Phase 2 pick
