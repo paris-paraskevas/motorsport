@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.246 — 2026-10-05
 
-The footer now lists all fifteen championships, so any hub is one click away from any page and any session three. DTM’s weekend pages link their sessions like the other series, and the sitemap names every session page.
+The footer now lists all fifteen championships, so any hub is one click away from any page and any session three clicks. DTM’s weekend pages link their sessions, and the sitemap names the session pages of thirteen championships.
 
 ## 1.0.245 — 2026-10-05
 

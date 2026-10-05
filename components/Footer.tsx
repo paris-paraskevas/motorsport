@@ -18,15 +18,19 @@ const HEATMAP_ID: Record<string, string> = { home: 'footer:landing', 'external:s
 function FooterLink({
   href,
   dataHeatmapId,
+  prefetch,
   children,
 }: {
   href: string;
   dataHeatmapId?: string;
+  /** false keeps a column of heavy pages (the fifteen hubs, X13) from prefetching on every footer view. */
+  prefetch?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
+      prefetch={prefetch}
       data-heatmap-id={dataHeatmapId}
       className="block py-1 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
     >
@@ -44,13 +48,13 @@ function ColumnHeading({ children }: { children: React.ReactNode }) {
 // One footer entry from the list: a route is a link, the support link opens in a
 // new tab, and the two actions place components that carry their own text and
 // behaviour (the entry's label is the designer's name for them, not the button's).
-function FooterEntry({ entry }: { entry: NavEntry }) {
+function FooterEntry({ entry, prefetch }: { entry: NavEntry; prefetch?: boolean }) {
   const dest = resolveEntry(entry);
   if (!dest) return null;
   const heat = HEATMAP_ID[entry.dest] ?? `footer:${entry.dest}`;
   if (dest.kind === 'route') {
     return (
-      <FooterLink href={dest.href} dataHeatmapId={heat}>
+      <FooterLink href={dest.href} dataHeatmapId={heat} prefetch={prefetch}>
         {entry.label}
       </FooterLink>
     );
@@ -124,9 +128,14 @@ export function Footer({
           </div>
           <div className="col-span-2 sm:col-span-1">
             <ColumnHeading>{text['footer.series']}</ColumnHeading>
-            {visibleSeries.map((entry, i) => (
-              <FooterEntry key={`${entry.dest}-${i}`} entry={entry} />
-            ))}
+            {/* The plan's drawing: two columns of the fifteen on a phone, one beside the other two on a laptop. The hubs
+                are heavy pages, so these links do not prefetch on every footer view (the reviewer's note; flip it on
+                the operator's word). */}
+            <div className="columns-2 gap-6 sm:columns-1">
+              {visibleSeries.map((entry, i) => (
+                <FooterEntry key={`${entry.dest}-${i}`} entry={entry} prefetch={false} />
+              ))}
+            </div>
           </div>
         </div>
         {/* Install, and the one line saying what this is.

@@ -48,8 +48,7 @@ import {
   parseEntries,
   resetNavListsMemo,
 } from './lists';
-import { SERIES_DESTINATION_SLUGS } from './destinations';
-import { pageDest } from './destinations';
+import { SERIES_DESTINATION_SLUGS, pageDest } from './destinations';
 
 const MONZA = 'a1b2c3d4-0000-4000-8000-000000000010';
 const IMOLA = 'a1b2c3d4-0000-4000-8000-000000000021';
@@ -216,6 +215,8 @@ describe('loadNavLists — the code is the fallback', () => {
     expect(nav.bar).toEqual(DEFAULT_NAV.bar);
     expect(nav.footerSite).toEqual(DEFAULT_NAV.footerSite);
     expect(nav.footerLegal).toEqual([{ label: 'Privacy', dest: 'privacy' }]);
+    // No rows for the Series list (prod's state until its seed): the shipped fifteen (X13).
+    expect(nav.footerSeries).toEqual(DEFAULT_NAV.footerSeries);
   });
 
   it('memoises for a minute and forgets on reset', async () => {

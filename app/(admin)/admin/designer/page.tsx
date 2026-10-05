@@ -25,7 +25,7 @@ export const metadata: Metadata = { title: 'Designer · Admin' };
 // Paddock Developer, the designer (Phase 2 of the designer plan). The page is a
 // thin server shell: the admin gate, the facts the browser cannot learn on its
 // own (whether this Worker is production, PADDOCK_ENV in lib/env.ts, who is
-// signed in, which championships exist), and the four lists, the text messages,
+// signed in, which championships exist), and the five lists, the text messages,
 // the build options and the settings loaded once so the designer opens with
 // them. The editor itself is a browser-only chunk (DesignerLoader). `?sc=<key>`
 // opens a catalogue entry directly.

@@ -43,7 +43,7 @@ export function AppShell({
   // Server-resolved (isBettingConfigured) — gates the Social row in the nav
   // panel so the betting/social surface only appears once Supabase env exists.
   bettingEnabled: boolean;
-  // The doors, the phone bar and the footer's two columns, resolved on the
+  // The doors, the phone bar and the footer's three columns, resolved on the
   // server from the design tables with the code as fallback (lib/design/lists.ts).
   nav: NavLists;
   // The chrome's fixed strings, same source and fallback (lib/design/text.ts).

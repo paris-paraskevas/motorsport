@@ -137,7 +137,7 @@ export const PD_POSITION: Record<Position, { label: string; note: string }> = {
  *  Shared Components, never on a page. */
 export const PD_SHARED: { key: SharedKey; position: string; label: string; sub: string; note: string; sc: string }[] = [
   { key: 'doors', position: 'Header', label: 'Navigation Menu', sub: 'the doors, the search, the date, the account', note: 'Shared · desktop and laptop', sc: 'doors' },
-  { key: 'footer', position: 'Footer', label: 'Site footer', sub: 'the site and legal lists, the running version', note: 'Shared · every page', sc: 'footer-site' },
+  { key: 'footer', position: 'Footer', label: 'Site footer', sub: 'the site, legal and series lists, the running version', note: 'Shared · every page', sc: 'footer-site' },
   { key: 'bar', position: 'Navigation Bar', label: 'Phone bar', sub: 'three to five cells, always visible on phones', note: 'Shared · phones only', sc: 'bar' },
 ];
 

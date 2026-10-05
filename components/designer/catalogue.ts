@@ -2,7 +2,7 @@ import type { NavListKey } from '@/lib/design/lists';
 
 // The Shared Components catalogue, APEX's ten groups mapped to what Paddock has
 // (Paddock Designer Field Guide §02). Every entry is listed so the operator sees
-// the whole shape from day one; the four navigation lists (Phase 2 step 2), Text
+// the whole shape from day one; the five navigation lists (Phase 2 step 2; the Series column since X13), Text
 // Messages (step 3), Build Options (step 4), Application Settings (step 5),
 // Authorization Schemes (step 6), Themes (step 7), Appearance (step 8, APEX's
 // User Interface Attributes), Shortcuts (step 9), Assets (step 10, APEX's

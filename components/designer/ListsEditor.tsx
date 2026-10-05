@@ -9,7 +9,7 @@ import type { PageRow } from '@/lib/design/pages';
 import { ListEditor } from './ListEditor';
 
 // Lists (APEX: Lists), the Phase 3 entry: every list of the application in one
-// table, the four the shell renders (opened in their own entries) and the
+// table, the five the shell renders (opened in their own entries) and the
 // operator's own, which a List region on any page may show. Create takes a key
 // and a label; Open edits the entries in the same list editor the shell's lists
 // use; Delete asks first and is refused by the database while a page's
@@ -50,7 +50,7 @@ export function ListsEditor({
   /** The row pages an entry may name, and the deleted ones (P1.12 B1). */
   pages?: readonly PageRow[];
   deleted?: readonly PageRow[];
-  /** One of the shell's four lists: its own catalogue entry opens. */
+  /** One of the shell's five lists: its own catalogue entry opens. */
   onOpenShell: (key: NavListKey) => void;
   /** The index after a create, a save or a delete. */
   onChanged: (lists: ListSummary[]) => void;
@@ -145,7 +145,7 @@ export function ListsEditor({
     <div>
       <h2 className="m-0 mb-1 text-20 font-bold text-text">Lists</h2>
       <p className="m-0 mb-4 max-w-[70ch] text-13 text-text-muted">
-        Every list of links the application holds. The shell renders four of them; the rest are yours, and a List region on any page can show one.
+        Every list of links the application holds. The shell renders five of them; the rest are yours, and a List region on any page can show one.
         A key never changes once stored, because regions name a list by it; a list any page revision has named stays, since revisions are kept.
       </p>
 

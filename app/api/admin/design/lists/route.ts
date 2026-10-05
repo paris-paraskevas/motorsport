@@ -19,7 +19,7 @@ export const dynamic = 'force-dynamic';
 //      list picker read it.
 // POST /api/admin/design/lists ← { key, label } → 201 { list }
 //
-// The POST creates a list of the operator's own (role `generic`; the four shell
+// The POST creates a list of the operator's own (role `generic`; the five shell
 // lists are seeded by migration and their keys are taken). The key and the
 // label are checked by the same rules the editor applies (400 with the reason);
 // a key already stored is a 409 with the current lists, also when the unique

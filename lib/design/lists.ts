@@ -62,7 +62,7 @@ export const DEFAULT_NAV: NavLists = {
     { label: 'Do Not Sell or Share', dest: 'do-not-sell' },
     { label: 'Imprint', dest: 'imprint' },
   ],
-  // X13: the footer's third column, every championship's hub one click from any page, in the series index's order.
+  // X13: the footer's third column, every championship's hub one click from any page, in the order the plan page drew.
   footerSeries: [
     { label: 'Formula 1', dest: 'series:f1' },
     { label: 'Formula 2', dest: 'series:f2' },

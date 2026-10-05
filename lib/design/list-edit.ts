@@ -8,7 +8,7 @@ export const LIST_LABEL_MAX = 60;
 export const LIST_NOTE_MAX = 120;
 const LIST_KEY = /^[a-z0-9][a-z0-9-]{0,39}$/;
 
-/** Why a key cannot name a new list, or null. The shell's four keys are taken. */
+/** Why a key cannot name a new list, or null. The shell's five keys are taken. */
 export function listKeyProblem(key: string): string | null {
   if (!key) return 'a key is needed';
   if (key.length > LIST_KEY_MAX) return `keys are at most ${LIST_KEY_MAX} characters`;

@@ -56,7 +56,7 @@ import { DESIGNER_TAB } from '@/components/page/DeveloperToolbar';
 // (the operator, 2026-09-09: "the app builder takes precedent"). Full viewport
 // over the console; the arrow at the top left goes back.
 //
-// Phase 2 opened the four navigation lists (step 2), Text Messages (step 3),
+// Phase 2 opened the four navigation lists (step 2; five since X13's Series column), Text Messages (step 3),
 // Build Options (step 4), Application Settings (step 5), Authorization Schemes
 // (step 6) and Themes (step 7). Everything else in the catalogue is listed with
 // the phase that brings it: the operator sees the whole shape, and nothing
@@ -474,7 +474,7 @@ export function Designer({
     initialListIndex ? { state: 'ready', lists: initialListIndex } : { state: 'loading' },
   );
 
-  // All four lists on open: the overview shows their counts, and the footer
+  // All five lists on open: the overview shows their counts, and the footer
   // preview needs the column that is not being edited. Only the ones the server
   // did not hand over are fetched.
   useEffect(() => {
@@ -667,7 +667,7 @@ export function Designer({
     return l && l.state === 'ready' ? l.list.entries : [];
   };
   // The Page Designer's List region picks from every list: the index when it
-  // has arrived, the shell's four until then.
+  // has arrived, the shell's five until then.
   const pdLists =
     listIndex.state === 'ready'
       ? listIndex.lists.map(l => ({ key: l.key, label: l.label }))

@@ -67,7 +67,7 @@ export function ListEditor({
   deleted = [],
   onSaved,
 }: {
-  /** One of the shell's four keys, or the key of a list of the operator's own. */
+  /** One of the shell's five keys, or the key of a list of the operator's own. */
   listKey: string;
   role: ListRole;
   list: EditableList;
