@@ -14,6 +14,14 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1131 · 1.0.248 · records · opened 2026-10-05 19:05:58Z; the merge on the standing word
+**X14’s plan written.** The decision-free overnight task of the handoff: the crawl’s broken files, pages and links re-checked on prod, six changes with their files and tests, the acceptance, the pre-mortem and the decision scan, in x14-plan.md (the paddock-x10 scratch directory) and on the page f4b91e27; built on “x14 go” after Phase 2.
+- **Readers see:** nothing; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (8):** `docs/plan/ledger.json` · X14’s evidence (status planned). `SCHEDULE.md` · item 7 of session 65. `docs/HANDOFF.md` · a sentence in the LATEST body and one in the pickup prompt. `docs/pull-requests.md` · this entry. `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.248.
+- **Verified:** `node docs/plan/render-ledger.mjs` → 79 slots; `npx vitest run lib/design/plan-ledger.test.ts` → 6 green; no code changed.
+- **Review:** none; records.
+
 ## #1130 · 1.0.247 · records · opened 2026-10-05 18:53:45Z; the merge on the standing word
 **The session-65 records.** B3 (#1128) merged and DONE on prod, X13 (#1129) rebased, re-gated and merged, the handoff’s session-65 LATEST with the evening’s two pages (Four Front Caches: the Phase 2 pick with Workers Cache as design D; The Two Bills: the Supabase and Cloudflare costs read against the logs), the schedule, the Inbox, the trio.
 - **Readers see:** nothing; the release notes carry one line.

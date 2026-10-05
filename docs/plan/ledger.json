@@ -1765,7 +1765,7 @@
    "acceptance": "The next crawl: file-sources-broken 0, pages-broken 0, external-link-target-problems at most the named bot blocks.",
    "status": "planned",
    "scopeHash": "596e4e9d6087",
-   "evidence": "PLANNED on the plan page of the 2nd (fourth of the seven)."
+   "evidence": "PLANNED on the plan page of the 2nd (fourth of the seven). The plan in detail written on the evening of the 5th (the decision-free overnight task the handoff allows): x14-plan.md in the paddock-x10 scratch directory and the page https://claude.ai/code/artifact/f4b91e27-5bab-4db0-8588-decc70a1e399; every crawl fact re-checked on prod (the fia.com links answer 200 to a browser, so no post is edited; the Formula E weekend 14 answers 200; the IMSA pages are renders of 1.4–2.2 s, Phase 2’s; the round-0 links come from the hub’s schedule rows, app/(app)/series/[slug]/page.tsx:415, over lib/rounds.ts:141; the analysis page’s four 404 links and the old Baku address join the list); six changes with their files and tests named; the build on “x14 go” after Phase 2; four new test files named for the word, default none."
   },
   {
    "id": "X15",
