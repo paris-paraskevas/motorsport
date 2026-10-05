@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.247 — 2026-10-05
+
+Behind the scenes: the day’s records.
+
 ## 1.0.246 — 2026-10-05
 
 The footer now lists all fifteen championships, so any hub is one click away from any page and any session three clicks. DTM’s weekend pages link their sessions, and the sitemap names the session pages of thirteen championships.
