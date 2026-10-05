@@ -759,6 +759,11 @@
    "date": "2026-10-05",
    "change": "B3 opened on “fix f2”: the FOM reader walks every race of a meeting and numbers a meeting by the curated calendar; the season trend folds a round’s races into one point for every series the builder serves (WorldSBK three ticks a round → one, Formula 3 two → one, the home’s movers for Formula 3 round over round), named on the reviewer’s second finding; the standings tables untouched.",
    "word": "“fix f2” of the 5th on the ESPA page bb291db9; the fold’s reach beyond Formula 2 asked at the merge"
+  },
+  {
+   "date": "2026-10-05",
+   "change": "The performance programme’s file placed at docs/perf-handoff.md (the operator’s file of the 5th, verbatim); the Phase 2 design picked: D, Workers Cache, the experiment on the testing Worker first, C behind it, A the fallback; the order of the evening: the fixes first (X14’s six changes and the crawl’s five title and description leftovers), then the front cache for the new numbers, then the next step from there; the Seobility re-crawl deferred until after the front cache.",
+   "word": "the operator, 2026-10-05 ~19:25Z: “wont do seobility check yet, lets first complete all fixes then make the worker so we can see new ms numbers and then see whats next from there”; “phase 2 pick: D, place the per handoff in docs if its not there and start”"
   }
  ],
  "phases": {
