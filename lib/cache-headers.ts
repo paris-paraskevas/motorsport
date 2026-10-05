@@ -79,6 +79,7 @@ export function withBrowserSafeCache(res: Response): Response {
  */
 const POSITIVE_WINDOW = /\b(?:s-maxage|max-age)=0*[1-9]\d*/;
 const NOT_SHARED = /\b(?:private|no-store)\b/;
+const TINY_WINDOW = /\bs-maxage=0*[12]\b/;
 
 export function edgeCacheRules(
   hostname: string,
@@ -89,6 +90,9 @@ export function edgeCacheRules(
   if (hostname.startsWith('dev.')) return { cacheControl: 'private, no-store' };
   if (!cacheControl) return { cacheControl: 'no-store' };
   if (cacheState?.toUpperCase() === 'STALE') return { cacheControl: 'no-store' };
+  // Next's "regenerating" answer (s-maxage=1 or 2 while the page is rebuilt) is the same case under another header:
+  // seen on the first test build as EXPIRED, HIT, EXPIRED churn, a copy stored and gone within the second.
+  if (TINY_WINDOW.test(cacheControl)) return { cacheControl: 'no-store' };
   if (NOT_SHARED.test(cacheControl)) return {};
   if (POSITIVE_WINDOW.test(cacheControl)) return { cacheTag: `path:${pathname},site` };
   return {};

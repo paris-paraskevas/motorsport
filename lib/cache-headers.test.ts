@@ -107,6 +107,18 @@ describe('edgeCacheRules', () => {
     });
   });
 
+  it("says no-store on Next's regenerating window of a second or two, whatever the state header says", () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=1, max-age=0, must-revalidate', 'HIT')).toEqual({
+      cacheControl: 'no-store',
+    });
+    expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=2, max-age=0, must-revalidate', null)).toEqual({
+      cacheControl: 'no-store',
+    });
+    expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=3, max-age=0, must-revalidate', null)).toEqual({
+      cacheTag: 'path:/calendar,site',
+    });
+  });
+
   it('touches nothing private, no-store or without a positive window', () => {
     expect(edgeCacheRules('paddock-tracker.com', '/blog/x', 'private, no-cache, no-store, max-age=0, must-revalidate')).toEqual({});
     expect(edgeCacheRules('paddock-tracker.com', '/settings', 'private, max-age=600')).toEqual({});
