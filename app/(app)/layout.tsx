@@ -81,6 +81,9 @@ export async function generateViewport(): Promise<Viewport> {
     themeColor: themeOption(set, set.defaultKey)?.tokens.bg ?? '#f7f3e8',
     width: 'device-width',
     initialScale: 1,
+    // Edge to edge on phones: Chrome on Android draws installed apps under the
+    // gesture bar and the status bar; the header and the bar pad by env(safe-area-*).
+    viewportFit: 'cover',
   };
 }
 

@@ -26,7 +26,7 @@ export function WeekendNote({ note }: { note: Note }) {
   // it is spelled out here rather than imported because this component is the
   // only thing that owns this section.
   return (
-    <section id="how-it-was-won" aria-label="How the race was won" className="mb-8 scroll-mt-[62px] lg:scroll-mt-[74px]">
+    <section id="how-it-was-won" aria-label="How the race was won" className="mb-8 scroll-mt-[calc(62px+env(safe-area-inset-top))] lg:scroll-mt-[calc(74px+env(safe-area-inset-top))]">
       <div className="mb-1 flex items-baseline justify-between border-b border-text pb-1">
         <span className="font-mono text-10 font-semibold uppercase tracking-[0.18em] text-text-muted">
           How it was won

@@ -126,7 +126,7 @@ const RETIRED_RE = /\b(dnf|dns|dsq|dq|ret|retired|withdrew|wd|accident|not class
 // anchor lands with its own title hidden, which reads as the link having missed.
 // Module scope because the technical file renders in BOTH the report and the
 // preview branch, and those are separate components.
-const ANCHOR_OFFSET = 'scroll-mt-[62px] lg:scroll-mt-[74px]';
+const ANCHOR_OFFSET = 'scroll-mt-[calc(62px+env(safe-area-inset-top))] lg:scroll-mt-[calc(74px+env(safe-area-inset-top))]';
 
 // Panel 3b: the preview rail's "Going in" factbox — the championship's top
 // three as the weekend starts. Network fetch, so it streams behind Suspense.

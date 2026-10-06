@@ -190,7 +190,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: NavSeriesMeta[] }
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-bg/95 backdrop-blur-md overflow-y-auto pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-0 z-[70] bg-bg/95 backdrop-blur-md overflow-y-auto pb-[env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px))]"
       role="dialog"
       aria-modal="true"
       aria-label="Onboarding"
@@ -345,7 +345,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: NavSeriesMeta[] }
         </div>
 
         {/* Sticky footer with primary action */}
-        <div className="sticky bottom-0 inset-x-0 bg-bg/95 backdrop-blur-md border-t border-border pb-[env(safe-area-inset-bottom)]">
+        <div className="sticky bottom-0 inset-x-0 bg-bg/95 backdrop-blur-md border-t border-border pb-[env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px))]">
           <div className="max-w-2xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-3">
             {step === 'series' ? (
               <>
