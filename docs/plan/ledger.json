@@ -769,6 +769,11 @@
    "date": "2026-10-05",
    "change": "The performance programme enters the ledger as phase PF with the slots PF0–PF6 from docs/perf-handoff.md: PF0 started on the 5th’s measurements; PF2 on design D (Workers Cache), PR B on the testing Worker first; PF5 pulled forward after The Two Bills page; X16’s first step folded into PF3.",
    "word": "the operator’s file of the 5th (20:09Z); “phase 2 pick: D, place the per handoff in docs if its not there and start” and “lets first complete all fixes then make the worker so we can see new ms numbers” (~19:25Z); the fixes merged 21:52Z and 22:02Z"
+  },
+  {
+   "date": "2026-10-06",
+   "change": "PF3 starts with PR D-1, stale answers served while the edge refreshes them (and while the Worker fails), ahead of the hash checks and the longer windows: the measurement of 11:57Z showed the first reader after every window paying the full render, which is what the operator’s phone sees.",
+   "word": "“swr go” (the operator, 2026-10-06 ~12:12Z)"
   }
  ],
  "phases": {
@@ -1861,16 +1866,29 @@
   },
   {
    "scopeHash": "fbdbbc35114d",
-   "evidence": "",
+   "evidence": "STARTED 2026-10-06 ~12:12Z on “swr go” with PR D-1, stale answers served while refreshing, pulled ahead of the hash checks and the windows after the measurement of 11:57Z from Athens: the first reader after a page’s window paid 1.8–2.3 s (Cf-Cache-Status BYPASS: Next’s stale answer, never stored), the second 0.5 s (MISS), the third 0.1 s (HIT), and the operator’s phone is nearly always the first. The Workers Cache honours stale-while-revalidate and stale-if-error and reads cloudflare-cdn-cache-control before Cache-Control (its configuration page, read 2026-10-06); Next’s must-revalidate on Cache-Control forbids serving stale, so the edge gets its own line and browsers keep Next’s header. Branch pf3/swr-edge from main 87ed53e0; the PR takes 1.0.257 (1.0.256 is R19’s, on its branch).",
    "id": "PF3",
    "title": "Revalidate on change, longer windows",
-   "status": "planned",
+   "status": "started",
    "scope": "Phase 3 of the file (PR D) with X16’s step 1 folded in: each cron route compares its data with the stored hash and revalidates only what changed; the windows lengthened (weekend, session, series tabs, driver and team pages to 3600 or more; the home’s window the operator’s word); the regional tag answer kept 300 s instead of 5; R2 Class A operations within the free tier.",
    "fixedBy": "the file; X16’s slot (the plan page of the 2nd); the R2 free tier noted in open-next.config.ts",
-   "defaults": "the hash check per cron; the regional TTL 300 s; the loader’s purge list extended with the public API routes it refreshes (the home widgets’ /api/home/*, /api/weekend/*), or those routes no-store (PR B’s review, finding 3)",
+   "defaults": "the hash check per cron; the regional TTL 300 s; the loader’s purge list extended with the public API routes it refreshes (the home widgets’ /api/home/*, /api/weekend/*), or those routes no-store (PR B’s review, finding 3); PR D-1 first (pulled ahead on the measurement of the 6th): the edge’s own directive line (cloudflare-cdn-cache-control, read before Cache-Control) with the page’s window as max-age and stale-while-revalidate and stale-if-error at 86,400 s; staleness bounded by the purges that follow every revalidation; browsers keep Next’s header",
    "needsWord": "the home’s window (the plan page’s default was 300 → 1,800 s)",
    "acceptance": "Render counts per page per hour fall in observability; a new result appears within one cron cycle; R2 operations for a day quoted; no getTagData call on a warm hit on testing.",
-   "phase": "PF"
+   "phase": "PF",
+   "brief": {
+    "files": [
+     "lib/cache-headers.ts",
+     "lib/cache-headers.test.ts"
+    ],
+    "steps": [
+     "edgeCacheRules: a cacheable response also returns cdnCacheControl = max-age=<its s-maxage, else its max-age>, stale-while-revalidate=86400, stale-if-error=86400",
+     "withEdgeCacheRules sets cloudflare-cdn-cache-control from it; no-store, STALE, the tiny window and private answers get none",
+     "the tests: the cacheable cases carry the line, the stored-nothing cases do not, the wrapper sets it"
+    ],
+    "gate": "lib/cache-headers.test.ts and app/api/cron/revalidate/route.test.ts green; npx tsc --noEmit → 0; eslint on the two files → 0; the full suite; on testing: a page HIT, then after its window Cf-Cache-Status UPDATING in under 0.3 s instead of BYPASS in about 2 s",
+    "wontTouch": "the windows (the home’s is the open word), the hash checks per cron, the regional tag TTL, the loader’s purge list: the second PR"
+   }
   },
   {
    "scopeHash": "448439e436aa",
