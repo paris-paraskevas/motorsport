@@ -145,7 +145,7 @@ export function SeasonView({
       </div>
 
       {[...sections.entries()].map(([key, s]) => (
-        <div key={key} id={`season-${key}`} className="mb-8 scroll-mt-20">
+        <div key={key} id={`season-${key}`} className="mb-8 scroll-mt-[calc(5rem+env(safe-area-inset-top))]">
           <div className="mb-1 flex items-baseline gap-3 border-b border-text pb-1">
             <h2 className="font-serif text-24 font-semibold leading-none text-text">{s.label}</h2>
             <span className="font-mono text-10 uppercase tracking-[0.14em] text-text-faint">

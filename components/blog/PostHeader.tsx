@@ -22,7 +22,7 @@ export interface PostAuthor {
  *  editor's view mode can't drift apart. */
 export const POST_ARTICLE_CLASS =
   `prose dark:prose-invert prose-zinc max-w-[760px] font-serif text-17 leading-[1.62]
-   prose-headings:font-serif prose-headings:tracking-tight prose-headings:scroll-mt-24
+   prose-headings:font-serif prose-headings:tracking-tight prose-headings:scroll-mt-[calc(6rem+env(safe-area-inset-top))]
    prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
    prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
    prose-p:leading-relaxed

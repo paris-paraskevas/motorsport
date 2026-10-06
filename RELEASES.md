@@ -7,6 +7,9 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 ## 1.0.257 — 2026-10-06
 
 Pages answer at once even while a fresh copy is being prepared behind the scenes, and they keep answering from the last good copy if something of ours fails for a while.
+## 1.0.256 — 2026-10-06
+
+On Android phones with the app installed, the bottom bar no longer hides under the gesture bar when the app opens; it sits where it belongs from the first moment.
 
 ## 1.0.255 — 2026-10-06
 

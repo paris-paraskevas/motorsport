@@ -115,7 +115,7 @@ export function AppShell({
       {/* Fixed (not sticky — overflow-x: hidden on body kills sticky). 50px on
           phones, the spec's 58px on lg+, closed by a hard 1px ink rule. */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated border-b border-text pt-[env(safe-area-inset-top)]">
-        <div className="flex h-[50px] w-full items-center gap-3 px-[14px] lg:h-[58px] lg:gap-[22px] lg:px-10">
+        <div className="flex h-[50px] w-full items-center gap-3 pl-[calc(14px+env(safe-area-inset-left))] pr-[calc(14px+env(safe-area-inset-right))] lg:h-[58px] lg:gap-[22px] lg:px-10">
           {/* The PADDOCK•TRACKER wordmark (operator, 2026-08-20: "get back our
               logo") — condensed caps + the brand dot. It used to be one
               treatment shared with LandingNav and LandingFooter; those were
@@ -160,7 +160,7 @@ export function AppShell({
       <main
         id="main-content"
         tabIndex={-1}
-        className="min-h-screen flex flex-col pt-[50px] lg:pt-[58px] pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0 outline-none"
+        className="min-h-screen flex flex-col pt-[calc(50px+env(safe-area-inset-top))] lg:pt-[calc(58px+env(safe-area-inset-top))] pb-[calc(3.5rem+env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px)))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] lg:pb-0 outline-none"
       >
         {definition.availability === 'maintenance' && (
           <p role="status" className="m-0 border-b border-border bg-surface px-4 py-2 text-center text-12 text-text-muted">
