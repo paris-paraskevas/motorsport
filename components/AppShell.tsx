@@ -160,7 +160,7 @@ export function AppShell({
       <main
         id="main-content"
         tabIndex={-1}
-        className="min-h-screen flex flex-col pt-[calc(50px+env(safe-area-inset-top))] lg:pt-[calc(58px+env(safe-area-inset-top))] pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] lg:pb-0 outline-none"
+        className="min-h-screen flex flex-col pt-[calc(50px+env(safe-area-inset-top))] lg:pt-[calc(58px+env(safe-area-inset-top))] pb-[calc(3.5rem+env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px)))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] lg:pb-0 outline-none"
       >
         {definition.availability === 'maintenance' && (
           <p role="status" className="m-0 border-b border-border bg-surface px-4 py-2 text-center text-12 text-text-muted">
