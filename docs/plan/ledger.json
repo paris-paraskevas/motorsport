@@ -1866,7 +1866,7 @@
   },
   {
    "scopeHash": "fbdbbc35114d",
-   "evidence": "STARTED 2026-10-06 ~12:12Z on “swr go” with PR D-1, stale answers served while refreshing, pulled ahead of the hash checks and the windows after the measurement of 11:57Z from Athens: the first reader after a page’s window paid 1.8–2.3 s (Cf-Cache-Status BYPASS: Next’s stale answer, never stored), the second 0.5 s (MISS), the third 0.1 s (HIT), and the operator’s phone is nearly always the first. The Workers Cache honours stale-while-revalidate and stale-if-error and reads cloudflare-cdn-cache-control before Cache-Control (its configuration page, read 2026-10-06); Next’s must-revalidate on Cache-Control forbids serving stale, so the edge gets its own line and browsers keep Next’s header. Branch pf3/swr-edge from main 87ed53e0; the PR takes 1.0.257 (1.0.256 is R19’s, on its branch).",
+   "evidence": "STARTED 2026-10-06 ~12:12Z on “swr go” with PR D-1, stale answers served while refreshing, pulled ahead of the hash checks and the windows after the measurement of 11:57Z from Athens: the first reader after a page’s window paid 1.8–2.3 s (Cf-Cache-Status BYPASS: Next’s stale answer, never stored), the second 0.5 s (MISS), the third 0.1 s (HIT), and the operator’s phone is nearly always the first. The Workers Cache honours stale-while-revalidate and stale-if-error and reads cloudflare-cdn-cache-control before Cache-Control (its configuration page, read 2026-10-06); Next’s must-revalidate on Cache-Control forbids serving stale, so the edge gets its own line and browsers keep Next’s header. Branch pf3/swr-edge from main 87ed53e0; the PR takes 1.0.257 (1.0.256 is R19’s, on its branch). The proof on testing (version aee3b340, the calendar page, its window 300 s): filled at 12:37:32Z (MISS 5.9 s, then HIT 0.10 s); after the window, six requests from 12:42:53Z answered 0.19, 0.14, 0.11, 0.10, 0.10 and 0.09 s: UPDATING twice on the old copy (age 315, 321), UPDATING twice on the stale answer stored as the expired copy (age 5, x-opennext-cache STALE), then HIT on the fresh copy (s-maxage=294). The first build without the second rule (version 72782fee, 12:23:59Z) had answered UPDATING 0.12 s, then BYPASS 2.7 s and 0.36 s on the stale answer the edge had dropped, then MISS 0.33 s. The second rule (the expired copy for a STALE or regenerating answer) came from the first proof; both on PR #1140.",
    "id": "PF3",
    "title": "Revalidate on change, longer windows",
    "status": "started",
@@ -1884,7 +1884,8 @@
     "steps": [
      "edgeCacheRules: a cacheable response also returns cdnCacheControl = max-age=<its s-maxage, else its max-age>, stale-while-revalidate=86400, stale-if-error=86400",
      "withEdgeCacheRules sets cloudflare-cdn-cache-control from it; no-store, STALE, the tiny window and private answers get none",
-     "the tests: the cacheable cases carry the line, the stored-nothing cases do not, the wrapper sets it"
+     "the tests: the cacheable cases carry the line, the stored-nothing cases do not, the wrapper sets it",
+     "a STALE or regenerating answer: Cache-Control no-store for browsers, the expired-copy line (max-age=0 with the allowances) for the edge; the tests follow"
     ],
     "gate": "lib/cache-headers.test.ts and app/api/cron/revalidate/route.test.ts green; npx tsc --noEmit → 0; eslint on the two files → 0; the full suite; on testing: a page HIT, then after its window Cf-Cache-Status UPDATING in under 0.3 s instead of BYPASS in about 2 s",
     "wontTouch": "the windows (the home’s is the open word), the hash checks per cron, the regional tag TTL, the loader’s purge list: the second PR"
