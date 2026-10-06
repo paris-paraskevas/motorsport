@@ -10,6 +10,7 @@ const BASE_METADATA: Metadata = {
   title: 'Cookie Policy',
   description:
     'How Paddock Tracker uses cookies and similar technologies — analytics, push notifications, and ads — plus how to manage your consent choices.',
+  alternates: { canonical: '/cookies' },
 };
 export const generateMetadata = pageMetadata('/cookies', BASE_METADATA);
 

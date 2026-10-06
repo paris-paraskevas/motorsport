@@ -10,6 +10,7 @@ const BASE_METADATA: Metadata = {
   title: 'Accessibility',
   description:
     "Paddock Tracker's accessibility commitment — the standards we target (WCAG 2.2), known gaps, and how to report a barrier.",
+  alternates: { canonical: '/accessibility' },
 };
 export const generateMetadata = pageMetadata('/accessibility', BASE_METADATA);
 

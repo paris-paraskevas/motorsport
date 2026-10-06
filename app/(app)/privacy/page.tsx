@@ -10,6 +10,7 @@ const BASE_METADATA: Metadata = {
   title: 'Privacy Policy',
   description:
     "Paddock Tracker's privacy policy — what we collect, how long we keep it, your GDPR/UK GDPR rights, and how to reach us with a request.",
+  alternates: { canonical: '/privacy' },
 };
 export const generateMetadata = pageMetadata('/privacy', BASE_METADATA);
 

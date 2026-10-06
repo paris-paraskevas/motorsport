@@ -16,6 +16,7 @@ const BASE_METADATA = {
   title: 'Blog',
   description:
     'Original analysis, race recaps, championship deep-dives, and commentary across F1, MotoGP, WEC, IndyCar, NASCAR and more motorsport categories.',
+  alternates: { canonical: '/blog' },
 };
 export const generateMetadata = pageMetadata('/blog', BASE_METADATA);
 

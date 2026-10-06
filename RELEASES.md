@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.260 — 2026-10-07
+
+Search engines now get one clear address for every driver page, the Learn hub and each of its topic pages, the blog’s front page, and the About, Changelog and legal pages.
+
 ## 1.0.259 — 2026-10-06
 
 The Sign in with Google button now appears whichever part of the page arrives first. Before, it could stay hidden on some phones.

@@ -14,6 +14,7 @@ const BASE_METADATA: Metadata = {
   title: 'Changelog',
   description:
     'What shipped recently in Paddock Tracker — the currently running version plus a public log of fixes, features, and improvements.',
+  alternates: { canonical: '/changelog' },
 };
 export const generateMetadata = pageMetadata('/changelog', BASE_METADATA);
 

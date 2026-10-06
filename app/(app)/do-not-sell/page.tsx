@@ -10,6 +10,7 @@ const BASE_METADATA: Metadata = {
   title: 'Do Not Sell or Share',
   description:
     'Exercise your CCPA/CPRA right to opt out of the sale or sharing of personal information on Paddock Tracker — including the GPC signal we honor.',
+  alternates: { canonical: '/do-not-sell' },
 };
 export const generateMetadata = pageMetadata('/do-not-sell', BASE_METADATA);
 

@@ -44,6 +44,7 @@ async function baseMetadata({
   return {
     title,
     description,
+    alternates: { canonical: `/information/${topic}` },
     // Topic index goes noindex until it holds ≥1 verified entry (keeps the
     // all-draft tracks directory out of Google until reviewed).
     ...(indexable ? {} : { robots: { index: false, follow: true } }),

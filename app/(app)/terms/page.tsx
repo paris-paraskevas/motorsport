@@ -10,6 +10,7 @@ const BASE_METADATA: Metadata = {
   title: 'Terms of Service',
   description:
     "Paddock Tracker's terms of service — acceptable use, the rules around content and accounts, account termination, and limits of warranty.",
+  alternates: { canonical: '/terms' },
 };
 export const generateMetadata = pageMetadata('/terms', BASE_METADATA);
 

@@ -10,6 +10,7 @@ const BASE_METADATA: Metadata = {
   title: 'Imprint',
   description:
     'Editorial responsibility and contact details for paddock-tracker.com under German § 18 Abs. 2 MStV and EU § 5 DDG.',
+  alternates: { canonical: '/imprint' },
 };
 export const generateMetadata = pageMetadata('/imprint', BASE_METADATA);
 

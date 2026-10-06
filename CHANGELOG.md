@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.260 — 2026-10-07
+
+### X17, PR 1 — The census’s 155 pages without a canonical name their own address
+
+The census workflow’s full run of 2026-10-06 (run 37436895755, all 2,042 sitemap pages) found 155 pages with no canonical link, in five families: every driver page (135), every Learn topic index (10), the Learn hub (`/information`), eight site pages (`/about`, `/changelog`, `/privacy`, `/terms`, `/cookies`, `/accessibility`, `/do-not-sell`, `/imprint`) and the blog index; the census’s own checks (`scripts/seo-census.mts`: `parseSitemap`, `familyOf`, `auditPage`) confirmed them against prod on the 7th. Their 12 routes now name their own address in their base metadata, `alternates: { canonical }`, as the sibling routes do (`/contact`, `/authors`, `/archive`); the path is relative and resolved by the `(app)` layout’s `metadataBase`, and `applyFrame` in `lib/design/page-frame.tsx` keeps the field (`{ ...own }`). The driver and topic routes take the slug from the URL, which is safe because their lookups match exactly (`findDriverBySlug`, `getTopic`), so a page renders only at its canonical address. The first review caught the hub, which a hand-picked probe had left out of the first count of 154; it is folded in. X17 runs in several PRs from here: the alt texts, typos, heading order and the calendar’s query variants follow. Also recorded: R19 and R20 done on the operator’s verdicts, and #1142’s landing on prod. Noted, not done: the census workflow keeps no artifact (`actions/upload-artifact` skips the hidden `.seo-census` folder by default); `og:url` falls back to the site root on most of these routes; no test pins the canonicals, and the census does not fail on a missing one.
+
 ## 1.0.259 — 2026-10-06
 
 ### R20 — Google’s button in either order
