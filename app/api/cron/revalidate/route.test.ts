@@ -3,6 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({ revalidatePath: (...a: unknown[]) => revalidatePath(...a) }));
 
+// The Worker's execution context as OpenNext hands it out; each test sets what the runtime offers.
+const edge = vi.hoisted(() => ({ ctx: {} as Record<string, unknown> }));
+vi.mock('@opennextjs/cloudflare', () => ({ getCloudflareContext: () => ({ ctx: edge.ctx }) }));
+
 import { POST, pickPaths } from './route';
 
 function post(body: unknown, auth?: string) {
@@ -36,10 +40,13 @@ describe('POST /api/cron/revalidate', () => {
   const secret = 'test-secret';
   beforeEach(() => {
     revalidatePath.mockClear();
+    edge.ctx = {};
     process.env.CRON_SECRET = secret;
   });
   afterEach(() => {
     delete process.env.CRON_SECRET;
+    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it('fails closed without a configured secret', async () => {
@@ -69,5 +76,40 @@ describe('POST /api/cron/revalidate', () => {
     expect(json.revalidated).toEqual(['/', '/series/f1/standings']);
     expect(revalidatePath).toHaveBeenCalledTimes(2);
     expect(revalidatePath).toHaveBeenCalledWith('/series/f1/standings');
+  });
+
+  // PF2: the edge copies (Workers Cache) are purged by tag through the Worker's execution context.
+  it('reports edgePurged false where the runtime offers no cache API', async () => {
+    const res = await post({ paths: ['/'] }, `Bearer ${secret}`);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { edgePurged: boolean }).edgePurged).toBe(false);
+  });
+
+  it('purges the path tags, reports the success and purges once more after the tag window', async () => {
+    vi.useFakeTimers();
+    const purge = vi.fn(async () => ({ success: true, errors: [] }));
+    const waited: Promise<unknown>[] = [];
+    edge.ctx = { cache: { purge }, waitUntil: (p: Promise<unknown>) => waited.push(p) };
+    const res = await post({ paths: ['/', '/series/f1'] }, `Bearer ${secret}`);
+    expect(((await res.json()) as { edgePurged: boolean }).edgePurged).toBe(true);
+    expect(purge).toHaveBeenCalledTimes(1);
+    expect(purge).toHaveBeenCalledWith({ tags: ['path:/', 'path:/series/f1'] });
+    expect(waited).toHaveLength(1);
+    await vi.advanceTimersByTimeAsync(6_000);
+    await waited[0];
+    expect(purge).toHaveBeenCalledTimes(2);
+    expect(purge).toHaveBeenLastCalledWith({ tags: ['path:/', 'path:/series/f1'] });
+  });
+
+  it('reports edgePurged false when the purge is refused, logs the refusal and does not purge again', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const purge = vi.fn(async () => ({ success: false, errors: [{ code: 10000, message: 'rate limited' }] }));
+    const waitUntil = vi.fn();
+    edge.ctx = { cache: { purge }, waitUntil };
+    const res = await post({ paths: ['/'] }, `Bearer ${secret}`);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { edgePurged: boolean; revalidated: string[] })).toMatchObject({ edgePurged: false, revalidated: ['/'] });
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('rate limited'));
+    expect(waitUntil).not.toHaveBeenCalled();
   });
 });

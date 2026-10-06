@@ -50,6 +50,11 @@
   "name": "motorsport-testing",
   "compatibility_date": "2025-09-23",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // PF2, the front cache (design D, the operator's pick of 2026-10-05): Workers Cache keeps a copy of every
+  // cacheable response in front of this Worker, keyed by path and query (not the hostname) and governed by the
+  // response's own Cache-Control; a hit runs no code and bills no CPU. The testing Worker proves it before prod
+  // (the eight checks of the Four Front Caches page); worker.ts adds the rules the hostname-blind key needs.
+  "cache": { "enabled": true },
   "routes": [
     { "pattern": "testing.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" }
   ],

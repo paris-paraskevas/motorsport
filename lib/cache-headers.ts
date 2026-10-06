@@ -55,3 +55,61 @@ export function withBrowserSafeCache(res: Response): Response {
   out.headers.set('cache-control', fixed);
   return out;
 }
+
+/**
+ * The rules a cache in front of the Worker needs (PF2, Workers Cache). Its key
+ * is the path and query, not the hostname; a response without Cache-Control
+ * may be kept on heuristic freshness; and a call through the Worker's own
+ * service binding is answered from the same cache. So four things are decided
+ * here, once, on the way out:
+ * - every response of the dev. host is private, so an admin's page can never be
+ *   served to the apex;
+ * - a response with no Cache-Control at all says no-store (the middleware's
+ *   redirects, Next's own redirects, route handlers that set nothing): none of
+ *   them was ever meant for a shared cache;
+ * - a STALE answer (OpenNext serves the old page under s-maxage=1 and queues a
+ *   HEAD revalidation through the self binding; GET and HEAD share one entry)
+ *   says no-store, or that HEAD could be answered by the one-second copy and
+ *   the page would never re-render;
+ * - a cacheable response (a positive s-maxage or max-age that is not private or
+ *   no-store) carries two Cache-Tags: its path, so a purge can follow a
+ *   revalidation of that page, and `site`, so one purge can follow a
+ *   layout-wide revalidation (a design save).
+ * Static assets never pass here: the assets binding answers them first.
+ */
+const POSITIVE_WINDOW = /\b(?:s-maxage|max-age)=0*[1-9]\d*/;
+const NOT_SHARED = /\b(?:private|no-store)\b/;
+const TINY_WINDOW = /\bs-maxage=0*[12]\b/;
+
+export function edgeCacheRules(
+  hostname: string,
+  pathname: string,
+  cacheControl: string | null,
+  cacheState: string | null = null,
+): { cacheControl?: string; cacheTag?: string } {
+  if (hostname.startsWith('dev.')) return { cacheControl: 'private, no-store' };
+  if (!cacheControl) return { cacheControl: 'no-store' };
+  if (cacheState?.toUpperCase() === 'STALE') return { cacheControl: 'no-store' };
+  // Next's "regenerating" answer (s-maxage=1 or 2 while the page is rebuilt) is the same case under another header:
+  // seen on the first test build as EXPIRED, HIT, EXPIRED churn, a copy stored and gone within the second.
+  if (TINY_WINDOW.test(cacheControl)) return { cacheControl: 'no-store' };
+  if (NOT_SHARED.test(cacheControl)) return {};
+  if (POSITIVE_WINDOW.test(cacheControl)) return { cacheTag: `path:${pathname},site` };
+  return {};
+}
+
+/** The handler's response with the edge rules applied, or the very same response when none applies. */
+export function withEdgeCacheRules(request: Request, res: Response): Response {
+  const url = new URL(request.url);
+  const rules = edgeCacheRules(
+    url.hostname,
+    url.pathname,
+    res.headers.get('cache-control'),
+    res.headers.get('x-opennext-cache') ?? res.headers.get('x-nextjs-cache'),
+  );
+  if (!rules.cacheControl && !rules.cacheTag) return res;
+  const out = new Response(res.body, res);
+  if (rules.cacheControl) out.headers.set('cache-control', rules.cacheControl);
+  if (rules.cacheTag) out.headers.set('cache-tag', rules.cacheTag);
+  return out;
+}

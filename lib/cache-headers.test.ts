@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { browserSafeCacheControl, withBrowserSafeCache } from './cache-headers';
+import { browserSafeCacheControl, edgeCacheRules, withBrowserSafeCache, withEdgeCacheRules } from './cache-headers';
 
 // The header OpenNext emits lets a browser reuse a stale page or payload for a
 // month; after a deploy that means the previous build's chunk names and content.
@@ -68,5 +68,108 @@ describe('withBrowserSafeCache', () => {
     expect(out.headers.get('vary')).toBe('rsc, next-router-state-tree');
     expect(out.headers.get('x-opennext')).toBe('1');
     expect(await out.text()).toBe('<html>');
+  });
+});
+
+// PF2: the rules a cache in front of the Worker needs. Workers Cache keys by path and query, not the hostname, and
+// may keep a response without Cache-Control on heuristic freshness.
+describe('edgeCacheRules', () => {
+  it('makes every response of the dev. host private', () => {
+    expect(edgeCacheRules('dev.paddock-tracker.com', '/series/f1', 's-maxage=300, max-age=0, must-revalidate')).toEqual({
+      cacheControl: 'private, no-store',
+    });
+    expect(edgeCacheRules('dev.paddock-tracker.com', '/admin/designer', null)).toEqual({ cacheControl: 'private, no-store' });
+  });
+
+  it('says no-store where nothing was said: a redirect, a route handler without a header', () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/series/f1', null)).toEqual({ cacheControl: 'no-store' });
+  });
+
+  it('tags a cacheable page with its path and the site, and leaves its header alone', () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=128, max-age=0, must-revalidate')).toEqual({
+      cacheTag: 'path:/calendar,site',
+    });
+    // A route handler or a media file with a positive max-age is kept by the edge too, so it is tagged too.
+    expect(edgeCacheRules('paddock-tracker.com', '/api/search', 'public, max-age=3600, stale-while-revalidate=86400')).toEqual({
+      cacheTag: 'path:/api/search,site',
+    });
+    expect(edgeCacheRules('paddock-tracker.com', '/media/a.jpg', 'public, max-age=31536000, immutable')).toEqual({
+      cacheTag: 'path:/media/a.jpg,site',
+    });
+  });
+
+  it('says no-store on a STALE answer, whose one-second copy would answer the revalidation HEAD', () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=1, max-age=0, must-revalidate', 'STALE')).toEqual({
+      cacheControl: 'no-store',
+    });
+    expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=1196, max-age=0, must-revalidate', 'HIT')).toEqual({
+      cacheTag: 'path:/series/f1,site',
+    });
+  });
+
+  it("says no-store on Next's regenerating window of a second or two, whatever the state header says", () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=1, max-age=0, must-revalidate', 'HIT')).toEqual({
+      cacheControl: 'no-store',
+    });
+    expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=2, max-age=0, must-revalidate', null)).toEqual({
+      cacheControl: 'no-store',
+    });
+    expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=3, max-age=0, must-revalidate', null)).toEqual({
+      cacheTag: 'path:/calendar,site',
+    });
+  });
+
+  it('touches nothing private, no-store or without a positive window', () => {
+    expect(edgeCacheRules('paddock-tracker.com', '/blog/x', 'private, no-cache, no-store, max-age=0, must-revalidate')).toEqual({});
+    expect(edgeCacheRules('paddock-tracker.com', '/settings', 'private, max-age=600')).toEqual({});
+    expect(edgeCacheRules('paddock-tracker.com', '/x', 'public, max-age=0, must-revalidate')).toEqual({});
+    expect(edgeCacheRules('paddock-tracker.com', '/x', 'no-cache')).toEqual({});
+  });
+});
+
+describe('withEdgeCacheRules', () => {
+  it('returns the same response object when nothing applies', () => {
+    const res = new Response('x', { headers: { 'cache-control': 'private, no-store' } });
+    expect(withEdgeCacheRules(new Request('https://paddock-tracker.com/settings'), res)).toBe(res);
+  });
+
+  it('copies the response and sets the header or the tag', async () => {
+    const res = new Response('<html>', {
+      status: 200,
+      headers: { 'cache-control': 's-maxage=300, max-age=0, must-revalidate', 'content-type': 'text/html' },
+    });
+    const out = withEdgeCacheRules(new Request('https://paddock-tracker.com/series/f1'), res);
+    expect(out.headers.get('cache-tag')).toBe('path:/series/f1,site');
+    expect(out.headers.get('cache-control')).toBe('s-maxage=300, max-age=0, must-revalidate');
+    expect(await out.text()).toBe('<html>');
+    const dev = withEdgeCacheRules(
+      new Request('https://dev.paddock-tracker.com/series/f1'),
+      new Response('y', { headers: { 'cache-control': 's-maxage=300' } }),
+    );
+    expect(dev.headers.get('cache-control')).toBe('private, no-store');
+    expect(dev.headers.get('cache-tag')).toBeNull();
+  });
+
+  it("keeps a redirect's status and location and says no-store", () => {
+    const res = new Response(null, { status: 301, headers: { location: 'https://paddock-tracker.com/calendar' } });
+    const out = withEdgeCacheRules(new Request('https://www.paddock-tracker.com/calendar'), res);
+    expect(out.status).toBe(301);
+    expect(out.headers.get('location')).toBe('https://paddock-tracker.com/calendar');
+    expect(out.headers.get('cache-control')).toBe('no-store');
+    expect(out.headers.get('cache-tag')).toBeNull();
+  });
+
+  it("reads OpenNext's cache state from the response: a STALE page is not stored", () => {
+    const stale = withEdgeCacheRules(
+      new Request('https://paddock-tracker.com/series/f1'),
+      new Response('<html>', { headers: { 'cache-control': 's-maxage=1, max-age=0, must-revalidate', 'x-opennext-cache': 'STALE' } }),
+    );
+    expect(stale.headers.get('cache-control')).toBe('no-store');
+    expect(stale.headers.get('cache-tag')).toBeNull();
+    const nextStale = withEdgeCacheRules(
+      new Request('https://paddock-tracker.com/news'),
+      new Response('<html>', { headers: { 'cache-control': 's-maxage=1, max-age=0, must-revalidate', 'x-nextjs-cache': 'STALE' } }),
+    );
+    expect(nextStale.headers.get('cache-control')).toBe('no-store');
   });
 });

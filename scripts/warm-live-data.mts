@@ -252,7 +252,10 @@ if (process.env.CRON_SECRET) {
       headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.CRON_SECRET}` },
       body: JSON.stringify({ paths }),
     });
-    console.error(`revalidate: HTTP ${res.status} for ${paths.length} paths${rowsSlugs.length ? ` (rows written for ${rowsSlugs.join(', ')})` : ''}`);
+    // PF2: the route also purges the edge copies (Workers Cache) of those paths and says whether it could.
+    const answer = (await res.json().catch(() => null)) as { edgePurged?: boolean } | null;
+    const edge = answer?.edgePurged === true ? 'purged' : answer?.edgePurged === false ? 'not purged (no cache API or refused)' : 'unknown';
+    console.error(`revalidate: HTTP ${res.status} for ${paths.length} paths; edge ${edge}${rowsSlugs.length ? ` (rows written for ${rowsSlugs.join(', ')})` : ''}`);
   } catch (err) {
     console.error(`revalidate: failed — ${err instanceof Error ? err.message : String(err)}`);
   }

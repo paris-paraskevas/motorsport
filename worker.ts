@@ -21,7 +21,7 @@ import { default as handler } from './.open-next/worker.js';
 export { DOQueueHandler, DOShardedTagCache, BucketCachePurge } from './.open-next/worker.js';
 /* eslint-enable @typescript-eslint/ban-ts-comment */
 
-import { withBrowserSafeCache } from './lib/cache-headers';
+import { withBrowserSafeCache, withEdgeCacheRules } from './lib/cache-headers';
 
 // Cron string (must match wrangler `triggers.crons`) -> /api/cron/<name> route(s).
 // notify runs every minute for tight session-relative reminders; the rest keep
@@ -47,9 +47,11 @@ type Ctx = { waitUntil(p: Promise<unknown>): void };
 const workerHandler = {
   // Every page and RSC payload passes through one header correction on the way
   // out: OpenNext's month-long stale-while-revalidate let browsers reuse the
-  // previous build's payloads after a deploy. See lib/cache-headers.ts.
+  // previous build's payloads after a deploy. See lib/cache-headers.ts. Then
+  // the rules a cache in front of the Worker needs (PF2, Workers Cache): the
+  // dev. host private, no header means no-store, a cacheable page tagged.
   async fetch(request: Request, env: unknown, ctx: Ctx): Promise<Response> {
-    return withBrowserSafeCache(await handler.fetch(request, env, ctx));
+    return withEdgeCacheRules(request, withBrowserSafeCache(await handler.fetch(request, env, ctx)));
   },
   async scheduled(event: { cron: string }, env: { CRON_SECRET?: string }, ctx: Ctx): Promise<void> {
     const jobs = CRON_JOBS[event.cron] ?? [];
