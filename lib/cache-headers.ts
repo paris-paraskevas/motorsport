@@ -73,11 +73,14 @@ export function withBrowserSafeCache(res: Response): Response {
  *   refresh meets it and the next reader reaches the Worker, whose STALE path
  *   is what triggers the regeneration. The edge was given an already-expired
  *   copy instead for one afternoon (2026-10-06, 1.0.257): the dense run
- *   converged in 23 s, but quiet-time runs on testing kept answering stale 90
- *   to 100 s after the window and one window saw no regeneration for nine
- *   minutes, and the copy carried no Cache-Tag, so no purge could reach it.
- *   Until the regeneration request can never be answered by a stored copy, the
- *   second reader after a window pays the render and the first does not;
+ *   converged in 23 s, but quiet-time runs on testing kept answering stale 91
+ *   and 103 s after the first reader past the window, one window showed no
+ *   regeneration for about nine minutes (the reviewer's notes, not logged), and
+ *   the copy carried no Cache-Tag, so no purge by tag could reach it. Before an
+ *   expired copy returns, three things must hold: the regeneration request can
+ *   never be answered by a stored copy, the copy carries the page's tags, and
+ *   three quiet windows are shown to converge. Until then the second reader
+ *   after a window pays the render and the first does not;
  * - a cacheable response (a positive s-maxage or max-age that is not private or
  *   no-store) carries two Cache-Tags: its path, so a purge can follow a
  *   revalidation of that page, and `site`, so one purge can follow a
@@ -86,12 +89,15 @@ export function withBrowserSafeCache(res: Response): Response {
  *   Cloudflare reads cloudflare-cdn-cache-control before Cache-Control, so the
  *   page's window stays its fresh time and, once it lapses, the expired copy is
  *   answered at once while the Worker refreshes it behind (Cf-Cache-Status
- *   UPDATING) or while the Worker fails. Next's must-revalidate on Cache-Control
- *   would forbid both; it stays there for browsers. Measured before this on
+ *   UPDATING) or, as Cloudflare documents it and not yet exercised here, while
+ *   the Worker fails. Next's must-revalidate on Cache-Control would forbid both;
+ *   it stays there for browsers. Measured before this on
  *   2026-10-06 from Athens: the first reader after a window paid 1.8–2.3 s (the
- *   stale answer is never stored), the second 0.5 s, the third 0.1 s. Staleness
- *   is bounded by the purges that follow every revalidation, not by the
- *   allowance below.
+ *   stale answer is never stored), the second 0.5 s, the third 0.1 s. For the
+ *   paths a revalidation purges, staleness is bounded by that purge, not by the
+ *   allowance below; a path no purge names (the public API routes outside the
+ *   loader's list, an open item of PF3) can answer one reader with a copy as old
+ *   as its last refresh, up to the allowance.
  * Static assets never pass here: the assets binding answers them first.
  */
 const STALE_ALLOWANCE_S = 86_400;

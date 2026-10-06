@@ -130,6 +130,10 @@ describe('edgeCacheRules', () => {
     expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=1, max-age=0, must-revalidate', 'STALE')).toEqual({
       cacheControl: 'no-store',
     });
+    // With a long window too, so the regenerating rule (s-maxage 1 or 2) is not what makes a STALE answer no-store.
+    expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=300, max-age=0, must-revalidate', 'STALE')).toEqual({
+      cacheControl: 'no-store',
+    });
     expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=1196, max-age=0, must-revalidate', 'HIT')).toEqual({
       cacheTag: 'path:/series/f1,site',
       cdnCacheControl: 'max-age=1196, stale-while-revalidate=86400, stale-if-error=86400',
