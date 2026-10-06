@@ -98,6 +98,72 @@ export function edgeCacheRules(
   return {};
 }
 
+// Workers Cache's purge never throws: it resolves { success, errors } and a rate-limited call says success:false
+// (developers.cloudflare.com/workers/cache/purge, read 2026-10-05); the Worker may send five purges a minute.
+type PurgeResult = { success?: boolean; errors?: Array<{ code?: number; message?: string }> };
+export type WorkerContext = {
+  cache?: { purge?: (options: { tags: string[] }) => Promise<PurgeResult | undefined> };
+  waitUntil?: (p: Promise<unknown>) => void;
+};
+
+// The Worker's regional tag answer is kept for 5 s (open-next.config.ts), so a request landing inside that window is
+// still answered with the old page under a fresh s-maxage and the edge stores it again; a second purge once the window
+// has passed catches that copy. Purges within a window share one second pass over the union of their tags (the
+// five-a-minute allowance); the set and the flag live per isolate, which is where the window is.
+const SECOND_PURGE_DELAY_MS = 6_000;
+const pendingTags = new Set<string>();
+let secondPassScheduled = false;
+
+/** The Worker's execution context as OpenNext hands it out; empty outside the Worker (the tests, the dev server). */
+async function workerContext(): Promise<WorkerContext> {
+  try {
+    const { getCloudflareContext } = await import('@opennextjs/cloudflare');
+    return getCloudflareContext().ctx as unknown as WorkerContext;
+  } catch {
+    return {};
+  }
+}
+
+/** One purge by tag through the given context; false where the runtime offers no cache, refuses, or throws. */
+export async function purgeEdgeTags(ctx: WorkerContext, tags: string[]): Promise<boolean> {
+  if (typeof ctx.cache?.purge !== 'function') return false;
+  try {
+    const result = await ctx.cache.purge({ tags });
+    if (result?.success !== true) {
+      console.error(`[edge-purge] refused for ${tags.length} tags: ${JSON.stringify(result?.errors ?? result ?? null)}`);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error(`[edge-purge] failed for ${tags.length} tags: ${err instanceof Error ? err.message : String(err)}`);
+    return false;
+  }
+}
+
+/**
+ * After a revalidatePath: purge the edge copies now and once more after the regional tag window. `site` is the tag on
+ * every cacheable response (a layout-wide revalidation); `path:<pathname>` names one page. Best effort: a refusal never
+ * fails the caller.
+ */
+export async function purgeEdgeAfterRevalidate(tags: string[]): Promise<boolean> {
+  const ctx = await workerContext();
+  const purged = await purgeEdgeTags(ctx, tags);
+  if (!purged || typeof ctx.waitUntil !== 'function') return purged;
+  for (const tag of tags) pendingTags.add(tag);
+  if (!secondPassScheduled) {
+    secondPassScheduled = true;
+    ctx.waitUntil(
+      new Promise<void>(resolve => setTimeout(resolve, SECOND_PURGE_DELAY_MS)).then(() => {
+        const union = [...pendingTags];
+        pendingTags.clear();
+        secondPassScheduled = false;
+        return purgeEdgeTags(ctx, union);
+      }),
+    );
+  }
+  return purged;
+}
+
 /** The handler's response with the edge rules applied, or the very same response when none applies. */
 export function withEdgeCacheRules(request: Request, res: Response): Response {
   const url = new URL(request.url);

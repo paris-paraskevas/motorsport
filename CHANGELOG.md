@@ -9,6 +9,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 ### X13 — The footer’s Series list seeded for the designer
 
 The footer’s third column has drawn its fifteen series from code since X13 (`lib/design/lists.ts`, `DEFAULT_NAV.footerSeries`), which the designer could list but not edit. The migration `20261006070000_design_list_footer_series.sql` seeds the `footer-series` list, its fifteen entries and the heading’s text row (`footer.series`, which the Text Messages seed of 20260908150000 left out), insert-where-absent in the shape of the shell lists’ seed; readers see the same column before and after, the designer can now reorder, rename or drop an entry. Prod on the operator’s “apply footer seed”, rehearsed inside begin…rollback through the Management API first.
+## 1.0.254 — 2026-10-06
+
+### PF2 — The front cache on prod (design D, PR C)
+
+`"cache": { "enabled": true }` in `wrangler.jsonc`: Workers Cache keeps a copy of every cacheable response in front of the production Worker, keyed by path and query and governed by the response’s own Cache-Control; a hit runs no code and bills no CPU (proven on the testing Worker in #1136: warm pages answered in 0.13–1.16 s over 27 hits, all but one under 0.4 s). Every route that revalidates a page now also purges the edge through `purgeEdgeAfterRevalidate` (`lib/cache-headers.ts`): now, and once more after the Worker’s five-second regional tag window, the purges inside a window sharing one second pass over the union of their tags; the Worker’s allowance is five purges a minute and a refusal is logged, never thrown. The designer’s saves purge everything (the `site` tag every cacheable response carries); the blog, author, Learn-topic and publish routes purge their pages; the loader’s revalidate route its paths; a test fails any new route that revalidates without purging. The www and http 301s sit in front of the cache as zone rules (the operator’s “Redirect from WWW to root” rule of the 6th; Always Use HTTPS). Rollback: the line removed, one deploy.
 
 ## 1.0.253 — 2026-10-05
 

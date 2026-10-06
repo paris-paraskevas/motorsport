@@ -7,6 +7,13 @@
   // Workers; using a recent date to get the widest Node compat surface.
   "compatibility_date": "2025-09-23",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // PF2 PR C (2026-10-06, the operator's "front cache on prod"): Workers Cache keeps a copy of every cacheable
+  // response in front of this Worker, keyed by path and query (not the hostname) and governed by the response's own
+  // Cache-Control; a hit runs no code and bills no CPU. The rules its key needs run in worker.ts (lib/cache-headers.ts):
+  // the dev. host private, no header means no-store, a STALE answer never stored, every cacheable response tagged
+  // path:<pathname>,site, every revalidation purging its tags. The www and http 301s sit in front of it as zone rules.
+  // Rollback: remove this line, one deploy. Proven on the testing Worker first (docs/pull-requests.md #1136).
+  "cache": { "enabled": true },
   // Serve the live domain from this Worker (routes intercept before the old
   // Vercel origin). The zone's DNS is already on Cloudflare, proxied.
   // `dev.*` is the admin entry point. Its DNS record is already proxied through

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -81,7 +82,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
     const rows = (data ?? []) as { updated_at: string }[];
     if (rows.length === 0) return refused(409, 'This saved view was saved again after you loaded it.', { current: await loadViewsForEditing() });
     resetViewsMemo();
-    if (target) revalidatePath(target.path);
+    if (target) {
+      revalidatePath(target.path);
+      await purgeEdgeAfterRevalidate([target.path.includes('[') ? 'site' : `path:${target.path}`]);
+    }
     const view: EditableSavedView = { ...stored, ...patch, updatedAt: String(rows[0].updated_at) };
     return NextResponse.json({ ok: true, view });
   } catch (err) {
@@ -118,7 +122,10 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ key: 
     const rows = (data ?? []) as { key: string }[];
     if (rows.length === 0) return refused(409, 'This saved view was saved again after you loaded it.', { current: await loadViewsForEditing() });
     resetViewsMemo();
-    if (target) revalidatePath(target.path);
+    if (target) {
+      revalidatePath(target.path);
+      await purgeEdgeAfterRevalidate([target.path.includes('[') ? 'site' : `path:${target.path}`]);
+    }
     return NextResponse.json({ ok: true, key });
   } catch (err) {
     return refused(500, err instanceof Error ? err.message : 'unknown');

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -105,6 +106,7 @@ export async function POST(req: Request) {
     }
     resetThemesMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     const base = shippedTheme(body.base);
     const theme: EditableTheme = {
       key,

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -155,6 +156,7 @@ export async function DELETE(req: Request) {
       resetPageFrameMemo();
       resetNavListsMemo();
       revalidatePath('/', 'layout');
+      await purgeEdgeAfterRevalidate(['site']);
     }
     return NextResponse.json({ ok: true, purged, held });
   } catch (err) {

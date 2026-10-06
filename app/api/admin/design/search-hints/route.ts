@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -85,6 +86,7 @@ export async function POST(req: Request) {
     if (!hint) return NextResponse.json({ error: 'the stored row could not be read back' }, { status: 500 });
     resetSearchHintsMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, hint }, { status: 201 });
   } catch (err) {
     return NextResponse.json(

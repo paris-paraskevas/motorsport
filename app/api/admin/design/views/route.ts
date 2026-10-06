@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { currentAccount } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
@@ -74,6 +75,7 @@ export async function POST(req: Request) {
     }
     resetViewsMemo();
     revalidatePath(target.path);
+    await purgeEdgeAfterRevalidate([target.path.includes('[') ? 'site' : `path:${target.path}`]);
     const row = data as { updated_at: string; seq: number };
     const view: EditableSavedView = { key, pageId, regionId, name, definition, seq: row.seq, updatedAt: String(row.updated_at) };
     return NextResponse.json({ ok: true, view }, { status: 201 });

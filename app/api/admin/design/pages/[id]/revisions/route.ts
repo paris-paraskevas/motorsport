@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -115,6 +116,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         // dynamic route is revalidated as a whole (the Page Designer plan, PR 3).
         if (detail.page.path.includes('[')) revalidatePath(detail.page.path, 'page');
         else revalidatePath(detail.page.path);
+        await purgeEdgeAfterRevalidate([detail.page.path.includes('[') ? 'site' : `path:${detail.page.path}`]);
       }
     }
     return NextResponse.json({
