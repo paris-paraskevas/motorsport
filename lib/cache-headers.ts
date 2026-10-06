@@ -69,14 +69,15 @@ export function withBrowserSafeCache(res: Response): Response {
  *   them was ever meant for a shared cache;
  * - a STALE or regenerating answer (OpenNext serves the old page under
  *   s-maxage=1 and queues a HEAD revalidation through the self binding; GET and
- *   HEAD share one entry) says no-store to browsers and gives the edge an
- *   already-expired copy (max-age=0 with the allowances below): every request
- *   is answered at once and still reaches the Worker behind, the HEAD included,
- *   until a fresh answer replaces the copy. A plain no-store here made the
- *   edge drop its copy when its refresh met the stale answer, and the next
- *   readers paid the render (testing, 2026-10-06 12:24Z: UPDATING 0.12 s, then
- *   BYPASS 2.7 s and 0.36 s, then MISS); a fresh s-maxage=1 copy, the other
- *   way, once answered the HEAD itself and the page never re-rendered;
+ *   HEAD share one entry) says no-store, so the edge drops its copy when its
+ *   refresh meets it and the next reader reaches the Worker, whose STALE path
+ *   is what triggers the regeneration. The edge was given an already-expired
+ *   copy instead for one afternoon (2026-10-06, 1.0.257): the dense run
+ *   converged in 23 s, but quiet-time runs on testing kept answering stale 90
+ *   to 100 s after the window and one window saw no regeneration for nine
+ *   minutes, and the copy carried no Cache-Tag, so no purge could reach it.
+ *   Until the regeneration request can never be answered by a stored copy, the
+ *   second reader after a window pays the render and the first does not;
  * - a cacheable response (a positive s-maxage or max-age that is not private or
  *   no-store) carries two Cache-Tags: its path, so a purge can follow a
  *   revalidation of that page, and `site`, so one purge can follow a
@@ -94,7 +95,6 @@ export function withBrowserSafeCache(res: Response): Response {
  * Static assets never pass here: the assets binding answers them first.
  */
 const STALE_ALLOWANCE_S = 86_400;
-const EXPIRED_COPY = `max-age=0, stale-while-revalidate=${STALE_ALLOWANCE_S}, stale-if-error=${STALE_ALLOWANCE_S}`;
 const SHARED_WINDOW = /\bs-maxage=0*(\d+)/;
 const ANY_WINDOW = /\bmax-age=0*(\d+)/;
 const POSITIVE_WINDOW = /\b(?:s-maxage|max-age)=0*[1-9]\d*/;
@@ -109,10 +109,10 @@ export function edgeCacheRules(
 ): { cacheControl?: string; cacheTag?: string; cdnCacheControl?: string } {
   if (hostname.startsWith('dev.')) return { cacheControl: 'private, no-store' };
   if (!cacheControl) return { cacheControl: 'no-store' };
-  if (cacheState?.toUpperCase() === 'STALE') return { cacheControl: 'no-store', cdnCacheControl: EXPIRED_COPY };
+  if (cacheState?.toUpperCase() === 'STALE') return { cacheControl: 'no-store' };
   // Next's "regenerating" answer (s-maxage=1 or 2 while the page is rebuilt) is the same case under another header:
   // seen on the first test build as EXPIRED, HIT, EXPIRED churn, a copy stored and gone within the second.
-  if (TINY_WINDOW.test(cacheControl)) return { cacheControl: 'no-store', cdnCacheControl: EXPIRED_COPY };
+  if (TINY_WINDOW.test(cacheControl)) return { cacheControl: 'no-store' };
   if (NOT_SHARED.test(cacheControl)) return {};
   if (POSITIVE_WINDOW.test(cacheControl)) {
     const window = Number((SHARED_WINDOW.exec(cacheControl) ?? ANY_WINDOW.exec(cacheControl))?.[1] ?? 0);

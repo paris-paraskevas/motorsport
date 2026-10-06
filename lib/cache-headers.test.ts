@@ -126,10 +126,9 @@ describe('edgeCacheRules', () => {
     });
   });
 
-  it('a STALE answer: no-store for browsers, an already-expired copy for the edge, so readers are answered at once while the Worker still runs behind', () => {
+  it('says no-store on a STALE answer and gives the edge no line for it: the next reader must reach the Worker, whose STALE path triggers the regeneration', () => {
     expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=1, max-age=0, must-revalidate', 'STALE')).toEqual({
       cacheControl: 'no-store',
-      cdnCacheControl: 'max-age=0, stale-while-revalidate=86400, stale-if-error=86400',
     });
     expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=1196, max-age=0, must-revalidate', 'HIT')).toEqual({
       cacheTag: 'path:/series/f1,site',
@@ -137,14 +136,12 @@ describe('edgeCacheRules', () => {
     });
   });
 
-  it("Next's regenerating window of a second or two, whatever the state header says: the same no-store and expired copy", () => {
+  it("says no-store on Next's regenerating window of a second or two, whatever the state header says, with no edge line", () => {
     expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=1, max-age=0, must-revalidate', 'HIT')).toEqual({
       cacheControl: 'no-store',
-      cdnCacheControl: 'max-age=0, stale-while-revalidate=86400, stale-if-error=86400',
     });
     expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=2, max-age=0, must-revalidate', null)).toEqual({
       cacheControl: 'no-store',
-      cdnCacheControl: 'max-age=0, stale-while-revalidate=86400, stale-if-error=86400',
     });
     expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=3, max-age=0, must-revalidate', null)).toEqual({
       cacheTag: 'path:/calendar,site',
@@ -185,7 +182,7 @@ describe('withEdgeCacheRules', () => {
     expect(dev.headers.get('cloudflare-cdn-cache-control')).toBeNull();
   });
 
-  it('gives no edge line to what it never stores (a private page, a bare redirect) and the expired-copy line to a STALE or regenerating answer', () => {
+  it('gives no edge line to what it never stores: a private page, a bare answer, a STALE answer, the regenerating window', () => {
     const priv = withEdgeCacheRules(
       new Request('https://paddock-tracker.com/series/f1'),
       new Response('x', { headers: { 'cache-control': 'private, max-age=600' } }),
@@ -203,7 +200,7 @@ describe('withEdgeCacheRules', () => {
         new Response('x', { headers: { 'cache-control': cc, ...(state ? { 'x-opennext-cache': state } : {}) } }),
       );
       expect(out.headers.get('cache-control'), cc).toBe('no-store');
-      expect(out.headers.get('cloudflare-cdn-cache-control'), cc).toBe('max-age=0, stale-while-revalidate=86400, stale-if-error=86400');
+      expect(out.headers.get('cloudflare-cdn-cache-control'), cc).toBeNull();
     }
   });
 
