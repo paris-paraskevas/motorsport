@@ -84,7 +84,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
     resetViewsMemo();
     if (target) {
       revalidatePath(target.path);
-      await purgeEdgeAfterRevalidate([`path:${target.path}`]);
+      await purgeEdgeAfterRevalidate([target.path.includes('[') ? 'site' : `path:${target.path}`]);
     }
     const view: EditableSavedView = { ...stored, ...patch, updatedAt: String(rows[0].updated_at) };
     return NextResponse.json({ ok: true, view });
@@ -124,7 +124,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ key: 
     resetViewsMemo();
     if (target) {
       revalidatePath(target.path);
-      await purgeEdgeAfterRevalidate([`path:${target.path}`]);
+      await purgeEdgeAfterRevalidate([target.path.includes('[') ? 'site' : `path:${target.path}`]);
     }
     return NextResponse.json({ ok: true, key });
   } catch (err) {

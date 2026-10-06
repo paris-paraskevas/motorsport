@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.254 — 2026-10-06
 
-Faster pages: the pages readers open most now come straight from Cloudflare’s cache in a fraction of the time, and they refresh the moment their results change.
+Faster pages: the pages readers open most now come straight from Cloudflare’s cache in a fraction of the time; the home, the series pages and the standings refresh as soon as new results land.
 
 ## 1.0.253 — 2026-10-05
 

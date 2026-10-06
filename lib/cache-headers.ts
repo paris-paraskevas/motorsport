@@ -108,9 +108,11 @@ export type WorkerContext = {
 
 // The Worker's regional tag answer is kept for 5 s (open-next.config.ts), so a request landing inside that window is
 // still answered with the old page under a fresh s-maxage and the edge stores it again; a second purge once the window
-// has passed catches that copy. Purges within a window share one second pass (the five-a-minute allowance).
+// has passed catches that copy. Purges within a window share one second pass over the union of their tags (the
+// five-a-minute allowance); the set and the flag live per isolate, which is where the window is.
 const SECOND_PURGE_DELAY_MS = 6_000;
-let lastPurgeAt = 0;
+const pendingTags = new Set<string>();
+let secondPassScheduled = false;
 
 /** The Worker's execution context as OpenNext hands it out; empty outside the Worker (the tests, the dev server). */
 async function workerContext(): Promise<WorkerContext> {
@@ -131,7 +133,6 @@ export async function purgeEdgeTags(ctx: WorkerContext, tags: string[]): Promise
       console.error(`[edge-purge] refused for ${tags.length} tags: ${JSON.stringify(result?.errors ?? result ?? null)}`);
       return false;
     }
-    lastPurgeAt = Date.now();
     return true;
   } catch (err) {
     console.error(`[edge-purge] failed for ${tags.length} tags: ${err instanceof Error ? err.message : String(err)}`);
@@ -147,12 +148,17 @@ export async function purgeEdgeTags(ctx: WorkerContext, tags: string[]): Promise
 export async function purgeEdgeAfterRevalidate(tags: string[]): Promise<boolean> {
   const ctx = await workerContext();
   const purged = await purgeEdgeTags(ctx, tags);
-  if (purged && typeof ctx.waitUntil === 'function') {
-    const startedAt = lastPurgeAt;
+  if (!purged || typeof ctx.waitUntil !== 'function') return purged;
+  for (const tag of tags) pendingTags.add(tag);
+  if (!secondPassScheduled) {
+    secondPassScheduled = true;
     ctx.waitUntil(
-      new Promise<void>(resolve => setTimeout(resolve, SECOND_PURGE_DELAY_MS)).then(() =>
-        lastPurgeAt === startedAt ? purgeEdgeTags(ctx, tags) : false,
-      ),
+      new Promise<void>(resolve => setTimeout(resolve, SECOND_PURGE_DELAY_MS)).then(() => {
+        const union = [...pendingTags];
+        pendingTags.clear();
+        secondPassScheduled = false;
+        return purgeEdgeTags(ctx, union);
+      }),
     );
   }
   return purged;

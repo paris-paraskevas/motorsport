@@ -75,7 +75,7 @@ export async function POST(req: Request) {
     }
     resetViewsMemo();
     revalidatePath(target.path);
-    await purgeEdgeAfterRevalidate([`path:${target.path}`]);
+    await purgeEdgeAfterRevalidate([target.path.includes('[') ? 'site' : `path:${target.path}`]);
     const row = data as { updated_at: string; seq: number };
     const view: EditableSavedView = { key, pageId, regionId, name, definition, seq: row.seq, updatedAt: String(row.updated_at) };
     return NextResponse.json({ ok: true, view }, { status: 201 });
