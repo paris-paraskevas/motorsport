@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.260 — 2026-10-07
 
-Search engines now get one clear address for every driver page, every topic page, the blog’s front page and the site’s legal and information pages.
+Search engines now get one clear address for every driver page, the Learn hub and each of its topic pages, the blog’s front page, and the About, Changelog and legal pages.
 
 ## 1.0.259 — 2026-10-06
 
