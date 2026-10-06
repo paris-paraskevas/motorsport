@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.256 — 2026-10-06
+
+### R17 — The bar under the gesture bar
+
+On an installed Android app (the operator’s Pixel 9, Chrome drawing installed apps edge to edge since 2026) the bottom bar sat under the gesture bar on the first paint with its labels cut off, and settled only after the first scroll: Chrome reports  as 0 until the first scroll, and the site never declared . The  layout’s viewport export now carries ; the bar (), the main’s bottom padding (), the assistant launcher and the nav panel read , the static maximum Chrome 135+ exposes, with the live inset as the fallback iOS uses; the main’s top padding follows the header’s height (, 58px on lg) so the cover opt-in hides nothing under the header on phones with a top inset. Verified on the device by the operator against the testing Worker;  0; eslint clean on the six files. The admin layout’s viewport and the landscape side insets are untouched.
+
 ## 1.0.255 — 2026-10-06
 
 ### X13 — The footer’s Series list seeded for the designer
