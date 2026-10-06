@@ -8,6 +8,183 @@ Time-series perf snapshot. **Append-only by date** — never overwrite prior row
 
 ---
 
+## 2026-10-06 — PF2 PR B: Workers Cache on the testing Worker (1.0.253)
+
+The front cache (design D) measured with the perf file's ten-page script, three requests per page, from the operator's machine in Thessaloniki. The first test build (381f21ee) was made without `DATA_SOURCE=db` in the build's environment, which left the home and the series tabs dynamic (never cacheable) and stored OpenNext's one-second stale copies; the corrected build (83b8c266, deployed 23:33:01Z) prerenders the home again and never stores a STALE or regenerating answer. A HIT runs no Worker code.
+
+Pass A (the fill, 00:00:01Z): / BYPASS/STALE 0.35 s, /series/f1 BYPASS/STALE 0.30 s, /series/f1/standings MISS/HIT 0.51 s, /series/f1/weekend/17 BYPASS/STALE 0.27 s, /calendar BYPASS/STALE 1.49 s, /news BYPASS/STALE 0.97 s, /drivers/kimi-antonelli HIT 0.34 s, /information HIT 0.64 s, /blog BYPASS/STALE 0.68 s; a STALE answer now says no-store (BYPASS, not stored) and the very next request is a fresh HIT from the Worker, stored (the revalidation landed within the second).
+
+Pass B (warm, 00:00:48Z): every cacheable page HIT, 0.13 s–1.16 s over 27 hits (the article BYPASS, private: PF1).
+
+Pass C (cold, after fifteen idle minutes, 00:16:18Z): 2 pages still HIT (/series/f1/standings 0.19 s, /information 0.28 s); the pages whose window had ended: / BYPASS/STALE 5.64 s → BYPASS/STALE 0.69 s → BYPASS/STALE 0.64 s; /series/f1 BYPASS/STALE 2.22 s → BYPASS/STALE 0.35 s → BYPASS/STALE 0.32 s; /series/f1/weekend/17 BYPASS/STALE 1.70 s → BYPASS/STALE 0.38 s → BYPASS/STALE 0.81 s; /calendar BYPASS/STALE 1.42 s → BYPASS/STALE 0.72 s → BYPASS/STALE 0.33 s; /news BYPASS/STALE 1.62 s → BYPASS/STALE 0.37 s → BYPASS/STALE 0.67 s; /drivers/kimi-antonelli BYPASS/STALE 1.64 s → BYPASS/STALE 0.39 s → BYPASS/STALE 0.64 s; /blog MISS/HIT 4.42 s → HIT/HIT 0.23 s → HIT/HIT 0.19 s.
+
+The purge check on /series/f3 (00:00:05Z): fill MISS 2.95 s, warm HIT 0.15 s; POST /api/cron/revalidate answered edgePurged:true; the next request MISS at 1.35 s (a fresh render), then HIT 0.14 s; nine seconds later MISS 0.38 s with x-opennext-cache HIT (the second purge had removed the copy, the Worker answered from its fresh entry), then HIT 0.34 s and 0.34 s.
+
+The STALE rule seen on every short-window page of pass A (x-opennext-cache STALE, Cache-Control no-store, Cf-Cache-Status BYPASS, then a fresh HIT) and on the home at 23:46Z before the chain (STALE no-store three times in 30 s, then x-opennext-cache HIT with s-maxage=245 stored). The populate of the corrected build stopped at 29 % (R2 writes answered 500 fourteen times, a Cloudflare-side fault of the night) and was re-run after the measurements; the ten pages rendered on demand meanwhile.
+
+### Build 83b8c266 (the corrected build, DATA_SOURCE=db)
+
+#### pass B warm (00:00:48Z)
+
+| page | #1 | #2 | #3 | Cf-Cache-Status | OpenNext | cache-control |
+|---|---|---|---|---|---|---|
+| / | 0.20 s | 0.39 s | 0.80 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=293 |
+| /series/f1 | 0.13 s | 0.14 s | 0.18 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=221 |
+| /series/f1/standings | 0.23 s | 0.14 s | 1.16 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=1123 |
+| /series/f1/weekend/17 | 0.25 s | 0.23 s | 0.14 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=247 |
+| /calendar | 0.15 s | 0.13 s | 0.34 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=287 |
+| /news | 0.16 s | 0.15 s | 0.36 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=289 |
+| /drivers/kimi-antonelli | 0.15 s | 0.14 s | 0.36 s | HIT · HIT · HIT | - | s-maxage=1800 |
+| /information | 0.20 s | 0.26 s | 0.36 s | HIT · HIT · HIT | - | s-maxage=3600 |
+| /blog | 0.14 s | 0.36 s | 0.15 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=273 |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 1.37 s | 1.49 s | 3.30 s | BYPASS · BYPASS · BYPASS | - | private, no-cache, no-store |
+
+#### pass C cold (00:16:18Z)
+
+| page | #1 | #2 | #3 | Cf-Cache-Status | OpenNext | cache-control |
+|---|---|---|---|---|---|---|
+| / | 5.64 s | 0.69 s | 0.64 s | BYPASS · BYPASS · BYPASS | STALE/STALE/STALE | no-store |
+| /series/f1 | 2.22 s | 0.35 s | 0.32 s | BYPASS · BYPASS · BYPASS | STALE/STALE/STALE | no-store |
+| /series/f1/standings | 0.19 s | 0.14 s | 0.49 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=1123 |
+| /series/f1/weekend/17 | 1.70 s | 0.38 s | 0.81 s | BYPASS · BYPASS · BYPASS | STALE/STALE/STALE | no-store |
+| /calendar | 1.42 s | 0.72 s | 0.33 s | BYPASS · BYPASS · BYPASS | STALE/STALE/STALE | no-store |
+| /news | 1.62 s | 0.37 s | 0.67 s | BYPASS · BYPASS · BYPASS | STALE/STALE/STALE | no-store |
+| /drivers/kimi-antonelli | 1.64 s | 0.39 s | 0.64 s | BYPASS · BYPASS · BYPASS | STALE/STALE/STALE | no-store |
+| /information | 0.28 s | 0.23 s | 0.41 s | HIT · HIT · HIT | - | s-maxage=3600 |
+| /blog | 4.42 s | 0.23 s | 0.19 s | MISS · HIT · HIT | HIT/HIT/HIT | s-maxage=266 |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 2.78 s | 1.34 s | 1.48 s | BYPASS · BYPASS · BYPASS | - | private, no-cache, no-store |
+
+### Build 381f21ee (the first build, without DATA_SOURCE=db)
+
+#### pass A fill
+
+| page | #1 | #2 | #3 | Cf-Cache-Status | OpenNext | cache-control |
+|---|---|---|---|---|---|---|
+| / | 6.89 s | 4.24 s | 2.85 s | BYPASS · BYPASS · BYPASS | - | private, no-cache, no-store |
+| /series/f1 | 3.32 s | 0.21 s | 0.18 s | MISS · HIT · HIT | - | s-maxage=300 |
+| /series/f1/standings | 2.23 s | 0.34 s | 0.31 s | MISS · HIT · HIT | HIT/HIT/HIT | s-maxage=313 |
+| /series/f1/weekend/17 | 3.62 s | 0.20 s | 0.24 s | MISS · HIT · HIT | - | s-maxage=300 |
+| /calendar | 2.16 s | 0.21 s | 0.42 s | EXPIRED · HIT · EXPIRED | STALE/STALE/STALE | s-maxage=1 |
+| /news | 3.14 s | 0.20 s | 0.15 s | MISS · HIT · HIT | - | s-maxage=300 |
+| /drivers/kimi-antonelli | 3.56 s | 0.22 s | 0.27 s | MISS · HIT · HIT | - | s-maxage=1800 |
+| /information | 1.45 s | 0.19 s | 0.21 s | MISS · HIT · HIT | HIT/HIT/HIT | s-maxage=3123 |
+| /blog | 1.65 s | 0.20 s | 0.32 s | MISS · HIT · EXPIRED | STALE/STALE/STALE | s-maxage=1 |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 2.42 s | 1.81 s | 1.58 s | BYPASS · BYPASS · BYPASS | - | private, no-cache, no-store |
+
+#### pass B warm (22:55:42Z)
+
+| page | #1 | #2 | #3 | Cf-Cache-Status | OpenNext | cache-control |
+|---|---|---|---|---|---|---|
+| / | 2.97 s | 3.04 s | 2.94 s | BYPASS · BYPASS · BYPASS | - | private, no-cache, no-store |
+| /series/f1 | 0.42 s | 0.37 s | 0.40 s | HIT · HIT · HIT | - | s-maxage=300 |
+| /series/f1/standings | 0.23 s | 0.47 s | 0.16 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=313 |
+| /series/f1/weekend/17 | 0.16 s | 0.48 s | 0.16 s | HIT · HIT · HIT | - | s-maxage=300 |
+| /calendar | 1.21 s | 0.51 s | 0.64 s | EXPIRED · HIT · EXPIRED | STALE/STALE/HIT | s-maxage=257 |
+| /news | 0.51 s | 0.18 s | 0.14 s | HIT · HIT · HIT | - | s-maxage=300 |
+| /drivers/kimi-antonelli | 0.18 s | 0.13 s | 0.26 s | HIT · HIT · HIT | - | s-maxage=1800 |
+| /information | 0.14 s | 0.49 s | 0.49 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=3123 |
+| /blog | 1.35 s | 0.26 s | 0.43 s | EXPIRED · HIT · EXPIRED | STALE/STALE/STALE | s-maxage=1 |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 1.67 s | 1.54 s | 1.71 s | BYPASS · BYPASS · BYPASS | - | private, no-cache, no-store |
+
+#### pass C cold, after
+
+| page | #1 | #2 | #3 | Cf-Cache-Status | OpenNext | cache-control |
+|---|---|---|---|---|---|---|
+| / | 4.50 s | 2.87 s | 2.78 s | BYPASS · BYPASS · BYPASS | - | private, no-cache, no-store |
+| /series/f1 | 2.43 s | 0.18 s | 0.14 s | EXPIRED · HIT · HIT | STALE/STALE/STALE | s-maxage=1 |
+| /series/f1/standings | 1.88 s | 0.48 s | 0.34 s | EXPIRED · HIT · EXPIRED | HIT/HIT/HIT | s-maxage=1 |
+| /series/f1/weekend/17 | 3.22 s | 0.19 s | 0.30 s | EXPIRED · HIT · EXPIRED | STALE/STALE/STALE | s-maxage=1 |
+| /calendar | 0.53 s | 0.14 s | 0.60 s | EXPIRED · HIT · EXPIRED | HIT/HIT/HIT | s-maxage=1 |
+| /news | 1.38 s | 0.14 s | 0.28 s | EXPIRED · HIT · EXPIRED | STALE/STALE/STALE | s-maxage=1 |
+| /drivers/kimi-antonelli | 0.14 s | 0.10 s | 0.19 s | HIT · HIT · HIT | - | s-maxage=1800 |
+| /information | 0.47 s | 0.20 s | 0.15 s | HIT · HIT · HIT | HIT/HIT/HIT | s-maxage=3123 |
+| /blog | 3.32 s | 0.34 s | 0.21 s | EXPIRED · EXPIRED · HIT | STALE/STALE/STALE | s-maxage=1 |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 1.75 s | 1.46 s | 1.37 s | BYPASS · BYPASS · BYPASS | - | private, no-cache, no-store |
+
+
+## 2026-10-06 — PF0: the field numbers (prod 1.0.252) and the Phase 0 tables
+
+**Cloudflare Workers metrics, prod, the seven days to 2026-10-05 ~22:00Z (the operator's screenshots):** invocations 330.81k (+82.7 % on the week before), subrequests 5.56M (+300 %), asset requests 540.24k at a 94.77 % asset-cache hit rate; CPU time median 70 ms (+72.5 %), P50 158 ms · P90 1 s · P99 2 s · P999 3 s; wall time median 1.6 s (+121 %), P50 1 s · P90 5 s · P99 8 s · P999 15 s; request duration 899 ms (+132.8 %); memory P50 131.2 MB · P90 149.6 MB · P99 169.4 MB · P999 195.1 MB against the 128 MiB line, 17 errors, all "Exceeded Memory"; 32k client disconnects ("Cancelled") on 5 October. Subrequests by host: dzelqrtajnauunzmxfic.supabase.co 2M 2xx and 182k 5xx at 1.61 s each; adjusted-yak-124038.upstash.io 104k at 140 ms; paddock-tracker.com 13k (the crons' self-fetch) with 32 5xx; www.motorsport.com 5k; en.wikipedia.org 3k; calendar.google.com 2k. Requests by colo: Singapore 121k, Sofia 30k, Amsterdam 22k, Paris 15k, Mumbai 12k, San Jose 12k, Seattle 12k, Atlanta 6k.
+
+**Zone analytics, the 24 h to 2026-10-05 ~22:00Z:** 253.56k requests, 248.2k served by Cloudflare's edge, 765 by the origin, 4.59k mitigated by managed rules; cache statuses None 145.58k · Hit 107.21k · Miss 763; GET 244.91k · POST 8.62k · HEAD 29; countries US 74.99k · Germany 74.84k · China 33.4k; browsers Chrome 102.83k · Unknown 94.67k · Edge 26.54k; HTTP/2 215.22k · HTTP/1.1 23.21k · HTTP/3 15.06k. The top addresses: 87.202.188.33 (12.87k; OTEnet, the operator's own line and this machine's checks), 2a01:4f8:c0c:fd3a::1 and 2a01:4f8:c0c:f4c0::1 (9.84k and 9.83k): both /64s are listed in Seobility's published crawler list (seobility.net/bots.json, read 2026-10-05 ~22:50Z; the block is Hetzner Cloud NBG1 per RIPE), so the night crawler of the two-bills reading is SeobilityBot, the site's own audits.
+
+**PageSpeed Insights, prod, 2026-10-05 22:00Z (Lighthouse 13.5.0; mobile = Moto G Power on slow 4G; lab only, "no data" from real users yet):**
+
+| page | mobile perf | FCP | LCP | TBT | CLS | SI | desktop perf | desktop LCP | desktop TBT |
+|---|---|---|---|---|---|---|---|---|---|
+| / | 72 | 2.0 s | 5.6 s | 20 ms | 0.128 | 3.4 s | 97 | 1.1 s | 80 ms |
+| /calendar | 78 | 1.8 s | 4.7 s | 100 ms | 0 | 5.4 s | 95 | 0.9 s | 30 ms |
+| /blog/f1-bahrain-grand-prix-2026-qualifying-recap | 83 | 1.7 s | 4.5 s | 50 ms | 0 | 2.8 s | 96 | 1.1 s | 10 ms |
+| /series/f1/standings | 77 | 2.0 s | 4.8 s | 120 ms | 0.001 | 4.8 s | 90 | 1.0 s | 240 ms |
+
+Accessibility 96–100, Best Practices 92 on all eight runs, SEO 100 (66 on /series/f1/standings: `noindex, follow` by design, R14). What the lab says: Lighthouse saw the document's first byte in 0–30 ms on every run (the pages answered from the Worker's cache interception), so the mobile LCP is the render path, not the server: the 26 KiB stylesheet blocks render for 600–950 ms on slow 4G; six or seven woff2 files sit on the critical path; the home's LCP image is a Wikimedia thumbnail discovered late (resource load delay 1,240 ms, 95 KiB JPEG at 864×540 for a 735×413 box); the calendar's and the standings' LCP element is the h1 with 1.9–2.5 s of element render delay; the standings page runs 1.7 s of JavaScript (the shared chunk 06es8zzmnhasg.js 1,175 ms, the chart chunk 277 ms). Three defects beside the numbers: the Content-Security-Policy blocks fundingchoicesmessages.google.com (the AdSense consent script) on every page; Wikimedia answered 429 for four thumbnails on the article run (hotlinked images); the home's h1 shifts 0.128 on mobile when its font arrives.
+
+**Phase 0 of the perf file (the ttfb script, 5 Oct 2026 ~21:50–22:05Z, from the operator's machine in Thessaloniki; three requests per page):**
+
+#### testing, cold (idle since ~19:10Z)
+
+| page | #1 | #2 | #3 | code | x-opennext-cache | cache-control |
+|---|---|---|---|---|---|---|
+| / | 4.98 s | 1.48 s | 0.70 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1 | 1.68 s | 1.35 s | 0.39 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1/standings | 2.28 s | 1.71 s | 0.42 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1/weekend/17 | 2.17 s | 2.02 s | 0.44 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /calendar | 3.04 s | 1.28 s | 0.40 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /news | 0.53 s | 0.28 s | 0.33 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /drivers/kimi-antonelli | 2.28 s | 2.14 s | 0.66 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /information | 0.40 s | 0.41 s | 0.29 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /blog | 0.65 s | 0.24 s | 0.23 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 3.33 s | 1.32 s | 1.52 s | 200 | - | private, no-cache, no-store, max-age=0, must-revalidate |
+
+#### prod, first pass
+
+| page | #1 | #2 | #3 | code | x-opennext-cache | cache-control |
+|---|---|---|---|---|---|---|
+| / | 0.53 s | 0.21 s | 0.19 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1 | 0.51 s | 0.46 s | 1.54 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1/standings | 0.42 s | 0.43 s | 0.44 s | 200 | HIT | s-maxage=934, max-age=0, must-revalidate |
+| /series/f1/weekend/17 | 11.58 s | 0.82 s | 0.48 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /calendar | 0.51 s | 0.53 s | 0.62 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /news | 0.66 s | 0.44 s | 0.49 s | 200 | HIT | s-maxage=165, max-age=0, must-revalidate |
+| /drivers/kimi-antonelli | 0.60 s | 0.42 s | 0.42 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /information | 0.50 s | 0.43 s | 0.80 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /blog | 0.46 s | 0.44 s | 0.42 s | 200 | HIT | s-maxage=159, max-age=0, must-revalidate |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 2.17 s | 1.77 s | 1.76 s | 200 | - | private, no-cache, no-store, max-age=0, must-revalidate |
+
+#### testing, warm
+
+| page | #1 | #2 | #3 | code | x-opennext-cache | cache-control |
+|---|---|---|---|---|---|---|
+| / | 0.58 s | 0.44 s | 0.86 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1 | 0.65 s | 0.55 s | 0.47 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1/standings | 0.51 s | 0.42 s | 0.21 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1/weekend/17 | 0.25 s | 0.19 s | 0.18 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /calendar | 0.28 s | 0.20 s | 1.23 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /news | 0.31 s | 0.33 s | 0.21 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /drivers/kimi-antonelli | 0.23 s | 0.23 s | 0.20 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /information | 0.17 s | 0.20 s | 0.17 s | 200 | HIT | s-maxage=3542, max-age=0, must-revalidate |
+| /blog | 0.22 s | 0.18 s | 0.18 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 1.35 s | 1.32 s | 1.50 s | 200 | - | private, no-cache, no-store, max-age=0, must-revalidate |
+
+#### prod, warm
+
+| page | #1 | #2 | #3 | code | x-opennext-cache | cache-control |
+|---|---|---|---|---|---|---|
+| / | 0.46 s | 0.16 s | 0.18 s | 200 | HIT | s-maxage=135, max-age=0, must-revalidate |
+| /series/f1 | 0.49 s | 0.47 s | 0.45 s | 200 | STALE | s-maxage=1, max-age=0, must-revalidate |
+| /series/f1/standings | 0.42 s | 0.43 s | 0.43 s | 200 | HIT | s-maxage=880, max-age=0, must-revalidate |
+| /series/f1/weekend/17 | 0.52 s | 0.56 s | 0.45 s | 200 | STALE/HIT | s-maxage=1, max-age=0, must-revalidate |
+| /calendar | 0.50 s | 0.45 s | 0.45 s | 200 | HIT | s-maxage=126, max-age=0, must-revalidate |
+| /news | 0.53 s | 0.79 s | 0.84 s | 200 | HIT | s-maxage=123, max-age=0, must-revalidate |
+| /drivers/kimi-antonelli | 0.70 s | 0.91 s | 0.74 s | 200 | HIT | s-maxage=916, max-age=0, must-revalidate |
+| /information | 0.75 s | 0.68 s | 0.63 s | 200 | HIT | s-maxage=3415, max-age=0, must-revalidate |
+| /blog | 0.67 s | 0.77 s | 0.61 s | 200 | HIT | s-maxage=114, max-age=0, must-revalidate |
+| /blog/f1-bahrain-grand-prix-2026-race-recap | 2.02 s | 1.74 s | 1.49 s | 200 | - | private, no-cache, no-store, max-age=0, must-revalidate |
+
+Worker Startup Time (wrangler deploy): 40 ms on the X13 testing deploy of the 5th, 26 ms on B3’s; the dry run 40,360.82 KiB raw / 8,808.41 KiB gzip.
+
+**The bundle:** handler.mjs 27.74 MiB of which .next/server/chunks 21.91 MiB (79.0 %) and node_modules/next 4.43 MiB (16.0 %); the server function 75.3 MiB on disk (handler.mjs 27.74, .next/server/chunks 20.80, node_modules/next 15.92, the metafile 2.10, app/(app) 1.84, content 1.67, data 1.40, react-dom 1.25); the dry run 40,360.82 KiB raw / 8,808.41 KiB gzip before PF2, 40,663.94 KiB after.
+
 ## 2026-10-01 — B2: the event-named races, the three tabs X6 B left (1.0.233)
 
 X6 B (1.0.227) could only give a round's row a "Classification →" line where the race session page could answer, and three series could not: NASCAR and IndyCar name the race by the event, DTM's session page read the chart data. B2 chooses the race per weekend for the event-named series, keys IndyCar's results by date against the curated rounds, gives DTM its per-race source, and (on the operator's word after the reviewer's finding) curates the Honda Indy 200 at Mid-Ohio as IndyCar round 11, the later rounds renumbered 12–18. The three tabs take X6 B's shape; the race session pages of the three series show their tables.
