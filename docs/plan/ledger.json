@@ -772,7 +772,8 @@
   },
   {
    "date": "2026-10-06",
-   "change": "R17 “The bar under the gesture bar” enters the ledger after R16 on the operator’s “this may be done next” (~09:12Z): the installed Android app’s bottom bar clipped on the first paint; viewport-fit cover and the static bottom inset. The slot carries the first `brief` (files, steps, gate, wontTouch): the shape Opus 5.5 builds from while Fable’s budget is thin (the page “Fable Plans, Opus Builds”, 08ea9f8d)."
+   "change": "R19 “The bar under the gesture bar” enters the ledger after R16 (R17 and R18 are taken) on the operator’s “this may be done next” (~09:12Z): the installed Android app’s bottom bar clipped on the first paint; viewport-fit cover and the static bottom inset. The slot carries the first `brief` (files, steps, gate, wontTouch): the shape Opus 5.5 builds from while Fable’s budget is thin (the page “Fable Plans, Opus Builds”, 08ea9f8d).",
+   "word": "“3. this may be done next” (the operator, 2026-10-06 ~09:12Z)"
   }
  ],
  "phases": {
@@ -1657,14 +1658,14 @@
    "scopeHash": "f1dd77afa430"
   },
   {
-   "id": "R17",
+   "id": "R19",
    "phase": "P2",
    "title": "The bar under the gesture bar",
-   "scope": "The bottom bar on an installed Android app (the operator’s Pixel 9, 2026-10-06 ~08:52Z): on the first paint the bar sits under the gesture bar with its labels cut off and settles only after the first scroll. Chrome on Android draws installed apps edge to edge and reports env(safe-area-inset-bottom) as 0 until the first scroll; the site never declared viewport-fit=cover. The fix: viewportFit cover on the (app) layout’s viewport export; the bar, the main, the assistant launcher and the nav panel read env(safe-area-max-inset-bottom, env(safe-area-inset-bottom, 0px)) so the gesture bar’s height is reserved from the first paint; the main’s top padding follows the header’s height (50px + env(safe-area-inset-top)) so the cover opt-in hides nothing under the header on iPhones.",
+   "scope": "The bottom bar on an installed Android app (the operator’s Pixel 9, 2026-10-06 ~08:52Z): on the first paint the bar sits under the gesture bar with its labels cut off and settles only after the first scroll. Chrome on Android draws installed apps edge to edge and reports env(safe-area-inset-bottom) as 0 until the first scroll; the site never declared viewport-fit=cover. The fix: viewportFit cover on the (app) layout’s viewport export; the bar, the main, the assistant launcher and the nav panel read env(safe-area-max-inset-bottom, env(safe-area-inset-bottom, 0px)) so the gesture bar’s height is reserved from the first paint; the main’s top padding follows the header’s height (50px + env(safe-area-inset-top)) so the cover opt-in hides nothing under the header on iPhones. The opt-in completed where the browser’s own insetting used to do the work: the header row, the main, the bar and the nav panel pad by env(safe-area-inset-left/right) (a notched iPhone in landscape); the series tab strip and the Data region’s jump strip stick at 3.5rem plus the top inset; the weekend page’s anchors and the race note scroll to 62px/74px plus the top inset; the onboarding wizard’s two bottom paddings read the same max inset.",
    "fixedBy": "the operator’s two screenshots (the bar clipped before the first scroll, right after it); Chrome’s edge-to-edge guide (safe-area-max-inset-* from Chrome 135, the dynamic inset); Next’s Viewport type (viewportFit); the existing env(safe-area-*) padding in AppShell, BottomBar, NavPanel and AssistantWidget",
    "defaults": "the max inset with the live inset as its fallback (iOS has only the live one); cover on the (app) layout alone, the admin layout’s viewport untouched; the landscape side insets left as they are",
    "needsWord": "none beyond the device check: the operator opens the installed app on the Pixel from cold on testing and reads the first paint",
-   "acceptance": "On the Pixel 9’s installed app opened from cold (the app swiped away first), pointed at testing: the bar’s labels fully above the gesture bar on the first paint, before any scroll; the home’s first content not under the header; desktop and iPhone unchanged; `npx tsc --noEmit` 0, eslint 0 on the six files; the built CSS carries safe-area-max-inset-bottom",
+   "acceptance": "On the Pixel 9’s installed app opened from cold (the app swiped away first), pointed at testing: the bar’s labels fully above the gesture bar on the first paint, before any scroll; the home’s first content not under the header; the series tab strip sticks below the header; desktop and iPhone portrait unchanged, iPhone landscape clear of the sensor housing; `npx tsc --noEmit` 0, eslint 0 on the ten files, lib/design/plan-ledger.test.ts green; the built CSS carries safe-area-max-inset-bottom",
    "status": "started",
    "brief": {
     "files": [
@@ -1672,19 +1673,28 @@
      "components/BottomBar.tsx",
      "components/AppShell.tsx",
      "components/assistant/AssistantWidget.tsx",
-     "components/NavPanel.tsx"
+     "components/NavPanel.tsx",
+     "components/SeriesTabs.tsx",
+     "components/data/DataRegionViews.tsx",
+     "app/(app)/series/[slug]/weekend/[round]/page.tsx",
+     "components/weekend/WeekendNote.tsx",
+     "components/OnboardingWizard.tsx"
     ],
     "steps": [
      "generateViewport: viewportFit cover after initialScale",
      "BottomBar: pb reads the max inset with the live inset as fallback",
      "AppShell main: pb the same; pt follows the header, 50px/58px + env(safe-area-inset-top)",
-     "AssistantWidget and NavPanel: the bottom offsets the same way"
+     "AssistantWidget and NavPanel: the bottom offsets the same way",
+     "AppShell header row, main, BottomBar, NavPanel: pad by env(safe-area-inset-left/right)",
+     "SeriesTabs and DataRegionViews: sticky top-14 → top-[calc(3.5rem+env(safe-area-inset-top))]",
+     "weekend page ANCHOR_OFFSET and WeekendNote: scroll-mt 62px/74px plus the top inset",
+     "OnboardingWizard: both bottom paddings read the max inset"
     ],
-    "gate": "npx tsc --noEmit → 0; npx eslint on the six files → 0; DATA_SOURCE=db npm run deploy:testing; the Pixel’s first paint by the operator",
-    "wontTouch": "the admin layout’s viewport; the landscape side insets; any other class on those lines"
+    "gate": "npx tsc --noEmit → 0; eslint on the ten files → 0; lib/design/plan-ledger.test.ts green; DATA_SOURCE=db npm run deploy:testing; the Pixel’s first paint by the operator",
+    "wontTouch": "the admin layout’s viewport; the assistant launcher’s side offset; any other class on those lines"
    },
-   "evidence": "STARTED 2026-10-06 ~09:20Z on “3. this may be done next” (the operator, ~09:12Z), branch r17/pwa-bar-insets from main 87ed53e0 (1.0.255), the PR to take 1.0.256.",
-   "scopeHash": "f4202fc3967a"
+   "evidence": "STARTED 2026-10-06 ~09:20Z on “3. this may be done next” (the operator, ~09:12Z), branch r17/pwa-bar-insets from main 87ed53e0 (1.0.255), the PR to take 1.0.256. The fresh-context Sonnet reviewer’s first pass (r17-review.md, 306k tokens, ~09:50Z): FIX FIRST on the records (R17 was taken by #1114 → the slot is R19; the change line’s word; the #1139 entry; the CHANGELOG’s code spans lost to the shell; the device claim made UNVERIFIED) and one Medium on the code (cover switches off the browser’s side insetting: landscape iPhones) with three Low (the wizard’s bottoms, the header-coupled sticky strips and anchors); every item folded ~10:00Z. The branch keeps its name r17/pwa-bar-insets, given before the clash was found.",
+   "scopeHash": "f5a5f9f63343"
   },
   {
    "id": "R17",

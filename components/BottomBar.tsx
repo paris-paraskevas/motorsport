@@ -86,7 +86,7 @@ export function BottomBar({
       aria-label="Primary"
       className={`${
         preview ? 'relative' : 'lg:hidden fixed bottom-0 inset-x-0 z-30'
-      } bg-surface-elevated border-t border-text pb-[env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px))]`}
+      } bg-surface-elevated border-t border-text pb-[env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]`}
     >
       <div className="grid" style={{ gridTemplateColumns: `repeat(${cells.length}, minmax(0, 1fr))` }}>
         {cells.map(({ entry, href }, i) => (

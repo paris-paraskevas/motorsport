@@ -12,7 +12,7 @@ let lastScrolledPath: string | null = null;
 
 // Sticky tab rail (PR 2c-3, docs/redesign-2026-06.md): replaces the 9-tile
 // grid that ate the first mobile viewport before any content. Horizontally
-// scrollable, sticks under the fixed app header (top-14) — which works
+// scrollable, sticks under the fixed app header (3.5rem plus the top inset) — which works
 // because html/body use overflow-x: clip, not hidden. Active tab carries the
 // series color via the page's --tint scope.
 //
@@ -57,7 +57,7 @@ export function SeriesTabs({
   return (
     <nav
       aria-label="Series sections"
-      className="sticky top-14 z-20 -mx-4 md:-mx-6 lg:-mx-8 mb-6 border-y border-border bg-bg/95 backdrop-blur-xl"
+      className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-20 -mx-4 md:-mx-6 lg:-mx-8 mb-6 border-y border-border bg-bg/95 backdrop-blur-xl"
     >
       <div ref={railRef} className="flex overflow-x-auto scrollbar-none px-4 md:px-6 lg:px-8 gap-5 sm:gap-0 [mask-image:linear-gradient(to_right,transparent,black_1rem,black_calc(100%_-_1rem),transparent)]">
         {tabs.map(tab => {

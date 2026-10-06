@@ -1680,7 +1680,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
       {/* The Jump-to bar sticks under the fixed header (the tab rail's precedent): the chips scroll in a strip of their own, so the
           bar itself never sits in an overflow box; the search box (a client island) and the count sit at its right from sm and on
           their own line below. The scroll margins below allow for the bar's height, two rows on phones. */}
-      <nav aria-label="Jump to" className="sticky top-14 z-20 -mx-4 border-y border-border bg-bg/95 backdrop-blur-xl md:-mx-6 lg:-mx-8">
+      <nav aria-label="Jump to" className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-20 -mx-4 border-y border-border bg-bg/95 backdrop-blur-xl md:-mx-6 lg:-mx-8">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 md:px-6 lg:px-8">
           <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none">
             <span className="mr-1 font-mono text-10 font-semibold uppercase tracking-[0.14em] text-text-faint">Jump to</span>
