@@ -14,11 +14,11 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1137 · 1.0.254 · X13 (the footer seed) · opened 2026-10-06 ~07:12Z on the word “apply footer seed” (the 6th, ~06:45Z); the merge on the word
+## #1137 · 1.0.255 · X13 (the footer seed) · opened 2026-10-06 ~07:12Z on the word “apply footer seed” (the 6th, ~06:45Z); the merge on the word
 **The footer’s Series list seeded for the designer.** The migration `20261006070000_design_list_footer_series.sql` seeds the `footer-series` list, its fifteen entries (the same fifteen as `lib/design/lists.ts` DEFAULT_NAV.footerSeries, in the same order) and the heading’s text row `footer.series` (left out by the Text Messages seed of 20260908150000), insert where absent in the shape of the shell lists’ seed (20260908130000).
 - **Readers see:** nothing new; the third column is the same fifteen before and after.
 - **Editors get:** the footer’s Series list and its heading in the designer’s Lists and Text Messages, editable.
-- **Files (5):** `supabase/migrations/20261006070000_design_list_footer_series.sql` · the seed. `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.254.
+- **Files (5):** `supabase/migrations/20261006070000_design_list_footer_series.sql` · the seed. `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.255.
 - **Verified:** the statements mirror the applied seeds’ shape (list on conflict (application_key, key); list_entry where the list has no entries; text_message on conflict); the prod rehearsal and the apply pending the Management API’s answer (HTTP 544 “connection timeout” at 07:04–07:06Z on the 6th, Supabase’s Eastern-US latency incident of the 5th).
 - **Review:** none; a seed in the shape of 20260908130000.
 
