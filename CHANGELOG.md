@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.260 — 2026-10-07
+
+### X17, PR 1 — Every page names its own address
+
+The census’s own checks (`scripts/seo-census.mts`: `parseSitemap`, `familyOf`, `auditPage`), run against prod on 2026-10-07, found 154 sitemap pages with no canonical link: every driver page (135), every Learn topic index (10), eight site pages (`/about`, `/changelog`, `/privacy`, `/terms`, `/cookies`, `/accessibility`, `/do-not-sell`, `/imprint`) and the blog index. Their 11 routes now name their own address in their base metadata, `alternates: { canonical }`, as the sibling routes do (`/contact`, `/authors`, `/archive`); the path is relative and resolved by the `(app)` layout’s `metadataBase`, and `applyFrame` in `lib/design/page-frame.tsx` keeps the field (`{ ...own }`). The driver and topic routes take the slug from the URL, which is safe because their lookups match exactly (`findDriverBySlug`, `getTopic`), so a page renders only at its canonical address. X17 runs in several PRs from here: the alt texts, typos, heading order and the calendar’s query variants follow. Also recorded: R19 and R20 done on the operator’s verdicts, and #1142’s landing on prod. The census workflow, it turned out, keeps no artifact (`actions/upload-artifact` skips the hidden `.seo-census` folder by default); noted, not done.
+
 ## 1.0.259 — 2026-10-06
 
 ### R20 — Google’s button in either order

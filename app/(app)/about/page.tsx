@@ -10,6 +10,7 @@ const BASE_METADATA: Metadata = {
   title: 'About',
   description:
     'What Paddock is, where its data comes from, and how it stays accurate: fifteen championships, curated schedules, verified results, one installable app.',
+  alternates: { canonical: '/about' },
 };
 export const generateMetadata = pageMetadata('/about', BASE_METADATA);
 
