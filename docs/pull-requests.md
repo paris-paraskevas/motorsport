@@ -26,7 +26,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `components/SeriesTabs.tsx`, `components/data/DataRegionViews.tsx` · the sticky strips at 3.5rem plus the top inset.
   - `app/(app)/series/[slug]/weekend/[round]/page.tsx`, `components/weekend/WeekendNote.tsx` · the anchors’ scroll margins plus the top inset.
   - `components/OnboardingWizard.tsx` · both bottom paddings read the same reserve.
-  - `public/inset-probe.html` · TEMPORARY, leaves the branch before the merge: a page that prints the viewport and the eight insets live while scrolling and draws three bars (the slide, the static reserve, the live padding) so one screenshot from the Pixel shows which keeps still.
+  - `public/inset-probe.html` · TEMPORARY, removed before the merge (it stayed on testing’s build of 12:37Z): a page that prints the viewport and the eight insets live while scrolling and draws three bars (the slide, the static reserve, the live padding) so one screenshot from the Pixel shows which keeps still.
   - `components/calendar/SeasonView.tsx`, `components/blog/PostHeader.tsx` and the Data region’s remaining anchors in `components/data/DataRegionViews.tsx` · the scroll margins plus the top inset.
   - `lib/design/component-render.test.tsx` · the four Roll-of-honour pins (the Jump-to strip, the honours section, the era box, the decade sections) follow the new classes (the change is intended).
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.256.
