@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -100,6 +101,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     // A dynamic route (`/series/[slug]`) is revalidated as a whole: every page it serves.
     if (page.path.includes('[')) revalidatePath(page.path, 'page');
     else revalidatePath(page.path);
+    await purgeEdgeAfterRevalidate([page.path.includes('[') ? 'site' : `path:${page.path}`]);
     return NextResponse.json({ ok: true, page });
   } catch (err) {
     return NextResponse.json(
@@ -147,6 +149,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     // The shell's lists may name the page (B1): they follow at once on this isolate and on the next render everywhere.
     resetNavListsMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, page });
   } catch (err) {
     return NextResponse.json(
@@ -208,6 +211,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       revalidatePath(detail.page.path);
       resetNavListsMemo();
       revalidatePath('/', 'layout');
+      await purgeEdgeAfterRevalidate(['site']);
       return NextResponse.json({ ok: true, id, path: detail.page.path, purged: true });
     }
     if (detail.page.deletedAt) {
@@ -228,6 +232,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     revalidatePath(detail.page.path);
     resetNavListsMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, id, path: detail.page.path, page });
   } catch (err) {
     return NextResponse.json(

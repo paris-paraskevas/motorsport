@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -93,6 +94,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     }
     resetSearchHintsMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, hint });
   } catch (err) {
     return NextResponse.json(
@@ -118,6 +120,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     if (((data ?? []) as unknown[]).length === 0) return new Response('not found', { status: 404 });
     resetSearchHintsMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, id });
   } catch (err) {
     return NextResponse.json(

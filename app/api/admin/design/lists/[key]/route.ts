@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -146,6 +147,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
     // The navigation renders inside the layout of every page, so every cached
     // page is told to re-render. Other isolates keep their memo for up to a minute.
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, updatedAt: String(data), entries });
   } catch (err) {
     return NextResponse.json(

@@ -1,5 +1,18 @@
-import { describe, expect, it } from 'vitest';
-import { browserSafeCacheControl, edgeCacheRules, withBrowserSafeCache, withEdgeCacheRules } from './cache-headers';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+  browserSafeCacheControl,
+  edgeCacheRules,
+  purgeEdgeAfterRevalidate,
+  purgeEdgeTags,
+  withBrowserSafeCache,
+  withEdgeCacheRules,
+} from './cache-headers';
+
+// The Worker's execution context as OpenNext hands it out; each test sets what the runtime offers.
+const edge = vi.hoisted(() => ({ ctx: {} as Record<string, unknown> }));
+vi.mock('@opennextjs/cloudflare', () => ({ getCloudflareContext: () => ({ ctx: edge.ctx }) }));
 
 // The header OpenNext emits lets a browser reuse a stale page or payload for a
 // month; after a deploy that means the previous build's chunk names and content.
@@ -159,6 +172,36 @@ describe('withEdgeCacheRules', () => {
     expect(out.headers.get('cache-tag')).toBeNull();
   });
 
+  it('purges by tag through the context and reads the answer', async () => {
+    expect(await purgeEdgeTags({}, ['site'])).toBe(false);
+    const refused = vi.fn(async () => ({ success: false, errors: [{ code: 10000, message: 'rate limited' }] }));
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(await purgeEdgeTags({ cache: { purge: refused } }, ['site'])).toBe(false);
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('rate limited'));
+    const purge = vi.fn(async () => ({ success: true, errors: [] }));
+    expect(await purgeEdgeTags({ cache: { purge } }, ['path:/calendar', 'site'])).toBe(true);
+    expect(purge).toHaveBeenCalledWith({ tags: ['path:/calendar', 'site'] });
+    error.mockRestore();
+  });
+
+  it('after a revalidation: purges now, once more after the tag window, and two close purges share the second pass', async () => {
+    vi.useFakeTimers();
+    const purge = vi.fn(async () => ({ success: true, errors: [] }));
+    const waited: Promise<unknown>[] = [];
+    edge.ctx = { cache: { purge }, waitUntil: (p: Promise<unknown>) => waited.push(p) };
+    expect(await purgeEdgeAfterRevalidate(['site'])).toBe(true);
+    await vi.advanceTimersByTimeAsync(2_000);
+    expect(await purgeEdgeAfterRevalidate(['path:/blog'])).toBe(true);
+    expect(purge).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(7_000);
+    await Promise.all(waited);
+    // The first call's second pass was superseded by the second call; the second call's second pass ran.
+    expect(purge).toHaveBeenCalledTimes(3);
+    expect(purge).toHaveBeenLastCalledWith({ tags: ['path:/blog'] });
+    edge.ctx = {};
+    expect(await purgeEdgeAfterRevalidate(['site'])).toBe(false);
+  });
+
   it("reads OpenNext's cache state from the response: a STALE page is not stored", () => {
     const stale = withEdgeCacheRules(
       new Request('https://paddock-tracker.com/series/f1'),
@@ -171,5 +214,30 @@ describe('withEdgeCacheRules', () => {
       new Response('<html>', { headers: { 'cache-control': 's-maxage=1, max-age=0, must-revalidate', 'x-nextjs-cache': 'STALE' } }),
     );
     expect(nextStale.headers.get('cache-control')).toBe('no-store');
+  });
+});
+
+// PF2 PR C: a page revalidated inside the Worker must also leave the cache in front of it, or readers keep the old copy
+// for the page's whole window. Every route that calls revalidatePath purges; a new one that forgets fails here.
+describe('every revalidation site purges the edge', () => {
+  afterEach(() => vi.useRealTimers());
+
+  function routeFiles(dir: string, out: string[] = []): string[] {
+    for (const name of readdirSync(dir)) {
+      const full = join(dir, name);
+      if (statSync(full).isDirectory()) routeFiles(full, out);
+      else if (name === 'route.ts') out.push(full);
+    }
+    return out;
+  }
+
+  it('names purgeEdgeAfterRevalidate in every route that calls revalidatePath', () => {
+    const files = routeFiles(join(process.cwd(), 'app', 'api'));
+    expect(files.length).toBeGreaterThan(20);
+    const forgetful = files.filter(f => {
+      const src = readFileSync(f, 'utf8');
+      return src.includes('revalidatePath(') && !src.includes('purgeEdgeAfterRevalidate(');
+    });
+    expect(forgetful).toEqual([]);
   });
 });

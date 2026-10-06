@@ -1,5 +1,6 @@
 import { NextResponse, after } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { accountId, currentAccount } from '@/lib/auth/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { isAdmin, canAuthor } from '@/lib/threads';
@@ -87,9 +88,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       const previous = gate.learnTopic;
       await setLearnTopic(id, topic);
       revalidatePath('/information');
-      for (const t of new Set([previous, topic].filter((t): t is string => Boolean(t)))) {
-        revalidatePath(`/information/${t}`);
-      }
+      const topics = [...new Set([previous, topic].filter((t): t is string => Boolean(t)))];
+      for (const t of topics) revalidatePath(`/information/${t}`);
+      await purgeEdgeAfterRevalidate(['path:/information', ...topics.map(t => `path:/information/${t}`)]);
       return NextResponse.json({ ok: true, learnTopic: topic });
     }
     if (body.action === 'reschedule') {
@@ -127,6 +128,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         if (published.length > 0) {
           revalidatePath('/blog');
           for (const p of published) revalidatePath(`/blog/${p.slug}`);
+          await purgeEdgeAfterRevalidate(['path:/blog', ...published.map(p => `path:/blog/${p.slug}`)]);
           if (isPushConfigured()) await announcePublishedPosts(published);
         }
       } catch (e) {
