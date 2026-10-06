@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.258 — 2026-10-06
+
+### PF3, PR D-1 follow-up — The expired copy for a stale answer withdrawn
+
+1.0.257 gave the edge an already-expired copy of a STALE or regenerating answer so that every reader after a page’s window would be answered at once. The fresh-context review that landed after the merge measured it in quiet traffic on testing: the regeneration behind the copy did not converge (stale answers 91 and 103 s after the first reader past the window, one window with no regeneration seen for about nine minutes in the reviewer’s run (its notes; those probes were not logged), HIT copies carrying `no-store` that no rule explains), and the copy carried no `Cache-Tag`, so no purge by tag could reach it. The two branches in `edgeCacheRules` (`lib/cache-headers.ts`) say plain `no-store` again, with their tests; the first rule stays, so the first reader after a window is still answered at once from the old copy and the second reaches the Worker, whose STALE path triggers the regeneration as before. Before any expired copy returns, three things must hold: the regeneration request can never be answered by a stored copy (a `Vary` on OpenNext’s revalidation header is the candidate), the copy carries the page’s tags, and three quiet windows are shown to converge. The comment block also says now that `stale-if-error` is documented by Cloudflare and not yet exercised here, and that the purges bound staleness only for the paths they name. One assertion pins a STALE answer with a long window to `no-store`; the regenerating rule had masked it.
+
 ## 1.0.257 — 2026-10-06
 
 ### PF3, PR D-1 — Stale answers served while refreshing
