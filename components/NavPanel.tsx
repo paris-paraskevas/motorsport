@@ -462,7 +462,7 @@ export function NavPanel({
       {open && (
         <div
           id="nav-panel"
-          className="fixed inset-x-0 top-[calc(50px+env(safe-area-inset-top))] bottom-[calc(3.5rem+env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px)))] z-40 overflow-y-auto border-t border-text bg-bg pl-[calc(14px+env(safe-area-inset-left))] pr-[calc(14px+env(safe-area-inset-right))] pb-6 lg:absolute lg:inset-x-auto lg:left-0 lg:top-[calc(100%+10px)] lg:bottom-auto lg:w-[min(1200px,var(--panel-max,calc(100vw-3rem)))] lg:max-h-[calc(100vh-90px)] lg:rounded-[4px] lg:border lg:bg-surface-elevated lg:px-5 lg:pb-4"
+          className="fixed inset-x-0 top-[calc(50px+env(safe-area-inset-top))] bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] z-40 overflow-y-auto border-t border-text bg-bg pl-[calc(14px+env(safe-area-inset-left))] pr-[calc(14px+env(safe-area-inset-right))] pb-6 lg:absolute lg:inset-x-auto lg:left-0 lg:top-[calc(100%+10px)] lg:bottom-auto lg:w-[min(1200px,var(--panel-max,calc(100vw-3rem)))] lg:max-h-[calc(100vh-90px)] lg:rounded-[4px] lg:border lg:bg-surface-elevated lg:px-5 lg:pb-4"
         >
           {nothing ? (
             <div className="px-1 py-10 text-center">

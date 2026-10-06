@@ -219,7 +219,7 @@ export function AssistantWidget() {
 
   // Sits above the mobile bottom bar (h-14 + safe area); flush on lg (no bar).
   const anchor =
-    'fixed right-4 z-40 bottom-[calc(4.5rem+env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px)))] lg:bottom-6';
+    'fixed right-4 z-40 bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:bottom-6';
 
   if (!open) {
     return (

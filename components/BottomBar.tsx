@@ -79,13 +79,16 @@ export function BottomBar({
   return (
     // `preview`: the designer draws the bar in place at phone width; on the site
     // it is fixed to the bottom of the phone viewport and hidden on lg+. The bottom
-    // padding reserves the gesture bar's full height from the first paint
-    // (safe-area-max-inset-bottom is static; the live inset is 0 until the first
-    // scroll on Android and the only value iOS has).
+    // padding reserves the gesture bar's full height (safe-area-max-inset-bottom,
+    // static) and the bar slides down by what the live inset does not yet need
+    // (Chrome's edge-to-edge form): while the browser keeps the viewport off the
+    // gesture bar the reserve sits below the screen, once the page extends under
+    // it the reserve comes up, and the labels keep one distance from the bottom.
+    // Browsers without the max inset (iOS) get bottom 0 and the live padding.
     <nav
       aria-label="Primary"
       className={`${
-        preview ? 'relative' : 'lg:hidden fixed bottom-0 inset-x-0 z-30'
+        preview ? 'relative' : 'lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)_-_env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px)))] inset-x-0 z-30'
       } bg-surface-elevated border-t border-text pb-[env(safe-area-max-inset-bottom,env(safe-area-inset-bottom,0px))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]`}
     >
       <div className="grid" style={{ gridTemplateColumns: `repeat(${cells.length}, minmax(0, 1fr))` }}>
