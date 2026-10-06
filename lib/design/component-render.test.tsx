@@ -1811,7 +1811,7 @@ describe('the champions page’s views (R18)', () => {
   it('the Roll of honour template: the seasons by decade, newest first, each decade a section with its count; the sticky Jump-to bar with the decades, the older era and the count of seasons; the table’s seven columns and the cards after the operator’s drawing; the era row where the era changes; the nationality code, the runner-up’s points, the teams’ champion’s title number', async () => {
     const roll = await draw(SEASONS, { preset: 'champions', view: 'honours', rows: 150, heading: 'Every season' }, 'honours');
     expect(roll).toContain('aria-label="Every season"');
-    expect(roll).toMatch(/<nav aria-label="Jump to" class="sticky top-14 /);
+    expect(roll).toMatch(/<nav aria-label="Jump to" class="sticky top-\[calc\(3\.5rem\+env\(safe-area-inset-top\)\)\] /);
     expect(roll).toMatch(/>Jump to</);
     // R18 PR E: the root marked for the search box; the box and the count in the bar; the chips marked for their targets; each
     // season a wrapper with its slugified haystack; the decades marked with their counts; the empty line hidden until a query.

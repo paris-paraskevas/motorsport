@@ -1668,14 +1668,14 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
   );
   const eraRow =
     eraAt && eraBefore ? (
-      <div id={`${prefix}-era`} data-era="" className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-lg border border-border bg-surface-elevated px-5 py-3 scroll-mt-40 sm:scroll-mt-32">
+      <div id={`${prefix}-era`} data-era="" className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-lg border border-border bg-surface-elevated px-5 py-3 scroll-mt-[calc(10rem+env(safe-area-inset-top))] sm:scroll-mt-[calc(8rem+env(safe-area-inset-top))]">
         <span className="font-mono text-10 font-bold uppercase tracking-[0.14em] text-brand">Era change</span>
         <span className="text-sm font-semibold text-text">{`${text(eraBefore.year)}: ${olderEra} becomes the ${text(eraBefore.era)}`}</span>
         <span className="text-13 text-text-muted">{`Seasons below raced as ${olderEra}`}</span>
       </div>
     ) : null;
   return (
-    <section data-honours="" aria-label={heading} className="min-w-0 scroll-mt-14">
+    <section data-honours="" aria-label={heading} className="min-w-0 scroll-mt-[calc(3.5rem+env(safe-area-inset-top))]">
       <H className="sr-only">{heading}</H>
       {/* The Jump-to bar sticks under the fixed header (the tab rail's precedent): the chips scroll in a strip of their own, so the
           bar itself never sits in an overflow box; the search box (a client island) and the count sit at its right from sm and on
@@ -1704,7 +1704,7 @@ export function DataRegionHonours({ heading, level, rows, region }: DataRegionVi
         No season matches what you typed.
       </p>
       {[...decades.entries()].map(([decade, seasons]) => (
-        <section key={decade} id={`${prefix}-${decade}`} data-decade="" className="pt-8 scroll-mt-40 sm:scroll-mt-28">
+        <section key={decade} id={`${prefix}-${decade}`} data-decade="" className="pt-8 scroll-mt-[calc(10rem+env(safe-area-inset-top))] sm:scroll-mt-[calc(7rem+env(safe-area-inset-top))]">
           <div className="mb-3 flex flex-wrap items-baseline gap-3">
             <h3 className="font-serif text-26 font-medium leading-tight text-text">{decade}</h3>
             <span data-decade-count="" className="font-mono text-11 text-text-faint">{count(seasons.length)}</span>
