@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.259 — 2026-10-06
 
-The Sign in with Google button now appears every time. On some phones it could stay hidden, depending on which part of the page arrived first.
+The Sign in with Google button now appears whichever part of the page arrives first. Before, it could stay hidden on some phones.
 
 ## 1.0.258 — 2026-10-06
 

@@ -78,6 +78,42 @@ describe('GoogleButton', () => {
     expect((google.accounts.id.initialize.mock.calls[0][0] as { nonce: string }).nonce).toBe('abc123');
   });
 
+  it('draws when the mount found the load already in flight: next/script then calls its onLoad alone', async () => {
+    delete window.google;
+    const body = vi.fn(async () => ({ ok: true, hashed: 'abc123' }));
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, json: body });
+    render(<GoogleButton clientId="client-1" next="/" onError={vi.fn()} />);
+    await waitFor(() => expect(body).toHaveBeenCalled());
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+    window.google = google;
+    act(() => {
+      script.first?.onLoad?.();
+    });
+    await waitFor(() => expect(google.accounts.id.renderButton).toHaveBeenCalledTimes(1));
+  });
+
+  it('draws when next/script calls its onReady alone before the library is up and the nonce lands last', async () => {
+    delete window.google;
+    let land: ((answer: unknown) => void) | undefined;
+    fetchMock.mockReturnValueOnce(
+      new Promise(resolve => {
+        land = resolve;
+      }),
+    );
+    render(<GoogleButton clientId="client-1" next="/" onError={vi.fn()} />);
+    act(() => {
+      script.first?.onReady?.();
+    });
+    window.google = google;
+    await act(async () => {
+      land?.({ ok: true, status: 200, json: async () => ({ ok: true, hashed: 'abc123' }) });
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+    await waitFor(() => expect(google.accounts.id.renderButton).toHaveBeenCalledTimes(1));
+  });
+
   it('reports a refused nonce or a refused token, and draws nothing without a client id', async () => {
     fetchMock.mockResolvedValueOnce(answer({ error: 'no' }, false));
     const onError = vi.fn();
