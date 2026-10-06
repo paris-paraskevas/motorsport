@@ -1815,7 +1815,7 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toMatch(/>Jump to</);
     // R18 PR E: the root marked for the search box; the box and the count in the bar; the chips marked for their targets; each
     // season a wrapper with its slugified haystack; the decades marked with their counts; the empty line hidden until a query.
-    expect(roll).toMatch(/^<section data-honours="" aria-label="Every season" class="min-w-0 scroll-mt-14">/);
+    expect(roll).toMatch(/^<section data-honours="" aria-label="Every season" class="min-w-0 scroll-mt-[calc(3.5rem+env(safe-area-inset-top))]">/);
     expect(roll).toMatch(/<input[^>]*type="search"[^>]*placeholder="Find a season or a driver"/);
     expect(roll).toMatch(/<span role="status"[^>]*>4 seasons<\/span>/);
     expect(roll).toMatch(/<a href="#honours-2020s" data-chip="honours-2020s"/);
@@ -1863,9 +1863,9 @@ describe('the champions page’s views (R18)', () => {
     expect(roll).toContain('>1st title<');
     // The era row sits between 2017 and 2016, with the older era below it.
     expect(roll).toMatch(/>2017 season<[\s\S]*id="honours-era"[\s\S]*>Era change<[\s\S]*>2017: GP2 Series becomes the FIA Formula 2 Championship<[\s\S]*>Seasons below raced as GP2 Series<[\s\S]*>2016 season</);
-    expect(roll).toMatch(/id="honours-era" data-era="" class="[^"]*rounded-lg border border-border[^"]*scroll-mt-40 sm:scroll-mt-32"/);
+    expect(roll).toMatch(/id="honours-era" data-era="" class="[^"]*rounded-lg border border-border[^"]*scroll-mt-[calc(10rem+env(safe-area-inset-top))] sm:scroll-mt-[calc(8rem+env(safe-area-inset-top))]"/);
     // The decade sections’ scroll margins allow for the taller bar (two rows on phones), as the era row’s do.
-    expect(roll).toMatch(/<section id="honours-2020s" data-decade="" class="pt-8 scroll-mt-40 sm:scroll-mt-28">/);
+    expect(roll).toMatch(/<section id="honours-2020s" data-decade="" class="pt-8 scroll-mt-[calc(10rem+env(safe-area-inset-top))] sm:scroll-mt-[calc(7rem+env(safe-area-inset-top))]">/);
     // The cards below lg follow the operator's drawing of the 2nd: a band with the season, the points and the wins; the two
     // champions side by side with their labels; the runner-up's row with their points and the margin; every cell ruled.
     // Each card its own rounded box with space between (the operator's second look), read per season from its wrapper.
