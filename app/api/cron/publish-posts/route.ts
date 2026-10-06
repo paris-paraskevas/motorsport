@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isPushConfigured } from '@/lib/push';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import { isBettingConfigured } from '@/lib/betting/client';
@@ -41,6 +42,7 @@ export async function GET(req: Request) {
     // not after the 5-min revalidate window.
     revalidatePath('/blog');
     for (const p of published) revalidatePath(`/blog/${p.slug}`);
+    await purgeEdgeAfterRevalidate(['path:/blog', ...published.map(p => `path:/blog/${p.slug}`)]);
 
     // Publishing is the primary job and already happened above. The push is
     // secondary — if VAPID isn't configured, report it clearly rather than

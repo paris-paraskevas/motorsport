@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -82,6 +83,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
     // The home page reads four of these and is cached for five minutes; the
     // notice rides the layout of every page. One nudge covers both.
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, key, value, updatedAt: String(rows[0].updated_at) });
   } catch (err) {
     return NextResponse.json(

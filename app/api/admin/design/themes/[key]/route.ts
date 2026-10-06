@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -113,6 +114,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
     }
     resetThemesMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, key, updatedAt: String(rows[0].updated_at) });
   } catch (err) {
     return refused(500, err instanceof Error ? err.message : 'unknown');
@@ -154,6 +156,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ key: 
     }
     resetThemesMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, key });
   } catch (err) {
     return refused(500, err instanceof Error ? err.message : 'unknown');

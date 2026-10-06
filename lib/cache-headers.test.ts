@@ -1,5 +1,24 @@
-import { describe, expect, it } from 'vitest';
-import { browserSafeCacheControl, edgeCacheRules, withBrowserSafeCache, withEdgeCacheRules } from './cache-headers';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+  browserSafeCacheControl,
+  edgeCacheRules,
+  purgeEdgeAfterRevalidate,
+  purgeEdgeTags,
+  withBrowserSafeCache,
+  withEdgeCacheRules,
+} from './cache-headers';
+
+// The Worker's execution context as OpenNext hands it out; each test sets what the runtime offers.
+const edge = vi.hoisted(() => ({ ctx: {} as Record<string, unknown> }));
+vi.mock('@opennextjs/cloudflare', () => ({ getCloudflareContext: () => ({ ctx: edge.ctx }) }));
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+  edge.ctx = {};
+});
 
 // The header OpenNext emits lets a browser reuse a stale page or payload for a
 // month; after a deploy that means the previous build's chunk names and content.
@@ -159,6 +178,53 @@ describe('withEdgeCacheRules', () => {
     expect(out.headers.get('cache-tag')).toBeNull();
   });
 
+  it('purges by tag through the context and reads the answer: absent, refused, thrown, done', async () => {
+    expect(await purgeEdgeTags({}, ['site'])).toBe(false);
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const refused = vi.fn(async () => ({ success: false, errors: [{ code: 10000, message: 'rate limited' }] }));
+    expect(await purgeEdgeTags({ cache: { purge: refused } }, ['site'])).toBe(false);
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('rate limited'));
+    const thrown = vi.fn(async () => {
+      throw new Error('network down');
+    });
+    expect(await purgeEdgeTags({ cache: { purge: thrown } }, ['site'])).toBe(false);
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('network down'));
+    const purge = vi.fn(async () => ({ success: true, errors: [] }));
+    expect(await purgeEdgeTags({ cache: { purge } }, ['path:/calendar', 'site'])).toBe(true);
+    expect(purge).toHaveBeenCalledWith({ tags: ['path:/calendar', 'site'] });
+  });
+
+  it('after a revalidation: purges now and once more after the tag window; close purges share one second pass over all their tags', async () => {
+    vi.useFakeTimers();
+    const purge = vi.fn(async () => ({ success: true, errors: [] }));
+    const waited: Promise<unknown>[] = [];
+    edge.ctx = { cache: { purge }, waitUntil: (p: Promise<unknown>) => waited.push(p) };
+    expect(await purgeEdgeAfterRevalidate(['site'])).toBe(true);
+    await vi.advanceTimersByTimeAsync(2_000);
+    expect(await purgeEdgeAfterRevalidate(['path:/blog'])).toBe(true);
+    expect(purge).toHaveBeenCalledTimes(2);
+    expect(waited).toHaveLength(1);
+    await vi.advanceTimersByTimeAsync(7_000);
+    await Promise.all(waited);
+    expect(purge).toHaveBeenCalledTimes(3);
+    expect(purge).toHaveBeenLastCalledWith({ tags: ['site', 'path:/blog'] });
+    // A later purge, after the window, schedules a second pass of its own.
+    expect(await purgeEdgeAfterRevalidate(['path:/news'])).toBe(true);
+    expect(waited).toHaveLength(2);
+    await vi.advanceTimersByTimeAsync(7_000);
+    await Promise.all(waited);
+    expect(purge).toHaveBeenLastCalledWith({ tags: ['path:/news'] });
+  });
+
+  it('without a cache API or without waitUntil: no purge or a single purge, never a throw', async () => {
+    edge.ctx = {};
+    expect(await purgeEdgeAfterRevalidate(['site'])).toBe(false);
+    const purge = vi.fn(async () => ({ success: true, errors: [] }));
+    edge.ctx = { cache: { purge } };
+    expect(await purgeEdgeAfterRevalidate(['site'])).toBe(true);
+    expect(purge).toHaveBeenCalledTimes(1);
+  });
+
   it("reads OpenNext's cache state from the response: a STALE page is not stored", () => {
     const stale = withEdgeCacheRules(
       new Request('https://paddock-tracker.com/series/f1'),
@@ -171,5 +237,28 @@ describe('withEdgeCacheRules', () => {
       new Response('<html>', { headers: { 'cache-control': 's-maxage=1, max-age=0, must-revalidate', 'x-nextjs-cache': 'STALE' } }),
     );
     expect(nextStale.headers.get('cache-control')).toBe('no-store');
+  });
+});
+
+// PF2 PR C: a page revalidated inside the Worker must also leave the cache in front of it, or readers keep the old copy
+// for the page's whole window. Every file under app/ or lib/ that revalidates purges; a new one that forgets fails here.
+describe('every revalidation site purges the edge', () => {
+  const REVALIDATES = /\b(?:revalidatePath|revalidateTag|updateTag)\(/;
+
+  function sourceFiles(dir: string, out: string[] = []): string[] {
+    for (const name of readdirSync(dir)) {
+      const full = join(dir, name);
+      if (statSync(full).isDirectory()) sourceFiles(full, out);
+      else if (/\.tsx?$/.test(name) && !/\.test\.tsx?$/.test(name) && !name.endsWith('.d.ts')) out.push(full);
+    }
+    return out;
+  }
+
+  it('names purgeEdgeAfterRevalidate in every file that calls revalidatePath, revalidateTag or updateTag', () => {
+    const files = [...sourceFiles(join(process.cwd(), 'app')), ...sourceFiles(join(process.cwd(), 'lib'))];
+    const revalidating = files.filter(f => REVALIDATES.test(readFileSync(f, 'utf8')));
+    expect(revalidating.length).toBeGreaterThan(20);
+    const forgetful = revalidating.filter(f => !readFileSync(f, 'utf8').includes('purgeEdgeAfterRevalidate('));
+    expect(forgetful).toEqual([]);
   });
 });

@@ -1,41 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
-import { getCloudflareContext } from '@opennextjs/cloudflare';
-
-// Workers Cache's purge never throws: it resolves { success, errors } and a rate-limited call says success:false
-// (developers.cloudflare.com/workers/cache/purge, read 2026-10-05).
-type PurgeResult = { success?: boolean; errors?: Array<{ code?: number; message?: string }> };
-type EdgeCache = { purge?: (options: { tags: string[] }) => Promise<PurgeResult | undefined> };
-type WorkerContext = { cache?: EdgeCache; waitUntil?: (p: Promise<unknown>) => void };
-
-// The Worker's regional tag answer is kept for 5 s (open-next.config.ts), so a request landing inside that window is
-// still answered with the old page under a fresh s-maxage and the edge stores it again; a second purge once the window
-// has passed catches that copy.
-const SECOND_PURGE_DELAY_MS = 6_000;
-
-function workerContext(): WorkerContext {
-  try {
-    return getCloudflareContext().ctx as unknown as WorkerContext;
-  } catch {
-    return {};
-  }
-}
-
-async function purgeEdgeTags(ctx: WorkerContext, tags: string[]): Promise<boolean> {
-  if (typeof ctx.cache?.purge !== 'function') return false;
-  try {
-    const result = await ctx.cache.purge({ tags });
-    if (result?.success !== true) {
-      console.error(`[edge-purge] refused for ${tags.length} tags: ${JSON.stringify(result?.errors ?? result ?? null)}`);
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.error(`[edge-purge] failed for ${tags.length} tags: ${err instanceof Error ? err.message : String(err)}`);
-    return false;
-  }
-}
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -83,13 +49,6 @@ export async function POST(req: Request) {
   // (worker.ts); purging those tags makes the loader's refresh visible at once instead of at the window's end.
   // Best effort: the purge rides on the Worker's execution context where the runtime offers it, and a refusal never
   // fails the revalidation.
-  const ctx = workerContext();
-  const tags = paths.map(p => `path:${p}`);
-  const edgePurged = await purgeEdgeTags(ctx, tags);
-  if (edgePurged && typeof ctx.waitUntil === 'function') {
-    ctx.waitUntil(
-      new Promise<void>(resolve => setTimeout(resolve, SECOND_PURGE_DELAY_MS)).then(() => purgeEdgeTags(ctx, tags)),
-    );
-  }
+  const edgePurged = await purgeEdgeAfterRevalidate(paths.map(p => `path:${p}`));
   return NextResponse.json({ ok: true, revalidated: paths, edgePurged, at: new Date().toISOString() });
 }

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.254 — 2026-10-06
+
+### PF2 — The front cache on prod (design D, PR C)
+
+`"cache": { "enabled": true }` in `wrangler.jsonc`: Workers Cache keeps a copy of every cacheable response in front of the production Worker, keyed by path and query and governed by the response’s own Cache-Control; a hit runs no code and bills no CPU (proven on the testing Worker in #1136: warm pages answered in 0.13–1.16 s over 27 hits, all but one under 0.4 s). Every route that revalidates a page now also purges the edge through `purgeEdgeAfterRevalidate` (`lib/cache-headers.ts`): now, and once more after the Worker’s five-second regional tag window, the purges inside a window sharing one second pass over the union of their tags; the Worker’s allowance is five purges a minute and a refusal is logged, never thrown. The designer’s saves purge everything (the `site` tag every cacheable response carries); the blog, author, Learn-topic and publish routes purge their pages; the loader’s revalidate route its paths; a test fails any new route that revalidates without purging. The www and http 301s sit in front of the cache as zone rules (the operator’s “Redirect from WWW to root” rule of the 6th; Always Use HTTPS). Rollback: the line removed, one deploy.
+
 ## 1.0.253 — 2026-10-05
 
 ### PF2 — The front cache on the testing Worker (design D, PR B)

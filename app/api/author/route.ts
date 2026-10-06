@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { accountId, currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
 import { canAuthor } from '@/lib/threads';
@@ -89,6 +90,12 @@ export async function PUT(req: Request) {
     revalidatePath(`/authors/${slug}`);
     if (previous && previous.slug !== slug) revalidatePath(`/authors/${previous.slug}`);
     revalidatePath('/blog');
+    await purgeEdgeAfterRevalidate([
+      'path:/authors',
+      `path:/authors/${slug}`,
+      ...(previous && previous.slug !== slug ? [`path:/authors/${previous.slug}`] : []),
+      'path:/blog',
+    ]);
     return NextResponse.json({ ok: true, slug });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'could not save your profile';

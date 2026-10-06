@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentAccount } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { purgeEdgeAfterRevalidate } from '@/lib/cache-headers';
 import { isAdmin } from '@/lib/threads';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { isProductionWorker } from '@/lib/env';
@@ -82,6 +83,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ key: str
     resetAuthzMemo();
     // The shell's lists and the served pages read the schemes at render.
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, key, label, message: message || null, updatedAt: String(rows[0].updated_at) });
   } catch (err) {
     return NextResponse.json(
@@ -135,6 +137,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ key:
     if (((data ?? []) as unknown[]).length === 0) return new Response('not found', { status: 404 });
     resetAuthzMemo();
     revalidatePath('/', 'layout');
+    await purgeEdgeAfterRevalidate(['site']);
     return NextResponse.json({ ok: true, key });
   } catch (err) {
     return NextResponse.json(
