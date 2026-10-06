@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.259 — 2026-10-06
+
+The Sign in with Google button now appears every time. On some phones it could stay hidden, depending on which part of the page arrived first.
+
 ## 1.0.258 — 2026-10-06
 
 A refinement of the previous release pulled back after testing: the first visitor after a quiet spell is still answered at once, and the next one waits about as long as the first visitor used to while the page refreshes.

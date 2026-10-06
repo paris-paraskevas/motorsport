@@ -1,8 +1,16 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { act, cleanup, render, waitFor } from '@testing-library/react';
 
-vi.mock('next/script', () => ({ default: () => null }));
+// next/script takes the handlers of its mount: loadScript runs once, from the mount's props, and calls that onLoad and
+// that onReady when the script lands. The mock keeps the first props it is given, so a case can fire exactly those.
+const script = vi.hoisted(() => ({ first: null as null | { onLoad?: () => void; onReady?: () => void } }));
+vi.mock('next/script', () => ({
+  default: (props: { onLoad?: () => void; onReady?: () => void }) => {
+    script.first ??= props;
+    return null;
+  },
+}));
 
 import { GoogleButton } from './GoogleButton';
 
@@ -21,6 +29,7 @@ describe('GoogleButton', () => {
   });
   afterEach(() => {
     cleanup();
+    script.first = null;
     fetchMock.mockReset();
     assign.mockClear();
     google.accounts.id.initialize.mockClear();
@@ -46,6 +55,27 @@ describe('GoogleButton', () => {
     expect(JSON.parse(init.body as string)).toEqual({ credential: 'jwt', next: '/f1' });
     expect(assign).toHaveBeenCalledWith('/f1');
     expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("draws the button when Google's script lands after the nonce: the handlers next/script kept from the mount must not hold the nonce", async () => {
+    delete window.google;
+    const body = vi.fn(async () => ({ ok: true, hashed: 'abc123' }));
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, json: body });
+    render(<GoogleButton clientId="client-1" next="/" onError={vi.fn()} />);
+    await waitFor(() => expect(body).toHaveBeenCalled());
+    // A macrotask's tick: every microtask of the nonce's answer has run, so the nonce is in state before Google lands.
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+    expect(google.accounts.id.renderButton).not.toHaveBeenCalled();
+    // Google's script lands now, and the real next/script calls the handlers of the mount: onLoad, then onReady.
+    window.google = google;
+    act(() => {
+      script.first?.onLoad?.();
+      script.first?.onReady?.();
+    });
+    await waitFor(() => expect(google.accounts.id.renderButton).toHaveBeenCalledTimes(1));
+    expect((google.accounts.id.initialize.mock.calls[0][0] as { nonce: string }).nonce).toBe('abc123');
   });
 
   it('reports a refused nonce or a refused token, and draws nothing without a client id', async () => {

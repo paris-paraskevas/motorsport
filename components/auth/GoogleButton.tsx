@@ -27,6 +27,12 @@ export function GoogleButton({ clientId, next, onError }: { clientId: string | n
   const box = useRef<HTMLDivElement>(null);
   const drawn = useRef(false);
   const [hashed, setHashed] = useState<string | null>(null);
+  // next/script calls the onLoad and onReady of its mount (loadScript runs once, from the mount's props), so neither
+  // may close over the nonce: when the nonce lands first, a mount-time draw has none. The load is a state the draw
+  // reads, set through React's stable setter from both: onLoad fires for a load the mount starts or finds in flight,
+  // onReady for a load the mount starts and on every remount after a load. It starts true when Google's library is
+  // already on the page.
+  const [loaded, setLoaded] = useState(() => typeof window !== 'undefined' && window.google !== undefined);
   useEffect(() => {
     if (!clientId) return;
     let mounted = true;
@@ -40,7 +46,7 @@ export function GoogleButton({ clientId, next, onError }: { clientId: string | n
     };
   }, [clientId, onError]);
   const draw = useCallback(() => {
-    if (!clientId || !hashed || !box.current || !window.google || drawn.current) return;
+    if (!clientId || !hashed || !loaded || !box.current || !window.google || drawn.current) return;
     drawn.current = true;
     window.google.accounts.id.initialize({
       client_id: clientId,
@@ -54,14 +60,14 @@ export function GoogleButton({ clientId, next, onError }: { clientId: string | n
       },
     });
     window.google.accounts.id.renderButton(box.current, { type: 'standard', theme: 'outline', size: 'large', text: 'signin_with', shape: 'rectangular', logo_alignment: 'left', width: 320 });
-  }, [clientId, hashed, next, onError]);
+  }, [clientId, hashed, loaded, next, onError]);
   useEffect(() => {
     draw();
   }, [draw]);
   if (!clientId) return null;
   return (
     <>
-      <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onLoad={draw} />
+      <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onLoad={() => setLoaded(true)} onReady={() => setLoaded(true)} />
       <div ref={box} className="flex min-h-11 justify-center" />
     </>
   );

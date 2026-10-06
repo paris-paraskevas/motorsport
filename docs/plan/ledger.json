@@ -789,6 +789,11 @@
    "date": "2026-10-06",
    "change": "PF3’s second rule (an already-expired edge copy for a STALE or regenerating answer, on 1.0.257) withdrawn on #1141 (1.0.258) after the reviewer’s FIX FIRST on #1140; PF3’s defaults now name three conditions before an expired copy returns (the regeneration request never answerable by a stored copy, the copy tagged, three quiet windows shown to converge) and scope the staleness bound to the paths a purge names.",
    "word": "“just merge everything” (the operator, 2026-10-06 ~13:02Z), whose line records #1140’s review findings folded as a follow-up; #1141’s merge has its own word"
+  },
+  {
+   "date": "2026-10-06",
+   "change": "R20 “Google’s button in either order” enters the ledger after R19 on the operator’s “google go”: the Sign in with Google button never drew when the site’s nonce arrived before Google’s script (the operator’s phone), because next/script keeps the onLoad of its mount; the load becomes a state the draw reads.",
+   "word": "“google go” (the operator, 2026-10-06 ~17:53Z)"
   }
  ],
  "phases": {
@@ -1717,6 +1722,32 @@
    },
    "evidence": "STARTED 2026-10-06 ~09:20Z on “3. this may be done next” (the operator, ~09:12Z), branch r17/pwa-bar-insets from main 87ed53e0 (1.0.255), the PR to take 1.0.256. The fresh-context Sonnet reviewer’s first pass (r17-review.md, 306k tokens, ~09:50Z): FIX FIRST on the records (R17 was taken by #1114 → the slot is R19; the change line’s word; the #1139 entry; the CHANGELOG’s code spans lost to the shell; the device claim made UNVERIFIED) and one Medium on the code (cover switches off the browser’s side insetting: landscape iPhones) with three Low (the wizard’s bottoms, the header-coupled sticky strips and anchors); every item folded ~10:00Z. The branch keeps its name r17/pwa-bar-insets, given before the clash was found. The second pass (r19-review-2.md, 300k tokens, ~10:30Z): FIX FIRST on one High (lib/design/component-render.test.tsx:1814 pinned the old sticky class; the change is intended, the pin follows it) and two Medium (the PR body and the slot’s defaults still said the side insets were untouched); the first pass’s items confirmed closed; the five remaining header-coupled scroll margins (the Data region’s anchors, the season view, the post headings) folded with it; the iPhone claims marked UNVERIFIED; the full suite added to the gate. Testing carries the completed build since 10:17:22Z (version a75b5f79; Total Upload 40,685.16 KiB, 62.1 % of 64 MiB; the home’s meta viewport-fit=cover; the stylesheet 0u7dsb0tnl1np.css with eight max-inset paddings and the sticky offset). The full suite on 54012b30: 275 files, 2,694 tests green (10:37:25Z); the two test files 57 green after the pins followed the new classes. The third pass (r19-review-3.md, ~10:45Z): PASS WITH NOTES (the pins exact, the margins right, Tailwind’s output correct; the entry’s iPhone lines now marked UNVERIFIED, the four pins named, the first-scroll claim worded as observed on the Pixel); testing redeployed from the final head so the look covers the last scroll margins. The operator’s second look (11:03Z, two screenshots): no clipping, but the bar in two heights (far from the bottom in the installed app, close in the browser tab) as Chrome’s live inset moved against a fixed reserve; the cause is the dynamic inset Chrome’s guide describes, the fix its documented form: the bar slides by (live − max) (01ca0041; tsc 0, eslint 0, 53 component files and the two design files green). Testing rebuilt from it for the third look; the fourth reviewer pass reads the commit. Full suite on 01ca0041: 2,692 green, two PageDesigner timeouts under the concurrent build, 57 of 57 alone at 11:21Z. Testing on 8b2ed86b since 11:19:14Z with the slide in its stylesheet; the third look pending. The third look (a Chrome tab on testing; the operator has no installed testing app, so the morning’s screenshots were the installed prod app and every testing look is a tab): the bar bounced with the slide. The fourth pass (r19-review-4.md, 291k tokens, PASS WITH NOTES) measured the slide right only where a live inset of 0 means the viewport ends above the gesture bar, which the installed app’s first paint contradicts, and named the live-inset padding on the main and the wizard as the guide’s anti-pattern. The static reserve is back everywhere (nothing positioned by the live inset); a temporary probe page (public/inset-probe.html: the viewport, the eight insets and three bars, live while scrolling) ships on testing for one screenshot that settles which signal moves on the Pixel; it leaves before the merge. Squash-merged 2026-10-06 13:03:37Z as 1eef110e on “just merge everything”, the device verdict open (the first paint read on prod in the installed app; the home’s bounce in a Chrome tab unexplained); the probe page removed before the merge.",
    "scopeHash": "40f501ac2160"
+  },
+  {
+   "id": "R20",
+   "phase": "P2",
+   "title": "Google’s button in either order",
+   "scope": "The Sign in with Google button on the sign-in and sign-up pages (one component, components/auth/GoogleButton.tsx) drew only when Google’s script loaded before the site’s nonce: next/script runs its loader once, from the props of its mount, and calls that onLoad when the script lands; the component passed onLoad={draw}, and the mount’s draw held no nonce, so when the nonce landed first the button never drew (the operator’s phone, 2026-10-06). The load becomes a state the draw reads, set through React’s stable setter by both onLoad and onReady and true from the start when Google’s library is already on the page, so the button draws whichever arrives first; a regression test lands the nonce first and fires exactly the handlers the mount kept.",
+   "fixedBy": "the operator’s screenshot of 2026-10-06 (the sign-in page with the OR divider and an empty space above it); the reproduction on prod at phone width (Google’s script held 2.5 s: the library loaded and no button iframe; the nonce held 2.5 s: the button, 340×44); next/script 16.2.12 (node_modules/next/dist/client/script.js: loadScript runs once from the mount’s props, the load listener calls that onLoad and then onReady, a remount after a load calls onReady, a load already in flight calls onLoad)",
+   "defaults": "a state set through React’s stable setter rather than a ref to the latest draw; both handlers given the same setter; the button’s look, size and text unchanged; the nonce and token routes untouched",
+   "needsWord": "none beyond the merge word",
+   "acceptance": "the new case in components/auth/GoogleButton.test.tsx red on the old component and green on the new; the GoogleButton, SignInForm and SignUpForm tests green; npx tsc --noEmit 0; eslint 0; the full suite green; on testing in a browser at phone width, the button drawn (an iframe from accounts.google.com/gsi/button) with Google’s script held 2.5 s and with the nonce held 2.5 s",
+   "status": "started",
+   "brief": {
+    "files": [
+     "components/auth/GoogleButton.tsx",
+     "components/auth/GoogleButton.test.tsx"
+    ],
+    "steps": [
+     "the test first: the mock of next/script keeps its first props; a case lands the nonce before Google’s library and fires the mount’s handlers; seen red on the old component",
+     "GoogleButton: a loaded state, true when window.google is present at the mount, set by onLoad and onReady through the stable setter; the draw needs it; onLoad={draw} gone",
+     "the three auth test files, tsc, eslint, the full suite; a testing build and the browser proof in both orders"
+    ],
+    "gate": "npx vitest run components/auth → green, the new case seen red first; npx tsc --noEmit → 0; eslint on the two files → 0; the full suite; DATA_SOURCE=db npm run cf:build then wrangler deploy -c wrangler.testing.jsonc; the browser proof at phone width in both orders",
+    "wontTouch": "the nonce route, the token route, the button’s look and text, the CSP and the consent script (their own queued item)"
+   },
+   "evidence": "STARTED 2026-10-06 ~17:53Z on “google go”, after the diagnosis of ~13:30Z: the operator’s phone showed no Google button; prod reproduced at phone width (Google’s script held 2.5 s: the library loaded, no button; the nonce held 2.5 s: the button drew); next/script 16.2.12 keeps the onLoad of the mount. The test first: red on the old component (“expected \"vi.fn()\" to be called 1 times, but got 0 times”), green after the fix together with the two existing cases; the three auth test files 7 green; tsc 0; eslint 0. Branch r20/google-button-order from main 5960b20d (1.0.258); the PR takes 1.0.259.",
+   "scopeHash": "165f8db51b12"
   },
   {
    "id": "R17",
