@@ -19,7 +19,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
 - **Readers see:** nothing new; the third column is the same fifteen before and after.
 - **Editors get:** the footer’s Series list and its heading in the designer’s Lists and Text Messages, editable.
 - **Files (5):** `supabase/migrations/20261006070000_design_list_footer_series.sql` · the seed. `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.255.
-- **Verified:** the statements mirror the applied seeds’ shape (list on conflict (application_key, key); list_entry where the list has no entries; text_message on conflict); the prod rehearsal and the apply pending the Management API’s answer (HTTP 544 “connection timeout” at 07:04–07:06Z on the 6th, Supabase’s Eastern-US latency incident of the 5th).
+- **Verified:** the statements mirror the applied seeds’ shape (list on conflict (application_key, key); list_entry where the list has no entries; text_message on conflict); rehearsed on prod inside begin…rollback through the Management API (0/0/0 → 1/1/15 → 0/0/0 at 07:59Z, after the database’s restart) and applied 2026-10-06 08:02:08Z on “apply footer seed”: 1 text row, 1 list, 15 entries in order (Formula 1 → NLS Nürburgring).
 - **Review:** none; a seed in the shape of 20260908130000.
 
 ## #1136 · 1.0.253 · PF2 (PR B) · opened 2026-10-05 22:13:24Z; the merge on the word
