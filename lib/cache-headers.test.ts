@@ -104,37 +104,51 @@ describe('edgeCacheRules', () => {
     expect(edgeCacheRules('paddock-tracker.com', '/series/f1', null)).toEqual({ cacheControl: 'no-store' });
   });
 
-  it('tags a cacheable page with its path and the site, and leaves its header alone', () => {
+  it("tags a cacheable page with its path and the site, leaves the browser's header alone and gives the edge its own line: the page's window, then stale while refreshing or failing", () => {
     expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=128, max-age=0, must-revalidate')).toEqual({
       cacheTag: 'path:/calendar,site',
+      cdnCacheControl: 'max-age=128, stale-while-revalidate=86400, stale-if-error=86400',
     });
-    // A route handler or a media file with a positive max-age is kept by the edge too, so it is tagged too.
+    // A route handler or a media file with a positive max-age is kept by the edge too, so it is tagged too; its own
+    // max-age is the window.
     expect(edgeCacheRules('paddock-tracker.com', '/api/search', 'public, max-age=3600, stale-while-revalidate=86400')).toEqual({
       cacheTag: 'path:/api/search,site',
+      cdnCacheControl: 'max-age=3600, stale-while-revalidate=86400, stale-if-error=86400',
     });
     expect(edgeCacheRules('paddock-tracker.com', '/media/a.jpg', 'public, max-age=31536000, immutable')).toEqual({
       cacheTag: 'path:/media/a.jpg,site',
+      cdnCacheControl: 'max-age=31536000, stale-while-revalidate=86400, stale-if-error=86400',
+    });
+    // s-maxage wins over max-age for the window, whichever comes first in the header.
+    expect(edgeCacheRules('paddock-tracker.com', '/x', 'max-age=0, s-maxage=600')).toEqual({
+      cacheTag: 'path:/x,site',
+      cdnCacheControl: 'max-age=600, stale-while-revalidate=86400, stale-if-error=86400',
     });
   });
 
-  it('says no-store on a STALE answer, whose one-second copy would answer the revalidation HEAD', () => {
+  it('a STALE answer: no-store for browsers, an already-expired copy for the edge, so readers are answered at once while the Worker still runs behind', () => {
     expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=1, max-age=0, must-revalidate', 'STALE')).toEqual({
       cacheControl: 'no-store',
+      cdnCacheControl: 'max-age=0, stale-while-revalidate=86400, stale-if-error=86400',
     });
     expect(edgeCacheRules('paddock-tracker.com', '/series/f1', 's-maxage=1196, max-age=0, must-revalidate', 'HIT')).toEqual({
       cacheTag: 'path:/series/f1,site',
+      cdnCacheControl: 'max-age=1196, stale-while-revalidate=86400, stale-if-error=86400',
     });
   });
 
-  it("says no-store on Next's regenerating window of a second or two, whatever the state header says", () => {
+  it("Next's regenerating window of a second or two, whatever the state header says: the same no-store and expired copy", () => {
     expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=1, max-age=0, must-revalidate', 'HIT')).toEqual({
       cacheControl: 'no-store',
+      cdnCacheControl: 'max-age=0, stale-while-revalidate=86400, stale-if-error=86400',
     });
     expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=2, max-age=0, must-revalidate', null)).toEqual({
       cacheControl: 'no-store',
+      cdnCacheControl: 'max-age=0, stale-while-revalidate=86400, stale-if-error=86400',
     });
     expect(edgeCacheRules('paddock-tracker.com', '/calendar', 's-maxage=3, max-age=0, must-revalidate', null)).toEqual({
       cacheTag: 'path:/calendar,site',
+      cdnCacheControl: 'max-age=3, stale-while-revalidate=86400, stale-if-error=86400',
     });
   });
 
@@ -160,6 +174,7 @@ describe('withEdgeCacheRules', () => {
     const out = withEdgeCacheRules(new Request('https://paddock-tracker.com/series/f1'), res);
     expect(out.headers.get('cache-tag')).toBe('path:/series/f1,site');
     expect(out.headers.get('cache-control')).toBe('s-maxage=300, max-age=0, must-revalidate');
+    expect(out.headers.get('cloudflare-cdn-cache-control')).toBe('max-age=300, stale-while-revalidate=86400, stale-if-error=86400');
     expect(await out.text()).toBe('<html>');
     const dev = withEdgeCacheRules(
       new Request('https://dev.paddock-tracker.com/series/f1'),
@@ -167,6 +182,29 @@ describe('withEdgeCacheRules', () => {
     );
     expect(dev.headers.get('cache-control')).toBe('private, no-store');
     expect(dev.headers.get('cache-tag')).toBeNull();
+    expect(dev.headers.get('cloudflare-cdn-cache-control')).toBeNull();
+  });
+
+  it('gives no edge line to what it never stores (a private page, a bare redirect) and the expired-copy line to a STALE or regenerating answer', () => {
+    const priv = withEdgeCacheRules(
+      new Request('https://paddock-tracker.com/series/f1'),
+      new Response('x', { headers: { 'cache-control': 'private, max-age=600' } }),
+    );
+    expect(priv.headers.get('cloudflare-cdn-cache-control')).toBeNull();
+    const bare = withEdgeCacheRules(new Request('https://paddock-tracker.com/series/f1'), new Response('x'));
+    expect(bare.headers.get('cache-control')).toBe('no-store');
+    expect(bare.headers.get('cloudflare-cdn-cache-control')).toBeNull();
+    for (const [cc, state] of [
+      ['s-maxage=1, max-age=0, must-revalidate', 'STALE'],
+      ['s-maxage=2, max-age=0, must-revalidate', null],
+    ] as const) {
+      const out = withEdgeCacheRules(
+        new Request('https://paddock-tracker.com/series/f1'),
+        new Response('x', { headers: { 'cache-control': cc, ...(state ? { 'x-opennext-cache': state } : {}) } }),
+      );
+      expect(out.headers.get('cache-control'), cc).toBe('no-store');
+      expect(out.headers.get('cloudflare-cdn-cache-control'), cc).toBe('max-age=0, stale-while-revalidate=86400, stale-if-error=86400');
+    }
   });
 
   it("keeps a redirect's status and location and says no-store", () => {
