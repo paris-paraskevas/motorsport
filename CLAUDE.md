@@ -40,7 +40,7 @@ Adopted 2026-09-10 (session 47) on the operator's word "rules go". Anthropic's g
 
 ## Stack and commands
 Next.js 16 App Router · React 19 · Tailwind v4 · Serwist PWA · Clerk · Upstash KV · Supabase · Cloudflare Worker (OpenNext; `wrangler.jsonc`). Repo `paris-paraskevas/motorsport`, live at https://paddock-tracker.com. Prod Supabase ref `dzelqrtajnauunzmxfic`.
-`npm run dev` · `build` · `lint` (0 errors, 2 known `_encoding` warnings) · `test` (vitest) · `health*` · `cf:build` · `deploy:testing`.
+`npm run dev` · `build` · `lint` (0 errors, 2 known `_encoding` warnings) · `test` (vitest) · `health*` · `cf:build`.
 
 | Path | Purpose |
 |---|---|

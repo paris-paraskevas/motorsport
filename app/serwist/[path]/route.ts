@@ -12,4 +12,8 @@ export const { GET, dynamic, dynamicParams, revalidate, generateStaticParams } =
     // Output naming derives from the entry basename: app/sw.ts → sw.js at the
     // project root → served as /serwist/sw.js (what SerwistRegister registers).
     swSrc: "app/sw.ts",
+    // Replaces Serwist's default list, so its one entry is repeated. The 3D car
+    // (public/models) loads only when a reader opens the replay; precaching it
+    // would make every reader download it (the operator's choice, 2026-10-07).
+    globIgnores: ["**/node_modules/**/*", "public/models/**/*"],
   });

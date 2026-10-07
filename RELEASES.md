@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.263 — 2026-10-07
+
+The 3D car in the F1 qualifying replay is now a ninth of its old size, so it appears sooner, especially on mobile data. Behind the scenes, old preview copies of the site and outdated notes were cleared away.
+
 ## 1.0.261 — 2026-10-07
 
 The circuit map and every team page now give search engines one clear address too, and the authors’ photos carry their names for search engines while screen readers skip them, since each name is printed right beside the photo.

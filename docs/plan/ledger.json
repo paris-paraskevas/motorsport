@@ -809,6 +809,16 @@
    "date": "2026-10-07",
    "change": "X11 (a lead paragraph on every data page) runs before the paid Seobility crawl, after X17’s decision-free remainder: one sample lead per page type, each approved by the operator before it ships.",
    "word": "“Yes, before the crawl” (the operator’s answer to “should every data page get a short written intro at the top?”, 2026-10-07)"
+  },
+  {
+   "date": "2026-10-07",
+   "change": "Session 67’s audit, point 1: the cleanup O2 opened (the three preview Workers’ setups, 48 docs and the root ONBOARDING.md pointer, a lighter 3D car); the testing Worker deleted on Cloudflare; 42 temporary storage rules clear the 84 old cache folders; the three old branches go after O2’s PR.",
+   "word": "“delete testing. i am the last say.”, “keep the lightest”, “1. yes 2. yes 3. yes” and, on the docs other docs use, “1. yes … 5. yes” (the operator, 2026-10-07)"
+  },
+  {
+   "date": "2026-10-07",
+   "change": "O2’s scope adds: the service worker skips the 3D models folder (public/models), so only readers who open the replay download the car; the fresh-context review found that the 319 KB car would otherwise fit the 2 MiB precache cap and reach every reader.",
+   "word": "“A” (the operator, 2026-10-07)"
   }
  ],
  "phases": {
@@ -1814,6 +1824,20 @@
    "acceptance": "a billing cycle under 1 GB before 2027-01-01, the usage page quoted; the smoke test unchanged.",
    "status": "planned",
    "scopeHash": "856201ee5093"
+  },
+  {
+   "id": "O2",
+   "phase": "PO",
+   "title": "Session 67’s cleanup",
+   "scope": "What the audit of 7 October found dead goes: the setups of the three preview Workers (wrangler.testing.jsonc, wrangler.paris.jsonc, wrangler.panagiotis.jsonc; the Workers themselves are gone from Cloudflare) with their nine npm commands, and scripts/sync-worker-secrets.mts with its secrets:sync command, which only served them; the 48 docs the operator approved (D1–D52 on the Session 67 page less D2, D26, D27 and D47, kept because other docs use them) and the root ONBOARDING.md pointer, with README’s link to it; the onboard replay’s 3D car (public/models/f1-2022/car.glb, 2,890 KB) replaced by its compressed copy (319 KB, meshopt, 12 parts, the same dimensions), its licence note saying so. The service worker skips the 3D models folder, so only readers who open the replay download the car.",
+   "fixedBy": "the operator’s words of 7 October: “delete testing. i am the last say.”, “keep the lightest” (the car), and “1. yes 2. yes 3. yes” (the temporary storage rules, D1–D52, the old branches after this PR)",
+   "defaults": "one PR into next, version 1.0.263; the comments, the census script’s usage line and CLAUDE.md’s command list stop naming the deleted setups; CONTRIBUTING.md waits for point 4’s rewrite; the three old branches are deleted after the merge",
+   "needsWord": "none",
+   "acceptance": "tsc, eslint and the tests pass; nothing outside the records names a deleted setup or doc; the onboard car loads from the new file in a browser; the car’s licence note records the change; the service worker’s precache list leaves the car out",
+   "status": "started",
+   "scopeHash": "289d92e1196d",
+   "evidence": "STARTED 2026-10-07 (session 67) on the operator’s words above. Done before the PR, outside the repo: the testing Worker deleted on Cloudflare (`wrangler delete`; `wrangler deployments list` then answers code 10007, the Worker does not exist); 42 temporary lifecycle rules on paddock-inc-cache (one for testing-cache/, one per old live build, none for the live build 5XT7GwG74-J8v3eCU8E2k) delete the 84 old folders’ files a day after their write (the bucket held 299.4 GB in 534,358 files, listed by 610 list operations).",
+   "brief": "Remove what session 67’s audit found dead, and give the onboard replay a lighter 3D car."
   },
   {
    "id": "R18",
