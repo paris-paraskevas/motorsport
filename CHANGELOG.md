@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.262 — 2026-10-07
+
+### Records — session 66’s close
+
+Records only, no code. `docs/HANDOFF.md`: the LATEST section for session 66 (the order of the next session, what shipped, the decisions of the 7th, the costs to watch, the living ledger page, the landmines). `docs/pull-requests.md`: #1144’s landing and its audit on prod, with the census’s first results file. `docs/plan/ledger.json`: X17’s evidence for PR 2 and a dated line for the operator’s order. `SCHEDULE.md`: item 27.
+
 ## 1.0.261 — 2026-10-07
 
 ### X17, PR 2 — The cleanup’s decision-free remainder
