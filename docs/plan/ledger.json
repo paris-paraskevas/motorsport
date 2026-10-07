@@ -812,7 +812,7 @@
   },
   {
    "date": "2026-10-07",
-   "change": "The next session’s order: X17’s rest first (the 19 F1 qualifying pages’ image descriptions, /social and /social/threads, typos, heading order), then PF5 planned and built, with the database check beginning while PF5 is done (the Security Advisor’s security-definer views, user_balance first; the log growth; every table’s size and shape explained plainly); X11’s intros still before the paid crawl.",
+   "change": "The next session’s order: X17’s rest first (the 19 F1 qualifying pages’ image descriptions, /social and /social/threads, typos, heading order), then PF5 planned and built, with the database check beginning as PF5 is being done (the Security Advisor’s security-definer views, user_balance first; the log growth; every table’s size and shape explained plainly); X11’s intros still before the paid crawl.",
    "word": "“Finish search cleanup, then do pf5 and as pf5 is being done we can begin checking the db” (the operator, 2026-10-07)"
   }
  ],
