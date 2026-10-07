@@ -20,6 +20,7 @@ const DESCRIPTION =
 const BASE_METADATA: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
+  alternates: { canonical: '/information/map' },
   ...withSocialMeta({ title: TITLE, description: DESCRIPTION, path: '/information/map' }),
 };
 export const generateMetadata = pageMetadata('/information/map', BASE_METADATA);
