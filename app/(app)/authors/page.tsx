@@ -76,7 +76,8 @@ async function AuthorsPage() {
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={identity.image}
-                    alt=""
+                    alt={profile.displayName}
+                    aria-hidden="true"
                     width={56}
                     height={56}
                     loading="lazy"

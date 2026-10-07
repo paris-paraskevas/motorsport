@@ -141,7 +141,8 @@ export function PostHeader({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={author.image}
-                  alt=""
+                  alt={author.name}
+                  aria-hidden="true"
                   width={28}
                   height={28}
                   loading="lazy"

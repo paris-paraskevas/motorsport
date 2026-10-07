@@ -133,7 +133,8 @@ async function AuthorPage({ params }: { params: Promise<{ slug: string }> }) {
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={identity.image}
-              alt=""
+              alt={name}
+              aria-hidden="true"
               width={96}
               height={96}
               className="h-20 w-20 shrink-0 border border-border bg-surface object-cover md:h-24 md:w-24"

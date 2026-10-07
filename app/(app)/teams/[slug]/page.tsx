@@ -59,6 +59,7 @@ async function baseMetadata({
     // 582 px with the number) is named in the records rather than widened past the budget.
     title: fitTitle([team.name, team.name.replace(/\s*\([^)]*\)\s*$/, ''), team.name.replace(/\s*#\d+\s*(\([^)]*\))?\s*$/, '')]),
     description,
+    alternates: { canonical: `/teams/${slug}` },
     ...withSocialMeta({ title: team.name, description, path: `/teams/${slug}` }),
   };
 }

@@ -21,8 +21,8 @@ describe('robots.txt', () => {
   const disallow = ([] as string[]).concat(rule.disallow ?? []);
   const blocked = (url: string) => disallow.some(d => matches(d, url));
 
-  it('keeps crawlers off the filter variants and nothing else new', () => {
-    expect(disallow).toEqual(['/api/', '/settings', '/sign-in', '/sign-up', '/*?*filter=']);
+  it('keeps crawlers off the filter variants and the calendar\'s ?s= deep links, and nothing else new', () => {
+    expect(disallow).toEqual(['/api/', '/settings', '/sign-in', '/sign-up', '/*?*filter=', '/calendar?s=']);
     expect(rule.allow).toBe('/');
     expect(rule.userAgent).toBe('*');
   });
@@ -36,8 +36,13 @@ describe('robots.txt', () => {
     ]) expect(blocked(url), url).toBe(true);
   });
 
+  it('blocks the calendar\'s ?s= deep links, with or without more parameters (X17), and nothing named alike', () => {
+    for (const url of ['/calendar?s=f1', '/calendar?s=f1&races=1', '/calendar?s=motogp']) expect(blocked(url), url).toBe(true);
+    for (const url of ['/calendar?series=f1', '/calendar?sessions=race', '/series/f1?s=x']) expect(blocked(url), url).toBe(false);
+  });
+
   it('leaves the plain pages, the sitemap, a series link with another query and every sitemap page allowed', () => {
-    for (const url of ['/', '/calendar', '/news', '/sitemap.xml', '/robots.txt', '/calendar?s=f1', '/series/f1/weekend/1', '/information/tracks/sachsenring', '/blog/f1-baku-2026-practice', '/drivers/pierre-gasly']) {
+    for (const url of ['/', '/calendar', '/news', '/sitemap.xml', '/robots.txt', '/calendar?series=f1', '/series/f1/weekend/1', '/information/tracks/sachsenring', '/blog/f1-baku-2026-practice', '/drivers/pierre-gasly']) {
       expect(blocked(url), url).toBe(false);
     }
     // A sort or a view alone is a handful of links per page, not a combination graph; the line names filters only.
