@@ -814,6 +814,11 @@
    "date": "2026-10-07",
    "change": "The next session’s order: X17’s rest first (the 19 F1 qualifying pages’ image descriptions, /social and /social/threads, typos, heading order), then PF5 planned and built, with the database check beginning as PF5 is being done (the Security Advisor’s security-definer views, user_balance first; the log growth; every table’s size and shape explained plainly); X11’s intros still before the paid crawl.",
    "word": "“Finish search cleanup, then do pf5 and as pf5 is being done we can begin checking the db” (the operator, 2026-10-07)"
+  },
+  {
+   "date": "2026-10-07",
+   "change": "At most one deploy a day: pull requests merge into a daily release branch next, which deploys nothing, and next merges into main once a day on the operator’s word. The cost goal: Supabase and Cloudflare at zero cost; research first, any big rebuild discussed before it is chosen. The order: the stale data (#1126), the cost research, X17’s rest, then PF5 with the database check.",
+   "word": "“We will do one deploy a day at most. Batching prs before we merge them.” · “stale data, cost research, then search cleanup” · “A daily release branch” · on a big rebuild “this will need discussing” (the operator, 2026-10-07)"
   }
  ],
  "phases": {
