@@ -53,14 +53,17 @@ try {
   // No marker yet: the first run only records the live build.
 }
 if (previous && !BUILD_ID.test(previous)) {
-  console.error(`keep-live: the marker holds "${previous.slice(0, 40)}", not a build id; nothing done.`);
-  process.exit(1);
+  // Overwritten below with the live build; stopping here would stop every later run too.
+  console.error(`keep-live: the marker holds "${previous.slice(0, 40)}", not a build id; treated as none recorded.`);
+  previous = '';
 }
 console.log(`keep-live: live build ${live}; previous ${previous || '(none recorded)'}`);
 
 const today = new Date().toISOString().slice(0, 10);
 const cutoff = Date.now() - RULE_LIFE_DAYS * 86_400_000;
-const rules = [...wrangler(`r2 bucket lifecycle list ${BUCKET}`).matchAll(/^name:\s+(\S+)/gm)].map((m) => m[1]);
+// wrangler prints the labels in colour when the terminal or FORCE_COLOR asks for it.
+const listing = wrangler(`r2 bucket lifecycle list ${BUCKET}`).replace(/\u001b\[[0-9;]*m/g, '');
+const rules = [...listing.matchAll(/^name:\s+(\S+)/gm)].map((m) => m[1]);
 const expired = rules.filter((n) => n.startsWith(RULE) && Date.parse(n.slice(RULE.length, RULE.length + 10)) < cutoff);
 
 const markPrevious = previous && previous !== live ? `${PREFIX}/${previous}/` : '';

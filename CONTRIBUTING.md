@@ -1,10 +1,10 @@
 # Contributing to Paddock Tracker
 
-Two-person codebase: Paris (paris-paraskevas) and Fotis. One rule is enforced, not trusted: only `next` merges into `main`, and only the operator merges it (a required check and the repository's ruleset on `main`, since 2026-10-08). The rest below is the social contract — break it rarely and explain why when you do.
+Two-person codebase: Paris (paris-paraskevas) and Fotis. One rule is enforced, not trusted: only `next` merges into `main`. GitHub enforces where the change comes from: the `from-next` check fails any other pull request into `main`, and the repository's ruleset on `main` requires it. GitHub sees the operator and Claude as one account, so who merges is enforced on Claude's side: Claude's push guard refuses every merge into `main`, and only the operator merges `next` into `main`, by hand. The rest below is the social contract — break it rarely and explain why when you do.
 
 ## TL;DR
 
-1. Never push or merge into `main` yourself. Branch from `next` → PR into `next` → review → merge into `next`. Once a day the operator merges `next` into `main`, and that merge is the only deploy.
+1. Never push or merge into `main` yourself. Branch from `next` → PR into `next` → review → merge into `next`. Once a day the operator merges `next` into `main` with a merge commit, and that merge is the only deploy.
 2. Every PR needs an approving review before merge. (CI is intentionally not wired yet — see `IDEAS.md` Parked.)
 3. Read `CLAUDE.md` — the operating manual that humans and Claude both follow.
 
@@ -31,7 +31,7 @@ There are no preview copies: `motorsport-testing`, `motorsport-paris` and `motor
 - Body: what + why + how to test. Link to the relevant `IDEAS.md` entry if applicable.
 - Target `next`: `gh pr create --base next`. A PR into `main` from any other branch fails the `from-next` check and cannot merge.
 - There is **no preview URL** (see "Where we work"). Review the diff, and check the change locally with `npm run dev`.
-- Squash-merge into `next`. Delete the branch after. Merging into `next` deploys nothing; **the operator's daily merge of `next` into `main` deploys production**, and the only undo is a revert PR.
+- Squash-merge into `next`. Delete the branch after. Merging into `next` deploys nothing; **the operator's daily merge of `next` into `main` deploys production**, and the only undo is a revert PR. That merge is a merge commit, never a squash: a squash gives `main` a commit `next` lacks, and the next day's merge conflicts on `CHANGELOG.md` and `package.json`.
 
 ## Code review
 

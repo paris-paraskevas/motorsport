@@ -25,7 +25,7 @@
     "cf:build": "opennextjs-cloudflare build",
     "cf:populate": "opennextjs-cloudflare populateCache remote --cacheChunkSize 5",
     "deploy": "npm run cf:build && npm run deploy:cf",
-    "deploy:cf": "npm run cf:populate && wrangler deploy && (tsx scripts/keep-live-cache.mts --apply || echo \"keep-live cleanup failed, non-fatal: the 7-day rule still clears old builds\")",
+    "deploy:cf": "opennextjs-cloudflare deploy --cacheChunkSize 5 && (tsx scripts/keep-live-cache.mts --apply || echo \"keep-live cleanup failed, non-fatal: the 7-day rule still clears old builds\")",
     "upgrades:draft": "tsx scripts/fetch-f1-upgrades.mts"
   },
   "dependencies": {

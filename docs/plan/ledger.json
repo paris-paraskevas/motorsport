@@ -829,6 +829,11 @@
    "date": "2026-10-08",
    "change": "One deploy a day becomes the foundation (slot O4): only the operator merges next into main, once a day; Claude never merges into main; a required check and a ruleset on main enforce it; each deploy keeps only the live cache folder. CLAUDE.md’s laws on pushing and deploying are rewritten to match.",
    "word": "“Ok, so only I merge and i can do so once a day? Build as ledger slot O4, GO!” (the operator, 2026-10-08)"
+  },
+  {
+   "date": "2026-10-08",
+   "change": "The operator’s daily merge of next into main uses a merge commit, never a squash: a squash gives main a commit next lacks, and the next day’s merge conflicts on CHANGELOG.md and package.json (the review of #1148 reproduced it in a scratch repository). CLAUDE.md and CONTRIBUTING.md say so.",
+   "word": "“Remind me, just before I click Merge, … to use a merge commit, not squash.” (the operator, 2026-10-08, session 68)"
   }
  ],
  "phases": {
@@ -1874,7 +1879,7 @@
    "acceptance": "the hook tests pass with the new cases; the cleanup’s dry run against the real bucket writes nothing; the ruleset exists on main and the daily pull request shows from-next passing; after the first daily merge with the new deploy command, a keep-live rule for the previous build appears and the marker names the new build",
    "status": "started",
    "scopeHash": "76adf475918a",
-   "evidence": "STARTED 2026-10-08 (session 67). Facts behind it: Cloudflare’s deploy command is set in the dashboard to “npx wrangler deploy && (npm run cf:populate || echo …)” (docs/HANDOFF.md:1786), live first and cache second; OpenNext’s own deploy fills the cache first (opennext.js.org/cloudflare/cli); populateCache writes through its own temporary worker and fills no Durable Object tag cache (node_modules/@opennextjs/cloudflare/dist/cli/commands/populate-cache.js:74-78, 126-211).",
+   "evidence": "STARTED 2026-10-08 (session 67). Facts behind it: Cloudflare’s deploy command is set in the dashboard to “npx wrangler deploy && (npm run cf:populate || echo …)” (docs/HANDOFF.md:1786); OpenNext’s own deploy fills the cache first (opennext.js.org/cloudflare/cli); populateCache writes through its own temporary worker and fills no Durable Object tag cache (node_modules/@opennextjs/cloudflare/dist/cli/commands/populate-cache.js:74-78, 126-211). Correction (session 68, from the review of #1148): the dashboard’s command does not go live first. A plain `wrangler deploy` in an OpenNext project hands off to `opennextjs-cloudflare deploy` (wrangler 4.114.0, wrangler-dist/cli.js:296662-296685; condition at :296742, `--autoconfig` defaults to true at :296859-296862), which fills the cache and then goes live (deploy.js:22-44); the dashboard’s command therefore fills the cache twice, once before and once after going live, and the first draft of deploy:cf (`cf:populate && wrangler deploy`) would have too. deploy:cf is now OpenNext’s own deploy with the chunk size cf:populate used (`--cacheChunkSize 5`, populate-cache.js:548-553): one fill, before going live. UNVERIFIED in a live build log (the API read was refused): the build log of 7ca4d086 should hold “OpenNext project detected, calling `opennextjs-cloudflare deploy`”. Defaults taken in the review’s fold: the push guard reads commands as a shell does, and refuses what it cannot check before the command runs (a pull request named through the shell, a lookup that fails or takes past 8 seconds of the hook’s 10); gh api may create a ruleset but never edit or delete one, and never merges or writes a branch; a marker that holds no build id counts as none recorded and is overwritten.",
    "brief": "Only the operator merges into main, once a day; every other way is refused; each deploy keeps only the live cache folder."
   },
   {
