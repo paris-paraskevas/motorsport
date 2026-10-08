@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.266 — 2026-10-08
+
+### Records — sessions 66 to 68, into next
+
+Records only, no code. This PR carries #1145 (session 66’s close, 1.0.262), which targeted `main` from a main-based branch and could no longer merge there once the ruleset existed (closed as folded in here), together with the records of sessions 67 and 68, merged with `next` by union (CHANGELOG, RELEASES, `docs/pull-requests.md` and the ledger keep both sides; #1144’s heading takes the records’ landing line). `docs/HANDOFF.md`: session 67’s LATEST section (the six-point audit, the operator’s rules of 7 and 8 October) and session 68’s (the first daily merge and the order ahead). `docs/plan/ledger.json`: O4 done (the ruleset 24720507 on `main`: no deletion, no force push, the `from-next` check from GitHub Actions, merge commits only, no bypass; the operator’s first daily merge #1149 at 12:12:18Z, live at 12:18:42Z; the keep-live rule for the old live folder and the marker naming the new build, both read back after the deploy); O2 and O3 live, with the checks each still owes. `docs/pull-requests.md`: #1149 and this entry. Outside the repo, on the operator’s word: the cleanup’s marker `keep-live/live-build.txt` set to the live build `5XT7GwG74-J8v3eCU8E2k` before the merge (one R2 write), so the first deploy already marked the old live folder for expiry.
+
 ## 1.0.265 — 2026-10-08
 
 ### O4 — One deploy a day, as the foundation
