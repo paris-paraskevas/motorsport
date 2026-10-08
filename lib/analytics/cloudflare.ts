@@ -23,12 +23,12 @@ const REST = 'https://api.cloudflare.com/client/v4';
 export const WORKERS_INCLUDED_REQUESTS = 10_000_000;
 
 /**
- * The production Worker's script name (`name` in wrangler.jsonc). The account
- * also runs `motorsport-testing` and `motorsport-paris`, so an unfiltered query
- * sums every Worker on the account and the console's "requests" figure is the
- * three previews' traffic added to prod's (found by the 2026-09-07 data-API
- * inventory). Hard-coded rather than read from the environment: the panel is
- * about production whichever Worker renders it.
+ * The production Worker's script name (`name` in wrangler.jsonc). An unfiltered
+ * query sums every Worker on the account: until 2026-10-07 the account also ran
+ * three preview Workers, and the console's "requests" figure added their traffic
+ * to prod's (found by the 2026-09-07 data-API inventory). Hard-coded rather than
+ * read from the environment: the panel is about production whichever Worker
+ * renders it.
  */
 export const PRODUCTION_SCRIPT_NAME = 'motorsport';
 

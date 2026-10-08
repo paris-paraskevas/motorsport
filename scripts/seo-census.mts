@@ -4,7 +4,7 @@
  * never see: a sitemap URL that answers noindex, a redirect, a 404 or a 5xx. The other findings are reported, not failing.
  *
  *   npx tsx scripts/seo-census.mts                                      # against https://paddock-tracker.com
- *   npx tsx scripts/seo-census.mts --site https://testing.paddock-tracker.com
+ *   npx tsx scripts/seo-census.mts --site http://localhost:3000                 # another host, e.g. a local server
  *   npx tsx scripts/seo-census.mts --out .seo-census                    # the CSV and the summary go there (the default)
  *   npx tsx scripts/seo-census.mts --limit 50                           # the first fifty URLs, a smoke run
  *

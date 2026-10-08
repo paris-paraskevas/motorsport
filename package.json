@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "1.0.261",
+  "version": "1.0.265",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -24,18 +24,8 @@
     "prepare": "husky",
     "cf:build": "opennextjs-cloudflare build",
     "cf:populate": "opennextjs-cloudflare populateCache remote --cacheChunkSize 5",
-    "cf:populate:testing": "opennextjs-cloudflare populateCache remote -c wrangler.testing.jsonc --cacheChunkSize 5",
-    "deploy": "npm run cf:build && wrangler deploy && npm run cf:populate",
-    "deploy:testing": "npm run cf:build && wrangler deploy -c wrangler.testing.jsonc && npm run cf:populate:testing",
-    "deploy:cf:testing": "wrangler deploy -c wrangler.testing.jsonc && (npm run cf:populate:testing || echo \"populate skipped, non-fatal: cache warms on first visit\")",
-    "deploy:cf": "wrangler deploy && npm run cf:populate",
-    "cf:populate:paris": "opennextjs-cloudflare populateCache remote -c wrangler.paris.jsonc --cacheChunkSize 5",
-    "deploy:paris": "npm run cf:build && wrangler deploy -c wrangler.paris.jsonc && npm run cf:populate:paris",
-    "deploy:cf:paris": "wrangler deploy -c wrangler.paris.jsonc && (npm run cf:populate:paris || echo \"populate skipped, non-fatal: cache warms on first visit\")",
-    "cf:populate:panagiotis": "opennextjs-cloudflare populateCache remote -c wrangler.panagiotis.jsonc --cacheChunkSize 5",
-    "deploy:panagiotis": "npm run cf:build && wrangler deploy -c wrangler.panagiotis.jsonc && npm run cf:populate:panagiotis",
-    "deploy:cf:panagiotis": "wrangler deploy -c wrangler.panagiotis.jsonc && (npm run cf:populate:panagiotis || echo \"populate skipped, non-fatal: cache warms on first visit\")",
-    "secrets:sync": "tsx --env-file=.env.production.local scripts/sync-worker-secrets.mts",
+    "deploy": "npm run cf:build && npm run deploy:cf",
+    "deploy:cf": "opennextjs-cloudflare deploy --cacheChunkSize 5 && (tsx scripts/keep-live-cache.mts --apply || echo \"keep-live cleanup failed, non-fatal: the 7-day rule still clears old builds\")",
     "upgrades:draft": "tsx scripts/fetch-f1-upgrades.mts"
   },
   "dependencies": {

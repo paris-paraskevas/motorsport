@@ -17,7 +17,7 @@ The repo's `CLAUDE.md` laws apply to every step here. In short:
 - Every PR quotes the Worker dry-run size against the 80% alarm of the 64 MiB ceiling.
 - A route file leaves only behind a parity check pasted in the PR.
 
-Every step below has a **gate**. Stop at the gate, show the numbers, and wait for the operator's word before the next step. Measure on the testing Worker (`testing.paddock-tracker.com`, `wrangler.testing.jsonc`, `npm run deploy:testing`) before prod, then on prod right after the deploy. Append every measurement to `docs/perf-baselines.md` (append-only, dated).
+Every step below has a **gate**. Stop at the gate, show the numbers, and wait for the operator's word before the next step. Measure on prod right after the daily deploy (the testing Worker that used to come first was deleted on 2026-10-07; a change goes live only through `next`'s daily merge into `main`). Append every measurement to `docs/perf-baselines.md` (append-only, dated).
 
 ## What is already fixed (do not redo)
 
@@ -64,7 +64,7 @@ Targets, from `docs/perf-baselines.md`: TTFB under 0.8 s, LCP under 2.5 s, CLS u
 
 ```bash
 #!/usr/bin/env bash
-# Usage: ./ttfb.sh https://paddock-tracker.com   (or https://testing.paddock-tracker.com)
+# Usage: ./ttfb.sh https://paddock-tracker.com
 # Prints TTFB, size and the cache headers for each page, three requests in a row.
 BASE="${1:-https://paddock-tracker.com}"
 UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128 Safari/537.36'
@@ -249,7 +249,7 @@ The sketch leaves three things for the PR to settle:
 
 **Wiring.**
 
-- `wrangler.edge.jsonc` declares `routes` for `testing.paddock-tracker.com/*` first, and a service binding `APP` → `motorsport-testing`.
+- `wrangler.edge.jsonc` was planned to declare `routes` for `testing.paddock-tracker.com/*` first, with a service binding `APP` → `motorsport-testing`; that Worker was deleted on 2026-10-07, so a trial of this step needs a new plan.
 - The app Worker's own route for that host is removed in the same deploy. Two Workers can't own the same route pattern.
 - The app keeps a `workers.dev` address, or no public route at all, and is reached only through the binding.
 - The crons keep working because they fetch the public hostname, which now goes through the edge Worker and passes `/api/*` through.
