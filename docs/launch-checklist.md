@@ -99,7 +99,7 @@ This is a **blocking prerequisite**, not launch-day polish. What exists today is
    - Flip `LAUNCH_ANNOUNCEMENT.active` → `true` in `lib/site.ts` (banner goes live). Keep `id: 'v1.0'` — dismissal is keyed by it.
    - Bump `package.json` `version` → **`1.0.0`**.
    - `CHANGELOG.md` + `RELEASES.md`. Under the release scheme adopted in 0.334.30, 1.0 opens a **new release header** in `RELEASES.md`: `# 1.0 · <Name>` with a 1–3 sentence story, then the `## 1.0.0 — <date>` entry beneath it. Do not author the date range or version span into the prose; both are derived.
-3. **Verify on a real Worker, not localhost.** There is no per-PR preview URL (a Worker implementing Durable Objects gets none), so push the branch to `testing-paris` and check `paris.paddock-tracker.com`: banner renders, dismiss persists across reload, `/changelog` shows 1.0.0 as "currently running". Remember previews share prod's Supabase, KV and R2.
+3. **Verify on a real Worker, not localhost.** There is no per-PR preview URL (a Worker implementing Durable Objects gets none), and the preview copies were deleted on 2026-10-07, so check on the live site after the daily deploy: banner renders, dismiss persists across reload, `/changelog` shows 1.0.0 as "currently running".
 4. **Merge → prod deploys in ~5–7 minutes.** Merging *is* the deploy; there is no separate step and **no GitHub Actions run to watch**, so poll `/changelog` until it reports 1.0.0. Then re-verify on prod: banner, a clean anonymous home, a signed-in home.
 5. **`npm run indexnow:submit`** to re-crawl.
 6. **Fire the marketing posts** per `docs/research/2026-07-06-launch-marketing.md`, in the sequenced order there. Don't blast every channel at once; stagger so you can react.

@@ -819,6 +819,31 @@
    "date": "2026-10-07",
    "change": "At most one deploy a day: pull requests merge into a daily release branch next, which deploys nothing, and next merges into main once a day on the operator’s word. The cost goal: Supabase and Cloudflare at zero cost; research first, any big rebuild discussed before it is chosen. The order: the stale data (#1126), the cost research, X17’s rest, then PF5 with the database check.",
    "word": "“We will do one deploy a day at most. Batching prs before we merge them.” · “stale data, cost research, then search cleanup” · “A daily release branch” · on a big rebuild “this will need discussing” (the operator, 2026-10-07)"
+  },
+  {
+   "date": "2026-10-07",
+   "change": "Session 67’s audit, point 1: the cleanup O2 opened (the three preview Workers’ setups, 48 docs and the root ONBOARDING.md pointer, a lighter 3D car); the testing Worker deleted on Cloudflare; 42 temporary storage rules clear the 84 old cache folders; the three old branches go after O2’s PR.",
+   "word": "“delete testing. i am the last say.”, “keep the lightest”, “1. yes 2. yes 3. yes” and, on the docs other docs use, “1. yes … 5. yes” (the operator, 2026-10-07)"
+  },
+  {
+   "date": "2026-10-07",
+   "change": "O2’s scope adds: the service worker skips the 3D models folder (public/models), so only readers who open the replay download the car; the fresh-context review found that the 319 KB car would otherwise fit the 2 MiB precache cap and reach every reader.",
+   "word": "“A” (the operator, 2026-10-07)"
+  },
+  {
+   "date": "2026-10-08",
+   "change": "Session 67, point 3: #1126 and #1072 were false alarms (one-time session captures counted as recurring sources; the data was arriving); slot O3 opened: the check fixed and the loader’s schedule moved off the hour. An API map (every API of the site and every outside service, in plain words) added to the session’s audit as point 7, after point 6.",
+   "word": "“GO on 1 and 2” and “ok i agree with api map” (the operator, 2026-10-08)"
+  },
+  {
+   "date": "2026-10-08",
+   "change": "One deploy a day becomes the foundation (slot O4): only the operator merges next into main, once a day; Claude never merges into main; a required check and a ruleset on main enforce it; each deploy keeps only the live cache folder. CLAUDE.md’s laws on pushing and deploying are rewritten to match.",
+   "word": "“Ok, so only I merge and i can do so once a day? Build as ledger slot O4, GO!” (the operator, 2026-10-08)"
+  },
+  {
+   "date": "2026-10-08",
+   "change": "The operator’s daily merge of next into main uses a merge commit, never a squash: a squash gives main a commit next lacks, and the next day’s merge conflicts on CHANGELOG.md and package.json (the review of #1148 reproduced it in a scratch repository). CLAUDE.md and CONTRIBUTING.md say so.",
+   "word": "“Remind me, just before I click Merge, … to use a merge commit, not squash.” (the operator, 2026-10-08, session 68)"
   }
  ],
  "phases": {
@@ -1824,6 +1849,48 @@
    "acceptance": "a billing cycle under 1 GB before 2027-01-01, the usage page quoted; the smoke test unchanged.",
    "status": "planned",
    "scopeHash": "856201ee5093"
+  },
+  {
+   "id": "O2",
+   "phase": "PO",
+   "title": "Session 67’s cleanup",
+   "scope": "What the audit of 7 October found dead goes: the setups of the three preview Workers (wrangler.testing.jsonc, wrangler.paris.jsonc, wrangler.panagiotis.jsonc; the Workers themselves are gone from Cloudflare) with their nine npm commands, and scripts/sync-worker-secrets.mts with its secrets:sync command, which only served them; the 48 docs the operator approved (D1–D52 on the Session 67 page less D2, D26, D27 and D47, kept because other docs use them) and the root ONBOARDING.md pointer, with README’s link to it; the onboard replay’s 3D car (public/models/f1-2022/car.glb, 2,890 KB) replaced by its compressed copy (319 KB, meshopt, 12 parts, the same dimensions), its licence note saying so. The service worker skips the 3D models folder, so only readers who open the replay download the car.",
+   "fixedBy": "the operator’s words of 7 October: “delete testing. i am the last say.”, “keep the lightest” (the car), and “1. yes 2. yes 3. yes” (the temporary storage rules, D1–D52, the old branches after this PR)",
+   "defaults": "one PR into next, version 1.0.263; the comments, the census script’s usage line and CLAUDE.md’s command list stop naming the deleted setups; CONTRIBUTING.md waits for point 4’s rewrite; the three old branches are deleted after the merge",
+   "needsWord": "none",
+   "acceptance": "tsc, eslint and the tests pass; nothing outside the records names a deleted setup or doc; the onboard car loads from the new file in a browser; the car’s licence note records the change; the service worker’s precache list leaves the car out",
+   "status": "started",
+   "scopeHash": "289d92e1196d",
+   "evidence": "STARTED 2026-10-07 (session 67) on the operator’s words above. Done before the PR, outside the repo: the testing Worker deleted on Cloudflare (`wrangler delete`; `wrangler deployments list` then answers code 10007, the Worker does not exist); 42 temporary lifecycle rules on paddock-inc-cache (one for testing-cache/, one per old live build, none for the live build 5XT7GwG74-J8v3eCU8E2k) delete the 84 old folders’ files a day after their write (the bucket held 299.4 GB in 534,358 files, listed by 610 list operations).",
+   "brief": "Remove what session 67’s audit found dead, and give the onboard replay a lighter 3D car."
+  },
+  {
+   "id": "O3",
+   "phase": "PO",
+   "title": "The freshness check’s false alarm, and the loader’s schedule",
+   "scope": "The freshness check stops counting one-time F1 session captures: each is captured once, in the 6 hours after its session ends (app/api/cron/warm-sessions/route.ts), so its age measured the calendar and kept the check red for days after every F1 weekend (#1072, #1126, both false alarms while the data was arriving). The loader’s schedule moves off the start of the hour to minutes 7, 27 and 47, where GitHub names its high load (it ran about 6 times a day of the 72 asked from 8 September to 8 October); its runs a day are counted for a week after the daily merge.",
+   "fixedBy": "the operator’s “GO on 1 and 2” (8 October), on point 3’s diagnosis in session 67",
+   "defaults": "one PR into next, 1.0.264; the session-result: prefix is the one-time kind (lib/session-result-rows.ts); the comments beside the threshold and the schedule carry the measured cadence and GitHub’s words; no test file (the check is a script; its proof is a run against the live data)",
+   "needsWord": "none",
+   "acceptance": "the check, run against the live data, passes while snapshots are fresh and names the oldest recurring source; #1126 closes itself on the first green scheduled check after the daily merge; a week of the loader’s runs counted against the measured 6 a day",
+   "status": "started",
+   "scopeHash": "7fa724441ac4",
+   "evidence": "STARTED 2026-10-08 (session 67): the diagnosis from GitHub’s records only (freshness run 37735116980: newest snapshot 2.5 h old, the row tier failing on session-result:f1:2026:16:bahrain-gp-practice-1 at 144.0 h; 184 loader runs since 8 September, 1 failure, 1 cancelled; the September outage was npm ci refusing an out-of-sync lockfile, run 33869936613).",
+   "brief": "Stop the false stale-data alarm after every F1 weekend, and try quieter minutes for the loader."
+  },
+  {
+   "id": "O4",
+   "phase": "PO",
+   "title": "One deploy a day, as the foundation",
+   "scope": "One deploy a day as the foundation: only the operator merges next into main, once a day, and that merge is the only deploy. Claude’s push-guard refuses any pull request not based on next, any merge of a pull request whose base is not next, and merges through the API (.claude/hooks/push-guard.mjs, with its tests). A required check (.github/workflows/main-from-next.yml, job from-next) fails any pull request into main that does not come from this repository’s next, and a ruleset on main requires it, with no force pushes and no deletion. The deploy fills the new build’s cache first, then goes live, then marks the previous build’s cache folder for deletion a day later and records the new build as live (npm run deploy:cf; scripts/keep-live-cache.mts, a marker object, never a bucket listing). CLAUDE.md’s two laws and CONTRIBUTING.md describe the flow. The operator sets Cloudflare’s deploy command to npm run deploy:cf and the build watch paths.",
+   "fixedBy": "the operator’s “Ok, so only I merge and i can do so once a day? Build as ledger slot O4, GO!” (8 October), on session 67’s point 4 proposal",
+   "defaults": "one PR into next, 1.0.265; the cleanup marks the previous build only (a marker object keep-live/live-build.txt, no listing), is non-fatal after the deploy, and refuses to write without --apply; filling the cache before going live is fatal (the old site keeps serving if it fails); keep-live rules older than 3 days are removed; the once-a-day limit stays the operator’s rule, not a check; the ruleset is created after this PR is in next, with no bypass actors",
+   "needsWord": "none for the code; the operator’s own hand for the dashboard (deploy command and build watch paths)",
+   "acceptance": "the hook tests pass with the new cases; the cleanup’s dry run against the real bucket writes nothing; the ruleset exists on main and the daily pull request shows from-next passing; after the first daily merge with the new deploy command, a keep-live rule for the previous build appears and the marker names the new build",
+   "status": "started",
+   "scopeHash": "76adf475918a",
+   "evidence": "STARTED 2026-10-08 (session 67). Facts behind it: Cloudflare’s deploy command is set in the dashboard to “npx wrangler deploy && (npm run cf:populate || echo …)” (docs/HANDOFF.md:1786); OpenNext’s own deploy fills the cache first (opennext.js.org/cloudflare/cli); populateCache writes through its own temporary worker and fills no Durable Object tag cache (node_modules/@opennextjs/cloudflare/dist/cli/commands/populate-cache.js:74-78, 126-211). Correction (session 68, from the review of #1148): the dashboard’s command does not go live first. A plain `wrangler deploy` in an OpenNext project hands off to `opennextjs-cloudflare deploy` (wrangler 4.114.0, wrangler-dist/cli.js:296662-296685; condition at :296742, `--autoconfig` defaults to true at :296859-296862), which fills the cache and then goes live (deploy.js:22-44); the dashboard’s command therefore fills the cache twice, once before and once after going live, and the first draft of deploy:cf (`cf:populate && wrangler deploy`) would have too. deploy:cf is now OpenNext’s own deploy with the chunk size cf:populate used (`--cacheChunkSize 5`, populate-cache.js:548-553): one fill, before going live. UNVERIFIED in a live build log (the API read was refused): the build log of 7ca4d086 should hold “OpenNext project detected, calling `opennextjs-cloudflare deploy`”. Defaults taken in the review’s fold: the push guard reads commands as a shell does, and refuses what it cannot check before the command runs (a pull request named through the shell, a lookup that fails or takes past 8 seconds of the hook’s 10); gh api may create a ruleset but never edit or delete one, and never merges or writes a branch; a marker that holds no build id counts as none recorded and is overwritten.",
+   "brief": "Only the operator merges into main, once a day; every other way is refused; each deploy keeps only the live cache folder."
   },
   {
    "id": "R18",
