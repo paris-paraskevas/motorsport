@@ -22,12 +22,14 @@
  */
 import { betDb } from '../lib/betting/client';
 
-// Deliberately generous. The workflow DECLARES */20 but GitHub throttles cron on
-// shared runners, and the real cadence is ~5 runs a day with observed gaps of 3
-// to 11 hours. A tighter threshold would fire on a healthy-but-throttled day,
+// Deliberately generous. The workflow DECLARES three runs an hour but GitHub
+// throttles cron on shared runners: from 2026-09-08 to 2026-10-08 the loader ran
+// about 6 times a day, with gaps of up to 7.9 hours between scheduled runs and
+// 14.4 hours between successful ones (5–6 October, around a failed and a
+// cancelled run). A tighter threshold would fire on a healthy-but-throttled day,
 // and an alert that cries wolf is one people learn to ignore — which is the
-// failure this whole line of work exists to prevent. 12 hours sits beyond the
-// worst observed gap, so it only speaks when something is genuinely wrong; the
+// failure this whole line of work exists to prevent. 12 hours sits beyond every
+// gap between scheduled runs, so a red check means runs failed or none ran; the
 // five-day outage would have been caught inside its first day.
 //
 // Overridable so the ALARM path can be exercised against real data without
@@ -95,6 +97,11 @@ async function check(): Promise<number> {
     const newest = new Map<string, number>();
     for (const r of (runs.data ?? []) as { source_key: string; finished_at: string | null }[]) {
       if (!r.finished_at || newest.has(r.source_key)) continue;
+      // A session result is captured once, in the 6 hours after its session ends
+      // (app/api/cron/warm-sessions/route.ts), so its age measures the calendar,
+      // not the loader: counted, it kept this check red for days after every F1
+      // weekend (#1072, #1126).
+      if (r.source_key.startsWith('session-result:')) continue;
       newest.set(r.source_key, Date.parse(r.finished_at));
     }
     if (newest.size === 0) {
@@ -105,7 +112,7 @@ async function check(): Promise<number> {
       for (const [key, at] of newest) if (at < oldestAt) { oldestAt = at; oldestKey = key; }
       const rowAgeHours = (Date.now() - oldestAt) / 3_600_000;
       const rowPretty = rowAgeHours < 1 ? `${Math.round(rowAgeHours * 60)} min` : `${rowAgeHours.toFixed(1)} h`;
-      console.log(`row tier: ${newest.size} sources; oldest OK load ${oldestKey} — ${rowPretty} old`);
+      console.log(`row tier: ${newest.size} recurring sources; oldest OK load ${oldestKey} — ${rowPretty} old`);
       if (rowAgeHours > MAX_AGE_HOURS) {
         console.error(
           `FAILED: the row tier for ${oldestKey} is ${rowPretty} old while snapshots are fresh — the loader` +
