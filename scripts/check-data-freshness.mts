@@ -23,11 +23,13 @@
 import { betDb } from '../lib/betting/client';
 
 // Deliberately generous. The workflow DECLARES three runs an hour but GitHub
-// throttles cron on shared runners, and the real cadence is ~6 runs a day with
-// observed gaps of 3 to 11 hours. A tighter threshold would fire on a healthy-but-throttled day,
+// throttles cron on shared runners: from 2026-09-08 to 2026-10-08 the loader ran
+// about 6 times a day, with gaps of up to 7.9 hours between scheduled runs and
+// 14.4 hours between successful ones (5–6 October, around a failed and a
+// cancelled run). A tighter threshold would fire on a healthy-but-throttled day,
 // and an alert that cries wolf is one people learn to ignore — which is the
-// failure this whole line of work exists to prevent. 12 hours sits beyond the
-// worst observed gap, so it only speaks when something is genuinely wrong; the
+// failure this whole line of work exists to prevent. 12 hours sits beyond every
+// gap between scheduled runs, so a red check means runs failed or none ran; the
 // five-day outage would have been caught inside its first day.
 //
 // Overridable so the ALARM path can be exercised against real data without
