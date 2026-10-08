@@ -1,0 +1,32 @@
+name: Only next merges into main
+
+# One deploy a day (slot O4, 2026-10-08): pull requests merge into `next`,
+# which deploys nothing; once a day the operator merges `next` into `main`,
+# and that merge is the only deploy. This check fails any pull request into
+# `main` that does not come from this repository's own `next` branch. The
+# repository's ruleset on `main` requires it, so a failing check blocks the
+# merge button. Costs nothing: Actions minutes are free on a public repo.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  from-next:
+    name: from-next
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: The pull request must come from next
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          THIS_REPO: ${{ github.repository }}
+        run: |
+          if [ "$HEAD_REF" != "next" ] || [ "$HEAD_REPO" != "$THIS_REPO" ]; then
+            echo "::error::Only $THIS_REPO's next branch merges into main (one deploy a day, by the operator). This pull request comes from $HEAD_REPO:$HEAD_REF; target next instead."
+            exit 1
+          fi
+          echo "From $THIS_REPO:next. Allowed."

@@ -52,6 +52,28 @@ r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'git push 
 expect('force-with-lease on a branch → allow', r.code, 0);
 r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'git pull && npm test' } });
 expect('no push → allow', r.code, 0);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'gh pr create --base next --title x --body y' } });
+expect('pr into next → allow', r.code, 0);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'gh pr create --title x --body y' } });
+expect('pr without a base (main by default) → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'gh pr create -B main --title x' } });
+expect('pr into main → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'gh pr merge 12 --squash --delete-branch' } }, { PUSH_GUARD_PR_BASE: 'next' });
+expect('merge a pr into next → allow', r.code, 0);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'gh pr merge 12 --squash' } }, { PUSH_GUARD_PR_BASE: 'main' });
+expect('merge a pr into main → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'gh pr merge --squash' } }, { PUSH_GUARD_PR_BASE: 'next' });
+expect('merge without a pr number → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'gh api -X PUT repos/o/r/pulls/12/merge' } });
+expect('merge through the api → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: "git commit -q -F - <<'MSG'\nfeat: gh pr merge checks the base; gh pr create needs --base next\nMSG" } });
+expect('a heredoc message naming the commands → allow', r.code, 0);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'git commit -m "open it with gh pr create, merge with gh pr merge"' } });
+expect('a quoted message naming the commands → allow', r.code, 0);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: "bash <<'EOF'\ngh pr merge 12 --squash\nEOF" } }, { PUSH_GUARD_PR_BASE: 'main' });
+expect('a merge fed to a shell through a heredoc → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
+r = run('push-guard.mjs', { tool_name: 'Bash', tool_input: { command: 'cd repo && gh pr merge 12 --squash' } }, { PUSH_GUARD_PR_BASE: 'main' });
+expect('a merge after && → deny', [r.code, r.decision?.permissionDecision], [2, 'deny']);
 
 // night-guard (night flag off → allow everything)
 r = run('night-guard.mjs', { tool_name: 'Bash', cwd: tmp, tool_input: { command: 'git rm app/(app)/calendar/page.tsx' } });

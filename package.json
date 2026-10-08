@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "1.0.264",
+  "version": "1.0.265",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -24,8 +24,8 @@
     "prepare": "husky",
     "cf:build": "opennextjs-cloudflare build",
     "cf:populate": "opennextjs-cloudflare populateCache remote --cacheChunkSize 5",
-    "deploy": "npm run cf:build && wrangler deploy && npm run cf:populate",
-    "deploy:cf": "wrangler deploy && npm run cf:populate",
+    "deploy": "npm run cf:build && npm run deploy:cf",
+    "deploy:cf": "npm run cf:populate && wrangler deploy && (tsx scripts/keep-live-cache.mts --apply || echo \"keep-live cleanup failed, non-fatal: the 7-day rule still clears old builds\")",
     "upgrades:draft": "tsx scripts/fetch-f1-upgrades.mts"
   },
   "dependencies": {
