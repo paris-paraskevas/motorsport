@@ -14,6 +14,27 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1150 · 1.0.266 · records (sessions 66 to 68, into next) · opened 2026-10-08 into `next` on the operator’s order for session 68 (“One records PR from records/session-67-close into next, which closes #1145”); the merge on the word
+**Sessions 66 to 68’s records.** Records only, no code: #1145 (session 66’s close), which targeted `main` and cannot merge there under the ruleset, folded in; session 67’s handoff and session 68’s LATEST section; O4 done in the ledger, O2 and O3 live with the checks each still owes; #1149’s entry and this one. `next` was merged in first (7d1a02e8), every conflict resolved by union.
+- **Readers see:** nothing; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (9):**
+  - `docs/HANDOFF.md` · session 66’s LATEST section (from #1145), session 67’s, and session 68’s.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · O4 done; O2 and O3 live; session 66’s two dated changes (from #1145) beside next’s five; X17’s evidence (from #1145).
+  - `docs/pull-requests.md` · #1145’s entry and #1144’s landing line (from #1145); #1149’s entry and this one.
+  - `SCHEDULE.md` · session 66’s line for #1144’s landing (from #1145).
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio: #1145’s 1.0.262 entries kept in their place, this PR’s 1.0.266.
+- **Verified:** `npx vitest run lib/design/plan-ledger.test.ts "app/(app)/changelog"` → 3 files, 28 tests passed; `npm run lockfile:check` → exit 0; `node .claude/hooks/test.mjs` → 93 passed, 0 failed; `node docs/plan/render-ledger.mjs` → 91 slots; no conflict markers left; no code file in the diff against `next`.
+- **Review:** pending: a fresh-context Sonnet reviewer, after the operator’s 5-hour figure.
+
+## #1149 · 1.0.265 · the daily merge of 8 October (next into main) · opened by the operator 2026-10-08 on session 68’s point 2; merged by the operator at 12:12:18Z with a merge commit, 613e33b9; prod on 1.0.265 at 12:18:42Z
+**The first daily merge.** `next` into `main`, the day’s only deploy under O4: #1146 (O2), #1147 (O3) and #1148 (O4) went live together. Before it, the operator set Cloudflare’s deploy command to `npm run deploy:cf` and the build watch paths, and checked the build token’s storage right; the cleanup’s marker was set to the live build `5XT7GwG74-J8v3eCU8E2k`. The `from-next` check passed in 4 s, and the ruleset left only “Create a merge commit”.
+- **Readers see:** the 3D car in the F1 qualifying replay at a ninth of its old size; nothing else (the rest is behind the scenes).
+- **Editors get:** nothing.
+- **Files (76 changed):** the three pull requests’ files, each listed in #1146’s, #1147’s and #1148’s entries.
+- **Verified:** Workers Builds: motorsport → success at 12:18:42Z on 613e33b9 (parents 78dc66e6 and 6d98a980); `/changelog` lists 1.0.265 (12:19:17Z, cache MISS); the home page carries the build `rGWQ5oZgY8tBM62WVNuwd`; `npx wrangler r2 bucket lifecycle list paddock-inc-cache` lists `keep-live-2026-10-08-5XT7GwG74-J8v3eCU8E2k` (expire after 1 day), and the marker names `rGWQ5oZgY8tBM62WVNuwd`. UNVERIFIED: the single cache fill in the build log (not read).
+- **Review:** none of its own: a release of three reviewed pull requests.
+
 ## #1148 · 1.0.265 · O4 (one deploy a day, as the foundation) · opened 2026-10-08 into `next` on the operator’s “Ok, so only I merge and i can do so once a day? Build as ledger slot O4, GO!”, on session 67’s point 4 proposal
 **Only the operator merges into main, and each deploy keeps only the live cache.** The operator’s rule of 7 October (at most one deploy a day, through `next`) lived only in memory. Claude’s push guard now refuses every way Claude could put a change on `main`: a pull request not based on `next`, a merge of one whose base is not `next`, merges, branch writes and ruleset edits through `gh api`, and pushes to main. It reads a command the way a shell does, so a commit message naming those commands passes, while a command after a heredoc, behind a wrapper or inside a nested script is still read. A check on GitHub, `from-next`, fails any pull request into `main` that is not this repository’s `next`; the ruleset on `main` that requires it is created once this is in `next`. Each deploy is now OpenNext’s own deploy: the new build’s cache is filled once, before going live, and the previous build’s cache folder is marked for deletion a day later. Session 67 had read the dashboard’s command as “live first, cache second”; in fact a plain `wrangler deploy` hands off to OpenNext’s deploy (wrangler 4.114.0, `wrangler-dist/cli.js:296662-296685, 296742`), so that command fills the cache twice, before going live and again after.
 - **Readers see:** nothing on the page; changes reach the site once a day, and each deploy fills the page cache once instead of twice.
