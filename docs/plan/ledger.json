@@ -824,6 +824,16 @@
    "date": "2026-10-08",
    "change": "Session 67, point 3: #1126 and #1072 were false alarms (one-time session captures counted as recurring sources; the data was arriving); slot O3 opened: the check fixed and the loader’s schedule moved off the hour. An API map (every API of the site and every outside service, in plain words) added to the session’s audit as point 7, after point 6.",
    "word": "“GO on 1 and 2” and “ok i agree with api map” (the operator, 2026-10-08)"
+  },
+  {
+   "date": "2026-10-08",
+   "change": "One deploy a day becomes the foundation (slot O4): only the operator merges next into main, once a day; Claude never merges into main; a required check and a ruleset on main enforce it; each deploy keeps only the live cache folder. CLAUDE.md’s laws on pushing and deploying are rewritten to match.",
+   "word": "“Ok, so only I merge and i can do so once a day? Build as ledger slot O4, GO!” (the operator, 2026-10-08)"
+  },
+  {
+   "date": "2026-10-08",
+   "change": "The operator’s daily merge of next into main uses a merge commit, never a squash: a squash gives main a commit next lacks, and the next day’s merge conflicts on CHANGELOG.md and package.json (the review of #1148 reproduced it in a scratch repository). CLAUDE.md and CONTRIBUTING.md say so.",
+   "word": "“Remind me, just before I click Merge, … to use a merge commit, not squash.” (the operator, 2026-10-08, session 68)"
   }
  ],
  "phases": {
@@ -1857,6 +1867,20 @@
    "scopeHash": "7fa724441ac4",
    "evidence": "STARTED 2026-10-08 (session 67): the diagnosis from GitHub’s records only (freshness run 37735116980: newest snapshot 2.5 h old, the row tier failing on session-result:f1:2026:16:bahrain-gp-practice-1 at 144.0 h; 184 loader runs since 8 September, 1 failure, 1 cancelled; the September outage was npm ci refusing an out-of-sync lockfile, run 33869936613).",
    "brief": "Stop the false stale-data alarm after every F1 weekend, and try quieter minutes for the loader."
+  },
+  {
+   "id": "O4",
+   "phase": "PO",
+   "title": "One deploy a day, as the foundation",
+   "scope": "One deploy a day as the foundation: only the operator merges next into main, once a day, and that merge is the only deploy. Claude’s push-guard refuses any pull request not based on next, any merge of a pull request whose base is not next, and merges through the API (.claude/hooks/push-guard.mjs, with its tests). A required check (.github/workflows/main-from-next.yml, job from-next) fails any pull request into main that does not come from this repository’s next, and a ruleset on main requires it, with no force pushes and no deletion. The deploy fills the new build’s cache first, then goes live, then marks the previous build’s cache folder for deletion a day later and records the new build as live (npm run deploy:cf; scripts/keep-live-cache.mts, a marker object, never a bucket listing). CLAUDE.md’s two laws and CONTRIBUTING.md describe the flow. The operator sets Cloudflare’s deploy command to npm run deploy:cf and the build watch paths.",
+   "fixedBy": "the operator’s “Ok, so only I merge and i can do so once a day? Build as ledger slot O4, GO!” (8 October), on session 67’s point 4 proposal",
+   "defaults": "one PR into next, 1.0.265; the cleanup marks the previous build only (a marker object keep-live/live-build.txt, no listing), is non-fatal after the deploy, and refuses to write without --apply; filling the cache before going live is fatal (the old site keeps serving if it fails); keep-live rules older than 3 days are removed; the once-a-day limit stays the operator’s rule, not a check; the ruleset is created after this PR is in next, with no bypass actors",
+   "needsWord": "none for the code; the operator’s own hand for the dashboard (deploy command and build watch paths)",
+   "acceptance": "the hook tests pass with the new cases; the cleanup’s dry run against the real bucket writes nothing; the ruleset exists on main and the daily pull request shows from-next passing; after the first daily merge with the new deploy command, a keep-live rule for the previous build appears and the marker names the new build",
+   "status": "started",
+   "scopeHash": "76adf475918a",
+   "evidence": "STARTED 2026-10-08 (session 67). Facts behind it: Cloudflare’s deploy command is set in the dashboard to “npx wrangler deploy && (npm run cf:populate || echo …)” (docs/HANDOFF.md:1786); OpenNext’s own deploy fills the cache first (opennext.js.org/cloudflare/cli); populateCache writes through its own temporary worker and fills no Durable Object tag cache (node_modules/@opennextjs/cloudflare/dist/cli/commands/populate-cache.js:74-78, 126-211). Correction (session 68, from the review of #1148): the dashboard’s command does not go live first. A plain `wrangler deploy` in an OpenNext project hands off to `opennextjs-cloudflare deploy` (wrangler 4.114.0, wrangler-dist/cli.js:296662-296685; condition at :296742, `--autoconfig` defaults to true at :296859-296862), which fills the cache and then goes live (deploy.js:22-44); the dashboard’s command therefore fills the cache twice, once before and once after going live, and the first draft of deploy:cf (`cf:populate && wrangler deploy`) would have too. deploy:cf is now OpenNext’s own deploy with the chunk size cf:populate used (`--cacheChunkSize 5`, populate-cache.js:548-553): one fill, before going live. UNVERIFIED in a live build log (the API read was refused): the build log of 7ca4d086 should hold “OpenNext project detected, calling `opennextjs-cloudflare deploy`”. Defaults taken in the review’s fold: the push guard reads commands as a shell does, and refuses what it cannot check before the command runs (a pull request named through the shell, a lookup that fails or takes past 8 seconds of the hook’s 10); gh api may create a ruleset but never edit or delete one, and never merges or writes a branch; a marker that holds no build id counts as none recorded and is overwritten.",
+   "brief": "Only the operator merges into main, once a day; every other way is refused; each deploy keeps only the live cache folder."
   },
   {
    "id": "R18",
