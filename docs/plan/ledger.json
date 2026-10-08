@@ -819,6 +819,11 @@
    "date": "2026-10-07",
    "change": "O2’s scope adds: the service worker skips the 3D models folder (public/models), so only readers who open the replay download the car; the fresh-context review found that the 319 KB car would otherwise fit the 2 MiB precache cap and reach every reader.",
    "word": "“A” (the operator, 2026-10-07)"
+  },
+  {
+   "date": "2026-10-08",
+   "change": "Session 67, point 3: #1126 and #1072 were false alarms (one-time session captures counted as recurring sources; the data was arriving); slot O3 opened: the check fixed and the loader’s schedule moved off the hour. An API map (every API of the site and every outside service, in plain words) added to the session’s audit as point 7, after point 6.",
+   "word": "“GO on 1 and 2” and “ok i agree with api map” (the operator, 2026-10-08)"
   }
  ],
  "phases": {
@@ -1838,6 +1843,20 @@
    "scopeHash": "289d92e1196d",
    "evidence": "STARTED 2026-10-07 (session 67) on the operator’s words above. Done before the PR, outside the repo: the testing Worker deleted on Cloudflare (`wrangler delete`; `wrangler deployments list` then answers code 10007, the Worker does not exist); 42 temporary lifecycle rules on paddock-inc-cache (one for testing-cache/, one per old live build, none for the live build 5XT7GwG74-J8v3eCU8E2k) delete the 84 old folders’ files a day after their write (the bucket held 299.4 GB in 534,358 files, listed by 610 list operations).",
    "brief": "Remove what session 67’s audit found dead, and give the onboard replay a lighter 3D car."
+  },
+  {
+   "id": "O3",
+   "phase": "PO",
+   "title": "The freshness check’s false alarm, and the loader’s schedule",
+   "scope": "The freshness check stops counting one-time F1 session captures: each is captured once, in the 6 hours after its session ends (app/api/cron/warm-sessions/route.ts), so its age measured the calendar and kept the check red for days after every F1 weekend (#1072, #1126, both false alarms while the data was arriving). The loader’s schedule moves off the start of the hour to minutes 7, 27 and 47, where GitHub names its high load (it ran about 6 times a day of the 72 asked from 8 September to 8 October); its runs a day are counted for a week after the daily merge.",
+   "fixedBy": "the operator’s “GO on 1 and 2” (8 October), on point 3’s diagnosis in session 67",
+   "defaults": "one PR into next, 1.0.264; the session-result: prefix is the one-time kind (lib/session-result-rows.ts); the comments beside the threshold and the schedule carry the measured cadence and GitHub’s words; no test file (the check is a script; its proof is a run against the live data)",
+   "needsWord": "none",
+   "acceptance": "the check, run against the live data, passes while snapshots are fresh and names the oldest recurring source; #1126 closes itself on the first green scheduled check after the daily merge; a week of the loader’s runs counted against the measured 6 a day",
+   "status": "started",
+   "scopeHash": "7fa724441ac4",
+   "evidence": "STARTED 2026-10-08 (session 67): the diagnosis from GitHub’s records only (freshness run 37735116980: newest snapshot 2.5 h old, the row tier failing on session-result:f1:2026:16:bahrain-gp-practice-1 at 144.0 h; 184 loader runs since 8 September, 1 failure, 1 cancelled; the September outage was npm ci refusing an out-of-sync lockfile, run 33869936613).",
+   "brief": "Stop the false stale-data alarm after every F1 weekend, and try quieter minutes for the loader."
   },
   {
    "id": "R18",

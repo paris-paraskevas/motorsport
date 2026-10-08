@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.264 — 2026-10-08
+
+### O3 — The freshness check’s false alarm, and the loader’s schedule
+
+Session 67’s point 3 found the open “The site’s data has gone stale” issue (#1126, and #1072 before it) a false alarm: the data was arriving (freshness run 37735116980: the newest snapshot 2.5 h old), while the row tier failed on `session-result:f1:2026:16:bahrain-gp-practice-1` at 144.0 h. A session result is captured once, in the 6 hours after its session ends (`app/api/cron/warm-sessions/route.ts`), so its age measured the calendar; counted among the newest 300 OK loads, it kept the check red for days after every F1 weekend. **`scripts/check-data-freshness.mts`:** the row tier skips `session-result:` keys (the one-time kind, `lib/session-result-rows.ts`) and names its sources “recurring”; the comment beside the threshold carries the measured cadence. **`.github/workflows/warm-live-data.yml`:** the schedule moves from `*/20` to `7,27,47`, off the start of the hour, where GitHub names its high load (“High load times include the start of every hour”, docs.github.com events-that-trigger-workflows); measured at `*/20` from 8 September to 8 October: 181 scheduled runs, about 6 a day, gaps up to 7.9 h; the runs a day are counted for a week after the daily merge. The loader itself was healthy over the month (1 failure, 1 cancelled in 184 runs); its one real outage of the period, 4–7 September, was `npm ci` refusing an out-of-sync lockfile (run 33869936613), and `npm run lockfile:check` on `next` exits 0. #1126 closes itself on the first green scheduled check after the merge (`data-freshness.yml`). Ledger: slot O3 and its dated change; the audit’s point 7, an API map.
+
 ## 1.0.263 — 2026-10-07
 
 ### O2 — Session 67’s cleanup
