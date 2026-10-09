@@ -15,12 +15,13 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
 ## #1150 · 1.0.266 · records (sessions 66 to 68, into next) · opened 2026-10-08 into `next` on the operator’s order for session 68 (“One records PR from records/session-67-close into next, which closes #1145”); the merge on the word
-**Sessions 66 to 68’s records.** Records only, no code: #1145 (session 66’s close), which targeted `main` and cannot merge there under the ruleset, folded in; session 67’s handoff and session 68’s LATEST section; O4 done in the ledger, O2 and O3 live with the checks each still owes; #1149’s entry and this one. `next` was merged in first (7d1a02e8), every conflict resolved by union.
+**Sessions 66 to 68’s records.** Records only, no code: #1145 (session 66’s close), which targeted `main` and cannot merge there under the ruleset, folded in; session 67’s handoff and session 68’s LATEST section; O4 done in the ledger, O2 and O3 live with the checks each still owes (#1126 closed itself on 8 Oct); #1149’s entry and this one; the operator’s rule of 9 October, how we pick what to finish (rules.md § 11). `next` was merged in first (7d1a02e8), every conflict resolved by union.
 - **Readers see:** nothing; the release notes carry one line.
 - **Editors get:** nothing.
-- **Files (9):**
-  - `docs/HANDOFF.md` · session 66’s LATEST section (from #1145), session 67’s, and session 68’s.
-  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · O4 done; O2 and O3 live; session 66’s two dated changes (from #1145) beside next’s five; X17’s evidence (from #1145).
+- **Files (11):**
+  - `docs/HANDOFF.md` · session 66’s LATEST section (from #1145), session 67’s, and session 68’s, whose order follows the new rule.
+  - `docs/plan/rules.md`, `CLAUDE.md` · group 11, how we pick what to finish (the order, what may go first, new items), on the operator’s “rule. go”; the session’s end sorts the Inbox by it.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · O4 done; O2 and O3 live; session 66’s two dated changes (from #1145) beside next’s five, and the rule’s dated line of 9 Oct; X17’s evidence (from #1145).
   - `docs/pull-requests.md` · #1145’s entry and #1144’s landing line (from #1145); #1149’s entry and this one.
   - `SCHEDULE.md` · session 66’s line for #1144’s landing (from #1145).
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio: #1145’s 1.0.262 entries kept in their place, this PR’s 1.0.266.
