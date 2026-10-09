@@ -79,6 +79,13 @@ Adopted 2026-09-10 (session 47) on the operator's word: "i have no other rules e
 - AI in the designer drafts, a rule extracts, a human clicks Apply, behind a remembered consent and a token budget; nowhere else. (Creating applications, run 7; Generative AI, run 10) [behaviour]
 - Locks with an administrator override, and a second administrator's rights, become rules only when a second administrator exists. (Creating applications, run 7; Security, run 12)
 
+## 11. How we pick what to finish (new group, 2026-10-09)
+Adopted on the operator's word "rule. go" (9 October 2026), on the proposal shown at the top of The Paddock Ledger page; the dated line is in the ledger's changes list.
+- **The order.** The order of the work is one list, kept at the top of the ledger page and in `docs/HANDOFF.md`'s LATEST section; what is started is finished first, one item at a time. [behaviour; page]
+- **What may go first.** Only three reasons put an item ahead of the order: the site is broken or shows a wrong fact (fixed first, the same day); something is costing money now (next, before anything new); a date that will not wait (a race weekend's article, a deadline: placed by its date). [behaviour]
+- **New items.** A new idea or finding is written down the same day, one line in `IDEAS.md` (the operator's own also under "Your ideas" on the ledger page), and the current item carries on. At the end of the session Claude suggests one of four for each, and the operator chooses: first (only for a reason above), next (the end of the order, or where the operator says), parked, or dropped with the reason. Before it is built it becomes a ledger item with its decision scan and its cost in deploys, builds and database questions. [behaviour; test: the decision scan before `started`]
+- **The operator's word moves anything**, at any time; the change is recorded with its date. [behaviour]
+
 ## What "rules go" added to the repo (the docs PR of 2026-09-10), and what waits
 - `.claude/settings.json`: `CLAUDE_CODE_SUBAGENT_MODEL=sonnet`, `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`; the hooks, each wired after a supervised first run with the operator watching.
 - `.claude/hooks/*.mjs` (Node, no jq): agent-model guard, push guard, night guard, gates on Stop, session start, pre-compaction handoff.
