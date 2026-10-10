@@ -17,8 +17,12 @@ interface BrowserOpts {
   permission?: string;
   /** What pushManager.getSubscription() resolves to. */
   existing?: unknown;
-  /** Status for POST /api/push/subscribe. 401 = signed out, the real case. */
+  /** Status for POST /api/push/subscribe. 404 = signed out (middleware.ts), the real case. */
   subscribeStatus?: number;
+  /** Make the POST to /api/push/subscribe reject, standing in for a dropped connection. */
+  subscribeRejects?: boolean;
+  /** Status for POST /api/push/unsubscribe. */
+  unsubscribeStatus?: number;
   /** Make pushManager.subscribe reject, standing in for a push-service outage. */
   subscribeThrows?: boolean;
 }
@@ -36,11 +40,11 @@ function stubBrowser(opts: BrowserOpts = {}) {
     : vi.fn(async () => created);
   const getSubscription = vi.fn(async () => opts.existing ?? null);
 
-  const fetchMock = vi.fn(async () => ({
-    ok: (opts.subscribeStatus ?? 200) < 400,
-    status: opts.subscribeStatus ?? 200,
-    json: async () => ({}),
-  }));
+  const fetchMock = vi.fn(async (url: string) => {
+    if (url === '/api/push/subscribe' && opts.subscribeRejects) throw new TypeError('Failed to fetch');
+    const status = (url === '/api/push/unsubscribe' ? opts.unsubscribeStatus : opts.subscribeStatus) ?? 200;
+    return { ok: status < 400, status, json: async () => ({}) };
+  });
 
   vi.stubGlobal('localStorage', {
     getItem: (k: string) => (k in store ? store[k] : null),
@@ -125,8 +129,8 @@ describe('restorePushSubscription', () => {
     expect(m.unsubscribe).not.toHaveBeenCalled();
   });
 
-  it('rolls the browser back when the server refuses (signed out → 401)', async () => {
-    const m = stubBrowser({ optedIn: true, existing: null, subscribeStatus: 401 });
+  it('rolls the browser back when the server refuses (signed out → 404)', async () => {
+    const m = stubBrowser({ optedIn: true, existing: null, subscribeStatus: 404 });
     const { restorePushSubscription } = await loadClient();
 
     expect(await restorePushSubscription()).toBe('failed');
@@ -145,6 +149,86 @@ describe('restorePushSubscription', () => {
 
     expect(await restorePushSubscription()).toBe('failed');
     expect(m.store[OPT_IN_KEY]).toBe('1');
+  });
+
+  it('rolls the browser back when the register call never arrives (offline)', async () => {
+    const m = stubBrowser({ optedIn: true, existing: null, subscribeRejects: true });
+    const { restorePushSubscription } = await loadClient();
+
+    expect(await restorePushSubscription()).toBe('failed');
+    expect(m.unsubscribe).toHaveBeenCalledOnce();
+    expect(m.store[OPT_IN_KEY]).toBe('1');
+  });
+
+  // N1: the five subscriptions of May to July were made under a key the server no longer signs with,
+  // and the browser still holds them, so the dropped-subscription path above never fires for them.
+  const keyBytes = (b64url: string) => {
+    const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (b64url.length % 4)) % 4);
+    return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)).buffer;
+  };
+  const OLD_KEY = 'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM';
+  const stale = (unsubscribe = vi.fn(async () => true)) => ({
+    endpoint: 'https://push.example/old',
+    options: { applicationServerKey: keyBytes(OLD_KEY) },
+    unsubscribe,
+  });
+
+  it('replaces a subscription made under an older key, even without the opt-in flag', async () => {
+    const oldUnsubscribe = vi.fn(async () => true);
+    const m = stubBrowser({ optedIn: false, existing: stale(oldUnsubscribe) });
+    const { restorePushSubscription } = await loadClient();
+
+    expect(await restorePushSubscription()).toBe('restored');
+    const calls = m.fetchMock.mock.calls as unknown as [string, RequestInit][];
+    expect(calls.map(([url]) => url)).toEqual(['/api/push/unsubscribe', '/api/push/subscribe']);
+    expect(JSON.parse(String(calls[0][1].body))).toEqual({ endpoint: 'https://push.example/old' });
+    expect(oldUnsubscribe).toHaveBeenCalledOnce();
+    expect(m.subscribe).toHaveBeenCalledOnce();
+    // A browser refuses a second subscription under another key, so the old one goes first.
+    expect(oldUnsubscribe.mock.invocationCallOrder[0]).toBeLessThan(m.subscribe.mock.invocationCallOrder[0]);
+    expect(m.store[OPT_IN_KEY]).toBe('1');
+  });
+
+  it('leaves a stale subscription alone while signed out, so a signed-in visit can replace it', async () => {
+    const oldUnsubscribe = vi.fn(async () => true);
+    const m = stubBrowser({ optedIn: false, existing: stale(oldUnsubscribe), unsubscribeStatus: 404 });
+    const { restorePushSubscription } = await loadClient();
+
+    expect(await restorePushSubscription()).toBe('failed');
+    expect(oldUnsubscribe).not.toHaveBeenCalled();
+    expect(m.subscribe).not.toHaveBeenCalled();
+    expect(m.store[OPT_IN_KEY]).toBeUndefined();
+  });
+
+  it('replaces a stale subscription whose server row is another account’s (403)', async () => {
+    const m = stubBrowser({ optedIn: false, existing: stale(), unsubscribeStatus: 403 });
+    const { restorePushSubscription } = await loadClient();
+
+    expect(await restorePushSubscription()).toBe('restored');
+    expect(m.subscribe).toHaveBeenCalledOnce();
+  });
+
+  it('keeps the intent when the new subscribe throws after the old one is gone', async () => {
+    const m = stubBrowser({ optedIn: false, existing: stale(), subscribeThrows: true });
+    const { restorePushSubscription } = await loadClient();
+
+    expect(await restorePushSubscription()).toBe('failed');
+    // The next load takes the dropped-subscription path and tries again.
+    expect(m.store[OPT_IN_KEY]).toBe('1');
+  });
+
+  it('keeps a subscription made under the current key', async () => {
+    const keep = vi.fn();
+    const m = stubBrowser({
+      optedIn: true,
+      existing: { endpoint: 'https://push.example/live', options: { applicationServerKey: keyBytes(VAPID) }, unsubscribe: keep },
+    });
+    const { restorePushSubscription } = await loadClient();
+
+    expect(await restorePushSubscription()).toBe('not-needed');
+    expect(m.subscribe).not.toHaveBeenCalled();
+    expect(m.fetchMock).not.toHaveBeenCalled();
+    expect(keep).not.toHaveBeenCalled();
   });
 });
 
