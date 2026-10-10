@@ -118,10 +118,14 @@
   // shows nothing after the event and the exception is only visible if
   // `wrangler tail` happened to be running at the time. Sampling at 1 (keep
   // everything) because this site's request volume is nowhere near the point
-  // where log ingestion is a cost concern.
+  // where log ingestion is a cost concern. Invocation logs off (O6, 2026-10-10):
+  // Cloudflare's automatic one-record-per-call log, 94% of it the page-tag cache
+  // Durable Object's calls in a sample of `wrangler tail`; every line the code
+  // writes, errors included, is still kept.
   "observability": {
     "enabled": true,
-    "head_sampling_rate": 1
+    "head_sampling_rate": 1,
+    "logs": { "invocation_logs": false }
   },
   "assets": {
     "directory": ".open-next/assets",

@@ -63,7 +63,11 @@ const workerHandler = {
         fetch(`https://paddock-tracker.com/api/cron/${job}`, {
           headers: env.CRON_SECRET ? { Authorization: `Bearer ${env.CRON_SECRET}` } : {},
         })
-          .then((r: Response) => console.log(`[cron] ${job} -> ${r.status}`))
+          // Only a failed run logs (O6): a line for every success of every job,
+          // the every-minute ones included, is noise in the logs.
+          .then((r: Response) => {
+            if (!r.ok) console.error(`[cron] ${job} -> ${r.status}`);
+          })
           .catch((e: unknown) => console.error(`[cron] ${job} failed:`, e)),
       );
     }

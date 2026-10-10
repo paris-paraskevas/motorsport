@@ -326,6 +326,7 @@ export async function GET(req: Request) {
     let evicted = 0;
     let skipped = 0;
     let errored = 0;
+    let transientErrors = 0;
     for (const { subscription, userId } of subs) {
       if (!userId) {
         skipped++;
@@ -356,12 +357,15 @@ export async function GET(req: Request) {
         evicted++;
       } else {
         errored++;
+        if (result.transient) transientErrors++;
       }
     }
 
-    // Batch-level retry: the whole tick delivered nothing but hit real (non-gone)
-    // errors → unmark every item so the next tick retries the transient blip.
-    if (sent === 0 && errored > 0) {
+    // Batch-level retry: the whole tick delivered nothing and at least one failure
+    // was transient (network, 429, 5xx) → unmark every item so the next tick
+    // retries the blip. A 400 or 403 fails the same way on every tick, so it does
+    // not re-queue the batch (O6: it re-sent and re-logged every minute).
+    if (sent === 0 && transientErrors > 0) {
       for (const item of batch) {
         await unmarkNotified(item.kind, item.session.uid);
       }
@@ -374,6 +378,7 @@ export async function GET(req: Request) {
       sent,
       skipped,
       evicted,
+      errored,
     });
   } catch (err) {
     console.error('GET /api/cron/notify failed:', err);

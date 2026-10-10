@@ -1,5 +1,49 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { isSubscriptionOwner, type StoredSubscription } from './push-store';
+
+const webpush = vi.hoisted(() => ({ setVapidDetails: vi.fn(), sendNotification: vi.fn() }));
+vi.mock('web-push', () => ({ default: webpush }));
+import { sendPushTo } from './push';
+
+// O6: only a failure the push service or the network may not repeat is worth a retry.
+describe('sendPushTo failure kinds', () => {
+  const sub = { endpoint: 'https://fcm.googleapis.com/fcm/send/abc123def456', keys: { p256dh: 'p', auth: 'a' } };
+  const failWith = (statusCode?: number) =>
+    webpush.sendNotification.mockRejectedValueOnce(statusCode === undefined ? new Error('network down') : Object.assign(new Error('push'), { statusCode }));
+  beforeAll(() => {
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY = 'public';
+    process.env.VAPID_PRIVATE_KEY = 'private';
+    process.env.VAPID_SUBJECT = 'mailto:test@example.invalid';
+  });
+
+  it('a 403 or a 400 is neither gone nor transient, so it is not retried', async () => {
+    failWith(403);
+    expect(await sendPushTo(sub, { title: 't', body: 'b' })).toEqual({ ok: false, gone: false, transient: false, status: 403 });
+    failWith(400);
+    expect(await sendPushTo(sub, { title: 't', body: 'b' })).toEqual({ ok: false, gone: false, transient: false, status: 400 });
+  });
+
+  it('a 5xx, a 429 or a network error is transient', async () => {
+    failWith(503);
+    expect(await sendPushTo(sub, { title: 't', body: 'b' })).toMatchObject({ ok: false, gone: false, transient: true });
+    failWith(429);
+    expect(await sendPushTo(sub, { title: 't', body: 'b' })).toMatchObject({ ok: false, gone: false, transient: true });
+    failWith(undefined);
+    expect(await sendPushTo(sub, { title: 't', body: 'b' })).toMatchObject({ ok: false, gone: false, transient: true });
+  });
+
+  it('a 404 or a 410 is gone and not transient', async () => {
+    failWith(410);
+    expect(await sendPushTo(sub, { title: 't', body: 'b' })).toEqual({ ok: false, gone: true, transient: false, status: 410 });
+    failWith(404);
+    expect(await sendPushTo(sub, { title: 't', body: 'b' })).toMatchObject({ ok: false, gone: true, transient: false });
+  });
+
+  it('a delivered push is ok', async () => {
+    webpush.sendNotification.mockResolvedValueOnce({ statusCode: 201 });
+    expect(await sendPushTo(sub, { title: 't', body: 'b' })).toEqual({ ok: true });
+  });
+});
 
 function makeSub(userId: string | null): StoredSubscription {
   return {
