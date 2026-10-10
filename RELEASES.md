@@ -8,6 +8,14 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 Notifications work again on devices that turned them on before August: they reconnect by themselves on the next visit, with no new prompt.
 
+## 1.0.268 — 2026-10-10
+
+Behind the scenes: far fewer log lines, and a notification a device cannot receive is no longer tried again every minute.
+
+## 1.0.267 — 2026-10-10
+
+Behind the scenes: a security fix to who may read some of the site’s stored data. Nothing changes for readers.
+
 ## 1.0.266 — 2026-10-08
 
 Behind the scenes: the project’s records brought up to date. Nothing changes for readers.

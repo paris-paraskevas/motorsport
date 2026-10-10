@@ -85,8 +85,10 @@ export async function unmarkNotified(kind: NotifyKind, uid: string): Promise<voi
  *
  * Retry only on a *transient total failure*: the fan-out completed, reached
  * zero subscribers successfully (`sent === 0`), AND at least one send failed
- * with a real, non-gone error (`errored > 0`) — i.e. a push-service 5xx /
- * network blip that a later tick may recover from.
+ * with an error a later tick may recover from (`errored > 0`). The notify cron
+ * counts only the transient ones in `errored` (no status, 429, 5xx: sendPushTo's
+ * `transient`, O6), since a 400 or 403 fails the same way on every tick; the
+ * betting and blog notifiers still count every non-gone failure.
  *
  * We deliberately DON'T retry when the only non-sends were dead-subscription
  * evictions (`gone` → already removed; resending is pointless) or pref/mute
