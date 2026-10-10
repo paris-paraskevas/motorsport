@@ -7,6 +7,7 @@ Database for the Paddock Betting game (S9). Full design: `docs/research/predicti
 
 - `migrations/` — schema (7 tables, enums, RLS-on-no-policies, append-only ledger trigger, `user_balance` view) + the grant functions (`grant_monthly`, `grant_monthly_all`) + service_role grants.
 - Access model: **Clerk is the auth layer, not Supabase Auth.** RLS is enabled on every table with no policies; only `service_role` (the server-side client) can touch them — `anon`/`authenticated` get nothing. App access goes through `lib/betting/*` (server-only) from Next API routes / crons.
+- Views too (O5, 2026-10-10): create every view in `public` `with (security_invoker = on)` and follow it with `revoke all on <view> from anon, authenticated`. Postgres gives a view its owner’s rights by default and Supabase’s default privileges grant `anon` and `authenticated` everything on new objects, which left four views readable, and one writable, with the public key until O5.
 - `config.toml` is trimmed: `auth`, `storage`, `realtime`, `inbucket` are **disabled** (we use Clerk + only need Postgres/PostgREST/Studio locally).
 
 ## Local dev
