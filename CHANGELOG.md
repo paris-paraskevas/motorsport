@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.269 — 2026-10-10
+
+### N1 — Notifications reach the old subscribers again
+
+Notifications reached no one: prod KV holds five push subscriptions (four FCM, created May to July; one Apple, June), and every send to them failed (403 from FCM, 400 from Apple, in a `wrangler tail` sample of 10 October). They were made under the push key that left with the Vercel account (0.255.1, 2026-08-04); a push service checks each send’s signature against the key the subscription was made with, and FCM answers a mismatch with 403 (RFC 8292 §4.2). `restorePushSubscription()` only re-subscribed a browser that held no subscription, so these never healed. `lib/pushClient.ts`: `hasStaleKey()` compares the browser’s `options.applicationServerKey` with the server’s key; on a visit with permission already granted, a stale subscription is dropped on the server (`/api/push/unsubscribe`, best effort) and in the browser, and the device subscribes again under the current key, silently (`subscribeSilently()`, the restore path’s old tail, now shared, with its rollback). An existing subscription counts as consent even where the opt-in flag predates it. `lib/pushClient.test.ts`: two cases (a stale key replaced without the flag; a current key kept). After the daily deploy, the entries still made under the old key are removed from KV. Ledger: slot N1 and its dated change.
+
 ## 1.0.266 — 2026-10-08
 
 ### Records — sessions 66 to 68, into next

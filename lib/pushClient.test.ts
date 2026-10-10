@@ -146,6 +146,43 @@ describe('restorePushSubscription', () => {
     expect(await restorePushSubscription()).toBe('failed');
     expect(m.store[OPT_IN_KEY]).toBe('1');
   });
+
+  // N1: the five subscriptions of May to July were made under a key the server no longer signs with,
+  // and the browser still holds them, so the dropped-subscription path above never fires for them.
+  const keyBytes = (b64url: string) => {
+    const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (b64url.length % 4)) % 4);
+    return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)).buffer;
+  };
+  const OLD_KEY = 'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM';
+
+  it('replaces a subscription made under an older key, even without the opt-in flag', async () => {
+    const oldUnsubscribe = vi.fn(async () => true);
+    const m = stubBrowser({
+      optedIn: false,
+      existing: { endpoint: 'https://push.example/old', options: { applicationServerKey: keyBytes(OLD_KEY) }, unsubscribe: oldUnsubscribe },
+    });
+    const { restorePushSubscription } = await loadClient();
+
+    expect(await restorePushSubscription()).toBe('restored');
+    const calls = m.fetchMock.mock.calls as unknown as [string, RequestInit][];
+    expect(calls.map(([url]) => url)).toEqual(['/api/push/unsubscribe', '/api/push/subscribe']);
+    expect(JSON.parse(String(calls[0][1].body))).toEqual({ endpoint: 'https://push.example/old' });
+    expect(oldUnsubscribe).toHaveBeenCalledOnce();
+    expect(m.subscribe).toHaveBeenCalledOnce();
+    expect(m.store[OPT_IN_KEY]).toBe('1');
+  });
+
+  it('keeps a subscription made under the current key', async () => {
+    const m = stubBrowser({
+      optedIn: true,
+      existing: { endpoint: 'https://push.example/live', options: { applicationServerKey: keyBytes(VAPID) }, unsubscribe: vi.fn() },
+    });
+    const { restorePushSubscription } = await loadClient();
+
+    expect(await restorePushSubscription()).toBe('not-needed');
+    expect(m.subscribe).not.toHaveBeenCalled();
+    expect(m.fetchMock).not.toHaveBeenCalled();
+  });
 });
 
 describe('opt-in bookkeeping', () => {

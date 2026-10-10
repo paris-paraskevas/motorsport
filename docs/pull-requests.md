@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1153 · 1.0.269 · N1 (notifications reach the old subscribers again) · opened 2026-10-10 into `next` on the operator’s “go”, ahead of the order under rule 11 (notifications reached no one); the merge on the word
+**Notifications reach the old subscribers again.** All five push subscriptions in prod were made from May to July under the key that left with the Vercel account, and every send to them fails (403 from FCM, 400 from Apple). The old restore path only re-subscribed a browser holding no subscription, so these never healed. On a visit with permission already granted, a subscription made under another key is now dropped on the server and in the browser and replaced silently under the current key; after this is live, the dead entries go from the store.
+- **Readers see:** on devices that turned notifications on before August, notifications start arriving again after their next visit, with no new prompt; nothing else.
+- **Editors get:** nothing.
+- **Files (9):**
+  - `lib/pushClient.ts` · `hasStaleKey()`; `restorePushSubscription()` replaces a stale subscription; `subscribeSilently()` shared by both restore paths.
+  - `lib/pushClient.test.ts` · two cases: a stale key replaced without the opt-in flag; a current key kept.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot N1 and its dated change.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.269.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** `npx vitest run lib/design/plan-ledger.test.ts "app/(app)/changelog" lib/pushClient.test.ts` → 4 files, 40 tests passed; `npx tsc --noEmit` → exit 0; eslint on the two files → exit 0; `npm run lockfile:check` → exit 0. UNVERIFIED until the daily deploy: a device of the five holds a subscription under the current key after its next visit and receives a test push (a real browser with a stale subscription cannot be staged locally).
+- **Review:** pending: a fresh-context Sonnet reviewer, one at a time after #1151’s and #1152’s.
+
 ## #1150 · 1.0.266 · records (sessions 66 to 68, into next) · opened 2026-10-08 into `next` on the operator’s order for session 68 (“One records PR from records/session-67-close into next, which closes #1145”); the merge on the word
 **Sessions 66 to 68’s records.** Records only, no code: #1145 (session 66’s close), which targeted `main` and cannot merge there under the ruleset, folded in; session 67’s handoff and session 68’s LATEST section; O4 done in the ledger, O2 and O3 live with the checks each still owes (#1126 closed itself on 8 Oct); #1149’s entry and this one; the operator’s rule of 9 October, how we pick what to finish (rules.md § 11). `next` was merged in first (7d1a02e8), every conflict resolved by union.
 - **Readers see:** nothing; the release notes carry one line.

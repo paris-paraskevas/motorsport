@@ -143,8 +143,47 @@ export async function unsubscribeFromPush(): Promise<void> {
 
 export type PushRestoreResult = 'restored' | 'not-needed' | 'failed';
 
+/** True when the browser's subscription was made under a key other than the
+ *  server's (N1). Such a subscription can never be delivered: the push service
+ *  checks every send's signature against the key the subscription was made with
+ *  (RFC 8292 §4.2), and the key of May to July left with the Vercel account. A
+ *  browser that does not report the key counts as current. */
+export function hasStaleKey(subscription: PushSubscription, vapidKey: string): boolean {
+  const held = subscription.options?.applicationServerKey;
+  if (!held) return false;
+  const a = new Uint8Array(held);
+  const b = urlBase64ToUint8Array(vapidKey);
+  return a.length !== b.length || a.some((byte, i) => byte !== b[i]);
+}
+
+/** Subscribes under `vapidKey` and registers the result, rolling the browser back
+ *  when the server refuses. Never prompts: callers check the permission first. */
+async function subscribeSilently(reg: ServiceWorkerRegistration, vapidKey: string): Promise<PushRestoreResult> {
+  const subscription = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
+  });
+  const res = await fetch('/api/push/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subscription, label: deviceLabel() }),
+  });
+  if (!res.ok) {
+    // Roll the browser back so the two sides cannot disagree. /api/push/
+    // subscribe is auth-protected (middleware.ts), so a signed-out visitor
+    // gets 401 here. Keeping the browser subscription in that case would be
+    // the worst outcome: getSubscription() would report 'subscribed', every
+    // later restore would decide there was nothing to do, and the device
+    // would never receive another notification while looking enabled.
+    await subscription.unsubscribe().catch(() => {});
+    return 'failed';
+  }
+  return 'restored';
+}
+
 /** Put back a subscription this device asked for and the browser has since
- *  dropped. Runs on mount from components/SerwistRegister.
+ *  dropped, or replace one made under an old key (N1). Runs on mount from
+ *  components/SerwistRegister.
  *
  *  SILENT BY CONSTRUCTION: it never calls Notification.requestPermission, so it
  *  can only act where permission is ALREADY granted and no dialog can appear on
@@ -152,39 +191,35 @@ export type PushRestoreResult = 'restored' | 'not-needed' | 'failed';
  *  is left alone. */
 export async function restorePushSubscription(): Promise<PushRestoreResult> {
   if (getPushAvailability() !== 'available') return 'not-needed';
-  if (!hasOptedIn()) return 'not-needed';
   // Permission revoked or reset since opting in. A silent re-subscribe is
   // impossible without a prompt, and prompting on load is exactly the pattern
   // browsers punish, so drop the stale intent instead of retrying every load.
   if (Notification.permission !== 'granted') {
-    setOptedIn(false);
+    if (hasOptedIn()) setOptedIn(false);
     return 'not-needed';
   }
   try {
     const reg = await navigator.serviceWorker.ready;
-    if (await reg.pushManager.getSubscription()) return 'not-needed';
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) {
+      const vapidKey = await getVapidKey();
+      if (!vapidKey || !hasStaleKey(existing, vapidKey)) return 'not-needed';
+      // A subscription is the device's consent even where the opt-in flag
+      // predates it. The server's copy goes first (best effort: a signed-out
+      // visitor gets 401 and the dead entry stays until it is removed there).
+      await fetch('/api/push/unsubscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: existing.endpoint }),
+      }).catch(() => {});
+      await existing.unsubscribe().catch(() => {});
+      setOptedIn(true);
+      return await subscribeSilently(reg, vapidKey);
+    }
+    if (!hasOptedIn()) return 'not-needed';
     const vapidKey = await getVapidKey();
     if (!vapidKey) return 'failed';
-    const subscription = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
-    });
-    const res = await fetch('/api/push/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ subscription, label: deviceLabel() }),
-    });
-    if (!res.ok) {
-      // Roll the browser back so the two sides cannot disagree. /api/push/
-      // subscribe is auth-protected (middleware.ts), so a signed-out visitor
-      // gets 401 here. Keeping the browser subscription in that case would be
-      // the worst outcome: getSubscription() would report 'subscribed', every
-      // later restore would decide there was nothing to do, and the device
-      // would never receive another notification while looking enabled.
-      await subscription.unsubscribe().catch(() => {});
-      return 'failed';
-    }
-    return 'restored';
+    return await subscribeSilently(reg, vapidKey);
   } catch {
     // Deliberately keeps the opt-in flag: a transient failure (offline, a 500)
     // should retry on the next load rather than silently give up.
