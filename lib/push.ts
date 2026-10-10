@@ -45,7 +45,7 @@ export interface PushPayload {
 export async function sendPushTo(
   subscription: PushSubscription,
   payload: PushPayload,
-): Promise<{ ok: true } | { ok: false; gone: boolean; status?: number }> {
+): Promise<{ ok: true } | { ok: false; gone: boolean; transient: boolean; status?: number }> {
   configure();
   // Final sink guard: never POST to an endpoint outside the Web Push allowlist,
   // even if a caller assembled the subscription without going through
@@ -60,7 +60,7 @@ export async function sendPushTo(
   if (!endpointUrl || !isAllowedPushEndpoint(endpointUrl)) {
     const tail = subscription.endpoint.slice(-12);
     console.warn(`push send skipped: off-allowlist endpoint …${tail}`);
-    return { ok: false, gone: true };
+    return { ok: false, gone: true, transient: false };
   }
   try {
     await webpush.sendNotification(subscription, JSON.stringify(payload));
@@ -69,6 +69,13 @@ export async function sendPushTo(
     const e = err as { statusCode?: number };
     // 404 or 410 = endpoint dead, caller should evict.
     const gone = e?.statusCode === 404 || e?.statusCode === 410;
+    // Worth trying again only when the push service or the network failed (no
+    // status, 429, 5xx). A 400 or 403 repeats on every retry: RFC 8292 §4.2 lets a
+    // service answer 403 when the VAPID key no longer matches the subscription.
+    const status = e?.statusCode;
+    // web-push's own validation errors (a malformed stored key) carry no status
+    // either and count as transient: an accepted limit.
+    const transient = status === undefined || status === 429 || status >= 500;
     // Surface real (non-gone) failures in the cron logs — a push-service 5xx or
     // network blip is invisible otherwise, since we stay fail-soft. Compact: the
     // status plus the endpoint tail (enough to spot a provider-wide outage vs a
@@ -77,7 +84,7 @@ export async function sendPushTo(
       const tail = subscription.endpoint.slice(-12);
       console.error(`push send failed status=${e?.statusCode ?? 'unknown'} endpoint=…${tail}`);
     }
-    return { ok: false, gone, status: e?.statusCode };
+    return { ok: false, gone, transient: !gone && transient, status };
   }
 }
 

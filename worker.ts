@@ -51,7 +51,14 @@ const workerHandler = {
   // the rules a cache in front of the Worker needs (PF2, Workers Cache): the
   // dev. host private, no header means no-store, a cacheable page tagged.
   async fetch(request: Request, env: unknown, ctx: Ctx): Promise<Response> {
-    return withEdgeCacheRules(request, withBrowserSafeCache(await handler.fetch(request, env, ctx)));
+    try {
+      return withEdgeCacheRules(request, withBrowserSafeCache(await handler.fetch(request, env, ctx)));
+    } catch (e) {
+      // With invocation logs off (wrangler.jsonc, O6) this line is the one sure
+      // trace of an uncaught exception. The path only: a query can carry a token.
+      console.error(`[worker] ${request.method} ${new URL(request.url).pathname} threw:`, e);
+      throw e;
+    }
   },
   async scheduled(event: { cron: string }, env: { CRON_SECRET?: string }, ctx: Ctx): Promise<void> {
     const jobs = CRON_JOBS[event.cron] ?? [];
@@ -63,7 +70,11 @@ const workerHandler = {
         fetch(`https://paddock-tracker.com/api/cron/${job}`, {
           headers: env.CRON_SECRET ? { Authorization: `Bearer ${env.CRON_SECRET}` } : {},
         })
-          .then((r: Response) => console.log(`[cron] ${job} -> ${r.status}`))
+          // Only a failed run logs (O6): a line for every success of every job,
+          // the every-minute ones included, is noise in the logs.
+          .then((r: Response) => {
+            if (!r.ok) console.error(`[cron] ${job} -> ${r.status}`);
+          })
           .catch((e: unknown) => console.error(`[cron] ${job} failed:`, e)),
       );
     }
