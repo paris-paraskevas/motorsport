@@ -157,7 +157,8 @@ export function hasStaleKey(subscription: PushSubscription, vapidKey: string): b
 }
 
 /** Subscribes under `vapidKey` and registers the result, rolling the browser back
- *  when the server refuses. Never prompts: callers check the permission first. */
+ *  when the server refuses or cannot be reached. Never prompts: callers check
+ *  the permission first. */
 async function subscribeSilently(reg: ServiceWorkerRegistration, vapidKey: string): Promise<PushRestoreResult> {
   const subscription = await reg.pushManager.subscribe({
     userVisibleOnly: true,
@@ -167,14 +168,15 @@ async function subscribeSilently(reg: ServiceWorkerRegistration, vapidKey: strin
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ subscription, label: deviceLabel() }),
-  });
-  if (!res.ok) {
+  }).catch(() => null);
+  if (!res?.ok) {
     // Roll the browser back so the two sides cannot disagree. /api/push/
     // subscribe is auth-protected (middleware.ts), so a signed-out visitor
-    // gets 401 here. Keeping the browser subscription in that case would be
-    // the worst outcome: getSubscription() would report 'subscribed', every
-    // later restore would decide there was nothing to do, and the device
-    // would never receive another notification while looking enabled.
+    // gets 404 here, and an offline one no answer at all. Keeping the browser
+    // subscription in that case would be the worst outcome: getSubscription()
+    // would report 'subscribed', every later restore would decide there was
+    // nothing to do, and the device would never receive another notification
+    // while looking enabled.
     await subscription.unsubscribe().catch(() => {});
     return 'failed';
   }
@@ -204,16 +206,22 @@ export async function restorePushSubscription(): Promise<PushRestoreResult> {
     if (existing) {
       const vapidKey = await getVapidKey();
       if (!vapidKey || !hasStaleKey(existing, vapidKey)) return 'not-needed';
-      // A subscription is the device's consent even where the opt-in flag
-      // predates it. The server's copy goes first (best effort: a signed-out
-      // visitor gets 401 and the dead entry stays until it is removed there).
-      await fetch('/api/push/unsubscribe', {
+      // A subscription is the device's consent, also where it predates the
+      // opt-in flag (0.334.99). The server's copy goes first. Signed out (the
+      // middleware answers 404), offline or a server error: the register below
+      // would fail too, so nothing is touched and the next visit tries again.
+      // A 403 (signed in, the row is another account's) goes on; that dead row
+      // stays until it is removed by hand.
+      const res = await fetch('/api/push/unsubscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ endpoint: existing.endpoint }),
-      }).catch(() => {});
-      await existing.unsubscribe().catch(() => {});
+      }).catch(() => null);
+      if (!res || (!res.ok && res.status !== 403)) return 'failed';
+      // Before the browser's unsubscribe, so a page closed in between still
+      // re-subscribes on the next load.
       setOptedIn(true);
+      await existing.unsubscribe().catch(() => {});
       return await subscribeSilently(reg, vapidKey);
     }
     if (!hasOptedIn()) return 'not-needed';
