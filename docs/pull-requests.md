@@ -14,6 +14,22 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1152 · 1.0.268 · O6 (fewer log lines) · opened 2026-10-10 into `next` on the operator’s “c - find why so many logs, remove as much as possible if possible” and “go”; the merge on the word
+**Fewer log lines.** Supabase’s log rows are 89% the designer’s reads at each page build, which only PF5 removes (it moves up to right after this slot). On the Worker, most events were Cloudflare’s automatic records of the page-tag cache’s calls, and most code lines were one notification re-sent every minute to five devices that answer 403 or 400. Invocation logs go off, every line the code writes stays; the scheduled jobs log only failures; the notification job re-queues a batch only for a failure that may not repeat, and deletes nothing on a 403.
+- **Readers see:** nothing; a device that cannot receive a notification is no longer tried again every minute.
+- **Editors get:** nothing.
+- **Files (11):**
+  - `wrangler.jsonc` · `observability.logs.invocation_logs: false`, the reason beside it.
+  - `worker.ts` · a scheduled job logs only a failed run.
+  - `lib/push.ts` · a failed send reports `transient` (no status, 429, 5xx); 400 and 403 neither gone nor transient (RFC 8292 §4.2).
+  - `app/api/cron/notify/route.ts` · re-queue only on a transient failure; `errored` in the response.
+  - `lib/push.test.ts` · four cases for the failure kinds.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot O6 and two dated changes (O6; the designer kept and PF5 moved up).
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.268.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** `npx vitest run lib/design/plan-ledger.test.ts "app/(app)/changelog" lib/push.test.ts` → 4 files, 38 tests passed; `npx tsc --noEmit` → exit 0; eslint on the changed files → exit 0; `npm run lockfile:check` → exit 0; `npx wrangler deploy --dry-run` accepts the setting, Total Upload 40,687.42 KiB / gzip 8,883.33 KiB, 62% of 64 MiB (over the local build of 27 Aug; UNVERIFIED for this PR’s own build). UNVERIFIED until the daily deploy: a `wrangler tail` sample without invocation records or success lines, and a failed push logged once per notification.
+- **Review:** pending: a fresh-context Sonnet reviewer, after the operator’s 5-hour figure.
+
 ## #1150 · 1.0.266 · records (sessions 66 to 68, into next) · opened 2026-10-08 into `next` on the operator’s order for session 68 (“One records PR from records/session-67-close into next, which closes #1145”); the merge on the word
 **Sessions 66 to 68’s records.** Records only, no code: #1145 (session 66’s close), which targeted `main` and cannot merge there under the ruleset, folded in; session 67’s handoff and session 68’s LATEST section; O4 done in the ledger, O2 and O3 live with the checks each still owes (#1126 closed itself on 8 Oct); #1149’s entry and this one; the operator’s rule of 9 October, how we pick what to finish (rules.md § 11). `next` was merged in first (7d1a02e8), every conflict resolved by union.
 - **Readers see:** nothing; the release notes carry one line.
