@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.267 — 2026-10-10
+
+### O5 — The four public views made private
+
+The cost plan’s database check (10 October) found the four views in `public` (`user_balance`, `standing_current`, `session_result_current`, `league_leaderboard`) running with their owner’s rights, Postgres’ default, and granting `anon` and `authenticated` every privilege, so anyone holding the project’s public key could read them through the Data API, the betting balances included, and write through `league_leaderboard`, a view of `league_member` alone that Postgres can update (the Security Advisor’s lint 0010). The Advisor’s list of 7 October also named `heatmap_element_stats`: it no longer exists on prod (42P01 on 10 October; the four are every view in `public`). The site never sends that key to browsers and reads the views only on the server through the service role (`lib/betting/client.ts` `betDb`). `supabase/migrations/20261010120000_views_private.sql`: `security_invoker = on` on all four, and `revoke all … from anon, authenticated`. Rehearsed inside begin…rollback through the Management API (as the service role 14, 344, 1,373 and 5 rows before and after; the two public roles read none; prod unchanged afterwards), then applied at 12:53:32Z on the operator’s “apply o5-views” and read back. The database change is live already; this PR records it and deploys nothing. `supabase/README.md`: every new view in `public` is created `with (security_invoker = on)` and followed by a revoke from `anon` and `authenticated`. Ledger: slot O5 and its dated change.
+
 ## 1.0.266 — 2026-10-08
 
 ### Records — sessions 66 to 68, into next
