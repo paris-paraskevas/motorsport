@@ -14,6 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1151 · 1.0.267 · O5 (the four public views made private) · opened 2026-10-10 into `next` on the operator’s “go go go, fix data exposure first”; the database change applied on “apply o5-views” at 12:53:32Z; the merge on the word
+**The four public views made private.** The cost plan’s database check found the four views in `public` running with their owner’s rights and granting `anon` and `authenticated` every privilege, so the project’s public key could read them through the Data API, the betting balances included. They now run with the caller’s rights and the two public roles hold nothing on them; the site reads them on the server through the service role and sees no change. The change is live in the database already; this PR records it.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (7):**
+  - `supabase/migrations/20261010120000_views_private.sql` · new: `security_invoker = on` on the four views, `revoke all … from anon, authenticated`.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot O5, done, and its dated change.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.267.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** rehearsed inside `begin … rollback` through the Management API (as the service role 14, 344, 1,373 and 5 rows before and after; the two public roles read none; prod unchanged afterwards); applied at 12:53:32Z and read back (the same counts; `has_table_privilege` false for `anon` and `authenticated` on all four; `security_invoker=on` on all four; `/series/f1/standings` and `/series/f2/standings` 200 on prod); `npx vitest run lib/design/plan-ledger.test.ts "app/(app)/changelog"` → 3 files, 28 tests passed; `npm run lockfile:check` → exit 0.
+- **Review:** pending: a fresh-context Sonnet reviewer, after the operator’s 5-hour figure.
+
 ## #1150 · 1.0.266 · records (sessions 66 to 68, into next) · opened 2026-10-08 into `next` on the operator’s order for session 68 (“One records PR from records/session-67-close into next, which closes #1145”); the merge on the word
 **Sessions 66 to 68’s records.** Records only, no code: #1145 (session 66’s close), which targeted `main` and cannot merge there under the ruleset, folded in; session 67’s handoff and session 68’s LATEST section; O4 done in the ledger, O2 and O3 live with the checks each still owes (#1126 closed itself on 8 Oct); #1149’s entry and this one; the operator’s rule of 9 October, how we pick what to finish (rules.md § 11). `next` was merged in first (7d1a02e8), every conflict resolved by union.
 - **Readers see:** nothing; the release notes carry one line.
