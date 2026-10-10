@@ -8,6 +8,7 @@ import {
   wasNotified,
   markNotified,
   unmarkNotified,
+  shouldRetryAfterTotalFailure,
 } from '@/lib/notify-ledger';
 import {
   looksLikeRaceSession,
@@ -364,8 +365,8 @@ export async function GET(req: Request) {
     // Batch-level retry: the whole tick delivered nothing and at least one failure
     // was transient (network, 429, 5xx) → unmark every item so the next tick
     // retries the blip. A 400 or 403 fails the same way on every tick, so it does
-    // not re-queue the batch (O6: it re-sent and re-logged every minute).
-    if (sent === 0 && transientErrors > 0) {
+    // not count (O6: it re-sent and re-logged every minute).
+    if (shouldRetryAfterTotalFailure({ sent, errored: transientErrors })) {
       for (const item of batch) {
         await unmarkNotified(item.kind, item.session.uid);
       }

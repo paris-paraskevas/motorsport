@@ -43,6 +43,12 @@ describe('sendPushTo failure kinds', () => {
     webpush.sendNotification.mockResolvedValueOnce({ statusCode: 201 });
     expect(await sendPushTo(sub, { title: 't', body: 'b' })).toEqual({ ok: true });
   });
+
+  it('an endpoint off the allowlist is gone, not transient, and never sent', async () => {
+    webpush.sendNotification.mockClear();
+    expect(await sendPushTo({ ...sub, endpoint: 'https://push.example.invalid/abc' }, { title: 't', body: 'b' })).toEqual({ ok: false, gone: true, transient: false });
+    expect(webpush.sendNotification).not.toHaveBeenCalled();
+  });
 });
 
 function makeSub(userId: string | null): StoredSubscription {

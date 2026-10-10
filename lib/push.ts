@@ -73,6 +73,8 @@ export async function sendPushTo(
     // status, 429, 5xx). A 400 or 403 repeats on every retry: RFC 8292 §4.2 lets a
     // service answer 403 when the VAPID key no longer matches the subscription.
     const status = e?.statusCode;
+    // web-push's own validation errors (a malformed stored key) carry no status
+    // either and count as transient: an accepted limit.
     const transient = status === undefined || status === 429 || status >= 500;
     // Surface real (non-gone) failures in the cron logs — a push-service 5xx or
     // network blip is invisible otherwise, since we stay fail-soft. Compact: the
