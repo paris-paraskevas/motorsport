@@ -402,10 +402,16 @@ export async function StandingsTab({ series }: { series: Series }) {
         ),
       },
     ];
+    const provisional = races.filter(r => r.provisional);
     return (
       <div className="space-y-4">
         <StandingsView sections={sections} />
         <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
+        {provisional.length > 0 && (
+          <p className="text-center text-xs text-text-faint">
+            {provisional.map(r => r.raceName).join(', ')}: OpenF1’s classification, provisional until jolpi.ca has it.
+          </p>
+        )}
       </div>
     );
   }

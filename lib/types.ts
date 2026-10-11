@@ -75,6 +75,8 @@ export interface RaceResult {
   date: Date;
   circuit: string;
   results: RaceResultEntry[];
+  /** F1 only (B5): taken from OpenF1 because jolpi.ca does not have the round yet; shown as provisional, never settled. */
+  provisional?: true;
 }
 
 export interface Champion {

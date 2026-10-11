@@ -123,7 +123,10 @@ export async function raceResultPool(series: Series): Promise<RaceResult[]> {
   }
   const source = await loadSnapshotSource(series);
   if (!source) return [];
-  const pool: RaceResult[] = [...source.races, ...(source.extras ?? [])];
+  // F1's sprints carry the grand prix's own name; marked here so a round whose race is not in yet can never show its
+  // sprint as the race (B5, Singapore 2026). Same label the driver pages give them (lib/profile-stats.ts).
+  const extras = (source.extras ?? []).map(e => (slug === 'f1' && !/sprint/i.test(e.raceName) ? { ...e, raceName: `${e.raceName} · Sprint` } : e));
+  const pool: RaceResult[] = [...source.races, ...extras];
   if (slug !== 'indycar' || !series.rounds?.rounds.length) return pool;
   const rounds = series.rounds.rounds;
   return pool.flatMap(r => {
@@ -146,7 +149,8 @@ export function raceFor(pool: RaceResult[], round: number, sessionTitle: string)
 // whose name shares the most tokens with the session title; tie → first.
 export function pickRaceForSession(candidates: RaceResult[], sessionTitle: string): RaceResult | null {
   if (candidates.length === 0) return null;
-  if (candidates.length === 1) return candidates[0];
+  // A sprint never stands for a race session (B5): the round's race is simply not in yet.
+  if (candidates.length === 1) return /sprint/i.test(candidates[0].raceName) && !/sprint/i.test(sessionTitle) ? null : candidates[0];
   const tokens = ['sprint', 'feature', 'superpole', 'race 1', 'race 2'];
   const t = sessionTitle.toLowerCase();
   let best = candidates[0];

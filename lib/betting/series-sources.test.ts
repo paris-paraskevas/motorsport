@@ -16,6 +16,7 @@ import { FIELD_SOURCES, RESULT_SOURCES } from './series-sources';
 import { BETTABLE_SERIES } from './constants';
 import { fetchF2Standings } from '@/lib/standings/f2';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
+import { fetchF1SeasonResults } from '@/lib/results/f1';
 
 const feature = (round: number, driverName: string) => ({
   round,
@@ -93,5 +94,12 @@ describe('betting series-sources gates', () => {
     const wired = Object.keys(FIELD_SOURCES).sort();
     expect([...BETTABLE_SERIES].sort()).toEqual(wired);
     expect(Object.keys(RESULT_SOURCES).sort()).toEqual([...BETTABLE_SERIES].sort());
+  });
+});
+
+describe('B5: a provisional F1 race', () => {
+  it('never settles: settlement waits for jolpi.ca to carry the round', async () => {
+    vi.mocked(fetchF1SeasonResults).mockResolvedValue([feature(16, 'A Driver'), { ...feature(17, 'B Driver'), provisional: true }] as never);
+    expect((await RESULT_SOURCES.f1()).map(r => r.round)).toEqual([16]);
   });
 });

@@ -1,6 +1,7 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 import { withF1LastGood } from '@/lib/f1-cache';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { openF1Gap } from '@/lib/results/f1-openf1';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -164,13 +165,17 @@ async function fetchF1LastRaceLive(): Promise<RaceResult | null> {
     const json = (await res.json()) as RacePayload;
     const races = json?.MRData?.RaceTable?.Races;
     if (!Array.isArray(races) || races.length === 0) return null;
-    return parseRace(races[0]);
+    const last = parseRace(races[0]);
+    // B5: a later race OpenF1 already has stands in until jolpi.ca catches up.
+    const filled = (await openF1Gap({ races: last ? [last] : [] })).races.at(-1);
+    return filled ?? last;
   } catch {
     return null;
   }
 }
 
-async function fetchF1SeasonResultsLive(): Promise<RaceResult[]> {
+/** jolpi.ca's races of the season, without OpenF1's additions. Empty on failure. */
+export async function jolpiSeasonResults(): Promise<RaceResult[]> {
   try {
     const races = mergeRacesByRound(await fetchAllPages(SEASON_RESULTS_URL), 'Results');
     const results: RaceResult[] = [];
@@ -184,7 +189,8 @@ async function fetchF1SeasonResultsLive(): Promise<RaceResult[]> {
   }
 }
 
-async function fetchF1SeasonSprintsLive(): Promise<RaceResult[]> {
+/** jolpi.ca's sprints of the season, without OpenF1's additions. Empty on failure. */
+export async function jolpiSeasonSprints(): Promise<RaceResult[]> {
   try {
     const races = mergeRacesByRound(await fetchAllPages(SEASON_SPRINTS_URL), 'SprintResults');
     const results: RaceResult[] = [];
@@ -196,6 +202,19 @@ async function fetchF1SeasonSprintsLive(): Promise<RaceResult[]> {
   } catch {
     return [];
   }
+}
+
+// B5: each fetcher adds what OpenF1 has after jolpi.ca's latest round of its own kind.
+async function fetchF1SeasonResultsLive(): Promise<RaceResult[]> {
+  const races = await jolpiSeasonResults();
+  const gap = await openF1Gap({ races });
+  return [...races, ...gap.races].sort((a, b) => a.round - b.round);
+}
+
+async function fetchF1SeasonSprintsLive(): Promise<RaceResult[]> {
+  const sprints = await jolpiSeasonSprints();
+  const gap = await openF1Gap({ sprints });
+  return [...sprints, ...gap.sprints].sort((a, b) => a.round - b.round);
 }
 
 // Each public fetcher below is wrapped in the KV last-good read-through so a

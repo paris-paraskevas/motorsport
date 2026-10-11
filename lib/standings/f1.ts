@@ -1,6 +1,8 @@
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 import { withF1LastGood } from '@/lib/f1-cache';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { jolpiSeasonResults, jolpiSeasonSprints } from '@/lib/results/f1';
+import { openF1Gap, withAddedSessions } from '@/lib/results/f1-openf1';
 
 export type { DriverStanding, ConstructorStanding };
 
@@ -103,7 +105,9 @@ async function fetchF1StandingsLive(): Promise<F1Standings | null> {
     const drivers = parseDrivers(driverJson);
     const constructors = parseConstructors(constructorJson);
     if (!drivers || !constructors) return null;
-    return { drivers, constructors };
+    // B5: the points of a race or sprint OpenF1 has and jolpi.ca does not yet, the same sessions the results add.
+    const [races, sprints] = await Promise.all([jolpiSeasonResults(), jolpiSeasonSprints()]);
+    return withAddedSessions({ drivers, constructors }, await openF1Gap({ races, sprints }), races);
   } catch {
     return null;
   }

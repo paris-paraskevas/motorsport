@@ -83,6 +83,30 @@ function matchOpenF1Session(
   return best;
 }
 
+// B5: a fresh F1 race or sprint is what the loader's OpenF1 backup can add to the results and the standings, so the
+// loader is started now rather than at GitHub's throttled schedule (gaps up to 7.9 h). Dormant without the secret (a
+// fine-grained token, Actions read and write on this repository only); only a failure logs (O6).
+async function startLoader(): Promise<void> {
+  const token = process.env.GITHUB_DISPATCH_TOKEN;
+  if (!token) return;
+  try {
+    const res = await fetch('https://api.github.com/repos/paris-paraskevas/motorsport/actions/workflows/warm-live-data.yml/dispatches', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        accept: 'application/vnd.github+json',
+        'x-github-api-version': '2022-11-28',
+        'user-agent': 'paddock-tracker-warm-sessions',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ ref: 'main' }),
+    });
+    if (!res.ok) console.error(`[warm-sessions] loader dispatch -> ${res.status}`);
+  } catch (e) {
+    console.error('[warm-sessions] loader dispatch failed:', e);
+  }
+}
+
 interface WarmOutcome {
   session: string;
   round: number | null;
@@ -194,6 +218,8 @@ export async function GET(req: Request) {
           warmed.map(o => `r${o.round}/${o.session}`).join(', '),
       );
     }
+    // A session is warmed once (its cache key answers "already-warm" after), so this starts the loader once per race.
+    if (warmed.some(o => o.session === 'race' || o.session === 'sprint')) await startLoader();
 
     return NextResponse.json({
       ok: true,

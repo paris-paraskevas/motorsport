@@ -293,6 +293,8 @@ async function ReportBody({
   const weekendName = weekendAnchorName(series.meta.name, weekendTitleLabel, round);
 
   let raceEntries: RaceResult['results'] = [];
+  // B5: an F1 race OpenF1 supplied because jolpi.ca does not have it yet.
+  let raceProvisional = false;
   let classBlocks: Awaited<ReturnType<typeof fetchClassClassifications>> = [];
   const raceHref = raceSession
     ? `/series/${slug}/weekend/${round}/${sessionSlug(raceSession.title)}`
@@ -304,7 +306,10 @@ async function ReportBody({
       // The pool the session page reads (B2): IndyCar's races keyed by date, DTM's from its per-race source.
       const pool = await raceResultPool(series).catch(() => [] as RaceResult[]);
       const race = raceFor(pool, round, raceSession.title);
-      if (race && race.results.length > 1) raceEntries = race.results;
+      if (race && race.results.length > 1) {
+        raceEntries = race.results;
+        raceProvisional = race.provisional === true;
+      }
     }
   }
   const winner = raceEntries[0] ?? classBlocks[0]?.data.entries[0] ?? null;
@@ -381,6 +386,7 @@ async function ReportBody({
         <p className="-mt-3 mb-5 font-mono text-11 tabular-nums text-text-muted">
           {winner.driverName} wins
           {margin ? <> · winning margin <span className="text-text">{margin}</span></> : null}
+          {raceProvisional ? ' · provisional, from OpenF1' : null}
         </p>
       )}
 
