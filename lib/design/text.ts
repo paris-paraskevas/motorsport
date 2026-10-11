@@ -1,6 +1,7 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { DEFAULT_TEXT, TEXT_DEFAULTS, TEXT_KEYS, TEXT_MAX, isTextKey, type ChromeText, type TextKey } from './text-defaults';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 export { DEFAULT_TEXT, TEXT_DEFAULTS, TEXT_KEYS, TEXT_MAX, isTextKey } from './text-defaults';
 export type { ChromeText, TextKey } from './text-defaults';
@@ -34,30 +35,14 @@ export function textFromRows(rows: unknown): ChromeText {
   return out;
 }
 
-const MEMO_MS = 60_000;
-let memo: { at: number; value: ChromeText } | null = null;
-
 export function resetTextMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** The chrome's strings for the shell. Never throws. */
+/** The chrome's strings for the shell, from the design snapshot. Never throws. */
 export async function loadTextMessages(): Promise<ChromeText> {
-  if (!isBettingConfigured()) return DEFAULT_TEXT;
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb()
-      .from('text_message')
-      .select('key, text')
-      .eq('application_key', APPLICATION_KEY)
-      .in('key', [...TEXT_KEYS]);
-    if (error || !data) return DEFAULT_TEXT;
-    const value = textFromRows(data);
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return DEFAULT_TEXT;
-  }
+  const snapshot = await loadDesignSnapshot();
+  return snapshot ? textFromRows(snapshotRows(snapshot, 'text_message')) : DEFAULT_TEXT;
 }
 
 /** A message as the editor sees it. `updatedAt` is the row's stamp exactly as

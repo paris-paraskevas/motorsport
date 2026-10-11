@@ -5,13 +5,18 @@ let result: { data: unknown; error: { message: string } | null } = { data: [], e
 vi.mock('@/lib/betting/client', () => ({
   isBettingConfigured: () => configured,
   betDb: () => ({
-    from: () => {
+    from: (table: string) => {
       const q = {
         select: () => q,
+        is: () => q,
+        order: () => q,
         eq: () => q,
         in: () => q,
         then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
-          Promise.resolve(result).then(resolve, reject),
+          // The site's loader reads through the design snapshot (PF5): the application row, this table's rows embedded.
+          Promise.resolve(
+            table === 'application' ? { data: result.data == null ? null : [{ setting: result.data }], error: result.error } : result,
+          ).then(resolve, reject),
       };
       return q;
     },

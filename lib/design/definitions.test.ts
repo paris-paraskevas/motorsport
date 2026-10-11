@@ -12,7 +12,9 @@ vi.mock('@/lib/betting/client', () => ({
   isBettingConfigured: () => true,
   betDb: () => ({
     from: (table: string) => {
-      if (throwOn === table) throw new Error(`boom on ${table}`);
+      // The site's loader reads through the design snapshot (PF5): the application row, the definitions' rows embedded.
+      const snapshot = table === 'application';
+      if (throwOn === table || (snapshot && throwOn === 'component_definition')) throw new Error(`boom on ${table}`);
       const chain = {
         select: () => chain,
         eq: () => chain,
@@ -20,12 +22,18 @@ vi.mock('@/lib/betting/client', () => ({
         not: () => chain,
         order: () => chain,
         limit: () => chain,
-        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) => Promise.resolve(tables[table] ?? { data: [], error: null }).then(resolve, reject),
+        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
+          Promise.resolve(snapshot ? snapshotAnswer() : (tables[table] ?? { data: [], error: null })).then(resolve, reject),
       };
       return chain;
     },
   }),
 }));
+
+function snapshotAnswer(): Answer {
+  const own = tables.component_definition ?? { data: [], error: null };
+  return { data: own.data == null ? null : [{ component_definition: own.data }], error: own.error };
+}
 
 import { loadComponents, loadDefinitions, loadDefinitionsForEditing, loadSourceUsage, mapBackgroundUsageFromRows, overlaysFromRows, resetDefinitionsMemo, sourceUsageFromRows, usageFromRows } from './definitions';
 import { DEFINITIONS } from './component-definitions';

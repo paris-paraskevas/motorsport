@@ -23,13 +23,21 @@ vi.mock('@/lib/betting/client', () => ({
         in: () => q,
         order: () => q,
         is: (col: string, v: unknown) => {
-          if (col === 'deleted_at' && v === null) liveOnly = true;
+          if ((col === 'deleted_at' || col === 'page.deleted_at') && v === null) liveOnly = true;
           return q;
         },
         maybeSingle: async () => (table === 'list' ? listRow : entryRows),
         then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) => {
+          const pages = liveOnly ? pageRows.data.filter(r => r.deleted_at == null) : pageRows.data;
           const result =
-            table === 'list' ? listRow : table === 'page' ? { ...pageRows, data: liveOnly ? pageRows.data.filter(r => r.deleted_at == null) : pageRows.data } : entryRows;
+            table === 'list'
+              ? listRow
+              : table === 'page'
+                ? { ...pageRows, data: pages }
+                : // The shell's loader reads through the design snapshot (PF5): the application row, the entries and the pages embedded.
+                  table === 'application'
+                  ? { data: entryRows.data == null ? null : [{ list_entry: entryRows.data, page: pages.map(p => ({ kind: 'row', ...p })) }], error: entryRows.error }
+                  : entryRows;
           return Promise.resolve(result).then(resolve, reject);
         },
       };
