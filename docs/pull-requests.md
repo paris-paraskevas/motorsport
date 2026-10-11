@@ -14,6 +14,27 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1156 · 1.0.272 · B5 (OpenF1 as F1’s backup) · opened 2026-10-11 into `next` on the operator’s “dont just have f1 on jolpica, have openf1 as backup” and the plan’s approval in plan mode; the merge on the word
+**OpenF1 as F1’s backup.** On 11 October jolpi.ca, F1’s only results source, still ended at round 16 two hours after Singapore’s race, while OpenF1 had the full classification: the standings, the results tab and the home lacked the race, and the weekend page showed the sprint as the Grand Prix. The loader now fills a race or sprint jolpi.ca lacks from OpenF1, named as jolpi.ca names it and marked provisional until jolpi.ca catches up; provisional races are labelled and never settle bets; a sprint is never shown as the race; a dormant trigger starts the loader after an F1 race once the operator sets its token.
+- **Readers see:** after a race jolpi.ca is slow to publish, the F1 results and standings with that race, marked provisional; the weekend page never presents the sprint as the race; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (23):**
+  - `lib/results/f1-openf1.ts` · new: the gap after jolpi.ca from OpenF1, converted to jolpi.ca’s shape and names, and the standings arithmetic with countback.
+  - `lib/results/f1-openf1.test.ts` · new: the schedule slots, the gap rules, the conversion, the standings arithmetic, the full path with OpenF1 mocked.
+  - `lib/results/f1.ts`, `lib/standings/f1.ts` · the four F1 fetchers take the gap; jolpi.ca’s season readers exported for the standings.
+  - `lib/types.ts` · `RaceResult.provisional`.
+  - `components/tabs/StandingsTab.tsx`, `components/tabs/ResultsTab.tsx` · the provisional note under the source line.
+  - `app/(app)/series/[slug]/weekend/[round]/page.tsx` · the lead’s winner line says provisional, from OpenF1.
+  - `lib/home-results.ts`, `lib/home-model.ts`, `components/HomeLead.tsx` · the home’s latest result carries and shows the mark.
+  - `lib/betting/series-sources.ts`, `lib/betting/series-sources.test.ts` · settlement skips provisional races, with its case.
+  - `lib/results/session-classification.ts`, `lib/results/session-classification.test.ts` · F1 sprints marked in the weekend pool; a lone sprint never returned for a race; their cases.
+  - `app/api/cron/warm-sessions/route.ts` · the loader dispatch after an F1 race or sprint, dormant without `GITHUB_DISPATCH_TOKEN`.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot B5 and its dated change.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.272.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** `npx vitest run` → 276 files, 2,721 tests passed; `npx tsc --noEmit` → exit 0; eslint on the changed files → exit 0; `npm run lockfile:check` → exit 0; the live probe (read-only, real data, jolpi.ca’s round-17 race taken out): OpenF1 filled it, matching formula1.com’s 22 rows and jolpi.ca’s own round 17, and the standings matched formula1.com’s 23 drivers and 11 teams. UNVERIFIED until a race after the deploy at which jolpi.ca lags, and for the dispatch until the token exists.
+- **Review:** pending: a fresh-context Sonnet reviewer, after the operator’s 5-hour figure.
+
 ## #1153 · 1.0.269 · N1 (notifications reach the old subscribers again) · opened 2026-10-10 into `next` on the operator’s “go”, ahead of the order under rule 11 (notifications reached no one); the merge on the word
 **Notifications reach the old subscribers again.** All five push subscriptions in prod were made from May to July under the key that left with the Vercel account, and every send to them fails (403 from FCM, 400 from Apple). The old restore path only re-subscribed a browser holding no subscription, so these never healed. On a visit with permission already granted, a subscription made under another key is now dropped on the server and in the browser and replaced silently under the current key; after this is live, the dead entries go from the store.
 - **Readers see:** on devices that turned notifications on before August, notifications start arriving again after their next visit, with no new prompt; nothing else.
