@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.270 — 2026-10-11
+
+### PF5 — One design snapshot
+
+Supabase’s gateway logged 342,037 calls in the last 24 hours (10 October), 304,685 of them (89%) on the designer’s tables: twelve loaders each read their own table once a minute per Worker isolate, about 19,000 times a day each (`application` twice, by the appearance and the definition; `theme` 26,316 times, two reads racing the memo). `lib/design/snapshot.ts` (new) reads the application row with every design table embedded (each one’s `application_key` references `application(key)`, so PostgREST embeds them: no migration), once a minute per isolate, one read for loaders that ask together; a failure is never kept and a save’s reset outranks a read under way. The twelve loaders (`loadAppearance`, `loadApplicationDefinition`, `loadThemeSet`, `loadSettings`, `loadTextMessages`, `loadSearchHints`, `loadAuthzSchemes`, `loadShortcuts`, `loadBuildOptions`, `loadOverlays`, `loadNavLists` with its page destinations, and the frames’ `loadFrames`) take their rows from it, their parsers and defaults unchanged; each `reset…Memo()` clears it, so the 20 admin routes are unchanged. `lib/design/pages.ts`: `destinationsFromRows()`, the destinations’ loop, shared. Per-request reads (a page’s live revision, its row by path) are untouched, so a publish still shows on the next render. The scope narrowed on 10 October: the cross-isolate cache with a tag waits for a week’s numbers. Tests: `lib/design/snapshot.test.ts` (new, 7 cases) and the loaders’ mocks answering the snapshot’s read. Locally, six pages on next and on the branch: design reads 65 → 9, the chrome identical. Ledger: PF5 started and its dated change. IDEAS.md: four Inbox lines (the cross-isolate cache; 14 functions without a fixed search path; Auth’s leaked-password protection; a hydration warning on the home in development).
+
 ## 1.0.269 — 2026-10-10
 
 ### N1 — Notifications reach the old subscribers again
