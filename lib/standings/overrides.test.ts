@@ -30,7 +30,7 @@ const F1_AFTER_R12: DriverStanding[] = [
   d(12, 'Franco Colapinto', 19),
 ];
 
-// Exactly what content/series/f1/standings-overrides.json carries.
+// Exactly what content/series/f1/standings-overrides.json carried (B4 deleted it on 11 Oct 2026, once jolpi.ca had the appeal).
 const MONACO_ICA = [
   { driverName: 'Isack Hadjar', pointsDelta: 3 },
   { driverName: 'Oscar Piastri', pointsDelta: 2 },

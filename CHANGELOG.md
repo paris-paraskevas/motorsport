@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.271 — 2026-10-11
+
+### B4 — F1’s standings without the Monaco appeal counted twice
+
+The standings check of 11 October against formula1.com found five drivers and four teams wrong on `/series/f1/standings` and the home’s championship box: Gasly 32 for 41, Piastri 130 for 128, Hadjar 99 for 96, Lawson 71 for 69 and Lindblad 40 for 38 (before Singapore’s race, which jolpi.ca has not added yet). `content/series/f1/standings-overrides.json` (#897, 4 September) added the Court of Appeal’s Monaco decision as deltas while jolpi.ca still served the pre-appeal order; jolpi.ca’s round 6 now carries the decision itself (Hadjar P3, Piastri P4, Lawson P5, Lindblad P6, Gasly P7, as formula1.com), so the deltas counted it twice. Both files are deleted, as their own notes asked once upstream caught up: `standings-overrides.json` and `results-overrides.json` (its Monaco block now equals jolpi.ca). An absent file reads as no overrides (`readJsonIfExists`), as for every other series. `lib/standings/overrides.test.ts`: the fixture’s comment in the past tense. `tests/f1-overrides-integrity.test.ts`: the results suite gains the deleted-file case its standings suite already had, so a deleted file reads as success rather than an empty suite (the operator’s choice). Ledger: slot B4 and its dated change.
+
 ## 1.0.269 — 2026-10-10
 
 ### N1 — Notifications reach the old subscribers again

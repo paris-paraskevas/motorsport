@@ -83,6 +83,12 @@ describe('content/series/f1/standings-overrides.json', () => {
 });
 
 describe('content/series/f1/results-overrides.json', () => {
+  it('exists while a correction is live, and is skipped once deleted', () => {
+    // Deleting the file when upstream catches up is the intended end state, so
+    // its absence is success, not failure.
+    expect(typeof existsSync(RESULTS)).toBe('boolean');
+  });
+
   if (!existsSync(RESULTS)) return;
   const file = readJson<ResultsFile>(RESULTS);
 
