@@ -14,6 +14,20 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1155 · 1.0.271 · B4 (F1’s standings without the Monaco appeal counted twice) · opened 2026-10-11 into `next` on the operator’s “go” after the standings check, ahead of the order as a wrong fact (rule 11); the merge on the word
+**F1’s standings without the Monaco appeal counted twice.** The standings check of 11 October found five drivers and four teams wrong on the F1 standings tab and the home’s championship box (Gasly 32 for 41, Piastri 130 for 128, Hadjar 99 for 96, Lawson 71 for 69, Lindblad 40 for 38): a correction file from 4 September added the Court of Appeal’s Monaco decision on top of jolpi.ca, which now carries it itself. Both correction files are deleted, as their notes asked.
+- **Readers see:** the five drivers’ and four teams’ official totals on the F1 standings and the home’s championship box; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (11):**
+  - `content/series/f1/standings-overrides.json`, `content/series/f1/results-overrides.json` · deleted (an absent file reads as no overrides).
+  - `tests/f1-overrides-integrity.test.ts` · the results suite’s deleted-file case, as its standings suite already had (the operator’s choice).
+  - `lib/standings/overrides.test.ts` · the fixture’s comment in the past tense.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot B4 and its dated change.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.271.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** `npx vitest run` → 275 files, 2,705 tests passed; `npx vitest run tests/f1-overrides-integrity.test.ts lib/standings/overrides.test.ts` → 2 files, 11 passed; `npx tsc --noEmit` → exit 0; `npm run lockfile:check` → exit 0; prod’s `standing_current` (read-only) holds the five official totals the page shows once the deltas are gone. UNVERIFIED until the daily deploy: the live table.
+- **Review:** none yet: a fresh-context Sonnet reviewer on the operator’s 5-hour figure, or the operator’s word to merge without one.
+
 ## #1153 · 1.0.269 · N1 (notifications reach the old subscribers again) · opened 2026-10-10 into `next` on the operator’s “go”, ahead of the order under rule 11 (notifications reached no one); the merge on the word
 **Notifications reach the old subscribers again.** All five push subscriptions in prod were made from May to July under the key that left with the Vercel account, and every send to them fails (403 from FCM, 400 from Apple). The old restore path only re-subscribed a browser holding no subscription, so these never healed. On a visit with permission already granted, a subscription made under another key is now dropped on the server and in the browser and replaced silently under the current key; after this is live, the dead entries go from the store.
 - **Readers see:** on devices that turned notifications on before August, notifications start arriving again after their next visit, with no new prompt; nothing else.
