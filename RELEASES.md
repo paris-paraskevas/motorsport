@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.272 — 2026-10-11
+
+Formula 1’s results and standings no longer wait for one data source: when it is slow after a race, the official timing feed fills in, marked provisional until the usual source catches up. A sprint is no longer shown as the Grand Prix’s result.
+
 ## 1.0.269 — 2026-10-10
 
 Notifications work again on devices that turned them on before August: they reconnect by themselves on the next visit, with no new prompt.

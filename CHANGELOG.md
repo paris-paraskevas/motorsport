@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.272 — 2026-10-11
+
+### B5 — OpenF1 as F1’s backup
+
+On 11 October jolpi.ca, F1’s only results source, still ended at round 16 two hours after Singapore’s race, while OpenF1 had the full classification and both championships: the standings, the results tab and the home lacked the race, and the weekend page showed the sprint’s classification as the Grand Prix’s. `lib/results/f1-openf1.ts` (new): in the loader’s fetch step, a race or sprint run after jolpi.ca’s latest round of its kind is read from OpenF1 (`session_result` and `drivers` through the paced client), numbered and named by jolpi.ca’s published schedule, with jolpi.ca’s driver names and teams matched by code, and marked `provisional` (`lib/types.ts`); `withAddedSessions` adds its points to jolpi.ca’s tables, an added race’s win, and re-ranks with countback. Nothing runs when jolpi.ca did not answer, and jolpi.ca takes over by itself once it has the round. `lib/results/f1.ts` and `lib/standings/f1.ts` wire it into the four F1 fetchers. Provisional races are labelled on the standings and results tabs, the weekend lead and the home’s latest result, and `lib/betting/series-sources.ts` never settles on them. `lib/results/session-classification.ts`: F1’s sprints are marked in the weekend pool and a lone sprint is never returned for a race session. `app/api/cron/warm-sessions/route.ts`: after capturing an F1 race or sprint it starts the loader through GitHub’s API when `GITHUB_DISPATCH_TOKEN` is set (dormant otherwise). Tests: `lib/results/f1-openf1.test.ts` (new) and cases in the session-classification and betting tests. Verified on real data with jolpi.ca’s round-17 race taken out: the filled race and the standings match formula1.com. Ledger: slot B5 and its dated change.
+
 ## 1.0.269 — 2026-10-10
 
 ### N1 — Notifications reach the old subscribers again
