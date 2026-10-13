@@ -10,6 +10,7 @@ import {
   type BuildOptionStatus,
   type BuildOptions,
 } from './build-option-defaults';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 export {
   BUILD_OPTION_DEFAULTS,
@@ -50,30 +51,14 @@ export function buildOptionsFromRows(rows: unknown): BuildOptions {
   return out;
 }
 
-const MEMO_MS = 60_000;
-let memo: { at: number; value: BuildOptions } | null = null;
-
 export function resetBuildOptionsMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** Every option's status, for the site. Never throws. */
+/** Every option's status, for the site, from the design snapshot. Never throws. */
 export async function loadBuildOptions(): Promise<BuildOptions> {
-  if (!isBettingConfigured()) return DEFAULT_BUILD_OPTIONS;
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb()
-      .from('build_option')
-      .select('key, status')
-      .eq('application_key', APPLICATION_KEY)
-      .in('key', [...BUILD_OPTION_KEYS]);
-    if (error || !data) return DEFAULT_BUILD_OPTIONS;
-    const value = buildOptionsFromRows(data);
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return DEFAULT_BUILD_OPTIONS;
-  }
+  const snapshot = await loadDesignSnapshot();
+  return snapshot ? buildOptionsFromRows(snapshotRows(snapshot, 'build_option')) : DEFAULT_BUILD_OPTIONS;
 }
 
 /** Whether the feature behind `key` renders. Include on any failure. */
