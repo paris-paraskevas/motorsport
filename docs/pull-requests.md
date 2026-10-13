@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1160 · 1.0.274 · records (session 68 closed) · opened 2026-10-13 into `next` on the operator’s “go” to close the day’s records; the merge on the word
+**Session 68 closed.** The state of 13 October in the repo: the handoff’s LATEST section (the robots’ bill and its cause, the two Cloudflare rules and the edit still owed, Supabase’s quotas, what went live with the daily merge and what waits in next, the landmines learned), the ledger’s evidence for every merge and the deploy, B4 done on the live check, slot O8 planned with the operator’s 60-second window, and seven Inbox lines.
+- **Readers see:** nothing; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (9):**
+  - `docs/HANDOFF.md` · the LATEST section for 13 October; the section of the 9th no longer marked LATEST.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · B4 done; the evidence of PF5, O6, N1, B5 and O7; slot O8 planned and its dated change.
+  - `IDEAS.md` · seven Inbox lines (the light rebuild asked and not chosen, the rule’s exemptions, the sitemap’s 403, the team names, the lookup-skipping pair, a budget alert, the parsers per call), with the line of 10 October this branch already carried.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.274.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** `npx vitest run lib/design/plan-ledger.test.ts "app/(app)/changelog"` → 3 files, 28 tests passed (the ledger canonical, every scope hash matching, the plan rendered).
+- **Review:** on the operator’s word: a fresh-context review, or the merge without one (records only).
+
 ## #1159 · 1.0.273 · O7 (a long browser cache for the script files) · opened 2026-10-13 into `next` on the operator’s “go” on E of the cost plan; the merge on the word
 **A long browser cache for the script files.** The script and style files under `/_next/static/` were served with Cloudflare Static Assets’ default (`max-age=0, must-revalidate`), so every page view asked again for each one, and each of those requests counts against the 10 million included. Their names carry a hash of their content, so `public/_headers` now gives them a year’s immutable cache, as OpenNext’s caching guide recommends; Cloudflare applies the file to static assets only.
 - **Readers see:** pages a little faster on repeat visits; the release notes carry one line.
