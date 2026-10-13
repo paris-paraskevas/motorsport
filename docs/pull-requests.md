@@ -14,6 +14,21 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1155 · 1.0.271 · B4 (F1’s standings without the Monaco appeal counted twice) · opened 2026-10-11 into `next` on the operator’s “go” after the standings check, ahead of the order as a wrong fact (rule 11); the merge on the word
+**F1’s standings without the Monaco appeal counted twice.** The standings check of 11 October found five drivers and four teams wrong on the F1 standings tab and the home’s championship box (Gasly 32 for 41, Piastri 130 for 128, Hadjar 99 for 96, Lawson 71 for 69, Lindblad 40 for 38): a correction file from 4 September added the Court of Appeal’s Monaco decision on top of jolpi.ca, which now carries it itself. Both correction files are deleted, as their notes asked.
+- **Readers see:** the five drivers’ and four teams’ official totals on the F1 standings and the home’s championship box; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (13):**
+  - `content/series/f1/standings-overrides.json`, `content/series/f1/results-overrides.json` · deleted (an absent file reads as no overrides).
+  - `tests/f1-overrides-integrity.test.ts` · the results suite’s deleted-file case, as its standings suite already had (the operator’s choice).
+  - `lib/standings/overrides.test.ts` · the fixture’s comment in the past tense.
+  - `lib/types.ts`, `lib/standings/overrides.ts` · the `pointsDelta` docblocks: a delta holds only until upstream carries the correction (the review’s second nit).
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot B4 and its dated change.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.271.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** `npx vitest run` → 275 files, 2,705 tests passed; `npx vitest run tests/f1-overrides-integrity.test.ts lib/standings/overrides.test.ts` → 2 files, 11 passed; `npx tsc --noEmit` → exit 0; `npm run lockfile:check` → exit 0; prod’s `standing_current` (read-only) holds the five official totals the page shows once the deltas are gone. After the review’s fold: `npx vitest run tests/f1-overrides-integrity.test.ts lib/standings lib/design/plan-ledger.test.ts "app/(app)/changelog"` → 20 files, 196 passed; `npx tsc --noEmit` → exit 0. UNVERIFIED until the daily deploy: the live table.
+- **Review:** a fresh-context Sonnet reviewer (2026-10-13, 354,552 tokens): no blocker, no should-fix. It confirmed the premise against jolpi.ca (round 6 equals the deleted block; after the deletion the table equals jolpi.ca’s round-17 standings) and that prod stops double counting at the deploy, since the correction applied at read time. Two nits, both folded: the records’ Singapore wording dated, with the totals the page must show after the deploy (Piastri 138, Hadjar 97, Lawson 75, Gasly 41, Lindblad 38), and the `pointsDelta` docblocks.
+
 ## #1154 · 1.0.270 · PF5 (one design snapshot) · opened 2026-10-11 into `next` on the operator’s “go” for PF5’s plan and its approval in plan mode (10 October); the merge on the word
 **One design snapshot.** Supabase’s gateway logged 342,037 calls in a day, 89% of them on the designer’s tables: twelve loaders each read their own table once a minute per isolate, about 19,000 times a day each. They now share one read of the application row with every design table embedded (no migration: each references `application(key)`), once a minute per isolate. Per-request reads stay, so a publish still shows on the next render. The scope narrowed with the plan’s approval: the cross-isolate cache with a tag waits for a week’s numbers.
 - **Readers see:** nothing; the release notes carry one line.

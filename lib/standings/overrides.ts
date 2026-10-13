@@ -39,7 +39,10 @@ function rerankByPoints<T extends { points: number; wins?: number; position: num
  *  five drivers. A standings table accumulates, so writing absolute totals there
  *  would have frozen those five at their 4 September values for the rest of the
  *  season. Any delta therefore re-ranks the table rather than trusting a curated
- *  position that the delta may have invalidated. */
+ *  position that the delta may have invalidated. A delta holds only until
+ *  upstream publishes the corrected result itself; then the curated file is
+ *  deleted, or the correction counts twice (jolpi.ca carried the Monaco decision
+ *  by October 2026, and B4 deleted the file). */
 export function applyDriverOverrides(
   drivers: DriverStanding[],
   overrides: StandingsOverridesFile['drivers'],
