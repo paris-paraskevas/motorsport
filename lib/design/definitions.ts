@@ -5,6 +5,7 @@ import { DEFINITIONS, EMPTY_OVERLAY, isDefinitionKey, mergeDefinition, mergeDefi
 import { encodeSourceRef, parseSourceRef } from './sources';
 import { upgradedKey } from './page-document';
 import { DEFAULT_MAP_BACKGROUND } from './map-backgrounds';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 // The component definitions as the site and the designer read them (the
 // components programme, P2.0, PR B; APEX: Plug-ins): the code's definitions
@@ -24,7 +25,6 @@ import { DEFAULT_MAP_BACKGROUND } from './map-backgrounds';
 // page still carries.
 
 const APPLICATION_KEY = 'paddock';
-const MEMO_MS = 60_000;
 
 interface Stamp {
   updatedAt: string;
@@ -54,25 +54,14 @@ export function overlaysFromRows(rows: unknown): Record<string, DefinitionOverla
   return readRows(rows).overlays;
 }
 
-let memo: { at: number; overlays: Record<string, DefinitionOverlay> } | null = null;
-
 export function resetDefinitionsMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** The usable overlays, by definition key. Never throws; empty on any failure. */
+/** The usable overlays, by definition key, from the design snapshot. Never throws; empty on any failure. */
 export async function loadOverlays(): Promise<Record<string, DefinitionOverlay>> {
-  if (!isBettingConfigured()) return {};
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.overlays;
-  try {
-    const { data, error } = await betDb().from('component_definition').select('key, overlay, updated_at, updated_by').eq('application_key', APPLICATION_KEY);
-    if (error || !data) return {};
-    const overlays = overlaysFromRows(data);
-    memo = { at: Date.now(), overlays };
-    return overlays;
-  } catch {
-    return {};
-  }
+  const snapshot = await loadDesignSnapshot();
+  return snapshot ? overlaysFromRows(snapshotRows(snapshot, 'component_definition')) : {};
 }
 
 /** One definition's row as it is NOW, read fresh (no memo): what the write

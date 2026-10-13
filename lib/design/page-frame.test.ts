@@ -21,7 +21,10 @@ vi.mock('@/lib/betting/client', () => ({
         select: () => q,
         eq: () => q,
         is: () => q,
-        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) => Promise.resolve(rows).then(resolve, reject),
+        order: () => q,
+        // The frames come from the design snapshot (PF5): the application row, the code rows embedded as its pages.
+        then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
+          Promise.resolve(table === 'application' ? { data: rows.data == null ? null : [{ page: rows.data }], error: rows.error } : rows).then(resolve, reject),
       });
       return q;
     },

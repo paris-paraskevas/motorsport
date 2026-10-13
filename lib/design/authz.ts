@@ -1,6 +1,7 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { DEFAULT_AUTHZ_SCHEMES, isAuthzType, type AuthzScheme } from './authz-defaults';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 export {
   AUTHZ_LABEL_MAX,
@@ -63,30 +64,15 @@ export function authzFromRows(rows: unknown): AuthzScheme[] {
   return out.sort(order);
 }
 
-const MEMO_MS = 60_000;
-let memo: { at: number; value: AuthzScheme[] } | null = null;
-
 export function resetAuthzMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** Every scheme, for the site and the lists route. Never throws. */
+/** Every scheme, for the site and the lists route, from the design snapshot. Never throws. */
 export async function loadAuthzSchemes(): Promise<readonly AuthzScheme[]> {
-  if (!isBettingConfigured()) return DEFAULT_AUTHZ_SCHEMES;
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb()
-      .from('authz_scheme')
-      .select('key, label, type, value, message')
-      .eq('application_key', APPLICATION_KEY);
-    if (error || !data) return DEFAULT_AUTHZ_SCHEMES;
-    const value = authzFromRows(data);
-    if (value.length === 0) return DEFAULT_AUTHZ_SCHEMES;
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return DEFAULT_AUTHZ_SCHEMES;
-  }
+  const snapshot = await loadDesignSnapshot();
+  const value = snapshot ? authzFromRows(snapshotRows(snapshot, 'authz_scheme')) : [];
+  return value.length === 0 ? DEFAULT_AUTHZ_SCHEMES : value;
 }
 
 /** A scheme as the editor sees it. `updatedAt` is the row's stamp exactly as

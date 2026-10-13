@@ -4,6 +4,30 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.271 — 2026-10-11
+
+Formula 1’s championship table counted the Monaco appeal twice for five drivers and four teams; it now shows the official totals.
+
+## 1.0.270 — 2026-10-11
+
+Behind the scenes: every page asks the database far fewer questions about its own design. Nothing changes for readers.
+
+## 1.0.269 — 2026-10-10
+
+Notifications work again on devices that turned them on before August: they reconnect by themselves on the next visit, with no new prompt.
+
+## 1.0.268 — 2026-10-10
+
+Behind the scenes: far fewer log lines, and a notification a device cannot receive is no longer tried again every minute.
+
+## 1.0.267 — 2026-10-10
+
+Behind the scenes: a security fix to who may read some of the site’s stored data. Nothing changes for readers.
+
+## 1.0.266 — 2026-10-08
+
+Behind the scenes: the project’s records brought up to date. Nothing changes for readers.
+
 ## 1.0.265 — 2026-10-08
 
 Behind the scenes: changes now reach the site once a day, in one release, and each release clears away the saved pages of the version before it.
@@ -15,6 +39,10 @@ Behind the scenes: the alarm that watches whether new results are arriving no lo
 ## 1.0.263 — 2026-10-07
 
 The 3D car in the F1 qualifying replay is now a ninth of its old size, so it appears sooner, especially on mobile data. Behind the scenes, old preview copies of the site and outdated notes were cleared away.
+
+## 1.0.262 — 2026-10-07
+
+Behind the scenes: the project’s records brought up to date. Nothing changes for readers.
 
 ## 1.0.261 — 2026-10-07
 

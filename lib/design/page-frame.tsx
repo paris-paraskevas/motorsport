@@ -2,7 +2,6 @@ import 'server-only';
 import { createElement, type ReactNode } from 'react';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
-import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { SITE_TITLE } from '@/lib/site';
 import { RefusedPage } from '@/components/page/RefusedPage';
 import { CodePageFrame } from '@/components/page/RowPageView';
@@ -16,7 +15,8 @@ import { applyBuildOptions, applyConditions, conditionAsks, documentRefs, scheme
 import { loadBuildOptions } from './build-options';
 import { loadAppearance } from './appearance';
 import { raceWeekendNow, renderComponents } from './component-render';
-import { PAGE_APPLICATION_KEY, PAGE_COLUMNS, loadNamedPages, pageFromRow, type PageRow } from './pages';
+import { loadNamedPages, pageFromRow, type PageRow } from './pages';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 // The frame around a page the code serves (the Page Designer plan, PR 1): the
 // attributes a code page's row carries that the site reads at render, and the
@@ -43,36 +43,21 @@ export interface PageFrame {
   row: PageRow;
 }
 
-const MEMO_MS = 60_000;
-let memo: { at: number; value: Map<string, PageFrame> } | null = null;
-
 export function resetPageFrameMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** Every code page's row, by path, read once a minute per isolate. Null when
- *  the rows cannot be read; a failed read is not memoised. */
+/** Every code page's row, by path, from the design snapshot (once a minute per
+ *  isolate). Null when the rows cannot be read; a failed read is not memoised. */
 async function loadFrames(): Promise<Map<string, PageFrame> | null> {
-  if (!isBettingConfigured()) return null;
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb()
-      .from('page')
-      .select(PAGE_COLUMNS)
-      .eq('application_key', PAGE_APPLICATION_KEY)
-      .eq('kind', 'code')
-      .is('deleted_at', null);
-    if (error || !Array.isArray(data)) return null;
-    const value = new Map<string, PageFrame>();
-    for (const item of data) {
-      const row = pageFromRow(item);
-      if (row) value.set(row.path, { name: row.name, title: row.title, indexable: row.indexable, authz: row.authz, row });
-    }
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return null;
+  const snapshot = await loadDesignSnapshot();
+  if (!snapshot) return null;
+  const value = new Map<string, PageFrame>();
+  for (const item of snapshotRows(snapshot, 'page')) {
+    const row = pageFromRow(item);
+    if (row?.kind === 'code') value.set(row.path, { name: row.name, title: row.title, indexable: row.indexable, authz: row.authz, row });
   }
+  return value;
 }
 
 /** The row for a code page's registry path, or null when there is none or the rows cannot be read. */
