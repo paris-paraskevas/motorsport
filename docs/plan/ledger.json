@@ -904,6 +904,11 @@
    "date": "2026-10-13",
    "change": "Slot B6 opened, planned in plan mode and approved: F1’s team names as formula1.com prints them, through content/series/f1/team-names.json applied where jolpi.ca’s current season is parsed.",
    "word": "“find open items, do them”, “go” and the plan’s approval (the operator, 2026-10-13)"
+  },
+  {
+   "date": "2026-10-13",
+   "change": "Slot O9 opened: the weekly copy of the design and editorial tables (export-design.yml) failed every Sunday since 13 September at its checkout step; the branch is now made in the working tree that fetched.",
+   "word": "“go” (the operator, 2026-10-13), after the question that named O9 beside the calendar filters"
   }
  ],
  "phases": {
@@ -2063,6 +2068,20 @@
    "scopeHash": "5eb39fa1eef4",
    "evidence": "PLANNED 2026-10-13 (session 68) in plan mode (C:\\Users\\ppara\\.claude\\plans\\bubbly-soaring-book.md). The installed @opennextjs/cloudflare 1.20.2 gives regionalCacheTtlSec (dist/api/overrides/tag-cache/do-sharded-tag-cache.d.ts, default 5) and queueCache (dist/api/overrides/queue/queue-cache.d.ts); on Next 16 the lookup-skipping pair and the background R2 read are each other’s inverse (dist/api/overrides/incremental-cache/regional-cache.js:39-45). This cycle’s bill: Durable Object requests 24.06M ($3.60), R2 reads 12.06M ($1.08), both driven by the robot flood of 8–11 October.",
    "brief": "The page cache asks its stale-page store once a minute per region instead of every five seconds."
+  },
+  {
+   "id": "O9",
+   "phase": "PO",
+   "title": "The weekly copy of the posts and the design runs again",
+   "scope": "The GitHub job “Export the design and editorial tables to git” (.github/workflows/export-design.yml), the only copy of the design rows, the posts and the authors outside Supabase’s Free plan (which keeps no backups), failed every Sunday from 13 September to 11 October at its checkout step: `git -C export-branch checkout -q -B export/design FETCH_HEAD` ran inside the second working tree, where FETCH_HEAD does not exist (“fatal: 'FETCH_HEAD' is not a commit and a branch 'export/design' cannot be created from it”), so the newest copy is from 8 September. The branch is now made in the working tree that fetched: `git worktree add -B export/design export-branch FETCH_HEAD`.",
+   "fixedBy": "research f of session 67 (keep our own backups: the Free plan has none); the operator’s decision of 8 September that made the job; the operator’s “go” of 13 October, after the question that named O9 beside the calendar filters",
+   "defaults": "one command changed, with a comment naming the constraint; the export script, its tables and the schedule untouched; proven by running the job’s two git steps, read from the workflow, against a scratch remote, with and without the branch; after the daily merge, one run by hand (Run workflow) checks it on GitHub",
+   "needsWord": "none left: the go of 13 October; the merge on the word",
+   "acceptance": "the job’s steps pass on a scratch remote on both paths, and the old steps fail there with the production error; after the daily merge, a run by hand ends green and export/design gains a commit on top of 8addfe43",
+   "status": "started",
+   "scopeHash": "82053a2d1bb7",
+   "evidence": "STARTED 2026-10-13 (session 68). Found in point 6’s plain check: gh run list --workflow export-design.yml → the five scheduled runs from 13 Sep to 11 Oct ended in failure at “Check out the export branch into export-branch/”, the run of 8 Sep in success (the branch did not exist yet, so the orphan path ran); run 38132047367’s log: “fatal: 'FETCH_HEAD' is not a commit and a branch 'export/design' cannot be created from it”, exit 128, reproduced on a scratch repository with git 2.53.0. Verified: the job’s two git steps, read from the edited workflow with the yaml package and run against a scratch remote, push a new commit on top of the old copy (with the branch) and create the branch (without it); the same steps from origin/next fail on the first path with the production error. The newest copy on export/design: 8addfe43 (2026-09-08), 19 files, 0.3 MB; the 18 exported tables all still exist in supabase/migrations.",
+   "brief": "The weekly copy of the posts and the design, broken since 13 September, runs again."
   },
   {
    "id": "R18",

@@ -48,9 +48,10 @@ jobs:
       # the branch as an orphan: it shares no history with main.
       - name: Check out the export branch into export-branch/
         run: |
+          # FETCH_HEAD exists only in the working tree that fetched, so the branch is made here, never
+          # inside export-branch/: there git answers "'FETCH_HEAD' is not a commit" (every run 13 Sep to 11 Oct, O9).
           if git fetch --depth=1 origin export/design 2>/dev/null; then
-            git worktree add export-branch FETCH_HEAD
-            git -C export-branch checkout -q -B export/design FETCH_HEAD
+            git worktree add -B export/design export-branch FETCH_HEAD
           else
             git worktree add --orphan -b export/design export-branch
           fi
