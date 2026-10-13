@@ -1,6 +1,7 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 import { withF1LastGood } from '@/lib/f1-cache';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { loadTeamNames, officialTeamName, type TeamNamesFile } from '@/lib/series-content';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -90,6 +91,7 @@ interface RawResult {
 }
 
 interface RawRace {
+  season?: string;
   round?: string;
   raceName?: string;
   date?: string;
@@ -140,6 +142,8 @@ function parseRace(
   // Same RawResult shape, different parent key. Default keeps existing
   // race-payload callers unchanged.
   resultsField: 'Results' | 'SprintResults' = 'Results',
+  // jolpi.ca keeps older names for some teams; the results print formula1.com's for the race's season (B6).
+  teamNames: TeamNamesFile | null = null,
 ): RaceResult | null {
   const round = Number(raw?.round);
   const raceName = raw?.raceName;
@@ -152,7 +156,7 @@ function parseRace(
   for (const r of rawResults) {
     const entry = parseEntry(r);
     if (!entry) return null;
-    results.push(entry);
+    results.push({ ...entry, team: officialTeamName(teamNames, raw?.season, entry.team) });
   }
   return { round, raceName, date, circuit, results };
 }
@@ -164,7 +168,7 @@ async function fetchF1LastRaceLive(): Promise<RaceResult | null> {
     const json = (await res.json()) as RacePayload;
     const races = json?.MRData?.RaceTable?.Races;
     if (!Array.isArray(races) || races.length === 0) return null;
-    return parseRace(races[0]);
+    return parseRace(races[0], 'Results', await loadTeamNames('f1'));
   } catch {
     return null;
   }
@@ -173,9 +177,10 @@ async function fetchF1LastRaceLive(): Promise<RaceResult | null> {
 async function fetchF1SeasonResultsLive(): Promise<RaceResult[]> {
   try {
     const races = mergeRacesByRound(await fetchAllPages(SEASON_RESULTS_URL), 'Results');
+    const teamNames = await loadTeamNames('f1');
     const results: RaceResult[] = [];
     for (const r of races) {
-      const parsed = parseRace(r);
+      const parsed = parseRace(r, 'Results', teamNames);
       if (parsed) results.push(parsed);
     }
     return results.sort((a, b) => a.round - b.round);
@@ -187,9 +192,10 @@ async function fetchF1SeasonResultsLive(): Promise<RaceResult[]> {
 async function fetchF1SeasonSprintsLive(): Promise<RaceResult[]> {
   try {
     const races = mergeRacesByRound(await fetchAllPages(SEASON_SPRINTS_URL), 'SprintResults');
+    const teamNames = await loadTeamNames('f1');
     const results: RaceResult[] = [];
     for (const r of races) {
-      const parsed = parseRace(r, 'SprintResults');
+      const parsed = parseRace(r, 'SprintResults', teamNames);
       if (parsed) results.push(parsed);
     }
     return results.sort((a, b) => a.round - b.round);

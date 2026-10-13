@@ -1,0 +1,9 @@
+{
+  "_comment": "jolpi.ca's team name → the name formula1.com prints, per season (B6, checked against formula1.com's 2026 team standings on 13 October 2026). The F1 standings and results parsers apply a season's lines to that season's payloads; a name with no line passes through unchanged.",
+  "2026": {
+    "Red Bull": "Red Bull Racing",
+    "RB F1 Team": "Racing Bulls",
+    "Alpine F1 Team": "Alpine",
+    "Cadillac F1 Team": "Cadillac"
+  }
+}

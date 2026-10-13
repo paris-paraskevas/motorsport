@@ -14,6 +14,23 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1162 · 1.0.276 · B6 (F1’s teams named as formula1.com names them) · opened 2026-10-13 into `next` on the operator’s “find open items, do them” and the plan’s approval; the merge on the word
+**F1’s teams named as formula1.com names them.** jolpi.ca names four 2026 teams by older names (Red Bull, RB F1 Team, Alpine F1 Team, Cadillac F1 Team); formula1.com, the roster and OpenF1 print Red Bull Racing, Racing Bulls, Alpine and Cadillac, and the Racing Bulls rows linked to no team page. A curated map per season is applied where jolpi.ca’s current season is parsed, so every surface agrees.
+- **Readers see:** after the deploy and the loader’s next run, the F1 standings, results, home and chart name all eleven teams as formula1.com does, and the Racing Bulls drivers link to their team page; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (15):**
+  - `content/series/f1/team-names.json` · new: jolpi.ca’s name against formula1.com’s, per season.
+  - `lib/series-content.ts` · `loadTeamNames()` and `officialTeamName()`.
+  - `lib/standings/f1.ts`, `lib/results/f1.ts` · the payload’s and each race’s season pick the names.
+  - `lib/standings/f1.test.ts`, `lib/results/f1.test.ts` · a 2026 payload renamed, a 2025 one untouched, every 2026 name with a chart colour.
+  - `components/LazySeasonTrendChart.tsx` · the four new names share the old names’ colours; `F1_TEAM_COLORS` exported for the test.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot B6 and its dated change.
+  - `IDEAS.md` · the Inbox line of 13 October marked as taken.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.276.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** `npx vitest run lib/standings lib/results components` → 87 files, 754 tests passed (with the constructors’ rename removed, the new case fails); `npx tsc --noEmit` → exit 0; eslint on the six changed files → exit 0; `DATA_SOURCE=db npm run cf:build` → exit 0. UNVERIFIED until the deploy and one loader run: the live tables.
+- **Review:** on the operator’s word: a fresh-context review, or the merge without one.
+
 ## #1161 · 1.0.275 · X17 (the cleanup, PR 3) · opened 2026-10-13 into `next` on the operator’s “find open items, do them”; the slot needs no word; the merge on the word
 **The decoder’s headshots named, the social pages’ canonicals.** The census of 7 October found 19 pages with an image lacking a description, every one an F1 qualifying or sprint-qualifying page: the qualifying decoder’s driver headshots carried an empty `alt`, and each now names its driver. /social and /social/threads, indexable and without a canonical, now name their own address. The ledger also records O2 done and O3’s loader runs so far.
 - **Readers see:** nothing; screen readers hear the driver’s name on each headshot; the release notes carry one line.
