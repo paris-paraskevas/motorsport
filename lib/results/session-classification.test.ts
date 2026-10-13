@@ -185,6 +185,14 @@ describe('pickRaceForSession', () => {
     expect(pickRaceForSession([sprint, feature], 'F2 - Sprint')).toBe(sprint);
     expect(pickRaceForSession([sprint, feature], 'F2 - Feature')).toBe(feature);
   });
+  it('never gives a race session a lone sprint (B5: the race is not in yet), but gives a sprint session its sprint', () => {
+    const sprint = race('Singapore Grand Prix · Sprint');
+    expect(pickRaceForSession([sprint], 'Formula 1 - Race')).toBeNull();
+    expect(pickRaceForSession([sprint], 'Formula 1 - Sprint')).toBe(sprint);
+    const gp = race('Singapore Grand Prix');
+    expect(pickRaceForSession([gp, sprint], 'Formula 1 - Race')).toBe(gp);
+    expect(pickRaceForSession([gp, sprint], 'Formula 1 - Sprint')).toBe(sprint);
+  });
   it('matches WorldSBK race numbers and the Superpole Race', () => {
     const r1 = race('Race 1');
     const sp = race('Superpole Race');

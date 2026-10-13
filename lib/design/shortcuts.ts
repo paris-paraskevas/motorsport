@@ -1,6 +1,7 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { SHORTCUT_TEXT_MAX, isShortcutKey } from './shortcut-defaults';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 export { SHORTCUT_KEY, SHORTCUT_KEY_MAX, SHORTCUT_TEXT_MAX, isShortcutKey, shortcutKeyProblem, shortcutTextProblem } from './shortcut-defaults';
 export type { Shortcut } from './shortcut-defaults';
@@ -36,26 +37,14 @@ export function shortcutsFromRows(rows: unknown): Record<string, string> {
   return out;
 }
 
-const MEMO_MS = 60_000;
-let memo: { at: number; value: Record<string, string> } | null = null;
-
 export function resetShortcutsMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** Every usable shortcut, key → text, for the site (Phase 3's Static Content). Never throws. */
+/** Every usable shortcut, key → text, for the site (Phase 3's Static Content), from the design snapshot. Never throws. */
 export async function loadShortcuts(): Promise<Record<string, string>> {
-  if (!isBettingConfigured()) return {};
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb().from('shortcut').select('key, text').eq('application_key', APPLICATION_KEY);
-    if (error || !data) return {};
-    const value = shortcutsFromRows(data);
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return {};
-  }
+  const snapshot = await loadDesignSnapshot();
+  return snapshot ? shortcutsFromRows(snapshotRows(snapshot, 'shortcut')) : {};
 }
 
 /** A shortcut as the editor sees it: a row, so it always has a stamp, exactly

@@ -1,6 +1,7 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import type { SearchHint } from './search-hint-defaults';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 export { SEARCH_HINT_MAX, SEARCH_HINT_ROTATE_MS, searchHintProblem } from './search-hint-defaults';
 export type { SearchHint } from './search-hint-defaults';
@@ -51,27 +52,14 @@ function ordered(rows: unknown): EditableSearchHint[] {
   return out.sort((a, b) => a.seq - b.seq || a.question.localeCompare(b.question));
 }
 
-// One read per isolate per minute: the hints ride the layout of every page.
-const MEMO_MS = 60_000;
-let memo: { at: number; value: string[] } | null = null;
-
 export function resetSearchHintsMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** The questions in order, for the header. Empty on any failure. */
+/** The questions in order, for the header, from the design snapshot (the hints ride the layout of every page). Empty on any failure. */
 export async function loadSearchHints(): Promise<string[]> {
-  if (!isBettingConfigured()) return [];
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb().from('search_hint').select(COLUMNS).eq('application_key', APPLICATION_KEY);
-    if (error || !data) return [];
-    const value = ordered(data).map(h => h.question);
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return [];
-  }
+  const snapshot = await loadDesignSnapshot();
+  return snapshot ? ordered(snapshotRows(snapshot, 'search_hint')).map(h => h.question) : [];
 }
 
 /** Every row with its stamp, in order. Null on any failure; empty when there are none. */
