@@ -25,7 +25,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.274.
   - `docs/pull-requests.md` · this entry.
 - **Verified:** `npx vitest run lib/design/plan-ledger.test.ts "app/(app)/changelog"` → 3 files, 28 tests passed (the ledger canonical, every scope hash matching, the plan rendered).
-- **Review:** on the operator’s word: a fresh-context review, or the merge without one (records only).
+- **Review:** none, on the operator’s word (13 October): records only, no code.
 
 ## #1159 · 1.0.273 · O7 (a long browser cache for the script files) · opened 2026-10-13 into `next` on the operator’s “go” on E of the cost plan; the merge on the word
 **A long browser cache for the script files.** The script and style files under `/_next/static/` were served with Cloudflare Static Assets’ default (`max-age=0, must-revalidate`), so every page view asked again for each one, and each of those requests counts against the 10 million included. Their names carry a hash of their content, so `public/_headers` now gives them a year’s immutable cache, as OpenNext’s caching guide recommends; Cloudflare applies the file to static assets only.
