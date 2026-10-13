@@ -884,6 +884,11 @@
    "date": "2026-10-11",
    "change": "Slot B5 opened, planned in plan mode: OpenF1 as F1’s backup when jolpi.ca lags (the results, the sprints, the last race and the standings, provisional until jolpi.ca has the round), the sprint never shown as the race, and a dormant trigger that starts the loader after an F1 race or sprint once the operator sets its token.",
    "word": "“dont just have f1 on jolpica, have openf1 as backup” and the plan’s approval (the operator, 2026-10-11)"
+  },
+  {
+   "date": "2026-10-13",
+   "change": "Slot B5 narrowed after #1156’s review: the OpenF1 backup and the race trigger dropped (a partial jolpi.ca read would count races twice, a driver who changed team was credited to the old one, the trigger missed races a reader’s visit warmed first); kept: the weekend page never shows the sprint as the race. When jolpi.ca is late, the loader is run by hand once it has the race; a wrong source gets a correction file.",
+   "word": "“go” on narrowing #1156 to the sprint fix (the operator, 2026-10-13)"
   }
  ],
  "phases": {
@@ -1895,16 +1900,16 @@
   {
    "id": "B5",
    "phase": "PX",
-   "title": "OpenF1 as F1’s backup",
-   "scope": "F1’s results and standings stop depending on jolpi.ca alone: a race or sprint run after jolpi.ca’s latest round of its kind is taken from OpenF1 in the loader’s fetch step (lib/results/f1-openf1.ts), named and numbered as jolpi.ca’s schedule names it, marked provisional and labelled so, never settled; the standings add its points; jolpi.ca takes over by itself once it has the round. The weekend lead never shows a sprint as the race. warm-sessions starts the loader after capturing an F1 race or sprint once GITHUB_DISPATCH_TOKEN is set.",
-   "fixedBy": "the operator’s “dont just have f1 on jolpica, have openf1 as backup” and the plan approved in plan mode (11 October)",
-   "defaults": "the backup in the loader’s upstream step, the Worker a reader; only after jolpi.ca’s latest round of each kind, and only when jolpi.ca answered that kind; names and teams from jolpi.ca by code; ties by countback over the Grands Prix; bets skip provisional races; a sprint is never returned for a race session (the plan’s other half, no race for a sprint session, is left as F2’s tested behaviour has it); no shared memo, each fetcher fetches what it always fetched (a memo let a later call see the first answer, caught by eight existing tests); the trigger fires once per session because a session is warmed once; the sprint mark lives in the weekend pool only, so driver pages and design regions are unchanged",
-   "needsWord": "only the trigger’s token: a fine-grained GitHub token with Actions read and write on this repository, set as the Worker secret GITHUB_DISPATCH_TOKEN; everything else works without it, on the loader’s next run",
-   "acceptance": "the tests pass; a read-only probe on real data with jolpi.ca’s round-17 race taken out fills it from OpenF1 and matches formula1.com’s race (22 rows) and standings (23 drivers, 11 teams); after the deploy, at the next race jolpi.ca lags, the loader log names what OpenF1 filled and the pages carry the provisional note until jolpi.ca catches up",
+   "title": "The weekend page never shows the sprint as the race",
+   "scope": "On an F1 weekend whose race is not in yet, the race session no longer shows the sprint’s classification under the Grand Prix’s name: F1’s sprints are marked in the weekend pool and a lone sprint is never returned for a race session (lib/results/session-classification.ts). Narrowed on 13 October from OpenF1 as F1’s backup, which its review found unsafe; when jolpi.ca is late, the loader is run by hand once it has the race.",
+   "fixedBy": "the operator’s “dont just have f1 on jolpica, have openf1 as backup” and the plan approved in plan mode (11 October); narrowed on the operator’s “go” after #1156’s review (13 October)",
+   "defaults": "the sprint mark lives in the weekend pool only (the label the driver pages already give), so driver pages and design regions are unchanged; a sprint is never returned for a race session, and the plan’s other half (no race for a sprint session) is left as F2’s tested behaviour has it; for a late or wrong source the manual paths: the loader’s Run workflow, and a correction file under content/series/f1/ deleted once the source catches up",
+   "needsWord": "none left",
+   "acceptance": "the session-classification tests pass with the new case; on an F1 weekend whose race is not in jolpi.ca yet, the race session page shows no classification rather than the sprint’s",
    "status": "started",
-   "scopeHash": "c9f3f4828cc2",
-   "evidence": "STARTED 2026-10-11 (session 68). The finding: at 16:05Z jolpi.ca still ended at round 16, two hours after Singapore’s race; OpenF1 had the race (22 rows) and both championships, as formula1.com. jolpi.ca caught up shortly after. Verified: npx vitest run → 276 files, 2,721 tests passed; npx tsc --noEmit → exit 0; eslint on the changed files → exit 0. The live probe (read-only, real data, jolpi.ca’s round-17 race taken out as it stood at 16:05Z): “[f1] OpenF1 filled round 17 race (Singapore Grand Prix)”; the race matches formula1.com on all 22 rows and equals jolpi.ca’s own round 17 in names, teams and points; the standings, jolpi.ca’s pre-race tables plus the race, match formula1.com on 23 drivers and 11 teams, positions included. With jolpi.ca complete, nothing is added and the tables match formula1.com as they stand.",
-   "brief": "When jolpi.ca is slow, F1’s results and standings come from OpenF1, marked provisional."
+   "scopeHash": "c2ae7b2af7f0",
+   "evidence": "STARTED 2026-10-11 (session 68). The finding: at 16:05Z jolpi.ca still ended at round 16, two hours after Singapore’s race; OpenF1 had the race (22 rows) and both championships, as formula1.com. jolpi.ca caught up shortly after. Verified: npx vitest run → 276 files, 2,721 tests passed; npx tsc --noEmit → exit 0; eslint on the changed files → exit 0. The live probe (read-only, real data, jolpi.ca’s round-17 race taken out as it stood at 16:05Z): “[f1] OpenF1 filled round 17 race (Singapore Grand Prix)”; the race matches formula1.com on all 22 rows and equals jolpi.ca’s own round 17 in names, teams and points; the standings, jolpi.ca’s pre-race tables plus the race, match formula1.com on 23 drivers and 11 teams, positions included. With jolpi.ca complete, nothing is added and the tables match formula1.com as they stand. NARROWED 2026-10-13 after a fresh-context Sonnet review of #1156 (review-1156.md, 435,539 tokens): no blocker; four should-fix, all in the backup and the trigger (a partial jolpi.ca read made rounds look missing and added their points again, Antonelli 340 → 355 in its probe, with the standings asking jolpi.ca 19 times instead of 9; a driver who changed team credited to the old one, OpenF1 spelling 4 of 11 team names differently; the trigger missing a race a reader’s visit warmed first; “official” for a community feed) and eight nits; the sprint fix verified on real data (the race session gets nothing while the race is absent, the sprint session keeps its sprint). On the operator’s “go” the backup, its labels, the bets filter and the trigger were dropped (kept in the branch’s history at cf52d57c); the sprint fix stays.",
+   "brief": "A Formula 1 weekend page never shows the sprint as the race."
   },
   {
    "id": "O1",

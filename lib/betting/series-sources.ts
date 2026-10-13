@@ -81,8 +81,7 @@ export const FIELD_SOURCES: Record<string, () => Promise<DriverForm[] | null>> =
  *  `races.find`), which is what the old reader fetched; changing that is the operator's call.
  *  Same names as FIELD_SOURCES (gates a + b + c). */
 export const RESULT_SOURCES: Record<string, () => Promise<RaceResult[]>> = {
-  // B5: a race OpenF1 supplied ahead of jolpi.ca is provisional; markets settle once jolpi.ca has it.
-  f1: async () => (await fetchF1SeasonResults()).filter(r => !r.provisional),
+  f1: () => fetchF1SeasonResults(),
   // FEATURE races only — the explicit gate-(b) pick. fetchF2SeasonResults
   // splits feature/sprint upstream, so the sprint classification can never
   // reach settlement. Season arg keys the shared KV cache (repo precedent:

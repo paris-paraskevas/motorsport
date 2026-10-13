@@ -46,8 +46,6 @@ export interface LatestRace {
   raceName: string;
   date: string; // ISO; race day (dateEnd for endurance ranges)
   podium: PodiumEntry[];
-  /** B5: an F1 race from OpenF1 because jolpi.ca does not have it yet. */
-  provisional?: true;
 }
 
 /** A "just missed" home card: the latest finished race for one series. Built
@@ -106,7 +104,6 @@ export function latestRaceFromFlat(races: RaceResult[], nowMs: number): LatestRa
     raceName: latest.raceName,
     date: (latest.date instanceof Date ? latest.date : new Date(latest.date)).toISOString(),
     podium,
-    ...(latest.provisional ? { provisional: true as const } : {}),
   };
 }
 

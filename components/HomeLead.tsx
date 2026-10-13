@@ -35,8 +35,6 @@ export interface HomeLeadResult {
   /** P2's gap string when it reads as one ("+15.080"). */
   margin?: string;
   weekendHref: string;
-  /** B5: an F1 race from OpenF1 because jolpi.ca does not have it yet. */
-  provisional?: true;
 }
 
 export interface HomeLeadChanged {
@@ -484,7 +482,6 @@ export function HomeLatestResult({
             </span>
             <span className="font-mono text-10 uppercase tracking-[0.16em] text-text-faint">
               Round {result.round} · {raceDate}
-              {result.provisional ? ' · provisional' : null}
             </span>
           </div>
           {championName && (

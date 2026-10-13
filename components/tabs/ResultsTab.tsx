@@ -789,16 +789,10 @@ export async function ResultsTab({ series }: { series: Series }) {
     // 0.26.0 — cumulative points are standings-shaped data, and co-locating
     // the chart with the tables it must reconcile against keeps the
     // chart-vs-standings invariant visible.
-    const provisional = races.filter(r => r.provisional);
     return (
       <div className="space-y-4">
         <SeasonResultsPanel races={merged} links={links} />
         <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
-        {provisional.length > 0 && (
-          <p className="text-center text-xs text-text-faint">
-            {provisional.map(r => r.raceName).join(', ')}: OpenF1’s classification, provisional until jolpi.ca has it.
-          </p>
-        )}
       </div>
     );
   }

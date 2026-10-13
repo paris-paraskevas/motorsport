@@ -339,7 +339,6 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
         // total time; some feeds carry status strings instead).
         margin: p2?.time && p2.time.startsWith('+') ? p2.time : undefined,
         weekendHref: `/series/${latest.slug}/weekend/${latest.race.round}`,
-        ...(latest.race.provisional ? { provisional: true as const } : {}),
       };
     }
   }

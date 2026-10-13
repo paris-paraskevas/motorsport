@@ -14,26 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1156 · 1.0.272 · B5 (OpenF1 as F1’s backup) · opened 2026-10-11 into `next` on the operator’s “dont just have f1 on jolpica, have openf1 as backup” and the plan’s approval in plan mode; the merge on the word
-**OpenF1 as F1’s backup.** On 11 October jolpi.ca, F1’s only results source, still ended at round 16 two hours after Singapore’s race, while OpenF1 had the full classification: the standings, the results tab and the home lacked the race, and the weekend page showed the sprint as the Grand Prix. The loader now fills a race or sprint jolpi.ca lacks from OpenF1, named as jolpi.ca names it and marked provisional until jolpi.ca catches up; provisional races are labelled and never settle bets; a sprint is never shown as the race; a dormant trigger starts the loader after an F1 race once the operator sets its token.
-- **Readers see:** after a race jolpi.ca is slow to publish, the F1 results and standings with that race, marked provisional; the weekend page never presents the sprint as the race; the release notes carry one line.
+## #1156 · 1.0.272 · B5 (the weekend page never shows the sprint as the race) · opened 2026-10-11 into `next` on the operator’s “dont just have f1 on jolpica, have openf1 as backup” and the plan’s approval in plan mode; narrowed on the operator’s “go” after its review (13 October); the merge on the word
+**The weekend page never shows the sprint as the race.** On 11 October, while jolpi.ca still lacked Singapore’s race, the weekend page showed the sprint’s classification under the Grand Prix’s name. F1’s sprints are now marked in the weekend pool and a lone sprint is never returned for a race session. The PR first carried OpenF1 as F1’s backup; its review found that unsafe (a partial jolpi.ca read would count races twice, team changes went to the old team, the trigger missed races), so on the operator’s word the backup and the trigger were dropped and the manual paths stand: the loader run by hand once jolpi.ca has the race, a correction file for a wrong source.
+- **Readers see:** on an F1 weekend whose race result is not in yet, the race session shows no classification instead of the sprint’s; the release notes carry one line.
 - **Editors get:** nothing.
-- **Files (23):**
-  - `lib/results/f1-openf1.ts` · new: the gap after jolpi.ca from OpenF1, converted to jolpi.ca’s shape and names, and the standings arithmetic with countback.
-  - `lib/results/f1-openf1.test.ts` · new: the schedule slots, the gap rules, the conversion, the standings arithmetic, the full path with OpenF1 mocked.
-  - `lib/results/f1.ts`, `lib/standings/f1.ts` · the four F1 fetchers take the gap; jolpi.ca’s season readers exported for the standings.
-  - `lib/types.ts` · `RaceResult.provisional`.
-  - `components/tabs/StandingsTab.tsx`, `components/tabs/ResultsTab.tsx` · the provisional note under the source line.
-  - `app/(app)/series/[slug]/weekend/[round]/page.tsx` · the lead’s winner line says provisional, from OpenF1.
-  - `lib/home-results.ts`, `lib/home-model.ts`, `components/HomeLead.tsx` · the home’s latest result carries and shows the mark.
-  - `lib/betting/series-sources.ts`, `lib/betting/series-sources.test.ts` · settlement skips provisional races, with its case.
-  - `lib/results/session-classification.ts`, `lib/results/session-classification.test.ts` · F1 sprints marked in the weekend pool; a lone sprint never returned for a race; their cases.
-  - `app/api/cron/warm-sessions/route.ts` · the loader dispatch after an F1 race or sprint, dormant without `GITHUB_DISPATCH_TOKEN`.
-  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot B5 and its dated change.
+- **Files (9):**
+  - `lib/results/session-classification.ts` · F1’s sprints marked “· Sprint” in the weekend pool; a lone sprint never returned for a race session.
+  - `lib/results/session-classification.test.ts` · its case: a race session gets nothing from a lone sprint, a sprint session keeps it, and with both the right one each.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot B5, narrowed, and its two dated changes.
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.272.
   - `docs/pull-requests.md` · this entry.
-- **Verified:** `npx vitest run` → 276 files, 2,721 tests passed; `npx tsc --noEmit` → exit 0; eslint on the changed files → exit 0; `npm run lockfile:check` → exit 0; the live probe (read-only, real data, jolpi.ca’s round-17 race taken out): OpenF1 filled it, matching formula1.com’s 22 rows and jolpi.ca’s own round 17, and the standings matched formula1.com’s 23 drivers and 11 teams. UNVERIFIED until a race after the deploy at which jolpi.ca lags, and for the dispatch until the token exists.
-- **Review:** pending: a fresh-context Sonnet reviewer, after the operator’s 5-hour figure.
+- **Verified:** after the narrowing, `npx vitest run --maxWorkers=4` → 276 files, 2,717 tests passed; `npx tsc --noEmit` → exit 0; eslint on the two changed files → exit 0; no code still names the dropped backup (`git grep` for its symbols). The reviewer verified the sprint fix on real data: the race session gets nothing while the race is absent, the sprint session keeps its sprint.
+- **Review:** a fresh-context Sonnet reviewer (2026-10-13, 435,539 tokens) on the full backup: no blocker; four should-fix, all in the backup and the trigger: a partial jolpi.ca read (one page refused) made rounds look missing and added their points again (Antonelli 340 → 355 in its probe), with the standings asking jolpi.ca 19 times instead of 9; a driver who changed team was credited to the old one, and OpenF1 spells 4 of 11 team names differently; the trigger missed a race a reader’s visit warmed first; the release note called a community feed “official”. Eight nits, all in the dropped code but one (a sprint’s provisional note, moot without the backup). Resolution: the operator’s “go” to drop the backup and the trigger (kept in the branch’s history at cf52d57c) and keep the sprint fix the reviewer verified.
 
 ## #1155 · 1.0.271 · B4 (F1’s standings without the Monaco appeal counted twice) · opened 2026-10-11 into `next` on the operator’s “go” after the standings check, ahead of the order as a wrong fact (rule 11); the merge on the word
 **F1’s standings without the Monaco appeal counted twice.** The standings check of 11 October found five drivers and four teams wrong on the F1 standings tab and the home’s championship box (Gasly 32 for 41, Piastri 130 for 128, Hadjar 99 for 96, Lawson 71 for 69, Lindblad 40 for 38): a correction file from 4 September added the Court of Appeal’s Monaco decision on top of jolpi.ca, which now carries it itself. Both correction files are deleted, as their notes asked.
