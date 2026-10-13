@@ -314,7 +314,9 @@ export interface DriverStandingOverride {
   points?: number;
   /** Adjustment applied to whatever upstream reports, which is what an appeal
    *  actually produces. Stays correct as the season continues, and needs no
-   *  editing after each race. Positions are recomputed when any delta lands. */
+   *  editing after each race. Positions are recomputed when any delta lands.
+   *  Holds only until upstream publishes the corrected result itself: then the
+   *  file goes, or the correction counts twice (B4, October 2026). */
   pointsDelta?: number;
   wins?: number;
 }

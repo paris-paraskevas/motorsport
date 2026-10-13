@@ -8,6 +8,14 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 Formula 1’s results and standings no longer wait for one data source: when it is slow after a race, the official timing feed fills in, marked provisional until the usual source catches up. A sprint is no longer shown as the Grand Prix’s result.
 
+## 1.0.271 — 2026-10-11
+
+Formula 1’s championship table counted the Monaco appeal twice for five drivers and four teams; it now shows the official totals.
+
+## 1.0.270 — 2026-10-11
+
+Behind the scenes: every page asks the database far fewer questions about its own design. Nothing changes for readers.
+
 ## 1.0.269 — 2026-10-10
 
 Notifications work again on devices that turned them on before August: they reconnect by themselves on the next visit, with no new prompt.

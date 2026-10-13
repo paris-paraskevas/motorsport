@@ -12,9 +12,12 @@ vi.mock('@/lib/betting/client', () => ({
     from: (table: string) => {
       from(table);
       const q: Record<string, unknown> = {};
+      // The site's loader reads the same row through the design snapshot (PF5), with its embedded filters.
       Object.assign(q, {
         select: () => q,
         eq: () => q,
+        is: () => q,
+        order: () => q,
         then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) => Promise.resolve(rows).then(resolve, reject),
       });
       return q;

@@ -1,6 +1,7 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { SHIPPED_APPEARANCE, parseAppearance, type Appearance } from './appearance-defaults';
+import { loadDesignSnapshot, resetDesignSnapshot } from './snapshot';
 
 export {
   APPEARANCE_RANGES,
@@ -38,26 +39,14 @@ export type { TemplatePresets } from './template-options';
 
 const APPLICATION_KEY = 'paddock';
 
-const MEMO_MS = 60_000;
-let memo: { at: number; value: Appearance } | null = null;
-
 export function resetAppearanceMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** The appearance for the site's layout. Never throws. */
+/** The appearance for the site's layout, from the design snapshot. Never throws. */
 export async function loadAppearance(): Promise<Appearance> {
-  if (!isBettingConfigured()) return SHIPPED_APPEARANCE;
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb().from('application').select('ui').eq('key', APPLICATION_KEY);
-    if (error || !data || data.length === 0) return SHIPPED_APPEARANCE;
-    const value = parseAppearance((data[0] as { ui?: unknown }).ui).value;
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return SHIPPED_APPEARANCE;
-  }
+  const snapshot = await loadDesignSnapshot();
+  return snapshot ? parseAppearance(snapshot.ui).value : SHIPPED_APPEARANCE;
 }
 
 /** The appearance as the editor sees it, with the application row's stamp

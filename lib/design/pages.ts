@@ -179,14 +179,19 @@ export async function loadPageDestinations(opts: { includeDeleted?: boolean } = 
     if (!opts.includeDeleted) q = q.is('deleted_at', null);
     const { data, error } = await q;
     if (error || !Array.isArray(data)) return {};
-    const out: Record<string, { path: string; name: string }> = {};
-    for (const r of data as { id?: unknown; path?: unknown; name?: unknown }[]) {
-      if (typeof r.id === 'string' && typeof r.path === 'string' && typeof r.name === 'string') out[r.id] = { path: r.path, name: r.name };
-    }
-    return out;
+    return destinationsFromRows(data);
   } catch {
     return {};
   }
+}
+
+/** Row pages' rows → destinations by id; a row without a string id, path and name is left out. */
+export function destinationsFromRows(rows: readonly unknown[]): PageDestinations {
+  const out: Record<string, { path: string; name: string }> = {};
+  for (const r of rows as { id?: unknown; path?: unknown; name?: unknown }[]) {
+    if (typeof r.id === 'string' && typeof r.path === 'string' && typeof r.name === 'string') out[r.id] = { path: r.path, name: r.name };
+  }
+  return out;
 }
 
 export { APPLICATION_KEY as PAGE_APPLICATION_KEY };
