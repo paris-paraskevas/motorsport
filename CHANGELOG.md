@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.273 — 2026-10-13
+
+### O7 — A long browser cache for the script files
+
+The site’s script and style files under `/_next/static/` were served with `Cache-Control: public, max-age=0, must-revalidate`, Cloudflare Static Assets’ default (checked live on 13 October: `/_next/static/chunks/2w4k5idyszfa6.js`, CF-Cache-Status REVALIDATED), so every page view asked again for each one, and with the front cache on, each of those requests counts against the 10 million included. `public/_headers` (new) gives `/_next/static/*` `Cache-Control: public,max-age=31536000,immutable`, the rule OpenNext’s caching guide gives for Next’s immutable files: their names carry a hash of their content, so a new build ships new names. The files in `public/` keep the default, since their names do not change. Cloudflare applies `_headers` to static asset responses only, never to the Worker’s pages (developers.cloudflare.com/workers/static-assets/headers). E of the cost plan of 10 October. Ledger: slot O7 and its dated change.
+
 ## 1.0.272 — 2026-10-11
 
 ### B5 — The weekend page never shows the sprint as the race
