@@ -25,7 +25,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.275.
   - `docs/pull-requests.md` · this entry.
 - **Verified:** `npx tsc --noEmit` → exit 0; eslint on the three files → exit 0; `npx vitest run components/f1 lib/design/plan-ledger.test.ts "app/(app)/changelog"` → 4 files, 30 tests passed. UNVERIFIED until the deploy: the live canonicals and the next census.
-- **Review:** on the operator’s word: a fresh-context review, or the merge without one (three lines of code).
+- **Review:** none, on the operator’s word (13 October): three lines of code.
 
 ## #1160 · 1.0.274 · records (session 68 closed) · opened 2026-10-13 into `next` on the operator’s “go” to close the day’s records; the merge on the word
 **Session 68 closed.** The state of 13 October in the repo: the handoff’s LATEST section (the robots’ bill and its cause, the two Cloudflare rules and the edit still owed, Supabase’s quotas, what went live with the daily merge and what waits in next, the landmines learned), the ledger’s evidence for every merge and the deploy, B4 done on the live check, slot O8 planned with the operator’s 60-second window, and seven Inbox lines.
