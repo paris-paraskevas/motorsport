@@ -14,6 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1159 · 1.0.273 · O7 (a long browser cache for the script files) · opened 2026-10-13 into `next` on the operator’s “go” on E of the cost plan; the merge on the word
+**A long browser cache for the script files.** The script and style files under `/_next/static/` were served with Cloudflare Static Assets’ default (`max-age=0, must-revalidate`), so every page view asked again for each one, and each of those requests counts against the 10 million included. Their names carry a hash of their content, so `public/_headers` now gives them a year’s immutable cache, as OpenNext’s caching guide recommends; Cloudflare applies the file to static assets only.
+- **Readers see:** pages a little faster on repeat visits; the release notes carry one line.
+- **Editors get:** nothing.
+- **Files (8):**
+  - `public/_headers` · new: `/_next/static/*` with `Cache-Control: public,max-age=31536000,immutable`.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot O7 and its dated change.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.273.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** `npm run cf:build` → exit 0, `.open-next/assets/_headers` holds the rule; `npx vitest run lib/design/plan-ledger.test.ts "app/(app)/changelog"` → 3 files, 28 tests passed. The local `wrangler dev` answered a script file with `Cache-Control: no-store`, its own local behaviour. UNVERIFIED until the daily deploy: a live script file answering the new header.
+- **Review:** on the operator’s word: a fresh-context review, or the merge without one (two lines of configuration).
+
 ## #1156 · 1.0.272 · B5 (the weekend page never shows the sprint as the race) · opened 2026-10-11 into `next` on the operator’s “dont just have f1 on jolpica, have openf1 as backup” and the plan’s approval in plan mode; narrowed on the operator’s “go” after its review (13 October); the merge on the word
 **The weekend page never shows the sprint as the race.** On 11 October, while jolpi.ca still lacked Singapore’s race, the weekend page showed the sprint’s classification under the Grand Prix’s name. F1’s sprints are now marked in the weekend pool and a lone sprint is never returned for a race session. The PR first carried OpenF1 as F1’s backup; its review found that unsafe (a partial jolpi.ca read would count races twice, team changes went to the old team, the trigger missed races), so on the operator’s word the backup and the trigger were dropped and the manual paths stand: the loader run by hand once jolpi.ca has the race, a correction file for a wrong source.
 - **Readers see:** on an F1 weekend whose race result is not in yet, the race session shows no classification instead of the sprint’s; the release notes carry one line.
