@@ -8,10 +8,13 @@ vi.mock('@/lib/betting/client', () => ({
   isBettingConfigured: () => configured,
   betDb: () => ({
     from: () => {
+      // The site's loader reads the same row through the design snapshot (PF5), with its embedded filters.
       const q = {
         select: () => q,
         eq: () => q,
         in: () => q,
+        is: () => q,
+        order: () => q,
         then: (resolve: (v: unknown) => unknown, reject?: (e: unknown) => unknown) =>
           Promise.resolve(result).then(resolve, reject),
       };

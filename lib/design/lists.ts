@@ -1,7 +1,8 @@
 import 'server-only';
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { BAR_MAX, BAR_MIN, NAV_LIST_KEYS, pageIdOf, resolveDestination, type ListRole, type NavEntry, type NavListKey, type NavLists, type PageDestinations } from './destinations';
-import { loadPageDestinations } from './pages';
+import { destinationsFromRows, loadPageDestinations } from './pages';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 export { BAR_MAX, BAR_MIN, NAV_LIST_KEYS } from './destinations';
 export type { ListRole, NavEntry, NavListKey, NavLists } from './destinations';
@@ -134,36 +135,24 @@ export function parseEntries(raw: unknown, role: ListRole, pages?: PageDestinati
   return out;
 }
 
-// One read per isolate per minute: the lists render inside the layout of every
-// page, and a save calls resetNavListsMemo() so its own isolate sees it at once;
-// the others catch up within the minute (field guide §03: "a minute for the
-// in-process nav cache").
-const MEMO_MS = 60_000;
-let memo: { at: number; value: NavLists } | null = null;
-
+// From the design snapshot, once a minute per isolate: the lists render inside
+// the layout of every page, and a save calls resetNavListsMemo() so its own
+// isolate sees it at once; the others catch up within the minute (field guide
+// §03: "a minute for the in-process nav cache").
 export function resetNavListsMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
 /** The five lists for the shell, from rows where they are usable and from the
  *  defaults where they are not. Never throws. */
 export async function loadNavLists(): Promise<NavLists> {
-  if (!isBettingConfigured()) return DEFAULT_NAV;
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
+  const snapshot = await loadDesignSnapshot();
+  if (!snapshot) return DEFAULT_NAV;
   try {
     // The live row pages the entries may name (P1.12 B1), read with the entries; a deleted page's entry leaves with it.
-    const [{ data, error }, pages] = await Promise.all([
-      betDb()
-        .from('list_entry')
-        .select('list_key, seq, label, dest_key, icon, authz_key')
-        .eq('application_key', APPLICATION_KEY)
-        .in('list_key', [...NAV_LIST_KEYS])
-        .order('seq', { ascending: true }),
-      loadPageDestinations(),
-    ]);
-    if (error || !data) return DEFAULT_NAV;
+    const pages = destinationsFromRows(snapshotRows(snapshot, 'page').filter(p => (p as { kind?: unknown } | null)?.kind === 'row'));
     const grouped = new Map<string, unknown[]>();
-    for (const row of data as Array<Record<string, unknown>>) {
+    for (const row of snapshotRows(snapshot, 'list_entry') as Array<Record<string, unknown>>) {
       const key = String(row.list_key);
       const bucket = grouped.get(key);
       if (bucket) bucket.push(row);
@@ -174,7 +163,6 @@ export async function loadNavLists(): Promise<NavLists> {
       const parsed = parseEntries(grouped.get(key) ?? [], ROLE[key], pages);
       if (parsed) value[FIELD[key]] = parsed;
     }
-    memo = { at: Date.now(), value };
     return value;
   } catch {
     return DEFAULT_NAV;

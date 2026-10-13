@@ -42,6 +42,9 @@ vi.mock('@/lib/betting/client', () => ({
   }),
 }));
 
+// The component definitions come from the design snapshot (PF5), the layout's read once a minute: these tests count the page's own reads.
+vi.mock('./snapshot', () => ({ loadDesignSnapshot: async () => null, resetDesignSnapshot: () => {}, snapshotRows: () => [] }));
+
 import { loadAssetsById, loadLiveComposed, loadLiveFrame, loadLivePage, loadRevisionPreview } from './live-page';
 
 const ID = 'a1b2c3d4-0000-4000-8000-000000000010';

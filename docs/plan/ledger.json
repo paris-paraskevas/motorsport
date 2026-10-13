@@ -871,6 +871,11 @@
    "word": "“go” (the operator, 2026-10-10) on the finding and the suggested fix"
   },
   {
+   "date": "2026-10-10",
+   "change": "PF5’s scope narrowed: the twelve minute-cached design loaders read as one snapshot (one embedded read of the application row, no migration); the cross-isolate cache with a tag waits for a week’s numbers, since on Cloudflare every cached read checks the Durable Object tag cache (the cost plan’s item F) and, behind the minute memo, a publish could still render stale. Per-request reads stay, so a publish shows on the next render.",
+   "word": "the PF5 plan approved in plan mode (the operator, 2026-10-10)"
+  },
+  {
    "date": "2026-10-11",
    "change": "Slot B4 opened, a fix in one sentence: delete the two F1 Monaco override files, since jolpi.ca now carries the appeal and the standings counted it twice; it goes ahead of the order as a wrong fact (rule 11).",
    "word": "“go” on the suggestion after the standings check (the operator, 2026-10-11)"
@@ -2206,17 +2211,18 @@
    "phase": "PF"
   },
   {
-   "scopeHash": "0b5f55c01317",
-   "evidence": "",
+   "scopeHash": "2afa278564f3",
+   "evidence": "STARTED 2026-10-11 (session 68). The database check of 10 Oct (read-only, Management API): 342,037 gateway calls in 24 hours, 304,685 (89%) on the design tables; the minute-cached tables about 19,000 a day each (application 38,100, as two loaders read the same row; theme 26,316, two reads racing the memo); the per-request page and revision reads about 70,000. Security Advisor: no errors; 14 functions without a fixed search path and Auth’s leaked-password protection off (both to the Inbox); 42 tables with row security and no policies, as intended. Table sizes: every design table 12 rows or fewer except page (62 rows, 29 KB), list_entry (53, 16 KB) and page_revision (190, 1.4 MB: every saved draft is kept; 3 pages published, 26 KB). Verified: npx vitest run → 276 files, 2,717 tests passed; npx vitest run lib/design/snapshot.test.ts → 7 passed; npx tsc --noEmit → exit 0; eslint on the changed files → exit 0. Locally (next dev on local Supabase, six pages, on next and on the branch): design reads 65 → 9, all gateway reads 93 → 38; the header, navigation, footer, meta tags and html element identical; the bodies identical but for live data that changed between runs (the MotoGP sprint result and standings, a Singapore session label); the home’s screenshot the same once hydrated. REVIEWED 2026-10-13 by a fresh-context Sonnet reviewer (review-1154.md, 443,290 tokens): no blocker; the twelve loaders byte-identical to next’s on a shared dataset (13 requests against 1); should-fix, all folded: the shared read had no deadline (on workerd a read started by a request that answered first never settled and held every later render; each render now gives up after 3 s and the next reads afresh); one unknown column fails the read for all twelve loaders (a test holds every column to supabase/migrations, the rule beside SNAPSHOT_SELECT, a failure logged at most once a minute); the bytes do not fall (34,339 B in 14 reads against 34,625 B in one, the page embed 61%: the records say so, an Inbox line narrows the embed); two guards no test pinned (two cases added). Nits: the 20 routes are 18 that clear the snapshot (corrected), two citations added, the parsers re-run per call (about 145 µs a render, NOTED). Verified after the fold: each of four mutants (the save guard, the row-page filter, the deadline, an unmigrated column) fails lib/design/snapshot.test.ts, which passes as is.",
    "id": "PF5",
    "title": "One design snapshot",
-   "status": "planned",
-   "scope": "Phase 5 of the file (PR F), pulled forward by the cost reading of the 5th: the layout’s eight designer loaders and the page registry’s reads as one snapshot, cached across isolates with a tag through Next’s data cache and revalidated by the design saves; the 60 s in-isolate memo kept as the first layer.",
+   "status": "started",
+   "scope": "Phase 5 of the file (PR F), pulled forward by the cost reading of the 5th, as narrowed on 10 October: the twelve design loaders the site reads once a minute per isolate (the layout’s eight, the code pages’ frames, shortcuts, build options, component definitions) read as one snapshot, one embedded read of the application row (lib/design/snapshot.ts) shared by the loaders that ask together; the 60 s in-isolate memo kept. A page’s live revision and its rows by path stay per-request reads. The cross-isolate layer (Next’s data cache with a tag) waits for a week’s numbers.",
    "fixedBy": "the file; The Two Bills page (96 % of the Supabase gateway rows are the designer’s reads per render)",
-   "defaults": "one tag design-snapshot; the admin design routes revalidate it on save",
-   "needsWord": "its plan in plan mode (its own decision scan) before code; after the night of 5–6 October it is the next slot after PR C (the database read by every render is what fell)",
-   "acceptance": "A cold render’s trace shows one design read instead of eight; a design change shows within the tag window; the gateway rows per render from about twenty to one or two on a snapshot miss and none on a hit.",
-   "phase": "PF"
+   "defaults": "one embedded read on application: every design table references application(key), so no migration and no prod write; each loader keeps its name, parser and defaults, and its reset…Memo() clears the snapshot (the 18 routes that save design tables unchanged); a failed read is never kept and a save’s reset outranks a read under way; the column lists are written out in snapshot.ts and held to each parser by snapshot.test.ts",
+   "needsWord": "none left: the plan, with the narrowed scope, was approved in plan mode on 10 October",
+   "acceptance": "the design tests pass with one read for loaders that ask together, the minute memo, failures never kept and a save outranking a read under way; locally, the chrome (header, navigation, footer, meta tags) is the same before and after and the design reads per page fall from about eleven to one or two; after the daily deploy, one logs query shows text_message, setting, theme, authz_scheme, search_hint, shortcut, build_option and component_definition near zero and application at about one read per isolate-minute; the bytes are not expected to fall (one response carries what the twelve reads did), so egress is read on Supabase’s usage page after the deploy",
+   "phase": "PF",
+   "brief": "The designer’s settings reach every page in one database read a minute instead of twelve."
   },
   {
    "scopeHash": "64c7eaa3207a",

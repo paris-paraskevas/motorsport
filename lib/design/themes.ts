@@ -11,6 +11,7 @@ import {
   type ThemeOption,
   type ThemeSet,
 } from './theme-defaults';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 export {
   CONTRAST_CHECKS,
@@ -89,29 +90,15 @@ export function themeSetFromRows(rows: unknown): ThemeSet {
   return { defaultKey, themes };
 }
 
-const MEMO_MS = 60_000;
-let memo: { at: number; value: ThemeSet } | null = null;
-
 export function resetThemesMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** The set for the site: the layout, the pre-paint script, the picker. Never throws. */
+/** The set for the site: the layout, the pre-paint script, the picker; from the design snapshot. Never throws. */
 export async function loadThemeSet(): Promise<ThemeSet> {
-  if (!isBettingConfigured()) return SHIPPED_THEME_SET;
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb()
-      .from('theme')
-      .select('key, label, tokens, is_default, available, base')
-      .eq('application_key', APPLICATION_KEY);
-    if (error || !data || data.length === 0) return SHIPPED_THEME_SET;
-    const value = themeSetFromRows(data);
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return SHIPPED_THEME_SET;
-  }
+  const snapshot = await loadDesignSnapshot();
+  const rows = snapshot ? snapshotRows(snapshot, 'theme') : [];
+  return rows.length === 0 ? SHIPPED_THEME_SET : themeSetFromRows(rows);
 }
 
 /** A theme as the editor sees it. `shipped` themes keep their colours in the

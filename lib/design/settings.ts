@@ -10,6 +10,7 @@ import {
   type SettingValue,
   type SettingValues,
 } from './setting-defaults';
+import { loadDesignSnapshot, resetDesignSnapshot, snapshotRows } from './snapshot';
 
 export {
   ANNOUNCEMENT_IDS,
@@ -53,30 +54,14 @@ export function settingsFromRows(rows: unknown): SettingValues {
   return out as SettingValues;
 }
 
-const MEMO_MS = 60_000;
-let memo: { at: number; value: SettingValues } | null = null;
-
 export function resetSettingsMemo(): void {
-  memo = null;
+  resetDesignSnapshot();
 }
 
-/** Every setting's value, for the site. Never throws. */
+/** Every setting's value, for the site, from the design snapshot. Never throws. */
 export async function loadSettings(): Promise<SettingValues> {
-  if (!isBettingConfigured()) return DEFAULT_SETTINGS;
-  if (memo && Date.now() - memo.at < MEMO_MS) return memo.value;
-  try {
-    const { data, error } = await betDb()
-      .from('setting')
-      .select('key, value')
-      .eq('application_key', APPLICATION_KEY)
-      .in('key', [...SETTING_KEYS]);
-    if (error || !data) return DEFAULT_SETTINGS;
-    const value = settingsFromRows(data);
-    memo = { at: Date.now(), value };
-    return value;
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
+  const snapshot = await loadDesignSnapshot();
+  return snapshot ? settingsFromRows(snapshotRows(snapshot, 'setting')) : DEFAULT_SETTINGS;
 }
 
 /** A setting as the editor sees it. `value` is what the site reads right now:
