@@ -889,6 +889,11 @@
    "date": "2026-10-13",
    "change": "Slot B5 narrowed after #1156’s review: the OpenF1 backup and the race trigger dropped (a partial jolpi.ca read would count races twice, a driver who changed team was credited to the old one, the trigger missed races a reader’s visit warmed first); kept: the weekend page never shows the sprint as the race. When jolpi.ca is late, the loader is run by hand once it has the race; a wrong source gets a correction file.",
    "word": "“go” on narrowing #1156 to the sprint fix (the operator, 2026-10-13)"
+  },
+  {
+   "date": "2026-10-13",
+   "change": "Slot O7 opened, a fix in one sentence: public/_headers gives /_next/static/* a year’s browser cache (E of the cost plan of 10 October).",
+   "word": "“go” on E (the operator, 2026-10-13)"
   }
  ],
  "phases": {
@@ -2006,6 +2011,20 @@
    "scopeHash": "60b4bb6c7699",
    "evidence": "STARTED 2026-10-10 (session 68). The finding: prod KV holds five push subscriptions (four FCM, created May to July; one Apple, June; all signed in; a read-only census printing hosts and months only), and every send to them failed in a 45-second wrangler tail sample (403 from FCM four times, 400 from Apple once). The key they were made under left with the Vercel account (CHANGELOG.md 0.255.1 and 0.255.2, 2026-08-04: the Vercel copy died with the account, and the Worker’s push secrets, found holding a redaction placeholder, were regenerated); FCM answers a key mismatch with 403 (RFC 8292 §4.2). restorePushSubscription only re-subscribed a browser holding no subscription (lib/pushClient.ts:165 before this change), so these five never healed. Verified so far: npx vitest run lib/pushClient.test.ts → 12 passed; npx tsc --noEmit → exit 0; eslint on the two files → exit 0. Review (fresh-context Sonnet, 304,487 tokens): no blocker; should-fix: a register call that never arrives skipped the rollback (now rolled back), a signed-out visit dropped the stale subscription it could not replace (now left for a signed-in visit; a 403 goes on), the opt-in flag set after the browser’s unsubscribe (now before); nits folded: the tests (the order of unsubscribe and subscribe, the intent after a failed subscribe, signed out, another account’s row, offline), the consent edge and the status call recorded as accepted defaults, 401 corrected to 404, “predates” inverted, the key change cited (0.255.2; the reviewer’s 0.256.0 is the About page). NOTED (not done): a page closed between the register call and its answer can still leave a subscription the server never got (needs a local marker); a browser that misreports its key would be replaced on every visit (no such browser known); turning notifications off while offline leaves the browser subscribed (unsubscribeFromPush, before this PR). After the fold: npx vitest run lib/design/plan-ledger.test.ts \"app/(app)/changelog\" lib/pushClient.test.ts → 4 files, 44 tests passed; the two new cases for the rollback and signed out fail on the pre-fold code (2 failed | 14 passed); npx tsc --noEmit → exit 0; eslint on the two files → exit 0.",
    "brief": "Devices that subscribed before August re-subscribe on their next visit, and notifications reach them again."
+  },
+  {
+   "id": "O7",
+   "phase": "PO",
+   "title": "A long browser cache for the script files",
+   "scope": "The script and style files under /_next/static, whose names carry a hash of their content, are kept by readers’ browsers for a year (public/_headers, read by Cloudflare Static Assets), so repeat visits stop asking Cloudflare for them; until now each was revalidated on every page view (Cache-Control: public, max-age=0, must-revalidate), and with the front cache on, every request counts against the 10 million included.",
+   "fixedBy": "the operator’s “go” (13 October) on E of the cost plan of 10 October; OpenNext’s caching guide gives this rule for Next’s immutable files",
+   "defaults": "only /_next/static/*, whose names change with their content; the files in public/ keep the default revalidation, since their names do not change; the value as OpenNext’s guide writes it (public,max-age=31536000,immutable)",
+   "needsWord": "none left: the new file was named with the go",
+   "acceptance": "the local build carries .open-next/assets/_headers with the rule; after the daily deploy a live script file answers Cache-Control: public,max-age=31536000,immutable",
+   "status": "started",
+   "scopeHash": "f42d88bd99f7",
+   "evidence": "STARTED 2026-10-13 (session 68). Live before: /_next/static/chunks/2w4k5idyszfa6.js answered Cache-Control: public, max-age=0, must-revalidate with CF-Cache-Status REVALIDATED; a public file (/favicon.ico) is answered by the Worker, not Static Assets, so the rule cannot reach it. Verified: npm run cf:build → exit 0, .open-next/assets/_headers holds the rule (OpenNext copies public/ into the assets); the local wrangler dev answered a script file with Cache-Control: no-store, its own local behaviour, so the header itself is read live after the deploy.",
+   "brief": "Readers’ browsers keep the site’s script files for a year instead of asking for them on every page."
   },
   {
    "id": "R18",
