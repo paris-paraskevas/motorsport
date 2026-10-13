@@ -140,6 +140,20 @@ describe('fetchF1LastRace', () => {
     const result = await fetchF1LastRace();
     expect(result).toBeNull();
   });
+
+  // B6: jolpi.ca keeps older names for some teams; content/series/f1/team-names.json gives formula1.com's per season.
+  it('prints formula1.com’s team name for a 2026 race, and jolpi.ca’s for a season without lines', async () => {
+    const race = (season: string) => ({
+      MRData: { RaceTable: { Races: [{
+        season, round: '17', raceName: 'Singapore Grand Prix', date: '2026-10-11', Circuit: { circuitName: 'Marina Bay Street Circuit' },
+        Results: [{ position: '1', points: '25', Driver: { givenName: 'Liam', familyName: 'Lawson', code: 'LAW' }, Constructor: { name: 'RB F1 Team' }, status: 'Finished' }],
+      }] } },
+    });
+    vi.stubGlobal('fetch', mockLastRaceFetch(race('2026')));
+    expect((await fetchF1LastRace())!.results[0].team).toBe('Racing Bulls');
+    vi.stubGlobal('fetch', mockLastRaceFetch(race('2025')));
+    expect((await fetchF1LastRace())!.results[0].team).toBe('RB F1 Team');
+  });
 });
 
 describe('fetchF1SeasonResults', () => {

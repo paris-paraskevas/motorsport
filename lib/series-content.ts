@@ -333,3 +333,17 @@ export function loadStandingsOverrides(
     path.join(SERIES_ROOT, slug, 'standings-overrides.json'),
   );
 }
+
+/** The upstream's team name against the name the series' official site prints, per season
+ *  (content/series/<slug>/team-names.json, B6); `_comment` and other non-object values are ignored. */
+export type TeamNamesFile = Record<string, Record<string, string> | string>;
+
+export function loadTeamNames(slug: string): Promise<TeamNamesFile | null> {
+  return readJsonIfExists<TeamNamesFile>(path.join(SERIES_ROOT, slug, 'team-names.json'));
+}
+
+/** The official name for an upstream team name in that season, or the name unchanged. */
+export function officialTeamName(names: TeamNamesFile | null, season: string | undefined, name: string): string {
+  const bySeason = season ? names?.[season] : undefined;
+  return bySeason && typeof bySeason === 'object' ? (bySeason[name] ?? name) : name;
+}

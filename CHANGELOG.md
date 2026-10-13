@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.276 — 2026-10-13
+
+### B6 — F1’s teams named as formula1.com names them
+
+jolpi.ca, F1’s results and standings source, names four 2026 teams by older names (Red Bull, RB F1 Team, Alpine F1 Team, Cadillac F1 Team) where formula1.com, the roster (`content/series/f1/drivers.json`) and OpenF1 print Red Bull Racing, Racing Bulls, Alpine and Cadillac; “RB F1 Team” also matched no roster team, so its rows linked nowhere. `content/series/f1/team-names.json` (new) holds jolpi.ca’s name against formula1.com’s, per season. `lib/series-content.ts`: `loadTeamNames()` and `officialTeamName()`. `lib/standings/f1.ts` renames the drivers’ teams and the constructors by the payload’s season; `lib/results/f1.ts` renames each result’s team by its race’s season, for the season results, the sprints and the last race. A season without lines passes through, so 2027 waits for its own. `components/LazySeasonTrendChart.tsx`: the four new names share the old names’ colours (kept for any payload outside the map), and `F1_TEAM_COLORS` is exported for the test. Tests: a 2026 payload renamed and a 2025 one untouched in both parsers; every 2026 name with a chart colour. The live tables change at the loader’s first run after the deploy. Ledger: slot B6 and its dated change.
+
 ## 1.0.275 — 2026-10-13
 
 ### X17 — the cleanup, PR 3: the decoder’s headshots named, the social pages’ canonicals

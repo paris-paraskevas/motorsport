@@ -33,22 +33,29 @@ function pickColor(idx: number): string {
   return COLORS[idx % COLORS.length];
 }
 
-// 2026 constructor colors, keyed by Jolpica `Constructor.name`. Broadcast-style
+// 2026 constructor colors, keyed by the team names the F1 parsers hand on:
+// formula1.com's where content/series/f1/team-names.json maps Jolpica's (B6),
+// Jolpica's `Constructor.name` otherwise; the four Jolpica names the map
+// replaces keep their colour for any payload outside its seasons. Broadcast-style
 // hexes; the two newcomers have no official hex (operator-directed web check
 // 2026-06-10): Cadillac runs a black-to-white monochrome livery → white reads
 // on our near-black; Audi runs titanium/black/red → Audi Red #F50537, because
 // titanium silver would be indistinguishable from Haas grey on this chart.
-const F1_TEAM_COLORS: Record<string, string> = {
+export const F1_TEAM_COLORS: Record<string, string> = {
+  'Red Bull Racing': '#3671c6',
   'Red Bull': '#3671c6',
   Ferrari: '#e8002d',
   McLaren: '#ff8000',
   Mercedes: '#27f4d2',
   'Aston Martin': '#229971',
+  Alpine: '#00a1e8',
   'Alpine F1 Team': '#00a1e8',
   Williams: '#1868db',
+  'Racing Bulls': '#6692ff',
   'RB F1 Team': '#6692ff',
   'Haas F1 Team': '#b6babd',
   Audi: '#f50537',
+  Cadillac: '#ffffff',
   'Cadillac F1 Team': '#ffffff',
 };
 

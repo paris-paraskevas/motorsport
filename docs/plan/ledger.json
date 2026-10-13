@@ -899,6 +899,11 @@
    "date": "2026-10-13",
    "change": "Slot O8 planned in plan mode and approved: the tag cache’s answers kept 60 s per region and the queue’s duplicate refreshes skipped, built only if the bill for 14 October still shows the Durable Object and R2 read lines above their free amounts.",
    "word": "“go” on F, the plan’s approval and “60 seconds” (the operator, 2026-10-13)"
+  },
+  {
+   "date": "2026-10-13",
+   "change": "Slot B6 opened, planned in plan mode and approved: F1’s team names as formula1.com prints them, through content/series/f1/team-names.json applied where jolpi.ca’s current season is parsed.",
+   "word": "“find open items, do them”, “go” and the plan’s approval (the operator, 2026-10-13)"
   }
  ],
  "phases": {
@@ -1920,6 +1925,20 @@
    "scopeHash": "c2ae7b2af7f0",
    "evidence": "STARTED 2026-10-11 (session 68). The finding: at 16:05Z jolpi.ca still ended at round 16, two hours after Singapore’s race; OpenF1 had the race (22 rows) and both championships, as formula1.com. jolpi.ca caught up shortly after. Verified: npx vitest run → 276 files, 2,721 tests passed; npx tsc --noEmit → exit 0; eslint on the changed files → exit 0. The live probe (read-only, real data, jolpi.ca’s round-17 race taken out as it stood at 16:05Z): “[f1] OpenF1 filled round 17 race (Singapore Grand Prix)”; the race matches formula1.com on all 22 rows and equals jolpi.ca’s own round 17 in names, teams and points; the standings, jolpi.ca’s pre-race tables plus the race, match formula1.com on 23 drivers and 11 teams, positions included. With jolpi.ca complete, nothing is added and the tables match formula1.com as they stand. NARROWED 2026-10-13 after a fresh-context Sonnet review of #1156 (review-1156.md, 435,539 tokens): no blocker; four should-fix, all in the backup and the trigger (a partial jolpi.ca read made rounds look missing and added their points again, Antonelli 340 → 355 in its probe, with the standings asking jolpi.ca 19 times instead of 9; a driver who changed team credited to the old one, OpenF1 spelling 4 of 11 team names differently; the trigger missing a race a reader’s visit warmed first; “official” for a community feed) and eight nits; the sprint fix verified on real data (the race session gets nothing while the race is absent, the sprint session keeps its sprint). On the operator’s “go” the backup, its labels, the bets filter and the trigger were dropped (kept in the branch’s history at cf52d57c); the sprint fix stays. MERGED into next 2026-10-13 as b9523671 (#1156), narrowed; live with the daily merge of the 14th.",
    "brief": "A Formula 1 weekend page never shows the sprint as the race."
+  },
+  {
+   "id": "B6",
+   "phase": "PX",
+   "title": "F1’s teams named as formula1.com names them",
+   "scope": "F1’s standings, results, home and season chart print the 2026 teams’ names as formula1.com does: jolpi.ca’s Red Bull, RB F1 Team, Alpine F1 Team and Cadillac F1 Team become Red Bull Racing, Racing Bulls, Alpine and Cadillac, through content/series/f1/team-names.json (jolpi.ca’s name against formula1.com’s, per season), applied where jolpi.ca’s current season is parsed (lib/standings/f1.ts, lib/results/f1.ts); the Racing Bulls rows then link to their team page.",
+   "fixedBy": "rule one; the operator’s “find open items, do them” and “go” (13 October); the plan approved in plan mode the same day",
+   "defaults": "one map applied in the parsers, so the snapshots, the database rows, the tables, the home, the chart and the team links agree; keyed by season (a season without lines passes through, 2027 included); formula1.com the source of every name; Haas F1 Team unchanged as formula1.com prints it; the chart keeps the four old names’ colours beside the new ones for any payload outside the map",
+   "needsWord": "none left: the new file content/series/f1/team-names.json came with the plan’s approval (13 October)",
+   "acceptance": "the standings and results tests pass with the new cases (a 2026 payload renamed, a season without lines untouched, every 2026 name with a chart colour); after the deploy and one loader run, the live /series/f1/standings names all 11 teams as formula1.com does and the Racing Bulls rows link to their team page",
+   "status": "started",
+   "scopeHash": "83928877fbc7",
+   "evidence": "STARTED 2026-10-13 (session 68). The finding: jolpi.ca’s /current/constructorStandings.json (season 2026) names Red Bull, RB F1 Team, Alpine F1 Team, Haas F1 Team, Audi, Cadillac F1 Team and five others; formula1.com’s team standings print Red Bull Racing, Racing Bulls, Alpine, Haas F1 Team, Audi and Cadillac; the roster (content/series/f1/drivers.json) and OpenF1 already use the current names. Every jolpi.ca payload carries its season (StandingsLists[].season, Races[].season). Verified: npx vitest run lib/standings lib/results components → 87 files, 754 tests passed; npx tsc --noEmit → exit 0; eslint on the six changed files → exit 0; with the constructors’ rename removed, the new standings case fails (a mutant run).",
+   "brief": "F1’s tables name the teams as formula1.com does: Racing Bulls, Red Bull Racing, Alpine, Cadillac."
   },
   {
    "id": "O1",

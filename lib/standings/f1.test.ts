@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { fetchF1Standings } from './f1';
+import { loadTeamNames } from '@/lib/series-content';
+import { F1_TEAM_COLORS } from '@/components/LazySeasonTrendChart';
 
 const driverFixture = {
   MRData: {
@@ -125,5 +127,45 @@ describe('fetchF1Standings', () => {
     );
     const result = await fetchF1Standings();
     expect(result).toBeNull();
+  });
+});
+
+// B6: jolpi.ca keeps older names for some teams; content/series/f1/team-names.json gives formula1.com's per season.
+describe('team names as formula1.com prints them', () => {
+  const driversOf = (season: string, team: string) => ({
+    MRData: { StandingsTable: { StandingsLists: [{ season, DriverStandings: [
+      { position: '1', points: '75', wins: '0', Driver: { givenName: 'Liam', familyName: 'Lawson', code: 'LAW' }, Constructors: [{ name: team }] },
+    ] }] } },
+  });
+  const constructorsOf = (season: string, name: string) => ({
+    MRData: { StandingsTable: { StandingsLists: [{ season, ConstructorStandings: [
+      { position: '1', points: '100', wins: '0', Constructor: { name } },
+    ] }] } },
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('renames a 2026 team in both tables: RB F1 Team is Racing Bulls', async () => {
+    vi.stubGlobal('fetch', mockFetchResponses(driversOf('2026', 'RB F1 Team'), constructorsOf('2026', 'RB F1 Team')));
+    const result = await fetchF1Standings();
+    expect(result!.drivers[0].team).toBe('Racing Bulls');
+    expect(result!.constructors[0].name).toBe('Racing Bulls');
+  });
+
+  it('leaves a season without lines as jolpi.ca names it', async () => {
+    vi.stubGlobal('fetch', mockFetchResponses(driversOf('2025', 'RB F1 Team'), constructorsOf('2025', 'RB F1 Team')));
+    const result = await fetchF1Standings();
+    expect(result!.drivers[0].team).toBe('RB F1 Team');
+    expect(result!.constructors[0].name).toBe('RB F1 Team');
+  });
+
+  it('gives every 2026 team name the parsers hand on a colour in the season chart', async () => {
+    const lines = (await loadTeamNames('f1'))?.['2026'];
+    expect(typeof lines).toBe('object');
+    const renamed = Object.values(lines as Record<string, string>);
+    const unchanged = ['Mercedes', 'Ferrari', 'McLaren', 'Aston Martin', 'Williams', 'Haas F1 Team', 'Audi'];
+    expect(renamed.length + unchanged.length).toBe(11);
+    for (const name of [...renamed, ...unchanged]) expect(F1_TEAM_COLORS[name], name).toBeDefined();
   });
 });

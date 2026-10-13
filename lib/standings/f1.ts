@@ -1,6 +1,7 @@
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 import { withF1LastGood } from '@/lib/f1-cache';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { loadTeamNames, officialTeamName } from '@/lib/series-content';
 
 export type { DriverStanding, ConstructorStanding };
 
@@ -25,7 +26,7 @@ interface RawConstructor {
 interface DriverPayload {
   MRData?: {
     StandingsTable?: {
-      StandingsLists?: Array<{ DriverStandings?: RawDriver[] }>;
+      StandingsLists?: Array<{ season?: string; DriverStandings?: RawDriver[] }>;
     };
   };
 }
@@ -33,7 +34,7 @@ interface DriverPayload {
 interface ConstructorPayload {
   MRData?: {
     StandingsTable?: {
-      StandingsLists?: Array<{ ConstructorStandings?: RawConstructor[] }>;
+      StandingsLists?: Array<{ season?: string; ConstructorStandings?: RawConstructor[] }>;
     };
   };
 }
@@ -103,7 +104,14 @@ async function fetchF1StandingsLive(): Promise<F1Standings | null> {
     const drivers = parseDrivers(driverJson);
     const constructors = parseConstructors(constructorJson);
     if (!drivers || !constructors) return null;
-    return { drivers, constructors };
+    // jolpi.ca keeps older names for some teams; the tables print formula1.com's (B6).
+    const names = await loadTeamNames('f1');
+    const driverSeason = driverJson?.MRData?.StandingsTable?.StandingsLists?.[0]?.season;
+    const constructorSeason = constructorJson?.MRData?.StandingsTable?.StandingsLists?.[0]?.season;
+    return {
+      drivers: drivers.map(d => ({ ...d, team: officialTeamName(names, driverSeason, d.team) })),
+      constructors: constructors.map(c => ({ ...c, name: officialTeamName(names, constructorSeason, c.name) })),
+    };
   } catch {
     return null;
   }
