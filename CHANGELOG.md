@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.274 — 2026-10-13
+
+### Records — session 68 closed
+
+Records only, no code. `docs/HANDOFF.md`: session 68’s LATEST section for the 13th (the robots’ bill and the two Cloudflare rules, the daily merge of 1.0.266–1.0.271 and its checks, B5 narrowed, O7, the F plan, the open items, the landmines). `docs/plan/ledger.json`: B4 done (the live table equals formula1.com), the merges and the deploy in the evidence of PF5, O6, N1, B5 and O7, and slot O8 planned with its dated change. `IDEAS.md`: seven Inbox lines (the light rebuild asked and not chosen, the rule’s exemptions, the sitemap’s 403, the team names, the lookup-skipping pair, a budget alert, the parsers per call). The branch also carries the Inbox line of 10 October (the old calendar filters back).
+
 ## 1.0.273 — 2026-10-13
 
 ### O7 — A long browser cache for the script files

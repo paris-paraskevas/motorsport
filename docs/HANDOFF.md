@@ -6,7 +6,50 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-09 (LATEST, session 68, 8 and 9 Oct: #1148 reviewed and in next, the ruleset on main, the operator’s first daily merge live, O4 done, #1126 closed, the rule of 9 Oct, #1150 reviewed)
+## ⚡ Next session pickup — 2026-10-13 (LATEST, session 68 closed on the 13th: the robots’ bill and two Cloudflare rules; the daily merge of 1.0.266–1.0.271, B4 checked live; B5 narrowed; O7 and the F plan into next)
+
+**WHERE IT STANDS (13 Oct, about 12:40Z):**
+1. **Live** since the daily merge #1158 (09:06Z, prod 09:12Z): 1.0.266–1.0.271, i.e. #1150 records, #1151 O5, #1152 O6, #1153 N1, #1154 PF5, #1155 B4. The F1 standings equal formula1.com on all 23 drivers and 11 teams (checked 09:13Z). jolpi.ca names Racing Bulls “RB F1 Team” (an Inbox line).
+2. **In next, for the merge of the 14th:**
+   - #1156 B5 (1.0.272): the weekend page never shows the sprint as the race. The OpenF1 backup and the race trigger were dropped after the review (a partial jolpi.ca read counted races twice; team changes went to the old team; the trigger missed races). The code stays at cf52d57c, and the GitHub token is no longer needed.
+   - #1159 O7 (1.0.273): `public/_headers` gives `/_next/static/*` `public,max-age=31536000,immutable`.
+   - This records PR (1.0.274).
+3. **The Cloudflare bill**, 15 Sep–13 Oct: $31.18 of usage (projected $32.26), plus the plan’s $5 minimum. The lines: CPU $14.80, logs $5.40, R2 Class A $4.50, Durable Objects $3.60, requests $1.20, R2 Class B $1.08, R2 storage $0.60.
+   - **The cause:** robots. 11.35M of 12.19M requests in seven days came from US addresses with no browser, in three night bursts from 8 to 11 Oct.
+   - **The operator turned on three defences:**
+     - the “Challenge heavy crawlers” rule (CN/SG, Known Bots spared; disabled and re-enabled on the 13th);
+     - a new “Challenge non-browsers” rule, Managed Challenge on `(not cf.client.bot and not starts_with(http.request.uri.path, "/api/") and not starts_with(http.request.uri.path, "/_next/") and (http.user_agent contains "HeadlessChrome" or not (http.user_agent contains "Chrome/" or http.user_agent contains "Firefox/" or http.user_agent contains "Safari/")))`;
+     - Bot Fight Mode.
+   - **Checked:** Chrome and iPhone Safari get 200; curl, headless Chrome and a fake Googlebot get 403 (`cf-mitigated: challenge`); `/api/` stays open.
+   - **Still the operator’s edit:** add `and http.request.uri.path ne "/feed.xml" and http.request.uri.path ne "/robots.txt" and not http.user_agent contains "paddock-seo-census"` before the census of Monday 06:23Z.
+4. **Supabase (Free)**, in the cycle from 22 Sep: egress 7.8 of 5 GB, log ingestion 16.1 of 1 GB, log query 207.7 of 100 GB. Nothing is billed; the risk is a restriction (402 on every API request) after the grace period, until the reset on 22 Oct. Log queries count through the Management API too, so no logs endpoint until then.
+5. **F of the cost plan** is slot O8: planned in plan mode and approved, with the 60 s window chosen (the plan: `C:\Users\ppara\.claude\plans\bubbly-soaring-book.md`). It is built only if the bill for 14 Oct still shows the Durable Object (1M a month free) and R2 read (10M free) lines above their free amounts.
+6. **The operator weighed taking the site down and a light rebuild** (WordPress exported as static files, the loader feeding data files), then kept the site. In an Inbox line.
+
+**DO NEXT, IN ORDER:**
+1. **After the merge of the 14th:**
+   - one request to a live `/_next/static` file for the new Cache-Control (O7’s acceptance);
+   - B5 on the next race weekend (United States GP, 25 Oct);
+   - when jolpi.ca is late after a race, run the loader by hand once it has the race (GitHub Actions, “Warm live-data cache (Cloudflare)”, Run workflow on main).
+2. **The bill for 14 Oct**, from the operator’s screenshot (with Durable Objects’ requests per class): O8 built or parked.
+3. **Later in the week:**
+   - N1’s five dead entries removed, after the devices have had days to visit, then a test push;
+   - O6’s dashboard log check;
+   - PF5 read on Supabase’s usage page (the calls fall about 13-fold, the bytes do not);
+   - the sitemap resubmitted in Search Console.
+4. **Then the ledger’s order:** G (the every-minute job), the plain check and the API map, X17’s rest, the eight drafts, X11.
+
+**LANDMINES learned on the 13th:**
+- **Workers Caching bills static files.** With it on, cache-served requests are billed, “this includes requests to static assets”; cache hits use no CPU (Workers pricing).
+- **The site cannot run on the Workers Free plan as built.** Free allows 10 ms of CPU per request and 100,000 requests a day (limits page). Pages average about 58 ms (769.72M ms over 13.35M requests). Paid has a $5 minimum.
+- **Partial millions are billed whole.** R2 rounds up to the next million (its pricing page), and the bill’s Durable Object and request lines match the same rounding.
+- **Cache Reserve has no free allowance.** Every miss is a $4.50-per-million write, so it is not for this site.
+- **A WAF challenge stops a request before the Worker.** No Worker request, CPU or log line is billed for it.
+- **A column joins `SNAPSHOT_SELECT` (`lib/design/snapshot.ts`) only after its migration is on prod.** One unknown column fails the read for all twelve design loaders; `snapshot.test.ts` holds the list to `supabase/migrations`.
+- **`wrangler dev` cannot prove `_headers`.** It answers static files with `no-store`, so the rule is verified live. Stop it by the PID of its node parent (`wrangler-dist/cli.js dev`), which respawns workerd children.
+- **A gap-filler over jolpi.ca’s paged reads must treat a short read as no answer**, or it double counts (`review-1156.md`, F1).
+
+## ⚡ Next session pickup — 2026-10-09 (session 68, 8 and 9 Oct: #1148 reviewed and in next, the ruleset on main, the operator’s first daily merge live, O4 done, #1126 closed, the rule of 9 Oct, #1150 reviewed)
 
 **WHERE IT STANDS (9 Oct, evening):**
 1. **#1150** (this records PR, into next) is open and CLEAN, no build. Its review ran twice: the first run, stopped by the operator on the 8th, found the union merge, every git and gh fact and the tests clean; the second (279,848 tokens) found 3 should-fix and 7 nits in the records, all folded in. Next: the merge into next on the word, then #1145 closed as folded in.
