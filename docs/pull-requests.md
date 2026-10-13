@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1163 · 1.0.277 · O9 (the weekly copy of the posts and the design runs again) · opened 2026-10-13 into `next` on the operator’s “go”; the merge on the word
+**The weekly copy of the posts and the design runs again.** The job “Export the design and editorial tables to git” is the only copy of the design rows, the posts and the authors outside Supabase, whose Free plan keeps no backups; every Sunday from 13 September to 11 October it stopped at its checkout step, because the branch was made inside the second working tree, where FETCH_HEAD does not exist. The branch is now made in the working tree that fetched.
+- **Readers see:** nothing; the release notes carry one line.
+- **Editors get:** a weekly copy of the posts and the design again, from the first Sunday after the daily merge (the newest today is of 8 September).
+- **Files (9):**
+  - `.github/workflows/export-design.yml` · the checkout step: `git worktree add -B export/design export-branch FETCH_HEAD`, with a comment naming the constraint.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot O9 and its dated change.
+  - `IDEAS.md` · the finding of 13 October, marked as taken.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.277.
+  - `docs/pull-requests.md` · this entry.
+- **Verified:** the failure reproduced on a scratch repository (git 2.53.0) with the production message; the job’s two git steps, read from the edited workflow, pass against a scratch remote with the branch (a new commit on top of the old copy) and without it (the branch created), and the steps from `origin/next` fail there with the production error; the 18 exported tables all still exist in `supabase/migrations`; `npx vitest run lib/design/plan-ledger.test.ts "app/(app)/changelog"` → 3 files, 28 tests passed. UNVERIFIED on GitHub until the daily merge: then one run by hand should end green and add a commit on top of 8addfe43.
+- **Review:** on the operator’s word: a fresh-context review, or the merge without one.
+
 ## #1162 · 1.0.276 · B6 (F1’s teams named as formula1.com names them) · opened 2026-10-13 into `next` on the operator’s “find open items, do them” and the plan’s approval; the merge on the word
 **F1’s teams named as formula1.com names them.** jolpi.ca names four 2026 teams by older names (Red Bull, RB F1 Team, Alpine F1 Team, Cadillac F1 Team); formula1.com, the roster and OpenF1 print Red Bull Racing, Racing Bulls, Alpine and Cadillac, and the Racing Bulls rows linked to no team page. A curated map per season is applied where jolpi.ca’s current season is parsed, so every surface agrees.
 - **Readers see:** after the deploy and the loader’s next run, the F1 standings, results, home and chart name all eleven teams as formula1.com does, and the Racing Bulls drivers link to their team page; the release notes carry one line.
