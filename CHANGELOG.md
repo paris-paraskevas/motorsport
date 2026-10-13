@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.277 — 2026-10-13
+
+### O9 — the weekly copy of the posts and the design runs again
+
+The job “Export the design and editorial tables to git” (`.github/workflows/export-design.yml`), the only copy of the design rows, the posts and the authors outside Supabase (the Free plan keeps no backups), failed every Sunday from 13 September to 11 October at “Check out the export branch into export-branch/”: `git -C export-branch checkout -q -B export/design FETCH_HEAD` ran inside the second working tree, where FETCH_HEAD does not exist, so git answered “fatal: 'FETCH_HEAD' is not a commit and a branch 'export/design' cannot be created from it” (run 38132047367). The run of 8 September passed only because the branch did not exist yet. The branch is now made in the working tree that fetched: `git worktree add -B export/design export-branch FETCH_HEAD`. Verified by running the job’s two git steps, read from the workflow, against a scratch remote: with the branch, a new commit lands on top of the old copy; without it, the branch is created; the old steps fail on the first path with the production error. The newest copy is 8addfe43 (8 September); a run by hand after the daily merge checks it on GitHub. Ledger: slot O9 and its dated change.
+
 ## 1.0.276 — 2026-10-13
 
 ### B6 — F1’s teams named as formula1.com names them
