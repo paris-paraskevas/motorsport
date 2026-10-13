@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.272 — 2026-10-11
+
+A Formula 1 weekend page no longer shows the sprint’s result as the Grand Prix’s while the race result is still on its way.
+
 ## 1.0.271 — 2026-10-11
 
 Formula 1’s championship table counted the Monaco appeal twice for five drivers and four teams; it now shows the official totals.

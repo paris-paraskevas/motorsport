@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.272 — 2026-10-11
+
+### B5 — The weekend page never shows the sprint as the race
+
+On 11 October jolpi.ca, F1’s results source, still ended at round 16 two hours after Singapore’s race, and the weekend page showed the sprint’s classification under the Grand Prix’s name: in the weekend pool an F1 sprint carries the grand prix’s own name, so a round whose race was not in yet matched its sprint. `lib/results/session-classification.ts`: F1’s sprints are marked “· Sprint” in the weekend pool (the label the driver pages already give them) and `pickRaceForSession` never returns a lone sprint for a race session, so the race session shows nothing until its race is in; its case in `lib/results/session-classification.test.ts`. The slot first carried OpenF1 as F1’s backup. Its fresh-context review found that a partial jolpi.ca read would count races twice, that a driver who changed team was credited to the old one, and that the trigger missed races a reader’s visit had warmed first; on the operator’s word (13 October) the backup, its labels and the trigger were dropped (kept in the branch’s history at cf52d57c), and the manual paths stand: the loader’s Run workflow once jolpi.ca has the race, a correction file under `content/series/f1/` for a source that is wrong. Ledger: slot B5 narrowed and its dated changes.
+
 ## 1.0.271 — 2026-10-11
 
 ### B4 — F1’s standings without the Monaco appeal counted twice
