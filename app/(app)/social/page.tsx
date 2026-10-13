@@ -20,6 +20,7 @@ const BASE_METADATA: Metadata = {
   title: 'Social — predictions, leagues & threads',
   description:
     'Predict race results with free monthly virtual credits, build private leagues with friends, and join the fan threads on Paddock Tracker. No cash, just bragging rights.',
+  alternates: { canonical: '/social' },
 };
 export const generateMetadata = pageMetadata('/social', BASE_METADATA);
 
