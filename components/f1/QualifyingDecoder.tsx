@@ -282,11 +282,12 @@ function DriverSlot({
                 // Plain <img>, not next/image: OpenF1 headshots are arbitrary
                 // remote hosts and next.config has no images.remotePatterns, so
                 // next/image would throw "hostname not configured". A 20px
-                // decorative avatar gains nothing from the optimizer anyway.
+                // decorative avatar gains nothing from the optimizer anyway. The alt
+                // names the driver: crawlers count an empty alt as a missing description (X17).
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={d.headshotUrl}
-                  alt=""
+                  alt={d.name}
                   width={20}
                   height={20}
                   loading="lazy"

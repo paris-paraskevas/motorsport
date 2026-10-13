@@ -16,6 +16,7 @@ const BASE_METADATA: Metadata = {
   description:
     // 938 px at 14 px by lib/site.ts textWidth (Seobility’s 985 px ceiling; the crawl of 5 October measured the old one at 1,137).
     'Community threads on Paddock Tracker: fan discussion across Formula 1, MotoGP, WEC, IndyCar and more. Start a thread or join one; sign in to post.',
+  alternates: { canonical: '/social/threads' },
 };
 export const generateMetadata = pageMetadata('/social/threads', BASE_METADATA);
 
