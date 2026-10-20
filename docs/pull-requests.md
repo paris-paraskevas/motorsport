@@ -14,6 +14,20 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1166 · 1.0.279 · O11 (the Paddock theme: a child of Twenty Twenty-Five carrying round 2) · opened 2026-10-20 into `next` on the operator's "go" after the plan's approval; the merge on the word
+**The theme.** After trying Ollie and Twenty Twenty-Five on the private site, the operator judged that neither came close to round 2 and said go on a theme of our own on top of Twenty Twenty-Five. The branch also carries session 69's records.
+- **Readers see:** nothing yet; the WordPress site is still private (Coming Soon). There, signed in: round 2's look, Night following the device, the header with Subscribe, the footer with Buy me a coffee, the phone's Calendar · Home · Learn bar, and the home (page 5053, the front page) with times in the reader's zone.
+- **Editors get:** design changes live in `wp-theme/paddock/` and reach the site as a zip uploaded by the operator; nothing is to be changed in WordPress's design editor, which would override the theme's files.
+- **Files (26):**
+  - `wp-theme/paddock/theme.json`, `style.css`, `functions.php`, `parts/header.html`, `parts/footer.html`, `templates/front-page.html`, `assets/js/paddock.js`, `assets/fonts/` (two Archivo woff2 files and OFL.txt), `screenshot.png` · new: the theme.
+  - `wp-theme/preview/blueprint.json`, `home.html`, `f1.html`, `post.html`, `post-excerpt.txt`, `media/` (two stand-in photos) · new: the Playground preview.
+  - `.gitignore` · the theme zip.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · O10's merge and O11 opened and built; two dated changes (the design passes; the theme of our own).
+  - `docs/HANDOFF.md` · the session's pickup, brought up to date twice. `IDEAS.md` · six Inbox lines from the feeds.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.279.
+- **Verified:** `theme.json` parses; `node --check` passes on the script; Playground (CLI 3.1.57) serves the home with no PHP warning; Playwright at 1440 and 390 px, Day and Night, against round 2; the private site signed in at 390 px after the operator's upload.
+- **Review:** not yet; a fresh-context Sonnet reader before the merge, once session usage allows.
+
 ## #1165 · 1.0.278 · O10 (the publisher: standings, results and calendars to WordPress) · opened 2026-10-20 into `next` on “build go” for the COST-3 brief’s plan; the merge on the word
 **The publisher.** The operator closed Cloudflare and Supabase on 20 October and moved the site to WordPress.com Personal; the blog, the standings, the results and the calendar stay. GitHub Actions runs the production fetchers the old loader ran, keeps what they return as JSON on the `paddock-data` branch (a commit only on change) and writes about sixty finished pages through the WordPress REST API. A failed or short feed keeps its last committed data and shows as STALE on /status/. No feed’s page is ever written from an empty fetch, and a page the publisher did not write is never overwritten.
 - **Readers see:** nothing yet. The workflow runs only from the default branch, which waits for the word, and the WordPress site does not exist yet. Once both are in place: /calendar/, /series/, /status/ and each series’ page, standings, results and calendar, times in UTC and Athens time. The release notes carry one line.
