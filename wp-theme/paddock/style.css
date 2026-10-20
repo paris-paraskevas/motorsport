@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.0
+Version: 0.1.1
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -60,17 +60,28 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-nav { margin-right: auto; }
 .pd-nav .wp-block-navigation-item a { color: var(--pd-muted); text-decoration: none; }
 .pd-nav .current-menu-item a, .pd-nav [aria-current="page"] { color: var(--pd-ink); font-weight: 800; }
-.pd-tools { gap: 10px; }
-.pd-search .wp-block-search__inside-wrapper { border: 1px solid var(--pd-line-strong); background: var(--pd-surface); padding: 0; width: 300px; }
-.pd-search .wp-block-search__input { border: 0; background: transparent; font-size: .84rem; padding: 9px 12px; order: 2; }
+.pd-brand, .pd-nav, .pd-tools > .wp-block-buttons { flex-shrink: 0; }
+.pd-tools { gap: 10px; min-width: 0; }
+.pd-search { flex: 0 1 300px; width: 300px; min-width: 0; }
+.pd-search .wp-block-search__inside-wrapper { border: 1px solid var(--pd-line-strong); background: var(--pd-surface); padding: 0; width: 100%; }
+.pd-search .wp-block-search__input { border: 0; border-radius: 0; background: transparent; font-size: .84rem; padding: 9px 12px; order: 2; min-width: 0; }
+/* Core drops the input's outline on focus, so the whole box carries the ring. */
+.pd-search .wp-block-search__inside-wrapper:has(.wp-block-search__input:focus-visible) { outline: 3px solid #ffdd00; box-shadow: 0 0 0 6px var(--pd-ink); }
+.pd-search .wp-block-search__input:focus-visible { box-shadow: none; }
 .pd-search .wp-block-search__button { order: 1; margin: 0; padding: 0 0 0 12px; border-radius: 0; background: transparent; color: var(--pd-muted); }
 .pd-search .wp-block-search__button svg { width: 18px; height: 18px; fill: currentColor; }
-.pd-subscribe .wp-block-button__link { background: transparent; color: var(--pd-ink); border: 1.5px solid var(--pd-ink); padding: 9px 16px; font-size: .84rem; }
+.pd-subscribe .wp-block-button__link { background: transparent; color: var(--pd-ink); border: 1.5px solid var(--pd-ink); padding: 9px 16px; font-size: .84rem; white-space: nowrap; }
 .pd-subscribe .wp-block-button__link:hover { background: var(--pd-ink); color: var(--pd-ground); }
-@media (max-width: 699px) {
-	.pd-top-in { gap: 8px; min-height: 52px; }
+@media (max-width: 859px) {
+	.pd-top-in { gap: 20px; }
+	.pd-search { flex: 0 0 auto; width: auto; }
 	.pd-search .wp-block-search__inside-wrapper { width: auto; border: 0; }
 	.pd-search .wp-block-search__input { display: none; }
+}
+@media (max-width: 699px) {
+	.pd-top-in { gap: 8px; min-height: 52px; }
+	.pd-top .pd-nav, .pd-top .pd-nav .wp-block-navigation__container { column-gap: 10px; }
+	.pd-top .pd-nav { font-size: .8125rem; }
 	.pd-subscribe .wp-block-button__link { padding: 6px 10px; font-size: .78rem; }
 }
 
