@@ -1,6 +1,8 @@
 {
   "slug": "nls",
   "name": "NLS Nürburgring",
+  "shortName": "NLS",
+  "order": 10,
   "color": "#fbbf24",
   "icsUrl": "https://calendar.google.com/calendar/ical/f7ubn1ltpc4p7amil7kefgj754%40group.calendar.google.com/public/basic.ics",
   "season": 2026,

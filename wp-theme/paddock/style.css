@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.2
+Version: 0.1.3
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -31,7 +31,7 @@ Text Domain: paddock
 		--wp--preset--color--accent-5: #171b22;
 		--wp--preset--color--pd-line: #262c36;
 		--wp--preset--color--pd-line-strong: #3a424f;
-		--wp--preset--color--pd-live: #e5484d;
+		--wp--preset--color--pd-live: #cf2f35;
 	}
 }
 
@@ -246,4 +246,127 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 	.pd-tabs { position: fixed; z-index: 50; left: 0; right: 0; bottom: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); padding: 7px 0 calc(9px + env(safe-area-inset-bottom, 0px)); background: var(--pd-surface); border-top: 1px solid var(--pd-line); }
 	.pd-tabs a { display: grid; justify-items: center; gap: 2px; font-size: .69rem; font-weight: 600; color: var(--pd-muted); text-decoration: none; }
 	.pd-tabs a[aria-current="page"] { color: var(--pd-ink); font-weight: 800; }
+}
+
+/* The Calendar (O12): round 2's month grid on a desktop, its weekend cards on a phone. The publisher lays the
+   month out in UTC; the script moves each session to the reader's day and adds the controls and data-view. */
+.pd-cal { max-width: 1248px; margin: 0 auto; padding: 34px max(16px, 2.8vw) 44px; }
+.pd-cal-top { display: grid; grid-template-columns: auto auto auto 1fr auto; align-items: center; gap: 14px; }
+.pd-cal-h1 { margin: 0 10px 0 0; font-size: clamp(2rem, 4vw, 2.875rem); line-height: 1; font-weight: 800; letter-spacing: -.025em; }
+.pd-cal-month { display: inline-flex; align-items: center; height: 42px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); }
+.pd-cal-month a, .pd-cal-month > span { display: grid; place-items: center; width: 40px; height: 100%; font-weight: 700; color: var(--pd-muted); text-decoration: none; }
+.pd-cal-month > span { opacity: .35; }
+.pd-cal-month b { min-width: 150px; text-align: center; font-size: .97rem; font-weight: 800; }
+.pd-cal-views { display: inline-flex; align-items: center; }
+.pd-cal-views button { height: 42px; padding: 0 16px; border: 1px solid var(--pd-line-strong); border-left-width: 0; border-radius: 0; background: var(--pd-surface); color: var(--pd-muted); font: inherit; font-size: .84rem; font-weight: 700; cursor: pointer; }
+.pd-cal-views button[data-v="month"] { border-left-width: 1px; }
+.pd-cal-views button[aria-pressed="true"] { background: var(--pd-ink); border-color: var(--pd-ink); color: var(--pd-ground); }
+.pd-cal-views .pd-cal-wstep { display: none; width: 42px; margin-left: 8px; padding: 0; border-left-width: 1px; }
+.pd-cal-views .pd-cal-wstep + .pd-cal-wstep { margin-left: 0; border-left-width: 0; }
+.pd-cal[data-view="week"] .pd-cal-wstep { display: inline-block; }
+.pd-cal-today { grid-column: 5; display: inline-flex; align-items: center; height: 42px; padding: 0 16px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
+.pd-cal-emails { grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; height: 42px; padding: 0 16px; border: 1.5px solid var(--pd-ink); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
+.pd-cal-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
+.pd-cal-lbl { margin-right: 4px; font-size: .84rem; color: var(--pd-muted); }
+.pd-cal-chip { display: inline-flex; align-items: center; height: 34px; padding: 0 12px; border: 1px solid var(--pd-line-strong); border-left: 5px solid var(--s); border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .81rem; font-weight: 700; }
+button.pd-cal-chip { cursor: pointer; }
+.pd-cal-chip.pd-dim { color: var(--pd-muted); border-left-color: color-mix(in srgb, var(--s) 35%, var(--pd-surface)); }
+.pd-cal-chip[aria-pressed="true"] { box-shadow: inset 0 -3px 0 var(--s); }
+.pd-cal-follow { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; }
+.pd-cal-follow small { font-size: .75rem; color: var(--pd-muted); }
+.pd-cal-switch { display: inline-flex; align-items: center; gap: 10px; padding: 4px 0; border: 0; background: none; color: var(--pd-ink); font: inherit; font-size: .84rem; font-weight: 800; cursor: pointer; }
+.pd-cal-switch i { position: relative; width: 34px; height: 20px; border: 1px solid var(--pd-line-strong); background: var(--pd-sunken); }
+.pd-cal-switch i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; background: var(--pd-muted); }
+.pd-cal-switch[aria-checked="true"] i { background: var(--pd-ink); border-color: var(--pd-ink); }
+.pd-cal-switch[aria-checked="true"] i::after { left: 17px; background: var(--pd-ground); }
+
+.pd-cal-grid { margin-top: 22px; border: 1px solid var(--pd-line); border-left: 0; background: var(--pd-surface); }
+.pd-cal-dow { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background: var(--pd-sunken); }
+.pd-cal-dow span { padding: 10px 12px; border-left: 1px solid var(--pd-line); color: var(--pd-muted); font-size: .78rem; font-weight: 700; }
+.pd-cal-wk { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: 30px minmax(64px, auto); border-top: 1px solid var(--pd-line); }
+.pd-cal-wk.pd-b1 { grid-template-rows: 30px repeat(1, 23px) minmax(64px, auto); }
+.pd-cal-wk.pd-b2 { grid-template-rows: 30px repeat(2, 23px) minmax(64px, auto); }
+.pd-cal-wk.pd-b3 { grid-template-rows: 30px repeat(3, 23px) minmax(64px, auto); }
+.pd-cal-wk.pd-b4 { grid-template-rows: 30px repeat(4, 23px) minmax(64px, auto); }
+.pd-cal-wk.pd-b5 { grid-template-rows: 30px repeat(5, 23px) minmax(64px, auto); }
+.pd-cal-wk.pd-b6 { grid-template-rows: 30px repeat(6, 23px) minmax(64px, auto); }
+.pd-cal-wk.pd-b7 { grid-template-rows: 30px repeat(7, 23px) minmax(64px, auto); }
+.pd-cal-wk.pd-b8 { grid-template-rows: 30px repeat(8, 23px) minmax(64px, auto); }
+.pd-cal-ses { grid-row: 2; }
+.pd-b1 > .pd-cal-ses { grid-row: 3; } .pd-b2 > .pd-cal-ses { grid-row: 4; } .pd-b3 > .pd-cal-ses { grid-row: 5; } .pd-b4 > .pd-cal-ses { grid-row: 6; }
+.pd-b5 > .pd-cal-ses { grid-row: 7; } .pd-b6 > .pd-cal-ses { grid-row: 8; } .pd-b7 > .pd-cal-ses { grid-row: 9; } .pd-b8 > .pd-cal-ses { grid-row: 10; }
+.pd-cal-wk > .pd-c1 { grid-column-start: 1; } .pd-cal-wk > .pd-c2 { grid-column-start: 2; } .pd-cal-wk > .pd-c3 { grid-column-start: 3; } .pd-cal-wk > .pd-c4 { grid-column-start: 4; }
+.pd-cal-wk > .pd-c5 { grid-column-start: 5; } .pd-cal-wk > .pd-c6 { grid-column-start: 6; } .pd-cal-wk > .pd-c7 { grid-column-start: 7; }
+.pd-w2 { grid-column-end: span 2; } .pd-w3 { grid-column-end: span 3; } .pd-w4 { grid-column-end: span 4; } .pd-w5 { grid-column-end: span 5; } .pd-w6 { grid-column-end: span 6; } .pd-w7 { grid-column-end: span 7; }
+.pd-cal-band.pd-r1 { grid-row: 2; } .pd-cal-band.pd-r2 { grid-row: 3; } .pd-cal-band.pd-r3 { grid-row: 4; } .pd-cal-band.pd-r4 { grid-row: 5; }
+.pd-cal-band.pd-r5 { grid-row: 6; } .pd-cal-band.pd-r6 { grid-row: 7; } .pd-cal-band.pd-r7 { grid-row: 8; } .pd-cal-band.pd-r8 { grid-row: 9; }
+.pd-cal-bg { grid-row: 1 / -1; border-left: 1px solid var(--pd-line); }
+.pd-cal-bg.pd-fss { background: color-mix(in srgb, var(--pd-ink) 3.5%, transparent); }
+.pd-cal-dn { grid-row: 1; z-index: 1; padding: 8px 10px 4px; font-size: .84rem; font-weight: 800; }
+.pd-cal-dn.pd-out { color: var(--pd-muted); font-weight: 600; }
+.pd-cal-dn.is-past { opacity: .5; }
+.pd-cal-dn.is-today { justify-self: start; align-self: start; margin: 6px 0 0 8px; padding: 1px 7px; background: var(--pd-accent); color: var(--pd-on); opacity: 1; }
+.pd-cal-band { z-index: 1; align-self: center; margin: 0 3px; padding: 3px 8px; overflow: hidden; background: var(--s); color: var(--pd-on); font-size: .72rem; font-weight: 800; line-height: 1.4; white-space: nowrap; text-overflow: ellipsis; }
+.pd-cal-band.is-past { padding-left: 6px; border-left: 4px solid var(--s); background: var(--pd-sunken); color: var(--pd-muted); }
+.pd-cal-ses { z-index: 1; display: grid; align-content: start; gap: 3px; min-width: 0; padding: 6px 8px 12px; }
+.pd-cal-ses.is-past { opacity: .5; }
+.pd-cs { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 6px; padding-left: 7px; border-left: 3px solid var(--s); font-size: .75rem; line-height: 1.35; }
+.pd-cs b { overflow: hidden; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
+.pd-cs .pd-t { color: var(--pd-muted); }
+.pd-cs.is-done { opacity: .55; }
+.pd-cal .pd-cs[data-key="0"] { display: none; }
+.pd-cal[data-view="week"] .pd-cs[data-key="0"] { display: grid; }
+.pd-cal[data-view="week"] .pd-cal-wk:not(.is-week) { display: none; }
+.pd-cal .is-more, .pd-cal .is-filtered { display: none !important; }
+.pd-cal-more { padding-left: 10px; color: var(--pd-muted); font-size: .72rem; font-weight: 700; }
+.pd-cal-clock { margin-bottom: 4px; color: color-mix(in srgb, var(--pd-accent) 75%, var(--pd-ink)); font-size: .72rem; font-weight: 800; line-height: 1.35; }
+.pd-cal-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; margin: 14px 0 0; color: var(--pd-muted); font-size: .81rem; }
+.pd-cal-legend b { color: var(--pd-ink); }
+.pd-cal-lg::before { content: ""; display: inline-block; width: 22px; height: 10px; margin-right: 8px; background: #ff4136; }
+
+/* Agenda: round 2's weekend cards */
+.pd-cal-agenda { display: none; max-width: 720px; margin-top: 8px; }
+.pd-cal[data-view="agenda"] .pd-cal-agenda { display: block; }
+.pd-cal[data-view="agenda"] .pd-cal-grid, .pd-cal[data-view="agenda"] .pd-cal-legend { display: none; }
+.pd-cal-wkh { position: sticky; top: 0; z-index: 3; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 18px 0 0; padding: 12px 0 8px; border-bottom: 2px solid var(--pd-ink); background: var(--pd-ground); font-size: 1.375rem; font-weight: 800; line-height: 1.1; letter-spacing: -.015em; }
+.pd-cal-wkh small { color: var(--pd-muted); font-size: .81rem; font-weight: 500; letter-spacing: 0; white-space: nowrap; }
+.pd-cal-wkend.is-past { display: none; }
+.pd-cal-earlier { margin-top: 14px; padding: 8px 14px; border: 1px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .84rem; font-weight: 700; cursor: pointer; }
+.pd-cal.is-earlier .pd-cal-wkend.is-past { display: block; opacity: .6; }
+.pd-cal-none { margin: 18px 0 0; color: var(--pd-muted); }
+.pd-wc { position: relative; margin-top: 14px; border: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-wc::before { content: ""; position: absolute; left: -1px; top: -15px; height: 14px; border-left: 1px solid var(--pd-line-strong); }
+.pd-wc-band { position: relative; display: grid; gap: 2px; overflow: hidden; padding: 12px 12px 13px; background: var(--s); color: var(--pd-on); }
+.pd-wc-band small { position: relative; z-index: 1; font-size: .72rem; font-weight: 800; }
+.pd-wc-band b { position: relative; z-index: 1; max-width: 82%; font-size: 1.19rem; font-weight: 800; line-height: 1.15; letter-spacing: -.01em; }
+.pd-wc-band span { position: relative; z-index: 1; font-size: .78rem; }
+.pd-wc-band .pd-pill { position: absolute; top: 10px; right: 10px; z-index: 2; font-style: normal; }
+.pd-wc-num { position: absolute; right: 2px; bottom: -16px; color: color-mix(in srgb, var(--s) 70%, #0f1217); font-size: 4.125rem; font-style: normal; font-weight: 800; line-height: 1; letter-spacing: -.04em; }
+.pd-wc-day { display: grid; grid-template-columns: 38px minmax(0, 1fr); border-top: 1px solid var(--pd-line); }
+.pd-wc-day:first-child { border-top: 0; }
+.pd-wc-dl { padding: 11px 0 0 12px; font-size: .81rem; font-weight: 800; }
+.pd-wc-ss { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pd-wc-s { display: grid; gap: 1px; min-width: 0; margin-top: -1px; padding: 9px 12px; border-top: 1px solid var(--pd-line); border-left: 1px solid var(--pd-line); }
+.pd-wc-s b { overflow: hidden; font-size: .84rem; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
+.pd-wc-s .pd-t, .pd-wc-s em { color: var(--pd-muted); font-size: .78rem; font-style: normal; }
+.pd-wc-s.is-done b, .pd-wc-s.is-done em { color: var(--pd-muted); font-weight: 600; }
+.pd-wc-s.is-live { background: color-mix(in srgb, var(--pd-live) 12%, transparent); }
+.pd-wc-s.is-live em { color: color-mix(in srgb, var(--pd-live) 70%, var(--pd-ink)); font-weight: 800; }
+.pd-wc-s.is-next { background: color-mix(in srgb, var(--pd-accent) 12%, transparent); }
+.pd-wc-s.is-next em, .pd-wc-s.is-next em .pd-t { color: color-mix(in srgb, var(--pd-accent) 75%, var(--pd-ink)); font-weight: 800; }
+.pd-wc-foot { display: flex; justify-content: space-between; gap: 10px; padding: 12px; border-top: 1px solid var(--pd-line); font-size: .81rem; font-weight: 800; }
+.pd-wc-none { margin: 0; padding: 12px; color: var(--pd-muted); font-size: .81rem; }
+@media (max-width: 699px) {
+	.pd-cal { padding-top: 18px; }
+	.pd-cal-top { grid-template-columns: auto 1fr auto; gap: 10px; }
+	.pd-cal-h1 { grid-column: 1 / -1; font-size: 1.75rem; }
+	.pd-cal-month { grid-column: 1; }
+	.pd-cal-month b { min-width: 120px; }
+	.pd-cal-views { display: none; }
+	.pd-cal-today { grid-column: 3; }
+	.pd-cal-filter { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * max(16px, 2.8vw)); padding: 0 max(16px, 2.8vw) 4px; scrollbar-width: none; }
+	.pd-cal-chip, .pd-cal-follow, .pd-cal-lbl { flex: none; }
+	.pd-cal-grid, .pd-cal-legend { display: none; }
+	.pd-cal-agenda, .pd-cal[data-view] .pd-cal-agenda { display: block; }
+	.pd-cal[data-view="month"] .pd-cal-grid, .pd-cal[data-view="week"] .pd-cal-grid { display: none; }
 }

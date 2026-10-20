@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import type { Series, Session } from '../types';
 import {
+  bandLabel,
   calendarEntries,
-  calendarPage,
+  calendarMonthPages,
   escapeHtml,
   hashOf,
   latestRace,
@@ -16,8 +17,10 @@ import {
   whenCells,
   withMarker,
   wpPaths,
+  type CalendarEntry,
   type Page,
   type ResultRound,
+  type SeriesData,
   type WpPageRow,
 } from './render';
 
@@ -261,6 +264,7 @@ describe('calendarEntries', () => {
       ['Race', 'Australian Grand Prix', 1, false],
     ]);
     expect(entries[1]).toMatchObject({ start: '2026-03-06T01:30:00.000Z', end: '2026-03-06T02:30:00.000Z' });
+    expect(entries[1].location).toBe('Albert Park Circuit, Melbourne');
   });
 });
 
@@ -299,20 +303,92 @@ describe('seriesPages', () => {
   });
 });
 
-describe('calendarPage', () => {
-  it('lists the sessions of the next 30 days and none beyond', () => {
-    const at = (start: string, event: string) => ({ start, end: start, dateOnly: false, event, session: 'Race', round: 1 });
-    const d = {
-      slug: 'f1',
-      name: 'Formula 1',
-      standings: null,
-      results: null,
-      calendar: [at('2026-10-19T12:00:00.000Z', 'Gone'), at('2026-11-18T23:59:00.000Z', 'Inside'), at('2026-11-19T00:01:00.000Z', 'Outside')],
-    };
-    const body = calendarPage([d], new Date('2026-10-20T00:00:00Z')).body;
-    expect(body).toContain('Inside');
-    expect(body).not.toContain('Outside');
-    expect(body).not.toContain('Gone');
+describe('calendarMonthPages', () => {
+  const at = (start: string, session: string, round = 18, dateOnly = false): CalendarEntry => ({
+    start,
+    end: new Date(Date.parse(start) + 3_600_000).toISOString(),
+    dateOnly,
+    event: 'United States Grand Prix',
+    session,
+    round,
+  });
+  const f1: SeriesData = {
+    slug: 'f1',
+    name: 'Formula 1',
+    short: 'F1',
+    order: 1,
+    standings: null,
+    results: null,
+    calendar: [
+      at('2026-10-23T17:30:00.000Z', 'Practice 1'),
+      at('2026-10-24T21:00:00.000Z', 'Qualifying'),
+      at('2026-10-25T20:00:00.000Z', 'Race'),
+      at('2026-11-02T00:30:00.000Z', 'Race', 19),
+    ],
+    rounds: [
+      { round: 18, name: 'United States Grand Prix', startDate: '2026-10-23', endDate: '2026-10-25', venue: 'Circuit of the Americas' },
+      { round: 19, name: 'Mexico City Grand Prix', startDate: '2026-10-30', endDate: '2026-11-01', venue: null },
+    ],
+  };
+  const now = new Date('2026-10-20T12:00:00Z');
+  const pages = calendarMonthPages([f1], now);
+  const october = pages.find(p => p.path === '/calendar/2026-10/')!;
+
+  it('writes /calendar/ as this month, then every month the data reaches, on the wide template', () => {
+    expect(pages.map(p => p.path)).toEqual(['/calendar/', '/calendar/2026-10/', '/calendar/2026-11/']);
+    expect(pages[0].body).toBe(october.body);
+    expect(pages.map(p => p.title)).toEqual(['Calendar', 'Calendar · October 2026', 'Calendar · November 2026']);
+    expect(pages.every(p => p.template === 'page-wide')).toBe(true);
+    expect(october.body.startsWith('<!-- wp:html -->')).toBe(true);
+  });
+
+  it('links the months either side, and none past the last', () => {
+    expect(october.body).toContain('<a href="/calendar/2026-11/" aria-label="November 2026">›</a>');
+    expect(october.body).toContain('<span aria-hidden="true">‹</span>');
+    expect(pages[2].body).toContain('<a href="/calendar/2026-10/" aria-label="October 2026">‹</a>');
+  });
+
+  it('puts each session in its UTC day, marks race, sprint and qualifying, and prints UTC', () => {
+    const cell = (day: string) => october.body.split(`<div class="pd-cal-ses pd-c`).find(c => c.startsWith(`${c[0]}" data-date="${day}">`)) ?? '';
+    expect(cell('2026-10-24')).toContain('<b>F1 Qualifying</b>');
+    expect(cell('2026-10-24')).toContain('data-key="1"');
+    expect(cell('2026-10-23')).toContain('data-key="0"');
+    expect(cell('2026-10-24')).toContain('data-f="t">21:00</span>');
+    expect(october.body).toContain('Times in UTC');
+  });
+
+  it('holds a session just past the grid in the spill, for a reader whose day brings it in', () => {
+    expect(october.body).toMatch(/<div class="pd-cal-spill" hidden>.*F1 Race.*2026-11-02T00:30/);
+  });
+
+  it('draws each round as a band across its days, split where a week ends', () => {
+    expect(october.body).toContain('<span class="pd-cal-band pd-s-f1 pd-c5 pd-w3 pd-r1" data-s="f1" data-from="2026-10-23" data-to="2026-10-25">F1 · United States GP</span>');
+    expect(pages[2].body).toContain('pd-c5 pd-w3 pd-r1" data-s="f1" data-from="2026-10-30" data-to="2026-11-01">F1 · Mexico City GP</span>');
+  });
+
+  it('cards each weekend with its host and its sessions by day', () => {
+    expect(october.body).toContain('<div class="pd-cal-wkend" data-from="2026-10-23" data-to="2026-10-25"><h2 class="pd-cal-wkh"><span>23–25 October</span>');
+    expect(october.body).toContain('<small>Formula 1 · Round 18</small><b>United States Grand Prix</b><span>Circuit of the Americas</span>');
+    expect(october.body).toContain('3 sessions · <span data-pd-zonename>UTC</span>');
+    expect(october.body).toContain('<span>30 October – 1 November</span>');
+  });
+
+  it('escapes what the feeds say', () => {
+    const odd: SeriesData = { ...f1, calendar: [at('2026-10-24T21:00:00.000Z', '<img src=x onerror=alert(1)>')], rounds: [] };
+    const body = calendarMonthPages([odd], now)[0].body;
+    expect(body).not.toContain('<img');
+    expect(body).toContain('&lt;img src=x onerror=alert(1)&gt;');
+  });
+
+  it('says so when a month has no race weekend', () => {
+    const quiet: SeriesData = { ...f1, calendar: [], rounds: [] };
+    expect(calendarMonthPages([quiet], now)[0].body).toContain('No race weekends this month.');
+  });
+
+  it("names a band shortly: GP, NASCAR's track, no trailing Round", () => {
+    expect(bandLabel('f1', 'Bahrain Grand Prix')).toBe('Bahrain GP');
+    expect(bandLabel('nascar-cup', 'Bank of America 400 (Charlotte oval)')).toBe('Charlotte');
+    expect(bandLabel('dtm', 'Hockenheimring Round')).toBe('Hockenheimring');
   });
 });
 
@@ -353,6 +429,11 @@ describe('planSync', () => {
 
   it('hashes the title with the body, so a new title is an update', () => {
     expect(hashOf({ title: 'A', body: 'x' })).not.toBe(hashOf({ title: 'B', body: 'x' }));
+  });
+
+  it('adds the template to the hash only when a page names one', () => {
+    expect(hashOf({ title: 'A', body: 'x', template: 'page-wide' })).not.toBe(hashOf({ title: 'A', body: 'x' }));
+    expect(hashOf({ title: 'A', body: 'x', template: undefined })).toBe(hashOf({ title: 'A', body: 'x' }));
   });
 });
 

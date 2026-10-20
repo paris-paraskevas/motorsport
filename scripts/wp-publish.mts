@@ -14,6 +14,7 @@
 //   npx tsx scripts/wp-publish.mts --data paddock-data                           fetch, store, publish
 //   npx tsx scripts/wp-publish.mts --from-ref origin/paddock-data --dry-run --out .wp-out   stored data only; no fetch
 //   npx tsx scripts/wp-publish.mts --test-page                                   one draft page written and read back
+//   add --only /calendar/ to any of these                                        one family of pages, the others left as they are
 //
 // Publishing needs WP_SITE_URL (an https origin), WP_USER and WP_APP_PASSWORD (an
 // application password; never printed). Every log line starts with the run's
@@ -34,10 +35,11 @@ import { fetchAllGtWorldSeasonRaces } from '../lib/results/gt-world';
 import { fetchImsaSeasonResults } from '../lib/results/imsa';
 import { fetchWecSeasonResults } from '../lib/results/wec';
 import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
-import type { Series } from '../lib/types';
+import { matchCircuitEntry, venueCandidates } from '../lib/circuits';
+import type { Series, SeriesRoundEntry } from '../lib/types';
 import {
   calendarEntries,
-  calendarPage,
+  calendarMonthPages,
   escapeHtml,
   hashOf,
   heading,
@@ -52,6 +54,7 @@ import {
   wpPaths,
   MARKER,
   type CalendarEntry,
+  type CalendarRound,
   type Page,
   type ResultRound,
   type SeriesData,
@@ -70,6 +73,8 @@ const TEST = argv.includes('--test-page');
 const OUT = opt('--out');
 const DATA = opt('--data');
 const FROM_REF = opt('--from-ref');
+/** Only the pages whose path starts here ("/calendar/"): a page family goes live once its design does. */
+const ONLY = opt('--only');
 
 const RUN = process.env.GITHUB_RUN_ID ? `wp-publish#${process.env.GITHUB_RUN_ID}` : `local-${Date.now().toString(36)}`;
 const log = (phase: string, msg: string): void => console.error(`${RUN} ${phase} ${msg}`);
@@ -81,6 +86,10 @@ if (DRY && !OUT) {
 }
 if (FROM_REF !== undefined && !/^[\w./-]+$/.test(FROM_REF)) {
   console.error('--from-ref takes a branch, tag or commit');
+  process.exit(1);
+}
+if (ONLY !== undefined && !/^\/[a-z0-9/-]*$/.test(ONLY)) {
+  console.error('--only takes a path that starts with /, such as /calendar/');
   process.exit(1);
 }
 // A stray DATA_SOURCE=db turns every fetcher into a reader of a database this job does not have.
@@ -137,13 +146,13 @@ function wordpress() {
       return rows;
     },
     /** The new page's id and the slug WordPress gave it, which can differ from the one asked for. */
-    async createPage(fields: { title: string; slug: string; parent: number; status: 'publish' | 'draft'; content: string }): Promise<{ id: number; slug: string }> {
+    async createPage(fields: { title: string; slug: string; parent: number; status: 'publish' | 'draft'; content: string; template?: string }): Promise<{ id: number; slug: string }> {
       const { json } = await call('POST', 'pages', fields);
       const page = json as Partial<WpRestPage> | null;
       if (typeof page?.id !== 'number') throw new Error('POST /wp-json/wp/v2/pages answered without a page id');
       return { id: page.id, slug: typeof page.slug === 'string' ? page.slug : '' };
     },
-    async updatePage(id: number, fields: { title: string; content: string; status?: 'draft' }): Promise<void> {
+    async updatePage(id: number, fields: { title: string; content: string; status?: 'draft'; template?: string }): Promise<void> {
       await call('POST', `pages/${id}`, fields);
     },
     async getPage(id: number): Promise<WpRestPage> {
@@ -371,13 +380,45 @@ function refTime(ref: string): Date | null {
   }
 }
 
+/** A series' rounds from its content (no fetch), each with its host: the curated venue as written (the
+ *  matcher reads aliases inside names, so "Las Vegas Motor Speedway" would come back as the Strip Circuit),
+ *  else the circuit the feed's location or the round's name matches (lib/circuits.ts). A rally has no circuit. */
+async function calendarRounds(slug: string, calendar: CalendarEntry[] | null, rally: boolean): Promise<CalendarRound[]> {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(readFileSync(join(process.cwd(), 'content', 'series', slug, 'rounds.json'), 'utf8'));
+  } catch {
+    return [];
+  }
+  const list: unknown = Array.isArray(raw) ? raw : (raw as { rounds?: unknown } | null)?.rounds;
+  if (!Array.isArray(list)) return [];
+  const out: CalendarRound[] = [];
+  for (const r of list as Partial<SeriesRoundEntry>[]) {
+    if (typeof r?.round !== 'number' || typeof r.startDate !== 'string' || typeof r.endDate !== 'string' || typeof r.name !== 'string') continue;
+    let venue: string | null = null;
+    if (!rally && r.venue) venue = r.venue;
+    else if (!rally) {
+      const location = calendar?.find(e => e.round === r.round && e.location)?.location;
+      const hit = await matchCircuitEntry(...venueCandidates({ location, title: r.name }));
+      venue = hit?.circuit.name ?? null;
+    }
+    out.push({ round: r.round, name: r.name, startDate: r.startDate, endDate: r.endDate, venue });
+  }
+  return out;
+}
+
 /** Fetch (or read what is stored at --from-ref), decide every feed, keep the data, render the pages. */
 async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }> {
   const slugs = (await listSeriesSlugs()).sort();
   // listSeriesSlugs answers [] on any error, which would empty /series/, /calendar/ and /status/.
   if (slugs.length === 0) throw new Error('no series found under content/series');
   const names = new Map<string, string>();
-  for (const slug of slugs) names.set(slug, (await loadSeriesMeta(slug)).name);
+  const chips = new Map<string, { short?: string; order?: number; rally: boolean }>();
+  for (const slug of slugs) {
+    const meta = await loadSeriesMeta(slug);
+    names.set(slug, meta.name);
+    chips.set(slug, { short: meta.shortName, order: meta.order, rally: meta.category === 'rally' });
+  }
 
   const fetched: Fetched | null = FROM_REF ? null : await fetchEverything(slugs, now);
   if (FROM_REF) log('F', `no fetch: rendering the data stored at ${FROM_REF}`);
@@ -391,6 +432,9 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
   let dataChanged = 0;
   for (const slug of slugs) {
     const d: SeriesData = { slug, name: names.get(slug) ?? slug, standings: null, results: null, calendar: null };
+    const chip = chips.get(slug);
+    if (chip?.short) d.short = chip.short;
+    if (chip?.order !== undefined) d.order = chip.order;
     for (const kind of KINDS) {
       const rel = relOf(slug, kind);
       const previous = readStored<unknown>(rel);
@@ -416,13 +460,14 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
       health.push({ slug, name: d.name, kind, status, note, since });
       log('N', `${kind} ${slug} ${status}${note ? ` (${note})` : ''}${changed ? ' changed' : ''}`);
     }
+    d.rounds = await calendarRounds(slug, d.calendar, chip?.rally === true);
     all.push(d);
   }
   if (fetched) writeStored('health.json', health);
   log('W', DATA && fetched ? `${dataChanged} data files changed in ${DATA}` : 'no data written');
 
   const checkedAt = FROM_REF ? (refTime(FROM_REF) ?? now) : now;
-  const pages: Page[] = [seriesIndexPage(all, now), calendarPage(all, now), statusPage(health, checkedAt), ...all.flatMap(d => seriesPages(d, now))];
+  const pages: Page[] = [seriesIndexPage(all, now), ...calendarMonthPages(all, now), statusPage(health, checkedAt), ...all.flatMap(d => seriesPages(d, now))];
   log('R', `${pages.length} pages`);
   return { pages, health };
 }
@@ -489,17 +534,18 @@ async function publish(pages: Page[]): Promise<boolean> {
       const started = Date.now();
       try {
         const content = withMarker(step.page.body, step.hash, path);
+        const template = step.page.template ? { template: step.page.template } : {};
         if (step.kind === 'create') {
           const segments = path.split('/').filter(Boolean);
           const slug = segments[segments.length - 1];
           const parentPath = segments.length > 1 ? `/${segments.slice(0, -1).join('/')}/` : null;
           const parent = parentPath === null ? 0 : ids.get(parentPath);
           if (parent === undefined) throw new Error(`its parent ${parentPath} does not exist`);
-          const made = await wp.createPage({ title, slug, parent, status: 'publish', content });
+          const made = await wp.createPage({ title, slug, parent, status: 'publish', content, ...template });
           ids.set(path, made.id);
           if (made.slug !== slug) moved(path, `${parentPath ?? '/'}${made.slug}/`);
         } else {
-          await wp.updatePage(step.id, { title, content });
+          await wp.updatePage(step.id, { title, content, ...template });
         }
         tally[step.kind]++;
         log('P', `${step.kind} ${path} ${Date.now() - started}ms`);
@@ -528,7 +574,9 @@ async function main(): Promise<number> {
     log('=', `FAILED before publishing: ${errorText(err)}`);
     return 1;
   }
-  const { pages, health } = built;
+  const { health } = built;
+  const pages = ONLY ? built.pages.filter(p => p.path.startsWith(ONLY)) : built.pages;
+  if (ONLY) log('R', `--only ${ONLY}: ${pages.length} of ${built.pages.length} pages`);
   const counts = { OK: 0, STALE: 0, MISSING: 0 };
   for (const h of health) counts[h.status]++;
   let ok = !(health.length > 0 && health.every(h => h.status === 'MISSING'));

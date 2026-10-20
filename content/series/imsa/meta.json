@@ -1,6 +1,8 @@
 {
   "slug": "imsa",
   "name": "IMSA",
+  "shortName": "IMSA",
+  "order": 4,
   "color": "#2dd4bf",
   "icsUrl": "https://calendar.google.com/calendar/ical/njulhksvo83qeoruc3nhend9js%40group.calendar.google.com/public/basic.ics",
   "season": 2026,

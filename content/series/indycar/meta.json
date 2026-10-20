@@ -1,6 +1,8 @@
 {
   "slug": "indycar",
   "name": "IndyCar",
+  "shortName": "IndyCar",
+  "order": 11,
   "color": "#f43f5e",
   "icsUrl": "https://calendar.google.com/calendar/ical/hlskhf7l8ce7btind39bb9kf1o%40group.calendar.google.com/public/basic.ics",
   "season": 2026,

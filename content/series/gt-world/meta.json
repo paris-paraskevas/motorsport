@@ -1,6 +1,8 @@
 {
   "slug": "gt-world",
   "name": "GT World Challenge",
+  "shortName": "GTWC",
+  "order": 5,
   "color": "#a855f7",
   "icsUrl": "https://calendar.google.com/calendar/ical/drne83rrmn7m9baje25qh2248s%40group.calendar.google.com/public/basic.ics",
   "season": 2026,
