@@ -106,3 +106,6 @@ Thumbs.db
 supabase/signing_keys.json
 # Unlighthouse output (the operator runs npx unlighthouse --site … from the repo root)
 /.unlighthouse/
+
+# O11: the theme zip for upload, built from wp-theme/paddock
+wp-theme/*.zip
