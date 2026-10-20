@@ -1,0 +1,1140 @@
+[
+  {
+    "round": 1,
+    "name": "6 Hours of Imola",
+    "date": "2026-04-19",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "8",
+                "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+                "TOYOTA RACING",
+                ""
+              ],
+              [
+                "2",
+                "51",
+                "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+                "FERRARI AF CORSE",
+                "13.352"
+              ],
+              [
+                "3",
+                "7",
+                "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+                "TOYOTA RACING",
+                "41.187"
+              ],
+              [
+                "4",
+                "35",
+                "CHARLES MILESI, FERDINAND HABSBURG",
+                "ALPINE ENDURANCE TEAM",
+                "59.385"
+              ],
+              [
+                "5",
+                "20",
+                "RENÉ RAST, ROBIN FRIJNS",
+                "BMW M TEAM WRT",
+                "1:00.543"
+              ],
+              [
+                "6",
+                "50",
+                "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+                "FERRARI AF CORSE",
+                "1:00.901"
+              ],
+              [
+                "7",
+                "15",
+                "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+                "BMW M TEAM WRT",
+                "1:01.506"
+              ],
+              [
+                "8",
+                "38",
+                "EARL BAMBER, SÉBASTIEN BOURDAIS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "1:01.995"
+              ],
+              [
+                "9",
+                "007",
+                "HARRY TINCKNELL, TOM GAMBLE",
+                "ASTON MARTIN THOR TEAM",
+                "1 Lap"
+              ],
+              [
+                "10",
+                "83",
+                "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+                "AF CORSE",
+                "1 Lap"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "69",
+                "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+                "TEAM WRT",
+                ""
+              ],
+              [
+                "2",
+                "33",
+                "JONNY EDGAR",
+                "TF SPORT",
+                "0.265"
+              ],
+              [
+                "3",
+                "92",
+                "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+                "THE BEND MANTHEY",
+                "1 Lap"
+              ],
+              [
+                "4",
+                "91",
+                "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+                "MANTHEY DK ENGINEERING",
+                "1 Lap"
+              ],
+              [
+                "5",
+                "32",
+                "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+                "TEAM WRT",
+                "1 Lap"
+              ],
+              [
+                "6",
+                "21",
+                "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+                "VISTA AF CORSE",
+                "1 Lap"
+              ],
+              [
+                "7",
+                "58",
+                "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+                "GARAGE 59",
+                "1 Lap"
+              ],
+              [
+                "8",
+                "88",
+                "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+                "PROTON COMPETITION",
+                "1 Lap"
+              ],
+              [
+                "9",
+                "23",
+                "GRAY NEWELL, JONNY ADAM",
+                "HEART OF RACING TEAM",
+                "1 Lap"
+              ],
+              [
+                "10",
+                "77",
+                "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+                "PROTON COMPETITION",
+                "1 Lap"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "name": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "date": "2026-05-09",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "20",
+                "RENÉ RAST, ROBIN FRIJNS",
+                "BMW M TEAM WRT",
+                ""
+              ],
+              [
+                "2",
+                "15",
+                "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+                "BMW M TEAM WRT",
+                "1.969"
+              ],
+              [
+                "3",
+                "50",
+                "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+                "FERRARI AF CORSE",
+                "2.622"
+              ],
+              [
+                "4",
+                "007",
+                "HARRY TINCKNELL, TOM GAMBLE",
+                "ASTON MARTIN THOR TEAM",
+                "5.004"
+              ],
+              [
+                "5",
+                "7",
+                "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+                "TOYOTA RACING",
+                "6.015"
+              ],
+              [
+                "6",
+                "83",
+                "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+                "AF CORSE",
+                "11.552"
+              ],
+              [
+                "7",
+                "93",
+                "NICK CASSIDY, PAUL DI RESTA",
+                "PEUGEOT TOTALENERGIES",
+                "12.861"
+              ],
+              [
+                "8",
+                "17",
+                "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
+                "GENESIS MAGMA RACING",
+                "29.882"
+              ],
+              [
+                "9",
+                "12",
+                "NORMAN NATO, WILL STEVENS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "31.837"
+              ],
+              [
+                "10",
+                "8",
+                "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+                "TOYOTA RACING",
+                "32.165"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "10",
+                "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
+                "GARAGE 59",
+                ""
+              ],
+              [
+                "2",
+                "27",
+                "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+                "HEART OF RACING TEAM",
+                "2.148"
+              ],
+              [
+                "3",
+                "92",
+                "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+                "THE BEND MANTHEY",
+                "3.422"
+              ],
+              [
+                "4",
+                "21",
+                "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+                "VISTA AF CORSE",
+                "4.063"
+              ],
+              [
+                "5",
+                "58",
+                "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+                "GARAGE 59",
+                "10.401"
+              ],
+              [
+                "6",
+                "87",
+                "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+                "AKKODIS ASP TEAM",
+                "12.259"
+              ],
+              [
+                "7",
+                "91",
+                "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+                "MANTHEY DK ENGINEERING",
+                "13.968"
+              ],
+              [
+                "8",
+                "33",
+                "JONNY EDGAR",
+                "TF SPORT",
+                "15.002"
+              ],
+              [
+                "9",
+                "34",
+                "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+                "RACING TEAM TURKEY BY TF",
+                "16.140"
+              ],
+              [
+                "10",
+                "61",
+                "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+                "IRON LYNX",
+                "16.335"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "name": "24 Hours of Le Mans",
+    "date": "2026-06-14",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "7",
+                "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+                "TOYOTA RACING",
+                ""
+              ],
+              [
+                "2",
+                "20",
+                "RENÉ RAST, ROBIN FRIJNS",
+                "BMW M TEAM WRT",
+                "10.913"
+              ],
+              [
+                "3",
+                "8",
+                "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+                "TOYOTA RACING",
+                "20.417"
+              ],
+              [
+                "4",
+                "12",
+                "NORMAN NATO, WILL STEVENS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "32.381"
+              ],
+              [
+                "5",
+                "51",
+                "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+                "FERRARI AF CORSE",
+                "2:22.423"
+              ],
+              [
+                "6",
+                "35",
+                "CHARLES MILESI, FERDINAND HABSBURG",
+                "ALPINE ENDURANCE TEAM",
+                "2:30.205"
+              ],
+              [
+                "7",
+                "83",
+                "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+                "AF CORSE",
+                "2:35.573"
+              ],
+              [
+                "8",
+                "007",
+                "HARRY TINCKNELL, TOM GAMBLE",
+                "ASTON MARTIN THOR TEAM",
+                "2 Laps"
+              ],
+              [
+                "9",
+                "101",
+                "RICKY TAYLOR",
+                "CADILLAC WTR",
+                "2 Laps"
+              ],
+              [
+                "10",
+                "36",
+                "JULES GOUNON, VICTOR MARTINS",
+                "ALPINE ENDURANCE TEAM",
+                "2 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "LMP2",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "43",
+                "",
+                "INTER EUROPOL COMPETITION",
+                ""
+              ],
+              [
+                "2",
+                "343",
+                "",
+                "INTER EUROPOL COMPETITION",
+                "1 Lap"
+              ],
+              [
+                "3",
+                "29",
+                "",
+                "FORESTIER RACING BY PANIS",
+                "1 Lap"
+              ],
+              [
+                "4",
+                "26",
+                "",
+                "VECTOR SPORT",
+                "1 Lap"
+              ],
+              [
+                "5",
+                "37",
+                "",
+                "CLX MOTORSPORT",
+                "1 Lap"
+              ],
+              [
+                "6",
+                "28",
+                "",
+                "IDEC SPORT",
+                "2 Laps"
+              ],
+              [
+                "7",
+                "4",
+                "",
+                "CROWDSTRIKE RACING BY APR",
+                "3 Laps"
+              ],
+              [
+                "8",
+                "22",
+                "",
+                "UNITED AUTOSPORTS",
+                "3 Laps"
+              ],
+              [
+                "9",
+                "183",
+                "",
+                "AF CORSE",
+                "4 Laps"
+              ],
+              [
+                "10",
+                "99",
+                "",
+                "AO BY TF",
+                "5 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "33",
+                "JONNY EDGAR",
+                "TF SPORT",
+                ""
+              ],
+              [
+                "2",
+                "78",
+                "HADRIEN DAVID, TOM VAN ROMPUY",
+                "AKKODIS ASP TEAM",
+                "1 Lap"
+              ],
+              [
+                "3",
+                "23",
+                "GRAY NEWELL, JONNY ADAM",
+                "HEART OF RACING TEAM",
+                "1 Lap"
+              ],
+              [
+                "4",
+                "87",
+                "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+                "AKKODIS ASP TEAM",
+                "1 Lap"
+              ],
+              [
+                "5",
+                "21",
+                "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+                "VISTA AF CORSE",
+                "1 Lap"
+              ],
+              [
+                "6",
+                "34",
+                "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+                "RACING TEAM TURKEY BY TF",
+                "1 Lap"
+              ],
+              [
+                "7",
+                "32",
+                "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+                "TEAM WRT",
+                "2 Laps"
+              ],
+              [
+                "8",
+                "150",
+                "",
+                "RICHARD MILLE AF CORSE",
+                "2 Laps"
+              ],
+              [
+                "9",
+                "74",
+                "",
+                "KESSEL RACING",
+                "2 Laps"
+              ],
+              [
+                "10",
+                "57",
+                "",
+                "KESSEL RACING",
+                "2 Laps"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "name": "Rolex 6 Hours of São Paulo",
+    "date": "2026-07-12",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "15",
+                "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+                "BMW M TEAM WRT",
+                ""
+              ],
+              [
+                "2",
+                "51",
+                "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+                "FERRARI AF CORSE",
+                "2.254"
+              ],
+              [
+                "3",
+                "12",
+                "NORMAN NATO, WILL STEVENS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "6.687"
+              ],
+              [
+                "4",
+                "38",
+                "EARL BAMBER, SÉBASTIEN BOURDAIS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "12.666"
+              ],
+              [
+                "5",
+                "83",
+                "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+                "AF CORSE",
+                "32.351"
+              ],
+              [
+                "6",
+                "007",
+                "HARRY TINCKNELL, TOM GAMBLE",
+                "ASTON MARTIN THOR TEAM",
+                "35.566"
+              ],
+              [
+                "7",
+                "50",
+                "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+                "FERRARI AF CORSE",
+                "39.952"
+              ],
+              [
+                "8",
+                "20",
+                "RENÉ RAST, ROBIN FRIJNS",
+                "BMW M TEAM WRT",
+                "40.047"
+              ],
+              [
+                "9",
+                "009",
+                "ALEX RIBERAS, MARCO SØRENSEN",
+                "ASTON MARTIN THOR TEAM",
+                "45.523"
+              ],
+              [
+                "10",
+                "35",
+                "CHARLES MILESI, FERDINAND HABSBURG",
+                "ALPINE ENDURANCE TEAM",
+                "56.996"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "34",
+                "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+                "RACING TEAM TURKEY BY TF",
+                ""
+              ],
+              [
+                "2",
+                "69",
+                "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+                "TEAM WRT",
+                "8.108"
+              ],
+              [
+                "3",
+                "92",
+                "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+                "THE BEND MANTHEY",
+                "1 Lap"
+              ],
+              [
+                "4",
+                "91",
+                "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+                "MANTHEY DK ENGINEERING",
+                "1 Lap"
+              ],
+              [
+                "5",
+                "88",
+                "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+                "PROTON COMPETITION",
+                "1 Lap"
+              ],
+              [
+                "6",
+                "61",
+                "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+                "IRON LYNX",
+                "1 Lap"
+              ],
+              [
+                "7",
+                "87",
+                "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+                "AKKODIS ASP TEAM",
+                "1 Lap"
+              ],
+              [
+                "8",
+                "33",
+                "JONNY EDGAR",
+                "TF SPORT",
+                "1 Lap"
+              ],
+              [
+                "9",
+                "21",
+                "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+                "VISTA AF CORSE",
+                "1 Lap"
+              ],
+              [
+                "10",
+                "77",
+                "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+                "PROTON COMPETITION",
+                "1 Lap"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "name": "Lone Star Le Mans",
+    "date": "2026-09-06",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "50",
+                "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+                "FERRARI AF CORSE",
+                ""
+              ],
+              [
+                "2",
+                "38",
+                "EARL BAMBER, SÉBASTIEN BOURDAIS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "4.471"
+              ],
+              [
+                "3",
+                "35",
+                "CHARLES MILESI, FERDINAND HABSBURG",
+                "ALPINE ENDURANCE TEAM",
+                "6.116"
+              ],
+              [
+                "4",
+                "007",
+                "HARRY TINCKNELL, TOM GAMBLE",
+                "ASTON MARTIN THOR TEAM",
+                "9.045"
+              ],
+              [
+                "5",
+                "36",
+                "JULES GOUNON, VICTOR MARTINS",
+                "ALPINE ENDURANCE TEAM",
+                "10.885"
+              ],
+              [
+                "6",
+                "8",
+                "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+                "TOYOTA RACING",
+                "21.389"
+              ],
+              [
+                "7",
+                "17",
+                "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
+                "GENESIS MAGMA RACING",
+                "35.975"
+              ],
+              [
+                "8",
+                "15",
+                "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+                "BMW M TEAM WRT",
+                "37.470"
+              ],
+              [
+                "9",
+                "12",
+                "NORMAN NATO, WILL STEVENS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "39.631"
+              ],
+              [
+                "10",
+                "94",
+                "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
+                "PEUGEOT TOTALENERGIES",
+                "40.000"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "27",
+                "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+                "HEART OF RACING TEAM",
+                ""
+              ],
+              [
+                "2",
+                "91",
+                "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+                "MANTHEY DK ENGINEERING",
+                "5.007"
+              ],
+              [
+                "3",
+                "23",
+                "GRAY NEWELL, JONNY ADAM",
+                "HEART OF RACING TEAM",
+                "7.732"
+              ],
+              [
+                "4",
+                "21",
+                "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+                "VISTA AF CORSE",
+                "8.235"
+              ],
+              [
+                "5",
+                "77",
+                "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+                "PROTON COMPETITION",
+                "28.878"
+              ],
+              [
+                "6",
+                "61",
+                "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+                "IRON LYNX",
+                "29.292"
+              ],
+              [
+                "7",
+                "79",
+                "JOHANNES ZELGER, LIN HODENIUS, MATTEO CRESSONI",
+                "IRON LYNX",
+                "32.250"
+              ],
+              [
+                "8",
+                "58",
+                "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+                "GARAGE 59",
+                "44.944"
+              ],
+              [
+                "9",
+                "88",
+                "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+                "PROTON COMPETITION",
+                "1 Lap"
+              ],
+              [
+                "10",
+                "54",
+                "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
+                "VISTA AF CORSE",
+                "1 Lap"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "name": "6 Hours of Fuji",
+    "date": "2026-09-27",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "8",
+                "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+                "TOYOTA RACING",
+                ""
+              ],
+              [
+                "2",
+                "36",
+                "JULES GOUNON, VICTOR MARTINS",
+                "ALPINE ENDURANCE TEAM",
+                "0.591"
+              ],
+              [
+                "3",
+                "15",
+                "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+                "BMW M TEAM WRT",
+                "6.415"
+              ],
+              [
+                "4",
+                "35",
+                "CHARLES MILESI, FERDINAND HABSBURG",
+                "ALPINE ENDURANCE TEAM",
+                "7.699"
+              ],
+              [
+                "5",
+                "38",
+                "EARL BAMBER, SÉBASTIEN BOURDAIS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "8.142"
+              ],
+              [
+                "6",
+                "94",
+                "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
+                "PEUGEOT TOTALENERGIES",
+                "10.176"
+              ],
+              [
+                "7",
+                "12",
+                "NORMAN NATO, WILL STEVENS",
+                "CADILLAC HERTZ TEAM JOTA",
+                "13.497"
+              ],
+              [
+                "8",
+                "7",
+                "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+                "TOYOTA RACING",
+                "14.206"
+              ],
+              [
+                "9",
+                "009",
+                "ALEX RIBERAS, MARCO SØRENSEN",
+                "ASTON MARTIN THOR TEAM",
+                "24.237"
+              ],
+              [
+                "10",
+                "51",
+                "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+                "FERRARI AF CORSE",
+                "26.443"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "32",
+                "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+                "TEAM WRT",
+                ""
+              ],
+              [
+                "2",
+                "27",
+                "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+                "HEART OF RACING TEAM",
+                "1.062"
+              ],
+              [
+                "3",
+                "34",
+                "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+                "RACING TEAM TURKEY BY TF",
+                "4.676"
+              ],
+              [
+                "4",
+                "54",
+                "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
+                "VISTA AF CORSE",
+                "6.601"
+              ],
+              [
+                "5",
+                "33",
+                "JONNY EDGAR",
+                "TF SPORT",
+                "10.136"
+              ],
+              [
+                "6",
+                "69",
+                "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+                "TEAM WRT",
+                "12.389"
+              ],
+              [
+                "7",
+                "91",
+                "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+                "MANTHEY DK ENGINEERING",
+                "12.402"
+              ],
+              [
+                "8",
+                "10",
+                "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
+                "GARAGE 59",
+                "13.194"
+              ],
+              [
+                "9",
+                "78",
+                "HADRIEN DAVID, TOM VAN ROMPUY",
+                "AKKODIS ASP TEAM",
+                "34.218"
+              ],
+              [
+                "10",
+                "77",
+                "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+                "PROTON COMPETITION",
+                "38.051"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

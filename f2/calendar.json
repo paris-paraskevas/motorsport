@@ -1,0 +1,524 @@
+[
+  {
+    "start": "2025-12-06T00:00:00.000Z",
+    "end": "2025-12-07T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Yas Marina Circuit - Abu Dhabi - United Arab Emirates",
+    "session": "Yas Marina - Sprint",
+    "round": null,
+    "location": "Yas Marina Circuit - Abu Dhabi - United Arab Emirates"
+  },
+  {
+    "start": "2025-12-07T00:00:00.000Z",
+    "end": "2025-12-08T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Yas Marina Circuit - Abu Dhabi - United Arab Emirates",
+    "session": "Yas Marina - Feature",
+    "round": null,
+    "location": "Yas Marina Circuit - Abu Dhabi - United Arab Emirates"
+  },
+  {
+    "start": "2026-03-05T23:00:00.000Z",
+    "end": "2026-03-05T23:45:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Practice",
+    "round": 1,
+    "location": "Albert Park Circuit, Melbourne"
+  },
+  {
+    "start": "2026-03-06T03:55:00.000Z",
+    "end": "2026-03-06T04:25:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Qualifying",
+    "round": 1,
+    "location": "Albert Park Circuit, Melbourne"
+  },
+  {
+    "start": "2026-03-07T03:10:00.000Z",
+    "end": "2026-03-07T04:00:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Sprint Race",
+    "round": 1,
+    "location": "Albert Park Circuit, Melbourne"
+  },
+  {
+    "start": "2026-03-08T00:25:00.000Z",
+    "end": "2026-03-08T01:35:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Feature Race",
+    "round": 1,
+    "location": "Albert Park Circuit, Melbourne"
+  },
+  {
+    "start": "2026-05-01T13:30:00.000Z",
+    "end": "2026-05-01T14:15:00.000Z",
+    "dateOnly": false,
+    "event": "Miami Grand Prix",
+    "session": "Practice",
+    "round": 2,
+    "location": "Miami International Autodrome"
+  },
+  {
+    "start": "2026-05-01T18:30:00.000Z",
+    "end": "2026-05-01T19:00:00.000Z",
+    "dateOnly": false,
+    "event": "Miami Grand Prix",
+    "session": "Qualifying",
+    "round": 2,
+    "location": "Miami International Autodrome"
+  },
+  {
+    "start": "2026-05-02T18:10:00.000Z",
+    "end": "2026-05-02T18:55:00.000Z",
+    "dateOnly": false,
+    "event": "Miami Grand Prix",
+    "session": "Sprint Race",
+    "round": 2,
+    "location": "Miami International Autodrome"
+  },
+  {
+    "start": "2026-05-03T13:25:00.000Z",
+    "end": "2026-05-03T14:30:00.000Z",
+    "dateOnly": false,
+    "event": "Miami Grand Prix",
+    "session": "Feature Race",
+    "round": 2,
+    "location": "Miami International Autodrome"
+  },
+  {
+    "start": "2026-05-22T14:05:00.000Z",
+    "end": "2026-05-22T14:50:00.000Z",
+    "dateOnly": false,
+    "event": "Canadian Grand Prix",
+    "session": "Practice",
+    "round": 3,
+    "location": "Circuit Gilles Villeneuve, Montreal"
+  },
+  {
+    "start": "2026-05-22T18:00:00.000Z",
+    "end": "2026-05-22T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Canadian Grand Prix",
+    "session": "Qualifying",
+    "round": 3,
+    "location": "Circuit Gilles Villeneuve, Montreal"
+  },
+  {
+    "start": "2026-05-23T18:10:00.000Z",
+    "end": "2026-05-23T18:55:00.000Z",
+    "dateOnly": false,
+    "event": "Canadian Grand Prix",
+    "session": "Sprint Race",
+    "round": 3,
+    "location": "Circuit Gilles Villeneuve, Montreal"
+  },
+  {
+    "start": "2026-05-24T16:05:00.000Z",
+    "end": "2026-05-24T17:05:00.000Z",
+    "dateOnly": false,
+    "event": "Canadian Grand Prix",
+    "session": "Feature Race",
+    "round": 3,
+    "location": "Circuit Gilles Villeneuve, Montreal"
+  },
+  {
+    "start": "2026-06-05T13:10:00.000Z",
+    "end": "2026-06-05T13:50:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco Grand Prix",
+    "session": "Qualifying",
+    "round": 4,
+    "location": "Circuit de Monaco"
+  },
+  {
+    "start": "2026-06-06T12:15:00.000Z",
+    "end": "2026-06-06T13:05:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco Grand Prix",
+    "session": "Sprint Race",
+    "round": 4,
+    "location": "Circuit de Monaco"
+  },
+  {
+    "start": "2026-06-07T07:35:00.000Z",
+    "end": "2026-06-07T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco Grand Prix",
+    "session": "Feature Race",
+    "round": 4,
+    "location": "Circuit de Monaco"
+  },
+  {
+    "start": "2026-06-12T09:05:00.000Z",
+    "end": "2026-06-12T09:50:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona-Catalunya Grand Prix",
+    "session": "Practice",
+    "round": 5,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-06-12T13:55:00.000Z",
+    "end": "2026-06-12T14:25:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona-Catalunya Grand Prix",
+    "session": "Qualifying",
+    "round": 5,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-06-13T12:15:00.000Z",
+    "end": "2026-06-13T13:05:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona-Catalunya Grand Prix",
+    "session": "Sprint Race",
+    "round": 5,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-06-14T09:25:00.000Z",
+    "end": "2026-06-14T10:30:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona-Catalunya Grand Prix",
+    "session": "Feature Race",
+    "round": 5,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-06-26T09:05:00.000Z",
+    "end": "2026-06-26T09:50:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Practice",
+    "round": 6,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-06-26T13:55:00.000Z",
+    "end": "2026-06-26T14:25:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Qualifying",
+    "round": 6,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-06-27T12:15:00.000Z",
+    "end": "2026-06-27T13:05:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Sprint Race",
+    "round": 6,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-06-28T08:10:00.000Z",
+    "end": "2026-06-28T09:15:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Feature Race",
+    "round": 6,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-07-03T09:00:00.000Z",
+    "end": "2026-07-03T09:45:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Practice",
+    "round": 7,
+    "location": "Silverstone Circuit"
+  },
+  {
+    "start": "2026-07-03T13:55:00.000Z",
+    "end": "2026-07-03T14:25:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Qualifying",
+    "round": 7,
+    "location": "Silverstone Circuit"
+  },
+  {
+    "start": "2026-07-04T12:45:00.000Z",
+    "end": "2026-07-04T13:35:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Sprint Race",
+    "round": 7,
+    "location": "Silverstone Circuit"
+  },
+  {
+    "start": "2026-07-05T10:15:00.000Z",
+    "end": "2026-07-05T11:20:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Feature Race",
+    "round": 7,
+    "location": "Silverstone Circuit"
+  },
+  {
+    "start": "2026-07-17T09:05:00.000Z",
+    "end": "2026-07-17T09:50:00.000Z",
+    "dateOnly": false,
+    "event": "Belgian Grand Prix",
+    "session": "Practice",
+    "round": 8,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-07-17T13:55:00.000Z",
+    "end": "2026-07-17T14:25:00.000Z",
+    "dateOnly": false,
+    "event": "Belgian Grand Prix",
+    "session": "Qualifying",
+    "round": 8,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-07-18T12:15:00.000Z",
+    "end": "2026-07-18T13:05:00.000Z",
+    "dateOnly": false,
+    "event": "Belgian Grand Prix",
+    "session": "Sprint Race",
+    "round": 8,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-07-19T08:00:00.000Z",
+    "end": "2026-07-19T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Belgian Grand Prix",
+    "session": "Feature Race",
+    "round": 8,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-07-24T09:05:00.000Z",
+    "end": "2026-07-24T09:50:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Practice",
+    "round": 9,
+    "location": "Hungaroring, Budapest"
+  },
+  {
+    "start": "2026-07-24T13:55:00.000Z",
+    "end": "2026-07-24T14:25:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Qualifying",
+    "round": 9,
+    "location": "Hungaroring, Budapest"
+  },
+  {
+    "start": "2026-07-25T12:15:00.000Z",
+    "end": "2026-07-25T13:05:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Sprint Race",
+    "round": 9,
+    "location": "Hungaroring, Budapest"
+  },
+  {
+    "start": "2026-07-26T09:25:00.000Z",
+    "end": "2026-07-26T10:35:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Feature Race",
+    "round": 9,
+    "location": "Hungaroring, Budapest"
+  },
+  {
+    "start": "2026-09-04T08:00:00.000Z",
+    "end": "2026-09-04T08:45:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Practice",
+    "round": 10,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-04T12:55:00.000Z",
+    "end": "2026-09-04T13:25:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Qualifying",
+    "round": 10,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-05T12:15:00.000Z",
+    "end": "2026-09-05T13:05:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Sprint Race",
+    "round": 10,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-06T07:45:00.000Z",
+    "end": "2026-09-06T08:50:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Feature Race",
+    "round": 10,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-11T09:05:00.000Z",
+    "end": "2026-09-11T09:50:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Practice",
+    "round": 11,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-11T13:00:00.000Z",
+    "end": "2026-09-11T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Qualifying",
+    "round": 11,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-12T12:15:00.000Z",
+    "end": "2026-09-12T13:05:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Sprint Race",
+    "round": 11,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-13T09:25:00.000Z",
+    "end": "2026-09-13T10:30:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Feature Race",
+    "round": 11,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-24T06:00:00.000Z",
+    "end": "2026-09-24T06:45:00.000Z",
+    "dateOnly": false,
+    "event": "Azerbaijan Grand Prix",
+    "session": "Practice",
+    "round": 12,
+    "location": "Baku City Circuit"
+  },
+  {
+    "start": "2026-09-24T10:00:00.000Z",
+    "end": "2026-09-24T10:20:00.000Z",
+    "dateOnly": false,
+    "event": "Azerbaijan Grand Prix",
+    "session": "Qualifying",
+    "round": 12,
+    "location": "Baku City Circuit"
+  },
+  {
+    "start": "2026-09-25T04:15:00.000Z",
+    "end": "2026-09-25T05:05:00.000Z",
+    "dateOnly": false,
+    "event": "Azerbaijan Grand Prix",
+    "session": "Sprint Race",
+    "round": 12,
+    "location": "Baku City Circuit"
+  },
+  {
+    "start": "2026-09-25T10:15:00.000Z",
+    "end": "2026-09-25T11:20:00.000Z",
+    "dateOnly": false,
+    "event": "Azerbaijan Grand Prix",
+    "session": "Feature Race 1",
+    "round": 12,
+    "location": "Baku City Circuit"
+  },
+  {
+    "start": "2026-09-26T07:00:00.000Z",
+    "end": "2026-09-26T08:05:00.000Z",
+    "dateOnly": false,
+    "event": "Azerbaijan Grand Prix",
+    "session": "Feature Race 2",
+    "round": 12,
+    "location": "Baku City Circuit"
+  },
+  {
+    "start": "2026-11-27T07:00:00.000Z",
+    "end": "2026-11-27T07:45:00.000Z",
+    "dateOnly": true,
+    "event": "Qatar Grand Prix",
+    "session": "Practice",
+    "round": 13,
+    "location": "Lusail International Circuit"
+  },
+  {
+    "start": "2026-11-27T11:55:00.000Z",
+    "end": "2026-11-27T12:25:00.000Z",
+    "dateOnly": true,
+    "event": "Qatar Grand Prix",
+    "session": "Qualifying",
+    "round": 13,
+    "location": "Lusail International Circuit"
+  },
+  {
+    "start": "2026-11-28T11:10:00.000Z",
+    "end": "2026-11-28T12:00:00.000Z",
+    "dateOnly": true,
+    "event": "Qatar Grand Prix",
+    "session": "Sprint Race",
+    "round": 13,
+    "location": "Lusail International Circuit"
+  },
+  {
+    "start": "2026-11-29T08:25:00.000Z",
+    "end": "2026-11-29T09:35:00.000Z",
+    "dateOnly": true,
+    "event": "Qatar Grand Prix",
+    "session": "Feature Race",
+    "round": 13,
+    "location": "Lusail International Circuit"
+  },
+  {
+    "start": "2026-12-04T06:00:00.000Z",
+    "end": "2026-12-04T06:45:00.000Z",
+    "dateOnly": true,
+    "event": "Abu Dhabi Grand Prix",
+    "session": "Practice",
+    "round": 14,
+    "location": "Yas Marina Circuit"
+  },
+  {
+    "start": "2026-12-04T10:55:00.000Z",
+    "end": "2026-12-04T11:25:00.000Z",
+    "dateOnly": true,
+    "event": "Abu Dhabi Grand Prix",
+    "session": "Qualifying",
+    "round": 14,
+    "location": "Yas Marina Circuit"
+  },
+  {
+    "start": "2026-12-05T10:10:00.000Z",
+    "end": "2026-12-05T11:00:00.000Z",
+    "dateOnly": true,
+    "event": "Abu Dhabi Grand Prix",
+    "session": "Sprint Race",
+    "round": 14,
+    "location": "Yas Marina Circuit"
+  },
+  {
+    "start": "2026-12-06T07:25:00.000Z",
+    "end": "2026-12-06T08:35:00.000Z",
+    "dateOnly": true,
+    "event": "Abu Dhabi Grand Prix",
+    "session": "Feature Race",
+    "round": 14,
+    "location": "Yas Marina Circuit"
+  }
+]

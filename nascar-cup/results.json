@@ -1,0 +1,3104 @@
+[
+  {
+    "round": 1,
+    "name": "Daytona 500",
+    "date": "2026-02-15",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "58"
+              ],
+              [
+                "2",
+                "Ricky Stenhouse Jr.",
+                "Hyak Motorsports",
+                "Classified",
+                "35"
+              ],
+              [
+                "3",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "36"
+              ],
+              [
+                "4",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "33"
+              ],
+              [
+                "5",
+                "Brad Keselowski",
+                "RFK Racing",
+                "Classified",
+                "32"
+              ],
+              [
+                "6",
+                "Zane Smith",
+                "Front Row Motorsports",
+                "Classified",
+                "41"
+              ],
+              [
+                "7",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "8",
+                "Riley Herbst",
+                "23XI Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "9",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "37"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "name": "Autotrader 400",
+    "date": "2026-02-22",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "67"
+              ],
+              [
+                "2",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "3",
+                "Ross Chastain",
+                "Trackhouse Racing",
+                "Classified",
+                "34"
+              ],
+              [
+                "4",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "38"
+              ],
+              [
+                "5",
+                "Daniel Suárez",
+                "Spire Motorsports",
+                "Classified",
+                "32"
+              ],
+              [
+                "6",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "32"
+              ],
+              [
+                "7",
+                "Zane Smith",
+                "Front Row Motorsports",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "48"
+              ],
+              [
+                "9",
+                "Ryan Preece",
+                "RFK Racing",
+                "Classified",
+                "32"
+              ],
+              [
+                "10",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "31"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "name": "DuraMAX Texas Grand Prix",
+    "date": "2026-03-01",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "61"
+              ],
+              [
+                "2",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "45"
+              ],
+              [
+                "3",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "34"
+              ],
+              [
+                "4",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "48"
+              ],
+              [
+                "5",
+                "Michael McDowell",
+                "Spire Motorsports",
+                "Classified",
+                "40"
+              ],
+              [
+                "6",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "31"
+              ],
+              [
+                "7",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "33"
+              ],
+              [
+                "8",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "33"
+              ],
+              [
+                "9",
+                "A. J. Allmendinger",
+                "Kaulig Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "10",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "28"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "name": "Straight Talk Wireless 500",
+    "date": "2026-03-08",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "65"
+              ],
+              [
+                "2",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "54"
+              ],
+              [
+                "3",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "36"
+              ],
+              [
+                "4",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "5",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "47"
+              ],
+              [
+                "6",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "37"
+              ],
+              [
+                "7",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "32"
+              ],
+              [
+                "8",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "9",
+                "Michael McDowell",
+                "Spire Motorsports",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Erik Jones",
+                "Legacy Motor Club",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "name": "Pennzoil 400",
+    "date": "2026-03-15",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "70"
+              ],
+              [
+                "2",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "40"
+              ],
+              [
+                "3",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "49"
+              ],
+              [
+                "4",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "51"
+              ],
+              [
+                "5",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "6",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "7",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "48"
+              ],
+              [
+                "8",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "41"
+              ],
+              [
+                "10",
+                "Brad Keselowski",
+                "RFK Racing",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "name": "Goodyear 400",
+    "date": "2026-03-22",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "70"
+              ],
+              [
+                "2",
+                "Brad Keselowski",
+                "RFK Racing",
+                "Classified",
+                "55"
+              ],
+              [
+                "3",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "42"
+              ],
+              [
+                "4",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "33"
+              ],
+              [
+                "5",
+                "Austin Cindric",
+                "Team Penske",
+                "Classified",
+                "38"
+              ],
+              [
+                "6",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "33"
+              ],
+              [
+                "7",
+                "Daniel Suárez",
+                "Spire Motorsports",
+                "Classified",
+                "33"
+              ],
+              [
+                "8",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "34"
+              ],
+              [
+                "9",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "42"
+              ],
+              [
+                "10",
+                "Erik Jones",
+                "Legacy Motor Club",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "name": "Cook Out 400 (Martinsville)",
+    "date": "2026-03-29",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "55"
+              ],
+              [
+                "2",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "56"
+              ],
+              [
+                "3",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "46"
+              ],
+              [
+                "4",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "49"
+              ],
+              [
+                "5",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "47"
+              ],
+              [
+                "6",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "41"
+              ],
+              [
+                "7",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Austin Cindric",
+                "Team Penske",
+                "Classified",
+                "40"
+              ],
+              [
+                "9",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "30"
+              ],
+              [
+                "10",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "36"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "name": "Food City 500",
+    "date": "2026-04-12",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "59"
+              ],
+              [
+                "2",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "53"
+              ],
+              [
+                "3",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "54"
+              ],
+              [
+                "4",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "33"
+              ],
+              [
+                "5",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "45"
+              ],
+              [
+                "6",
+                "Todd Gilliland",
+                "Front Row Motorsports",
+                "Classified",
+                "31"
+              ],
+              [
+                "7",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "33"
+              ],
+              [
+                "8",
+                "Ryan Preece",
+                "RFK Racing",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "41"
+              ],
+              [
+                "10",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "38"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 9,
+    "name": "AdventHealth 400",
+    "date": "2026-04-19",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "71"
+              ],
+              [
+                "2",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "54"
+              ],
+              [
+                "3",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "4",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "52"
+              ],
+              [
+                "5",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "6",
+                "Brad Keselowski",
+                "RFK Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "7",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "41"
+              ],
+              [
+                "9",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "10",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "29"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 10,
+    "name": "Jack Link's 500",
+    "date": "2026-04-26",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "55"
+              ],
+              [
+                "2",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "50"
+              ],
+              [
+                "3",
+                "Alex Bowman",
+                "Hendrick Motorsports",
+                "Classified",
+                "37"
+              ],
+              [
+                "4",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "35"
+              ],
+              [
+                "5",
+                "Zane Smith",
+                "Front Row Motorsports",
+                "Classified",
+                "34"
+              ],
+              [
+                "6",
+                "Ricky Stenhouse Jr.",
+                "Hyak Motorsports",
+                "Classified",
+                "38"
+              ],
+              [
+                "7",
+                "Ross Chastain",
+                "Trackhouse Racing",
+                "Classified",
+                "41"
+              ],
+              [
+                "8",
+                "Austin Cindric",
+                "Team Penske",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "Noah Gragson",
+                "Front Row Motorsports",
+                "Classified",
+                "31"
+              ],
+              [
+                "10",
+                "Kyle Busch",
+                "Richard Childress Racing",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 11,
+    "name": "Würth 400",
+    "date": "2026-05-03",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "69"
+              ],
+              [
+                "2",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "3",
+                "Alex Bowman",
+                "Hendrick Motorsports",
+                "Classified",
+                "35"
+              ],
+              [
+                "4",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "42"
+              ],
+              [
+                "5",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "6",
+                "Daniel Suárez",
+                "Spire Motorsports",
+                "Classified",
+                "36"
+              ],
+              [
+                "7",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "41"
+              ],
+              [
+                "8",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "31"
+              ],
+              [
+                "9",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 12,
+    "name": "Go Bowling at The Glen",
+    "date": "2026-05-10",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "68"
+              ],
+              [
+                "2",
+                "Michael McDowell",
+                "Spire Motorsports",
+                "Classified",
+                "36"
+              ],
+              [
+                "3",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "42"
+              ],
+              [
+                "4",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "5",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "41"
+              ],
+              [
+                "6",
+                "Austin Dillon",
+                "Richard Childress Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "7",
+                "A. J. Allmendinger",
+                "Kaulig Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "8",
+                "Kyle Busch",
+                "Richard Childress Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "9",
+                "Austin Cindric",
+                "Team Penske",
+                "Classified",
+                "39"
+              ],
+              [
+                "10",
+                "John Hunter Nemechek",
+                "Legacy Motor Club",
+                "Classified",
+                "32"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 13,
+    "name": "Coca-Cola 600",
+    "date": "2026-05-24",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Daniel Suárez",
+                "Spire Motorsports",
+                "Classified",
+                "55"
+              ],
+              [
+                "2",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "50"
+              ],
+              [
+                "3",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "60"
+              ],
+              [
+                "4",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "53"
+              ],
+              [
+                "5",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "54"
+              ],
+              [
+                "6",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "53"
+              ],
+              [
+                "7",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "41"
+              ],
+              [
+                "8",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Zane Smith",
+                "Front Row Motorsports",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 14,
+    "name": "Cracker Barrel 400",
+    "date": "2026-05-31",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "62"
+              ],
+              [
+                "2",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "3",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "4",
+                "Ricky Stenhouse Jr.",
+                "Hyak Motorsports",
+                "Classified",
+                "41"
+              ],
+              [
+                "5",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "32"
+              ],
+              [
+                "6",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "37"
+              ],
+              [
+                "7",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "37"
+              ],
+              [
+                "8",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "37"
+              ],
+              [
+                "9",
+                "Zane Smith",
+                "Front Row Motorsports",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 15,
+    "name": "FireKeepers Casino 400",
+    "date": "2026-06-07",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "58"
+              ],
+              [
+                "2",
+                "Erik Jones",
+                "Legacy Motor Club",
+                "Classified",
+                "44"
+              ],
+              [
+                "3",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "40"
+              ],
+              [
+                "4",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "44"
+              ],
+              [
+                "5",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "45"
+              ],
+              [
+                "6",
+                "Daniel Suárez",
+                "Spire Motorsports",
+                "Classified",
+                "40"
+              ],
+              [
+                "7",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "32"
+              ],
+              [
+                "8",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "31"
+              ],
+              [
+                "10",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 16,
+    "name": "The Great American Getaway 400",
+    "date": "2026-06-14",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "67"
+              ],
+              [
+                "2",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "3",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "38"
+              ],
+              [
+                "4",
+                "John Hunter Nemechek",
+                "Legacy Motor Club",
+                "Classified",
+                "41"
+              ],
+              [
+                "5",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "41"
+              ],
+              [
+                "6",
+                "Erik Jones",
+                "Legacy Motor Club",
+                "Classified",
+                "41"
+              ],
+              [
+                "7",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "37"
+              ],
+              [
+                "8",
+                "Ross Chastain",
+                "Trackhouse Racing",
+                "Classified",
+                "34"
+              ],
+              [
+                "9",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "10",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 17,
+    "name": "Anduril 250",
+    "date": "2026-06-21",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Corey Heim (i)",
+                "23XI Racing",
+                "Classified",
+                "0"
+              ],
+              [
+                "2",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "3",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "42"
+              ],
+              [
+                "4",
+                "Zane Smith",
+                "Front Row Motorsports",
+                "Classified",
+                "33"
+              ],
+              [
+                "5",
+                "AJ Allmendinger",
+                "Kaulig Racing",
+                "Classified",
+                "45"
+              ],
+              [
+                "6",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "7",
+                "Ross Chastain",
+                "Trackhouse Racing",
+                "Classified",
+                "33"
+              ],
+              [
+                "8",
+                "Riley Herbst",
+                "23XI Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "9",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "44"
+              ],
+              [
+                "10",
+                "Michael McDowell",
+                "Spire Motorsports",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 18,
+    "name": "Toyota/Save Mart 350",
+    "date": "2026-06-28",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "63"
+              ],
+              [
+                "2",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "37"
+              ],
+              [
+                "3",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "54"
+              ],
+              [
+                "4",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "35"
+              ],
+              [
+                "5",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "50"
+              ],
+              [
+                "6",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "32"
+              ],
+              [
+                "7",
+                "Connor Zilisch (R)",
+                "Trackhouse Racing",
+                "Classified",
+                "33"
+              ],
+              [
+                "8",
+                "Ryan Preece",
+                "RFK Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "9",
+                "Michael McDowell",
+                "Spire Motorsports",
+                "Classified",
+                "36"
+              ],
+              [
+                "10",
+                "Alex Bowman",
+                "Hendrick Motorsports",
+                "Classified",
+                "32"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 19,
+    "name": "eero 400",
+    "date": "2026-07-05",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "70"
+              ],
+              [
+                "2",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "40"
+              ],
+              [
+                "3",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "45"
+              ],
+              [
+                "4",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "53"
+              ],
+              [
+                "5",
+                "Alex Bowman",
+                "Hendrick Motorsports",
+                "Classified",
+                "35"
+              ],
+              [
+                "6",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "40"
+              ],
+              [
+                "7",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "36"
+              ],
+              [
+                "8",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "9",
+                "Corey Heim (i)",
+                "23XI Racing",
+                "Classified",
+                "0"
+              ],
+              [
+                "10",
+                "Riley Herbst",
+                "23XI Racing",
+                "Classified",
+                "31"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 20,
+    "name": "Quaker State 400",
+    "date": "2026-07-12",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "75"
+              ],
+              [
+                "2",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "3",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "39"
+              ],
+              [
+                "4",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "5",
+                "Erik Jones",
+                "Legacy Motor Club",
+                "Classified",
+                "35"
+              ],
+              [
+                "6",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "32"
+              ],
+              [
+                "7",
+                "Austin Dillon",
+                "Richard Childress Racing",
+                "Classified",
+                "34"
+              ],
+              [
+                "8",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "47"
+              ],
+              [
+                "9",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "43"
+              ],
+              [
+                "10",
+                "Chris Buescher",
+                "RFK Racing",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 21,
+    "name": "Window World 450",
+    "date": "2026-07-19",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "73"
+              ],
+              [
+                "2",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "51"
+              ],
+              [
+                "3",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "45"
+              ],
+              [
+                "4",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "5",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "47"
+              ],
+              [
+                "6",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "7",
+                "Brad Keselowski",
+                "RFK Racing",
+                "Classified",
+                "34"
+              ],
+              [
+                "8",
+                "Todd Gilliland",
+                "Front Row Motorsports",
+                "Classified",
+                "31"
+              ],
+              [
+                "9",
+                "Daniel Suárez",
+                "Spire Motorsports",
+                "Classified",
+                "29"
+              ],
+              [
+                "10",
+                "Ryan Preece",
+                "RFK Racing",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 22,
+    "name": "Brickyard 400",
+    "date": "2026-07-26",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Corey Heim (i)",
+                "23XI Racing",
+                "Classified",
+                "0"
+              ],
+              [
+                "2",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "35"
+              ],
+              [
+                "3",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "34"
+              ],
+              [
+                "4",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "5",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "44"
+              ],
+              [
+                "6",
+                "Brad Keselowski",
+                "RFK Racing",
+                "Classified",
+                "31"
+              ],
+              [
+                "7",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Ryan Preece",
+                "RFK Racing",
+                "Classified",
+                "33"
+              ],
+              [
+                "9",
+                "Carson Hocevar",
+                "Spire Motorsports",
+                "Classified",
+                "40"
+              ],
+              [
+                "10",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "28"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 23,
+    "name": "Iowa Corn 350",
+    "date": "2026-08-09",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "69"
+              ],
+              [
+                "2",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "50"
+              ],
+              [
+                "3",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "47"
+              ],
+              [
+                "4",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "33"
+              ],
+              [
+                "5",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "37"
+              ],
+              [
+                "6",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "40"
+              ],
+              [
+                "7",
+                "Ross Chastain",
+                "Trackhouse Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "8",
+                "A. J. Allmendinger",
+                "Kaulig Racing",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "32"
+              ],
+              [
+                "10",
+                "Austin Dillon",
+                "Richard Childress Racing",
+                "Classified",
+                "33"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 24,
+    "name": "Cook Out 400 (Richmond)",
+    "date": "2026-08-15",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Joey Logano",
+                "Team Penske",
+                "Classified",
+                "73"
+              ],
+              [
+                "2",
+                "Chase Briscoe",
+                "Joe Gibbs Racing",
+                "Classified",
+                "52"
+              ],
+              [
+                "3",
+                "Austin Cindric",
+                "Team Penske",
+                "Classified",
+                "48"
+              ],
+              [
+                "4",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "46"
+              ],
+              [
+                "5",
+                "Chase Elliott",
+                "Hendrick Motorsports",
+                "Classified",
+                "38"
+              ],
+              [
+                "6",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "31"
+              ],
+              [
+                "7",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "8",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "40"
+              ],
+              [
+                "9",
+                "William Byron",
+                "Hendrick Motorsports",
+                "Classified",
+                "30"
+              ],
+              [
+                "10",
+                "Alex Bowman",
+                "Hendrick Motorsports",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 25,
+    "name": "Dollar Tree 301",
+    "date": "2026-08-23",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Ryan Blaney",
+                "Team Penske",
+                "Classified",
+                "70"
+              ],
+              [
+                "2",
+                "Bubba Wallace",
+                "23XI Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "3",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "49"
+              ],
+              [
+                "4",
+                "Christopher Bell",
+                "Joe Gibbs Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "5",
+                "Kyle Larson",
+                "Hendrick Motorsports",
+                "Classified",
+                "48"
+              ],
+              [
+                "6",
+                "Ty Gibbs",
+                "Joe Gibbs Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "7",
+                "Denny Hamlin",
+                "Joe Gibbs Racing",
+                "Classified",
+                "32"
+              ],
+              [
+                "8",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "Ryan Preece",
+                "RFK Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "10",
+                "Noah Gragson",
+                "Front Row Motorsports",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 26,
+    "name": "Coke Zero Sugar 400",
+    "date": "2026-08-29",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Ryan Preece",
+                "RFK Racing",
+                "Classified",
+                "67"
+              ],
+              [
+                "2",
+                "Daniel Suárez",
+                "Spire Motorsports",
+                "Classified",
+                "38"
+              ],
+              [
+                "3",
+                "Tyler Reddick",
+                "23XI Racing",
+                "Classified",
+                "34"
+              ],
+              [
+                "4",
+                "Michael McDowell",
+                "Spire Motorsports",
+                "Classified",
+                "33"
+              ],
+              [
+                "5",
+                "Ricky Stenhouse Jr.",
+                "Hyak Motorsports",
+                "Classified",
+                "32"
+              ],
+              [
+                "6",
+                "Austin Cindric",
+                "Team Penske",
+                "Classified",
+                "32"
+              ],
+              [
+                "7",
+                "Austin Dillon",
+                "Richard Childress Racing",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Alex Bowman",
+                "Hendrick Motorsports",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Cole Custer",
+                "Haas Factory Team",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 27,
+    "name": "Cook Out Southern 500",
+    "date": "2026-09-06",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Christopher Bell (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "73"
+              ],
+              [
+                "2",
+                "Ty Gibbs (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "3",
+                "Tyler Reddick (CC)",
+                "23XI Racing",
+                "Classified",
+                "46"
+              ],
+              [
+                "4",
+                "Ryan Blaney (CC)",
+                "Team Penske",
+                "Classified",
+                "44"
+              ],
+              [
+                "5",
+                "Kyle Larson (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "41"
+              ],
+              [
+                "6",
+                "Chase Briscoe (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "7",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "34"
+              ],
+              [
+                "8",
+                "Bubba Wallace (CC)",
+                "23XI Racing",
+                "Classified",
+                "44"
+              ],
+              [
+                "9",
+                "Joey Logano (CC)",
+                "Team Penske",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Ryan Preece (CC)",
+                "RFK Racing",
+                "Classified",
+                "31"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 28,
+    "name": "Enjoy Illinois 300",
+    "date": "2026-09-13",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Kyle Larson (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "73"
+              ],
+              [
+                "2",
+                "Alex Bowman",
+                "Hendrick Motorsports",
+                "Classified",
+                "38"
+              ],
+              [
+                "3",
+                "Joey Logano (CC)",
+                "Team Penske",
+                "Classified",
+                "54"
+              ],
+              [
+                "4",
+                "William Byron (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "33"
+              ],
+              [
+                "5",
+                "Ross Chastain",
+                "Trackhouse Racing",
+                "Classified",
+                "32"
+              ],
+              [
+                "6",
+                "Austin Dillon",
+                "Richard Childress Racing",
+                "Classified",
+                "31"
+              ],
+              [
+                "7",
+                "Connor Zilisch (R)",
+                "Trackhouse Racing",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Carson Hocevar (CC)",
+                "Spire Motorsports",
+                "Classified",
+                "34"
+              ],
+              [
+                "9",
+                "Denny Hamlin (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "33"
+              ],
+              [
+                "10",
+                "Austin Cindric (CC)",
+                "Team Penske",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 29,
+    "name": "Bass Pro Shops Night Race",
+    "date": "2026-09-19",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Joey Logano (CC)",
+                "Team Penske",
+                "Classified",
+                "73"
+              ],
+              [
+                "2",
+                "Kyle Larson (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "47"
+              ],
+              [
+                "3",
+                "Carson Hocevar (CC)",
+                "Spire Motorsports",
+                "Classified",
+                "41"
+              ],
+              [
+                "4",
+                "Christopher Bell (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "5",
+                "Ty Gibbs (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "47"
+              ],
+              [
+                "6",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "38"
+              ],
+              [
+                "7",
+                "Bubba Wallace (CC)",
+                "23XI Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "8",
+                "Denny Hamlin (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "37"
+              ],
+              [
+                "9",
+                "William Byron (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "31"
+              ],
+              [
+                "10",
+                "Ryan Preece (CC)",
+                "RFK Racing",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 30,
+    "name": "Hollywood Casino 400",
+    "date": "2026-09-27",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Kyle Larson (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "76"
+              ],
+              [
+                "2",
+                "Austin Cindric (CC)",
+                "Team Penske",
+                "Classified",
+                "52"
+              ],
+              [
+                "3",
+                "Denny Hamlin (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "51"
+              ],
+              [
+                "4",
+                "Chase Briscoe (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "40"
+              ],
+              [
+                "5",
+                "Ryan Blaney (CC)",
+                "Team Penske",
+                "Classified",
+                "37"
+              ],
+              [
+                "6",
+                "Christopher Bell (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "43"
+              ],
+              [
+                "7",
+                "William Byron (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "39"
+              ],
+              [
+                "8",
+                "Chase Elliott (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "32"
+              ],
+              [
+                "9",
+                "Bubba Wallace (CC)",
+                "23XI Racing",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Ryan Preece (CC)",
+                "RFK Racing",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 31,
+    "name": "South Point 400",
+    "date": "2026-10-04",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Chase Briscoe (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "75"
+              ],
+              [
+                "2",
+                "Kyle Larson (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "36"
+              ],
+              [
+                "3",
+                "Tyler Reddick (CC)",
+                "23XI Racing",
+                "Classified",
+                "41"
+              ],
+              [
+                "4",
+                "Austin Cindric (CC)",
+                "Team Penske",
+                "Classified",
+                "48"
+              ],
+              [
+                "5",
+                "Ryan Blaney (CC)",
+                "Team Penske",
+                "Classified",
+                "47"
+              ],
+              [
+                "6",
+                "William Byron (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "34"
+              ],
+              [
+                "7",
+                "Chase Elliott (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "34"
+              ],
+              [
+                "8",
+                "Bubba Wallace (CC)",
+                "23XI Racing",
+                "Classified",
+                "39"
+              ],
+              [
+                "9",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Joey Logano (CC)",
+                "Team Penske",
+                "Classified",
+                "32"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 32,
+    "name": "Bank of America 400",
+    "date": "2026-10-11",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Chase Briscoe (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "68"
+              ],
+              [
+                "2",
+                "Christopher Bell (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "53"
+              ],
+              [
+                "3",
+                "Ryan Blaney (CC)",
+                "Team Penske",
+                "Classified",
+                "44"
+              ],
+              [
+                "4",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "36"
+              ],
+              [
+                "5",
+                "Denny Hamlin (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "40"
+              ],
+              [
+                "6",
+                "Kyle Larson (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "49"
+              ],
+              [
+                "7",
+                "Shane van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Tyler Reddick (CC)",
+                "23XI Racing",
+                "Classified",
+                "41"
+              ],
+              [
+                "9",
+                "Joey Logano (CC)",
+                "Team Penske",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Chris Buescher (CC)",
+                "RFK Racing",
+                "Classified",
+                "29"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 33,
+    "name": "Freeway Insurance 500",
+    "date": "2026-10-18",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Tyler Reddick (CC)",
+                "23XI Racing",
+                "Classified",
+                "61"
+              ],
+              [
+                "2",
+                "Ryan Blaney (CC)",
+                "Team Penske",
+                "Classified",
+                "48"
+              ],
+              [
+                "3",
+                "Chase Elliott (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "39"
+              ],
+              [
+                "4",
+                "Christopher Bell (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "49"
+              ],
+              [
+                "5",
+                "Corey Heim (i)",
+                "23XI Racing",
+                "Classified",
+                "0"
+              ],
+              [
+                "6",
+                "Joey Logano (CC)",
+                "Team Penske",
+                "Classified",
+                "51"
+              ],
+              [
+                "7",
+                "Daniel Suárez (CC)",
+                "Spire Motorsports",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Chase Briscoe (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "44"
+              ],
+              [
+                "9",
+                "Ross Chastain",
+                "Trackhouse Racing",
+                "Classified",
+                "31"
+              ],
+              [
+                "10",
+                "Ty Gibbs (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "27"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,1285 @@
+[
+  {
+    "round": 1,
+    "name": "Rolex 24 at Daytona",
+    "date": "2026-01-24",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "GTD Pro",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "1",
+                "Neil Verhagen Connor De Phillippi Max Hesse Dan Harper",
+                "Paul Miller Racing",
+                "Classified"
+              ],
+              [
+                "2",
+                "75",
+                "Kenny Habul Maro Engel Will Power Chaz Mostert",
+                "75 Express",
+                "+2.223"
+              ],
+              [
+                "3",
+                "48",
+                "Scott Noble Jason Hart Maxime Martin Luca Stolz",
+                "WINWARD RACING",
+                "+28.360"
+              ],
+              [
+                "4",
+                "4",
+                "Tommy Milner Nicky Catsburg Nico Varrone",
+                "Corvette Racing by Pratt Miller Motorsports",
+                "+32.976"
+              ],
+              [
+                "5",
+                "911",
+                "Ayhancan Guven Thomas Preining Klaus Bachler Ricardo Feller",
+                "Manthey",
+                "+45.388"
+              ],
+              [
+                "6",
+                "9",
+                "Andrea Caldarelli Sandy Mitchell Mirko Bortolotti James Hinchcliffe",
+                "Pfaff Motorsports",
+                "+55.656"
+              ],
+              [
+                "7",
+                "65",
+                "Christopher Mies Frederic Vervisch Sebastian Priaulx",
+                "Ford Racing",
+                "1 Laps"
+              ],
+              [
+                "8",
+                "033",
+                "James Calado Riccardo Agostini Miguel Molina Alessio Rovera",
+                "Triarsi Competizione",
+                "1 Laps"
+              ],
+              [
+                "9",
+                "77",
+                "Nick Tandy Harry King Alessio Picariello",
+                "AO Racing",
+                "2 Laps"
+              ],
+              [
+                "10",
+                "14",
+                "Jack Hawksworth Ben Barnicoat Kyle Kirkwood",
+                "Vasser Sullivan Racing",
+                "3 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "LMP2",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "04",
+                "George Kurtz Alex Quinn Toby Sowery Malthe Jakobsen",
+                "Crowdstrike Racing by APR",
+                "Classified"
+              ],
+              [
+                "2",
+                "43",
+                "Tom Dillmann Bijoy Garg Antonio Felix da Costa Jeremy Clarke",
+                "Inter Europol Competition",
+                "+5.590"
+              ],
+              [
+                "3",
+                "343",
+                "Jakub Smiechowski George Kolovos Nolan Siegel Nick Cassidy",
+                "Inter Europol Competition",
+                "1 Laps"
+              ],
+              [
+                "4",
+                "22",
+                "Daniel Goldburg Paul Di Resta Rasmus Lindh Grégoire Saucy",
+                "United Autosports USA",
+                "1 Laps"
+              ],
+              [
+                "5",
+                "99",
+                "PJ Hyett Dane Cameron Jonny Edgar Christian Rasmussen",
+                "AO Racing",
+                "1 Laps"
+              ],
+              [
+                "6",
+                "52",
+                "Misha Goikhberg Ben Keating Parker Thompson Harry Tincknell",
+                "Bryan Herta Autosport with PR1/Mathiasen",
+                "1 Laps"
+              ],
+              [
+                "7",
+                "37",
+                "Jon Field Oliver Jarvis Seth Lucas Job Van Uitert",
+                "Intersport Racing",
+                "2 Laps"
+              ],
+              [
+                "8",
+                "8",
+                "John Farano Sebastien Bourdais Sebastian Alvarez Kyffin Simpson",
+                "Tower Motorsports",
+                "10 Laps"
+              ],
+              [
+                "9",
+                "18",
+                "Naveen Rao Ferdinand Habsburg Jacob Abel Logan Sargeant",
+                "Era Motorsport",
+                "16 Laps"
+              ],
+              [
+                "10",
+                "2",
+                "Phil Fayer Ben Hanley Hunter McElrea Mikkel Jensen",
+                "United Autosports USA",
+                "34 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "GTP",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "7",
+                "Felipe Nasr Julien Andlauer Laurin Heinrich",
+                "Porsche Penske Motorsport",
+                "Classified"
+              ],
+              [
+                "2",
+                "31",
+                "Jack Aitken Earl Bamber Frederik Vesti Connor Zilisch",
+                "Cadillac Whelen",
+                "+1.569"
+              ],
+              [
+                "3",
+                "24",
+                "Sheldon van der Linde Dries Vanthoor Robin Frijns Rene Rast",
+                "BMW M Team WRT",
+                "+21.386"
+              ],
+              [
+                "4",
+                "6",
+                "Laurens Vanthoor Kevin Estre Matt Campbell",
+                "Porsche Penske Motorsport",
+                "+31.822"
+              ],
+              [
+                "5",
+                "93",
+                "Renger van der Zande Nick Yelloly Alex Palou Kaku Ohta",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+45.677"
+              ],
+              [
+                "6",
+                "40",
+                "Jordan Taylor Louis Deletraz Colton Herta",
+                "Cadillac Wayne Taylor Racing",
+                "+54.017"
+              ],
+              [
+                "7",
+                "85",
+                "Tijmen van der Helm Nico Pino Kaylen Frederick",
+                "JDC-Miller MotorSports",
+                "+1'10.736"
+              ],
+              [
+                "8",
+                "25",
+                "Raffaele Marciello Philipp Eng Marco Wittmann Kevin Magnussen",
+                "BMW M Team WRT",
+                "+1'13.443"
+              ],
+              [
+                "9",
+                "60",
+                "Tom Blomqvist Colin Braun Scott Dixon AJ Allmendinger",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+1'22.563"
+              ],
+              [
+                "10",
+                "23",
+                "Ross Gunn Roman De Angelis Alex Riberas Marco Sorensen",
+                "ASTON MARTIN THOR Team",
+                "44 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "GTD",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "57",
+                "Russell Ward Philip Ellis Indy Dontje Lucas Auer",
+                "WINWARD RACING",
+                "Classified"
+              ],
+              [
+                "2",
+                "44",
+                "John Potter Spencer Pumpelly Nicki Thiim Madison Snow",
+                "Magnus Racing",
+                "+1.367"
+              ],
+              [
+                "3",
+                "27",
+                "Tom Gamble Dudu Barrichello Zacharie Robichon Mattia Drudi",
+                "Heart of Racing Team",
+                "+10.291"
+              ],
+              [
+                "4",
+                "13",
+                "Orey Fidani Matthew Bell Lars Kern Ben Green",
+                "13 Autosport",
+                "+22.167"
+              ],
+              [
+                "5",
+                "21",
+                "Simon Mann Lilou Wadoux Ducellier Antonio Fuoco Tommaso Mosca",
+                "Af Corse Usa",
+                "+34.196"
+              ],
+              [
+                "6",
+                "80",
+                "Scott Andrews Lin Hodenius James Roe Ralf Aron",
+                "Lone Star Racing",
+                "+39.432"
+              ],
+              [
+                "7",
+                "023",
+                "Onofrio Triarsi Kenton Koch Robert Megennis Yifei Ye",
+                "Triarsi Competizione",
+                "1 Laps"
+              ],
+              [
+                "8",
+                "45",
+                "Danny Formal Trent Hindman Graham Doyle Marcus Ericsson",
+                "Wayne Taylor Racing",
+                "1 Laps"
+              ],
+              [
+                "9",
+                "12",
+                "Aaron Telitz Benjamin Pedersen Frankie Montecalvo Esteban Masson",
+                "Vasser Sullivan Racing",
+                "1 Laps"
+              ],
+              [
+                "10",
+                "96",
+                "Patrick Gallagher Robby Foley Jens Klingmann Francis Selldorff",
+                "Turner Motorsport",
+                "1 Laps"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "name": "74th Annual Mobil 1 Twelve Hours of Sebring",
+    "date": "2026-03-21",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "GTD Pro",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "911",
+                "Thomas Preining Klaus Bachler Ricardo Feller",
+                "Manthey",
+                "Classified"
+              ],
+              [
+                "2",
+                "77",
+                "Nick Tandy Harry King Alessio Picariello",
+                "AO Racing",
+                "+1.430"
+              ],
+              [
+                "3",
+                "4",
+                "Tommy Milner Nicky Catsburg Nico Varrone",
+                "Corvette Racing by Pratt Miller Motorsports",
+                "+5.240"
+              ],
+              [
+                "4",
+                "3",
+                "Antonio Garcia Alexander Sims Marvin Kirchhöfer",
+                "Corvette Racing by Pratt Miller Motorsports",
+                "+12.427"
+              ],
+              [
+                "5",
+                "1",
+                "Neil Verhagen Connor De Phillippi Max Hesse",
+                "Paul Miller Racing",
+                "+13.527"
+              ],
+              [
+                "6",
+                "64",
+                "Ben Barker Dennis Olsen Mike Rockenfeller",
+                "Ford Racing",
+                "+14.051"
+              ],
+              [
+                "7",
+                "033",
+                "James Calado Riccardo Agostini Miguel Molina",
+                "Triarsi Competizione",
+                "+34.604"
+              ],
+              [
+                "8",
+                "65",
+                "Christopher Mies Frederic Vervisch Sebastian Priaulx",
+                "Ford Racing",
+                "+1'25.068"
+              ],
+              [
+                "9",
+                "59",
+                "Max Esterson Nikita Johnson Dean MacDonald",
+                "RLL Team McLaren",
+                "1 Laps"
+              ],
+              [
+                "10",
+                "9",
+                "Andrea Caldarelli Sandy Mitchell Franck Perera",
+                "Pfaff Motorsports",
+                "1 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "LMP2",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "2",
+                "Phil Fayer Hunter McElrea Mikkel Jensen",
+                "United Autosports USA",
+                "Classified"
+              ],
+              [
+                "2",
+                "22",
+                "Daniel Goldburg Paul Di Resta Rasmus Lindh",
+                "United Autosports USA",
+                "+0.510"
+              ],
+              [
+                "3",
+                "8",
+                "John Farano Tristan Vautier Sebastian Alvarez",
+                "Tower Motorsports",
+                "+11.878"
+              ],
+              [
+                "4",
+                "18",
+                "Naveen Rao Ferdinand Habsburg Jacob Abel",
+                "Era Motorsport",
+                "+12.416"
+              ],
+              [
+                "5",
+                "04",
+                "George Kurtz Alex Quinn Toby Sowery",
+                "Crowdstrike Racing by APR",
+                "+12.439"
+              ],
+              [
+                "6",
+                "99",
+                "PJ Hyett Dane Cameron Jonny Edgar",
+                "AO Racing",
+                "+13.291"
+              ],
+              [
+                "7",
+                "11",
+                "Tobi Lutke Charles Milesi David Heinemeier Hansson",
+                "TDS Racing",
+                "+14.841"
+              ],
+              [
+                "8",
+                "52",
+                "Misha Goikhberg Parker Thompson Harry Tincknell",
+                "Bryan Herta Autosport with PR1/Mathiasen",
+                "2 Laps"
+              ],
+              [
+                "9",
+                "73",
+                "Pietro Fittipaldi Manuel Espirito Santo Chris Cumming",
+                "Pratt Miller Motorsports",
+                "2 Laps"
+              ],
+              [
+                "10",
+                "37",
+                "Oliver Jarvis Seth Lucas Jon Field",
+                "Intersport Racing",
+                "4 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "GTP",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "7",
+                "Felipe Nasr Julien Andlauer Laurin Heinrich",
+                "Porsche Penske Motorsport",
+                "Classified"
+              ],
+              [
+                "2",
+                "6",
+                "Laurens Vanthoor Kevin Estre Matt Campbell",
+                "Porsche Penske Motorsport",
+                "+1.515"
+              ],
+              [
+                "3",
+                "31",
+                "Jack Aitken Earl Bamber Frederik Vesti",
+                "Cadillac Whelen",
+                "+10.377"
+              ],
+              [
+                "4",
+                "60",
+                "Tom Blomqvist Colin Braun Scott Dixon",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+11.104"
+              ],
+              [
+                "5",
+                "24",
+                "Dries Vanthoor Sheldon van der Linde Robin Frijns",
+                "BMW M Team WRT",
+                "+13.723"
+              ],
+              [
+                "6",
+                "93",
+                "Renger van der Zande Nick Yelloly Alex Palou",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+14.819"
+              ],
+              [
+                "7",
+                "40",
+                "Jordan Taylor Louis Deletraz Colton Herta",
+                "Cadillac Wayne Taylor Racing",
+                "+16.642"
+              ],
+              [
+                "8",
+                "5",
+                "Tijmen van der Helm Nico Pino Kaylen Frederick",
+                "JDC-Miller MotorSports",
+                "+24.739"
+              ],
+              [
+                "9",
+                "23",
+                "Ross Gunn Roman De Angelis Alex Riberas",
+                "ASTON MARTIN THOR Team",
+                "12 Laps"
+              ],
+              [
+                "10",
+                "25",
+                "Philipp Eng Marco Wittmann Kevin Magnussen",
+                "BMW M Team WRT",
+                "14 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "GTD",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "21",
+                "Simon Mann Lilou Wadoux Ducellier Antonio Fuoco",
+                "Af Corse Usa",
+                "Classified"
+              ],
+              [
+                "2",
+                "27",
+                "Tom Gamble Dudu Barrichello Zacharie Robichon",
+                "Heart of Racing Team",
+                "+0.746"
+              ],
+              [
+                "3",
+                "120",
+                "Adam Adelson Tom Sargent Callum Ilott",
+                "Wright Motorsports",
+                "+7.084"
+              ],
+              [
+                "4",
+                "80",
+                "Scott Andrews Lin Hodenius James Roe",
+                "Lone Star Racing",
+                "+8.225"
+              ],
+              [
+                "5",
+                "96",
+                "Patrick Gallagher Robby Foley Francis Selldorff",
+                "Turner Motorsport",
+                "+8.642"
+              ],
+              [
+                "6",
+                "13",
+                "Orey Fidani Matthew Bell Lars Kern",
+                "13 Autosport",
+                "+11.548"
+              ],
+              [
+                "7",
+                "34",
+                "Manny Franco Albert Costa Lorenzo Patrese",
+                "Conquest Racing",
+                "+36.452"
+              ],
+              [
+                "8",
+                "66",
+                "Jake Walker Till Bechtolsheimer Joey Hand",
+                "Gradient Racing",
+                "+1'09.562"
+              ],
+              [
+                "9",
+                "36",
+                "Mason Filippi Charlie Eastwood Salih Yoluc",
+                "DXDT Racing",
+                "1 Laps"
+              ],
+              [
+                "10",
+                "28",
+                "Jan Heylen Dillon Machavern Spencer Pumpelly",
+                "Rs1",
+                "6 Laps"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "name": "Acura Grand Prix of Long Beach",
+    "date": "2026-04-18",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "GTP",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "93",
+                "Renger van der Zande Nick Yelloly",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "Classified"
+              ],
+              [
+                "2",
+                "31",
+                "Frederik Vesti Jack Aitken",
+                "Cadillac Whelen",
+                "+0.818"
+              ],
+              [
+                "3",
+                "6",
+                "Laurens Vanthoor Kevin Estre",
+                "Porsche Penske Motorsport",
+                "+2.429"
+              ],
+              [
+                "4",
+                "7",
+                "Felipe Nasr Julien Andlauer",
+                "Porsche Penske Motorsport",
+                "+3.272"
+              ],
+              [
+                "5",
+                "24",
+                "Sheldon van der Linde Dries Vanthoor",
+                "BMW M Team WRT",
+                "+3.671"
+              ],
+              [
+                "6",
+                "5",
+                "Tijmen van der Helm Laurin Heinrich",
+                "JDC-Miller MotorSports",
+                "+4.494"
+              ],
+              [
+                "7",
+                "60",
+                "Tom Blomqvist Colin Braun",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+5.103"
+              ],
+              [
+                "8",
+                "40",
+                "Jordan Taylor Louis Deletraz",
+                "Cadillac Wayne Taylor Racing",
+                "+6.022"
+              ],
+              [
+                "9",
+                "23",
+                "Ross Gunn Roman De Angelis",
+                "ASTON MARTIN THOR Team",
+                "1 Laps"
+              ],
+              [
+                "10",
+                "10",
+                "Ricky Taylor Filipe Albuquerque",
+                "Cadillac Wayne Taylor Racing",
+                "3 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "GTD",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "12",
+                "Aaron Telitz Benjamin Pedersen",
+                "Vasser Sullivan Racing",
+                "Classified"
+              ],
+              [
+                "2",
+                "96",
+                "Patrick Gallagher Robby Foley",
+                "Turner Motorsport",
+                "+5.055"
+              ],
+              [
+                "3",
+                "34",
+                "Manny Franco Albert Costa",
+                "Conquest Racing",
+                "+5.685"
+              ],
+              [
+                "4",
+                "70",
+                "Brendan Iribe Frederik Schandorff",
+                "Inception Racing",
+                "+6.124"
+              ],
+              [
+                "5",
+                "89",
+                "Jack Hawksworth Frankie Montecalvo",
+                "Vasser Sullivan Racing",
+                "+10.237"
+              ],
+              [
+                "6",
+                "36",
+                "Mason Filippi Robert Wickens",
+                "DXDT Racing",
+                "+10.567"
+              ],
+              [
+                "7",
+                "16",
+                "Sheena Monk Felipe Fraga",
+                "Myers Riley Motorsports",
+                "+11.822"
+              ],
+              [
+                "8",
+                "19",
+                "Valentin Hasse Clot Rory van der Steur",
+                "van der Steur Racing",
+                "+12.767"
+              ],
+              [
+                "9",
+                "57",
+                "Russell Ward Philip Ellis",
+                "WINWARD RACING",
+                "+12.949"
+              ],
+              [
+                "10",
+                "27",
+                "Dudu Barrichello Spencer Pumpelly",
+                "Heart of Racing Team",
+                "+16.988"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "name": "StubHub Monterey SportsCar Championship",
+    "date": "2026-05-03",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "GTD Pro",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "65",
+                "Christopher Mies Frederic Vervisch",
+                "Ford Racing",
+                "Classified"
+              ],
+              [
+                "2",
+                "4",
+                "Tommy Milner Nicky Catsburg",
+                "Corvette Racing by Pratt Miller Motorsports",
+                "+1.277"
+              ],
+              [
+                "3",
+                "77",
+                "Nick Tandy Harry King",
+                "AO Racing",
+                "+11.505"
+              ],
+              [
+                "4",
+                "3",
+                "Antonio Garcia Alexander Sims",
+                "Corvette Racing by Pratt Miller Motorsports",
+                "+11.902"
+              ],
+              [
+                "5",
+                "9",
+                "Andrea Caldarelli Sandy Mitchell",
+                "Pfaff Motorsports",
+                "+15.889"
+              ],
+              [
+                "6",
+                "64",
+                "Ben Barker Dennis Olsen",
+                "Ford Racing",
+                "+17.231"
+              ],
+              [
+                "7",
+                "59",
+                "Max Esterson Nikita Johnson",
+                "RLL Team McLaren",
+                "+21.673"
+              ],
+              [
+                "8",
+                "1",
+                "Neil Verhagen Connor De Phillippi",
+                "Paul Miller Racing",
+                "1 Laps"
+              ],
+              [
+                "9",
+                "14",
+                "Jack Hawksworth Ben Barnicoat",
+                "Vasser Sullivan Racing",
+                "1 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "GTP",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "5",
+                "Tijmen van der Helm Laurin Heinrich",
+                "JDC-Miller MotorSports",
+                "Classified"
+              ],
+              [
+                "2",
+                "31",
+                "Jack Aitken Earl Bamber",
+                "Cadillac Whelen",
+                "+0.758"
+              ],
+              [
+                "3",
+                "25",
+                "Philipp Eng Marco Wittmann",
+                "BMW M Team WRT",
+                "+3.343"
+              ],
+              [
+                "4",
+                "60",
+                "Tom Blomqvist Colin Braun",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+4.108"
+              ],
+              [
+                "5",
+                "93",
+                "Renger van der Zande Nick Yelloly",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+6.688"
+              ],
+              [
+                "6",
+                "6",
+                "Laurens Vanthoor Kevin Estre",
+                "Porsche Penske Motorsport",
+                "+7.194"
+              ],
+              [
+                "7",
+                "7",
+                "Felipe Nasr Julien Andlauer",
+                "Porsche Penske Motorsport",
+                "+7.645"
+              ],
+              [
+                "8",
+                "23",
+                "Ross Gunn Roman De Angelis",
+                "ASTON MARTIN THOR Team",
+                "+8.010"
+              ],
+              [
+                "9",
+                "24",
+                "Sheldon van der Linde Dries Vanthoor",
+                "BMW M Team WRT",
+                "+23.102"
+              ],
+              [
+                "10",
+                "40",
+                "Jordan Taylor Louis Deletraz",
+                "Cadillac Wayne Taylor Racing",
+                "+1'07.604"
+              ]
+            ]
+          },
+          {
+            "title": "GTD",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "45",
+                "Danny Formal Trent Hindman",
+                "Wayne Taylor Racing",
+                "Classified"
+              ],
+              [
+                "2",
+                "27",
+                "Dudu Barrichello Tom Gamble",
+                "Heart of Racing Team",
+                "1 Laps"
+              ],
+              [
+                "3",
+                "70",
+                "Brendan Iribe Frederik Schandorff",
+                "Inception Racing",
+                "1 Laps"
+              ],
+              [
+                "4",
+                "120",
+                "Adam Adelson Callum Ilott",
+                "Wright Motorsports",
+                "1 Laps"
+              ],
+              [
+                "5",
+                "57",
+                "Russell Ward Philip Ellis",
+                "WINWARD RACING",
+                "1 Laps"
+              ],
+              [
+                "6",
+                "12",
+                "Aaron Telitz Benjamin Pedersen",
+                "Vasser Sullivan Racing",
+                "1 Laps"
+              ],
+              [
+                "7",
+                "96",
+                "Patrick Gallagher Robby Foley",
+                "Turner Motorsport",
+                "1 Laps"
+              ],
+              [
+                "8",
+                "16",
+                "Sheena Monk Felipe Fraga",
+                "Myers Riley Motorsports",
+                "1 Laps"
+              ],
+              [
+                "9",
+                "66",
+                "Jake Walker Corey Lewis",
+                "Gradient Racing",
+                "1 Laps"
+              ],
+              [
+                "10",
+                "19",
+                "Rory van der Steur Scott Andrews",
+                "van der Steur Racing",
+                "1 Laps"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "name": "Chevrolet Detroit Sports Car Classic",
+    "date": "2026-05-30",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "GTD Pro",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "3",
+                "Antonio Garcia Alexander Sims",
+                "Corvette Racing by Pratt Miller Motorsports",
+                "Classified"
+              ],
+              [
+                "2",
+                "9",
+                "Andrea Caldarelli Sandy Mitchell",
+                "Pfaff Motorsports",
+                "+1.935"
+              ],
+              [
+                "3",
+                "65",
+                "Christopher Mies Frederic Vervisch",
+                "Ford Racing",
+                "+3.832"
+              ],
+              [
+                "4",
+                "1",
+                "Neil Verhagen Connor De Phillippi",
+                "Paul Miller Racing",
+                "+5.161"
+              ],
+              [
+                "5",
+                "64",
+                "Ben Barker Dennis Olsen",
+                "Ford Racing",
+                "+5.930"
+              ],
+              [
+                "6",
+                "14",
+                "Jack Hawksworth Ben Barnicoat",
+                "Vasser Sullivan Racing",
+                "+15.847"
+              ],
+              [
+                "7",
+                "4",
+                "Tommy Milner Nicky Catsburg",
+                "Corvette Racing by Pratt Miller Motorsports",
+                "+15.940"
+              ],
+              [
+                "8",
+                "59",
+                "Max Esterson Nikita Johnson",
+                "RLL Team McLaren",
+                "+19.400"
+              ],
+              [
+                "9",
+                "77",
+                "Nick Tandy Harry King",
+                "AO Racing",
+                "1 Laps"
+              ],
+              [
+                "10",
+                "15",
+                "Aaron Telitz Chaz Mostert",
+                "Vasser Sullivan Racing",
+                "1 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "GTP",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "31",
+                "Jack Aitken Earl Bamber",
+                "Cadillac Whelen",
+                "Classified"
+              ],
+              [
+                "2",
+                "25",
+                "Philipp Eng Marco Wittmann",
+                "BMW M Team WRT",
+                "+6.023"
+              ],
+              [
+                "3",
+                "10",
+                "Ricky Taylor Filipe Albuquerque",
+                "Cadillac Wayne Taylor Racing",
+                "+6.758"
+              ],
+              [
+                "4",
+                "93",
+                "Renger van der Zande Nick Yelloly",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+7.341"
+              ],
+              [
+                "5",
+                "7",
+                "Felipe Nasr Julien Andlauer",
+                "Porsche Penske Motorsport",
+                "+8.269"
+              ],
+              [
+                "6",
+                "40",
+                "Jordan Taylor Louis Deletraz",
+                "Cadillac Wayne Taylor Racing",
+                "+9.871"
+              ],
+              [
+                "7",
+                "60",
+                "Tom Blomqvist Colin Braun",
+                "Acura Meyer Shank Racing w/Curb Agajanian",
+                "+10.215"
+              ],
+              [
+                "8",
+                "6",
+                "Laurens Vanthoor Kevin Estre",
+                "Porsche Penske Motorsport",
+                "+10.735"
+              ],
+              [
+                "9",
+                "24",
+                "Sheldon van der Linde Dries Vanthoor",
+                "BMW M Team WRT",
+                "+11.418"
+              ],
+              [
+                "10",
+                "23",
+                "Ross Gunn Roman De Angelis",
+                "ASTON MARTIN THOR Team",
+                "+12.558"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

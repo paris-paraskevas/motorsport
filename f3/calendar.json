@@ -1,0 +1,380 @@
+[
+  {
+    "start": "2026-03-05T21:50:00.000Z",
+    "end": "2026-03-05T22:35:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Practice",
+    "round": 1,
+    "location": "Albert Park Circuit, Melbourne"
+  },
+  {
+    "start": "2026-03-06T03:00:00.000Z",
+    "end": "2026-03-06T03:30:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Qualifying",
+    "round": 1,
+    "location": "Albert Park Circuit, Melbourne"
+  },
+  {
+    "start": "2026-03-07T00:15:00.000Z",
+    "end": "2026-03-07T01:00:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Sprint Race",
+    "round": 1,
+    "location": "Albert Park Circuit, Melbourne"
+  },
+  {
+    "start": "2026-03-07T21:50:00.000Z",
+    "end": "2026-03-07T22:40:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Feature Race",
+    "round": 1,
+    "location": "Albert Park Circuit, Melbourne"
+  },
+  {
+    "start": "2026-04-11T00:00:00.000Z",
+    "end": "2026-04-12T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Bahrain International Circuit",
+    "session": "*Cancelled* F3 | Sakhir | Race 1",
+    "round": null,
+    "location": "Bahrain International Circuit, Gate 255, Gulf of Bahrain Avenue Umm Jidar, Sakhir، 1062, Bahrain"
+  },
+  {
+    "start": "2026-04-12T00:00:00.000Z",
+    "end": "2026-04-13T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Bahrain International Circuit",
+    "session": "*Cancelled* F3 | Sakhir | Race 2",
+    "round": null,
+    "location": "Bahrain International Circuit, Gate 255, Gulf of Bahrain Avenue Umm Jidar, Sakhir، 1062, Bahrain"
+  },
+  {
+    "start": "2026-06-04T11:25:00.000Z",
+    "end": "2026-06-04T12:10:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco Grand Prix",
+    "session": "Practice",
+    "round": 3,
+    "location": "Circuit de Monaco"
+  },
+  {
+    "start": "2026-06-05T09:05:00.000Z",
+    "end": "2026-06-05T09:21:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco Grand Prix",
+    "session": "Qualifying Group A",
+    "round": 3,
+    "location": "Circuit de Monaco"
+  },
+  {
+    "start": "2026-06-05T09:29:00.000Z",
+    "end": "2026-06-05T09:45:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco Grand Prix",
+    "session": "Qualifying Group B",
+    "round": 3,
+    "location": "Circuit de Monaco"
+  },
+  {
+    "start": "2026-06-06T08:45:00.000Z",
+    "end": "2026-06-06T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco Grand Prix",
+    "session": "Sprint Race",
+    "round": 3,
+    "location": "Circuit de Monaco"
+  },
+  {
+    "start": "2026-06-07T05:45:00.000Z",
+    "end": "2026-06-07T06:35:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco Grand Prix",
+    "session": "Feature Race",
+    "round": 3,
+    "location": "Circuit de Monaco"
+  },
+  {
+    "start": "2026-06-12T07:55:00.000Z",
+    "end": "2026-06-12T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona-Catalunya Grand Prix",
+    "session": "Practice",
+    "round": 4,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-06-12T13:00:00.000Z",
+    "end": "2026-06-12T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona-Catalunya Grand Prix",
+    "session": "Qualifying",
+    "round": 4,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-06-13T08:05:00.000Z",
+    "end": "2026-06-13T08:50:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona-Catalunya Grand Prix",
+    "session": "Sprint Race",
+    "round": 4,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-06-14T06:40:00.000Z",
+    "end": "2026-06-14T07:30:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona-Catalunya Grand Prix",
+    "session": "Feature Race",
+    "round": 4,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-06-26T07:55:00.000Z",
+    "end": "2026-06-26T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Practice",
+    "round": 5,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-06-26T13:00:00.000Z",
+    "end": "2026-06-26T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Qualifying",
+    "round": 5,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-06-27T08:05:00.000Z",
+    "end": "2026-06-27T08:50:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Sprint Race",
+    "round": 5,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-06-28T06:40:00.000Z",
+    "end": "2026-06-28T07:30:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Feature Race",
+    "round": 5,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-07-03T07:50:00.000Z",
+    "end": "2026-07-03T08:35:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Practice",
+    "round": 6,
+    "location": "Silverstone Circuit"
+  },
+  {
+    "start": "2026-07-03T13:00:00.000Z",
+    "end": "2026-07-03T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Qualifying",
+    "round": 6,
+    "location": "Silverstone Circuit"
+  },
+  {
+    "start": "2026-07-04T08:35:00.000Z",
+    "end": "2026-07-04T09:20:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Sprint Race",
+    "round": 6,
+    "location": "Silverstone Circuit"
+  },
+  {
+    "start": "2026-07-05T07:25:00.000Z",
+    "end": "2026-07-05T08:15:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Feature Race",
+    "round": 6,
+    "location": "Silverstone Circuit"
+  },
+  {
+    "start": "2026-07-17T07:55:00.000Z",
+    "end": "2026-07-17T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Belgian Grand Prix",
+    "session": "Practice",
+    "round": 7,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-07-17T13:00:00.000Z",
+    "end": "2026-07-17T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Belgian Grand Prix",
+    "session": "Qualifying",
+    "round": 7,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-07-18T08:00:00.000Z",
+    "end": "2026-07-18T08:45:00.000Z",
+    "dateOnly": false,
+    "event": "Belgian Grand Prix",
+    "session": "Sprint Race",
+    "round": 7,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-07-19T06:30:00.000Z",
+    "end": "2026-07-19T07:20:00.000Z",
+    "dateOnly": false,
+    "event": "Belgian Grand Prix",
+    "session": "Feature Race",
+    "round": 7,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-07-24T07:55:00.000Z",
+    "end": "2026-07-24T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Practice",
+    "round": 8,
+    "location": "Hungaroring, Budapest"
+  },
+  {
+    "start": "2026-07-24T13:00:00.000Z",
+    "end": "2026-07-24T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Qualifying",
+    "round": 8,
+    "location": "Hungaroring, Budapest"
+  },
+  {
+    "start": "2026-07-25T08:05:00.000Z",
+    "end": "2026-07-25T08:50:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Sprint Race",
+    "round": 8,
+    "location": "Hungaroring, Budapest"
+  },
+  {
+    "start": "2026-07-26T06:40:00.000Z",
+    "end": "2026-07-26T07:30:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Feature Race",
+    "round": 8,
+    "location": "Hungaroring, Budapest"
+  },
+  {
+    "start": "2026-09-04T06:35:00.000Z",
+    "end": "2026-09-04T07:20:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Practice",
+    "round": 9,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-04T12:00:00.000Z",
+    "end": "2026-09-04T12:10:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Qualifying Group A",
+    "round": 9,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-04T12:20:00.000Z",
+    "end": "2026-09-04T12:30:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Qualifying Group B",
+    "round": 9,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-05T07:30:00.000Z",
+    "end": "2026-09-05T08:15:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Sprint Race",
+    "round": 9,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-06T06:15:00.000Z",
+    "end": "2026-09-06T07:05:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Feature Race",
+    "round": 9,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-09-11T07:55:00.000Z",
+    "end": "2026-09-11T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Practice",
+    "round": 10,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-11T16:25:00.000Z",
+    "end": "2026-09-11T16:45:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Qualifying 1",
+    "round": 10,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-11T16:55:00.000Z",
+    "end": "2026-09-11T17:15:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Qualifying 2",
+    "round": 10,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-12T09:05:00.000Z",
+    "end": "2026-09-12T09:50:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Sprint Race",
+    "round": 10,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-12T16:00:00.000Z",
+    "end": "2026-09-12T16:50:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Feature Race 1",
+    "round": 10,
+    "location": "Madring, Madrid"
+  },
+  {
+    "start": "2026-09-13T07:45:00.000Z",
+    "end": "2026-09-13T08:35:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix (Madrid)",
+    "session": "Feature Race 2",
+    "round": 10,
+    "location": "Madring, Madrid"
+  }
+]

@@ -1,0 +1,1638 @@
+[
+  {
+    "title": "GTP · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Jack Aitken",
+        "3020"
+      ],
+      [
+        "2",
+        "Laurin Heinrich",
+        "2859"
+      ],
+      [
+        "3",
+        "Nick Yelloly Renger van der Zande",
+        "2723"
+      ],
+      [
+        "4",
+        "Kévin Estre",
+        "2709"
+      ],
+      [
+        "5",
+        "Earl Bamber",
+        "2672"
+      ],
+      [
+        "6",
+        "Sheldon van der Linde Dries Vanthoor",
+        "2650"
+      ],
+      [
+        "7",
+        "Julien Andlauer Felipe Nasr",
+        "2638"
+      ],
+      [
+        "8",
+        "Louis Delétraz Jordan Taylor",
+        "2556"
+      ],
+      [
+        "9",
+        "Tijmen van der Helm",
+        "2525"
+      ],
+      [
+        "10",
+        "Tom Blomqvist Colin Braun",
+        "2465"
+      ],
+      [
+        "11",
+        "Filipe Albuquerque Ricky Taylor",
+        "2448"
+      ],
+      [
+        "12",
+        "Laurens Vanthoor",
+        "2386"
+      ],
+      [
+        "13",
+        "Philipp Eng Marco Wittmann",
+        "2338"
+      ],
+      [
+        "14",
+        "Roman De Angelis Ross Gunn",
+        "2242"
+      ],
+      [
+        "15",
+        "Frederik Vesti",
+        "1931"
+      ],
+      [
+        "16",
+        "Kaylen Frederick",
+        "1424"
+      ],
+      [
+        "17",
+        "Matt Campbell",
+        "1030"
+      ],
+      [
+        "18",
+        "Robin Frijns",
+        "956"
+      ],
+      [
+        "19",
+        "Colton Herta",
+        "873"
+      ],
+      [
+        "20",
+        "Scott Dixon",
+        "845"
+      ],
+      [
+        "21",
+        "Álex Palou",
+        "809"
+      ],
+      [
+        "22",
+        "Will Stevens",
+        "756"
+      ],
+      [
+        "23",
+        "Alex Riberas",
+        "755"
+      ],
+      [
+        "24",
+        "Kevin Magnussen",
+        "704"
+      ],
+      [
+        "25",
+        "Kakunoshin Ohta",
+        "643"
+      ],
+      [
+        "26",
+        "Nico Pino",
+        "518"
+      ],
+      [
+        "27",
+        "Nico Müller",
+        "480"
+      ],
+      [
+        "28",
+        "Connor Zilisch",
+        "340"
+      ],
+      [
+        "29",
+        "René Rast",
+        "323"
+      ],
+      [
+        "30",
+        "Raffaele Marciello",
+        "252"
+      ],
+      [
+        "31",
+        "A. J. Allmendinger",
+        "248"
+      ],
+      [
+        "32",
+        "Marco Sørensen",
+        "231"
+      ]
+    ]
+  },
+  {
+    "title": "LMP2 · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "George Kurtz Alex Quinn",
+        "2322"
+      ],
+      [
+        "2",
+        "Jeremy Clarke Tom Dillmann",
+        "2302"
+      ],
+      [
+        "3",
+        "Dan Goldburg",
+        "2127"
+      ],
+      [
+        "4",
+        "Dane Cameron P.J. Hyett",
+        "2087"
+      ],
+      [
+        "5",
+        "Misha Goikhberg",
+        "2021"
+      ],
+      [
+        "6",
+        "John Farano",
+        "1967"
+      ],
+      [
+        "7",
+        "Paul di Resta",
+        "1837"
+      ],
+      [
+        "8",
+        "Phil Fayer Mikkel Jensen",
+        "1835"
+      ],
+      [
+        "9",
+        "Chris Cumming Pietro Fittipaldi",
+        "1782"
+      ],
+      [
+        "10",
+        "Tobias Lütke",
+        "1775"
+      ],
+      [
+        "11",
+        "Toby Sowery",
+        "1729"
+      ],
+      [
+        "12",
+        "Harry Tincknell",
+        "1709"
+      ],
+      [
+        "13",
+        "Sebastián Álvarez",
+        "1666"
+      ],
+      [
+        "14",
+        "Bijoy Garg",
+        "1632"
+      ],
+      [
+        "15",
+        "Mathias Beche",
+        "1511"
+      ],
+      [
+        "16",
+        "Jonny Edgar",
+        "1505"
+      ],
+      [
+        "17",
+        "Rasmus Lindh",
+        "1505"
+      ],
+      [
+        "18",
+        "Tristan Vautier",
+        "1464"
+      ],
+      [
+        "19",
+        "Jacob Abel Ferdinand Habsburg Naveen Rao",
+        "1420"
+      ],
+      [
+        "20",
+        "Parker Thompson",
+        "1361"
+      ],
+      [
+        "21",
+        "Hunter McElrea",
+        "1336"
+      ],
+      [
+        "22",
+        "David Heinemeier Hansson",
+        "1265"
+      ],
+      [
+        "23",
+        "Manuel Espírito Santo",
+        "1225"
+      ],
+      [
+        "24",
+        "Jon Field Oliver Jarvis",
+        "1182"
+      ],
+      [
+        "25",
+        "Seth Lucas",
+        "710"
+      ],
+      [
+        "26",
+        "Christian Rasmussen",
+        "666"
+      ],
+      [
+        "27",
+        "Ben Hanley",
+        "521"
+      ],
+      [
+        "28",
+        "Charles Milesi",
+        "480"
+      ],
+      [
+        "29",
+        "Max van der Snel",
+        "472"
+      ],
+      [
+        "30",
+        "Nick Boulle",
+        "374"
+      ],
+      [
+        "31",
+        "Malthe Jakobsen",
+        "373"
+      ],
+      [
+        "32",
+        "António Félix da Costa",
+        "355"
+      ],
+      [
+        "33",
+        "Nick Cassidy Georgios Kolovos Nolan Siegel Jakub Śmiechowski",
+        "325"
+      ],
+      [
+        "34",
+        "Ricky Taylor",
+        "312"
+      ],
+      [
+        "35",
+        "Grégoire Saucy",
+        "310"
+      ],
+      [
+        "36",
+        "Ben Keating",
+        "278"
+      ],
+      [
+        "37",
+        "Josh Burdon Sennan Fielding Gerry Kraut",
+        "268"
+      ],
+      [
+        "38",
+        "Job van Uitert",
+        "258"
+      ],
+      [
+        "39",
+        "Sébastien Bourdais Kyffin Simpson",
+        "250"
+      ],
+      [
+        "40",
+        "Logan Sargeant",
+        "244"
+      ],
+      [
+        "41",
+        "Enzo Fittipaldi",
+        "222"
+      ],
+      [
+        "42",
+        "Dylan Murry Nicklas Nielsen François Perrodo Matthieu Vaxivière",
+        "199"
+      ]
+    ]
+  },
+  {
+    "title": "GTD Pro · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Connor De Phillippi Neil Verhagen",
+        "3012"
+      ],
+      [
+        "2",
+        "Andrea Caldarelli Sandy Mitchell",
+        "2979"
+      ],
+      [
+        "3",
+        "Nicky Catsburg Tommy Milner",
+        "2949"
+      ],
+      [
+        "4",
+        "Harry King Nick Tandy",
+        "2921"
+      ],
+      [
+        "5",
+        "Christopher Mies Frédéric Vervisch",
+        "2825"
+      ],
+      [
+        "6",
+        "Ben Barker Dennis Olsen",
+        "2821"
+      ],
+      [
+        "7",
+        "Ben Barnicoat Jack Hawksworth",
+        "2779"
+      ],
+      [
+        "8",
+        "Antonio García Alexander Sims",
+        "2776"
+      ],
+      [
+        "9",
+        "Max Esterson Nikita Johnson",
+        "2392"
+      ],
+      [
+        "10",
+        "Klaus Bachler",
+        "1379"
+      ],
+      [
+        "11",
+        "Riccardo Agostini James Calado",
+        "1240"
+      ],
+      [
+        "12",
+        "Davide Rigon Daniel Serra",
+        "1206"
+      ],
+      [
+        "13",
+        "Thomas Preining",
+        "1169"
+      ],
+      [
+        "14",
+        "Valentin Hasse-Clot",
+        "1134"
+      ],
+      [
+        "15",
+        "Alessio Picariello",
+        "926"
+      ],
+      [
+        "17",
+        "Nico Varrone",
+        "848"
+      ],
+      [
+        "18",
+        "Marco Sørensen",
+        "908"
+      ],
+      [
+        "18",
+        "Marvin Kirchhöfer",
+        "779"
+      ],
+      [
+        "19",
+        "Sebastian Priaulx",
+        "737"
+      ],
+      [
+        "20",
+        "Miguel Molina",
+        "707"
+      ],
+      [
+        "21",
+        "Dan Harper",
+        "701"
+      ],
+      [
+        "22",
+        "Mike Rockenfeller",
+        "700"
+      ],
+      [
+        "23",
+        "Kyle Kirkwood",
+        "694"
+      ],
+      [
+        "24",
+        "Alessandro Pier Guidi",
+        "672"
+      ],
+      [
+        "25",
+        "Max Hesse",
+        "658"
+      ],
+      [
+        "26",
+        "Ricardo Feller",
+        "658"
+      ],
+      [
+        "27",
+        "Chaz Mostert",
+        "584"
+      ],
+      [
+        "28",
+        "Franck Perera",
+        "532"
+      ],
+      [
+        "29",
+        "Jason Hart Scott Noble Luca Stolz",
+        "512"
+      ],
+      [
+        "30",
+        "Dean MacDonald",
+        "470"
+      ],
+      [
+        "31",
+        "Mattia Drudi",
+        "382"
+      ],
+      [
+        "32",
+        "Maro Engel Kenny Habul Will Power",
+        "350"
+      ],
+      [
+        "33",
+        "Maxime Martin",
+        "322"
+      ],
+      [
+        "34",
+        "Ayhancan Güven",
+        "278"
+      ],
+      [
+        "35",
+        "Mirko Bortolotti James Hinchcliffe",
+        "271"
+      ],
+      [
+        "36",
+        "Giacomo Altoè Sébastien Bourdais Casper Stevenson",
+        "268"
+      ],
+      [
+        "37",
+        "Mathieu Jaminet",
+        "265"
+      ],
+      [
+        "38",
+        "Alessio Rovera",
+        "258"
+      ],
+      [
+        "39",
+        "Scott Andrews",
+        "236"
+      ],
+      [
+        "40",
+        "Aaron Telitz",
+        "234"
+      ],
+      [
+        "41",
+        "Anthony Bartone Maximilian Götz Jules Gounon Fabian Schiller",
+        "225"
+      ],
+      [
+        "42",
+        "Jüri Vips",
+        "222"
+      ],
+      [
+        "43",
+        "Michael Christensen Loek Hartog",
+        "210"
+      ],
+      [
+        "44",
+        "Benjamin Goethe",
+        "192"
+      ]
+    ]
+  },
+  {
+    "title": "GTD · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Philip Ellis Russell Ward",
+        "3078"
+      ],
+      [
+        "2",
+        "Robby Foley Patrick Gallagher",
+        "2843"
+      ],
+      [
+        "3",
+        "Eduardo Barrichello",
+        "2742"
+      ],
+      [
+        "4",
+        "Benjamin Pedersen Aaron Telitz",
+        "2677"
+      ],
+      [
+        "5",
+        "Matt Bell Orey Fidani",
+        "2414"
+      ],
+      [
+        "6",
+        "Brendan Iribe",
+        "2398"
+      ],
+      [
+        "7",
+        "Adam Adelson Callum Ilott",
+        "2387"
+      ],
+      [
+        "8",
+        "Albert Costa",
+        "2363"
+      ],
+      [
+        "9",
+        "Frederik Schandorff",
+        "2268"
+      ],
+      [
+        "10",
+        "Tom Gamble",
+        "2217"
+      ],
+      [
+        "11",
+        "Danny Formal Trent Hindman",
+        "2215"
+      ],
+      [
+        "12",
+        "Mason Filippi",
+        "2061"
+      ],
+      [
+        "13",
+        "Lorenzo Patrese",
+        "2039"
+      ],
+      [
+        "14",
+        "Jake Walker",
+        "2033"
+      ],
+      [
+        "15",
+        "Felipe Fraga Sheena Monk",
+        "2011"
+      ],
+      [
+        "16",
+        "Giacomo Altoè",
+        "1978"
+      ],
+      [
+        "17",
+        "Casper Stevenson",
+        "1544"
+      ],
+      [
+        "18",
+        "Indy Dontje",
+        "1464"
+      ],
+      [
+        "19",
+        "Frankie Montecalvo",
+        "1461"
+      ],
+      [
+        "20",
+        "Corey Lewis",
+        "1431"
+      ],
+      [
+        "21",
+        "Lin Hodenius James Roe",
+        "1372"
+      ],
+      [
+        "22",
+        "Antonio Fuoco Simon Mann",
+        "1318"
+      ],
+      [
+        "23",
+        "Valentin Hasse-Clot",
+        "1308"
+      ],
+      [
+        "24",
+        "Zacharie Robichon",
+        "1307"
+      ],
+      [
+        "25",
+        "Scott Andrews",
+        "1299"
+      ],
+      [
+        "26",
+        "Kenton Koch Robert Megennis Onofrio Triarsi",
+        "1264"
+      ],
+      [
+        "27",
+        "Lars Kern",
+        "1221"
+      ],
+      [
+        "28",
+        "Francis Selldorff",
+        "1212"
+      ],
+      [
+        "29",
+        "Spencer Pumpelly",
+        "1197"
+      ],
+      [
+        "30",
+        "Ryan Hardwick Riccardo Pera",
+        "1189"
+      ],
+      [
+        "31",
+        "Tom Sargent",
+        "1187"
+      ],
+      [
+        "32",
+        "Lilou Wadoux",
+        "1178"
+      ],
+      [
+        "33",
+        "Robert Wickens",
+        "1133"
+      ],
+      [
+        "34",
+        "Charlie Eastwood",
+        "1120"
+      ],
+      [
+        "35",
+        "Jan Heylen",
+        "1005"
+      ],
+      [
+        "36",
+        "Till Bechtolsheimer",
+        "936"
+      ],
+      [
+        "37",
+        "Henrik Hedman",
+        "931"
+      ],
+      [
+        "38",
+        "Salih Yoluç",
+        "928"
+      ],
+      [
+        "39",
+        "Rory van der Steur",
+        "913"
+      ],
+      [
+        "40",
+        "Graham Doyle",
+        "907"
+      ],
+      [
+        "41",
+        "Morris Schuring",
+        "839"
+      ],
+      [
+        "42",
+        "Jenson Altzman",
+        "836"
+      ],
+      [
+        "43",
+        "Manny Franco",
+        "769"
+      ],
+      [
+        "44",
+        "Joey Hand",
+        "746"
+      ],
+      [
+        "45",
+        "Ollie Millroy",
+        "739"
+      ],
+      [
+        "46",
+        "John Potter",
+        "729"
+      ],
+      [
+        "47",
+        "Alec Udell",
+        "652"
+      ],
+      [
+        "48",
+        "Fran Rueda",
+        "645"
+      ],
+      [
+        "49",
+        "Trenton Estep Marius Fossard",
+        "630"
+      ],
+      [
+        "50",
+        "Ryan Yardley",
+        "618"
+      ],
+      [
+        "51",
+        "Dillon Machavern",
+        "559"
+      ],
+      [
+        "52",
+        "Richard Lietz",
+        "553"
+      ],
+      [
+        "53",
+        "Sébastien Baud",
+        "429"
+      ],
+      [
+        "54",
+        "Zachary Vanier",
+        "405"
+      ],
+      [
+        "55",
+        "Mario Farnbacher",
+        "393"
+      ],
+      [
+        "56",
+        "Lucas Auer",
+        "382"
+      ],
+      [
+        "57",
+        "Madison Snow Nicki Thiim",
+        "336"
+      ],
+      [
+        "58",
+        "Mattia Drudi",
+        "335"
+      ],
+      [
+        "59",
+        "Luca Stolz",
+        "308"
+      ],
+      [
+        "60",
+        "Ben Green",
+        "295"
+      ],
+      [
+        "61",
+        "Roman De Angelis",
+        "285"
+      ],
+      [
+        "62",
+        "Tommaso Mosca",
+        "285"
+      ],
+      [
+        "63",
+        "Ralf Aron",
+        "273"
+      ],
+      [
+        "64",
+        "Jack Hawksworth",
+        "260"
+      ],
+      [
+        "65",
+        "Yifei Ye",
+        "260"
+      ],
+      [
+        "66",
+        "Marcus Ericsson",
+        "249"
+      ],
+      [
+        "67",
+        "Jens Klingmann",
+        "240"
+      ],
+      [
+        "68",
+        "Esteban Masson",
+        "237"
+      ],
+      [
+        "69",
+        "Devlin DeFrancesco",
+        "234"
+      ],
+      [
+        "70",
+        "Carl Bennett",
+        "226"
+      ],
+      [
+        "71",
+        "Eric Lux",
+        "220"
+      ],
+      [
+        "72",
+        "David Fumanelli",
+        "202"
+      ],
+      [
+        "73",
+        "Harry King Mikkel O. Pedersen",
+        "202"
+      ],
+      [
+        "74",
+        "Andrea Caldarelli",
+        "193"
+      ],
+      [
+        "75",
+        "Thierry Vermeulen",
+        "188"
+      ],
+      [
+        "76",
+        "Matteo Cairoli",
+        "174"
+      ],
+      [
+        "77",
+        "Peter Ludwig Dave Musial Dave Musial Jr.",
+        "172"
+      ],
+      [
+        "78",
+        "Scott McLaughlin",
+        "168"
+      ],
+      [
+        "79",
+        "Elliott Skeer",
+        "131"
+      ],
+      [
+        "80",
+        "Jaxon Evans",
+        "130"
+      ],
+      [
+        "81",
+        "Romain Grosjean",
+        "130"
+      ],
+      [
+        "82",
+        "Sven Müller Eric Zitza",
+        "111"
+      ]
+    ]
+  },
+  {
+    "title": "GTP · Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Car",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "#31 Cadillac Whelen",
+        "Cadillac V-Series.R",
+        "3020"
+      ],
+      [
+        "2",
+        "#93 Acura Meyer Shank Racing with Curb-Agajanian",
+        "Acura ARX-06",
+        "2723"
+      ],
+      [
+        "3",
+        "#6 Porsche Penske Motorsport",
+        "Porsche 963",
+        "2709"
+      ],
+      [
+        "4",
+        "#24 BMW M Team WRT",
+        "BMW M Hybrid V8",
+        "2650"
+      ],
+      [
+        "5",
+        "#7 Porsche Penske Motorsport",
+        "Porsche 963",
+        "2638"
+      ],
+      [
+        "6",
+        "#40 Cadillac Wayne Taylor Racing",
+        "Cadillac V-Series.R",
+        "2556"
+      ],
+      [
+        "7",
+        "#5 JDC–Miller MotorSports",
+        "Porsche 963",
+        "2525"
+      ],
+      [
+        "8",
+        "#60 Acura Meyer Shank Racing with Curb-Agajanian",
+        "Acura ARX-06",
+        "2465"
+      ],
+      [
+        "9",
+        "#10 Cadillac Wayne Taylor Racing",
+        "Cadillac V-Series.R",
+        "2448"
+      ],
+      [
+        "10",
+        "#25 BMW M Team WRT",
+        "BMW M Hybrid V8",
+        "2338"
+      ],
+      [
+        "11",
+        "#23 Aston Martin THOR Team",
+        "Aston Martin Valkyrie",
+        "2242"
+      ]
+    ]
+  },
+  {
+    "title": "LMP2 · Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Car",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "#04 CrowdStrike Racing by APR",
+        "Oreca 07",
+        "2322"
+      ],
+      [
+        "2",
+        "#43 Inter Europol Competition",
+        "Oreca 07",
+        "2302"
+      ],
+      [
+        "3",
+        "#22 United Autosports USA",
+        "Oreca 07",
+        "2127"
+      ],
+      [
+        "4",
+        "#99 AO Racing",
+        "Oreca 07",
+        "2087"
+      ],
+      [
+        "5",
+        "#52 Bryan Herta Autosport with PR1/Mathiasen",
+        "Oreca 07",
+        "2021"
+      ],
+      [
+        "6",
+        "#8 Tower Motorsports",
+        "Oreca 07",
+        "1967"
+      ],
+      [
+        "7",
+        "#2 United Autosports USA",
+        "Oreca 07",
+        "1835"
+      ],
+      [
+        "8",
+        "#18 Era Motorsport",
+        "Oreca 07",
+        "1794"
+      ],
+      [
+        "9",
+        "#73 Pratt Miller Motorsports",
+        "Oreca 07",
+        "1782"
+      ],
+      [
+        "10",
+        "#11 TDS Racing",
+        "Oreca 07",
+        "1775"
+      ],
+      [
+        "11",
+        "#37 Intersport Racing",
+        "Oreca 07",
+        "1182"
+      ],
+      [
+        "12",
+        "#343 Inter Europol Competition",
+        "Oreca 07",
+        "325"
+      ],
+      [
+        "13",
+        "#79 JDC-Miller MotorSports",
+        "Oreca 07",
+        "268"
+      ],
+      [
+        "14",
+        "#83 AF Corse USA",
+        "Oreca 07",
+        "199"
+      ]
+    ]
+  },
+  {
+    "title": "GTD Pro · Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Car",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "#1 Paul Miller Racing",
+        "BMW M4 GT3 Evo",
+        "3017"
+      ],
+      [
+        "2",
+        "#9 Pfaff Motorsports",
+        "Lamborghini Huracán GT3 Evo 2 1 Lamborghini Temerario GT3 9",
+        "2979"
+      ],
+      [
+        "3",
+        "#4 Corvette Racing by Pratt Miller Motorsports",
+        "Chevrolet Corvette Z06 GT3.R",
+        "2949"
+      ],
+      [
+        "4",
+        "#77 AO Racing",
+        "Porsche 911 GT3 R (992.2)",
+        "2921"
+      ],
+      [
+        "5",
+        "#65 Ford Racing",
+        "Ford Mustang GT3 Evo",
+        "2825"
+      ],
+      [
+        "6",
+        "#64 Ford Racing",
+        "Ford Mustang GT3 Evo",
+        "2821"
+      ],
+      [
+        "7",
+        "#14 Vasser Sullivan Racing",
+        "Lexus RC F GT3",
+        "2779"
+      ],
+      [
+        "8",
+        "#3 Corvette Racing by Pratt Miller Motorsports",
+        "Chevrolet Corvette Z06 GT3.R",
+        "2776"
+      ],
+      [
+        "9",
+        "#59 RLL Team McLaren",
+        "McLaren 720S GT3 Evo",
+        "2392"
+      ],
+      [
+        "10",
+        "#911 Manthey Racing",
+        "Porsche 911 GT3 R (992.2)",
+        "1379"
+      ],
+      [
+        "11",
+        "#033 Triarsi Competizione",
+        "Ferrari 296 GT3 Evo",
+        "1257"
+      ],
+      [
+        "12",
+        "#62 Risi Competizione",
+        "Ferrari 296 GT3 Evo",
+        "1206"
+      ],
+      [
+        "13",
+        "#68 Car Blanche",
+        "Aston Martin Vantage AMR GT3 Evo",
+        "1144"
+      ],
+      [
+        "14",
+        "#48 Winward Racing",
+        "Mercedes-AMG GT3 Evo",
+        "512"
+      ],
+      [
+        "15",
+        "#75 75 Express",
+        "Mercedes-AMG GT3 Evo",
+        "350"
+      ],
+      [
+        "16",
+        "#74 DragonSpeed",
+        "Chevrolet Corvette Z06 GT3.R",
+        "268"
+      ],
+      [
+        "17",
+        "#15 Vasser Sullivan Racing",
+        "Lexus RC F GT3",
+        "234"
+      ],
+      [
+        "18",
+        "#69 Bartone Bros with GetSpeed",
+        "Mercedes-AMG GT3 Evo",
+        "225"
+      ]
+    ]
+  },
+  {
+    "title": "GTD · Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Car",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "#57 Winward Racing",
+        "Mercedes-AMG GT3 Evo",
+        "3078"
+      ],
+      [
+        "2",
+        "#96 Turner Motorsport",
+        "BMW M4 GT3 Evo",
+        "2843"
+      ],
+      [
+        "3",
+        "#27 Heart of Racing Team",
+        "Aston Martin Vantage AMR GT3 Evo",
+        "2742"
+      ],
+      [
+        "4",
+        "#12 Vasser Sullivan Racing",
+        "Lexus RC F GT3",
+        "2677"
+      ],
+      [
+        "5",
+        "#13 13 Autosport",
+        "Chevrolet Corvette Z06 GT3.R",
+        "2414"
+      ],
+      [
+        "6",
+        "#70 Inception Racing",
+        "Ferrari 296 GT3 Evo",
+        "2398"
+      ],
+      [
+        "7",
+        "#120 Wright Motorsports",
+        "Porsche 911 GT3 R (992.2)",
+        "2387"
+      ],
+      [
+        "8",
+        "#34 Conquest Racing",
+        "Ferrari 296 GT3 Evo",
+        "2363"
+      ],
+      [
+        "9",
+        "#45 Wayne Taylor Racing",
+        "Lamborghini Huracán GT3 Evo 2",
+        "2215"
+      ],
+      [
+        "10",
+        "#36 DXDT Racing",
+        "Chevrolet Corvette Z06 GT3.R",
+        "2061"
+      ],
+      [
+        "11",
+        "#66 Gradient Racing",
+        "Ford Mustang GT3 Evo",
+        "2033"
+      ],
+      [
+        "12",
+        "#16 Myers Riley Motorsports",
+        "Ford Mustang GT3 Evo",
+        "2011"
+      ],
+      [
+        "13",
+        "#81 DragonSpeed",
+        "Chevrolet Corvette Z06 GT3.R",
+        "1978"
+      ],
+      [
+        "14",
+        "#19 van der Steur Racing 4#068 Car Blanche 2",
+        "Aston Martin Vantage AMR GT3 Evo",
+        "1543"
+      ],
+      [
+        "15",
+        "#80 Lone Star Racing",
+        "Mercedes-AMG GT3 Evo",
+        "1372"
+      ],
+      [
+        "16",
+        "#21 AF Corse USA",
+        "Ferrari 296 GT3 Evo",
+        "1318"
+      ],
+      [
+        "17",
+        "#023 Triarsi Competizione",
+        "Ferrari 296 GT3 Evo",
+        "1264"
+      ],
+      [
+        "18",
+        "#912 Manthey 1st Phorm",
+        "Porsche 911 GT3 R (992.2)",
+        "1189"
+      ],
+      [
+        "19",
+        "#28 RS1",
+        "Porsche 911 GT3 R (992.2)",
+        "1005"
+      ],
+      [
+        "20",
+        "#44 Magnus Racing",
+        "Aston Martin Vantage AMR GT3 Evo",
+        "729"
+      ],
+      [
+        "21",
+        "#89 Vasser Sullivan Racing",
+        "Lexus RC F GT3",
+        "260"
+      ],
+      [
+        "22",
+        "#177 AO Racing",
+        "Porsche 911 GT3 R (992.2)",
+        "202"
+      ],
+      [
+        "23",
+        "#46 Pfaff Motorsports",
+        "Lamborghini Temerario GT3",
+        "193"
+      ],
+      [
+        "24",
+        "#123 Mühlner Motorsport",
+        "Porsche 911 GT3 R (992.2)",
+        "172"
+      ]
+    ]
+  },
+  {
+    "title": "GTP · Manufacturers",
+    "columns": [
+      "Pos",
+      "Manufacturer",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Cadillac",
+        "3244"
+      ],
+      [
+        "2",
+        "Porsche",
+        "3156"
+      ],
+      [
+        "3",
+        "Acura",
+        "2973"
+      ],
+      [
+        "4",
+        "BMW",
+        "2960"
+      ],
+      [
+        "5",
+        "Aston Martin",
+        "2616"
+      ]
+    ]
+  },
+  {
+    "title": "GTD Pro · Manufacturers",
+    "columns": [
+      "Pos",
+      "Manufacturer",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Chevrolet",
+        "3248"
+      ],
+      [
+        "2",
+        "Ford",
+        "3163"
+      ],
+      [
+        "3",
+        "BMW",
+        "3156"
+      ],
+      [
+        "4",
+        "Porsche",
+        "3090"
+      ],
+      [
+        "5",
+        "Lamborghini",
+        "3089"
+      ],
+      [
+        "6",
+        "Lexus",
+        "2935"
+      ],
+      [
+        "7",
+        "McLaren",
+        "2647"
+      ],
+      [
+        "8",
+        "Ferrari",
+        "1401"
+      ],
+      [
+        "9",
+        "Aston Martin",
+        "1206"
+      ],
+      [
+        "10",
+        "Mercedes-AMG",
+        "570"
+      ]
+    ]
+  },
+  {
+    "title": "GTD · Manufacturers",
+    "columns": [
+      "Pos",
+      "Manufacturer",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Mercedes-AMG",
+        "3339"
+      ],
+      [
+        "2",
+        "Aston Martin",
+        "3166"
+      ],
+      [
+        "3",
+        "Ferrari",
+        "3136"
+      ],
+      [
+        "4",
+        "BMW",
+        "2988"
+      ],
+      [
+        "5",
+        "Lexus",
+        "2889"
+      ],
+      [
+        "6",
+        "Chevrolet",
+        "2869"
+      ],
+      [
+        "7",
+        "Porsche",
+        "2860"
+      ],
+      [
+        "8",
+        "Lamborghini",
+        "2683"
+      ],
+      [
+        "9",
+        "Ford",
+        "2530"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,1377 @@
+[
+  {
+    "round": 1,
+    "name": "Circuit Paul Ricard",
+    "date": "2026-04-11",
+    "sessions": [
+      {
+        "label": "Main Race",
+        "tables": [
+          {
+            "title": "Main Race",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "7",
+                "Mattia Drudi, Marco Sorensen, Nicki Thiim",
+                "Comtoyou Racing",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "48",
+                "Lucas Auer, Luca Stolz, Maro Engel",
+                "Mercedes-AMG Team MANN-FILTER",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "58",
+                "Thomas Fleming, Louis Prette, Benjamin Goethe",
+                "Garage 59",
+                "Gold Cup"
+              ],
+              [
+                "4",
+                "32",
+                "Kelvin van der Linde, Jordan Pepper, Charles Weerts",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "59",
+                "Joseph Loake, Dean Macdonald, Marvin Kirchhöfer",
+                "Garage 59",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "98",
+                "Augusto Farfus, Jake Dennis, Raffaele Marciello",
+                "Rowe Racing",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "17",
+                "Maxime Martin, Maximilian Götz, Fabian Schiller",
+                "Mercedes-AMG Team GetSpeed",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "111",
+                "James Kell, Arthur Rougier, Simon Gachet",
+                "CSA Racing",
+                "Gold Cup"
+              ],
+              [
+                "9",
+                "3",
+                "Daniel Juncadella, Chris Lulham, Jules Gounon",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "998",
+                "Ugo De Wilde, Tim Tramnitz, Jens Klingmann",
+                "Rowe Racing",
+                "Gold Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "name": "Brands Hatch",
+    "date": "2026-05-03",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "50",
+                "Arthur Leclerc, Thomas Neubauer",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "2",
+                "Morris Schuring, Dorian Boccolacci",
+                "Boutsen VDS",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "32",
+                "Charles Weerts, Kelvin van der Linde",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "31",
+                "Amaury Cordeel, Jordan Pepper",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "14",
+                "Konsta Lappalainen, Matteo Cairoli",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "48",
+                "Lucas Auer, Maro Engel",
+                "Winward Racing",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "51",
+                "Tommaso Mosca, Matias Zagazeta",
+                "AF Corse",
+                "Gold Cup"
+              ],
+              [
+                "8",
+                "58",
+                "Thomas Fleming, Louis Prette",
+                "Garage 59",
+                "Gold Cup"
+              ],
+              [
+                "9",
+                "7",
+                "Nicki Thiim, Kobe Pauwels",
+                "Comtoyou Racing",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "69",
+                "Ben Green, Thierry Vermeulen",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "80",
+                "Ricardo Feller, Bastian Buus",
+                "Lionspeed GP",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "3",
+                "Daniel Juncadella, Chris Lulham",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "48",
+                "Lucas Auer, Maro Engel",
+                "Winward Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "46",
+                "Valentino Rossi, Max Hesse",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "59",
+                "Dean Macdonald, Marvin Kirchhöfer",
+                "Garage 59",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "32",
+                "Charles Weerts, Kelvin van der Linde",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "31",
+                "Amaury Cordeel, Jordan Pepper",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "30",
+                "Matisse Lismont, Ignacio Montenegro",
+                "Team WRT",
+                "Silver Cup"
+              ],
+              [
+                "9",
+                "14",
+                "Konsta Lappalainen, Matteo Cairoli",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "555",
+                "Romain Andriolo, Simon Gachet",
+                "CSA Racing",
+                "Gold Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "name": "Monza",
+    "date": "2026-05-31",
+    "sessions": [
+      {
+        "label": "Main Race",
+        "tables": [
+          {
+            "title": "Main Race",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "66",
+                "Rocco Mazzola, Sebastian Øgaard, Ariel Levi",
+                "Tresor Attempto Racing",
+                "Silver Cup"
+              ],
+              [
+                "2",
+                "48",
+                "Lucas Auer, Luca Stolz, Maro Engel",
+                "Mercedes-AMG Team MANN-FILTER",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "555",
+                "Baptiste Moulin, Romain Andriolo, Lorens Lecertua",
+                "CSA Racing",
+                "Silver Cup"
+              ],
+              [
+                "4",
+                "2",
+                "Morris Schuring, Dorian Boccolacci, Alessio Picariello",
+                "Boutsen VDS",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "98",
+                "Augusto Farfus, Jake Dennis, Raffaele Marciello",
+                "Rowe Racing",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "23",
+                "Horatio Fitz-Simon, Maxwell Lynn, Ben Dörr",
+                "Team RJN",
+                "Silver Cup"
+              ],
+              [
+                "7",
+                "96",
+                "Luca Engstler, Marco Mapelli, Patric Niederhauser",
+                "Rutronik Racing",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "74",
+                "Dustin Blattner, Lorenzo Patrese, Dennis Marschall",
+                "Kessel Racing",
+                "Bronze Cup"
+              ],
+              [
+                "9",
+                "56",
+                "Giacomo Petrobelli, Lorcan Hanafin, Jonathan Adam",
+                "Ecurie Ecosse Blackthorn",
+                "Bronze Cup"
+              ],
+              [
+                "10",
+                "54",
+                "Francesco Simonazzi, Angus Whiteside, Tanart Sathienthirakul",
+                "Dinamic GT",
+                "Silver Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "name": "CrowdStrike 24 Hours of Spa",
+    "date": "2026-06-28",
+    "sessions": [
+      {
+        "label": "Main Race",
+        "tables": [
+          {
+            "title": "Main Race",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "80",
+                "Ricardo Feller, Thomas Preining, Bastian Buus",
+                "Lionspeed GP",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "48",
+                "Lucas Auer, Luca Stolz, Maro Engel",
+                "Mercedes-AMG Team MANN-FILTER",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "51",
+                "Alessio Rovera, Tommaso Mosca, Nicklas Nielsen",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "22",
+                "Ayhancan Güven, Matt Campbell, Frederic Makowiecki",
+                "Schumacher CLRT",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "50",
+                "Lilou Wadoux, Arthur Leclerc, Sean Gelael",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "46",
+                "Valentino Rossi, Daniel Harper, Max Hesse",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "34",
+                "Jamie Day, Christian Krognes, Henrique Chaves",
+                "natural elements by Walkenhorst Motorsport",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "2",
+                "Morris Schuring, Dorian Boccolacci, Alessio Picariello",
+                "Boutsen VDS",
+                "Pro Cup"
+              ],
+              [
+                "9",
+                "98",
+                "Augusto Farfus, Jake Dennis, Raffaele Marciello",
+                "Rowe Racing",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "74",
+                "Dustin Blattner, Ben Tuck, Mathys Jaubert, Dennis Marschall",
+                "Kessel Racing",
+                "Bronze Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "name": "Misano",
+    "date": "2026-07-19",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "32",
+                "Charles Weerts, Kelvin van der Linde",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "80",
+                "Ricardo Feller, Bastian Buus",
+                "Lionspeed GP",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "48",
+                "Lucas Auer, Maro Engel",
+                "Winward Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "69",
+                "Thierry Vermeulen, Ben Green",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "99",
+                "Dylan Pereira, Alex Aka",
+                "Tresor Attempto Racing",
+                "Gold Cup"
+              ],
+              [
+                "6",
+                "46",
+                "Valentino Rossi, Max Hesse",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "31",
+                "Amaury Cordeel, Jordan Pepper",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "84",
+                "Christopher Haase, Simon Reicher",
+                "Eastalent Racing",
+                "Pro Cup"
+              ],
+              [
+                "9",
+                "50",
+                "Thomas Neubauer, Arthur Leclerc",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "30",
+                "Matisse Lismont, Ignacio Montenegro",
+                "Team WRT",
+                "Silver Cup"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "32",
+                "Charles Weerts, Kelvin van der Linde",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "3",
+                "Daniel Juncadella, Jules Gounon",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "48",
+                "Lucas Auer, Maro Engel",
+                "Winward Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "46",
+                "Valentino Rossi, Max Hesse",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "69",
+                "Thierry Vermeulen, Ben Green",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "50",
+                "Thomas Neubauer, Arthur Leclerc",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "59",
+                "Dean Macdonald, Marvin Kirchhöfer",
+                "Garage 59",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "99",
+                "Dylan Pereira, Alex Aka",
+                "Tresor Attempto Racing",
+                "Gold Cup"
+              ],
+              [
+                "9",
+                "58",
+                "Thomas Fleming, Louis Prette",
+                "Garage 59",
+                "Gold Cup"
+              ],
+              [
+                "10",
+                "31",
+                "Amaury Cordeel, Jordan Pepper",
+                "Team WRT",
+                "Pro Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "name": "Magny-Cours",
+    "date": "2026-08-02",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "3",
+                "Jules Gounon, Daniel Juncadella",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "50",
+                "Thomas Neubauer, Arthur Leclerc",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "7",
+                "Kobe Pauwels, Nicki Thiim",
+                "Comtoyou Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "48",
+                "Lucas Auer, Maro Engel",
+                "Winward Racing",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "59",
+                "Dean Macdonald, Marvin Kirchhöfer",
+                "Garage 59",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "46",
+                "Max Hesse, Valentino Rossi",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "32",
+                "Charles Weerts, Kelvin van der Linde",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "10",
+                "Gilles Magnus, Robin Knutsson",
+                "Boutsen VDS",
+                "Gold Cup"
+              ],
+              [
+                "9",
+                "2",
+                "Alessio Picariello, Dorian Boccolacci",
+                "Boutsen VDS",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "51",
+                "Tommaso Mosca, Matias Zagazeta",
+                "AF Corse",
+                "Gold Cup"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "80",
+                "Bastian Buus, Ricardo Feller",
+                "Lionspeed GP",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "30",
+                "Matisse Lismont, Ignacio Montenegro",
+                "Team WRT",
+                "Silver Cup"
+              ],
+              [
+                "3",
+                "96",
+                "Luca Engstler, Patric Niederhauser",
+                "Rutronik Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "50",
+                "Thomas Neubauer, Arthur Leclerc",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "84",
+                "Simon Reicher, Christopher Haase",
+                "Eastalent Racing",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "111",
+                "James Kell, Arthur Rougier",
+                "CSA Racing",
+                "Gold Cup"
+              ],
+              [
+                "7",
+                "59",
+                "Dean Macdonald, Marvin Kirchhöfer",
+                "Garage 59",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "3",
+                "Jules Gounon, Daniel Juncadella",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "9",
+                "46",
+                "Max Hesse, Valentino Rossi",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "51",
+                "Tommaso Mosca, Matias Zagazeta",
+                "AF Corse",
+                "Gold Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "name": "Nürburgring",
+    "date": "2026-08-30",
+    "sessions": [
+      {
+        "label": "Main Race",
+        "tables": [
+          {
+            "title": "Main Race",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "7",
+                "Mattia Drudi, Marco Sorensen, Nicki Thiim",
+                "Comtoyou Racing",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "32",
+                "Kelvin van der Linde, Jordan Pepper, Charles Weerts",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "3",
+                "Daniel Juncadella, Chris Lulham, Jules Gounon",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "48",
+                "Lucas Auer, Luca Stolz, Maro Engel",
+                "Mercedes-AMG Team MANN-FILTER",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "17",
+                "Maxime Martin, Maximilian Götz, Fabian Schiller",
+                "Mercedes-AMG Team GetSpeed",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "64",
+                "Arjun Maini, Fabio Scherer, Thomas Drouet",
+                "HRT Ford Racing",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "99",
+                "Dylan Pereira, Andrea Frassineti, Alex Aka",
+                "Tresor Attempto Racing",
+                "Gold Cup"
+              ],
+              [
+                "8",
+                "10",
+                "Nico Menzel, Robin Knutsson, Gilles Magnus",
+                "Boutsen VDS",
+                "Gold Cup"
+              ],
+              [
+                "9",
+                "46",
+                "Daniel Harper, Max Hesse, Valentino Rossi",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "59",
+                "Joseph Loake, Dean Macdonald, Marvin Kirchhöfer",
+                "Garage 59",
+                "Pro Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "name": "Zandvoort",
+    "date": "2026-09-20",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "58",
+                "Thomas Fleming, Louis Prette",
+                "Garage 59",
+                "Gold Cup"
+              ],
+              [
+                "2",
+                "2",
+                "Morris Schuring, Dorian Boccolacci",
+                "Boutsen VDS",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "69",
+                "Thierry Vermeulen, Ben Green",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "914",
+                "Klaus Bachler, Simon Birch",
+                "Razoon - more than racing",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "3",
+                "Daniel Juncadella, Chris Lulham",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "50",
+                "Thomas Neubauer, Arthur Leclerc",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "51",
+                "Tommaso Mosca, Matias Zagazeta",
+                "AF Corse",
+                "Gold Cup"
+              ],
+              [
+                "8",
+                "30",
+                "Matisse Lismont, Ignacio Montenegro",
+                "Team WRT",
+                "Silver Cup"
+              ],
+              [
+                "9",
+                "7",
+                "Nicki Thiim, Kobe Pauwels",
+                "Comtoyou Racing",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "163",
+                "Loris Spinelli, Mattia Michelotto",
+                "VSR",
+                "Gold Cup"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "69",
+                "Thierry Vermeulen, Ben Green",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "80",
+                "Bastian Buus, Ricardo Feller",
+                "Lionspeed GP",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "14",
+                "Matteo Cairoli, Konsta Lappalainen",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "46",
+                "Valentino Rossi, Max Hesse",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "50",
+                "Thomas Neubauer, Arthur Leclerc",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "51",
+                "Tommaso Mosca, Matias Zagazeta",
+                "AF Corse",
+                "Gold Cup"
+              ],
+              [
+                "7",
+                "96",
+                "Luca Engstler, Patric Niederhauser",
+                "Rutronik Racing",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "48",
+                "Lucas Auer, Maro Engel",
+                "Winward Racing",
+                "Pro Cup"
+              ],
+              [
+                "9",
+                "3",
+                "Daniel Juncadella, Chris Lulham",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "10",
+                "Robin Knutsson, Gilles Magnus",
+                "Boutsen VDS",
+                "Gold Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 9,
+    "name": "Barcelona",
+    "date": "2026-10-04",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "99",
+                "Dylan Pereira, Alex Aka",
+                "Tresor Attempto Racing",
+                "Gold Cup"
+              ],
+              [
+                "2",
+                "80",
+                "Bastian Buus, Ricardo Feller",
+                "Lionspeed GP",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "96",
+                "Patric Niederhauser, Luca Engstler",
+                "Rutronik Racing",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "59",
+                "Joseph Loake, Dean Macdonald",
+                "Garage 59",
+                "Pro Cup"
+              ],
+              [
+                "5",
+                "93",
+                "Eddie Cheever, Peter Dempsey",
+                "Ziggo Sport Tempesta Racing",
+                "Bronze Cup"
+              ],
+              [
+                "6",
+                "2",
+                "Sven Müller, Dorian Boccolacci",
+                "Boutsen VDS",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "48",
+                "Lucas Auer, Maro Engel",
+                "Winward Racing",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "77",
+                "Jop Rappange, David Pittard",
+                "KPX Motorsport",
+                "Gold Cup"
+              ],
+              [
+                "9",
+                "74",
+                "Dennis Marschall, Constantin Dressler",
+                "Kessel Racing",
+                "Bronze Cup"
+              ],
+              [
+                "10",
+                "32",
+                "Charles Weerts, Kelvin van der Linde",
+                "Team WRT",
+                "Pro Cup"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "69",
+                "Thierry Vermeulen, Ben Green",
+                "Emil Frey Racing",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "50",
+                "Thomas Neubauer, Arthur Leclerc",
+                "AF Corse",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "66",
+                "Ariel Levi, Andrea Frassineti",
+                "Tresor Attempto Racing",
+                "Silver Cup"
+              ],
+              [
+                "4",
+                "163",
+                "Loris Spinelli, Mattia Michelotto",
+                "VSR",
+                "Gold Cup"
+              ],
+              [
+                "5",
+                "3",
+                "Daniel Juncadella, Chris Lulham",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "6",
+                "32",
+                "Charles Weerts, Kelvin van der Linde",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "7",
+                "Kobe Pauwels, Nicki Thiim",
+                "Comtoyou Racing",
+                "Pro Cup"
+              ],
+              [
+                "8",
+                "31",
+                "Amaury Cordeel, Jordan Pepper",
+                "Team WRT",
+                "Pro Cup"
+              ],
+              [
+                "9",
+                "59",
+                "Joseph Loake, Dean Macdonald",
+                "Garage 59",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "99",
+                "Dylan Pereira, Alex Aka",
+                "Tresor Attempto Racing",
+                "Gold Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 10,
+    "name": "Portimao",
+    "date": "2026-10-18",
+    "sessions": [
+      {
+        "label": "Main Race",
+        "tables": [
+          {
+            "title": "Main Race",
+            "columns": [
+              "Pos",
+              "#",
+              "Drivers",
+              "Team",
+              "Cup"
+            ],
+            "rows": [
+              [
+                "1",
+                "17",
+                "Ralf Aron, Maximilian Götz, Fabian Schiller",
+                "Mercedes-AMG Team GetSpeed",
+                "Pro Cup"
+              ],
+              [
+                "2",
+                "80",
+                "Ricardo Feller, Thomas Preining, Bastian Buus",
+                "Lionspeed GP",
+                "Pro Cup"
+              ],
+              [
+                "3",
+                "2",
+                "Morris Schuring, Dorian Boccolacci, Alessio Picariello",
+                "Boutsen VDS",
+                "Pro Cup"
+              ],
+              [
+                "4",
+                "71",
+                "Frederik Schandorff, Malte Ebdrup, Simon Birch",
+                "Selected Car Racing",
+                "Gold Cup"
+              ],
+              [
+                "5",
+                "30",
+                "Amaury Cordeel, Matisse Lismont, Ignacio Montenegro",
+                "Team WRT",
+                "Silver Cup"
+              ],
+              [
+                "6",
+                "59",
+                "Joseph Loake, Dean Macdonald, Jack Hawksworth",
+                "Garage 59",
+                "Pro Cup"
+              ],
+              [
+                "7",
+                "998",
+                "Ugo De Wilde, Tim Tramnitz, Jens Klingmann",
+                "Rowe Racing",
+                "Gold Cup"
+              ],
+              [
+                "8",
+                "6",
+                "Anthony Bartone, Aurelien Panis, Cesar Gazeau",
+                "GetSpeed Team Bartone Bros",
+                "Silver Cup"
+              ],
+              [
+                "9",
+                "3",
+                "Ben Barnicoat, Chris Lulham, Max Verstappen",
+                "Mercedes-AMG Team Verstappen Racing",
+                "Pro Cup"
+              ],
+              [
+                "10",
+                "50",
+                "Albert Costa, Arthur Leclerc, Lilou Wadoux",
+                "AF Corse",
+                "Pro Cup"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

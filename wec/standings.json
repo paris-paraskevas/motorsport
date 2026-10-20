@@ -1,0 +1,504 @@
+[
+  {
+    "title": "Hypercar · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+        "TOYOTA #8",
+        "114"
+      ],
+      [
+        "2",
+        "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+        "TOYOTA #7",
+        "97"
+      ],
+      [
+        "3",
+        "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
+        "BMW #15",
+        "75"
+      ],
+      [
+        "4",
+        "RENÉ RAST, ROBIN FRIJNS",
+        "BMW #20",
+        "75"
+      ],
+      [
+        "5",
+        "DRIES VANTHOOR",
+        "BMW #15",
+        "69"
+      ],
+      [
+        "6",
+        "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
+        "FERRARI #50",
+        "69"
+      ],
+      [
+        "7",
+        "SHELDON VAN DER LINDE",
+        "BMW #20",
+        "65"
+      ],
+      [
+        "8",
+        "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
+        "FERRARI #51",
+        "59"
+      ],
+      [
+        "9",
+        "NORMAN NATO, WILL STEVENS",
+        "CADILLAC #12",
+        "58"
+      ],
+      [
+        "10",
+        "CHARLES MILESI, FERDINAND HABSBURG",
+        "ALPINE #35",
+        "57"
+      ],
+      [
+        "11",
+        "EARL BAMBER, SÉBASTIEN BOURDAIS",
+        "CADILLAC #38",
+        "56"
+      ],
+      [
+        "12",
+        "JACK AITKEN",
+        "CADILLAC #38",
+        "52"
+      ],
+      [
+        "13",
+        "ANTÓNIO FÉLIX DA COSTA",
+        "ALPINE #35",
+        "44"
+      ],
+      [
+        "14",
+        "HARRY TINCKNELL, TOM GAMBLE",
+        "ASTON MARTIN #007",
+        "42"
+      ],
+      [
+        "15",
+        "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
+        "FERRARI #83",
+        "41"
+      ],
+      [
+        "16",
+        "JULES GOUNON, VICTOR MARTINS",
+        "ALPINE #36",
+        "36"
+      ],
+      [
+        "17",
+        "LOUIS DELÉTRAZ",
+        "CADILLAC #12",
+        "26"
+      ],
+      [
+        "18",
+        "FRÉDÉRIC MAKOWIECKI",
+        "ALPINE #36",
+        "14"
+      ],
+      [
+        "19",
+        "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
+        "PEUGEOT #94",
+        "12"
+      ],
+      [
+        "20",
+        "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
+        "GENESIS #17",
+        "11"
+      ],
+      [
+        "21",
+        "ALEX LYNN",
+        "CADILLAC #12",
+        "8"
+      ],
+      [
+        "22",
+        "ROSS GUNN",
+        "ASTON MARTIN #007",
+        "8"
+      ],
+      [
+        "23",
+        "NICK CASSIDY, PAUL DI RESTA",
+        "PEUGEOT #93",
+        "6"
+      ],
+      [
+        "24",
+        "STOFFEL VANDOORNE",
+        "PEUGEOT #93",
+        "6"
+      ],
+      [
+        "25",
+        "ALEX RIBERAS, MARCO SØRENSEN",
+        "ASTON MARTIN #009",
+        "6"
+      ],
+      [
+        "26",
+        "RICKY TAYLOR",
+        "CADILLAC #101",
+        "2"
+      ],
+      [
+        "27",
+        "DANIEL JUNCADELLA, MATHIEU JAMINET, PAUL-LOUP CHATIN",
+        "GENESIS #19",
+        "0"
+      ],
+      [
+        "28",
+        "ALEX QUINN",
+        "PEUGEOT #93",
+        "0"
+      ],
+      [
+        "29",
+        "ROMAN DE ANGELIS",
+        "ASTON MARTIN #009",
+        "0"
+      ]
+    ]
+  },
+  {
+    "title": "LMGT3 · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "JONNY EDGAR",
+        "CORVETTE #33",
+        "92"
+      ],
+      [
+        "2",
+        "NICKY CATSBURG",
+        "CORVETTE #33",
+        "88"
+      ],
+      [
+        "3",
+        "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
+        "PORSCHE #92",
+        "74"
+      ],
+      [
+        "4",
+        "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
+        "CORVETTE #34",
+        "70"
+      ],
+      [
+        "5",
+        "BEN KEATING",
+        "CORVETTE #33",
+        "70"
+      ],
+      [
+        "6",
+        "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
+        "BMW #69",
+        "66"
+      ],
+      [
+        "7",
+        "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
+        "FERRARI #21",
+        "64"
+      ],
+      [
+        "8",
+        "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
+        "ASTON MARTIN #27",
+        "62"
+      ],
+      [
+        "9",
+        "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
+        "McLAREN #10",
+        "57"
+      ],
+      [
+        "10",
+        "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
+        "PORSCHE #91",
+        "54"
+      ],
+      [
+        "11",
+        "GRAY NEWELL, JONNY ADAM",
+        "ASTON MARTIN #23",
+        "51"
+      ],
+      [
+        "12",
+        "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
+        "BMW #32",
+        "48"
+      ],
+      [
+        "13",
+        "EDUARDO BARRICHELLO",
+        "ASTON MARTIN #23",
+        "48"
+      ],
+      [
+        "14",
+        "HADRIEN DAVID, TOM VAN ROMPUY",
+        "LEXUS #78",
+        "39"
+      ],
+      [
+        "15",
+        "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
+        "LEXUS #87",
+        "38"
+      ],
+      [
+        "16",
+        "JACK HAWKSWORTH",
+        "LEXUS #78",
+        "36"
+      ],
+      [
+        "17",
+        "MARTIN BERRY, MAXIME MARTIN, RUI ANDRADE",
+        "MERCEDES #61",
+        "25"
+      ],
+      [
+        "18",
+        "BLAKE MCDONALD",
+        "CORVETTE #33",
+        "22"
+      ],
+      [
+        "19",
+        "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
+        "McLAREN #58",
+        "22"
+      ],
+      [
+        "20",
+        "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
+        "FORD #88",
+        "16"
+      ],
+      [
+        "21",
+        "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
+        "FERRARI #54",
+        "13"
+      ],
+      [
+        "22",
+        "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
+        "FORD #77",
+        "13"
+      ],
+      [
+        "23",
+        "JOHANNES ZELGER, LIN HODENIUS, MATTEO CRESSONI",
+        "MERCEDES #79",
+        "10"
+      ],
+      [
+        "24",
+        "NICOLÁS VARRONE",
+        "CORVETTE #33",
+        "4"
+      ],
+      [
+        "25",
+        "ESTEBAN MASSON",
+        "LEXUS #78",
+        "3"
+      ],
+      [
+        "26",
+        "KOBE PAUWELS",
+        "ASTON MARTIN #23",
+        "3"
+      ]
+    ]
+  },
+  {
+    "title": "LMGT3 · Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "CORVETTE #33 TF SPORT",
+        "92"
+      ],
+      [
+        "2",
+        "PORSCHE #92 THE BEND MANTHEY",
+        "74"
+      ],
+      [
+        "3",
+        "CORVETTE #34 RACING TEAM TURKEY BY TF",
+        "70"
+      ],
+      [
+        "4",
+        "BMW #69 TEAM WRT",
+        "66"
+      ],
+      [
+        "5",
+        "FERRARI #21 VISTA AF CORSE",
+        "64"
+      ],
+      [
+        "6",
+        "ASTON MARTIN #27 HEART OF RACING TEAM",
+        "62"
+      ],
+      [
+        "7",
+        "McLAREN #10 GARAGE 59",
+        "57"
+      ],
+      [
+        "8",
+        "PORSCHE #91 MANTHEY DK ENGINEERING",
+        "54"
+      ],
+      [
+        "9",
+        "ASTON MARTIN #23 HEART OF RACING TEAM",
+        "51"
+      ],
+      [
+        "10",
+        "BMW #32 TEAM WRT",
+        "48"
+      ],
+      [
+        "11",
+        "LEXUS #78 AKKODIS ASP TEAM",
+        "39"
+      ],
+      [
+        "12",
+        "LEXUS #87 AKKODIS ASP TEAM",
+        "38"
+      ],
+      [
+        "13",
+        "MERCEDES #61 IRON LYNX",
+        "25"
+      ],
+      [
+        "14",
+        "McLAREN #58 GARAGE 59",
+        "22"
+      ],
+      [
+        "15",
+        "FORD #88 PROTON COMPETITION",
+        "16"
+      ],
+      [
+        "16",
+        "FERRARI #54 VISTA AF CORSE",
+        "13"
+      ],
+      [
+        "17",
+        "FORD #77 PROTON COMPETITION",
+        "13"
+      ],
+      [
+        "18",
+        "MERCEDES #79 IRON LYNX",
+        "10"
+      ]
+    ]
+  },
+  {
+    "title": "Hypercar · Manufacturers",
+    "columns": [
+      "Pos",
+      "Manufacturer",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "TOYOTA",
+        "212"
+      ],
+      [
+        "2",
+        "BMW",
+        "154"
+      ],
+      [
+        "3",
+        "FERRARI",
+        "130"
+      ],
+      [
+        "4",
+        "CADILLAC",
+        "118"
+      ],
+      [
+        "5",
+        "ALPINE",
+        "104"
+      ],
+      [
+        "6",
+        "ASTON MARTIN",
+        "58"
+      ],
+      [
+        "7",
+        "PEUGEOT",
+        "24"
+      ],
+      [
+        "8",
+        "GENESIS",
+        "14"
+      ]
+    ]
+  }
+]

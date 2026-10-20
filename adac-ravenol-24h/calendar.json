@@ -1,0 +1,155 @@
+[
+  {
+    "start": "2026-05-13T05:30:00.000Z",
+    "end": "2026-05-13T10:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Permit Training Course AM (Nordschleife)",
+    "round": 1,
+    "location": "Nordschleife, Nürburgring, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-13T07:00:00.000Z",
+    "end": "2026-05-13T19:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Administrative Check (Wed)",
+    "round": 1,
+    "location": "Nürburgring, Start/Finish building, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-13T07:00:00.000Z",
+    "end": "2026-05-13T19:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Scrutineering (Wed)",
+    "round": 1,
+    "location": "Nürburgring, Paddock Scrutineering building, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-13T11:30:00.000Z",
+    "end": "2026-05-13T16:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Permit Training Course PM (Nordschleife)",
+    "round": 1,
+    "location": "Nordschleife, Nürburgring, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-14T07:00:00.000Z",
+    "end": "2026-05-14T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Administrative Check (Thu)",
+    "round": 1,
+    "location": "Nürburgring, Start/Finish building, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-14T07:00:00.000Z",
+    "end": "2026-05-14T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Scrutineering (Thu)",
+    "round": 1,
+    "location": "Nürburgring, Paddock Scrutineering building, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-14T11:15:00.000Z",
+    "end": "2026-05-14T13:15:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Qualifying 1",
+    "round": 1,
+    "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-14T18:00:00.000Z",
+    "end": "2026-05-14T21:30:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Qualifying 2 (Night)",
+    "round": 1,
+    "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-15T08:15:00.000Z",
+    "end": "2026-05-15T08:45:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Top Qualifying 1",
+    "round": 1,
+    "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-15T09:05:00.000Z",
+    "end": "2026-05-15T09:35:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Top Qualifying 2",
+    "round": 1,
+    "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-15T10:00:00.000Z",
+    "end": "2026-05-15T11:05:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Qualifying 3",
+    "round": 1,
+    "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-15T11:35:00.000Z",
+    "end": "2026-05-15T12:35:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Top Qualifying 3 (Pole Shootout)",
+    "round": 1,
+    "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-15T17:30:00.000Z",
+    "end": "2026-05-15T19:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Pit Walk / Track Walk",
+    "round": 1,
+    "location": "Nürburgring, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-16T08:00:00.000Z",
+    "end": "2026-05-16T09:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Warm-up",
+    "round": 1,
+    "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-16T10:45:00.000Z",
+    "end": "2026-05-16T12:40:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Grid Formation",
+    "round": 1,
+    "location": "Nürburgring, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-16T11:10:00.000Z",
+    "end": "2026-05-16T12:10:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Open Grid",
+    "round": 1,
+    "location": "Nürburgring, Nürburg, Germany"
+  },
+  {
+    "start": "2026-05-16T13:00:00.000Z",
+    "end": "2026-05-17T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Nordschleife",
+    "session": "Race (Start)",
+    "round": 1,
+    "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany"
+  }
+]

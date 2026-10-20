@@ -1,0 +1,278 @@
+[
+  {
+    "title": "Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Kyle Larson",
+        "Hendrick Motorsports",
+        "2370"
+      ],
+      [
+        "2",
+        "Christopher Bell",
+        "Joe Gibbs Racing",
+        "2365"
+      ],
+      [
+        "3",
+        "Chase Briscoe",
+        "Joe Gibbs Racing",
+        "2346"
+      ],
+      [
+        "4",
+        "Denny Hamlin",
+        "Joe Gibbs Racing",
+        "2339"
+      ],
+      [
+        "5",
+        "Ryan Blaney",
+        "Team Penske",
+        "2330"
+      ],
+      [
+        "6",
+        "Joey Logano",
+        "Team Penske",
+        "2326"
+      ],
+      [
+        "7",
+        "Tyler Reddick",
+        "23XI Racing",
+        "2314"
+      ],
+      [
+        "8",
+        "Austin Cindric",
+        "Team Penske",
+        "2240"
+      ],
+      [
+        "9",
+        "Ty Gibbs",
+        "Joe Gibbs Racing",
+        "2238"
+      ],
+      [
+        "10",
+        "Chase Elliott",
+        "Hendrick Motorsports",
+        "2221"
+      ],
+      [
+        "11",
+        "Carson Hocevar",
+        "Spire Motorsports",
+        "2212"
+      ],
+      [
+        "12",
+        "Bubba Wallace",
+        "23XI Racing",
+        "2208"
+      ],
+      [
+        "13",
+        "Daniel Suárez",
+        "Spire Motorsports",
+        "2182"
+      ],
+      [
+        "14",
+        "William Byron",
+        "Hendrick Motorsports",
+        "2180"
+      ],
+      [
+        "15",
+        "Chris Buescher",
+        "RFK Racing",
+        "2166"
+      ],
+      [
+        "16",
+        "Ryan Preece",
+        "RFK Racing",
+        "2159"
+      ],
+      [
+        "17",
+        "Shane van Gisbergen",
+        "Trackhouse Racing",
+        "729"
+      ],
+      [
+        "18",
+        "Brad Keselowski",
+        "RFK Racing",
+        "683"
+      ],
+      [
+        "19",
+        "Ross Chastain",
+        "Trackhouse Racing",
+        "673"
+      ],
+      [
+        "20",
+        "Michael McDowell",
+        "Spire Motorsports",
+        "616"
+      ],
+      [
+        "21",
+        "Erik Jones",
+        "Legacy Motor Club",
+        "607"
+      ],
+      [
+        "22",
+        "Josh Berry",
+        "Wood Brothers Racing",
+        "584"
+      ],
+      [
+        "23",
+        "Todd Gilliland",
+        "Front Row Motorsports",
+        "582"
+      ],
+      [
+        "24",
+        "A. J. Allmendinger",
+        "Kaulig Racing",
+        "574"
+      ],
+      [
+        "25",
+        "Austin Dillon",
+        "Richard Childress Racing",
+        "540"
+      ],
+      [
+        "26",
+        "Zane Smith",
+        "Front Row Motorsports",
+        "523"
+      ],
+      [
+        "27",
+        "Alex Bowman",
+        "Hendrick Motorsports",
+        "512"
+      ],
+      [
+        "28",
+        "John Hunter Nemechek",
+        "Legacy Motor Club",
+        "503"
+      ],
+      [
+        "29",
+        "Ricky Stenhouse Jr.",
+        "Hyak Motorsports",
+        "481"
+      ],
+      [
+        "30",
+        "Riley Herbst",
+        "23XI Racing",
+        "470"
+      ],
+      [
+        "31",
+        "Noah Gragson",
+        "Front Row Motorsports",
+        "430"
+      ],
+      [
+        "32",
+        "Cole Custer",
+        "Haas Factory Team",
+        "407"
+      ],
+      [
+        "33",
+        "Connor Zilisch (R)",
+        "Trackhouse Racing",
+        "360"
+      ],
+      [
+        "34",
+        "Ty Dillon",
+        "Kaulig Racing",
+        "352"
+      ],
+      [
+        "35",
+        "Cody Ware",
+        "Rick Ware Racing",
+        "237"
+      ],
+      [
+        "36",
+        "Casey Mears",
+        "Garage 66",
+        "13"
+      ],
+      [
+        "37",
+        "Kevin Magnussen",
+        "Trackhouse Racing",
+        "11"
+      ],
+      [
+        "38",
+        "Jimmie Johnson",
+        "Legacy Motor Club",
+        "9"
+      ],
+      [
+        "39",
+        "Katherine Legge",
+        "Live Fast Motorsports",
+        "8"
+      ],
+      [
+        "40",
+        "B. J. McLeod",
+        "NY Racing Team",
+        "8"
+      ]
+    ]
+  },
+  {
+    "title": "Manufacturers",
+    "columns": [
+      "Pos",
+      "Manufacturer",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Toyota",
+        "1489"
+      ],
+      [
+        "2",
+        "Chevrolet",
+        "1272"
+      ],
+      [
+        "3",
+        "Ford",
+        "1224"
+      ]
+    ]
+  }
+]

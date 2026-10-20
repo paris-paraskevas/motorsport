@@ -1,0 +1,216 @@
+[
+  {
+    "title": "Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Rafael Câmara",
+        "Invicta Racing",
+        "207"
+      ],
+      [
+        "2",
+        "Nikola Tsolov",
+        "Campos Racing",
+        "200"
+      ],
+      [
+        "3",
+        "Alexander Dunne",
+        "Rodin Motorsport",
+        "189"
+      ],
+      [
+        "4",
+        "Gabriele Mini",
+        "MP Motorsport",
+        "163"
+      ],
+      [
+        "5",
+        "Dino Beganovic",
+        "DAMS Lucas Oil",
+        "137"
+      ],
+      [
+        "6",
+        "Noel Leon",
+        "Campos Racing",
+        "133"
+      ],
+      [
+        "7",
+        "Martinius Stenshorne",
+        "Rodin Motorsport",
+        "107"
+      ],
+      [
+        "8",
+        "Joshua Dürksen",
+        "Invicta Racing",
+        "90"
+      ],
+      [
+        "9",
+        "Kush Maini",
+        "ART Grand Prix",
+        "90"
+      ],
+      [
+        "10",
+        "Laurens van Hoepen",
+        "TRIDENT",
+        "90"
+      ],
+      [
+        "11",
+        "Tasanapol Inthraphuvasak",
+        "ART Grand Prix",
+        "71"
+      ],
+      [
+        "12",
+        "Ritomo Miyata",
+        "Hitech",
+        "70"
+      ],
+      [
+        "13",
+        "Rafael Villagomez",
+        "Van Amersfoort Racing",
+        "42"
+      ],
+      [
+        "14",
+        "John Bennett",
+        "TRIDENT",
+        "38"
+      ],
+      [
+        "15",
+        "Oliver Goethe",
+        "MP Motorsport",
+        "37"
+      ],
+      [
+        "16",
+        "Roman Bilinski",
+        "DAMS Lucas Oil",
+        "36"
+      ],
+      [
+        "17",
+        "Sebastian Montoya",
+        "PREMA Racing",
+        "30"
+      ],
+      [
+        "18",
+        "Emerson Fittipaldi",
+        "AIX Racing",
+        "28"
+      ],
+      [
+        "19",
+        "Colton Herta",
+        "Hitech",
+        "26"
+      ],
+      [
+        "20",
+        "Mari Boya",
+        "PREMA Racing",
+        "21"
+      ],
+      [
+        "21",
+        "Nico Varrone",
+        "",
+        "15"
+      ],
+      [
+        "22",
+        "Cian Shields",
+        "AIX Racing",
+        "10"
+      ],
+      [
+        "23",
+        "Hiyu Yamakoshi",
+        "Van Amersfoort Racing",
+        "2"
+      ]
+    ]
+  },
+  {
+    "title": "Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Campos Racing",
+        "333"
+      ],
+      [
+        "2",
+        "Invicta Racing",
+        "297"
+      ],
+      [
+        "3",
+        "Rodin Motorsport",
+        "296"
+      ],
+      [
+        "4",
+        "MP Motorsport",
+        "200"
+      ],
+      [
+        "5",
+        "DAMS Lucas Oil",
+        "173"
+      ],
+      [
+        "6",
+        "ART Grand Prix",
+        "161"
+      ],
+      [
+        "7",
+        "TRIDENT",
+        "128"
+      ],
+      [
+        "8",
+        "Hitech",
+        "96"
+      ],
+      [
+        "9",
+        "Van Amersfoort Racing",
+        "59"
+      ],
+      [
+        "10",
+        "PREMA Racing",
+        "51"
+      ],
+      [
+        "11",
+        "AIX Racing",
+        "38"
+      ]
+    ]
+  }
+]

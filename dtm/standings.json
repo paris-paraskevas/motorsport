@@ -1,0 +1,260 @@
+[
+  {
+    "title": "Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "T. Preining",
+        "Manthey Racing",
+        "225"
+      ],
+      [
+        "2",
+        "M. Engel",
+        "Mercedes-AMG Team Winward",
+        "213"
+      ],
+      [
+        "3",
+        "M. Wittmann",
+        "Schubert Motorsport",
+        "198"
+      ],
+      [
+        "4",
+        "L. Auer",
+        "Mercedes-AMG Team Landgraf",
+        "182"
+      ],
+      [
+        "5",
+        "M. Cairoli",
+        "Emil Frey Racing",
+        "160"
+      ],
+      [
+        "6",
+        "N. Thiim",
+        "Comtoyou Racing",
+        "149"
+      ],
+      [
+        "7",
+        "B. Dörr",
+        "Dörr Motorsport",
+        "139"
+      ],
+      [
+        "8",
+        "A. Maini",
+        "HRT Ford Performance",
+        "133"
+      ],
+      [
+        "9",
+        "R. Feller",
+        "Manthey Racing",
+        "121"
+      ],
+      [
+        "10",
+        "J. Gounon",
+        "Mercedes-AMG Team Winward",
+        "111"
+      ],
+      [
+        "11",
+        "T. Vermeulen",
+        "Emil Frey Racing",
+        "107"
+      ],
+      [
+        "12",
+        "L. Engstler",
+        "Red Bull Team Abt",
+        "99"
+      ],
+      [
+        "13",
+        "M. Bortolotti",
+        "TGI Team Lamborghini by GRT",
+        "97"
+      ],
+      [
+        "14",
+        "K. van der Linde",
+        "Schubert Motorsport",
+        "96"
+      ],
+      [
+        "15",
+        "F. Wiebelhaus",
+        "HRT Ford Performance",
+        "78"
+      ],
+      [
+        "16",
+        "B. Buus",
+        "Land-Motorsport",
+        "66"
+      ],
+      [
+        "17",
+        "M. Mapelli",
+        "Red Bull Team Abt",
+        "57"
+      ],
+      [
+        "18",
+        "T. Kalender",
+        "Mercedes-AMG Team Landgraf",
+        "49"
+      ],
+      [
+        "19",
+        "T. Glock",
+        "Dörr Motorsport",
+        "30"
+      ],
+      [
+        "20",
+        "P. Maximilian",
+        "TGI Team Lamborghini by GRT",
+        "14"
+      ],
+      [
+        "21",
+        "N. Baert",
+        "Comtoyou Racing",
+        "8"
+      ],
+      [
+        "22",
+        "C. Engelhart",
+        "TGI Team Lamborghini by GRT",
+        "2"
+      ]
+    ]
+  },
+  {
+    "title": "Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Manthey Racing",
+        "330"
+      ],
+      [
+        "2",
+        "Mercedes-AMG Team Winward",
+        "309"
+      ],
+      [
+        "3",
+        "Schubert Motorsport",
+        "284"
+      ],
+      [
+        "4",
+        "Emil Frey Racing",
+        "254"
+      ],
+      [
+        "5",
+        "Mercedes-AMG Team Landgraf",
+        "225"
+      ],
+      [
+        "6",
+        "HRT Ford Performance",
+        "200"
+      ],
+      [
+        "7",
+        "Dörr Motorsport",
+        "165"
+      ],
+      [
+        "8",
+        "Red Bull Team Abt",
+        "148"
+      ],
+      [
+        "9",
+        "Comtoyou Racing",
+        "147"
+      ],
+      [
+        "10",
+        "TGI Team Lamborghini by GRT",
+        "113"
+      ],
+      [
+        "11",
+        "Land-Motorsport",
+        "63"
+      ]
+    ]
+  },
+  {
+    "title": "Manufacturers",
+    "columns": [
+      "Pos",
+      "Manufacturer",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Mercedes",
+        "455"
+      ],
+      [
+        "2",
+        "Porsche",
+        "372"
+      ],
+      [
+        "3",
+        "BMW",
+        "289"
+      ],
+      [
+        "4",
+        "Ferrari",
+        "271"
+      ],
+      [
+        "5",
+        "Lamborghini",
+        "262"
+      ],
+      [
+        "6",
+        "Ford",
+        "213"
+      ],
+      [
+        "7",
+        "McLaren",
+        "180"
+      ],
+      [
+        "8",
+        "Aston Martin",
+        "173"
+      ]
+    ]
+  }
+]

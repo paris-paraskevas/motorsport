@@ -1,0 +1,205 @@
+[
+  {
+    "title": "Riders",
+    "columns": [
+      "Pos",
+      "Rider",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Jorge Martin",
+        "Aprilia Racing",
+        "355"
+      ],
+      [
+        "2",
+        "Marc Marquez",
+        "Ducati Lenovo Team",
+        "353"
+      ],
+      [
+        "3",
+        "Marco Bezzecchi",
+        "Aprilia Racing",
+        "309"
+      ],
+      [
+        "4",
+        "Ai Ogura",
+        "SuperFile Trackhouse MotoGP Team",
+        "259"
+      ],
+      [
+        "5",
+        "Pedro Acosta",
+        "Red Bull KTM Factory Racing",
+        "258"
+      ],
+      [
+        "6",
+        "Fabio Di Giannantonio",
+        "Pertamina Enduro VR46 Racing Team",
+        "245"
+      ],
+      [
+        "7",
+        "Raul Fernandez",
+        "SuperFile Trackhouse MotoGP Team",
+        "236"
+      ],
+      [
+        "8",
+        "Alex Marquez",
+        "BK8 Gresini Racing MotoGP",
+        "172"
+      ],
+      [
+        "9",
+        "Francesco Bagnaia",
+        "Ducati Lenovo Team",
+        "166"
+      ],
+      [
+        "10",
+        "Fermin Aldeguer",
+        "BK8 Gresini Racing MotoGP",
+        "125"
+      ],
+      [
+        "11",
+        "Enea Bastianini",
+        "Red Bull KTM Tech3",
+        "122"
+      ],
+      [
+        "12",
+        "Luca Marini",
+        "Honda HRC Castrol",
+        "108"
+      ],
+      [
+        "13",
+        "Brad Binder",
+        "Red Bull KTM Factory Racing",
+        "104"
+      ],
+      [
+        "14",
+        "Fabio Quartararo",
+        "Monster Energy Yamaha MotoGP Team",
+        "74"
+      ],
+      [
+        "15",
+        "Diogo Moreira",
+        "Pro Honda LCR",
+        "74"
+      ],
+      [
+        "16",
+        "Franco Morbidelli",
+        "Pertamina Enduro VR46 Racing Team",
+        "59"
+      ],
+      [
+        "17",
+        "Johann Zarco",
+        "Castrol Honda LCR",
+        "51"
+      ],
+      [
+        "18",
+        "Joan Mir",
+        "Honda HRC Castrol",
+        "33"
+      ],
+      [
+        "19",
+        "Jack Miller",
+        "Prima Pramac Yamaha MotoGP",
+        "28"
+      ],
+      [
+        "20",
+        "Alex Rins",
+        "Monster Energy Yamaha MotoGP Team",
+        "25"
+      ],
+      [
+        "21",
+        "Toprak Razgatlioglu",
+        "Prima Pramac Yamaha MotoGP",
+        "18"
+      ],
+      [
+        "22",
+        "Maverick Viñales",
+        "Red Bull KTM Tech3",
+        "12"
+      ],
+      [
+        "23",
+        "Iker Lecuona",
+        "BK8 Gresini Racing MotoGP",
+        "9"
+      ],
+      [
+        "24",
+        "Augusto Fernandez",
+        "Yamaha Factory Racing",
+        "6"
+      ],
+      [
+        "25",
+        "Pol Espargaro",
+        "Red Bull KTM Tech3",
+        "5"
+      ],
+      [
+        "26",
+        "Somkiat Chantra",
+        "Honda HRC Castrol",
+        "3"
+      ],
+      [
+        "27",
+        "Takaaki Nakagami",
+        "Honda HRC Castrol",
+        "3"
+      ],
+      [
+        "28",
+        "Cal Crutchlow",
+        "Castrol Honda LCR",
+        "0"
+      ],
+      [
+        "29",
+        "Jonas Folger",
+        "Red Bull KTM Tech3",
+        "0"
+      ],
+      [
+        "30",
+        "Lorenzo Savadori",
+        "SuperFile Trackhouse MotoGP Team",
+        "0"
+      ],
+      [
+        "31",
+        "Michele Pirro",
+        "BK8 Gresini Racing MotoGP",
+        "0"
+      ],
+      [
+        "32",
+        "Aleix Espargaro",
+        "Honda HRC Castrol",
+        "0"
+      ]
+    ]
+  }
+]

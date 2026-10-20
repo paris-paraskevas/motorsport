@@ -1,0 +1,387 @@
+[
+  {
+    "title": "Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Elfyn Evans",
+        "243"
+      ],
+      [
+        "2",
+        "Oliver Solberg",
+        "238"
+      ],
+      [
+        "3",
+        "Sami Pajari",
+        "237"
+      ],
+      [
+        "4",
+        "Sébastien Ogier",
+        "189"
+      ],
+      [
+        "5",
+        "Adrien Fourmaux",
+        "183"
+      ],
+      [
+        "6",
+        "Takamoto Katsuta",
+        "175"
+      ],
+      [
+        "7",
+        "Thierry Neuville",
+        "134"
+      ],
+      [
+        "8",
+        "Hayden Paddon",
+        "38"
+      ],
+      [
+        "9",
+        "Josh McErlean",
+        "35"
+      ],
+      [
+        "10",
+        "Esapekka Lappi",
+        "33"
+      ],
+      [
+        "11",
+        "Yohan Rossel",
+        "24"
+      ],
+      [
+        "12",
+        "Jon Armstrong",
+        "22"
+      ],
+      [
+        "13",
+        "Robert Virves",
+        "19"
+      ],
+      [
+        "14",
+        "Léo Rossel",
+        "18"
+      ],
+      [
+        "15",
+        "Gus Greensmith",
+        "14"
+      ],
+      [
+        "16",
+        "Mārtiņš Sesks",
+        "12"
+      ],
+      [
+        "17",
+        "Nikolay Gryazin",
+        "10"
+      ],
+      [
+        "18",
+        "Dani Sordo",
+        "10"
+      ],
+      [
+        "19",
+        "Roope Korhonen",
+        "9"
+      ],
+      [
+        "20",
+        "Diego Domínguez Jr.",
+        "8"
+      ],
+      [
+        "21",
+        "Alejandro Cachón",
+        "7"
+      ],
+      [
+        "22",
+        "Fabrizio Zaldivar",
+        "6"
+      ],
+      [
+        "23",
+        "Roberto Daprà",
+        "6"
+      ],
+      [
+        "24",
+        "Andreas Mikkelsen",
+        "5"
+      ],
+      [
+        "25",
+        "Jari-Matti Latvala",
+        "4"
+      ],
+      [
+        "26",
+        "Arthur Pelamourgues",
+        "2"
+      ],
+      [
+        "27",
+        "Alejandro Galanti",
+        "2"
+      ],
+      [
+        "28",
+        "Teemu Suninen",
+        "2"
+      ],
+      [
+        "29",
+        "Matteo Fontana",
+        "2"
+      ],
+      [
+        "30",
+        "Taylor Gill",
+        "1"
+      ],
+      [
+        "31",
+        "Eric Camilli",
+        "1"
+      ],
+      [
+        "32",
+        "Emil Lindholm",
+        "1"
+      ]
+    ]
+  },
+  {
+    "title": "Co-drivers",
+    "columns": [
+      "Pos",
+      "Co-driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Scott Martin",
+        "243"
+      ],
+      [
+        "2",
+        "Elliott Edmondson",
+        "238"
+      ],
+      [
+        "3",
+        "Marko Salminen",
+        "237"
+      ],
+      [
+        "4",
+        "Vincent Landais",
+        "189"
+      ],
+      [
+        "5",
+        "Alexandre Coria",
+        "183"
+      ],
+      [
+        "6",
+        "Aaron Johnston",
+        "172"
+      ],
+      [
+        "7",
+        "Martijn Wydaeghe",
+        "134"
+      ],
+      [
+        "8",
+        "John Kennard",
+        "38"
+      ],
+      [
+        "9",
+        "Eoin Treacy",
+        "35"
+      ],
+      [
+        "10",
+        "Enni Mälkönen",
+        "33"
+      ],
+      [
+        "11",
+        "Arnaud Dunand",
+        "24"
+      ],
+      [
+        "12",
+        "Shane Byrne",
+        "22"
+      ],
+      [
+        "13",
+        "Jakko Viilo",
+        "19"
+      ],
+      [
+        "14",
+        "Guillaume Mercoiret",
+        "18"
+      ],
+      [
+        "15",
+        "Jonas Andersson",
+        "14"
+      ],
+      [
+        "16",
+        "Renārs Francis",
+        "12"
+      ],
+      [
+        "17",
+        "Konstantin Aleksandrov",
+        "10"
+      ],
+      [
+        "18",
+        "Cándido Carrera",
+        "10"
+      ],
+      [
+        "19",
+        "Anssi Viinikka",
+        "9"
+      ],
+      [
+        "20",
+        "Rogelio Peñate",
+        "8"
+      ],
+      [
+        "21",
+        "Borja Rozada",
+        "7"
+      ],
+      [
+        "22",
+        "Marcelo Der Ohannesian",
+        "6"
+      ],
+      [
+        "23",
+        "Luca Guglielmetti",
+        "6"
+      ],
+      [
+        "24",
+        "Jørn Listerud",
+        "5"
+      ],
+      [
+        "25",
+        "Juho Hänninen",
+        "4"
+      ],
+      [
+        "26",
+        "James Fulton",
+        "3"
+      ],
+      [
+        "27",
+        "Bastien Pouget",
+        "2"
+      ],
+      [
+        "28",
+        "Marcelo Toyotoshi",
+        "2"
+      ],
+      [
+        "29",
+        "Janni Hussi",
+        "2"
+      ],
+      [
+        "30",
+        "Alessandro Arnaboldi",
+        "2"
+      ],
+      [
+        "31",
+        "Daniel Brkic",
+        "1"
+      ],
+      [
+        "32",
+        "Thibault de la Haye",
+        "1"
+      ],
+      [
+        "33",
+        "Gabriel Morales",
+        "1"
+      ]
+    ]
+  },
+  {
+    "title": "Manufacturers",
+    "columns": [
+      "Pos",
+      "Manufacturer",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Toyota Gazoo Racing WRT",
+        "662"
+      ],
+      [
+        "2",
+        "Hyundai Shell Mobis WRT",
+        "440"
+      ],
+      [
+        "3",
+        "Toyota Gazoo Racing WRT2",
+        "251"
+      ],
+      [
+        "4",
+        "M-Sport Ford WRT",
+        "168"
+      ],
+      [
+        "21755",
+        "217+4+3",
+        "217"
+      ],
+      [
+        "41220",
+        "510+0+1",
+        "68"
+      ]
+    ]
+  }
+]

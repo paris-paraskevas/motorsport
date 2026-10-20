@@ -1,0 +1,596 @@
+[
+  {
+    "start": "2025-12-05T19:30:00.000Z",
+    "end": "2025-12-05T20:10:00.000Z",
+    "dateOnly": false,
+    "event": "São Paulo E-Prix",
+    "session": "FP1 (São Paulo R1)",
+    "round": 1,
+    "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil"
+  },
+  {
+    "start": "2025-12-06T10:30:00.000Z",
+    "end": "2025-12-06T11:10:00.000Z",
+    "dateOnly": false,
+    "event": "São Paulo E-Prix",
+    "session": "FP2 (São Paulo R1)",
+    "round": 1,
+    "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil"
+  },
+  {
+    "start": "2025-12-06T12:40:00.000Z",
+    "end": "2025-12-06T13:48:00.000Z",
+    "dateOnly": false,
+    "event": "São Paulo E-Prix",
+    "session": "Qualifying (São Paulo R1)",
+    "round": 1,
+    "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil"
+  },
+  {
+    "start": "2025-12-06T17:05:00.000Z",
+    "end": "2025-12-06T18:00:00.000Z",
+    "dateOnly": false,
+    "event": "São Paulo E-Prix",
+    "session": "Race (São Paulo R1)",
+    "round": 1,
+    "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil"
+  },
+  {
+    "start": "2026-01-09T22:30:00.000Z",
+    "end": "2026-01-09T23:10:00.000Z",
+    "dateOnly": false,
+    "event": "Mexico City E-Prix",
+    "session": "FP1 (Mexico City R2)",
+    "round": 2,
+    "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico"
+  },
+  {
+    "start": "2026-01-10T13:30:00.000Z",
+    "end": "2026-01-10T14:10:00.000Z",
+    "dateOnly": false,
+    "event": "Mexico City E-Prix",
+    "session": "FP2 (Mexico City R2)",
+    "round": 2,
+    "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico"
+  },
+  {
+    "start": "2026-01-10T15:40:00.000Z",
+    "end": "2026-01-10T16:48:00.000Z",
+    "dateOnly": false,
+    "event": "Mexico City E-Prix",
+    "session": "Qualifying (Mexico City R2)",
+    "round": 2,
+    "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico"
+  },
+  {
+    "start": "2026-01-10T20:05:00.000Z",
+    "end": "2026-01-10T21:00:00.000Z",
+    "dateOnly": false,
+    "event": "Mexico City E-Prix",
+    "session": "Race (Mexico City R2)",
+    "round": 2,
+    "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico"
+  },
+  {
+    "start": "2026-01-30T22:00:00.000Z",
+    "end": "2026-01-30T22:40:00.000Z",
+    "dateOnly": false,
+    "event": "Miami E-Prix",
+    "session": "FP1 (Miami R3)",
+    "round": 3,
+    "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA"
+  },
+  {
+    "start": "2026-01-31T12:30:00.000Z",
+    "end": "2026-01-31T13:10:00.000Z",
+    "dateOnly": false,
+    "event": "Miami E-Prix",
+    "session": "FP2 (Miami R3)",
+    "round": 3,
+    "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA"
+  },
+  {
+    "start": "2026-01-31T14:40:00.000Z",
+    "end": "2026-01-31T15:48:00.000Z",
+    "dateOnly": false,
+    "event": "Miami E-Prix",
+    "session": "Qualifying (Miami R3)",
+    "round": 3,
+    "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA"
+  },
+  {
+    "start": "2026-01-31T19:05:00.000Z",
+    "end": "2026-01-31T20:00:00.000Z",
+    "dateOnly": false,
+    "event": "Miami E-Prix",
+    "session": "Race (Miami R3)",
+    "round": 3,
+    "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA"
+  },
+  {
+    "start": "2026-02-12T17:00:00.000Z",
+    "end": "2026-02-12T17:40:00.000Z",
+    "dateOnly": false,
+    "event": "Jeddah E-Prix — Race 1",
+    "session": "FP1 (Jeddah R4)",
+    "round": 4,
+    "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+  },
+  {
+    "start": "2026-02-13T10:30:00.000Z",
+    "end": "2026-02-13T11:10:00.000Z",
+    "dateOnly": false,
+    "event": "Jeddah E-Prix — Race 1",
+    "session": "FP2 (Jeddah R4)",
+    "round": 4,
+    "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+  },
+  {
+    "start": "2026-02-13T12:40:00.000Z",
+    "end": "2026-02-13T13:48:00.000Z",
+    "dateOnly": false,
+    "event": "Jeddah E-Prix — Race 1",
+    "session": "Qualifying (Jeddah R4)",
+    "round": 4,
+    "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+  },
+  {
+    "start": "2026-02-13T17:05:00.000Z",
+    "end": "2026-02-13T18:00:00.000Z",
+    "dateOnly": false,
+    "event": "Jeddah E-Prix — Race 1",
+    "session": "Race (Jeddah R4)",
+    "round": 4,
+    "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+  },
+  {
+    "start": "2026-02-14T10:30:00.000Z",
+    "end": "2026-02-14T11:10:00.000Z",
+    "dateOnly": false,
+    "event": "Jeddah E-Prix — Race 2",
+    "session": "FP3 (Jeddah R5)",
+    "round": 5,
+    "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+  },
+  {
+    "start": "2026-02-14T12:40:00.000Z",
+    "end": "2026-02-14T13:48:00.000Z",
+    "dateOnly": false,
+    "event": "Jeddah E-Prix — Race 2",
+    "session": "Qualifying (Jeddah R5)",
+    "round": 5,
+    "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+  },
+  {
+    "start": "2026-02-14T17:05:00.000Z",
+    "end": "2026-02-14T18:00:00.000Z",
+    "dateOnly": false,
+    "event": "Jeddah E-Prix — Race 2",
+    "session": "Race (Jeddah R5)",
+    "round": 5,
+    "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia"
+  },
+  {
+    "start": "2026-03-20T13:30:00.000Z",
+    "end": "2026-03-20T13:45:00.000Z",
+    "dateOnly": false,
+    "event": "Madrid E-Prix",
+    "session": "Shakedown (Madrid R6)",
+    "round": 6,
+    "location": "Circuito del Jarama, Madrid, Spain"
+  },
+  {
+    "start": "2026-03-20T15:30:00.000Z",
+    "end": "2026-03-20T16:10:00.000Z",
+    "dateOnly": false,
+    "event": "Madrid E-Prix",
+    "session": "FP1 (Madrid R6)",
+    "round": 6,
+    "location": "Circuito del Jarama, Madrid, Spain"
+  },
+  {
+    "start": "2026-03-21T07:30:00.000Z",
+    "end": "2026-03-21T08:10:00.000Z",
+    "dateOnly": false,
+    "event": "Madrid E-Prix",
+    "session": "FP2 (Madrid R6)",
+    "round": 6,
+    "location": "Circuito del Jarama, Madrid, Spain"
+  },
+  {
+    "start": "2026-03-21T09:40:00.000Z",
+    "end": "2026-03-21T10:48:00.000Z",
+    "dateOnly": false,
+    "event": "Madrid E-Prix",
+    "session": "Qualifying (Madrid R6)",
+    "round": 6,
+    "location": "Circuito del Jarama, Madrid, Spain"
+  },
+  {
+    "start": "2026-03-21T14:05:00.000Z",
+    "end": "2026-03-21T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "Madrid E-Prix",
+    "session": "Race (Madrid R6)",
+    "round": 6,
+    "location": "Circuito del Jarama, Madrid, Spain"
+  },
+  {
+    "start": "2026-05-01T14:00:00.000Z",
+    "end": "2026-05-01T14:40:00.000Z",
+    "dateOnly": false,
+    "event": "Berlin E-Prix — Race 1",
+    "session": "FP1 (Berlin R7)",
+    "round": 7,
+    "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+  },
+  {
+    "start": "2026-05-02T07:30:00.000Z",
+    "end": "2026-05-02T08:10:00.000Z",
+    "dateOnly": false,
+    "event": "Berlin E-Prix — Race 1",
+    "session": "FP2 (Berlin R7)",
+    "round": 7,
+    "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+  },
+  {
+    "start": "2026-05-02T09:40:00.000Z",
+    "end": "2026-05-02T10:48:00.000Z",
+    "dateOnly": false,
+    "event": "Berlin E-Prix — Race 1",
+    "session": "Qualifying (Berlin R7)",
+    "round": 7,
+    "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+  },
+  {
+    "start": "2026-05-02T14:05:00.000Z",
+    "end": "2026-05-02T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "Berlin E-Prix — Race 1",
+    "session": "Race (Berlin R7)",
+    "round": 7,
+    "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+  },
+  {
+    "start": "2026-05-03T07:30:00.000Z",
+    "end": "2026-05-03T08:10:00.000Z",
+    "dateOnly": false,
+    "event": "Berlin E-Prix — Race 2",
+    "session": "FP3 (Berlin R8)",
+    "round": 8,
+    "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+  },
+  {
+    "start": "2026-05-03T09:40:00.000Z",
+    "end": "2026-05-03T10:48:00.000Z",
+    "dateOnly": false,
+    "event": "Berlin E-Prix — Race 2",
+    "session": "Qualifying (Berlin R8)",
+    "round": 8,
+    "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+  },
+  {
+    "start": "2026-05-03T14:05:00.000Z",
+    "end": "2026-05-03T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "Berlin E-Prix — Race 2",
+    "session": "Race (Berlin R8)",
+    "round": 8,
+    "location": "Tempelhof Airport Street Circuit, Berlin, Germany"
+  },
+  {
+    "start": "2026-05-16T05:30:00.000Z",
+    "end": "2026-05-16T06:15:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco E-Prix — Race 1",
+    "session": "FP1",
+    "round": 9,
+    "location": "Circuit de Monaco, Monte Carlo, Monaco"
+  },
+  {
+    "start": "2026-05-16T07:10:00.000Z",
+    "end": "2026-05-16T07:45:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco E-Prix — Race 1",
+    "session": "FP2",
+    "round": 9,
+    "location": "Circuit de Monaco, Monte Carlo, Monaco"
+  },
+  {
+    "start": "2026-05-16T08:40:00.000Z",
+    "end": "2026-05-16T09:48:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco E-Prix — Race 1",
+    "session": "Qualifying",
+    "round": 9,
+    "location": "Circuit de Monaco, Monte Carlo, Monaco"
+  },
+  {
+    "start": "2026-05-16T13:05:00.000Z",
+    "end": "2026-05-16T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco E-Prix — Race 1",
+    "session": "Race",
+    "round": 9,
+    "location": "Circuit de Monaco, Monte Carlo, Monaco"
+  },
+  {
+    "start": "2026-05-17T06:30:00.000Z",
+    "end": "2026-05-17T07:15:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco E-Prix — Race 2",
+    "session": "FP3",
+    "round": 10,
+    "location": "Circuit de Monaco, Monte Carlo, Monaco"
+  },
+  {
+    "start": "2026-05-17T08:40:00.000Z",
+    "end": "2026-05-17T09:48:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco E-Prix — Race 2",
+    "session": "Qualifying",
+    "round": 10,
+    "location": "Circuit de Monaco, Monte Carlo, Monaco"
+  },
+  {
+    "start": "2026-05-17T13:05:00.000Z",
+    "end": "2026-05-17T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Monaco E-Prix — Race 2",
+    "session": "Race",
+    "round": 10,
+    "location": "Circuit de Monaco, Monte Carlo, Monaco"
+  },
+  {
+    "start": "2026-06-19T08:30:00.000Z",
+    "end": "2026-06-19T09:10:00.000Z",
+    "dateOnly": false,
+    "event": "Sanya E-Prix",
+    "session": "FP1 (Sanya R11)",
+    "round": 11,
+    "location": "Sanya Street Circuit, Sanya, China"
+  },
+  {
+    "start": "2026-06-20T00:30:00.000Z",
+    "end": "2026-06-20T01:10:00.000Z",
+    "dateOnly": false,
+    "event": "Sanya E-Prix",
+    "session": "FP2 (Sanya R11)",
+    "round": 11,
+    "location": "Sanya Street Circuit, Sanya, China"
+  },
+  {
+    "start": "2026-06-20T02:40:00.000Z",
+    "end": "2026-06-20T03:48:00.000Z",
+    "dateOnly": false,
+    "event": "Sanya E-Prix",
+    "session": "Qualifying (Sanya R11)",
+    "round": 11,
+    "location": "Sanya Street Circuit, Sanya, China"
+  },
+  {
+    "start": "2026-06-20T07:05:00.000Z",
+    "end": "2026-06-20T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Sanya E-Prix",
+    "session": "Race (Sanya R11)",
+    "round": 11,
+    "location": "Sanya Street Circuit, Sanya, China"
+  },
+  {
+    "start": "2026-07-03T08:00:00.000Z",
+    "end": "2026-07-03T08:55:00.000Z",
+    "dateOnly": false,
+    "event": "Shanghai E-Prix — Race 1",
+    "session": "FP1 (Shanghai R12)",
+    "round": 12,
+    "location": "Shanghai International Circuit (short layout), Shanghai, China"
+  },
+  {
+    "start": "2026-07-04T00:30:00.000Z",
+    "end": "2026-07-04T01:25:00.000Z",
+    "dateOnly": false,
+    "event": "Shanghai E-Prix — Race 1",
+    "session": "FP2 (Shanghai R12)",
+    "round": 12,
+    "location": "Shanghai International Circuit (short layout), Shanghai, China"
+  },
+  {
+    "start": "2026-07-04T02:40:00.000Z",
+    "end": "2026-07-04T03:48:00.000Z",
+    "dateOnly": false,
+    "event": "Shanghai E-Prix — Race 1",
+    "session": "Qualifying (Shanghai R12)",
+    "round": 12,
+    "location": "Shanghai International Circuit (short layout), Shanghai, China"
+  },
+  {
+    "start": "2026-07-04T07:05:00.000Z",
+    "end": "2026-07-04T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Shanghai E-Prix — Race 1",
+    "session": "Race (Shanghai R12)",
+    "round": 12,
+    "location": "Shanghai International Circuit (short layout), Shanghai, China"
+  },
+  {
+    "start": "2026-07-05T00:30:00.000Z",
+    "end": "2026-07-05T01:25:00.000Z",
+    "dateOnly": false,
+    "event": "Shanghai E-Prix — Race 2",
+    "session": "FP3 (Shanghai R13)",
+    "round": 13,
+    "location": "Shanghai International Circuit (short layout), Shanghai, China"
+  },
+  {
+    "start": "2026-07-05T02:40:00.000Z",
+    "end": "2026-07-05T03:48:00.000Z",
+    "dateOnly": false,
+    "event": "Shanghai E-Prix — Race 2",
+    "session": "Qualifying (Shanghai R13)",
+    "round": 13,
+    "location": "Shanghai International Circuit (short layout), Shanghai, China"
+  },
+  {
+    "start": "2026-07-05T07:05:00.000Z",
+    "end": "2026-07-05T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Shanghai E-Prix — Race 2",
+    "session": "Race (Shanghai R13)",
+    "round": 13,
+    "location": "Shanghai International Circuit (short layout), Shanghai, China"
+  },
+  {
+    "start": "2026-07-24T10:00:00.000Z",
+    "end": "2026-07-24T10:55:00.000Z",
+    "dateOnly": false,
+    "event": "Tokyo E-Prix — Race 1",
+    "session": "FP1 (Tokyo R14)",
+    "round": 14,
+    "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+  },
+  {
+    "start": "2026-07-25T04:30:00.000Z",
+    "end": "2026-07-25T05:25:00.000Z",
+    "dateOnly": false,
+    "event": "Tokyo E-Prix — Race 1",
+    "session": "FP2 (Tokyo R14)",
+    "round": 14,
+    "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+  },
+  {
+    "start": "2026-07-25T06:40:00.000Z",
+    "end": "2026-07-25T07:48:00.000Z",
+    "dateOnly": false,
+    "event": "Tokyo E-Prix — Race 1",
+    "session": "Qualifying (Tokyo R14)",
+    "round": 14,
+    "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+  },
+  {
+    "start": "2026-07-25T11:05:00.000Z",
+    "end": "2026-07-25T12:00:00.000Z",
+    "dateOnly": false,
+    "event": "Tokyo E-Prix — Race 1",
+    "session": "Race (Tokyo R14)",
+    "round": 14,
+    "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+  },
+  {
+    "start": "2026-07-26T04:30:00.000Z",
+    "end": "2026-07-26T05:25:00.000Z",
+    "dateOnly": false,
+    "event": "Tokyo E-Prix — Race 2",
+    "session": "FP3 (Tokyo R15)",
+    "round": 15,
+    "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+  },
+  {
+    "start": "2026-07-26T06:40:00.000Z",
+    "end": "2026-07-26T07:48:00.000Z",
+    "dateOnly": false,
+    "event": "Tokyo E-Prix — Race 2",
+    "session": "Qualifying (Tokyo R15)",
+    "round": 15,
+    "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+  },
+  {
+    "start": "2026-07-26T11:05:00.000Z",
+    "end": "2026-07-26T12:00:00.000Z",
+    "dateOnly": false,
+    "event": "Tokyo E-Prix — Race 2",
+    "session": "Race (Tokyo R15)",
+    "round": 15,
+    "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan"
+  },
+  {
+    "start": "2026-08-14T14:00:00.000Z",
+    "end": "2026-08-14T14:40:00.000Z",
+    "dateOnly": false,
+    "event": "London E-Prix — Race 1",
+    "session": "FP1 (London R16)",
+    "round": 16,
+    "location": "ExCeL London, Royal Victoria Dock, London, UK"
+  },
+  {
+    "start": "2026-08-15T09:30:00.000Z",
+    "end": "2026-08-15T10:10:00.000Z",
+    "dateOnly": false,
+    "event": "London E-Prix — Race 1",
+    "session": "FP2 (London R16)",
+    "round": 16,
+    "location": "ExCeL London, Royal Victoria Dock, London, UK"
+  },
+  {
+    "start": "2026-08-15T11:40:00.000Z",
+    "end": "2026-08-15T12:48:00.000Z",
+    "dateOnly": false,
+    "event": "London E-Prix — Race 1",
+    "session": "Qualifying (London R16)",
+    "round": 16,
+    "location": "ExCeL London, Royal Victoria Dock, London, UK"
+  },
+  {
+    "start": "2026-08-15T16:00:00.000Z",
+    "end": "2026-08-15T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "London E-Prix — Race 1",
+    "session": "Race (London R16)",
+    "round": 16,
+    "location": "ExCeL London, Royal Victoria Dock, London, UK"
+  },
+  {
+    "start": "2026-08-16T09:30:00.000Z",
+    "end": "2026-08-16T10:10:00.000Z",
+    "dateOnly": false,
+    "event": "London E-Prix — Race 2 (Season Finale)",
+    "session": "FP3 (London R17)",
+    "round": 17,
+    "location": "ExCeL London, Royal Victoria Dock, London, UK"
+  },
+  {
+    "start": "2026-08-16T11:40:00.000Z",
+    "end": "2026-08-16T12:48:00.000Z",
+    "dateOnly": false,
+    "event": "London E-Prix — Race 2 (Season Finale)",
+    "session": "Qualifying (London R17)",
+    "round": 17,
+    "location": "ExCeL London, Royal Victoria Dock, London, UK"
+  },
+  {
+    "start": "2026-08-16T16:00:00.000Z",
+    "end": "2026-08-16T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "London E-Prix — Race 2 (Season Finale)",
+    "session": "Race (London R17) — Season Finale",
+    "round": 17,
+    "location": "ExCeL London, Royal Victoria Dock, London, UK"
+  },
+  {
+    "start": "2026-12-18T00:00:00.000Z",
+    "end": "2026-12-19T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Jeddah Corniche Circuit",
+    "session": "Formula E | Jeddah ePrix | Race 1",
+    "round": null,
+    "location": "Jeddah Corniche Circuit, طريق الكورنيش،، الشاطئ،، Jeddah 23512, Saudi Arabia"
+  },
+  {
+    "start": "2026-12-19T00:00:00.000Z",
+    "end": "2026-12-20T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Jeddah Corniche Circuit",
+    "session": "Formula E | Jeddah ePrix | Race 2",
+    "round": null,
+    "location": "Jeddah Corniche Circuit, طريق الكورنيش،، الشاطئ،، Jeddah 23512, Saudi Arabia"
+  },
+  {
+    "start": "2027-01-16T00:00:00.000Z",
+    "end": "2027-01-17T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Autódromo Hermanos Rodríguez",
+    "session": "Formula E | Mexico City ePrix",
+    "round": null,
+    "location": "Autódromo Hermanos Rodríguez, Av, Viad. Río de la Piedad S/n, Granjas México, Iztacalco, 08400 Iztacalco, CDMX, Mexico"
+  }
+]

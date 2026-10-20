@@ -1,0 +1,497 @@
+[
+  {
+    "start": "2026-04-14T00:00:00.000Z",
+    "end": "2026-04-15T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "6 Hours of Imola",
+    "session": "FIA WEC | [TEST] Prologue",
+    "round": 1,
+    "location": "Autodromo Enzo e Dino Ferrari, Piazza Ayrton Senna da Silva, 1, 40026 Imola BO, Italy"
+  },
+  {
+    "start": "2026-04-17T08:15:00.000Z",
+    "end": "2026-04-17T09:45:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Imola",
+    "session": "Free Practice 1",
+    "round": 1,
+    "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+  },
+  {
+    "start": "2026-04-17T13:15:00.000Z",
+    "end": "2026-04-17T14:45:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Imola",
+    "session": "Free Practice 2",
+    "round": 1,
+    "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+  },
+  {
+    "start": "2026-04-18T08:30:00.000Z",
+    "end": "2026-04-18T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Imola",
+    "session": "Free Practice 3",
+    "round": 1,
+    "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+  },
+  {
+    "start": "2026-04-18T12:30:00.000Z",
+    "end": "2026-04-18T12:42:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Imola",
+    "session": "LMGT3 Qualifying",
+    "round": 1,
+    "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+  },
+  {
+    "start": "2026-04-18T12:50:00.000Z",
+    "end": "2026-04-18T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Imola",
+    "session": "LMGT3 Hyperpole",
+    "round": 1,
+    "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+  },
+  {
+    "start": "2026-04-18T13:10:00.000Z",
+    "end": "2026-04-18T13:22:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Imola",
+    "session": "Hypercar Qualifying",
+    "round": 1,
+    "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+  },
+  {
+    "start": "2026-04-18T13:30:00.000Z",
+    "end": "2026-04-18T13:40:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Imola",
+    "session": "Hypercar Hyperpole",
+    "round": 1,
+    "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+  },
+  {
+    "start": "2026-04-19T11:00:00.000Z",
+    "end": "2026-04-19T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Imola",
+    "session": "6 Hours of Imola (Race)",
+    "round": 1,
+    "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola"
+  },
+  {
+    "start": "2026-05-07T09:00:00.000Z",
+    "end": "2026-05-07T10:30:00.000Z",
+    "dateOnly": false,
+    "event": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "session": "Free Practice 1",
+    "round": 2,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-05-07T13:40:00.000Z",
+    "end": "2026-05-07T15:10:00.000Z",
+    "dateOnly": false,
+    "event": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "session": "Free Practice 2",
+    "round": 2,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-05-08T08:10:00.000Z",
+    "end": "2026-05-08T09:10:00.000Z",
+    "dateOnly": false,
+    "event": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "session": "Free Practice 3",
+    "round": 2,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-05-08T12:30:00.000Z",
+    "end": "2026-05-08T12:42:00.000Z",
+    "dateOnly": false,
+    "event": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "session": "LMGT3 Qualifying",
+    "round": 2,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-05-08T12:55:00.000Z",
+    "end": "2026-05-08T13:05:00.000Z",
+    "dateOnly": false,
+    "event": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "session": "LMGT3 Hyperpole",
+    "round": 2,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-05-08T13:20:00.000Z",
+    "end": "2026-05-08T13:32:00.000Z",
+    "dateOnly": false,
+    "event": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "session": "Hypercar Qualifying",
+    "round": 2,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-05-08T13:45:00.000Z",
+    "end": "2026-05-08T13:55:00.000Z",
+    "dateOnly": false,
+    "event": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "session": "Hypercar Hyperpole",
+    "round": 2,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-05-09T12:00:00.000Z",
+    "end": "2026-05-09T18:00:00.000Z",
+    "dateOnly": false,
+    "event": "TotalEnergies 6 Hours of Spa-Francorchamps",
+    "session": "6 Hours of Spa-Francorchamps (Race)",
+    "round": 2,
+    "location": "Circuit de Spa-Francorchamps"
+  },
+  {
+    "start": "2026-06-10T12:00:00.000Z",
+    "end": "2026-06-10T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Free Practice 1",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-10T16:45:00.000Z",
+    "end": "2026-06-10T17:15:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Qualifying (LMP2 & LMGT3)",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-10T17:30:00.000Z",
+    "end": "2026-06-10T18:00:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Qualifying (Hypercar)",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-10T20:00:00.000Z",
+    "end": "2026-06-10T22:00:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Free Practice 2",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-11T12:45:00.000Z",
+    "end": "2026-06-11T14:45:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Free Practice 3",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-11T18:00:00.000Z",
+    "end": "2026-06-11T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Hyperpole 1 (LMP2 & LMGT3)",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-11T18:35:00.000Z",
+    "end": "2026-06-11T19:05:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Hyperpole 2 (LMP2 & LMGT3)",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-11T19:05:00.000Z",
+    "end": "2026-06-11T19:35:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Hyperpole 1 (Hypercar)",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-11T19:40:00.000Z",
+    "end": "2026-06-11T20:10:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Hyperpole 2 (Hypercar)",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-11T21:00:00.000Z",
+    "end": "2026-06-11T22:00:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Free Practice 4",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-13T10:00:00.000Z",
+    "end": "2026-06-13T10:15:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "Le Mans Warm-up",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-06-13T14:00:00.000Z",
+    "end": "2026-06-14T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "24 Hours of Le Mans",
+    "session": "24 Hours of Le Mans (Race Start)",
+    "round": 3,
+    "location": "Circuit de la Sarthe, Le Mans"
+  },
+  {
+    "start": "2026-07-10T13:00:00.000Z",
+    "end": "2026-07-10T14:30:00.000Z",
+    "dateOnly": false,
+    "event": "Rolex 6 Hours of São Paulo",
+    "session": "Free Practice 1",
+    "round": 4,
+    "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+  },
+  {
+    "start": "2026-07-10T17:00:00.000Z",
+    "end": "2026-07-10T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Rolex 6 Hours of São Paulo",
+    "session": "Free Practice 2",
+    "round": 4,
+    "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+  },
+  {
+    "start": "2026-07-11T12:00:00.000Z",
+    "end": "2026-07-11T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Rolex 6 Hours of São Paulo",
+    "session": "Free Practice 3",
+    "round": 4,
+    "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+  },
+  {
+    "start": "2026-07-11T17:00:00.000Z",
+    "end": "2026-07-11T17:12:00.000Z",
+    "dateOnly": false,
+    "event": "Rolex 6 Hours of São Paulo",
+    "session": "LMGT3 Qualifying",
+    "round": 4,
+    "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+  },
+  {
+    "start": "2026-07-11T17:20:00.000Z",
+    "end": "2026-07-11T17:30:00.000Z",
+    "dateOnly": false,
+    "event": "Rolex 6 Hours of São Paulo",
+    "session": "LMGT3 Hyperpole",
+    "round": 4,
+    "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+  },
+  {
+    "start": "2026-07-11T17:40:00.000Z",
+    "end": "2026-07-11T17:52:00.000Z",
+    "dateOnly": false,
+    "event": "Rolex 6 Hours of São Paulo",
+    "session": "Hypercar Qualifying",
+    "round": 4,
+    "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+  },
+  {
+    "start": "2026-07-11T18:00:00.000Z",
+    "end": "2026-07-11T18:10:00.000Z",
+    "dateOnly": false,
+    "event": "Rolex 6 Hours of São Paulo",
+    "session": "Hypercar Hyperpole",
+    "round": 4,
+    "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+  },
+  {
+    "start": "2026-07-12T14:00:00.000Z",
+    "end": "2026-07-12T20:00:00.000Z",
+    "dateOnly": false,
+    "event": "Rolex 6 Hours of São Paulo",
+    "session": "6 Hours of São Paulo (Race)",
+    "round": 4,
+    "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
+  },
+  {
+    "start": "2026-09-04T16:30:00.000Z",
+    "end": "2026-09-04T18:00:00.000Z",
+    "dateOnly": false,
+    "event": "Lone Star Le Mans",
+    "session": "Free Practice 1",
+    "round": 5,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-09-04T21:00:00.000Z",
+    "end": "2026-09-04T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Lone Star Le Mans",
+    "session": "Free Practice 2",
+    "round": 5,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-09-05T16:00:00.000Z",
+    "end": "2026-09-05T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "Lone Star Le Mans",
+    "session": "Free Practice 3",
+    "round": 5,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-09-05T20:00:00.000Z",
+    "end": "2026-09-05T20:12:00.000Z",
+    "dateOnly": false,
+    "event": "Lone Star Le Mans",
+    "session": "LMGT3 Qualifying",
+    "round": 5,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-09-05T20:20:00.000Z",
+    "end": "2026-09-05T20:30:00.000Z",
+    "dateOnly": false,
+    "event": "Lone Star Le Mans",
+    "session": "LMGT3 Hyperpole",
+    "round": 5,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-09-05T20:40:00.000Z",
+    "end": "2026-09-05T20:52:00.000Z",
+    "dateOnly": false,
+    "event": "Lone Star Le Mans",
+    "session": "Hypercar Qualifying",
+    "round": 5,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-09-05T21:00:00.000Z",
+    "end": "2026-09-05T21:10:00.000Z",
+    "dateOnly": false,
+    "event": "Lone Star Le Mans",
+    "session": "Hypercar Hyperpole",
+    "round": 5,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-09-06T18:00:00.000Z",
+    "end": "2026-09-07T00:00:00.000Z",
+    "dateOnly": false,
+    "event": "Lone Star Le Mans",
+    "session": "Lone Star Le Mans 6 Hours (Race)",
+    "round": 5,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-09-25T01:15:00.000Z",
+    "end": "2026-09-25T02:45:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Fuji",
+    "session": "Free Practice 1",
+    "round": 6,
+    "location": "Fuji International Speedway, Oyama"
+  },
+  {
+    "start": "2026-09-25T05:30:00.000Z",
+    "end": "2026-09-25T07:00:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Fuji",
+    "session": "Free Practice 2",
+    "round": 6,
+    "location": "Fuji International Speedway, Oyama"
+  },
+  {
+    "start": "2026-09-26T00:50:00.000Z",
+    "end": "2026-09-26T01:50:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Fuji",
+    "session": "Free Practice 3",
+    "round": 6,
+    "location": "Fuji International Speedway, Oyama"
+  },
+  {
+    "start": "2026-09-26T05:20:00.000Z",
+    "end": "2026-09-26T05:32:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Fuji",
+    "session": "LMGT3 Qualifying",
+    "round": 6,
+    "location": "Fuji International Speedway, Oyama"
+  },
+  {
+    "start": "2026-09-26T05:40:00.000Z",
+    "end": "2026-09-26T05:50:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Fuji",
+    "session": "LMGT3 Hyperpole",
+    "round": 6,
+    "location": "Fuji International Speedway, Oyama"
+  },
+  {
+    "start": "2026-09-26T06:00:00.000Z",
+    "end": "2026-09-26T06:12:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Fuji",
+    "session": "Hypercar Qualifying",
+    "round": 6,
+    "location": "Fuji International Speedway, Oyama"
+  },
+  {
+    "start": "2026-09-26T06:20:00.000Z",
+    "end": "2026-09-26T06:30:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Fuji",
+    "session": "Hypercar Hyperpole",
+    "round": 6,
+    "location": "Fuji International Speedway, Oyama"
+  },
+  {
+    "start": "2026-09-27T02:00:00.000Z",
+    "end": "2026-09-27T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "6 Hours of Fuji",
+    "session": "6 Hours of Fuji (Race)",
+    "round": 6,
+    "location": "Fuji International Speedway, Oyama"
+  },
+  {
+    "start": "2026-10-18T00:00:00.000Z",
+    "end": "2026-10-19T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "6 Hours of Barcelona",
+    "session": "FIA WEC | 6 Hours of Barcelona",
+    "round": 7,
+    "location": "Circuit de Barcelona, Mas La Moreneta s/n, 08160 Montmeló, Barcelona, Spain"
+  },
+  {
+    "start": "2026-11-08T00:00:00.000Z",
+    "end": "2026-11-09T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "6 Hours of Monza",
+    "session": "FIA WEC | 6 Hours of Monza",
+    "round": 8,
+    "location": "Autodromo Nazionale Monza, Viale di Vedano, 5, 20900 Monza MB, Italy"
+  }
+]

@@ -1,0 +1,362 @@
+[
+  {
+    "start": "2026-02-02T01:00:00.000Z",
+    "end": "2026-02-02T03:30:00.000Z",
+    "dateOnly": false,
+    "event": "Bowman Gray Stadium",
+    "session": "Cook Out Clash at Bowman Gray (exhibition)",
+    "round": null,
+    "location": "Bowman Gray Stadium, Winston-Salem, NC"
+  },
+  {
+    "start": "2026-02-13T00:00:00.000Z",
+    "end": "2026-02-13T02:30:00.000Z",
+    "dateOnly": false,
+    "event": "68th Daytona 500",
+    "session": "Bluegreen Vacations Duel at Daytona",
+    "round": 1,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-02-15T19:30:00.000Z",
+    "end": "2026-02-15T23:30:00.000Z",
+    "dateOnly": false,
+    "event": "68th Daytona 500",
+    "session": "68th Daytona 500",
+    "round": 1,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-02-22T20:00:00.000Z",
+    "end": "2026-02-22T23:30:00.000Z",
+    "dateOnly": false,
+    "event": "Ambetter Health 400 (Atlanta)",
+    "session": "Ambetter Health 400",
+    "round": 2,
+    "location": "Atlanta Motor Speedway, Hampton, GA"
+  },
+  {
+    "start": "2026-03-01T20:30:00.000Z",
+    "end": "2026-03-02T00:00:00.000Z",
+    "dateOnly": false,
+    "event": "EchoPark Automotive Grand Prix (COTA)",
+    "session": "EchoPark Automotive Grand Prix",
+    "round": 3,
+    "location": "Circuit of the Americas, Austin, TX"
+  },
+  {
+    "start": "2026-03-08T19:30:00.000Z",
+    "end": "2026-03-08T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Shriners Children's 500 (Phoenix)",
+    "session": "Shriners Children's 500",
+    "round": 4,
+    "location": "Phoenix Raceway, Avondale, AZ"
+  },
+  {
+    "start": "2026-03-15T20:00:00.000Z",
+    "end": "2026-03-15T23:30:00.000Z",
+    "dateOnly": false,
+    "event": "Pennzoil 400 (Las Vegas)",
+    "session": "Pennzoil 400",
+    "round": 5,
+    "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+  },
+  {
+    "start": "2026-03-22T19:00:00.000Z",
+    "end": "2026-03-22T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Goodyear 400 (Darlington)",
+    "session": "Goodyear 400",
+    "round": 6,
+    "location": "Darlington Raceway, Darlington, SC"
+  },
+  {
+    "start": "2026-03-29T19:30:00.000Z",
+    "end": "2026-03-29T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Cook Out 400 (Martinsville)",
+    "session": "Cook Out 400",
+    "round": 7,
+    "location": "Martinsville Speedway, Martinsville, VA"
+  },
+  {
+    "start": "2026-04-12T19:00:00.000Z",
+    "end": "2026-04-12T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Food City 500 (Bristol)",
+    "session": "Food City 500",
+    "round": 8,
+    "location": "Bristol Motor Speedway, Bristol, TN"
+  },
+  {
+    "start": "2026-04-19T18:00:00.000Z",
+    "end": "2026-04-19T21:30:00.000Z",
+    "dateOnly": false,
+    "event": "AdventHealth 400 (Kansas)",
+    "session": "AdventHealth 400",
+    "round": 9,
+    "location": "Kansas Speedway, Kansas City, KS"
+  },
+  {
+    "start": "2026-04-26T19:00:00.000Z",
+    "end": "2026-04-26T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Jack Link's 500 (Talladega)",
+    "session": "Jack Link's 500",
+    "round": 10,
+    "location": "Talladega Superspeedway, Talladega, AL"
+  },
+  {
+    "start": "2026-05-03T19:30:00.000Z",
+    "end": "2026-05-03T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Würth 400 (Texas)",
+    "session": "Wurth 400",
+    "round": 11,
+    "location": "Texas Motor Speedway, Fort Worth, TX"
+  },
+  {
+    "start": "2026-05-10T19:00:00.000Z",
+    "end": "2026-05-10T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Go Bowling at The Glen",
+    "session": "Go Bowling at The Glen",
+    "round": 12,
+    "location": "Watkins Glen International, Watkins Glen, NY"
+  },
+  {
+    "start": "2026-05-17T18:00:00.000Z",
+    "end": "2026-05-17T19:00:00.000Z",
+    "dateOnly": false,
+    "event": "Dover Motor Speedway",
+    "session": "All-Star Open (exhibition)",
+    "round": null,
+    "location": "Dover Motor Speedway, Dover, DE"
+  },
+  {
+    "start": "2026-05-17T19:00:00.000Z",
+    "end": "2026-05-17T22:00:00.000Z",
+    "dateOnly": false,
+    "event": "Dover Motor Speedway",
+    "session": "All-Star Race (exhibition)",
+    "round": null,
+    "location": "Dover Motor Speedway, Dover, DE"
+  },
+  {
+    "start": "2026-05-24T22:00:00.000Z",
+    "end": "2026-05-25T03:00:00.000Z",
+    "dateOnly": false,
+    "event": "Coca-Cola 600 (Charlotte)",
+    "session": "Coca-Cola 600",
+    "round": 13,
+    "location": "Charlotte Motor Speedway, Concord, NC"
+  },
+  {
+    "start": "2026-05-31T23:00:00.000Z",
+    "end": "2026-06-01T02:30:00.000Z",
+    "dateOnly": false,
+    "event": "Cracker Barrel 400 (Nashville)",
+    "session": "Cracker Barrel 400",
+    "round": 14,
+    "location": "Nashville Superspeedway, Lebanon, TN"
+  },
+  {
+    "start": "2026-06-07T19:00:00.000Z",
+    "end": "2026-06-07T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "FireKeepers Casino 400 (Michigan)",
+    "session": "FireKeepers Casino 400",
+    "round": 15,
+    "location": "Michigan International Speedway, Brooklyn, MI"
+  },
+  {
+    "start": "2026-06-14T19:00:00.000Z",
+    "end": "2026-06-14T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "The Great American Getaway 400 (Pocono)",
+    "session": "The Great American Getaway 400",
+    "round": 16,
+    "location": "Pocono Raceway, Long Pond, PA"
+  },
+  {
+    "start": "2026-06-21T20:00:00.000Z",
+    "end": "2026-06-21T23:00:00.000Z",
+    "dateOnly": false,
+    "event": "Anduril 250 Race the Base (San Diego)",
+    "session": "Anduril 250 Race the Base",
+    "round": 17,
+    "location": "Naval Base Coronado Street Circuit, San Diego, CA"
+  },
+  {
+    "start": "2026-06-28T19:30:00.000Z",
+    "end": "2026-06-28T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Toyota/Save Mart 350 (Sonoma)",
+    "session": "Toyota/Save Mart 350",
+    "round": 18,
+    "location": "Sonoma Raceway, Sonoma, CA"
+  },
+  {
+    "start": "2026-07-05T22:00:00.000Z",
+    "end": "2026-07-06T01:30:00.000Z",
+    "dateOnly": false,
+    "event": "eero 400 (Chicagoland)",
+    "session": "eero 400 (Chicagoland)",
+    "round": 19,
+    "location": "Chicagoland Speedway, Joliet, IL"
+  },
+  {
+    "start": "2026-07-12T23:00:00.000Z",
+    "end": "2026-07-13T02:30:00.000Z",
+    "dateOnly": false,
+    "event": "Quaker State 400 (Atlanta)",
+    "session": "Quaker State 400",
+    "round": 20,
+    "location": "Atlanta Motor Speedway, Hampton, GA"
+  },
+  {
+    "start": "2026-07-19T23:00:00.000Z",
+    "end": "2026-07-20T02:30:00.000Z",
+    "dateOnly": false,
+    "event": "Window World 450 (North Wilkesboro)",
+    "session": "Window World 450 (North Wilkesboro)",
+    "round": 21,
+    "location": "North Wilkesboro Speedway, North Wilkesboro, NC"
+  },
+  {
+    "start": "2026-07-26T18:00:00.000Z",
+    "end": "2026-07-26T22:00:00.000Z",
+    "dateOnly": false,
+    "event": "Brickyard 400 (Indianapolis)",
+    "session": "Brickyard 400",
+    "round": 22,
+    "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+  },
+  {
+    "start": "2026-08-09T19:30:00.000Z",
+    "end": "2026-08-09T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Iowa Corn 350",
+    "session": "Iowa Corn 350",
+    "round": 23,
+    "location": "Iowa Speedway, Newton, IA"
+  },
+  {
+    "start": "2026-08-15T23:00:00.000Z",
+    "end": "2026-08-16T02:30:00.000Z",
+    "dateOnly": false,
+    "event": "Cook Out 400 (Richmond)",
+    "session": "Cook Out 400 (Richmond)",
+    "round": 24,
+    "location": "Richmond Raceway, Richmond, VA"
+  },
+  {
+    "start": "2026-08-23T19:00:00.000Z",
+    "end": "2026-08-23T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Mobil 1 301 (New Hampshire)",
+    "session": "Mobil 1 301",
+    "round": 25,
+    "location": "New Hampshire Motor Speedway, Loudon, NH"
+  },
+  {
+    "start": "2026-08-29T23:30:00.000Z",
+    "end": "2026-08-30T03:00:00.000Z",
+    "dateOnly": false,
+    "event": "Coke Zero Sugar 400 (Daytona — regular-season finale)",
+    "session": "Coke Zero Sugar 400 (regular-season finale)",
+    "round": 26,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-09-06T21:00:00.000Z",
+    "end": "2026-09-07T01:30:00.000Z",
+    "dateOnly": false,
+    "event": "Southern 500 (Darlington)",
+    "session": "Southern 500",
+    "round": 27,
+    "location": "Darlington Raceway, Darlington, SC"
+  },
+  {
+    "start": "2026-09-13T19:00:00.000Z",
+    "end": "2026-09-13T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Enjoy Illinois 300 (WWT Raceway)",
+    "session": "Enjoy Illinois 300 (WWT Raceway)",
+    "round": 28,
+    "location": "World Wide Technology Raceway, Madison, IL"
+  },
+  {
+    "start": "2026-09-19T23:30:00.000Z",
+    "end": "2026-09-20T03:00:00.000Z",
+    "dateOnly": false,
+    "event": "Bass Pro Shops Night Race (Bristol)",
+    "session": "Bass Pro Shops Night Race",
+    "round": 29,
+    "location": "Bristol Motor Speedway, Bristol, TN"
+  },
+  {
+    "start": "2026-09-27T19:00:00.000Z",
+    "end": "2026-09-27T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Hollywood Casino 400 (Kansas)",
+    "session": "Hollywood Casino 400",
+    "round": 30,
+    "location": "Kansas Speedway, Kansas City, KS"
+  },
+  {
+    "start": "2026-10-04T21:30:00.000Z",
+    "end": "2026-10-05T01:00:00.000Z",
+    "dateOnly": false,
+    "event": "South Point 400 (Las Vegas)",
+    "session": "South Point 400",
+    "round": 31,
+    "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+  },
+  {
+    "start": "2026-10-11T19:00:00.000Z",
+    "end": "2026-10-11T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Bank of America 400 (Charlotte oval)",
+    "session": "Bank of America 400",
+    "round": 32,
+    "location": "Charlotte Motor Speedway (oval), Concord, NC"
+  },
+  {
+    "start": "2026-10-18T19:00:00.000Z",
+    "end": "2026-10-18T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "United Rentals 312 (Phoenix)",
+    "session": "United Rentals 312",
+    "round": 33,
+    "location": "Phoenix Raceway, Avondale, AZ"
+  },
+  {
+    "start": "2026-10-25T18:00:00.000Z",
+    "end": "2026-10-25T21:30:00.000Z",
+    "dateOnly": false,
+    "event": "YellaWood 500 (Talladega)",
+    "session": "YellaWood 500",
+    "round": 34,
+    "location": "Talladega Superspeedway, Talladega, AL"
+  },
+  {
+    "start": "2026-11-01T19:00:00.000Z",
+    "end": "2026-11-01T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Xfinity 500 (Martinsville)",
+    "session": "Xfinity 500",
+    "round": 35,
+    "location": "Martinsville Speedway, Martinsville, VA"
+  },
+  {
+    "start": "2026-11-08T20:00:00.000Z",
+    "end": "2026-11-08T23:30:00.000Z",
+    "dateOnly": false,
+    "event": "NASCAR Cup Series Championship (Homestead)",
+    "session": "NASCAR Cup Series Championship (Homestead)",
+    "round": 36,
+    "location": "Homestead-Miami Speedway, Homestead, FL"
+  }
+]

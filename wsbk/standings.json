@@ -1,0 +1,215 @@
+[
+  {
+    "title": "Riders",
+    "columns": [
+      "Pos",
+      "Rider",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Nicolo Bulega",
+        "Aruba.it Racing - Ducati",
+        "726"
+      ],
+      [
+        "2",
+        "Iker Lecuona",
+        "Aruba.it Racing - Ducati",
+        "563"
+      ],
+      [
+        "3",
+        "Yari Montella",
+        "Barni Spark Racing Team",
+        "318"
+      ],
+      [
+        "4",
+        "Sam Lowes",
+        "ELF Marc VDS Racing Team",
+        "268"
+      ],
+      [
+        "5",
+        "Alex Lowes",
+        "bimota by Kawasaki Racing Team",
+        "259"
+      ],
+      [
+        "6",
+        "Lorenzo Baldassarri",
+        "Team Goeleven",
+        "236"
+      ],
+      [
+        "7",
+        "Axel Bassani",
+        "bimota by Kawasaki Racing Team",
+        "222"
+      ],
+      [
+        "8",
+        "Alberto Surra",
+        "Motocorsa Racing",
+        "198"
+      ],
+      [
+        "9",
+        "Alvaro Bautista",
+        "Barni Spark Racing Team",
+        "167"
+      ],
+      [
+        "10",
+        "Garrett Gerloff",
+        "Kawasaki WorldSBK Team",
+        "165"
+      ],
+      [
+        "11",
+        "Miguel Oliveira",
+        "ROKiT BMW Motorrad WorldSBK Team",
+        "142"
+      ],
+      [
+        "12",
+        "Andrea Locatelli",
+        "Pata Maxus Yamaha",
+        "121"
+      ],
+      [
+        "13",
+        "Xavi Vierge",
+        "Pata Maxus Yamaha",
+        "113"
+      ],
+      [
+        "14",
+        "Thomas Bridewell",
+        "Superbike Advocates",
+        "83"
+      ],
+      [
+        "15",
+        "Tarran Mackenzie",
+        "MGM Optical Express Racing",
+        "81"
+      ],
+      [
+        "16",
+        "Remy Gardner",
+        "GYTR GRT Yamaha WorldSBK Team",
+        "63"
+      ],
+      [
+        "17",
+        "Danilo Petrucci",
+        "ROKiT BMW Motorrad WorldSBK Team",
+        "61"
+      ],
+      [
+        "18",
+        "Stefano Manzi",
+        "GYTR GRT Yamaha WorldSBK Team",
+        "46"
+      ],
+      [
+        "19",
+        "Jake Dixon",
+        "Honda HRC",
+        "41"
+      ],
+      [
+        "20",
+        "Michael van der Mark",
+        "ROKiT BMW Motorrad WorldSBK Team",
+        "23"
+      ],
+      [
+        "21",
+        "Somkiat Chantra",
+        "Honda HRC",
+        "23"
+      ],
+      [
+        "22",
+        "Tetsuta Nagashima",
+        "Honda HRC",
+        "7"
+      ],
+      [
+        "23",
+        "Loris Baz",
+        "MGM Optical Express Racing",
+        "7"
+      ],
+      [
+        "24",
+        "Jonathan Rea",
+        "Honda HRC",
+        "6"
+      ],
+      [
+        "25",
+        "Bahattin Sofuoglu",
+        "Motoxracing WorldSBK Team",
+        "4"
+      ],
+      [
+        "26",
+        "Mattia Rato",
+        "Motoxracing WorldSBK Team",
+        "3"
+      ],
+      [
+        "27",
+        "Ryan Vickers",
+        "Honda HRC",
+        "1"
+      ]
+    ]
+  },
+  {
+    "title": "Manufacturers",
+    "columns": [
+      "Pos",
+      "Manufacturer",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Ducati",
+        "744"
+      ],
+      [
+        "2",
+        "bimota",
+        "316"
+      ],
+      [
+        "3",
+        "BMW",
+        "184"
+      ],
+      [
+        "4",
+        "Yamaha",
+        "183"
+      ],
+      [
+        "5",
+        "Kawasaki",
+        "165"
+      ],
+      [
+        "6",
+        "Honda",
+        "64"
+      ]
+    ]
+  }
+]

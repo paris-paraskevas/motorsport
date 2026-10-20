@@ -1,0 +1,172 @@
+[
+  {
+    "title": "Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Pascal Wehrlein",
+        "169"
+      ],
+      [
+        "2",
+        "Jake Dennis",
+        "164"
+      ],
+      [
+        "3",
+        "Mitch Evans",
+        "160"
+      ],
+      [
+        "4",
+        "Oliver Rowland",
+        "137"
+      ],
+      [
+        "5",
+        "Edoardo Mortara",
+        "137"
+      ],
+      [
+        "6",
+        "António Félix da Costa",
+        "128"
+      ],
+      [
+        "7",
+        "Nyck de Vries",
+        "115"
+      ],
+      [
+        "8",
+        "Nick Cassidy",
+        "114"
+      ],
+      [
+        "9",
+        "Nico Müller",
+        "102"
+      ],
+      [
+        "10",
+        "Sébastien Buemi",
+        "97"
+      ],
+      [
+        "11",
+        "Taylor Barnard",
+        "68"
+      ],
+      [
+        "12",
+        "Jean-Éric Vergne",
+        "68"
+      ],
+      [
+        "13",
+        "Pepe Martí",
+        "66"
+      ],
+      [
+        "14",
+        "Felipe Drugovich",
+        "65"
+      ],
+      [
+        "15",
+        "Dan Ticktum",
+        "62"
+      ],
+      [
+        "16",
+        "Joel Eriksson",
+        "55"
+      ],
+      [
+        "17",
+        "Lucas di Grassi",
+        "32"
+      ],
+      [
+        "18",
+        "Maximilian Günther",
+        "23"
+      ],
+      [
+        "19",
+        "Norman Nato",
+        "20"
+      ],
+      [
+        "20",
+        "Zane Maloney",
+        "3"
+      ]
+    ]
+  },
+  {
+    "title": "Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Jaguar TCS Racing",
+        "288"
+      ],
+      [
+        "2",
+        "Porsche Formula E Team",
+        "271"
+      ],
+      [
+        "3",
+        "Mahindra Racing",
+        "252"
+      ],
+      [
+        "4",
+        "Andretti Formula E",
+        "229"
+      ],
+      [
+        "5",
+        "Citroën Racing",
+        "182"
+      ],
+      [
+        "6",
+        "Nissan Formula E Team",
+        "157"
+      ],
+      [
+        "7",
+        "Envision Racing",
+        "152"
+      ],
+      [
+        "8",
+        "Cupra Kiro",
+        "128"
+      ],
+      [
+        "9",
+        "DS Penske",
+        "91"
+      ],
+      [
+        "10",
+        "Lola Yamaha ABT Formula E Team",
+        "35"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,1613 @@
+[
+  {
+    "start": "2026-01-29T00:00:00.000Z",
+    "end": "2026-02-01T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Sepang International Circuit",
+    "session": "MotoGP | [SHAKEDOWN] Sepang",
+    "round": null,
+    "location": "Sepang International Circuit, Jalan Pekeliling, 64000 Sepang, Selangor, Malaysia"
+  },
+  {
+    "start": "2026-02-03T00:00:00.000Z",
+    "end": "2026-02-06T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Sepang International Circuit",
+    "session": "MotoGP | [TEST] Sepang",
+    "round": null,
+    "location": "Sepang International Circuit, Jalan Pekeliling, 64000 Sepang, Selangor, Malaysia"
+  },
+  {
+    "start": "2026-02-21T00:00:00.000Z",
+    "end": "2026-02-23T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Chang International Circuit",
+    "session": "MotoGP | [TEST] Buriram",
+    "round": null,
+    "location": "Chang International Circuit, 30, 2, Tambon Isan, Amphoe Mueang Buri Ram, Chang Wat Buri Ram 31000, Thailand"
+  },
+  {
+    "start": "2026-02-27T03:45:00.000Z",
+    "end": "2026-02-27T04:30:00.000Z",
+    "dateOnly": false,
+    "event": "Thai Grand Prix",
+    "session": "FP1",
+    "round": 1,
+    "location": "Chang International Circuit, Buriram"
+  },
+  {
+    "start": "2026-02-27T08:00:00.000Z",
+    "end": "2026-02-27T09:00:00.000Z",
+    "dateOnly": false,
+    "event": "Thai Grand Prix",
+    "session": "Practice",
+    "round": 1,
+    "location": "Chang International Circuit, Buriram"
+  },
+  {
+    "start": "2026-02-28T03:10:00.000Z",
+    "end": "2026-02-28T03:40:00.000Z",
+    "dateOnly": false,
+    "event": "Thai Grand Prix",
+    "session": "FP2",
+    "round": 1,
+    "location": "Chang International Circuit, Buriram"
+  },
+  {
+    "start": "2026-02-28T03:50:00.000Z",
+    "end": "2026-02-28T04:05:00.000Z",
+    "dateOnly": false,
+    "event": "Thai Grand Prix",
+    "session": "Q1",
+    "round": 1,
+    "location": "Chang International Circuit, Buriram"
+  },
+  {
+    "start": "2026-02-28T04:15:00.000Z",
+    "end": "2026-02-28T04:30:00.000Z",
+    "dateOnly": false,
+    "event": "Thai Grand Prix",
+    "session": "Q2",
+    "round": 1,
+    "location": "Chang International Circuit, Buriram"
+  },
+  {
+    "start": "2026-02-28T08:00:00.000Z",
+    "end": "2026-02-28T08:30:00.000Z",
+    "dateOnly": false,
+    "event": "Thai Grand Prix",
+    "session": "Sprint",
+    "round": 1,
+    "location": "Chang International Circuit, Buriram"
+  },
+  {
+    "start": "2026-03-01T03:40:00.000Z",
+    "end": "2026-03-01T03:50:00.000Z",
+    "dateOnly": false,
+    "event": "Thai Grand Prix",
+    "session": "Warm Up",
+    "round": 1,
+    "location": "Chang International Circuit, Buriram"
+  },
+  {
+    "start": "2026-03-01T08:00:00.000Z",
+    "end": "2026-03-01T09:00:00.000Z",
+    "dateOnly": false,
+    "event": "Thai Grand Prix",
+    "session": "Race",
+    "round": 1,
+    "location": "Chang International Circuit, Buriram"
+  },
+  {
+    "start": "2026-03-20T15:05:00.000Z",
+    "end": "2026-03-20T16:05:00.000Z",
+    "dateOnly": false,
+    "event": "Brazilian Grand Prix",
+    "session": "FP1",
+    "round": 2,
+    "location": "Autodromo Internacional Ayrton Senna, Goiania"
+  },
+  {
+    "start": "2026-03-20T19:00:00.000Z",
+    "end": "2026-03-20T20:15:00.000Z",
+    "dateOnly": false,
+    "event": "Brazilian Grand Prix",
+    "session": "Practice",
+    "round": 2,
+    "location": "Autodromo Internacional Ayrton Senna, Goiania"
+  },
+  {
+    "start": "2026-03-21T13:10:00.000Z",
+    "end": "2026-03-21T13:40:00.000Z",
+    "dateOnly": false,
+    "event": "Brazilian Grand Prix",
+    "session": "FP2",
+    "round": 2,
+    "location": "Autodromo Internacional Ayrton Senna, Goiania"
+  },
+  {
+    "start": "2026-03-21T13:50:00.000Z",
+    "end": "2026-03-21T14:05:00.000Z",
+    "dateOnly": false,
+    "event": "Brazilian Grand Prix",
+    "session": "Q1",
+    "round": 2,
+    "location": "Autodromo Internacional Ayrton Senna, Goiania"
+  },
+  {
+    "start": "2026-03-21T14:15:00.000Z",
+    "end": "2026-03-21T14:30:00.000Z",
+    "dateOnly": false,
+    "event": "Brazilian Grand Prix",
+    "session": "Q2",
+    "round": 2,
+    "location": "Autodromo Internacional Ayrton Senna, Goiania"
+  },
+  {
+    "start": "2026-03-21T18:00:00.000Z",
+    "end": "2026-03-21T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Brazilian Grand Prix",
+    "session": "Sprint",
+    "round": 2,
+    "location": "Autodromo Internacional Ayrton Senna, Goiania"
+  },
+  {
+    "start": "2026-03-22T13:40:00.000Z",
+    "end": "2026-03-22T13:50:00.000Z",
+    "dateOnly": false,
+    "event": "Brazilian Grand Prix",
+    "session": "Warm Up",
+    "round": 2,
+    "location": "Autodromo Internacional Ayrton Senna, Goiania"
+  },
+  {
+    "start": "2026-03-22T18:00:00.000Z",
+    "end": "2026-03-22T19:00:00.000Z",
+    "dateOnly": false,
+    "event": "Brazilian Grand Prix",
+    "session": "Race",
+    "round": 2,
+    "location": "Autodromo Internacional Ayrton Senna, Goiania"
+  },
+  {
+    "start": "2026-03-27T15:45:00.000Z",
+    "end": "2026-03-27T16:30:00.000Z",
+    "dateOnly": false,
+    "event": "Grand Prix of the Americas",
+    "session": "FP1",
+    "round": 3,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-03-27T20:00:00.000Z",
+    "end": "2026-03-27T21:00:00.000Z",
+    "dateOnly": false,
+    "event": "Grand Prix of the Americas",
+    "session": "Practice",
+    "round": 3,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-03-28T15:10:00.000Z",
+    "end": "2026-03-28T15:40:00.000Z",
+    "dateOnly": false,
+    "event": "Grand Prix of the Americas",
+    "session": "FP2",
+    "round": 3,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-03-28T15:50:00.000Z",
+    "end": "2026-03-28T16:05:00.000Z",
+    "dateOnly": false,
+    "event": "Grand Prix of the Americas",
+    "session": "Q1",
+    "round": 3,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-03-28T16:15:00.000Z",
+    "end": "2026-03-28T16:30:00.000Z",
+    "dateOnly": false,
+    "event": "Grand Prix of the Americas",
+    "session": "Q2",
+    "round": 3,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-03-28T20:00:00.000Z",
+    "end": "2026-03-28T20:30:00.000Z",
+    "dateOnly": false,
+    "event": "Grand Prix of the Americas",
+    "session": "Sprint",
+    "round": 3,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-03-29T14:40:00.000Z",
+    "end": "2026-03-29T14:50:00.000Z",
+    "dateOnly": false,
+    "event": "Grand Prix of the Americas",
+    "session": "Warm Up",
+    "round": 3,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-03-29T19:00:00.000Z",
+    "end": "2026-03-29T20:00:00.000Z",
+    "dateOnly": false,
+    "event": "Grand Prix of the Americas",
+    "session": "Race",
+    "round": 3,
+    "location": "Circuit of The Americas, Austin"
+  },
+  {
+    "start": "2026-04-24T08:45:00.000Z",
+    "end": "2026-04-24T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix",
+    "session": "FP1",
+    "round": 4,
+    "location": "Circuito de Jerez - Angel Nieto, Jerez"
+  },
+  {
+    "start": "2026-04-24T13:00:00.000Z",
+    "end": "2026-04-24T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix",
+    "session": "Practice",
+    "round": 4,
+    "location": "Circuito de Jerez - Angel Nieto, Jerez"
+  },
+  {
+    "start": "2026-04-25T08:10:00.000Z",
+    "end": "2026-04-25T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix",
+    "session": "FP2",
+    "round": 4,
+    "location": "Circuito de Jerez - Angel Nieto, Jerez"
+  },
+  {
+    "start": "2026-04-25T08:50:00.000Z",
+    "end": "2026-04-25T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix",
+    "session": "Q1",
+    "round": 4,
+    "location": "Circuito de Jerez - Angel Nieto, Jerez"
+  },
+  {
+    "start": "2026-04-25T09:15:00.000Z",
+    "end": "2026-04-25T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix",
+    "session": "Q2",
+    "round": 4,
+    "location": "Circuito de Jerez - Angel Nieto, Jerez"
+  },
+  {
+    "start": "2026-04-25T13:00:00.000Z",
+    "end": "2026-04-25T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix",
+    "session": "Sprint",
+    "round": 4,
+    "location": "Circuito de Jerez - Angel Nieto, Jerez"
+  },
+  {
+    "start": "2026-04-26T07:40:00.000Z",
+    "end": "2026-04-26T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix",
+    "session": "Warm Up",
+    "round": 4,
+    "location": "Circuito de Jerez - Angel Nieto, Jerez"
+  },
+  {
+    "start": "2026-04-26T12:00:00.000Z",
+    "end": "2026-04-26T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Spanish Grand Prix",
+    "session": "Race",
+    "round": 4,
+    "location": "Circuito de Jerez - Angel Nieto, Jerez"
+  },
+  {
+    "start": "2026-05-08T08:45:00.000Z",
+    "end": "2026-05-08T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "French Grand Prix",
+    "session": "FP1",
+    "round": 5,
+    "location": "Le Mans Bugatti Circuit, Le Mans"
+  },
+  {
+    "start": "2026-05-08T13:00:00.000Z",
+    "end": "2026-05-08T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "French Grand Prix",
+    "session": "Practice",
+    "round": 5,
+    "location": "Le Mans Bugatti Circuit, Le Mans"
+  },
+  {
+    "start": "2026-05-09T08:10:00.000Z",
+    "end": "2026-05-09T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "French Grand Prix",
+    "session": "FP2",
+    "round": 5,
+    "location": "Le Mans Bugatti Circuit, Le Mans"
+  },
+  {
+    "start": "2026-05-09T08:50:00.000Z",
+    "end": "2026-05-09T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "French Grand Prix",
+    "session": "Q1",
+    "round": 5,
+    "location": "Le Mans Bugatti Circuit, Le Mans"
+  },
+  {
+    "start": "2026-05-09T09:15:00.000Z",
+    "end": "2026-05-09T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "French Grand Prix",
+    "session": "Q2",
+    "round": 5,
+    "location": "Le Mans Bugatti Circuit, Le Mans"
+  },
+  {
+    "start": "2026-05-09T13:00:00.000Z",
+    "end": "2026-05-09T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "French Grand Prix",
+    "session": "Sprint",
+    "round": 5,
+    "location": "Le Mans Bugatti Circuit, Le Mans"
+  },
+  {
+    "start": "2026-05-10T07:40:00.000Z",
+    "end": "2026-05-10T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "French Grand Prix",
+    "session": "Warm Up",
+    "round": 5,
+    "location": "Le Mans Bugatti Circuit, Le Mans"
+  },
+  {
+    "start": "2026-05-10T12:00:00.000Z",
+    "end": "2026-05-10T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "French Grand Prix",
+    "session": "Race",
+    "round": 5,
+    "location": "Le Mans Bugatti Circuit, Le Mans"
+  },
+  {
+    "start": "2026-05-15T08:45:00.000Z",
+    "end": "2026-05-15T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Catalan Grand Prix",
+    "session": "FP1",
+    "round": 6,
+    "location": "Circuit de Barcelona-Catalunya, Barcelona"
+  },
+  {
+    "start": "2026-05-15T13:00:00.000Z",
+    "end": "2026-05-15T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Catalan Grand Prix",
+    "session": "Practice",
+    "round": 6,
+    "location": "Circuit de Barcelona-Catalunya, Barcelona"
+  },
+  {
+    "start": "2026-05-16T08:10:00.000Z",
+    "end": "2026-05-16T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Catalan Grand Prix",
+    "session": "FP2",
+    "round": 6,
+    "location": "Circuit de Barcelona-Catalunya, Barcelona"
+  },
+  {
+    "start": "2026-05-16T08:50:00.000Z",
+    "end": "2026-05-16T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Catalan Grand Prix",
+    "session": "Q1",
+    "round": 6,
+    "location": "Circuit de Barcelona-Catalunya, Barcelona"
+  },
+  {
+    "start": "2026-05-16T09:15:00.000Z",
+    "end": "2026-05-16T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Catalan Grand Prix",
+    "session": "Q2",
+    "round": 6,
+    "location": "Circuit de Barcelona-Catalunya, Barcelona"
+  },
+  {
+    "start": "2026-05-16T13:00:00.000Z",
+    "end": "2026-05-16T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Catalan Grand Prix",
+    "session": "Sprint",
+    "round": 6,
+    "location": "Circuit de Barcelona-Catalunya, Barcelona"
+  },
+  {
+    "start": "2026-05-17T07:40:00.000Z",
+    "end": "2026-05-17T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "Catalan Grand Prix",
+    "session": "Warm Up",
+    "round": 6,
+    "location": "Circuit de Barcelona-Catalunya, Barcelona"
+  },
+  {
+    "start": "2026-05-17T12:00:00.000Z",
+    "end": "2026-05-17T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Catalan Grand Prix",
+    "session": "Race",
+    "round": 6,
+    "location": "Circuit de Barcelona-Catalunya, Barcelona"
+  },
+  {
+    "start": "2026-05-29T08:45:00.000Z",
+    "end": "2026-05-29T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "FP1",
+    "round": 7,
+    "location": "Autodromo Internazionale del Mugello, Scarperia"
+  },
+  {
+    "start": "2026-05-29T13:00:00.000Z",
+    "end": "2026-05-29T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Practice",
+    "round": 7,
+    "location": "Autodromo Internazionale del Mugello, Scarperia"
+  },
+  {
+    "start": "2026-05-30T08:10:00.000Z",
+    "end": "2026-05-30T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "FP2",
+    "round": 7,
+    "location": "Autodromo Internazionale del Mugello, Scarperia"
+  },
+  {
+    "start": "2026-05-30T08:50:00.000Z",
+    "end": "2026-05-30T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Q1",
+    "round": 7,
+    "location": "Autodromo Internazionale del Mugello, Scarperia"
+  },
+  {
+    "start": "2026-05-30T09:15:00.000Z",
+    "end": "2026-05-30T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Q2",
+    "round": 7,
+    "location": "Autodromo Internazionale del Mugello, Scarperia"
+  },
+  {
+    "start": "2026-05-30T13:00:00.000Z",
+    "end": "2026-05-30T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Sprint",
+    "round": 7,
+    "location": "Autodromo Internazionale del Mugello, Scarperia"
+  },
+  {
+    "start": "2026-05-31T07:40:00.000Z",
+    "end": "2026-05-31T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Warm Up",
+    "round": 7,
+    "location": "Autodromo Internazionale del Mugello, Scarperia"
+  },
+  {
+    "start": "2026-05-31T12:00:00.000Z",
+    "end": "2026-05-31T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Italian Grand Prix",
+    "session": "Race",
+    "round": 7,
+    "location": "Autodromo Internazionale del Mugello, Scarperia"
+  },
+  {
+    "start": "2026-06-05T08:45:00.000Z",
+    "end": "2026-06-05T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "FP1",
+    "round": 8,
+    "location": "Balaton Park Circuit, Balatonfokajar"
+  },
+  {
+    "start": "2026-06-05T13:00:00.000Z",
+    "end": "2026-06-05T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Practice",
+    "round": 8,
+    "location": "Balaton Park Circuit, Balatonfokajar"
+  },
+  {
+    "start": "2026-06-06T08:10:00.000Z",
+    "end": "2026-06-06T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "FP2",
+    "round": 8,
+    "location": "Balaton Park Circuit, Balatonfokajar"
+  },
+  {
+    "start": "2026-06-06T08:50:00.000Z",
+    "end": "2026-06-06T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Q1",
+    "round": 8,
+    "location": "Balaton Park Circuit, Balatonfokajar"
+  },
+  {
+    "start": "2026-06-06T09:15:00.000Z",
+    "end": "2026-06-06T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Q2",
+    "round": 8,
+    "location": "Balaton Park Circuit, Balatonfokajar"
+  },
+  {
+    "start": "2026-06-06T13:00:00.000Z",
+    "end": "2026-06-06T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Sprint",
+    "round": 8,
+    "location": "Balaton Park Circuit, Balatonfokajar"
+  },
+  {
+    "start": "2026-06-07T07:40:00.000Z",
+    "end": "2026-06-07T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Warm Up",
+    "round": 8,
+    "location": "Balaton Park Circuit, Balatonfokajar"
+  },
+  {
+    "start": "2026-06-07T12:00:00.000Z",
+    "end": "2026-06-07T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Hungarian Grand Prix",
+    "session": "Race",
+    "round": 8,
+    "location": "Balaton Park Circuit, Balatonfokajar"
+  },
+  {
+    "start": "2026-06-19T08:45:00.000Z",
+    "end": "2026-06-19T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Czech Grand Prix",
+    "session": "FP1",
+    "round": 9,
+    "location": "Automotodrom Brno, Brno"
+  },
+  {
+    "start": "2026-06-19T13:00:00.000Z",
+    "end": "2026-06-19T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Czech Grand Prix",
+    "session": "Practice",
+    "round": 9,
+    "location": "Automotodrom Brno, Brno"
+  },
+  {
+    "start": "2026-06-20T08:10:00.000Z",
+    "end": "2026-06-20T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Czech Grand Prix",
+    "session": "FP2",
+    "round": 9,
+    "location": "Automotodrom Brno, Brno"
+  },
+  {
+    "start": "2026-06-20T08:50:00.000Z",
+    "end": "2026-06-20T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Czech Grand Prix",
+    "session": "Q1",
+    "round": 9,
+    "location": "Automotodrom Brno, Brno"
+  },
+  {
+    "start": "2026-06-20T09:15:00.000Z",
+    "end": "2026-06-20T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Czech Grand Prix",
+    "session": "Q2",
+    "round": 9,
+    "location": "Automotodrom Brno, Brno"
+  },
+  {
+    "start": "2026-06-20T13:00:00.000Z",
+    "end": "2026-06-20T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Czech Grand Prix",
+    "session": "Sprint",
+    "round": 9,
+    "location": "Automotodrom Brno, Brno"
+  },
+  {
+    "start": "2026-06-21T07:40:00.000Z",
+    "end": "2026-06-21T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "Czech Grand Prix",
+    "session": "Warm Up",
+    "round": 9,
+    "location": "Automotodrom Brno, Brno"
+  },
+  {
+    "start": "2026-06-21T12:00:00.000Z",
+    "end": "2026-06-21T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Czech Grand Prix",
+    "session": "Race",
+    "round": 9,
+    "location": "Automotodrom Brno, Brno"
+  },
+  {
+    "start": "2026-06-26T08:45:00.000Z",
+    "end": "2026-06-26T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Dutch Grand Prix",
+    "session": "FP1",
+    "round": 10,
+    "location": "TT Circuit Assen, Assen"
+  },
+  {
+    "start": "2026-06-26T13:00:00.000Z",
+    "end": "2026-06-26T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Dutch Grand Prix",
+    "session": "Practice",
+    "round": 10,
+    "location": "TT Circuit Assen, Assen"
+  },
+  {
+    "start": "2026-06-27T08:10:00.000Z",
+    "end": "2026-06-27T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Dutch Grand Prix",
+    "session": "FP2",
+    "round": 10,
+    "location": "TT Circuit Assen, Assen"
+  },
+  {
+    "start": "2026-06-27T08:50:00.000Z",
+    "end": "2026-06-27T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Dutch Grand Prix",
+    "session": "Q1",
+    "round": 10,
+    "location": "TT Circuit Assen, Assen"
+  },
+  {
+    "start": "2026-06-27T09:15:00.000Z",
+    "end": "2026-06-27T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Dutch Grand Prix",
+    "session": "Q2",
+    "round": 10,
+    "location": "TT Circuit Assen, Assen"
+  },
+  {
+    "start": "2026-06-27T13:00:00.000Z",
+    "end": "2026-06-27T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Dutch Grand Prix",
+    "session": "Sprint",
+    "round": 10,
+    "location": "TT Circuit Assen, Assen"
+  },
+  {
+    "start": "2026-06-28T07:40:00.000Z",
+    "end": "2026-06-28T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "Dutch Grand Prix",
+    "session": "Warm Up",
+    "round": 10,
+    "location": "TT Circuit Assen, Assen"
+  },
+  {
+    "start": "2026-06-28T12:00:00.000Z",
+    "end": "2026-06-28T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Dutch Grand Prix",
+    "session": "Race",
+    "round": 10,
+    "location": "TT Circuit Assen, Assen"
+  },
+  {
+    "start": "2026-07-10T08:45:00.000Z",
+    "end": "2026-07-10T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "German Grand Prix",
+    "session": "FP1",
+    "round": 11,
+    "location": "Sachsenring, Hohenstein-Ernstthal"
+  },
+  {
+    "start": "2026-07-10T13:00:00.000Z",
+    "end": "2026-07-10T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "German Grand Prix",
+    "session": "Practice",
+    "round": 11,
+    "location": "Sachsenring, Hohenstein-Ernstthal"
+  },
+  {
+    "start": "2026-07-11T08:10:00.000Z",
+    "end": "2026-07-11T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "German Grand Prix",
+    "session": "FP2",
+    "round": 11,
+    "location": "Sachsenring, Hohenstein-Ernstthal"
+  },
+  {
+    "start": "2026-07-11T08:50:00.000Z",
+    "end": "2026-07-11T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "German Grand Prix",
+    "session": "Q1",
+    "round": 11,
+    "location": "Sachsenring, Hohenstein-Ernstthal"
+  },
+  {
+    "start": "2026-07-11T09:15:00.000Z",
+    "end": "2026-07-11T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "German Grand Prix",
+    "session": "Q2",
+    "round": 11,
+    "location": "Sachsenring, Hohenstein-Ernstthal"
+  },
+  {
+    "start": "2026-07-11T13:00:00.000Z",
+    "end": "2026-07-11T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "German Grand Prix",
+    "session": "Sprint",
+    "round": 11,
+    "location": "Sachsenring, Hohenstein-Ernstthal"
+  },
+  {
+    "start": "2026-07-12T07:40:00.000Z",
+    "end": "2026-07-12T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "German Grand Prix",
+    "session": "Warm Up",
+    "round": 11,
+    "location": "Sachsenring, Hohenstein-Ernstthal"
+  },
+  {
+    "start": "2026-07-12T12:00:00.000Z",
+    "end": "2026-07-12T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "German Grand Prix",
+    "session": "Race",
+    "round": 11,
+    "location": "Sachsenring, Hohenstein-Ernstthal"
+  },
+  {
+    "start": "2026-08-07T09:45:00.000Z",
+    "end": "2026-08-07T10:30:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "FP1",
+    "round": 12,
+    "location": "Silverstone Circuit, Silverstone"
+  },
+  {
+    "start": "2026-08-07T14:00:00.000Z",
+    "end": "2026-08-07T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Practice",
+    "round": 12,
+    "location": "Silverstone Circuit, Silverstone"
+  },
+  {
+    "start": "2026-08-08T09:10:00.000Z",
+    "end": "2026-08-08T09:40:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "FP2",
+    "round": 12,
+    "location": "Silverstone Circuit, Silverstone"
+  },
+  {
+    "start": "2026-08-08T09:50:00.000Z",
+    "end": "2026-08-08T10:05:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Q1",
+    "round": 12,
+    "location": "Silverstone Circuit, Silverstone"
+  },
+  {
+    "start": "2026-08-08T10:15:00.000Z",
+    "end": "2026-08-08T10:30:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Q2",
+    "round": 12,
+    "location": "Silverstone Circuit, Silverstone"
+  },
+  {
+    "start": "2026-08-08T14:00:00.000Z",
+    "end": "2026-08-08T14:30:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Sprint",
+    "round": 12,
+    "location": "Silverstone Circuit, Silverstone"
+  },
+  {
+    "start": "2026-08-09T08:40:00.000Z",
+    "end": "2026-08-09T08:50:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Warm Up",
+    "round": 12,
+    "location": "Silverstone Circuit, Silverstone"
+  },
+  {
+    "start": "2026-08-09T12:00:00.000Z",
+    "end": "2026-08-09T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "British Grand Prix",
+    "session": "Race",
+    "round": 12,
+    "location": "Silverstone Circuit, Silverstone"
+  },
+  {
+    "start": "2026-08-28T08:45:00.000Z",
+    "end": "2026-08-28T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Aragon Grand Prix",
+    "session": "FP1",
+    "round": 13,
+    "location": "MotorLand Aragon, Alcaniz"
+  },
+  {
+    "start": "2026-08-28T13:00:00.000Z",
+    "end": "2026-08-28T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Aragon Grand Prix",
+    "session": "Practice",
+    "round": 13,
+    "location": "MotorLand Aragon, Alcaniz"
+  },
+  {
+    "start": "2026-08-29T08:10:00.000Z",
+    "end": "2026-08-29T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Aragon Grand Prix",
+    "session": "FP2",
+    "round": 13,
+    "location": "MotorLand Aragon, Alcaniz"
+  },
+  {
+    "start": "2026-08-29T08:50:00.000Z",
+    "end": "2026-08-29T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Aragon Grand Prix",
+    "session": "Q1",
+    "round": 13,
+    "location": "MotorLand Aragon, Alcaniz"
+  },
+  {
+    "start": "2026-08-29T09:15:00.000Z",
+    "end": "2026-08-29T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Aragon Grand Prix",
+    "session": "Q2",
+    "round": 13,
+    "location": "MotorLand Aragon, Alcaniz"
+  },
+  {
+    "start": "2026-08-29T13:00:00.000Z",
+    "end": "2026-08-29T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Aragon Grand Prix",
+    "session": "Sprint",
+    "round": 13,
+    "location": "MotorLand Aragon, Alcaniz"
+  },
+  {
+    "start": "2026-08-30T07:40:00.000Z",
+    "end": "2026-08-30T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "Aragon Grand Prix",
+    "session": "Warm Up",
+    "round": 13,
+    "location": "MotorLand Aragon, Alcaniz"
+  },
+  {
+    "start": "2026-08-30T12:00:00.000Z",
+    "end": "2026-08-30T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Aragon Grand Prix",
+    "session": "Race",
+    "round": 13,
+    "location": "MotorLand Aragon, Alcaniz"
+  },
+  {
+    "start": "2026-09-11T08:45:00.000Z",
+    "end": "2026-09-11T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "San Marino Grand Prix",
+    "session": "FP1",
+    "round": 14,
+    "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+  },
+  {
+    "start": "2026-09-11T13:00:00.000Z",
+    "end": "2026-09-11T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "San Marino Grand Prix",
+    "session": "Practice",
+    "round": 14,
+    "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+  },
+  {
+    "start": "2026-09-12T08:10:00.000Z",
+    "end": "2026-09-12T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "San Marino Grand Prix",
+    "session": "FP2",
+    "round": 14,
+    "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+  },
+  {
+    "start": "2026-09-12T08:50:00.000Z",
+    "end": "2026-09-12T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "San Marino Grand Prix",
+    "session": "Q1",
+    "round": 14,
+    "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+  },
+  {
+    "start": "2026-09-12T09:15:00.000Z",
+    "end": "2026-09-12T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "San Marino Grand Prix",
+    "session": "Q2",
+    "round": 14,
+    "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+  },
+  {
+    "start": "2026-09-12T13:00:00.000Z",
+    "end": "2026-09-12T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "San Marino Grand Prix",
+    "session": "Sprint",
+    "round": 14,
+    "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+  },
+  {
+    "start": "2026-09-13T07:40:00.000Z",
+    "end": "2026-09-13T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "San Marino Grand Prix",
+    "session": "Warm Up",
+    "round": 14,
+    "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+  },
+  {
+    "start": "2026-09-13T12:00:00.000Z",
+    "end": "2026-09-13T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "San Marino Grand Prix",
+    "session": "Race",
+    "round": 14,
+    "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico"
+  },
+  {
+    "start": "2026-09-18T08:45:00.000Z",
+    "end": "2026-09-18T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "FP1",
+    "round": 15,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-09-18T13:00:00.000Z",
+    "end": "2026-09-18T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Practice",
+    "round": 15,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-09-19T08:10:00.000Z",
+    "end": "2026-09-19T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "FP2",
+    "round": 15,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-09-19T08:50:00.000Z",
+    "end": "2026-09-19T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Q1",
+    "round": 15,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-09-19T09:15:00.000Z",
+    "end": "2026-09-19T09:30:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Q2",
+    "round": 15,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-09-19T13:00:00.000Z",
+    "end": "2026-09-19T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Sprint",
+    "round": 15,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-09-20T07:40:00.000Z",
+    "end": "2026-09-20T07:50:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Warm Up",
+    "round": 15,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-09-20T12:00:00.000Z",
+    "end": "2026-09-20T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Austrian Grand Prix",
+    "session": "Race",
+    "round": 15,
+    "location": "Red Bull Ring, Spielberg"
+  },
+  {
+    "start": "2026-10-02T01:45:00.000Z",
+    "end": "2026-10-02T02:30:00.000Z",
+    "dateOnly": false,
+    "event": "Japanese Grand Prix",
+    "session": "FP1",
+    "round": 16,
+    "location": "Mobility Resort Motegi, Motegi"
+  },
+  {
+    "start": "2026-10-02T06:00:00.000Z",
+    "end": "2026-10-02T07:00:00.000Z",
+    "dateOnly": false,
+    "event": "Japanese Grand Prix",
+    "session": "Practice",
+    "round": 16,
+    "location": "Mobility Resort Motegi, Motegi"
+  },
+  {
+    "start": "2026-10-03T01:10:00.000Z",
+    "end": "2026-10-03T01:40:00.000Z",
+    "dateOnly": false,
+    "event": "Japanese Grand Prix",
+    "session": "FP2",
+    "round": 16,
+    "location": "Mobility Resort Motegi, Motegi"
+  },
+  {
+    "start": "2026-10-03T01:50:00.000Z",
+    "end": "2026-10-03T02:05:00.000Z",
+    "dateOnly": false,
+    "event": "Japanese Grand Prix",
+    "session": "Q1",
+    "round": 16,
+    "location": "Mobility Resort Motegi, Motegi"
+  },
+  {
+    "start": "2026-10-03T02:15:00.000Z",
+    "end": "2026-10-03T02:30:00.000Z",
+    "dateOnly": false,
+    "event": "Japanese Grand Prix",
+    "session": "Q2",
+    "round": 16,
+    "location": "Mobility Resort Motegi, Motegi"
+  },
+  {
+    "start": "2026-10-03T06:00:00.000Z",
+    "end": "2026-10-03T06:30:00.000Z",
+    "dateOnly": false,
+    "event": "Japanese Grand Prix",
+    "session": "Sprint",
+    "round": 16,
+    "location": "Mobility Resort Motegi, Motegi"
+  },
+  {
+    "start": "2026-10-04T00:40:00.000Z",
+    "end": "2026-10-04T00:50:00.000Z",
+    "dateOnly": false,
+    "event": "Japanese Grand Prix",
+    "session": "Warm Up",
+    "round": 16,
+    "location": "Mobility Resort Motegi, Motegi"
+  },
+  {
+    "start": "2026-10-04T05:00:00.000Z",
+    "end": "2026-10-04T06:00:00.000Z",
+    "dateOnly": false,
+    "event": "Japanese Grand Prix",
+    "session": "Race",
+    "round": 16,
+    "location": "Mobility Resort Motegi, Motegi"
+  },
+  {
+    "start": "2026-10-09T02:45:00.000Z",
+    "end": "2026-10-09T03:30:00.000Z",
+    "dateOnly": false,
+    "event": "Indonesian Grand Prix",
+    "session": "FP1",
+    "round": 17,
+    "location": "Pertamina Mandalika International Circuit, Lombok"
+  },
+  {
+    "start": "2026-10-09T07:00:00.000Z",
+    "end": "2026-10-09T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Indonesian Grand Prix",
+    "session": "Practice",
+    "round": 17,
+    "location": "Pertamina Mandalika International Circuit, Lombok"
+  },
+  {
+    "start": "2026-10-10T02:10:00.000Z",
+    "end": "2026-10-10T02:40:00.000Z",
+    "dateOnly": false,
+    "event": "Indonesian Grand Prix",
+    "session": "FP2",
+    "round": 17,
+    "location": "Pertamina Mandalika International Circuit, Lombok"
+  },
+  {
+    "start": "2026-10-10T02:50:00.000Z",
+    "end": "2026-10-10T03:05:00.000Z",
+    "dateOnly": false,
+    "event": "Indonesian Grand Prix",
+    "session": "Q1",
+    "round": 17,
+    "location": "Pertamina Mandalika International Circuit, Lombok"
+  },
+  {
+    "start": "2026-10-10T03:15:00.000Z",
+    "end": "2026-10-10T03:30:00.000Z",
+    "dateOnly": false,
+    "event": "Indonesian Grand Prix",
+    "session": "Q2",
+    "round": 17,
+    "location": "Pertamina Mandalika International Circuit, Lombok"
+  },
+  {
+    "start": "2026-10-10T07:00:00.000Z",
+    "end": "2026-10-10T07:30:00.000Z",
+    "dateOnly": false,
+    "event": "Indonesian Grand Prix",
+    "session": "Sprint",
+    "round": 17,
+    "location": "Pertamina Mandalika International Circuit, Lombok"
+  },
+  {
+    "start": "2026-10-11T02:40:00.000Z",
+    "end": "2026-10-11T02:50:00.000Z",
+    "dateOnly": false,
+    "event": "Indonesian Grand Prix",
+    "session": "Warm Up",
+    "round": 17,
+    "location": "Pertamina Mandalika International Circuit, Lombok"
+  },
+  {
+    "start": "2026-10-11T07:00:00.000Z",
+    "end": "2026-10-11T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Indonesian Grand Prix",
+    "session": "Race",
+    "round": 17,
+    "location": "Pertamina Mandalika International Circuit, Lombok"
+  },
+  {
+    "start": "2026-10-22T23:45:00.000Z",
+    "end": "2026-10-23T00:30:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "FP1",
+    "round": 18,
+    "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+  },
+  {
+    "start": "2026-10-23T04:00:00.000Z",
+    "end": "2026-10-23T05:00:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Practice",
+    "round": 18,
+    "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+  },
+  {
+    "start": "2026-10-23T23:10:00.000Z",
+    "end": "2026-10-23T23:40:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "FP2",
+    "round": 18,
+    "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+  },
+  {
+    "start": "2026-10-23T23:50:00.000Z",
+    "end": "2026-10-24T00:05:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Q1",
+    "round": 18,
+    "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+  },
+  {
+    "start": "2026-10-24T00:15:00.000Z",
+    "end": "2026-10-24T00:30:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Q2",
+    "round": 18,
+    "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+  },
+  {
+    "start": "2026-10-24T04:00:00.000Z",
+    "end": "2026-10-24T04:30:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Sprint",
+    "round": 18,
+    "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+  },
+  {
+    "start": "2026-10-24T22:40:00.000Z",
+    "end": "2026-10-24T22:50:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Warm Up",
+    "round": 18,
+    "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+  },
+  {
+    "start": "2026-10-25T03:00:00.000Z",
+    "end": "2026-10-25T04:00:00.000Z",
+    "dateOnly": false,
+    "event": "Australian Grand Prix",
+    "session": "Race",
+    "round": 18,
+    "location": "Phillip Island Grand Prix Circuit, Phillip Island"
+  },
+  {
+    "start": "2026-10-30T02:45:00.000Z",
+    "end": "2026-10-30T03:30:00.000Z",
+    "dateOnly": false,
+    "event": "Malaysian Grand Prix",
+    "session": "FP1",
+    "round": 19,
+    "location": "Petronas Sepang International Circuit, Sepang"
+  },
+  {
+    "start": "2026-10-30T07:00:00.000Z",
+    "end": "2026-10-30T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Malaysian Grand Prix",
+    "session": "Practice",
+    "round": 19,
+    "location": "Petronas Sepang International Circuit, Sepang"
+  },
+  {
+    "start": "2026-10-31T02:10:00.000Z",
+    "end": "2026-10-31T02:40:00.000Z",
+    "dateOnly": false,
+    "event": "Malaysian Grand Prix",
+    "session": "FP2",
+    "round": 19,
+    "location": "Petronas Sepang International Circuit, Sepang"
+  },
+  {
+    "start": "2026-10-31T02:50:00.000Z",
+    "end": "2026-10-31T03:05:00.000Z",
+    "dateOnly": false,
+    "event": "Malaysian Grand Prix",
+    "session": "Q1",
+    "round": 19,
+    "location": "Petronas Sepang International Circuit, Sepang"
+  },
+  {
+    "start": "2026-10-31T03:15:00.000Z",
+    "end": "2026-10-31T03:30:00.000Z",
+    "dateOnly": false,
+    "event": "Malaysian Grand Prix",
+    "session": "Q2",
+    "round": 19,
+    "location": "Petronas Sepang International Circuit, Sepang"
+  },
+  {
+    "start": "2026-10-31T07:00:00.000Z",
+    "end": "2026-10-31T07:30:00.000Z",
+    "dateOnly": false,
+    "event": "Malaysian Grand Prix",
+    "session": "Sprint",
+    "round": 19,
+    "location": "Petronas Sepang International Circuit, Sepang"
+  },
+  {
+    "start": "2026-11-01T02:40:00.000Z",
+    "end": "2026-11-01T02:50:00.000Z",
+    "dateOnly": false,
+    "event": "Malaysian Grand Prix",
+    "session": "Warm Up",
+    "round": 19,
+    "location": "Petronas Sepang International Circuit, Sepang"
+  },
+  {
+    "start": "2026-11-01T07:00:00.000Z",
+    "end": "2026-11-01T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Malaysian Grand Prix",
+    "session": "Race",
+    "round": 19,
+    "location": "Petronas Sepang International Circuit, Sepang"
+  },
+  {
+    "start": "2026-11-06T10:45:00.000Z",
+    "end": "2026-11-06T11:30:00.000Z",
+    "dateOnly": false,
+    "event": "Qatar Grand Prix",
+    "session": "FP1",
+    "round": 20,
+    "location": "Lusail International Circuit, Lusail"
+  },
+  {
+    "start": "2026-11-06T15:00:00.000Z",
+    "end": "2026-11-06T16:00:00.000Z",
+    "dateOnly": false,
+    "event": "Qatar Grand Prix",
+    "session": "Practice",
+    "round": 20,
+    "location": "Lusail International Circuit, Lusail"
+  },
+  {
+    "start": "2026-11-07T09:45:00.000Z",
+    "end": "2026-11-07T10:15:00.000Z",
+    "dateOnly": false,
+    "event": "Qatar Grand Prix",
+    "session": "FP2",
+    "round": 20,
+    "location": "Lusail International Circuit, Lusail"
+  },
+  {
+    "start": "2026-11-07T10:25:00.000Z",
+    "end": "2026-11-07T10:40:00.000Z",
+    "dateOnly": false,
+    "event": "Qatar Grand Prix",
+    "session": "Q1",
+    "round": 20,
+    "location": "Lusail International Circuit, Lusail"
+  },
+  {
+    "start": "2026-11-07T10:50:00.000Z",
+    "end": "2026-11-07T11:05:00.000Z",
+    "dateOnly": false,
+    "event": "Qatar Grand Prix",
+    "session": "Q2",
+    "round": 20,
+    "location": "Lusail International Circuit, Lusail"
+  },
+  {
+    "start": "2026-11-07T15:00:00.000Z",
+    "end": "2026-11-07T15:30:00.000Z",
+    "dateOnly": false,
+    "event": "Qatar Grand Prix",
+    "session": "Sprint",
+    "round": 20,
+    "location": "Lusail International Circuit, Lusail"
+  },
+  {
+    "start": "2026-11-08T10:40:00.000Z",
+    "end": "2026-11-08T10:50:00.000Z",
+    "dateOnly": false,
+    "event": "Qatar Grand Prix",
+    "session": "Warm Up",
+    "round": 20,
+    "location": "Lusail International Circuit, Lusail"
+  },
+  {
+    "start": "2026-11-08T15:00:00.000Z",
+    "end": "2026-11-08T16:00:00.000Z",
+    "dateOnly": false,
+    "event": "Qatar Grand Prix",
+    "session": "Race",
+    "round": 20,
+    "location": "Lusail International Circuit, Lusail"
+  },
+  {
+    "start": "2026-11-20T10:45:00.000Z",
+    "end": "2026-11-20T11:30:00.000Z",
+    "dateOnly": false,
+    "event": "Portuguese Grand Prix",
+    "session": "FP1",
+    "round": 21,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-11-20T15:00:00.000Z",
+    "end": "2026-11-20T16:00:00.000Z",
+    "dateOnly": false,
+    "event": "Portuguese Grand Prix",
+    "session": "Practice",
+    "round": 21,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-11-21T10:10:00.000Z",
+    "end": "2026-11-21T10:40:00.000Z",
+    "dateOnly": false,
+    "event": "Portuguese Grand Prix",
+    "session": "FP2",
+    "round": 21,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-11-21T10:50:00.000Z",
+    "end": "2026-11-21T11:05:00.000Z",
+    "dateOnly": false,
+    "event": "Portuguese Grand Prix",
+    "session": "Q1",
+    "round": 21,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-11-21T11:15:00.000Z",
+    "end": "2026-11-21T11:30:00.000Z",
+    "dateOnly": false,
+    "event": "Portuguese Grand Prix",
+    "session": "Q2",
+    "round": 21,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-11-21T15:00:00.000Z",
+    "end": "2026-11-21T15:30:00.000Z",
+    "dateOnly": false,
+    "event": "Portuguese Grand Prix",
+    "session": "Sprint",
+    "round": 21,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-11-22T09:40:00.000Z",
+    "end": "2026-11-22T09:50:00.000Z",
+    "dateOnly": false,
+    "event": "Portuguese Grand Prix",
+    "session": "Warm Up",
+    "round": 21,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-11-22T14:00:00.000Z",
+    "end": "2026-11-22T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "Portuguese Grand Prix",
+    "session": "Race",
+    "round": 21,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-11-27T09:45:00.000Z",
+    "end": "2026-11-27T10:30:00.000Z",
+    "dateOnly": false,
+    "event": "Valencian Grand Prix",
+    "session": "FP1",
+    "round": 22,
+    "location": "Circuit Ricardo Tormo, Cheste"
+  },
+  {
+    "start": "2026-11-27T14:00:00.000Z",
+    "end": "2026-11-27T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "Valencian Grand Prix",
+    "session": "Practice",
+    "round": 22,
+    "location": "Circuit Ricardo Tormo, Cheste"
+  },
+  {
+    "start": "2026-11-28T09:10:00.000Z",
+    "end": "2026-11-28T09:40:00.000Z",
+    "dateOnly": false,
+    "event": "Valencian Grand Prix",
+    "session": "FP2",
+    "round": 22,
+    "location": "Circuit Ricardo Tormo, Cheste"
+  },
+  {
+    "start": "2026-11-28T09:50:00.000Z",
+    "end": "2026-11-28T10:05:00.000Z",
+    "dateOnly": false,
+    "event": "Valencian Grand Prix",
+    "session": "Q1",
+    "round": 22,
+    "location": "Circuit Ricardo Tormo, Cheste"
+  },
+  {
+    "start": "2026-11-28T10:15:00.000Z",
+    "end": "2026-11-28T10:30:00.000Z",
+    "dateOnly": false,
+    "event": "Valencian Grand Prix",
+    "session": "Q2",
+    "round": 22,
+    "location": "Circuit Ricardo Tormo, Cheste"
+  },
+  {
+    "start": "2026-11-28T14:00:00.000Z",
+    "end": "2026-11-28T14:30:00.000Z",
+    "dateOnly": false,
+    "event": "Valencian Grand Prix",
+    "session": "Sprint",
+    "round": 22,
+    "location": "Circuit Ricardo Tormo, Cheste"
+  },
+  {
+    "start": "2026-11-29T08:40:00.000Z",
+    "end": "2026-11-29T08:50:00.000Z",
+    "dateOnly": false,
+    "event": "Valencian Grand Prix",
+    "session": "Warm Up",
+    "round": 22,
+    "location": "Circuit Ricardo Tormo, Cheste"
+  },
+  {
+    "start": "2026-11-29T13:00:00.000Z",
+    "end": "2026-11-29T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Valencian Grand Prix",
+    "session": "Race",
+    "round": 22,
+    "location": "Circuit Ricardo Tormo, Cheste"
+  }
+]

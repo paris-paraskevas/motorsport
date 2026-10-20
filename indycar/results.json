@@ -1,0 +1,1694 @@
+[
+  {
+    "round": 1,
+    "name": "Firestone Grand Prix of St. Petersburg",
+    "date": "2026-03-01",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "42"
+              ],
+              [
+                "3",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "29"
+              ],
+              [
+                "7",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "27"
+              ],
+              [
+                "8",
+                "Romain Grosjean",
+                "Dale Coyne Racing",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Rinus VeeKay",
+                "Juncos Hollinger Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Dennis Hauger RY",
+                "",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "name": "Good Ranchers 250 (Phoenix Raceway)",
+    "date": "2026-03-07",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "37"
+              ],
+              [
+                "4",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "33"
+              ],
+              [
+                "5",
+                "Marcus Armstrong",
+                "Meyer Shank Racing",
+                "Finished",
+                "31"
+              ],
+              [
+                "6",
+                "Alexander Rossi",
+                "Ed Carpenter Racing",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Scott Dixon",
+                "Chip Ganassi Racing",
+                "Finished",
+                "27"
+              ],
+              [
+                "8",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Graham Rahal",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Kyffin Simpson",
+                "Chip Ganassi Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "name": "Java House Grand Prix of Arlington",
+    "date": "2026-03-15",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "Will Power",
+                "Andretti Global",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "34"
+              ],
+              [
+                "5",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Scott Dixon",
+                "Chip Ganassi Racing",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Alexander Rossi",
+                "Ed Carpenter Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Marcus Armstrong",
+                "Meyer Shank Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "name": "Children's of Alabama Indy Grand Prix",
+    "date": "2026-03-29",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "52"
+              ],
+              [
+                "2",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "Graham Rahal",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Marcus Armstrong",
+                "Meyer Shank Racing",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Scott Dixon",
+                "Chip Ganassi Racing",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Santino Ferrucci",
+                "A.J. Foyt Racing",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "name": "Acura Grand Prix of Long Beach",
+    "date": "2026-04-19",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Felix Rosenqvist",
+                "Meyer Shank Racing",
+                "Finished",
+                "42"
+              ],
+              [
+                "3",
+                "Scott Dixon",
+                "Chip Ganassi Racing",
+                "Finished",
+                "35"
+              ],
+              [
+                "4",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Graham Rahal",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Alexander Rossi",
+                "Ed Carpenter Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Kyffin Simpson",
+                "Chip Ganassi Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "name": "Sonsio Grand Prix at the Brickyard",
+    "date": "2026-05-09",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "Graham Rahal",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "35"
+              ],
+              [
+                "4",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "32"
+              ],
+              [
+                "6",
+                "Scott Dixon",
+                "Chip Ganassi Racing",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Louis Foster",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Dennis Hauger RY",
+                "",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Nolan Siegel",
+                "Arrow McLaren",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "name": "110th Indianapolis 500",
+    "date": "2026-05-24",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Felix Rosenqvist",
+                "Meyer Shank Racing",
+                "Finished",
+                "50"
+              ],
+              [
+                "2",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "40"
+              ],
+              [
+                "3",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "35"
+              ],
+              [
+                "4",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Marcus Armstrong",
+                "Meyer Shank Racing",
+                "Finished",
+                "31"
+              ],
+              [
+                "6",
+                "Rinus VeeKay",
+                "Juncos Hollinger Racing",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Santino Ferrucci",
+                "A.J. Foyt Racing",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Romain Grosjean",
+                "Dale Coyne Racing",
+                "Finished",
+                "23"
+              ],
+              [
+                "10",
+                "Takuma Sato",
+                "",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "name": "Chevrolet Detroit Grand Prix",
+    "date": "2026-05-31",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "52"
+              ],
+              [
+                "2",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "Graham Rahal",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "35"
+              ],
+              [
+                "4",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "31"
+              ],
+              [
+                "6",
+                "Felix Rosenqvist",
+                "Meyer Shank Racing",
+                "Finished",
+                "29"
+              ],
+              [
+                "7",
+                "Louis Foster",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Kyffin Simpson",
+                "Chip Ganassi Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 9,
+    "name": "Bommarito Automotive Group 500 (Gateway)",
+    "date": "2026-06-07",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "Christian Rasmussen",
+                "Ed Carpenter Racing",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "Rinus VeeKay",
+                "Juncos Hollinger Racing",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Will Power",
+                "Andretti Global",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Marcus Armstrong",
+                "Meyer Shank Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 10,
+    "name": "XPEL Grand Prix at Road America",
+    "date": "2026-06-21",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "40"
+              ],
+              [
+                "3",
+                "Will Power",
+                "Andretti Global",
+                "Finished",
+                "35"
+              ],
+              [
+                "4",
+                "Kyffin Simpson",
+                "Chip Ganassi Racing",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "32"
+              ],
+              [
+                "6",
+                "Alexander Rossi",
+                "Ed Carpenter Racing",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Felix Rosenqvist",
+                "Meyer Shank Racing",
+                "Finished",
+                "25"
+              ],
+              [
+                "9",
+                "Santino Ferrucci",
+                "A.J. Foyt Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 11,
+    "name": "Honda Indy 200 at Mid-Ohio",
+    "date": "2026-07-05",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "42"
+              ],
+              [
+                "3",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "35"
+              ],
+              [
+                "4",
+                "Rinus VeeKay",
+                "Juncos Hollinger Racing",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Will Power",
+                "Andretti Global",
+                "Finished",
+                "29"
+              ],
+              [
+                "7",
+                "Christian Rasmussen",
+                "Ed Carpenter Racing",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "23"
+              ],
+              [
+                "10",
+                "Nolan Siegel",
+                "Arrow McLaren",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 12,
+    "name": "Music City Grand Prix (Nashville Superspeedway)",
+    "date": "2026-07-19",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "40"
+              ],
+              [
+                "3",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "33"
+              ],
+              [
+                "5",
+                "Felix Rosenqvist",
+                "Meyer Shank Racing",
+                "Finished",
+                "31"
+              ],
+              [
+                "6",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Mick Schumacher R",
+                "",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Kyffin Simpson",
+                "Chip Ganassi Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "22"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 13,
+    "name": "OnlyBulls Grand Prix of Portland",
+    "date": "2026-08-09",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Felix Rosenqvist",
+                "Meyer Shank Racing",
+                "Finished",
+                "42"
+              ],
+              [
+                "3",
+                "Will Power",
+                "Andretti Global",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "Rinus VeeKay",
+                "Juncos Hollinger Racing",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "25"
+              ],
+              [
+                "9",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Kyffin Simpson",
+                "Chip Ganassi Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 14,
+    "name": "Ontario Honda Dealers Indy at Markham",
+    "date": "2026-08-16",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Romain Grosjean",
+                "Dale Coyne Racing",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "Will Power",
+                "Andretti Global",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Rinus VeeKay",
+                "Juncos Hollinger Racing",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Graham Rahal",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Santino Ferrucci",
+                "A.J. Foyt Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 15,
+    "name": "Freedom 250 Grand Prix of Washington, D.C.",
+    "date": "2026-08-23",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "40"
+              ],
+              [
+                "3",
+                "Will Power",
+                "Andretti Global",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Kyffin Simpson",
+                "Chip Ganassi Racing",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Nolan Siegel",
+                "Arrow McLaren",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Scott Dixon",
+                "Chip Ganassi Racing",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Caio Collet R",
+                "",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Romain Grosjean",
+                "Dale Coyne Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 16,
+    "name": "Snap-on Makers and Fixers 250 (Milwaukee Mile Race 1)",
+    "date": "2026-08-29",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "Rinus VeeKay",
+                "Juncos Hollinger Racing",
+                "Finished",
+                "35"
+              ],
+              [
+                "4",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "33"
+              ],
+              [
+                "5",
+                "Christian Rasmussen",
+                "Ed Carpenter Racing",
+                "Finished",
+                "31"
+              ],
+              [
+                "6",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "29"
+              ],
+              [
+                "7",
+                "Josef Newgarden",
+                "Team Penske",
+                "Finished",
+                "26"
+              ],
+              [
+                "8",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Marcus Armstrong",
+                "Meyer Shank Racing",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 17,
+    "name": "Snap-on Milwaukee Mile 250 (Race 2)",
+    "date": "2026-08-30",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Pato O'Ward",
+                "Arrow McLaren",
+                "Finished",
+                "51"
+              ],
+              [
+                "2",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "41"
+              ],
+              [
+                "3",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "35"
+              ],
+              [
+                "4",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "32"
+              ],
+              [
+                "5",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "32"
+              ],
+              [
+                "6",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Rinus VeeKay",
+                "Juncos Hollinger Racing",
+                "Finished",
+                "27"
+              ],
+              [
+                "8",
+                "Christian Rasmussen",
+                "Ed Carpenter Racing",
+                "Finished",
+                "25"
+              ],
+              [
+                "9",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Louis Foster",
+                "Rahal Letterman Lanigan Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 18,
+    "name": "WeatherTech Raceway Laguna Seca (Season Finale)",
+    "date": "2026-09-06",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Scott McLaughlin",
+                "Team Penske",
+                "Finished",
+                "52"
+              ],
+              [
+                "2",
+                "Kyle Kirkwood",
+                "Andretti Global",
+                "Finished",
+                "40"
+              ],
+              [
+                "3",
+                "Alexander Rossi",
+                "Ed Carpenter Racing",
+                "Finished",
+                "36"
+              ],
+              [
+                "4",
+                "Felix Rosenqvist",
+                "Meyer Shank Racing",
+                "Finished",
+                "33"
+              ],
+              [
+                "5",
+                "David Malukas",
+                "Team Penske",
+                "Finished",
+                "30"
+              ],
+              [
+                "6",
+                "Christian Lundgaard",
+                "Arrow McLaren",
+                "Finished",
+                "28"
+              ],
+              [
+                "7",
+                "Marcus Armstrong",
+                "Meyer Shank Racing",
+                "Finished",
+                "27"
+              ],
+              [
+                "8",
+                "Álex Palou",
+                "Chip Ganassi Racing",
+                "Finished",
+                "24"
+              ],
+              [
+                "9",
+                "Marcus Ericsson",
+                "Andretti Global",
+                "Finished",
+                "22"
+              ],
+              [
+                "10",
+                "Kyffin Simpson",
+                "Chip Ganassi Racing",
+                "Finished",
+                "20"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

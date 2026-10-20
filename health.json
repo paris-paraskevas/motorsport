@@ -1,0 +1,338 @@
+[
+  {
+    "slug": "adac-ravenol-24h",
+    "name": "ADAC Ravenol 24h Nürburgring",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "dtm",
+    "name": "DTM",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "dtm",
+    "name": "DTM",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "dtm",
+    "name": "DTM",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f1",
+    "name": "Formula 1",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f1",
+    "name": "Formula 1",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f1",
+    "name": "Formula 1",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f2",
+    "name": "Formula 2",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f2",
+    "name": "Formula 2",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f2",
+    "name": "Formula 2",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f3",
+    "name": "Formula 3",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f3",
+    "name": "Formula 3",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "f3",
+    "name": "Formula 3",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "formula-e",
+    "name": "Formula E",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "formula-e",
+    "name": "Formula E",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "formula-e",
+    "name": "Formula E",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "gt-world",
+    "name": "GT World Challenge",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "gt-world",
+    "name": "GT World Challenge",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "gt-world",
+    "name": "GT World Challenge",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "imsa",
+    "name": "IMSA",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "imsa",
+    "name": "IMSA",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "imsa",
+    "name": "IMSA",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "indycar",
+    "name": "IndyCar",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "indycar",
+    "name": "IndyCar",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "indycar",
+    "name": "IndyCar",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "motogp",
+    "name": "MotoGP",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "motogp",
+    "name": "MotoGP",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "motogp",
+    "name": "MotoGP",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "nascar-cup",
+    "name": "NASCAR Cup",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "nascar-cup",
+    "name": "NASCAR Cup",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "nascar-cup",
+    "name": "NASCAR Cup",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "nls",
+    "name": "NLS Nürburgring",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "nls",
+    "name": "NLS Nürburgring",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wec",
+    "name": "FIA WEC",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wec",
+    "name": "FIA WEC",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wec",
+    "name": "FIA WEC",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wrc",
+    "name": "WRC",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wrc",
+    "name": "WRC",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wrc",
+    "name": "WRC",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wsbk",
+    "name": "WorldSBK",
+    "kind": "standings",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wsbk",
+    "name": "WorldSBK",
+    "kind": "results",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  },
+  {
+    "slug": "wsbk",
+    "name": "WorldSBK",
+    "kind": "calendar",
+    "status": "OK",
+    "note": "",
+    "since": "2026-10-20"
+  }
+]

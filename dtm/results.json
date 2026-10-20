@@ -1,0 +1,1450 @@
+[
+  {
+    "round": 1,
+    "name": "Red Bull Ring",
+    "date": "2026-03-22",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "T. Preining",
+                "Manthey Racing",
+                "1:00'11.576",
+                "25"
+              ],
+              [
+                "2",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+0.774",
+                "20"
+              ],
+              [
+                "3",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+1.620",
+                "16"
+              ],
+              [
+                "4",
+                "T. Kalender",
+                "Mercedes-AMG Team Landgraf",
+                "+2.544",
+                "13"
+              ],
+              [
+                "5",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+2.763",
+                "11"
+              ],
+              [
+                "6",
+                "T. Glock",
+                "Dörr Motorsport",
+                "+3.344",
+                "10"
+              ],
+              [
+                "7",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+4.122",
+                "9"
+              ],
+              [
+                "8",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "+4.697",
+                "8"
+              ],
+              [
+                "9",
+                "R. Feller",
+                "Manthey Racing",
+                "+4.871",
+                "7"
+              ],
+              [
+                "10",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "+5.416",
+                "6"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "56'30.308",
+                "25"
+              ],
+              [
+                "2",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+4.857",
+                "20"
+              ],
+              [
+                "3",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+5.429",
+                "16"
+              ],
+              [
+                "4",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+6.220",
+                "13"
+              ],
+              [
+                "5",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "+9.203",
+                "11"
+              ],
+              [
+                "6",
+                "K. van der Linde",
+                "Schubert Motorsport",
+                "+10.312",
+                "10"
+              ],
+              [
+                "7",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "+10.527",
+                "9"
+              ],
+              [
+                "8",
+                "F. Wiebelhaus",
+                "HRT Ford Performance",
+                "+14.386",
+                "8"
+              ],
+              [
+                "9",
+                "T. Vermeulen",
+                "Emil Frey Racing",
+                "+18.431",
+                "7"
+              ],
+              [
+                "10",
+                "B. Buus",
+                "Land-Motorsport",
+                "+20.236",
+                "6"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "name": "Zandvoort",
+    "date": "2026-04-12",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "58'09.644",
+                "25"
+              ],
+              [
+                "2",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+3.622",
+                "20"
+              ],
+              [
+                "3",
+                "T. Vermeulen",
+                "Emil Frey Racing",
+                "+4.786",
+                "16"
+              ],
+              [
+                "4",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+7.187",
+                "13"
+              ],
+              [
+                "5",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "+8.290",
+                "11"
+              ],
+              [
+                "6",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+8.701",
+                "10"
+              ],
+              [
+                "7",
+                "T. Preining",
+                "Manthey Racing",
+                "+9.444",
+                "9"
+              ],
+              [
+                "8",
+                "L. Engstler",
+                "Red Bull Team Abt",
+                "+13.774",
+                "8"
+              ],
+              [
+                "9",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "+15.949",
+                "7"
+              ],
+              [
+                "10",
+                "R. Feller",
+                "Manthey Racing",
+                "+21.857",
+                "6"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "K. van der Linde",
+                "Schubert Motorsport",
+                "58'14.005",
+                "25"
+              ],
+              [
+                "2",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "+6.377",
+                "20"
+              ],
+              [
+                "3",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+7.046",
+                "16"
+              ],
+              [
+                "4",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+7.510",
+                "13"
+              ],
+              [
+                "5",
+                "T. Vermeulen",
+                "Emil Frey Racing",
+                "+11.053",
+                "11"
+              ],
+              [
+                "6",
+                "L. Engstler",
+                "Red Bull Team Abt",
+                "+12.205",
+                "10"
+              ],
+              [
+                "7",
+                "M. Mapelli",
+                "Red Bull Team Abt",
+                "+17.021",
+                "9"
+              ],
+              [
+                "8",
+                "T. Preining",
+                "Manthey Racing",
+                "+17.348",
+                "8"
+              ],
+              [
+                "9",
+                "M. Bortolotti",
+                "TGI Team Lamborghini by GRT",
+                "+17.641",
+                "7"
+              ],
+              [
+                "10",
+                "R. Feller",
+                "Manthey Racing",
+                "+18.156",
+                "6"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "name": "Lausitzring",
+    "date": "2026-05-03",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "59'21.929",
+                "25"
+              ],
+              [
+                "2",
+                "M. Mapelli",
+                "Red Bull Team Abt",
+                "+13.136",
+                "20"
+              ],
+              [
+                "3",
+                "R. Feller",
+                "Manthey Racing",
+                "+17.732",
+                "16"
+              ],
+              [
+                "4",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "+23.435",
+                "13"
+              ],
+              [
+                "5",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+24.749",
+                "11"
+              ],
+              [
+                "6",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+34.419",
+                "10"
+              ],
+              [
+                "7",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+34.660",
+                "9"
+              ],
+              [
+                "8",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "+36.016",
+                "8"
+              ],
+              [
+                "9",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+36.432",
+                "7"
+              ],
+              [
+                "10",
+                "K. van der Linde",
+                "Schubert Motorsport",
+                "+37.699",
+                "6"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "58'55.357",
+                "25"
+              ],
+              [
+                "2",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "+0.413",
+                "20"
+              ],
+              [
+                "3",
+                "F. Wiebelhaus",
+                "HRT Ford Performance",
+                "+5.392",
+                "16"
+              ],
+              [
+                "4",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+8.118",
+                "13"
+              ],
+              [
+                "5",
+                "M. Bortolotti",
+                "TGI Team Lamborghini by GRT",
+                "+8.607",
+                "11"
+              ],
+              [
+                "6",
+                "L. Engstler",
+                "Red Bull Team Abt",
+                "+17.956",
+                "10"
+              ],
+              [
+                "7",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+25.406",
+                "9"
+              ],
+              [
+                "8",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+26.399",
+                "8"
+              ],
+              [
+                "9",
+                "K. van der Linde",
+                "Schubert Motorsport",
+                "+26.427",
+                "7"
+              ],
+              [
+                "10",
+                "T. Preining",
+                "Manthey Racing",
+                "+28.952",
+                "6"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "name": "Norisring",
+    "date": "2026-05-24",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "1:50'55.938",
+                "25"
+              ],
+              [
+                "2",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+0.587",
+                "20"
+              ],
+              [
+                "3",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+3.182",
+                "16"
+              ],
+              [
+                "4",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+3.826",
+                "13"
+              ],
+              [
+                "5",
+                "T. Vermeulen",
+                "Emil Frey Racing",
+                "+11.346",
+                "11"
+              ],
+              [
+                "6",
+                "F. Wiebelhaus",
+                "HRT Ford Performance",
+                "+12.237",
+                "10"
+              ],
+              [
+                "7",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+13.612",
+                "9"
+              ],
+              [
+                "8",
+                "M. Bortolotti",
+                "TGI Team Lamborghini by GRT",
+                "+14.506",
+                "8"
+              ],
+              [
+                "9",
+                "T. Preining",
+                "Manthey Racing",
+                "+16.220",
+                "7"
+              ],
+              [
+                "10",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "+17.355",
+                "6"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "1:10'22.199",
+                "25"
+              ],
+              [
+                "2",
+                "F. Wiebelhaus",
+                "HRT Ford Performance",
+                "+0.887",
+                "20"
+              ],
+              [
+                "3",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+5.753",
+                "16"
+              ],
+              [
+                "4",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+8.417",
+                "13"
+              ],
+              [
+                "5",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+9.178",
+                "11"
+              ],
+              [
+                "6",
+                "T. Vermeulen",
+                "Emil Frey Racing",
+                "+9.939",
+                "10"
+              ],
+              [
+                "7",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+11.293",
+                "9"
+              ],
+              [
+                "8",
+                "B. Buus",
+                "Land-Motorsport",
+                "+14.556",
+                "8"
+              ],
+              [
+                "9",
+                "T. Preining",
+                "Manthey Racing",
+                "+18.130",
+                "7"
+              ],
+              [
+                "10",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+18.902",
+                "6"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "name": "Oschersleben",
+    "date": "2026-06-14",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "T. Preining",
+                "Manthey Racing",
+                "57'25.269",
+                "25"
+              ],
+              [
+                "2",
+                "L. Engstler",
+                "Red Bull Team Abt",
+                "+1.601",
+                "20"
+              ],
+              [
+                "3",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+5.040",
+                "16"
+              ],
+              [
+                "4",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+5.744",
+                "13"
+              ],
+              [
+                "5",
+                "M. Bortolotti",
+                "TGI Team Lamborghini by GRT",
+                "+6.180",
+                "11"
+              ],
+              [
+                "6",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+9.838",
+                "10"
+              ],
+              [
+                "7",
+                "K. van der Linde",
+                "Schubert Motorsport",
+                "+11.239",
+                "9"
+              ],
+              [
+                "8",
+                "T. Glock",
+                "Dörr Motorsport",
+                "+11.757",
+                "8"
+              ],
+              [
+                "9",
+                "T. Vermeulen",
+                "Emil Frey Racing",
+                "+15.506",
+                "7"
+              ],
+              [
+                "10",
+                "R. Feller",
+                "Manthey Racing",
+                "+16.680",
+                "6"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+3.027",
+                "25"
+              ],
+              [
+                "2",
+                "T. Preining",
+                "Manthey Racing",
+                "+3.431",
+                "20"
+              ],
+              [
+                "3",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+3.640",
+                "16"
+              ],
+              [
+                "4",
+                "L. Engstler",
+                "Red Bull Team Abt",
+                "+5.467",
+                "13"
+              ],
+              [
+                "5",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+8.103",
+                "11"
+              ],
+              [
+                "6",
+                "K. van der Linde",
+                "Schubert Motorsport",
+                "+10.362",
+                "10"
+              ],
+              [
+                "7",
+                "R. Feller",
+                "Manthey Racing",
+                "+11.594",
+                "9"
+              ],
+              [
+                "8",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+18.372",
+                "8"
+              ],
+              [
+                "9",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "+18.803",
+                "7"
+              ],
+              [
+                "10",
+                "B. Buus",
+                "Land-Motorsport",
+                "+19.146",
+                "6"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "name": "Nurburgring",
+    "date": "2026-07-05",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "57:05.857",
+                "25"
+              ],
+              [
+                "2",
+                "T. Preining",
+                "Manthey Racing",
+                "+9.973",
+                "20"
+              ],
+              [
+                "3",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+13.756",
+                "16"
+              ],
+              [
+                "4",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "+14.569",
+                "13"
+              ],
+              [
+                "5",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+15.373",
+                "11"
+              ],
+              [
+                "6",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+16.051",
+                "10"
+              ],
+              [
+                "7",
+                "L. Engstler",
+                "Red Bull Team Abt",
+                "+21.229",
+                "9"
+              ],
+              [
+                "8",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+28.514",
+                "8"
+              ],
+              [
+                "9",
+                "R. Feller",
+                "Manthey Racing",
+                "+37.133",
+                "7"
+              ],
+              [
+                "10",
+                "B. Buus",
+                "Land-Motorsport",
+                "+38.768",
+                "6"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "1:00'11.283",
+                "25"
+              ],
+              [
+                "2",
+                "T. Kalender",
+                "Mercedes-AMG Team Landgraf",
+                "+0.517",
+                "20"
+              ],
+              [
+                "3",
+                "T. Preining",
+                "Manthey Racing",
+                "+0.918",
+                "16"
+              ],
+              [
+                "4",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+2.571",
+                "13"
+              ],
+              [
+                "5",
+                "M. Bortolotti",
+                "TGI Team Lamborghini by GRT",
+                "+3.112",
+                "11"
+              ],
+              [
+                "6",
+                "L. Engstler",
+                "Red Bull Team Abt",
+                "+6.703",
+                "10"
+              ],
+              [
+                "7",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "+9.165",
+                "9"
+              ],
+              [
+                "8",
+                "T. Glock",
+                "Dörr Motorsport",
+                "+10.043",
+                "8"
+              ],
+              [
+                "9",
+                "M. Mapelli",
+                "Red Bull Team Abt",
+                "+11.157",
+                "7"
+              ],
+              [
+                "10",
+                "B. Buus",
+                "Land-Motorsport",
+                "+12.225",
+                "6"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "name": "Sachsenring",
+    "date": "2026-07-26",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "59'05.133",
+                "25"
+              ],
+              [
+                "2",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+0.450",
+                "20"
+              ],
+              [
+                "3",
+                "T. Preining",
+                "Manthey Racing",
+                "+3.684",
+                "16"
+              ],
+              [
+                "4",
+                "K. van der Linde",
+                "Schubert Motorsport",
+                "+14.991",
+                "13"
+              ],
+              [
+                "5",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+15.265",
+                "11"
+              ],
+              [
+                "6",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "+16.158",
+                "10"
+              ],
+              [
+                "7",
+                "M. Bortolotti",
+                "TGI Team Lamborghini by GRT",
+                "+16.918",
+                "9"
+              ],
+              [
+                "8",
+                "N. Thiim",
+                "Comtoyou Racing",
+                "+17.235",
+                "8"
+              ],
+              [
+                "9",
+                "T. Vermeulen",
+                "Emil Frey Racing",
+                "+30.686",
+                "7"
+              ],
+              [
+                "10",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "+35.277",
+                "6"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "1:01'10.777",
+                "25"
+              ],
+              [
+                "2",
+                "T. Preining",
+                "Manthey Racing",
+                "+1.219",
+                "20"
+              ],
+              [
+                "3",
+                "R. Feller",
+                "Manthey Racing",
+                "+2.021",
+                "16"
+              ],
+              [
+                "4",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "+2.293",
+                "13"
+              ],
+              [
+                "5",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "+3.565",
+                "11"
+              ],
+              [
+                "6",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+4.460",
+                "10"
+              ],
+              [
+                "7",
+                "T. Vermeulen",
+                "Emil Frey Racing",
+                "+4.687",
+                "9"
+              ],
+              [
+                "8",
+                "L. Engstler",
+                "Red Bull Team Abt",
+                "+5.000",
+                "8"
+              ],
+              [
+                "9",
+                "B. Buus",
+                "Land-Motorsport",
+                "+5.588",
+                "7"
+              ],
+              [
+                "10",
+                "P. Maximilian",
+                "TGI Team Lamborghini by GRT",
+                "+6.038",
+                "6"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "name": "Hockenheim",
+    "date": "2026-08-16",
+    "sessions": [
+      {
+        "label": "Race 1",
+        "tables": [
+          {
+            "title": "Race 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "L. Auer",
+                "Mercedes-AMG Team Landgraf",
+                "1:14'52.316",
+                "25"
+              ],
+              [
+                "2",
+                "M. Bortolotti",
+                "TGI Team Lamborghini by GRT",
+                "+4.777",
+                "20"
+              ],
+              [
+                "3",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+8.157",
+                "16"
+              ],
+              [
+                "4",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "+8.533",
+                "13"
+              ],
+              [
+                "5",
+                "T. Preining",
+                "Manthey Racing",
+                "+17.057",
+                "11"
+              ],
+              [
+                "6",
+                "K. van der Linde",
+                "Schubert Motorsport",
+                "+21.562",
+                "10"
+              ],
+              [
+                "7",
+                "J. Gounon",
+                "Mercedes-AMG Team Winward",
+                "+22.044",
+                "9"
+              ],
+              [
+                "8",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+23.357",
+                "8"
+              ],
+              [
+                "9",
+                "M. Mapelli",
+                "Red Bull Team Abt",
+                "+28.897",
+                "7"
+              ],
+              [
+                "10",
+                "F. Wiebelhaus",
+                "HRT Ford Performance",
+                "+29.635",
+                "6"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race 2",
+        "tables": [
+          {
+            "title": "Race 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "M. Engel",
+                "Mercedes-AMG Team Winward",
+                "57'21.106",
+                "25"
+              ],
+              [
+                "2",
+                "R. Feller",
+                "Manthey Racing",
+                "+3.058",
+                "20"
+              ],
+              [
+                "3",
+                "T. Preining",
+                "Manthey Racing",
+                "+3.698",
+                "16"
+              ],
+              [
+                "4",
+                "B. Buus",
+                "Land-Motorsport",
+                "+3.994",
+                "13"
+              ],
+              [
+                "5",
+                "B. Dörr",
+                "Dörr Motorsport",
+                "+10.139",
+                "11"
+              ],
+              [
+                "6",
+                "M. Cairoli",
+                "Emil Frey Racing",
+                "+10.818",
+                "10"
+              ],
+              [
+                "7",
+                "M. Wittmann",
+                "Schubert Motorsport",
+                "+14.902",
+                "9"
+              ],
+              [
+                "8",
+                "A. Maini",
+                "HRT Ford Performance",
+                "+17.108",
+                "8"
+              ],
+              [
+                "9",
+                "M. Mapelli",
+                "Red Bull Team Abt",
+                "+24.202",
+                "7"
+              ],
+              [
+                "10",
+                "M. Bortolotti",
+                "TGI Team Lamborghini by GRT",
+                "+25.659",
+                "6"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

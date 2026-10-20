@@ -1,0 +1,211 @@
+[
+  {
+    "title": "Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Alex Palou",
+        "Chip Ganassi Racing",
+        "631"
+      ],
+      [
+        "2",
+        "Kyle Kirkwood",
+        "Andretti Global",
+        "545"
+      ],
+      [
+        "3",
+        "Christian Lundgaard",
+        "Arrow McLaren",
+        "535"
+      ],
+      [
+        "4",
+        "Pato O'Ward",
+        "Arrow McLaren",
+        "522"
+      ],
+      [
+        "5",
+        "David Malukas",
+        "Team Penske",
+        "514"
+      ],
+      [
+        "6",
+        "Scott McLaughlin",
+        "Team Penske",
+        "482"
+      ],
+      [
+        "7",
+        "Marcus Ericsson",
+        "Andretti Global",
+        "429"
+      ],
+      [
+        "8",
+        "Josef Newgarden",
+        "Team Penske",
+        "423"
+      ],
+      [
+        "9",
+        "Felix Rosenqvist",
+        "Meyer Shank Racing",
+        "412"
+      ],
+      [
+        "10",
+        "Rinus VeeKay",
+        "Juncos Hollinger Racing",
+        "378"
+      ],
+      [
+        "11",
+        "Will Power",
+        "Andretti Global",
+        "368"
+      ],
+      [
+        "12",
+        "Scott Dixon",
+        "Chip Ganassi Racing",
+        "331"
+      ],
+      [
+        "13",
+        "Kyffin Simpson",
+        "Chip Ganassi Racing",
+        "327"
+      ],
+      [
+        "14",
+        "Marcus Armstrong",
+        "Meyer Shank Racing",
+        "320"
+      ],
+      [
+        "15",
+        "Alexander Rossi",
+        "ECR",
+        "307"
+      ],
+      [
+        "16",
+        "Graham Rahal",
+        "Rahal Letterman Lanigan Racing",
+        "302"
+      ],
+      [
+        "17",
+        "Santino Ferrucci",
+        "A.J. Foyt Enterprises",
+        "280"
+      ],
+      [
+        "18",
+        "Louis Foster",
+        "Rahal Letterman Lanigan Racing",
+        "267"
+      ],
+      [
+        "19",
+        "Romain Grosjean",
+        "Dale Coyne Racing",
+        "259"
+      ],
+      [
+        "20",
+        "Nolan Siegel",
+        "Arrow McLaren",
+        "259"
+      ],
+      [
+        "21",
+        "Christian Rasmussen",
+        "ECR",
+        "245"
+      ],
+      [
+        "22",
+        "Dennis Hauger",
+        "Dale Coyne Racing",
+        "228"
+      ],
+      [
+        "23",
+        "Mick Schumacher",
+        "Rahal Letterman Lanigan Racing",
+        "213"
+      ],
+      [
+        "24",
+        "Caio Collet",
+        "A.J. Foyt Enterprises",
+        "203"
+      ],
+      [
+        "25",
+        "Sting Ray Robb",
+        "Juncos Hollinger Racing",
+        "182"
+      ],
+      [
+        "26",
+        "Conor Daly",
+        "Dreyer & Reinbold Racing",
+        "24"
+      ],
+      [
+        "27",
+        "Takuma Sato",
+        "Rahal Letterman Lanigan Racing",
+        "20"
+      ],
+      [
+        "28",
+        "Jack Harvey",
+        "Dreyer & Reinbold Racing",
+        "8"
+      ],
+      [
+        "29",
+        "Jacob Abel",
+        "Abel Motorsports",
+        "6"
+      ],
+      [
+        "30",
+        "Helio Castroneves",
+        "Meyer Shank Racing",
+        "5"
+      ],
+      [
+        "31",
+        "Ed Carpenter",
+        "ECR",
+        "5"
+      ],
+      [
+        "32",
+        "Ryan Hunter-Reay",
+        "Arrow McLaren",
+        "5"
+      ],
+      [
+        "33",
+        "Katherine Legge",
+        "HMD Motorsports w/ AJ Foyt Racing",
+        "5"
+      ]
+    ]
+  }
+]

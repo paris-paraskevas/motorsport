@@ -1,0 +1,1727 @@
+[
+  {
+    "title": "Overall · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Lucas Auer",
+        "131.5"
+      ],
+      [
+        "1",
+        "Maro Engel",
+        "131.5"
+      ],
+      [
+        "2",
+        "Ricardo Feller",
+        "120"
+      ],
+      [
+        "2",
+        "Bastian Buus",
+        "120"
+      ],
+      [
+        "3",
+        "Kelvin Van Der Linde",
+        "97"
+      ],
+      [
+        "3",
+        "Charles Weerts",
+        "97"
+      ],
+      [
+        "4",
+        "Luca Stolz",
+        "86"
+      ],
+      [
+        "5",
+        "Daniel Juncadella",
+        "80"
+      ],
+      [
+        "6",
+        "Arthur Leclerc",
+        "76.5"
+      ],
+      [
+        "7",
+        "Nicki Thiim",
+        "75.5"
+      ],
+      [
+        "8",
+        "Thomas Neubauer",
+        "65.5"
+      ],
+      [
+        "9",
+        "Dorian Boccolacci",
+        "65.5"
+      ],
+      [
+        "10",
+        "Morris Schuring",
+        "60"
+      ],
+      [
+        "11",
+        "Marco Sorensen",
+        "59"
+      ],
+      [
+        "11",
+        "Mattia Drudi",
+        "59"
+      ],
+      [
+        "12",
+        "Jordan Pepper",
+        "58"
+      ],
+      [
+        "13",
+        "Thierry Vermeulen",
+        "56.5"
+      ],
+      [
+        "13",
+        "Ben Green",
+        "56.5"
+      ],
+      [
+        "14",
+        "Jules Gounon",
+        "53.5"
+      ],
+      [
+        "15",
+        "Thomas Fleming",
+        "51.5"
+      ],
+      [
+        "15",
+        "Louis Prette",
+        "51.5"
+      ],
+      [
+        "16",
+        "Chris Lulham",
+        "49.5"
+      ],
+      [
+        "17",
+        "Thomas Preining",
+        "48"
+      ],
+      [
+        "18",
+        "Dean Macdonald",
+        "47.5"
+      ],
+      [
+        "19",
+        "Max Hesse",
+        "46.5"
+      ],
+      [
+        "19",
+        "Valentino Rossi",
+        "46.5"
+      ],
+      [
+        "20",
+        "Fabian Schiller",
+        "41"
+      ],
+      [
+        "20",
+        "Maximilian Götz",
+        "41"
+      ],
+      [
+        "21",
+        "Alessio Picariello",
+        "36"
+      ],
+      [
+        "22",
+        "Ariel Levi",
+        "34.5"
+      ],
+      [
+        "23",
+        "Benjamin Goethe",
+        "32"
+      ],
+      [
+        "24",
+        "Dylan Pereira",
+        "31"
+      ],
+      [
+        "24",
+        "Alex Aka",
+        "31"
+      ],
+      [
+        "25",
+        "Marvin Kirchhöfer",
+        "31"
+      ],
+      [
+        "26",
+        "Joseph Loake",
+        "29.5"
+      ],
+      [
+        "27",
+        "Tommaso Mosca",
+        "29"
+      ],
+      [
+        "28",
+        "Patric Niederhauser",
+        "28"
+      ],
+      [
+        "28",
+        "Luca Engstler",
+        "28"
+      ],
+      [
+        "29",
+        "Matisse Lismont",
+        "27.5"
+      ],
+      [
+        "29",
+        "Ignacio Montenegro",
+        "27.5"
+      ],
+      [
+        "30",
+        "Amaury Cordeel",
+        "26"
+      ],
+      [
+        "31",
+        "Augusto  Farfus",
+        "26"
+      ],
+      [
+        "31",
+        "Jake Dennis",
+        "26"
+      ],
+      [
+        "31",
+        "Raffaele Marciello",
+        "26"
+      ],
+      [
+        "32",
+        "Rocco Mazzola",
+        "25"
+      ],
+      [
+        "32",
+        "Sebastian Øgaard",
+        "25"
+      ],
+      [
+        "33",
+        "Christopher Haase",
+        "20"
+      ],
+      [
+        "33",
+        "Simon  Reicher",
+        "20"
+      ],
+      [
+        "34",
+        "Dennis  Marschall",
+        "18"
+      ],
+      [
+        "35",
+        "Matteo Cairoli",
+        "17.5"
+      ],
+      [
+        "35",
+        "Konsta Lappalainen",
+        "17.5"
+      ],
+      [
+        "36",
+        "Dustin Blattner",
+        "17"
+      ],
+      [
+        "37",
+        "Kobe Pauwels",
+        "16.5"
+      ],
+      [
+        "38",
+        "Alessio Rovera",
+        "16"
+      ],
+      [
+        "38",
+        "Nicklas Nielsen",
+        "16"
+      ],
+      [
+        "39",
+        "Maxime Martin",
+        "16"
+      ],
+      [
+        "40",
+        "Thomas Drouet",
+        "16"
+      ],
+      [
+        "40",
+        "Fabio Scherer",
+        "16"
+      ],
+      [
+        "40",
+        "Arjun  Maini",
+        "16"
+      ],
+      [
+        "41",
+        "Andrea Frassineti",
+        "15.5"
+      ],
+      [
+        "42",
+        "Romain Andriolo",
+        "15.5"
+      ],
+      [
+        "43",
+        "Lorens Lecertua",
+        "15"
+      ],
+      [
+        "43",
+        "Baptiste Moulin",
+        "15"
+      ],
+      [
+        "44",
+        "Matias Zagazeta",
+        "13"
+      ],
+      [
+        "45",
+        "Daniel Harper",
+        "13"
+      ],
+      [
+        "46",
+        "Ben Tuck",
+        "13"
+      ],
+      [
+        "46",
+        "Mathys Jaubert",
+        "13"
+      ],
+      [
+        "47",
+        "Simon Birch",
+        "12"
+      ],
+      [
+        "47",
+        "Ayhancan Guven",
+        "12"
+      ],
+      [
+        "47",
+        "Matt Campbell",
+        "12"
+      ],
+      [
+        "47",
+        "Frederic Makowiecki",
+        "12"
+      ],
+      [
+        "47",
+        "Malte Ebdrup",
+        "12"
+      ],
+      [
+        "47",
+        "Frederik Schandorff",
+        "12"
+      ],
+      [
+        "48",
+        "Markus Winkelhock",
+        "12"
+      ],
+      [
+        "49",
+        "Lilou Wadoux",
+        "11"
+      ],
+      [
+        "50",
+        "David Pittard",
+        "11"
+      ],
+      [
+        "51",
+        "Sean Gelael",
+        "10"
+      ],
+      [
+        "52",
+        "Tim Tramnitz",
+        "9"
+      ],
+      [
+        "52",
+        "Jens Klingmann",
+        "9"
+      ],
+      [
+        "52",
+        "Ugo De Wilde",
+        "9"
+      ],
+      [
+        "53",
+        "James Kellett",
+        "9"
+      ],
+      [
+        "53",
+        "Leyton Fourie",
+        "9"
+      ],
+      [
+        "53",
+        "Darren Leung",
+        "9"
+      ],
+      [
+        "54",
+        "Loris Spinelli",
+        "8.5"
+      ],
+      [
+        "54",
+        "Mattia Michelotto",
+        "8.5"
+      ],
+      [
+        "55",
+        "Arthur Rougier",
+        "8.5"
+      ],
+      [
+        "55",
+        "James Kell",
+        "8.5"
+      ],
+      [
+        "56",
+        "Ben Dörr",
+        "8"
+      ],
+      [
+        "56",
+        "Maxwell Lynn",
+        "8"
+      ],
+      [
+        "56",
+        "Horatio Fitz-Simon",
+        "8"
+      ],
+      [
+        "57",
+        "Christian Krognes",
+        "7"
+      ],
+      [
+        "57",
+        "Henrique Chaves",
+        "7"
+      ],
+      [
+        "57",
+        "Jamie Day",
+        "7"
+      ],
+      [
+        "58",
+        "Gilles Magnus",
+        "7"
+      ],
+      [
+        "58",
+        "Robin Knutsson",
+        "7"
+      ],
+      [
+        "59",
+        "Peter Dempsey",
+        "6"
+      ],
+      [
+        "59",
+        "Eddie Cheever",
+        "6"
+      ],
+      [
+        "60",
+        "Marco Mapelli",
+        "6"
+      ],
+      [
+        "61",
+        "Sven Müller",
+        "4.5"
+      ],
+      [
+        "62",
+        "Simon Gachet",
+        "4.5"
+      ],
+      [
+        "63",
+        "Nico Menzel",
+        "4"
+      ],
+      [
+        "63",
+        "Cesar Gazeau",
+        "4"
+      ],
+      [
+        "63",
+        "Anthony Bartone",
+        "4"
+      ],
+      [
+        "63",
+        "Lorenzo  Patrese",
+        "4"
+      ],
+      [
+        "63",
+        "Aurélien Panis",
+        "4"
+      ],
+      [
+        "64",
+        "Jop Rappange",
+        "2"
+      ],
+      [
+        "65",
+        "Jonathan Adam",
+        "2"
+      ],
+      [
+        "65",
+        "Lorcan Hanafin",
+        "2"
+      ],
+      [
+        "65",
+        "Giacomo Petrobelli",
+        "2"
+      ],
+      [
+        "67",
+        "Angus Whiteside",
+        "1"
+      ],
+      [
+        "67",
+        "Tanart Sathienthirakul",
+        "1"
+      ],
+      [
+        "67",
+        "Francesco Simonazzi",
+        "1"
+      ]
+    ]
+  },
+  {
+    "title": "Overall · Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Team WRT",
+        "152.5"
+      ],
+      [
+        "2",
+        "Winward Racing",
+        "138.5"
+      ],
+      [
+        "3",
+        "Lionspeed GP",
+        "122"
+      ],
+      [
+        "4",
+        "AF Corse",
+        "99.5"
+      ],
+      [
+        "5",
+        "Garage 59",
+        "93.5"
+      ],
+      [
+        "6",
+        "2Seas Motorsport",
+        "92"
+      ],
+      [
+        "7",
+        "Boutsen VDS",
+        "82.5"
+      ],
+      [
+        "8",
+        "Comtoyou Racing",
+        "81"
+      ],
+      [
+        "9",
+        "Emil Frey Racing",
+        "71"
+      ],
+      [
+        "10",
+        "Tresor Attempto Racing",
+        "67.5"
+      ],
+      [
+        "11",
+        "GetSpeed",
+        "44.5"
+      ],
+      [
+        "12",
+        "Rowe Racing",
+        "39"
+      ],
+      [
+        "13",
+        "Rutronik Racing",
+        "34"
+      ],
+      [
+        "14",
+        "CSA Racing",
+        "30.5"
+      ],
+      [
+        "15",
+        "Eastalent Racing",
+        "23"
+      ],
+      [
+        "16",
+        "Kessel Racing",
+        "21"
+      ],
+      [
+        "17",
+        "HRT Ford Racing",
+        "16"
+      ],
+      [
+        "18",
+        "Walkenhorst Motorsport",
+        "14"
+      ],
+      [
+        "19",
+        "Paradine Competition",
+        "11"
+      ],
+      [
+        "20",
+        "VSR",
+        "10.5"
+      ],
+      [
+        "21",
+        "Team RJN",
+        "8"
+      ],
+      [
+        "22",
+        "Ziggo Sport Tempesta Racing",
+        "6"
+      ],
+      [
+        "23",
+        "Optimum Motorsport",
+        "2.5"
+      ],
+      [
+        "24",
+        "KPX Motorsport",
+        "2"
+      ],
+      [
+        "25",
+        "Ecurie Ecosse Blackthorn",
+        "2"
+      ],
+      [
+        "26",
+        "Dinamic GT",
+        "1"
+      ],
+      [
+        "26",
+        "Rinaldi Racing",
+        "1"
+      ]
+    ]
+  },
+  {
+    "title": "Sprint Cup · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Ricardo Feller",
+        "72"
+      ],
+      [
+        "1",
+        "Bastian Buus",
+        "72"
+      ],
+      [
+        "2",
+        "Arthur Leclerc",
+        "65.5"
+      ],
+      [
+        "2",
+        "Thomas Neubauer",
+        "65.5"
+      ],
+      [
+        "3",
+        "Daniel Juncadella",
+        "59"
+      ],
+      [
+        "4",
+        "Ben Green",
+        "56.5"
+      ],
+      [
+        "4",
+        "Thierry Vermeulen",
+        "56.5"
+      ],
+      [
+        "5",
+        "Kelvin Van Der Linde",
+        "55"
+      ],
+      [
+        "5",
+        "Charles Weerts",
+        "55"
+      ],
+      [
+        "6",
+        "Maro Engel",
+        "45.5"
+      ],
+      [
+        "6",
+        "Lucas Auer",
+        "45.5"
+      ],
+      [
+        "7",
+        "Max Hesse",
+        "33.5"
+      ],
+      [
+        "7",
+        "Valentino Rossi",
+        "33.5"
+      ],
+      [
+        "8",
+        "Jules Gounon",
+        "32.5"
+      ],
+      [
+        "9",
+        "Dorian Boccolacci",
+        "30.5"
+      ],
+      [
+        "10",
+        "Chris Lulham",
+        "26.5"
+      ],
+      [
+        "11",
+        "Dean Macdonald",
+        "26.5"
+      ],
+      [
+        "12",
+        "Morris Schuring",
+        "25"
+      ],
+      [
+        "13",
+        "Dylan Pereira",
+        "25"
+      ],
+      [
+        "13",
+        "Alex Aka",
+        "25"
+      ],
+      [
+        "14",
+        "Luca Engstler",
+        "22"
+      ],
+      [
+        "14",
+        "Patric Niederhauser",
+        "22"
+      ],
+      [
+        "15",
+        "Thomas Fleming",
+        "19.5"
+      ],
+      [
+        "15",
+        "Louis Prette",
+        "19.5"
+      ],
+      [
+        "16",
+        "Marvin Kirchhöfer",
+        "18"
+      ],
+      [
+        "17",
+        "Konsta Lappalainen",
+        "17.5"
+      ],
+      [
+        "17",
+        "Matteo Cairoli",
+        "17.5"
+      ],
+      [
+        "18",
+        "Matisse Lismont",
+        "17.5"
+      ],
+      [
+        "18",
+        "Ignacio Montenegro",
+        "17.5"
+      ],
+      [
+        "19",
+        "Kobe Pauwels",
+        "16.5"
+      ],
+      [
+        "19",
+        "Nicki Thiim",
+        "16.5"
+      ],
+      [
+        "20",
+        "Jordan Pepper",
+        "16"
+      ],
+      [
+        "20",
+        "Amaury Cordeel",
+        "16"
+      ],
+      [
+        "21",
+        "Tommaso Mosca",
+        "13"
+      ],
+      [
+        "21",
+        "Matias Zagazeta",
+        "13"
+      ],
+      [
+        "22",
+        "Andrea Frassineti",
+        "9.5"
+      ],
+      [
+        "22",
+        "Ariel Levi",
+        "9.5"
+      ],
+      [
+        "23",
+        "Mattia Michelotto",
+        "8.5"
+      ],
+      [
+        "23",
+        "Loris Spinelli",
+        "8.5"
+      ],
+      [
+        "24",
+        "Christopher Haase",
+        "8"
+      ],
+      [
+        "24",
+        "Simon  Reicher",
+        "8"
+      ],
+      [
+        "25",
+        "Peter Dempsey",
+        "6"
+      ],
+      [
+        "25",
+        "Eddie Cheever",
+        "6"
+      ],
+      [
+        "26",
+        "Arthur Rougier",
+        "4.5"
+      ],
+      [
+        "26",
+        "James Kell",
+        "4.5"
+      ],
+      [
+        "27",
+        "Gilles Magnus",
+        "3"
+      ],
+      [
+        "27",
+        "Robin Knutsson",
+        "3"
+      ],
+      [
+        "28",
+        "Jop Rappange",
+        "2"
+      ],
+      [
+        "28",
+        "David Pittard",
+        "2"
+      ],
+      [
+        "29",
+        "Alessio Picariello",
+        "1"
+      ],
+      [
+        "29",
+        "Dennis  Marschall",
+        "1"
+      ],
+      [
+        "30",
+        "Simon Gachet",
+        "0.5"
+      ],
+      [
+        "30",
+        "Romain Andriolo",
+        "0.5"
+      ]
+    ]
+  },
+  {
+    "title": "Sprint Cup · Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Team WRT",
+        "86.5"
+      ],
+      [
+        "2",
+        "Lionspeed GP",
+        "74"
+      ],
+      [
+        "3",
+        "Emil Frey Racing",
+        "71"
+      ],
+      [
+        "4",
+        "AF Corse",
+        "70.5"
+      ],
+      [
+        "5",
+        "2Seas Motorsport",
+        "63"
+      ],
+      [
+        "6",
+        "Garage 59",
+        "51.5"
+      ],
+      [
+        "7",
+        "Winward Racing",
+        "51.5"
+      ],
+      [
+        "8",
+        "Boutsen VDS",
+        "37.5"
+      ],
+      [
+        "9",
+        "Tresor Attempto Racing",
+        "36.5"
+      ],
+      [
+        "10",
+        "Rutronik Racing",
+        "27"
+      ],
+      [
+        "11",
+        "Comtoyou Racing",
+        "21"
+      ],
+      [
+        "12",
+        "Eastalent Racing",
+        "11"
+      ],
+      [
+        "13",
+        "VSR",
+        "10.5"
+      ],
+      [
+        "14",
+        "CSA Racing",
+        "9.5"
+      ],
+      [
+        "15",
+        "Ziggo Sport Tempesta Racing",
+        "6"
+      ],
+      [
+        "16",
+        "Optimum Motorsport",
+        "2.5"
+      ],
+      [
+        "17",
+        "KPX Motorsport",
+        "2"
+      ],
+      [
+        "18",
+        "Kessel Racing",
+        "1"
+      ],
+      [
+        "19",
+        "Walkenhorst Motorsport",
+        "1"
+      ],
+      [
+        "20",
+        "GetSpeed",
+        "0.5"
+      ]
+    ]
+  },
+  {
+    "title": "Endurance Cup · Drivers",
+    "columns": [
+      "Pos",
+      "Driver",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Lucas Auer",
+        "86"
+      ],
+      [
+        "1",
+        "Maro Engel",
+        "86"
+      ],
+      [
+        "1",
+        "Luca Stolz",
+        "86"
+      ],
+      [
+        "2",
+        "Nicki Thiim",
+        "59"
+      ],
+      [
+        "2",
+        "Marco Sorensen",
+        "59"
+      ],
+      [
+        "2",
+        "Mattia Drudi",
+        "59"
+      ],
+      [
+        "3",
+        "Bastian Buus",
+        "48"
+      ],
+      [
+        "3",
+        "Ricardo Feller",
+        "48"
+      ],
+      [
+        "3",
+        "Thomas Preining",
+        "48"
+      ],
+      [
+        "4",
+        "Kelvin Van Der Linde",
+        "42"
+      ],
+      [
+        "4",
+        "Jordan Pepper",
+        "42"
+      ],
+      [
+        "4",
+        "Charles Weerts",
+        "42"
+      ],
+      [
+        "5",
+        "Fabian Schiller",
+        "41"
+      ],
+      [
+        "5",
+        "Maximilian Götz",
+        "41"
+      ],
+      [
+        "6",
+        "Dorian Boccolacci",
+        "35"
+      ],
+      [
+        "6",
+        "Alessio Picariello",
+        "35"
+      ],
+      [
+        "6",
+        "Morris Schuring",
+        "35"
+      ],
+      [
+        "7",
+        "Louis Prette",
+        "32"
+      ],
+      [
+        "7",
+        "Thomas Fleming",
+        "32"
+      ],
+      [
+        "7",
+        "Benjamin Goethe",
+        "32"
+      ],
+      [
+        "8",
+        "Augusto  Farfus",
+        "26"
+      ],
+      [
+        "8",
+        "Raffaele Marciello",
+        "26"
+      ],
+      [
+        "8",
+        "Jake Dennis",
+        "26"
+      ],
+      [
+        "9",
+        "Rocco Mazzola",
+        "25"
+      ],
+      [
+        "9",
+        "Ariel Levi",
+        "25"
+      ],
+      [
+        "9",
+        "Sebastian Øgaard",
+        "25"
+      ],
+      [
+        "10",
+        "Chris Lulham",
+        "23"
+      ],
+      [
+        "11",
+        "Jules Gounon",
+        "21"
+      ],
+      [
+        "11",
+        "Daniel Juncadella",
+        "21"
+      ],
+      [
+        "12",
+        "Dean Macdonald",
+        "21"
+      ],
+      [
+        "12",
+        "Joseph Loake",
+        "21"
+      ],
+      [
+        "13",
+        "Dennis  Marschall",
+        "17"
+      ],
+      [
+        "13",
+        "Dustin Blattner",
+        "17"
+      ],
+      [
+        "14",
+        "Tommaso Mosca",
+        "16"
+      ],
+      [
+        "14",
+        "Nicklas Nielsen",
+        "16"
+      ],
+      [
+        "14",
+        "Alessio Rovera",
+        "16"
+      ],
+      [
+        "15",
+        "Maxime Martin",
+        "16"
+      ],
+      [
+        "16",
+        "Fabio Scherer",
+        "16"
+      ],
+      [
+        "16",
+        "Thomas Drouet",
+        "16"
+      ],
+      [
+        "16",
+        "Arjun  Maini",
+        "16"
+      ],
+      [
+        "17",
+        "Romain Andriolo",
+        "15"
+      ],
+      [
+        "17",
+        "Lorens Lecertua",
+        "15"
+      ],
+      [
+        "17",
+        "Baptiste Moulin",
+        "15"
+      ],
+      [
+        "18",
+        "Marvin Kirchhöfer",
+        "13"
+      ],
+      [
+        "19",
+        "Daniel Harper",
+        "13"
+      ],
+      [
+        "19",
+        "Max Hesse",
+        "13"
+      ],
+      [
+        "19",
+        "Valentino Rossi",
+        "13"
+      ],
+      [
+        "20",
+        "Ben Tuck",
+        "13"
+      ],
+      [
+        "20",
+        "Mathys Jaubert",
+        "13"
+      ],
+      [
+        "21",
+        "Malte Ebdrup",
+        "12"
+      ],
+      [
+        "21",
+        "Simon Birch",
+        "12"
+      ],
+      [
+        "21",
+        "Ayhancan Guven",
+        "12"
+      ],
+      [
+        "21",
+        "Frederic Makowiecki",
+        "12"
+      ],
+      [
+        "21",
+        "Matt Campbell",
+        "12"
+      ],
+      [
+        "21",
+        "Frederik Schandorff",
+        "12"
+      ],
+      [
+        "22",
+        "Markus Winkelhock",
+        "12"
+      ],
+      [
+        "22",
+        "Christopher Haase",
+        "12"
+      ],
+      [
+        "22",
+        "Simon  Reicher",
+        "12"
+      ],
+      [
+        "23",
+        "Lilou Wadoux",
+        "11"
+      ],
+      [
+        "23",
+        "Arthur Leclerc",
+        "11"
+      ],
+      [
+        "24",
+        "Sean Gelael",
+        "10"
+      ],
+      [
+        "24",
+        "Matisse Lismont",
+        "10"
+      ],
+      [
+        "24",
+        "Ignacio Montenegro",
+        "10"
+      ],
+      [
+        "24",
+        "Amaury Cordeel",
+        "10"
+      ],
+      [
+        "25",
+        "Tim Tramnitz",
+        "9"
+      ],
+      [
+        "25",
+        "Ugo De Wilde",
+        "9"
+      ],
+      [
+        "25",
+        "Jens Klingmann",
+        "9"
+      ],
+      [
+        "26",
+        "Darren Leung",
+        "9"
+      ],
+      [
+        "26",
+        "David Pittard",
+        "9"
+      ],
+      [
+        "26",
+        "Leyton Fourie",
+        "9"
+      ],
+      [
+        "26",
+        "James Kellett",
+        "9"
+      ],
+      [
+        "27",
+        "Horatio Fitz-Simon",
+        "8"
+      ],
+      [
+        "27",
+        "Maxwell Lynn",
+        "8"
+      ],
+      [
+        "27",
+        "Ben Dörr",
+        "8"
+      ],
+      [
+        "28",
+        "Henrique Chaves",
+        "7"
+      ],
+      [
+        "28",
+        "Christian Krognes",
+        "7"
+      ],
+      [
+        "28",
+        "Jamie Day",
+        "7"
+      ],
+      [
+        "29",
+        "Patric Niederhauser",
+        "6"
+      ],
+      [
+        "29",
+        "Dylan Pereira",
+        "6"
+      ],
+      [
+        "29",
+        "Alex Aka",
+        "6"
+      ],
+      [
+        "29",
+        "Andrea Frassineti",
+        "6"
+      ],
+      [
+        "29",
+        "Marco Mapelli",
+        "6"
+      ],
+      [
+        "29",
+        "Luca Engstler",
+        "6"
+      ],
+      [
+        "30",
+        "Simon Gachet",
+        "4"
+      ],
+      [
+        "30",
+        "Robin Knutsson",
+        "4"
+      ],
+      [
+        "30",
+        "Nico Menzel",
+        "4"
+      ],
+      [
+        "30",
+        "Cesar Gazeau",
+        "4"
+      ],
+      [
+        "30",
+        "Lorenzo  Patrese",
+        "4"
+      ],
+      [
+        "30",
+        "Arthur Rougier",
+        "4"
+      ],
+      [
+        "30",
+        "James Kell",
+        "4"
+      ],
+      [
+        "30",
+        "Gilles Magnus",
+        "4"
+      ],
+      [
+        "30",
+        "Aurélien Panis",
+        "4"
+      ],
+      [
+        "30",
+        "Anthony Bartone",
+        "4"
+      ],
+      [
+        "31",
+        "Lorcan Hanafin",
+        "2"
+      ],
+      [
+        "31",
+        "Jonathan Adam",
+        "2"
+      ],
+      [
+        "31",
+        "Giacomo Petrobelli",
+        "2"
+      ],
+      [
+        "32",
+        "Tanart Sathienthirakul",
+        "1"
+      ],
+      [
+        "32",
+        "Francesco Simonazzi",
+        "1"
+      ],
+      [
+        "32",
+        "Angus Whiteside",
+        "1"
+      ]
+    ]
+  },
+  {
+    "title": "Endurance Cup · Teams",
+    "columns": [
+      "Pos",
+      "Team",
+      "Pts"
+    ],
+    "rows": [
+      [
+        "1",
+        "Winward Racing",
+        "87"
+      ],
+      [
+        "2",
+        "Team WRT",
+        "66"
+      ],
+      [
+        "3",
+        "Comtoyou Racing",
+        "60"
+      ],
+      [
+        "4",
+        "Lionspeed GP",
+        "48"
+      ],
+      [
+        "5",
+        "Boutsen VDS",
+        "45"
+      ],
+      [
+        "6",
+        "GetSpeed",
+        "44"
+      ],
+      [
+        "7",
+        "Garage 59",
+        "42"
+      ],
+      [
+        "8",
+        "Rowe Racing",
+        "39"
+      ],
+      [
+        "9",
+        "Tresor Attempto Racing",
+        "31"
+      ],
+      [
+        "10",
+        "AF Corse",
+        "29"
+      ],
+      [
+        "11",
+        "2Seas Motorsport",
+        "29"
+      ],
+      [
+        "12",
+        "CSA Racing",
+        "21"
+      ],
+      [
+        "13",
+        "Kessel Racing",
+        "20"
+      ],
+      [
+        "14",
+        "HRT Ford Racing",
+        "16"
+      ],
+      [
+        "15",
+        "Walkenhorst Motorsport",
+        "13"
+      ],
+      [
+        "16",
+        "Eastalent Racing",
+        "12"
+      ],
+      [
+        "17",
+        "Paradine Competition",
+        "11"
+      ],
+      [
+        "18",
+        "Team RJN",
+        "8"
+      ],
+      [
+        "19",
+        "Rutronik Racing",
+        "7"
+      ],
+      [
+        "20",
+        "Ecurie Ecosse Blackthorn",
+        "2"
+      ],
+      [
+        "21",
+        "Dinamic GT",
+        "1"
+      ],
+      [
+        "21",
+        "Rinaldi Racing",
+        "1"
+      ]
+    ]
+  }
+]

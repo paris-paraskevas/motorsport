@@ -1,0 +1,2122 @@
+[
+  {
+    "round": 1,
+    "name": "Australian Grand Prix",
+    "date": "2026-03-08",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "George Russell",
+                "Mercedes",
+                "1:23:06.801",
+                "25"
+              ],
+              [
+                "2",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+2.974",
+                "18"
+              ],
+              [
+                "3",
+                "Charles Leclerc",
+                "Ferrari",
+                "+15.519",
+                "15"
+              ],
+              [
+                "4",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+16.144",
+                "12"
+              ],
+              [
+                "5",
+                "Lando Norris",
+                "McLaren",
+                "+51.741",
+                "10"
+              ],
+              [
+                "6",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+54.617",
+                "8"
+              ],
+              [
+                "7",
+                "Oliver Bearman",
+                "Haas F1 Team",
+                "+4.593",
+                "6"
+              ],
+              [
+                "8",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+11.816",
+                "4"
+              ],
+              [
+                "9",
+                "Gabriel Bortoleto",
+                "Audi",
+                "+12.775",
+                "2"
+              ],
+              [
+                "10",
+                "Pierre Gasly",
+                "Alpine",
+                "+29.027",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "name": "Chinese Grand Prix",
+    "date": "2026-03-15",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "George Russell",
+                "Mercedes",
+                "33:38.998",
+                "8"
+              ],
+              [
+                "2",
+                "Charles Leclerc",
+                "Ferrari",
+                "+0.674",
+                "7"
+              ],
+              [
+                "3",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+2.554",
+                "6"
+              ],
+              [
+                "4",
+                "Lando Norris",
+                "McLaren",
+                "+4.433",
+                "5"
+              ],
+              [
+                "5",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+5.688",
+                "4"
+              ],
+              [
+                "6",
+                "Oscar Piastri",
+                "McLaren",
+                "+6.809",
+                "3"
+              ],
+              [
+                "7",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+10.900",
+                "2"
+              ],
+              [
+                "8",
+                "Oliver Bearman",
+                "Haas F1 Team",
+                "+11.271",
+                "1"
+              ],
+              [
+                "9",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+11.619",
+                "0"
+              ],
+              [
+                "10",
+                "Esteban Ocon",
+                "Haas F1 Team",
+                "+13.887",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "1:33:15.607",
+                "25"
+              ],
+              [
+                "2",
+                "George Russell",
+                "Mercedes",
+                "+5.515",
+                "18"
+              ],
+              [
+                "3",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+25.267",
+                "15"
+              ],
+              [
+                "4",
+                "Charles Leclerc",
+                "Ferrari",
+                "+28.894",
+                "12"
+              ],
+              [
+                "5",
+                "Oliver Bearman",
+                "Haas F1 Team",
+                "+57.268",
+                "10"
+              ],
+              [
+                "6",
+                "Pierre Gasly",
+                "Alpine",
+                "+59.647",
+                "8"
+              ],
+              [
+                "7",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+1:20.588",
+                "6"
+              ],
+              [
+                "8",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+1:27.247",
+                "4"
+              ],
+              [
+                "9",
+                "Carlos Sainz",
+                "Williams",
+                "+11.673",
+                "2"
+              ],
+              [
+                "10",
+                "Franco Colapinto",
+                "Alpine",
+                "+12.403",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "name": "Japanese Grand Prix",
+    "date": "2026-03-29",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "1:28:03.403",
+                "25"
+              ],
+              [
+                "2",
+                "Oscar Piastri",
+                "McLaren",
+                "+13.722",
+                "18"
+              ],
+              [
+                "3",
+                "Charles Leclerc",
+                "Ferrari",
+                "+15.270",
+                "15"
+              ],
+              [
+                "4",
+                "George Russell",
+                "Mercedes",
+                "+15.754",
+                "12"
+              ],
+              [
+                "5",
+                "Lando Norris",
+                "McLaren",
+                "+23.479",
+                "10"
+              ],
+              [
+                "6",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+25.037",
+                "8"
+              ],
+              [
+                "7",
+                "Pierre Gasly",
+                "Alpine",
+                "+32.340",
+                "6"
+              ],
+              [
+                "8",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+32.677",
+                "4"
+              ],
+              [
+                "9",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+50.180",
+                "2"
+              ],
+              [
+                "10",
+                "Esteban Ocon",
+                "Haas F1 Team",
+                "+51.216",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "name": "Miami Grand Prix",
+    "date": "2026-05-03",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Lando Norris",
+                "McLaren",
+                "29:15.045",
+                "8"
+              ],
+              [
+                "2",
+                "Oscar Piastri",
+                "McLaren",
+                "+3.766",
+                "7"
+              ],
+              [
+                "3",
+                "Charles Leclerc",
+                "Ferrari",
+                "+6.251",
+                "6"
+              ],
+              [
+                "4",
+                "George Russell",
+                "Mercedes",
+                "+12.951",
+                "5"
+              ],
+              [
+                "5",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+13.639",
+                "4"
+              ],
+              [
+                "6",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+13.777",
+                "3"
+              ],
+              [
+                "7",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+21.665",
+                "2"
+              ],
+              [
+                "8",
+                "Pierre Gasly",
+                "Alpine",
+                "+30.525",
+                "1"
+              ],
+              [
+                "9",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+35.346",
+                "0"
+              ],
+              [
+                "10",
+                "Franco Colapinto",
+                "Alpine",
+                "+36.970",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "1:33:19.273",
+                "25"
+              ],
+              [
+                "2",
+                "Lando Norris",
+                "McLaren",
+                "+3.264",
+                "18"
+              ],
+              [
+                "3",
+                "Oscar Piastri",
+                "McLaren",
+                "+27.092",
+                "15"
+              ],
+              [
+                "4",
+                "George Russell",
+                "Mercedes",
+                "+43.051",
+                "12"
+              ],
+              [
+                "5",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+48.949",
+                "10"
+              ],
+              [
+                "6",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+53.753",
+                "8"
+              ],
+              [
+                "7",
+                "Franco Colapinto",
+                "Alpine",
+                "+1:01.871",
+                "6"
+              ],
+              [
+                "8",
+                "Charles Leclerc",
+                "Ferrari",
+                "+1:04.245",
+                "4"
+              ],
+              [
+                "9",
+                "Carlos Sainz",
+                "Williams",
+                "+1:22.072",
+                "2"
+              ],
+              [
+                "10",
+                "Alexander Albon",
+                "Williams",
+                "+1:30.972",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "name": "Canadian Grand Prix",
+    "date": "2026-05-24",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "George Russell",
+                "Mercedes",
+                "28:50.951",
+                "8"
+              ],
+              [
+                "2",
+                "Lando Norris",
+                "McLaren",
+                "+1.272",
+                "7"
+              ],
+              [
+                "3",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+1.843",
+                "6"
+              ],
+              [
+                "4",
+                "Oscar Piastri",
+                "McLaren",
+                "+9.797",
+                "5"
+              ],
+              [
+                "5",
+                "Charles Leclerc",
+                "Ferrari",
+                "+9.929",
+                "4"
+              ],
+              [
+                "6",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+10.545",
+                "3"
+              ],
+              [
+                "7",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+15.935",
+                "2"
+              ],
+              [
+                "8",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+29.710",
+                "1"
+              ],
+              [
+                "9",
+                "Franco Colapinto",
+                "Alpine",
+                "+31.621",
+                "0"
+              ],
+              [
+                "10",
+                "Carlos Sainz",
+                "Williams",
+                "+36.793",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "1:28:15.758",
+                "25"
+              ],
+              [
+                "2",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+10.768",
+                "18"
+              ],
+              [
+                "3",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+11.276",
+                "15"
+              ],
+              [
+                "4",
+                "Charles Leclerc",
+                "Ferrari",
+                "+44.151",
+                "12"
+              ],
+              [
+                "5",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+5.033",
+                "10"
+              ],
+              [
+                "6",
+                "Franco Colapinto",
+                "Alpine",
+                "+19.510",
+                "8"
+              ],
+              [
+                "7",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+34.235",
+                "6"
+              ],
+              [
+                "8",
+                "Pierre Gasly",
+                "Alpine",
+                "+34.572",
+                "4"
+              ],
+              [
+                "9",
+                "Carlos Sainz",
+                "Williams",
+                "+58.014",
+                "2"
+              ],
+              [
+                "10",
+                "Oliver Bearman",
+                "Haas F1 Team",
+                "+59.049",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "name": "Monaco Grand Prix",
+    "date": "2026-06-07",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "2:23:31.243",
+                "25"
+              ],
+              [
+                "2",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+6.271",
+                "18"
+              ],
+              [
+                "3",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+23.394",
+                "15"
+              ],
+              [
+                "4",
+                "Oscar Piastri",
+                "McLaren",
+                "+24.261",
+                "12"
+              ],
+              [
+                "5",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+26.553",
+                "10"
+              ],
+              [
+                "6",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+29.010",
+                "8"
+              ],
+              [
+                "7",
+                "Pierre Gasly",
+                "Alpine",
+                "+30.369",
+                "6"
+              ],
+              [
+                "8",
+                "Alexander Albon",
+                "Williams",
+                "+33.413",
+                "4"
+              ],
+              [
+                "9",
+                "Esteban Ocon",
+                "Haas F1 Team",
+                "+37.140",
+                "2"
+              ],
+              [
+                "10",
+                "Fernando Alonso",
+                "Aston Martin",
+                "+41.899",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "name": "Barcelona Grand Prix",
+    "date": "2026-06-14",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Lewis Hamilton",
+                "Ferrari",
+                "1:32:28.105",
+                "25"
+              ],
+              [
+                "2",
+                "George Russell",
+                "Mercedes",
+                "+19.561",
+                "18"
+              ],
+              [
+                "3",
+                "Lando Norris",
+                "McLaren",
+                "+23.719",
+                "15"
+              ],
+              [
+                "4",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+40.497",
+                "12"
+              ],
+              [
+                "5",
+                "Oscar Piastri",
+                "McLaren",
+                "+58.661",
+                "10"
+              ],
+              [
+                "6",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+24.627",
+                "8"
+              ],
+              [
+                "7",
+                "Pierre Gasly",
+                "Alpine",
+                "+55.789",
+                "6"
+              ],
+              [
+                "8",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+1:12.224",
+                "4"
+              ],
+              [
+                "9",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+1:18.074",
+                "2"
+              ],
+              [
+                "10",
+                "Franco Colapinto",
+                "Alpine",
+                "+1:19.867",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "name": "Austrian Grand Prix",
+    "date": "2026-06-28",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "George Russell",
+                "Mercedes",
+                "1:26:37.979",
+                "25"
+              ],
+              [
+                "2",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+1.611",
+                "18"
+              ],
+              [
+                "3",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+1.986",
+                "15"
+              ],
+              [
+                "4",
+                "Oscar Piastri",
+                "McLaren",
+                "+21.809",
+                "12"
+              ],
+              [
+                "5",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+26.393",
+                "10"
+              ],
+              [
+                "6",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+29.399",
+                "8"
+              ],
+              [
+                "7",
+                "Lando Norris",
+                "McLaren",
+                "+31.505",
+                "6"
+              ],
+              [
+                "8",
+                "Charles Leclerc",
+                "Ferrari",
+                "+45.659",
+                "4"
+              ],
+              [
+                "9",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+15.334",
+                "2"
+              ],
+              [
+                "10",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+19.030",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 9,
+    "name": "British Grand Prix",
+    "date": "2026-07-05",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "26:12.129",
+                "8"
+              ],
+              [
+                "2",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+2.745",
+                "7"
+              ],
+              [
+                "3",
+                "Lando Norris",
+                "McLaren",
+                "+9.783",
+                "6"
+              ],
+              [
+                "4",
+                "George Russell",
+                "Mercedes",
+                "+10.639",
+                "5"
+              ],
+              [
+                "5",
+                "Charles Leclerc",
+                "Ferrari",
+                "+12.620",
+                "4"
+              ],
+              [
+                "6",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+16.550",
+                "3"
+              ],
+              [
+                "7",
+                "Oscar Piastri",
+                "McLaren",
+                "+17.551",
+                "2"
+              ],
+              [
+                "8",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+30.233",
+                "1"
+              ],
+              [
+                "9",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+30.953",
+                "0"
+              ],
+              [
+                "10",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+35.110",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Charles Leclerc",
+                "Ferrari",
+                "1:27:11.335",
+                "25"
+              ],
+              [
+                "2",
+                "George Russell",
+                "Mercedes",
+                "+0.427",
+                "18"
+              ],
+              [
+                "3",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+0.772",
+                "15"
+              ],
+              [
+                "4",
+                "Lando Norris",
+                "McLaren",
+                "+1.149",
+                "12"
+              ],
+              [
+                "5",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+1.598",
+                "10"
+              ],
+              [
+                "6",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+2.023",
+                "8"
+              ],
+              [
+                "7",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+2.214",
+                "6"
+              ],
+              [
+                "8",
+                "Gabriel Bortoleto",
+                "Audi",
+                "+2.413",
+                "4"
+              ],
+              [
+                "9",
+                "Franco Colapinto",
+                "Alpine",
+                "+3.229",
+                "2"
+              ],
+              [
+                "10",
+                "Pierre Gasly",
+                "Alpine",
+                "+3.445",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 10,
+    "name": "Belgian Grand Prix",
+    "date": "2026-07-19",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "1:24:42.479",
+                "25"
+              ],
+              [
+                "2",
+                "Charles Leclerc",
+                "Ferrari",
+                "+1.952",
+                "18"
+              ],
+              [
+                "3",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+11.586",
+                "15"
+              ],
+              [
+                "4",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+17.245",
+                "12"
+              ],
+              [
+                "5",
+                "Oscar Piastri",
+                "McLaren",
+                "+18.988",
+                "10"
+              ],
+              [
+                "6",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+23.307",
+                "8"
+              ],
+              [
+                "7",
+                "Lando Norris",
+                "McLaren",
+                "+24.014",
+                "6"
+              ],
+              [
+                "8",
+                "Gabriel Bortoleto",
+                "Audi",
+                "+49.140",
+                "4"
+              ],
+              [
+                "9",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+50.406",
+                "2"
+              ],
+              [
+                "10",
+                "Franco Colapinto",
+                "Alpine",
+                "+1:16.037",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 11,
+    "name": "Hungarian Grand Prix",
+    "date": "2026-07-26",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Lando Norris",
+                "McLaren",
+                "1:39:56.180",
+                "25"
+              ],
+              [
+                "2",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+15.080",
+                "18"
+              ],
+              [
+                "3",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+18.728",
+                "15"
+              ],
+              [
+                "4",
+                "Charles Leclerc",
+                "Ferrari",
+                "+23.840",
+                "12"
+              ],
+              [
+                "5",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+24.540",
+                "10"
+              ],
+              [
+                "6",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+55.488",
+                "8"
+              ],
+              [
+                "7",
+                "George Russell",
+                "Mercedes",
+                "+57.503",
+                "6"
+              ],
+              [
+                "8",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+28.033",
+                "4"
+              ],
+              [
+                "9",
+                "Nico Hülkenberg",
+                "Audi",
+                "+30.382",
+                "2"
+              ],
+              [
+                "10",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+51.050",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 12,
+    "name": "Dutch Grand Prix",
+    "date": "2026-08-23",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "George Russell",
+                "Mercedes",
+                "30:25.318",
+                "8"
+              ],
+              [
+                "2",
+                "Charles Leclerc",
+                "Ferrari",
+                "+1.360",
+                "7"
+              ],
+              [
+                "3",
+                "Lando Norris",
+                "McLaren",
+                "+5.196",
+                "6"
+              ],
+              [
+                "4",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+5.581",
+                "5"
+              ],
+              [
+                "5",
+                "Oscar Piastri",
+                "McLaren",
+                "+10.185",
+                "4"
+              ],
+              [
+                "6",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+10.529",
+                "3"
+              ],
+              [
+                "7",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+12.188",
+                "2"
+              ],
+              [
+                "8",
+                "Pierre Gasly",
+                "Alpine",
+                "+42.510",
+                "1"
+              ],
+              [
+                "9",
+                "Gabriel Bortoleto",
+                "Audi",
+                "+44.437",
+                "0"
+              ],
+              [
+                "10",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+44.971",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Lando Norris",
+                "McLaren",
+                "2:04:44.859",
+                "25"
+              ],
+              [
+                "2",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+11.536",
+                "18"
+              ],
+              [
+                "3",
+                "George Russell",
+                "Mercedes",
+                "+15.906",
+                "15"
+              ],
+              [
+                "4",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+16.755",
+                "12"
+              ],
+              [
+                "5",
+                "Charles Leclerc",
+                "Ferrari",
+                "+17.258",
+                "10"
+              ],
+              [
+                "6",
+                "Oscar Piastri",
+                "McLaren",
+                "+32.332",
+                "8"
+              ],
+              [
+                "7",
+                "Liam Lawson",
+                "Red Bull Racing",
+                "+1:19.915",
+                "6"
+              ],
+              [
+                "8",
+                "Nico Hülkenberg",
+                "Audi",
+                "+36.049",
+                "4"
+              ],
+              [
+                "9",
+                "Fernando Alonso",
+                "Aston Martin",
+                "+48.393",
+                "2"
+              ],
+              [
+                "10",
+                "Pierre Gasly",
+                "Alpine",
+                "+49.640",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 13,
+    "name": "Italian Grand Prix",
+    "date": "2026-09-06",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "1:51:15.281",
+                "25"
+              ],
+              [
+                "2",
+                "George Russell",
+                "Mercedes",
+                "+3.857",
+                "18"
+              ],
+              [
+                "3",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+14.718",
+                "15"
+              ],
+              [
+                "4",
+                "Lando Norris",
+                "McLaren",
+                "+19.056",
+                "12"
+              ],
+              [
+                "5",
+                "Oscar Piastri",
+                "McLaren",
+                "+19.253",
+                "10"
+              ],
+              [
+                "6",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+24.655",
+                "8"
+              ],
+              [
+                "7",
+                "Pierre Gasly",
+                "Alpine",
+                "+27.351",
+                "6"
+              ],
+              [
+                "8",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+45.136",
+                "4"
+              ],
+              [
+                "9",
+                "Franco Colapinto",
+                "Alpine",
+                "+47.353",
+                "2"
+              ],
+              [
+                "10",
+                "Yuki Tsunoda",
+                "Racing Bulls",
+                "+58.187",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 14,
+    "name": "Spanish Grand Prix",
+    "date": "2026-09-13",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "1:34:23.754",
+                "25"
+              ],
+              [
+                "2",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+4.351",
+                "18"
+              ],
+              [
+                "3",
+                "Lando Norris",
+                "McLaren",
+                "+5.089",
+                "15"
+              ],
+              [
+                "4",
+                "Charles Leclerc",
+                "Ferrari",
+                "+29.116",
+                "12"
+              ],
+              [
+                "5",
+                "George Russell",
+                "Mercedes",
+                "+29.829",
+                "10"
+              ],
+              [
+                "6",
+                "Liam Lawson",
+                "Red Bull Racing",
+                "+1:26.746",
+                "8"
+              ],
+              [
+                "7",
+                "Franco Colapinto",
+                "Alpine",
+                "+1:34.281",
+                "6"
+              ],
+              [
+                "8",
+                "Oscar Piastri",
+                "McLaren",
+                "+1:35.839",
+                "4"
+              ],
+              [
+                "9",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+10.408",
+                "2"
+              ],
+              [
+                "10",
+                "Nico Hülkenberg",
+                "Audi",
+                "+11.298",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 15,
+    "name": "Azerbaijan Grand Prix",
+    "date": "2026-09-26",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "George Russell",
+                "Mercedes",
+                "1:38:02.143",
+                "25"
+              ],
+              [
+                "2",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "+0.196",
+                "18"
+              ],
+              [
+                "3",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+10.704",
+                "15"
+              ],
+              [
+                "4",
+                "Charles Leclerc",
+                "Ferrari",
+                "+14.136",
+                "12"
+              ],
+              [
+                "5",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+14.512",
+                "10"
+              ],
+              [
+                "6",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+22.382",
+                "8"
+              ],
+              [
+                "7",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+31.159",
+                "6"
+              ],
+              [
+                "8",
+                "Esteban Ocon",
+                "Haas F1 Team",
+                "+31.189",
+                "4"
+              ],
+              [
+                "9",
+                "Oliver Bearman",
+                "Haas F1 Team",
+                "+31.929",
+                "2"
+              ],
+              [
+                "10",
+                "Carlos Sainz",
+                "Williams",
+                "+32.416",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 16,
+    "name": "Bahrain Grand Prix in Malaysia",
+    "date": "2026-10-04",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "1:47:14.808",
+                "25"
+              ],
+              [
+                "2",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+2.307",
+                "18"
+              ],
+              [
+                "3",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+4.919",
+                "15"
+              ],
+              [
+                "4",
+                "Charles Leclerc",
+                "Ferrari",
+                "+7.258",
+                "12"
+              ],
+              [
+                "5",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+8.571",
+                "10"
+              ],
+              [
+                "6",
+                "Oscar Piastri",
+                "McLaren",
+                "+9.454",
+                "8"
+              ],
+              [
+                "7",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+12.753",
+                "6"
+              ],
+              [
+                "8",
+                "Fernando Alonso",
+                "Aston Martin",
+                "+13.372",
+                "4"
+              ],
+              [
+                "9",
+                "Lando Norris",
+                "McLaren",
+                "+13.993",
+                "2"
+              ],
+              [
+                "10",
+                "Arvid Lindblad",
+                "Racing Bulls",
+                "+15.928",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 17,
+    "name": "Singapore Grand Prix",
+    "date": "2026-10-11",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "39:48.162",
+                "8"
+              ],
+              [
+                "2",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+2.591",
+                "7"
+              ],
+              [
+                "3",
+                "Charles Leclerc",
+                "Ferrari",
+                "+16.871",
+                "6"
+              ],
+              [
+                "4",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+17.238",
+                "5"
+              ],
+              [
+                "5",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+20.632",
+                "4"
+              ],
+              [
+                "6",
+                "Oliver Bearman",
+                "Haas F1 Team",
+                "+24.321",
+                "3"
+              ],
+              [
+                "7",
+                "Nico Hülkenberg",
+                "Audi",
+                "+27.525",
+                "2"
+              ],
+              [
+                "8",
+                "Lando Norris",
+                "McLaren",
+                "+28.272",
+                "1"
+              ],
+              [
+                "9",
+                "Pierre Gasly",
+                "Alpine",
+                "+36.220",
+                "0"
+              ],
+              [
+                "10",
+                "Esteban Ocon",
+                "Haas F1 Team",
+                "+37.640",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Max Verstappen",
+                "Red Bull Racing",
+                "1:42:00.785",
+                "25"
+              ],
+              [
+                "2",
+                "Charles Leclerc",
+                "Ferrari",
+                "+7.335",
+                "18"
+              ],
+              [
+                "3",
+                "Andrea Kimi Antonelli",
+                "Mercedes",
+                "+24.573",
+                "15"
+              ],
+              [
+                "4",
+                "Lando Norris",
+                "McLaren",
+                "+40.506",
+                "12"
+              ],
+              [
+                "5",
+                "Oscar Piastri",
+                "McLaren",
+                "+49.644",
+                "10"
+              ],
+              [
+                "6",
+                "Lewis Hamilton",
+                "Ferrari",
+                "+53.188",
+                "8"
+              ],
+              [
+                "7",
+                "Liam Lawson",
+                "Racing Bulls",
+                "+1:21.666",
+                "6"
+              ],
+              [
+                "8",
+                "Nico Hülkenberg",
+                "Audi",
+                "+1:23.386",
+                "4"
+              ],
+              [
+                "9",
+                "George Russell",
+                "Mercedes",
+                "+1:24.677",
+                "2"
+              ],
+              [
+                "10",
+                "Isack Hadjar",
+                "Red Bull Racing",
+                "+1:30.862",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

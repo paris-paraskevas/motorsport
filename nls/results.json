@@ -1,0 +1,234 @@
+[
+  {
+    "round": 2,
+    "name": "58. ADAC Barbarossapreis",
+    "date": "2026-03-21",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Dan Harper · Jordan Pepper",
+                "Rowe Racing",
+                "Winner"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "name": "57. Adenauer ADAC Rundstrecken-Trophy",
+    "date": "2026-04-11",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Philipp Eng · Robin Frijns · Marco Wittmann",
+                "Schubert Motorsport",
+                "Winner"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "name": "ADAC 24h Nürburgring Qualifiers Rennen 2",
+    "date": "2026-04-19",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Ben Green · Christopher Haase · Alexander Sims",
+                "Scherer Sport PHX",
+                "Winner"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "name": "1. ADAC Eifel Trophy",
+    "date": "2026-06-20",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nico Menzel · Sven Müller",
+                "Dunlop Motorsports",
+                "Winner"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "name": "KW 6h ADAC Ruhr-Pokal-Rennen",
+    "date": "2026-08-01",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Ralf Aron · Luca Stolz",
+                "Mercedes-AMG Ravenol",
+                "Winner"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "name": "65. ADAC Reinoldus-Langstreckenrennen",
+    "date": "2026-09-12",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Jens Klingmann · Jordan Pepper · Ugo de Wilde",
+                "Schubert Motorsport",
+                "Winner"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 9,
+    "name": "66. ADAC ACAS Cup",
+    "date": "2026-09-13",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Tim Heinemann · Morris Schuring",
+                "Falken Motorsports",
+                "Winner"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 10,
+    "name": "2. NLS Sportwarte-Trophy",
+    "date": "2026-10-10",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nico Menzel · Sven Müller",
+                "Dunlop Motorsports",
+                "Winner"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

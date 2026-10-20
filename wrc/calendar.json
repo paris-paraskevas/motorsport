@@ -1,0 +1,1154 @@
+[
+  {
+    "start": "2026-01-21T12:01:00.000Z",
+    "end": "2026-01-21T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "Shakedown (Monte Carlo)",
+    "round": 1,
+    "location": "Gap, France"
+  },
+  {
+    "start": "2026-01-22T15:05:00.000Z",
+    "end": "2026-01-22T15:35:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS1 Toudon / Saint-Antonin (Monte Carlo)",
+    "round": 1,
+    "location": "Toudon, France"
+  },
+  {
+    "start": "2026-01-22T17:35:00.000Z",
+    "end": "2026-01-22T18:05:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS2 Esclangon / Seyne-les-Alpes (Monte Carlo)",
+    "round": 1,
+    "location": "Esclangon, France"
+  },
+  {
+    "start": "2026-01-22T19:35:00.000Z",
+    "end": "2026-01-22T20:00:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS3 Vaumeilh / Claret 1 (Monte Carlo)",
+    "round": 1,
+    "location": "Vaumeilh, France"
+  },
+  {
+    "start": "2026-01-23T08:04:00.000Z",
+    "end": "2026-01-23T08:34:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS4 Laborel / Chauvac-Laux-Montaux 1 (Monte Carlo)",
+    "round": 1,
+    "location": "Laborel, France"
+  },
+  {
+    "start": "2026-01-23T14:16:00.000Z",
+    "end": "2026-01-23T14:46:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS6 La-Bâtie-des-Fontes / Aspremont 1 (Monte Carlo)",
+    "round": 1,
+    "location": "La-Bâtie-des-Fontes, France"
+  },
+  {
+    "start": "2026-01-23T15:44:00.000Z",
+    "end": "2026-01-23T16:14:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS7 Laborel / Chauvac-Laux-Montaux 2 (Monte Carlo)",
+    "round": 1,
+    "location": "Laborel, France"
+  },
+  {
+    "start": "2026-01-23T17:05:00.000Z",
+    "end": "2026-01-23T17:50:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS8 Saint-Nazaire-le-Désert / La Motte-Chalancon 2 (Monte Carlo)",
+    "round": 1,
+    "location": "Saint-Nazaire-le-Désert, France"
+  },
+  {
+    "start": "2026-01-24T07:31:00.000Z",
+    "end": "2026-01-24T08:15:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS10 La Bréole / Bellaffaires 1 (Monte Carlo)",
+    "round": 1,
+    "location": "La Bréole, France"
+  },
+  {
+    "start": "2026-01-24T08:55:00.000Z",
+    "end": "2026-01-24T09:20:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS11 Vaumeilh / Claret 2 (Monte Carlo)",
+    "round": 1,
+    "location": "Vaumeilh, France"
+  },
+  {
+    "start": "2026-01-24T11:31:00.000Z",
+    "end": "2026-01-24T12:15:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS12 La Bréole / Bellaffaires 2 (Monte Carlo)",
+    "round": 1,
+    "location": "La Bréole, France"
+  },
+  {
+    "start": "2026-01-24T17:35:00.000Z",
+    "end": "2026-01-24T17:45:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS13 Monaco Circuit (Super Special) (Monte Carlo)",
+    "round": 1,
+    "location": "Circuit de Monaco, Monte Carlo, Monaco"
+  },
+  {
+    "start": "2026-01-25T07:05:00.000Z",
+    "end": "2026-01-25T07:25:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS14 Col de Braus / La Cabanette 1 (Monte Carlo)",
+    "round": 1,
+    "location": "Col de Braus, France"
+  },
+  {
+    "start": "2026-01-25T08:35:00.000Z",
+    "end": "2026-01-25T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS15 La Bollène-Vésubie / Moulinet 1 (Monte Carlo)",
+    "round": 1,
+    "location": "La Bollène-Vésubie, France"
+  },
+  {
+    "start": "2026-01-25T10:09:00.000Z",
+    "end": "2026-01-25T10:29:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS16 Col de Braus / La Cabanette 2 (Monte Carlo)",
+    "round": 1,
+    "location": "Col de Braus, France"
+  },
+  {
+    "start": "2026-01-25T12:15:00.000Z",
+    "end": "2026-01-25T12:45:00.000Z",
+    "dateOnly": false,
+    "event": "Rallye Monte-Carlo",
+    "session": "SS17 La Bollène-Vésubie / Moulinet 2 - Power Stage (Monte Carlo)",
+    "round": 1,
+    "location": "La Bollène-Vésubie, France"
+  },
+  {
+    "start": "2026-02-12T00:00:00.000Z",
+    "end": "2026-02-16T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Rally Sweden",
+    "session": "WRC | Rally Sweden",
+    "round": 2,
+    "location": "Umeå, Sweden"
+  },
+  {
+    "start": "2026-03-12T00:00:00.000Z",
+    "end": "2026-03-16T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Safari Rally Kenya",
+    "session": "WRC | Safari Rally Kenya",
+    "round": 3,
+    "location": "Naivasha, Kenya"
+  },
+  {
+    "start": "2026-04-09T08:01:00.000Z",
+    "end": "2026-04-09T11:00:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "Shakedown (Croatia)",
+    "round": 4,
+    "location": "Automotodrom Grobnik, Rijeka, Croatia"
+  },
+  {
+    "start": "2026-04-09T16:30:00.000Z",
+    "end": "2026-04-09T18:00:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "Ceremonial Start Rijeka Korzo (Croatia)",
+    "round": 4,
+    "location": "Rijeka Korzo, Croatia"
+  },
+  {
+    "start": "2026-04-10T07:13:00.000Z",
+    "end": "2026-04-10T07:43:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS1 Vodice / Brest 1 (Croatia)",
+    "round": 4,
+    "location": "Vodice, Croatia"
+  },
+  {
+    "start": "2026-04-10T08:11:00.000Z",
+    "end": "2026-04-10T08:41:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS2 Lake Butoniga / Motovun 1 (Croatia)",
+    "round": 4,
+    "location": "Lake Butoniga, Croatia"
+  },
+  {
+    "start": "2026-04-10T09:14:00.000Z",
+    "end": "2026-04-10T09:44:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS3 Beram / Cerovlje 1 (Croatia)",
+    "round": 4,
+    "location": "Beram, Croatia"
+  },
+  {
+    "start": "2026-04-10T10:02:00.000Z",
+    "end": "2026-04-10T10:32:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS4 Učka 1 (Croatia)",
+    "round": 4,
+    "location": "Učka, Croatia"
+  },
+  {
+    "start": "2026-04-10T13:15:00.000Z",
+    "end": "2026-04-10T13:45:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS5 Vodice / Brest 2 (Croatia)",
+    "round": 4,
+    "location": "Vodice, Croatia"
+  },
+  {
+    "start": "2026-04-10T14:13:00.000Z",
+    "end": "2026-04-10T14:43:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS6 Lake Butoniga / Motovun 2 (Croatia)",
+    "round": 4,
+    "location": "Lake Butoniga, Croatia"
+  },
+  {
+    "start": "2026-04-10T15:16:00.000Z",
+    "end": "2026-04-10T15:46:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS7 Beram / Cerovlje 2 (Croatia)",
+    "round": 4,
+    "location": "Beram, Croatia"
+  },
+  {
+    "start": "2026-04-10T16:04:00.000Z",
+    "end": "2026-04-10T16:34:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS8 Učka 2 (Croatia)",
+    "round": 4,
+    "location": "Učka, Croatia"
+  },
+  {
+    "start": "2026-04-11T06:43:00.000Z",
+    "end": "2026-04-11T07:13:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS9 Platak 1 (Croatia)",
+    "round": 4,
+    "location": "Platak, Croatia"
+  },
+  {
+    "start": "2026-04-11T07:41:00.000Z",
+    "end": "2026-04-11T08:11:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS10 Ravna Gora / Skrad 1 (Croatia)",
+    "round": 4,
+    "location": "Ravna Gora, Croatia"
+  },
+  {
+    "start": "2026-04-11T09:05:00.000Z",
+    "end": "2026-04-11T09:35:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS11 Generalski Stol / Zdihovo 1 (Croatia)",
+    "round": 4,
+    "location": "Generalski Stol, Croatia"
+  },
+  {
+    "start": "2026-04-11T10:03:00.000Z",
+    "end": "2026-04-11T10:33:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS12 Pećurkovo Brdo / Mrežnički Novaki 1 (Croatia)",
+    "round": 4,
+    "location": "Pećurkovo Brdo, Croatia"
+  },
+  {
+    "start": "2026-04-11T12:12:00.000Z",
+    "end": "2026-04-11T12:42:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS13 Pećurkovo Brdo / Mrežnički Novaki 2 (Croatia)",
+    "round": 4,
+    "location": "Pećurkovo Brdo, Croatia"
+  },
+  {
+    "start": "2026-04-11T13:05:00.000Z",
+    "end": "2026-04-11T13:35:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS14 Generalski Stol / Zdihovo 2 (Croatia)",
+    "round": 4,
+    "location": "Generalski Stol, Croatia"
+  },
+  {
+    "start": "2026-04-11T14:23:00.000Z",
+    "end": "2026-04-11T14:53:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS15 Ravna Gora / Skrad 2 (Croatia)",
+    "round": 4,
+    "location": "Ravna Gora, Croatia"
+  },
+  {
+    "start": "2026-04-11T15:22:00.000Z",
+    "end": "2026-04-11T15:52:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS16 Platak 2 (Croatia)",
+    "round": 4,
+    "location": "Platak, Croatia"
+  },
+  {
+    "start": "2026-04-12T06:05:00.000Z",
+    "end": "2026-04-12T06:35:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS17 Bribir / Novi Vinodolski 1 (Croatia)",
+    "round": 4,
+    "location": "Bribir, Croatia"
+  },
+  {
+    "start": "2026-04-12T07:05:00.000Z",
+    "end": "2026-04-12T07:35:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS18 Alan / Senj 1 (Croatia)",
+    "round": 4,
+    "location": "Alan, Croatia"
+  },
+  {
+    "start": "2026-04-12T08:38:00.000Z",
+    "end": "2026-04-12T09:08:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS19 Bribir / Novi Vinodolski 2 (Croatia)",
+    "round": 4,
+    "location": "Bribir, Croatia"
+  },
+  {
+    "start": "2026-04-12T11:15:00.000Z",
+    "end": "2026-04-12T11:45:00.000Z",
+    "dateOnly": false,
+    "event": "Croatia Rally",
+    "session": "SS20 Alan / Senj 2 - Wolf Power Stage (Croatia)",
+    "round": 4,
+    "location": "Alan, Croatia"
+  },
+  {
+    "start": "2026-04-23T00:00:00.000Z",
+    "end": "2026-04-27T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Rally Islas Canarias",
+    "session": "WRC | Rally Islas Canarias",
+    "round": 5,
+    "location": "Las Palmas de Gran Canaria, Las Palmas, Spain"
+  },
+  {
+    "start": "2026-05-06T14:01:00.000Z",
+    "end": "2026-05-06T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "Shakedown (Portugal)",
+    "round": 6,
+    "location": "Baltar, Portugal"
+  },
+  {
+    "start": "2026-05-07T14:05:00.000Z",
+    "end": "2026-05-07T14:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS1 Águeda / Sever (Portugal)",
+    "round": 6,
+    "location": "Águeda/Sever, Portugal"
+  },
+  {
+    "start": "2026-05-07T15:05:00.000Z",
+    "end": "2026-05-07T15:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS2 Sever / Albergaria (Portugal)",
+    "round": 6,
+    "location": "Sever/Albergaria, Portugal"
+  },
+  {
+    "start": "2026-05-07T17:05:00.000Z",
+    "end": "2026-05-07T17:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS3 Figueira da Foz (Portugal)",
+    "round": 6,
+    "location": "Figueira da Foz (SSS), Portugal"
+  },
+  {
+    "start": "2026-05-08T06:35:00.000Z",
+    "end": "2026-05-08T07:05:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS4 Mortágua 1 (Portugal)",
+    "round": 6,
+    "location": "Mortágua 1, Portugal"
+  },
+  {
+    "start": "2026-05-08T07:55:00.000Z",
+    "end": "2026-05-08T08:25:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS5 Arganil 1 (Portugal)",
+    "round": 6,
+    "location": "Arganil 1, Portugal"
+  },
+  {
+    "start": "2026-05-08T09:13:00.000Z",
+    "end": "2026-05-08T09:43:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS6 Lousã 1 (Portugal)",
+    "round": 6,
+    "location": "Lousã 1, Portugal"
+  },
+  {
+    "start": "2026-05-08T11:30:00.000Z",
+    "end": "2026-05-08T12:00:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS7 Arganil 2 (Portugal)",
+    "round": 6,
+    "location": "Arganil 2, Portugal"
+  },
+  {
+    "start": "2026-05-08T12:25:00.000Z",
+    "end": "2026-05-08T12:55:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS8 Góis (Portugal)",
+    "round": 6,
+    "location": "Góis, Portugal"
+  },
+  {
+    "start": "2026-05-08T13:08:00.000Z",
+    "end": "2026-05-08T13:38:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS9 Lousã 2 (Portugal)",
+    "round": 6,
+    "location": "Lousã 2, Portugal"
+  },
+  {
+    "start": "2026-05-08T14:45:00.000Z",
+    "end": "2026-05-08T15:15:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS10 Mortágua 2 (Portugal)",
+    "round": 6,
+    "location": "Mortágua 2, Portugal"
+  },
+  {
+    "start": "2026-05-09T06:00:00.000Z",
+    "end": "2026-05-09T06:30:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS11 Felgueiras 1 (Portugal)",
+    "round": 6,
+    "location": "Felgueiras 1, Portugal"
+  },
+  {
+    "start": "2026-05-09T07:05:00.000Z",
+    "end": "2026-05-09T07:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS12 Cabeceiras de Basto 1 (Portugal)",
+    "round": 6,
+    "location": "Cabeceiras de Basto 1, Portugal"
+  },
+  {
+    "start": "2026-05-09T08:35:00.000Z",
+    "end": "2026-05-09T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS13 Amarante 1 (Portugal)",
+    "round": 6,
+    "location": "Amarante 1, Portugal"
+  },
+  {
+    "start": "2026-05-09T10:05:00.000Z",
+    "end": "2026-05-09T10:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS14 Paredes 1 (Portugal)",
+    "round": 6,
+    "location": "Paredes 1, Portugal"
+  },
+  {
+    "start": "2026-05-09T13:00:00.000Z",
+    "end": "2026-05-09T13:30:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS15 Felgueiras 2 (Portugal)",
+    "round": 6,
+    "location": "Felgueiras 2, Portugal"
+  },
+  {
+    "start": "2026-05-09T14:05:00.000Z",
+    "end": "2026-05-09T14:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS16 Cabeceiras de Basto 2 (Portugal)",
+    "round": 6,
+    "location": "Cabeceiras de Basto 2, Portugal"
+  },
+  {
+    "start": "2026-05-09T15:35:00.000Z",
+    "end": "2026-05-09T16:05:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS17 Amarante 2 (Portugal)",
+    "round": 6,
+    "location": "Amarante 2, Portugal"
+  },
+  {
+    "start": "2026-05-09T17:05:00.000Z",
+    "end": "2026-05-09T17:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS18 Paredes 2 (Portugal)",
+    "round": 6,
+    "location": "Paredes 2, Portugal"
+  },
+  {
+    "start": "2026-05-09T18:05:00.000Z",
+    "end": "2026-05-09T18:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS19 Lousada (Portugal)",
+    "round": 6,
+    "location": "Lousada (SSS), Portugal"
+  },
+  {
+    "start": "2026-05-10T07:05:00.000Z",
+    "end": "2026-05-10T07:35:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS20 Vieira do Minho 1 (Portugal)",
+    "round": 6,
+    "location": "Vieira do Minho 1, Portugal"
+  },
+  {
+    "start": "2026-05-10T08:35:00.000Z",
+    "end": "2026-05-10T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS21 Fafe 1 (Portugal)",
+    "round": 6,
+    "location": "Fafe 1, Portugal"
+  },
+  {
+    "start": "2026-05-10T09:35:00.000Z",
+    "end": "2026-05-10T10:05:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS22 Vieira do Minho 2 (Portugal)",
+    "round": 6,
+    "location": "Vieira do Minho 2, Portugal"
+  },
+  {
+    "start": "2026-05-10T12:15:00.000Z",
+    "end": "2026-05-10T12:45:00.000Z",
+    "dateOnly": false,
+    "event": "Vodafone Rally de Portugal",
+    "session": "SS23 Fafe 2 - Wolf Power Stage (Portugal)",
+    "round": 6,
+    "location": "Fafe 2 - Power Stage, Portugal"
+  },
+  {
+    "start": "2026-05-28T00:00:00.000Z",
+    "end": "2026-06-01T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "FORUM8 Rally Japan",
+    "session": "WRC | Rally Japan",
+    "round": 7,
+    "location": "Aichi, Japan"
+  },
+  {
+    "start": "2026-06-25T06:01:00.000Z",
+    "end": "2026-06-25T09:01:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "Shakedown (Greece)",
+    "round": 8,
+    "location": "Loutraki, Greece"
+  },
+  {
+    "start": "2026-06-25T16:05:00.000Z",
+    "end": "2026-06-25T16:20:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS1 EKO Super Special Stage (Greece)",
+    "round": 8,
+    "location": "The Ellinikon, Athens, Greece"
+  },
+  {
+    "start": "2026-06-26T05:48:00.000Z",
+    "end": "2026-06-26T06:23:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS2 Bauxites (Greece)",
+    "round": 8,
+    "location": "Itea, Greece"
+  },
+  {
+    "start": "2026-06-26T06:51:00.000Z",
+    "end": "2026-06-26T07:26:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS3 Parnassos Mt (Greece)",
+    "round": 8,
+    "location": "Parnassos, Greece"
+  },
+  {
+    "start": "2026-06-26T08:14:00.000Z",
+    "end": "2026-06-26T08:49:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS4 Stiri 1 (Greece)",
+    "round": 8,
+    "location": "Stiri, Greece"
+  },
+  {
+    "start": "2026-06-26T10:35:00.000Z",
+    "end": "2026-06-26T11:10:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS5 Elikon Mt (Greece)",
+    "round": 8,
+    "location": "Elikon, Greece"
+  },
+  {
+    "start": "2026-06-26T11:46:00.000Z",
+    "end": "2026-06-26T12:21:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS6 Stiri 2 (Greece)",
+    "round": 8,
+    "location": "Stiri, Greece"
+  },
+  {
+    "start": "2026-06-26T13:56:00.000Z",
+    "end": "2026-06-26T14:31:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS7 Thiva (Greece)",
+    "round": 8,
+    "location": "Thiva, Greece"
+  },
+  {
+    "start": "2026-06-27T04:54:00.000Z",
+    "end": "2026-06-27T05:29:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS8 Ghymno 1 (Greece)",
+    "round": 8,
+    "location": "Ghymno, Greece"
+  },
+  {
+    "start": "2026-06-27T06:19:00.000Z",
+    "end": "2026-06-27T06:54:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS9 Kolines (Greece)",
+    "round": 8,
+    "location": "Kollines, Arcadia, Greece"
+  },
+  {
+    "start": "2026-06-27T08:05:00.000Z",
+    "end": "2026-06-27T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS10 Menalo Mt 1 (Greece)",
+    "round": 8,
+    "location": "Menalo, Arcadia, Greece"
+  },
+  {
+    "start": "2026-06-27T09:58:00.000Z",
+    "end": "2026-06-27T10:33:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS11 Kefalari (Greece)",
+    "round": 8,
+    "location": "Kefalari, Greece"
+  },
+  {
+    "start": "2026-06-27T13:39:00.000Z",
+    "end": "2026-06-27T14:14:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS12 Ghymno 2 (Greece)",
+    "round": 8,
+    "location": "Ghymno, Greece"
+  },
+  {
+    "start": "2026-06-27T16:05:00.000Z",
+    "end": "2026-06-27T16:40:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS13 Menalo Mt 2 (Greece)",
+    "round": 8,
+    "location": "Menalo, Arcadia, Greece"
+  },
+  {
+    "start": "2026-06-28T05:28:00.000Z",
+    "end": "2026-06-28T06:03:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS14 Aghii Theodori 1 (Greece)",
+    "round": 8,
+    "location": "Aghii Theodori, Greece"
+  },
+  {
+    "start": "2026-06-28T06:35:00.000Z",
+    "end": "2026-06-28T07:10:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS15 Loutraki 1 (Greece)",
+    "round": 8,
+    "location": "Loutraki, Greece"
+  },
+  {
+    "start": "2026-06-28T09:10:00.000Z",
+    "end": "2026-06-28T09:45:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS16 Aghii Theodori 2 (Greece)",
+    "round": 8,
+    "location": "Aghii Theodori, Greece"
+  },
+  {
+    "start": "2026-06-28T11:15:00.000Z",
+    "end": "2026-06-28T11:50:00.000Z",
+    "dateOnly": false,
+    "event": "EKO Acropolis Rally Greece",
+    "session": "SS17 Loutraki 2 - Wolf Power Stage (Greece)",
+    "round": 8,
+    "location": "Loutraki, Greece"
+  },
+  {
+    "start": "2026-07-17T06:01:00.000Z",
+    "end": "2026-07-17T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "Shakedown Kastre (Estonia)",
+    "round": 9,
+    "location": "Kastre, Estonia"
+  },
+  {
+    "start": "2026-07-17T10:03:00.000Z",
+    "end": "2026-07-17T10:33:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS1 Raanitsa 1 (Estonia)",
+    "round": 9,
+    "location": "Raanitsa, Estonia"
+  },
+  {
+    "start": "2026-07-17T10:56:00.000Z",
+    "end": "2026-07-17T11:11:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS2 Karaski 1 (Estonia)",
+    "round": 9,
+    "location": "Karaski, Estonia"
+  },
+  {
+    "start": "2026-07-17T11:49:00.000Z",
+    "end": "2026-07-17T12:09:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS3 Kanepi 1 (Estonia)",
+    "round": 9,
+    "location": "Kanepi, Estonia"
+  },
+  {
+    "start": "2026-07-17T13:46:00.000Z",
+    "end": "2026-07-17T14:16:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS4 Raanitsa 2 (Estonia)",
+    "round": 9,
+    "location": "Raanitsa, Estonia"
+  },
+  {
+    "start": "2026-07-17T14:39:00.000Z",
+    "end": "2026-07-17T14:54:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS5 Karaski 2 (Estonia)",
+    "round": 9,
+    "location": "Karaski, Estonia"
+  },
+  {
+    "start": "2026-07-17T15:32:00.000Z",
+    "end": "2026-07-17T15:52:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS6 Kanepi 2 (Estonia)",
+    "round": 9,
+    "location": "Kanepi, Estonia"
+  },
+  {
+    "start": "2026-07-17T16:35:00.000Z",
+    "end": "2026-07-17T16:45:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS7 Elva linn (Estonia)",
+    "round": 9,
+    "location": "Elva, Estonia"
+  },
+  {
+    "start": "2026-07-18T06:56:00.000Z",
+    "end": "2026-07-18T07:26:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS8 Peipsiääre 1 (Estonia)",
+    "round": 9,
+    "location": "Peipsiääre, Estonia"
+  },
+  {
+    "start": "2026-07-18T07:49:00.000Z",
+    "end": "2026-07-18T08:04:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS9 Mustvee 1 (Estonia)",
+    "round": 9,
+    "location": "Mustvee, Estonia"
+  },
+  {
+    "start": "2026-07-18T09:10:00.000Z",
+    "end": "2026-07-18T09:40:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS10 Peipsiääre 2 (Estonia)",
+    "round": 9,
+    "location": "Peipsiääre, Estonia"
+  },
+  {
+    "start": "2026-07-18T10:03:00.000Z",
+    "end": "2026-07-18T10:18:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS11 Mustvee 2 (Estonia)",
+    "round": 9,
+    "location": "Mustvee, Estonia"
+  },
+  {
+    "start": "2026-07-18T12:48:00.000Z",
+    "end": "2026-07-18T13:18:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS12 Kambja 1 (Estonia)",
+    "round": 9,
+    "location": "Kambja, Estonia"
+  },
+  {
+    "start": "2026-07-18T14:05:00.000Z",
+    "end": "2026-07-18T14:25:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS13 Otepää 1 (Estonia)",
+    "round": 9,
+    "location": "Otepää, Estonia"
+  },
+  {
+    "start": "2026-07-18T14:58:00.000Z",
+    "end": "2026-07-18T15:28:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS14 Kambja 2 (Estonia)",
+    "round": 9,
+    "location": "Kambja, Estonia"
+  },
+  {
+    "start": "2026-07-18T16:05:00.000Z",
+    "end": "2026-07-18T16:25:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS15 Otepää 2 (Estonia)",
+    "round": 9,
+    "location": "Otepää, Estonia"
+  },
+  {
+    "start": "2026-07-18T17:35:00.000Z",
+    "end": "2026-07-18T17:45:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS16 Tartu vald (Estonia)",
+    "round": 9,
+    "location": "Tartu, Estonia"
+  },
+  {
+    "start": "2026-07-19T08:05:00.000Z",
+    "end": "2026-07-19T08:35:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS17 Kääriku 1 (Estonia)",
+    "round": 9,
+    "location": "Kääriku, Estonia"
+  },
+  {
+    "start": "2026-07-19T10:15:00.000Z",
+    "end": "2026-07-19T10:45:00.000Z",
+    "dateOnly": false,
+    "event": "Rally Estonia",
+    "session": "SS18 Kääriku 2 - Wolf Power Stage (Estonia)",
+    "round": 9,
+    "location": "Kääriku, Estonia"
+  },
+  {
+    "start": "2026-07-29T15:00:00.000Z",
+    "end": "2026-07-29T16:30:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "Ceremonial Start Jyväskylä (Finland)",
+    "round": 10,
+    "location": "Jyväskylä, Finland"
+  },
+  {
+    "start": "2026-07-30T05:01:00.000Z",
+    "end": "2026-07-30T08:00:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "Shakedown Ruuhimäki (Finland)",
+    "round": 10,
+    "location": "Ruuhimäki, Finland"
+  },
+  {
+    "start": "2026-07-30T15:05:00.000Z",
+    "end": "2026-07-30T15:15:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS1 Harju 1 (Finland)",
+    "round": 10,
+    "location": "Jyväskylä, Finland"
+  },
+  {
+    "start": "2026-07-31T04:44:00.000Z",
+    "end": "2026-07-31T05:10:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS2 Laukaa 1 (Finland)",
+    "round": 10,
+    "location": "Laukaa, Finland"
+  },
+  {
+    "start": "2026-07-31T05:45:00.000Z",
+    "end": "2026-07-31T06:08:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS3 Saarikas 1 (Finland)",
+    "round": 10,
+    "location": "Saarikas, Finland"
+  },
+  {
+    "start": "2026-07-31T06:50:00.000Z",
+    "end": "2026-07-31T07:15:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS4 Sydänmaa 1 (Finland)",
+    "round": 10,
+    "location": "Sydänmaa, Finland"
+  },
+  {
+    "start": "2026-07-31T07:58:00.000Z",
+    "end": "2026-07-31T08:14:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS5 Hoho 1 (Finland)",
+    "round": 10,
+    "location": "Hoho, Finland"
+  },
+  {
+    "start": "2026-07-31T10:48:00.000Z",
+    "end": "2026-07-31T11:14:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS6 Laukaa 2 (Finland)",
+    "round": 10,
+    "location": "Laukaa, Finland"
+  },
+  {
+    "start": "2026-07-31T11:49:00.000Z",
+    "end": "2026-07-31T12:12:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS7 Saarikas 2 (Finland)",
+    "round": 10,
+    "location": "Saarikas, Finland"
+  },
+  {
+    "start": "2026-07-31T12:54:00.000Z",
+    "end": "2026-07-31T13:19:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS8 Sydänmaa 2 (Finland)",
+    "round": 10,
+    "location": "Sydänmaa, Finland"
+  },
+  {
+    "start": "2026-07-31T14:05:00.000Z",
+    "end": "2026-07-31T14:21:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS9 Hoho 2 (Finland)",
+    "round": 10,
+    "location": "Hoho, Finland"
+  },
+  {
+    "start": "2026-07-31T15:05:00.000Z",
+    "end": "2026-07-31T15:15:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS10 Harju 2 (Finland)",
+    "round": 10,
+    "location": "Jyväskylä, Finland"
+  },
+  {
+    "start": "2026-08-01T04:01:00.000Z",
+    "end": "2026-08-01T04:25:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS11 Parkkola 1 (Finland)",
+    "round": 10,
+    "location": "Parkkola, Finland"
+  },
+  {
+    "start": "2026-08-01T05:42:00.000Z",
+    "end": "2026-08-01T05:58:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS12 Päijälä 1 (Finland)",
+    "round": 10,
+    "location": "Päijälä, Finland"
+  },
+  {
+    "start": "2026-08-01T06:36:00.000Z",
+    "end": "2026-08-01T07:02:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS13 Västilä 1 (Finland)",
+    "round": 10,
+    "location": "Västilä, Finland"
+  },
+  {
+    "start": "2026-08-01T08:05:00.000Z",
+    "end": "2026-08-01T08:30:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS14 Leustu 1 (Finland)",
+    "round": 10,
+    "location": "Leustu, Korpilahti, Finland"
+  },
+  {
+    "start": "2026-08-01T11:01:00.000Z",
+    "end": "2026-08-01T11:25:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS15 Parkkola 2 (Finland)",
+    "round": 10,
+    "location": "Parkkola, Finland"
+  },
+  {
+    "start": "2026-08-01T12:42:00.000Z",
+    "end": "2026-08-01T12:58:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS16 Päijälä 2 (Finland)",
+    "round": 10,
+    "location": "Päijälä, Finland"
+  },
+  {
+    "start": "2026-08-01T13:36:00.000Z",
+    "end": "2026-08-01T14:02:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS17 Västilä 2 (Finland)",
+    "round": 10,
+    "location": "Västilä, Finland"
+  },
+  {
+    "start": "2026-08-01T15:05:00.000Z",
+    "end": "2026-08-01T15:30:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS18 Leustu 2 (Finland)",
+    "round": 10,
+    "location": "Leustu, Korpilahti, Finland"
+  },
+  {
+    "start": "2026-08-02T06:35:00.000Z",
+    "end": "2026-08-02T07:15:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS19 Himos-Jämsä 1 (Finland)",
+    "round": 10,
+    "location": "Himos, Jämsä, Finland"
+  },
+  {
+    "start": "2026-08-02T09:15:00.000Z",
+    "end": "2026-08-02T09:55:00.000Z",
+    "dateOnly": false,
+    "event": "Secto Rally Finland",
+    "session": "SS20 Himos-Jämsä 2 - Wolf Power Stage (Finland)",
+    "round": 10,
+    "location": "Himos, Jämsä, Finland"
+  },
+  {
+    "start": "2026-08-27T00:00:00.000Z",
+    "end": "2026-08-31T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Rally del Paraguay",
+    "session": "WRC | Rally del Paraguay",
+    "round": 11,
+    "location": "Encarnacion, Paraguay"
+  },
+  {
+    "start": "2026-09-10T00:00:00.000Z",
+    "end": "2026-09-14T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Rally Chile",
+    "session": "WRC | Rally Chile Bio Bío",
+    "round": 12,
+    "location": "Concepción, Talcahuano, Bío Bío, Chile"
+  },
+  {
+    "start": "2026-10-01T00:00:00.000Z",
+    "end": "2026-10-05T00:00:00.000Z",
+    "dateOnly": true,
+    "event": "Rally Italia Sardegna",
+    "session": "WRC | Rally Italia Sardegna",
+    "round": 13,
+    "location": "Olbia, 07026 Olbia, Province of Sassari, Italy"
+  }
+]
