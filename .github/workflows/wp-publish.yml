@@ -29,6 +29,10 @@ on:
         type: choice
         options: [publish, dry-run, test-page]
         default: publish
+      only:
+        description: 'the pages whose path starts here; all: every page'
+        type: string
+        default: /calendar/
 
 # One writer of the data branch at a time, shared with wp-backup.yml.
 concurrency:
@@ -45,6 +49,8 @@ jobs:
       issues: write
     env:
       MODE: ${{ inputs.mode || 'publish' }}
+      # A page family goes live once its design has (O12: the calendar); a scheduled run has no inputs.
+      ONLY: ${{ inputs.only || '/calendar/' }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -86,10 +92,12 @@ jobs:
           WP_USER: ${{ secrets.WP_USER }}
           WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
         run: |
+          only=()
+          if [ "$ONLY" != all ]; then only=(--only "$ONLY"); fi
           case "$MODE" in
-            dry-run)   npx tsx scripts/wp-publish.mts --data paddock-data --dry-run --out wp-out ;;
+            dry-run)   npx tsx scripts/wp-publish.mts --data paddock-data --dry-run --out wp-out "${only[@]}" ;;
             test-page) npx tsx scripts/wp-publish.mts --test-page ;;
-            *)         npx tsx scripts/wp-publish.mts --data paddock-data ;;
+            *)         npx tsx scripts/wp-publish.mts --data paddock-data "${only[@]}" ;;
           esac
 
       - name: Keep the rendered pages

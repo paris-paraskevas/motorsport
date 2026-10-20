@@ -115,5 +115,8 @@
 			"core/navigation": { "typography": { "fontSize": "0.875rem", "fontWeight": "600" } },
 			"core/post-title": { "typography": { "fontWeight": "800" } }
 		}
-	}
+	},
+	"customTemplates": [
+		{ "name": "page-wide", "title": "Wide page", "postTypes": [ "page" ] }
+	]
 }

@@ -14,6 +14,23 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1167 · 1.0.280 · O12 (the Calendar: round 2's Calendar on the theme, written by the publisher) · opened 2026-10-20 into `next` on the plan's approval; the merge on the word
+**The Calendar.** The operator approved the Calendar's draft ("the plan is good") and the plan: the publisher writes one page a month in round 2's design, laid out in UTC, and the theme moves every session to the reader's own day and time.
+- **Readers see:** nothing yet; the site is in Coming Soon. Once published and the theme uploaded: `/calendar/` and a page a month, round 2's month grid on a desktop and its weekend cards on a phone, every session on the reader's own day and time, today boxed, the past greyed, round 2's clock-change note, Month, Week and Agenda, and the series followed remembered on the device.
+- **Editors get:** the calendar is written by the publisher, never by hand; chip labels and order live in each series' `meta.json` (`shortName`, `order`); a round whose name misleads the venue resolver gets a curated `venue` in its rounds.json, shown as written; `--only /calendar/` (and the workflow's `only` input) publishes one family of pages.
+- **Files (38):**
+  - `lib/wp/render.ts`, `lib/wp/render.test.ts` · `calendarMonthPages` and its tests replace the 30-day `calendarPage` and its test; `CalendarEntry.location`, `Page.template`, the hash counting a named template.
+  - `scripts/wp-publish.mts` · rounds and venues from content (no fetch), chips from meta, the template through the REST API, `--only`.
+  - `lib/types.ts` · `SeriesMeta.shortName`, `order` (optional).
+  - `wp-theme/paddock/assets/js/paddock.js`, `style.css`, `theme.json`, `templates/page-wide.html` (new) · theme 0.1.3: the calendar's script and styles, the Wide page template, Night's live pill.
+  - `wp-theme/preview/calendar.html` (new), `blueprint.json` · the Playground builds `/calendar/`.
+  - `.github/workflows/wp-publish.yml` · the `only` input, `/calendar/` by default; the schedule stays off.
+  - `content/series/*/meta.json` (15) · `shortName`, `order`. `content/series/motogp/rounds.json`, `content/series/nascar-cup/rounds.json`, `content/series/nascar-cup/sessions.json` · seven curated venues; round 19 the eero 400.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.280.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md`, `docs/HANDOFF.md`, `IDEAS.md` · O11 merged; O12 opened and built; the venue lines settled.
+- **Verified:** `npx vitest run` 278 files, 2,768 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; a fresh-fetch dry run, 42 feeds OK, 15 calendar pages; Playground with Playwright in Europe/Athens and America/New_York (sessions on the reader's day, the clock note, chips kept across a reload, the views, the phone's agenda, the UTC page without JavaScript, the Home unchanged, no console or PHP error); every venue read by eye, the curated ones checked against their sources.
+- **Review:** a fresh-context Sonnet reader, running at the merge's word.
+
 ## #1166 · 1.0.279 · O11 (the Paddock theme: a child of Twenty Twenty-Five carrying round 2) · opened 2026-10-20 into `next` on the operator's "go" after the plan's approval; the merge on the word
 **The theme.** After trying Ollie and Twenty Twenty-Five on the private site, the operator judged that neither came close to round 2 and said go on a theme of our own on top of Twenty Twenty-Five. The branch also carries session 69's records.
 - **Readers see:** nothing yet; the WordPress site is still private (Coming Soon). There, signed in: round 2's look, Night following the device, the header with Subscribe, the footer with Buy me a coffee, the phone's Calendar · Home · Learn bar, and the home (page 5053, the front page) with times in the reader's zone.

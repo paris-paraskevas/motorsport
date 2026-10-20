@@ -1,6 +1,8 @@
 {
   "slug": "formula-e",
   "name": "Formula E",
+  "shortName": "Formula E",
+  "order": 12,
   "color": "#06b6d4",
   "icsUrl": "https://calendar.google.com/calendar/ical/vno0ntshopq0nmob26db2pcen8%40group.calendar.google.com/public/basic.ics",
   "season": 2026,

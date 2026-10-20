@@ -1,6 +1,8 @@
 {
   "slug": "nascar-cup",
   "name": "NASCAR Cup",
+  "shortName": "NASCAR",
+  "order": 8,
   "color": "#a3e635",
   "icsUrl": "https://calendar.google.com/calendar/ical/db8c47ne2bt9qbld2mhdabm0u8%40group.calendar.google.com/public/basic.ics",
   "season": 2026,

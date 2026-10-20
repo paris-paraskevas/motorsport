@@ -13,6 +13,10 @@ export interface SeriesMeta {
   icsUrl: string;
   season: number;
   category: SeriesCategory;
+  /** The WordPress calendar's chip label ("F1", "GTWC"); the name when absent. */
+  shortName?: string;
+  /** The series' place among the calendar's chips (round 2's order). */
+  order?: number;
   // ⚠ Passing FULL SeriesMeta across a client-component boundary RSC-serializes
   // every field (icsUrl included) into the page's flight payload — the
   // machine-readable half of the leak the 0.256.0 /about cleanup removed.

@@ -1,6 +1,8 @@
 {
   "slug": "f3",
   "name": "Formula 3",
+  "shortName": "F3",
+  "order": 14,
   "color": "#818cf8",
   "icsUrl": "https://calendar.google.com/calendar/ical/sorhedtr7q5qmea6f0hvf20864%40group.calendar.google.com/public/basic.ics",
   "season": 2026,

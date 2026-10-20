@@ -1,6 +1,8 @@
 {
   "slug": "adac-ravenol-24h",
   "name": "ADAC Ravenol 24h Nürburgring",
+  "shortName": "24h Nürburgring",
+  "order": 15,
   "color": "#fbbf24",
   "icsUrl": "",
   "season": 2026,
