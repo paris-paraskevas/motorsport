@@ -8,7 +8,7 @@
 <!-- wp:site-title {"level":0} /--></div>
 <!-- /wp:group -->
 
-<!-- wp:navigation {"overlayMenu":"mobile","className":"pd-nav","layout":{"type":"flex","justifyContent":"left"}} -->
+<!-- wp:navigation {"overlayMenu":"mobile","ariaLabel":"Main","className":"pd-nav","layout":{"type":"flex","justifyContent":"left"}} -->
 <!-- wp:navigation-link {"label":"Home","url":"/","kind":"custom"} /-->
 <!-- wp:navigation-link {"label":"Calendar","url":"/calendar/","kind":"custom"} /-->
 <!-- wp:navigation-link {"label":"Series","url":"/series/","kind":"custom"} /-->
@@ -18,6 +18,10 @@
 
 <!-- wp:group {"className":"pd-tools","layout":{"type":"flex","flexWrap":"nowrap"}} -->
 <div class="wp-block-group pd-tools"><!-- wp:search {"label":"Search","showLabel":false,"placeholder":"Search drivers, races, circuits","buttonText":"Search","buttonPosition":"button-inside","buttonUseIcon":true,"className":"pd-search"} /-->
+
+<!-- wp:html -->
+<details class="pd-search-sm"><summary aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></summary><form role="search" method="get" action="/"><label class="screen-reader-text" for="pd-s-sm">Search</label><input id="pd-s-sm" type="search" name="s" placeholder="Search drivers, races, circuits" required><button type="submit">Search</button></form></details>
+<!-- /wp:html -->
 
 <!-- wp:buttons -->
 <div class="wp-block-buttons"><!-- wp:button {"className":"pd-subscribe"} -->

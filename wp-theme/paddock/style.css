@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.1
+Version: 0.1.2
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -52,12 +52,12 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 :where(.wp-site-blocks) :focus-visible { outline: 3px solid #ffdd00; outline-offset: 0; box-shadow: 0 0 0 6px var(--pd-ink); }
 
 /* Header */
-.pd-top { background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
+.pd-top { position: relative; background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
 .pd-top-in { gap: 28px; min-height: 58px; padding: 6px max(16px, 2.8vw); }
 .pd-brand { gap: 9px; }
 .pd-mark { display: inline-block; width: 20px; height: 20px; border: 1.5px solid var(--pd-ink); background: repeating-conic-gradient(var(--pd-ink) 0 25%, transparent 0 50%) 0 0 / 8.5px 8.5px; }
 .pd-top .wp-block-site-title a { text-decoration: none; }
-.pd-nav { margin-right: auto; }
+.pd-top-in > .pd-nav { margin-right: auto; }
 .pd-nav .wp-block-navigation-item a { color: var(--pd-muted); text-decoration: none; }
 .pd-nav .current-menu-item a, .pd-nav [aria-current="page"] { color: var(--pd-ink); font-weight: 800; }
 .pd-brand, .pd-nav, .pd-tools > .wp-block-buttons { flex-shrink: 0; }
@@ -70,13 +70,20 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-search .wp-block-search__input:focus-visible { box-shadow: none; }
 .pd-search .wp-block-search__button { order: 1; margin: 0; padding: 0 0 0 12px; border-radius: 0; background: transparent; color: var(--pd-muted); }
 .pd-search .wp-block-search__button svg { width: 18px; height: 18px; fill: currentColor; }
+/* Below 860 px the field gives way to a disclosure: the magnifier opens a search bar under the header. */
+.pd-search-sm { display: none; }
+.pd-search-sm summary { display: grid; place-items: center; width: 38px; height: 38px; list-style: none; cursor: pointer; color: var(--pd-ink); }
+.pd-search-sm summary::-webkit-details-marker { display: none; }
+.pd-search-sm summary svg { width: 18px; height: 18px; }
+.pd-search-sm form { position: absolute; z-index: 30; left: 0; right: 0; top: 100%; display: flex; gap: 8px; padding: 10px max(16px, 2.8vw); background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
+.pd-search-sm input { flex: 1; min-width: 0; height: 42px; padding: 0 12px; border: 1px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-ground); color: var(--pd-ink); font: inherit; font-size: 1rem; }
+.pd-search-sm button { height: 42px; padding: 0 16px; border: 0; border-radius: 0; background: var(--pd-accent); color: var(--pd-on); font: inherit; font-weight: 800; cursor: pointer; }
 .pd-subscribe .wp-block-button__link { background: transparent; color: var(--pd-ink); border: 1.5px solid var(--pd-ink); padding: 9px 16px; font-size: .84rem; white-space: nowrap; }
 .pd-subscribe .wp-block-button__link:hover { background: var(--pd-ink); color: var(--pd-ground); }
 @media (max-width: 859px) {
 	.pd-top-in { gap: 20px; }
-	.pd-search { flex: 0 0 auto; width: auto; }
-	.pd-search .wp-block-search__inside-wrapper { width: auto; border: 0; }
-	.pd-search .wp-block-search__input { display: none; }
+	.pd-search { display: none; }
+	.pd-search-sm { display: block; }
 }
 @media (max-width: 699px) {
 	.pd-top-in { gap: 8px; min-height: 52px; }
@@ -89,6 +96,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-live { margin: 0; padding: 10px max(16px, 2.8vw); background: color-mix(in srgb, var(--pd-live) 10%, var(--pd-ground)); border-bottom: 1px solid var(--pd-line); font-size: .84rem; }
 .pd-live p { margin: 0; }
 .pd-live[hidden], .pd-live.is-off { display: none; }
+.pd-main, .pd-live + .pd-hero { margin-block-start: 0; }
 .pd-mut { color: var(--pd-muted); }
 .pd-pill { display: inline-block; padding: 1px 8px; font-size: .72rem; font-weight: 800; white-space: nowrap; }
 .pd-pill-live { background: var(--pd-live); color: #ffffff; }
@@ -102,6 +110,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 /* Flow layouts add a top margin to every second child; grids and flex rows of ours lay out by gap instead. */
 .pd-sessions > *, .pd-cards > *, .pd-card > *, .pd-card-top > *, .pd-champ > *, .pd-nextwk > *, .pd-sh > *, .pd-live > *, .pd-ses > * { margin-block: 0 !important; }
 .pd-hero h1, .pd-hero h2, .pd-hero p, .pd-hero a { color: #f4f5f7; }
+.pd-hero .wp-block-button:not(.is-style-outline) .wp-block-button__link { color: var(--pd-on); }
 .pd-chips { display: flex; flex-wrap: wrap; margin: 0; }
 .pd-chip { display: inline-block; padding: 5px 10px; font-size: .78rem; font-weight: 700; }
 .pd-chip[class*="pd-s-"] { background: var(--s); color: var(--pd-on); }
@@ -109,6 +118,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-hero-title.wp-block-heading { margin: 18px 0 8px; font-size: clamp(2.25rem, 5vw, 4.25rem); line-height: .98; font-stretch: 92%; letter-spacing: -.035em; }
 .pd-hero-sub { margin: 0 0 24px; font-size: 1.06rem; opacity: .86; }
 .pd-count { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 30px; margin: 0 0 26px; }
+.pd-count[hidden] { display: none; }
 .pd-cd-u { display: grid; }
 .pd-cd-u b { font-size: 3.5rem; line-height: .9; font-weight: 800; font-stretch: 88%; letter-spacing: -.02em; }
 .pd-cd-u small { margin-top: 6px; font-size: .75rem; opacity: .72; }
@@ -117,7 +127,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-hero .wp-block-button__link { height: 48px; display: inline-flex; align-items: center; padding: 0 20px; }
 .pd-hero .is-style-outline .wp-block-button__link { background: transparent; color: #f4f5f7; border: 2px solid #f4f5f7; }
 .pd-hero .pd-bignum { position: absolute; z-index: 1; right: -24px; top: 40px; margin: 0; font-size: 21rem; line-height: 1; font-weight: 800; letter-spacing: -.05em; color: transparent; -webkit-text-stroke: 2px rgba(244, 245, 247, .3); pointer-events: none; }
-.pd-credit { position: absolute; z-index: 2; top: -50px; right: 0; max-width: 640px; margin: 0; text-align: right; font-size: .69rem; line-height: 1.4; opacity: .78; }
+.pd-credit { position: absolute; z-index: 2; top: -50px; right: 0; max-width: 640px; margin: 0; text-align: right; font-size: .69rem; line-height: 1.4; opacity: .78; text-shadow: 0 1px 2px rgba(0, 0, 0, .9); }
 .pd-sessions { display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0 !important; margin: 0 !important; }
 .pd-ses { padding: 16px 14px 20px 0; border-top: 1px solid rgba(244, 245, 247, .24); }
 .pd-ses + .pd-ses { padding-left: 14px; border-left: 1px solid rgba(244, 245, 247, .16); }
@@ -185,6 +195,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-rows li { display: grid; grid-template-columns: 96px 80px minmax(0, 1fr) auto; align-items: center; gap: 12px; height: 52px; padding: 0 14px 0 16px; background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); box-shadow: inset 4px 0 0 var(--s); font-size: .88rem; }
 .pd-rows li.is-live { background: linear-gradient(color-mix(in srgb, var(--pd-live) 10%, transparent), color-mix(in srgb, var(--pd-live) 10%, transparent)), var(--pd-surface); }
 .pd-rows li.is-next { background: linear-gradient(color-mix(in srgb, var(--pd-accent) 11%, transparent), color-mix(in srgb, var(--pd-accent) 11%, transparent)), var(--pd-surface); }
+.pd-rows li.is-done { opacity: .5; }
 .pd-rows .pd-tm { font-weight: 800; }
 .pd-rows .pd-tm small { margin-right: 5px; font-weight: 500; color: var(--pd-muted); font-size: .78rem; }
 .pd-rows .pd-cd { font-weight: 600; color: var(--pd-muted); }

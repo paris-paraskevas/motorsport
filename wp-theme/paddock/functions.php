@@ -9,6 +9,9 @@
  * @package Paddock
  */
 
+defined( 'ABSPATH' ) || exit;
+
+// Priority 20 prints this after Twenty Twenty-Five's stylesheet, so equal selectors resolve in the child's favour.
 add_action(
 	'wp_enqueue_scripts',
 	function () {
@@ -24,7 +27,8 @@ add_action(
 				'in_footer' => true,
 			)
 		);
-	}
+	},
+	20
 );
 
 add_action(

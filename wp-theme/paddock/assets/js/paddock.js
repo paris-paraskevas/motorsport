@@ -16,12 +16,13 @@
 
 	function inWords( ms ) {
 		var m = Math.max( 0, Math.round( ms / 60000 ) ), h = Math.floor( m / 60 );
-		if ( h >= 48 ) { return 'in ' + Math.round( h / 24 ) + ' days'; }
+		if ( h >= 48 ) { return 'in ' + Math.floor( h / 24 ) + ' days'; }
 		return h > 0 ? 'in ' + h + ' h ' + ( m % 60 ) + ' min' : 'in ' + m + ' min';
 	}
 
 	function render() {
-		var now = frozen ? Date.parse( frozen.getAttribute( 'data-pd-now' ) ) : Date.now();
+		var now = frozen ? Date.parse( frozen.getAttribute( 'data-pd-now' ) ) : NaN;
+		if ( isNaN( now ) ) { now = Date.now(); }
 		var today = fDay.format( new Date( now ) );
 
 		// The countdown follows the hero's own timetable, so it stays right between publisher runs.
@@ -59,13 +60,14 @@
 
 		document.querySelectorAll( '[data-pd-target]' ).forEach( function ( el ) {
 			var left = Date.parse( el.getAttribute( 'data-pd-target' ) ) - now;
-			if ( ! ( left > 0 ) ) { el.hidden = true; return; }
+			el.hidden = ! ( left > 0 );
+			if ( el.hidden ) { return; }
 			var m = Math.round( left / 60000 ), h = Math.floor( m / 60 );
-			var units = h >= 24 ? [ Math.floor( h / 24 ), 'days', h % 24, 'hours' ] : [ h, 'hours', m % 60, 'minutes' ];
+			var units = h >= 24 ? [ Math.floor( h / 24 ), 'day', h % 24, 'hour' ] : [ h, 'hour', m % 60, 'minute' ];
 			[ 'a', 'b' ].forEach( function ( k, i ) {
 				var n = el.querySelector( '[data-pd-cd="' + k + '"]' ), l = el.querySelector( '[data-pd-cdl="' + k + '"]' );
 				if ( n ) { n.textContent = String( units[ i * 2 ] ); }
-				if ( l ) { l.textContent = units[ i * 2 + 1 ]; }
+				if ( l ) { l.textContent = units[ i * 2 + 1 ] + ( units[ i * 2 ] === 1 ? '' : 's' ); }
 			} );
 		} );
 
@@ -74,6 +76,7 @@
 			group.querySelectorAll( '.pd-st[data-pd-start]' ).forEach( function ( st ) {
 				var start = Date.parse( st.getAttribute( 'data-pd-start' ) ), end = Date.parse( st.getAttribute( 'data-pd-end' ) ) || start;
 				var item = st.closest( '.pd-ses, li' ), row = group.classList.contains( 'pd-rows' );
+				if ( ! item ) { return; }
 				item.classList.remove( 'is-live', 'is-next', 'is-done' );
 				if ( now >= start && now < end ) {
 					item.classList.add( 'is-live' );
@@ -103,6 +106,18 @@
 	}
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
+
+	// The phone search: focus the field when it opens, close it on Escape.
+	document.querySelectorAll( 'details.pd-search-sm' ).forEach( function ( d ) {
+		var input = d.querySelector( 'input' ), summary = d.querySelector( 'summary' );
+		d.addEventListener( 'toggle', function () { if ( d.open && input ) { input.focus(); } } );
+		d.addEventListener( 'keydown', function ( e ) {
+			if ( e.key === 'Escape' && d.open ) {
+				d.open = false;
+				if ( summary ) { summary.focus(); }
+			}
+		} );
+	} );
 
 	var here = location.pathname.replace( /\/+$/, '/' );
 	document.querySelectorAll( '.pd-tabs a, .pd-nav a' ).forEach( function ( a ) {
