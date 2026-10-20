@@ -538,8 +538,8 @@ export function seriesPages(d: SeriesData, now: Date): Page[] {
 //
 // One page a month, laid out in UTC: each session sits in its UTC day's cell and prints its UTC
 // time. The theme's script (wp-theme/paddock/assets/js/paddock.js) moves every session to the
-// reader's own day and time, marks today, greys what has run and adds the controls (views,
-// series, follow); without it the UTC page stands. Only classes and data-* attributes carry the
+// reader's own day and time, marks today, greys what has run and adds the controls (the views
+// and the Filters tab); without it the UTC page stands. Only classes and data-* attributes carry the
 // layout, so the site's content filter keeps all of it, and nothing in the markup depends on the
 // hour it was written, so a page changes only when its data does.
 
@@ -573,9 +573,6 @@ const lastDayOf = (ym: string): string => addDays(`${shiftMonth(ym, 1)}-01`, -1)
 const monthLabel = (ym: string): string => MONTH_YEAR.format(new Date(`${ym}-01T00:00:00Z`));
 export const calendarMonthPath = (ym: string): string => `/calendar/${ym}/`;
 
-/** Race, sprint and qualifying: what the month view lists; practice, tests and warm-ups live in the week view. */
-export const isKeySession = (session: string): boolean => !/practice|^fp\s?\d|warm|test|shakedown|free/i.test(session);
-
 /** A band's short name: "Grand Prix" as "GP", NASCAR's race by its track ("YellaWood 500 (Talladega)" → "Talladega"), no trailing "Round". */
 export function bandLabel(slug: string, name: string): string {
   const place = /\(([^)]+)\)\s*$/.exec(name);
@@ -607,10 +604,20 @@ const bySeries = (a: SeriesData, b: SeriesData): number => (a.order ?? 99) - (b.
 const slugAttr = (d: SeriesData): string => escapeHtml(d.slug);
 const clock = (iso: string): string => `<span class="pd-t" data-utc="${escapeHtml(iso)}" data-f="t">${CLOCK_UTC.format(new Date(iso))}</span>`;
 
-/** One session in the grid; `data-key` is 1 for race, sprint and qualifying. */
+/** The Sessions filter's three kinds. A sprint is a race; sprint qualifying, a shootout, Superpole and the Fast Six are
+ *  qualifying; practice also takes the weekend's other appointments (scrutineering, a pit walk, a ceremonial start).
+ *  Brackets name the event, not the session: NLS's "Race 4h (NLS4 ADAC 24h Qualifiers)" is a race. */
+export function sessionKind(session: string): 'practice' | 'qualifying' | 'race' {
+  const s = session.replace(/\([^)]*\)/g, ' ').trim();
+  if (/practice|^fp\s?\d|\bwarm|\btest\b|shakedown|\bfree\b|training|scrutineer|administrative|pit walk|track walk|grid formation|open grid|ceremonial|pit stop challenge/i.test(s)) return 'practice';
+  if (/qualif|^q\d\b|shootout|hyperpole|superpole(?!\s+race)|^pole|fast six/i.test(s)) return 'qualifying';
+  return 'race';
+}
+
+/** One session in the grid; `data-kind` is its filter, and without the script only qualifying and races show. */
 function gridSession({ d, e }: Placed): string {
   return (
-    `<span class="pd-cs pd-s-${slugAttr(d)}" data-s="${slugAttr(d)}" data-key="${isKeySession(e.session) ? 1 : 0}" data-utc="${escapeHtml(e.start)}" data-end="${escapeHtml(e.end)}">` +
+    `<span class="pd-cs pd-s-${slugAttr(d)}" data-s="${slugAttr(d)}" data-kind="${sessionKind(e.session)}" data-utc="${escapeHtml(e.start)}" data-end="${escapeHtml(e.end)}">` +
     `<b>${escapeHtml(`${chipLabel(d)} ${e.session}`)}</b> ${clock(e.start)}</span>`
   );
 }
@@ -630,16 +637,19 @@ function gridWeek(week: string[], ym: string, held: Held[], byDay: Map<string, P
       rows[row].push([band.a, band.b]);
       return { ...band, row };
     });
+  // style.css draws pd-b1…pd-b12 and pd-r1…pd-r12 (2026's busiest week holds 8). Past twelve the theme's script
+  // packs the week itself; without it the extra rounds share the twelfth row.
+  const cap = (n: number): number => Math.min(n, 12);
   const days = week.map((day, i) => {
     const cls = `pd-c${i + 1}${day.slice(0, 7) === ym ? '' : ' pd-out'}${i >= 4 ? ' pd-fss' : ''}`;
     return `<span class="pd-cal-bg ${cls}" data-date="${day}"></span><span class="pd-cal-dn ${cls}" data-date="${day}">${Number(day.slice(8))}</span>`;
   });
   const strips = bands.map(
     ({ d, r, a, b, row }) =>
-      `<span class="pd-cal-band pd-s-${slugAttr(d)} pd-c${a + 1} pd-w${b - a + 1} pd-r${row + 1}" data-s="${slugAttr(d)}" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}">${escapeHtml(`${chipLabel(d)} · ${bandLabel(d.slug, r.name)}`)}</span>`,
+      `<span class="pd-cal-band pd-s-${slugAttr(d)} pd-c${a + 1} pd-w${b - a + 1} pd-r${cap(row + 1)}" data-s="${slugAttr(d)}" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}">${escapeHtml(`${chipLabel(d)} · ${bandLabel(d.slug, r.name)}`)}</span>`,
   );
   const sessions = week.map((day, i) => `<div class="pd-cal-ses pd-c${i + 1}" data-date="${day}">${(byDay.get(day) ?? []).map(gridSession).join('')}</div>`);
-  return `<div class="pd-cal-wk pd-b${rows.length}">${days.join('')}${strips.join('')}${sessions.join('')}</div>`;
+  return `<div class="pd-cal-wk pd-b${cap(rows.length)}">${days.join('')}${strips.join('')}${sessions.join('')}</div>`;
 }
 
 /** The month as round 2's grid, Monday first, with the days either side that finish its weeks. A session
@@ -671,13 +681,13 @@ function weekendCard({ d, r }: Held): string {
   const host = [r.venue, d.slug === 'f1' && list.some(e => /^sprint$/i.test(e.session)) ? 'sprint weekend' : null].filter(Boolean).join(' · ');
   const days = [...byDay].map(
     ([day, es]) =>
-      `<div class="pd-wc-day" data-date="${day}"><span class="pd-wc-dl">${DOW[weekdayOf(day)]}</span><div class="pd-wc-ss">` +
-      es.map(e => `<span class="pd-wc-s" data-utc="${escapeHtml(e.start)}" data-end="${escapeHtml(e.end)}"><b>${escapeHtml(e.session)}</b>${clock(e.start)}</span>`).join('') +
+      `<div class="pd-wc-day" data-date="${escapeHtml(day)}"><span class="pd-wc-dl">${DOW[weekdayOf(day)]}</span><div class="pd-wc-ss">` +
+      es.map(e => `<span class="pd-wc-s" data-kind="${sessionKind(e.session)}" data-utc="${escapeHtml(e.start)}" data-end="${escapeHtml(e.end)}"><b>${escapeHtml(e.session)}</b>${clock(e.start)}</span>`).join('') +
       '</div></div>',
   );
   return (
     `<article class="pd-wc pd-s-${slugAttr(d)}" data-s="${slugAttr(d)}"><header class="pd-wc-band"><small>${escapeHtml(d.name)} · Round ${r.round}</small>` +
-    `<b>${escapeHtml(r.name.replace(/\s*\([^)]*\)\s*$/, ''))}</b>${host ? `<span>${escapeHtml(host)}</span>` : ''}<i class="pd-wc-num" aria-hidden="true">${r.round}</i></header>` +
+    `<b>${escapeHtml(r.name.replace(/\s*\([^)]*\)\s*$/, ''))}</b>${host ? `<span>${escapeHtml(host)}</span>` : ''}<i class="pd-wc-num" aria-hidden="true"><b class="pd-wc-series">${escapeHtml(chipLabel(d))}</b>${r.round}</i></header>` +
     (list.length ? `<div class="pd-wc-days">${days.join('')}</div>` : '<p class="pd-wc-none">Times not published yet.</p>') +
     `<footer class="pd-wc-foot"><span>${list.length} session${list.length === 1 ? '' : 's'} · <span data-pd-zonename>UTC</span></span></footer></article>`
   );
@@ -716,18 +726,18 @@ function calendarMonth(ym: string, months: string[], all: SeriesData[], path: st
     ...placed.filter(({ e }) => e.start.slice(0, 10) >= first && e.start.slice(0, 10) <= last).map(({ d }) => d.slug),
   ]);
   const at = months.indexOf(ym);
-  const step = (m: string | undefined, sign: string): string =>
-    m ? `<a href="${calendarMonthPath(m)}" aria-label="${monthLabel(m)}">${sign}</a>` : `<span aria-hidden="true">${sign}</span>`;
+  const step = (m: string | undefined, sign: string, way: string): string =>
+    m ? `<a href="${calendarMonthPath(m)}" aria-label="${way}: ${monthLabel(m)}">${sign}</a>` : `<span aria-hidden="true">${sign}</span>`;
   const top =
     `<div class="pd-cal-top"><h1 class="pd-cal-h1">Calendar</h1>` +
-    `<nav class="pd-cal-month" aria-label="Months">${step(at > 0 ? months[at - 1] : undefined, '‹')}<b>${monthLabel(ym)}</b>${step(at >= 0 ? months[at + 1] : undefined, '›')}</nav>` +
+    `<nav class="pd-cal-month" aria-label="Months">${step(at > 0 ? months[at - 1] : undefined, '‹', 'Previous month')}<b>${monthLabel(ym)}</b>${step(at >= 0 ? months[at + 1] : undefined, '›', 'Next month')}</nav>` +
     '<div class="pd-cal-views" data-pd-views></div><a class="pd-cal-today" href="/calendar/">Today</a><a class="pd-cal-emails" href="/subscribe/">Session emails</a></div>';
   const chips = ordered
     .filter(d => d.calendar?.length || d.rounds?.length)
     .map(d => `<span class="pd-cal-chip pd-s-${slugAttr(d)}${busy.has(d.slug) ? '' : ' pd-dim'}" data-s="${slugAttr(d)}">${escapeHtml(chipLabel(d))}</span>`);
-  const filter = `<div class="pd-cal-filter"><span class="pd-cal-lbl">Series</span>${chips.join('')}<span class="pd-cal-follow" data-pd-follow></span></div>`;
+  const filter = `<div class="pd-cal-filter"><span class="pd-cal-lbl">Series</span>${chips.join('')}</div>`;
   const legend =
-    '<p class="pd-cal-legend"><span class="pd-cal-lg">Event, across its days</span><span><b>F1 Race</b> 15:00 · race, sprint and qualifying</span>' +
+    '<p class="pd-cal-legend"><span class="pd-cal-lg">Event, across its days</span><span>Pick a week for its session times</span>' +
     '<span>Greyed: already run</span><span>Shaded: Friday to Sunday</span><span data-pd-calzone>Times in UTC</span></p>';
   const body = `<!-- wp:html -->\n<div class="pd-cal" data-month="${ym}">${top}${filter}${monthGrid(ym, start, end, placed, held)}${legend}${agenda(first, last, held)}</div>\n<!-- /wp:html -->`;
   return { path, title, body, template: 'page-wide' };

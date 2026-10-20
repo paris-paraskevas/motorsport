@@ -36,6 +36,7 @@ import { fetchImsaSeasonResults } from '../lib/results/imsa';
 import { fetchWecSeasonResults } from '../lib/results/wec';
 import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
 import { matchCircuitEntry, venueCandidates } from '../lib/circuits';
+import contentFs from '../lib/content-fs';
 import type { Series, SeriesRoundEntry } from '../lib/types';
 import {
   calendarEntries,
@@ -64,6 +65,19 @@ import {
 import { decideFeed, resultsShrank, statusPage, type FeedHealth, type FeedKind, type Fresh } from '../lib/wp/health';
 
 const argv = process.argv.slice(2);
+// An unknown argument, or a flag missing its value, stops the run: "--only" with nothing after it would publish every page.
+for (let i = 0; i < argv.length; i++) {
+  if (['--out', '--data', '--from-ref', '--only'].includes(argv[i])) {
+    if (argv[i + 1] === undefined || argv[i + 1].startsWith('--')) {
+      console.error(`${argv[i]} needs a value`);
+      process.exit(1);
+    }
+    i++;
+  } else if (!['--dry-run', '--test-page'].includes(argv[i])) {
+    console.error(`unknown argument ${argv[i]}`);
+    process.exit(1);
+  }
+}
 const opt = (name: string): string | undefined => {
   const i = argv.indexOf(name);
   return i >= 0 ? argv[i + 1] : undefined;
@@ -380,13 +394,14 @@ function refTime(ref: string): Date | null {
   }
 }
 
-/** A series' rounds from its content (no fetch), each with its host: the curated venue as written (the
- *  matcher reads aliases inside names, so "Las Vegas Motor Speedway" would come back as the Strip Circuit),
- *  else the circuit the feed's location or the round's name matches (lib/circuits.ts). A rally has no circuit. */
+/** A series' rounds from its content (no fetch; the content bundle, where the sessions come from too), each with
+ *  its host: the curated venue as written (the matcher reads aliases inside names, so "Las Vegas Motor Speedway"
+ *  would come back as the Strip Circuit), else the circuit the feed's location or the round's name matches
+ *  (lib/circuits.ts). A rally has no circuit; a cancelled round has no band or card. */
 async function calendarRounds(slug: string, calendar: CalendarEntry[] | null, rally: boolean): Promise<CalendarRound[]> {
   let raw: unknown;
   try {
-    raw = JSON.parse(readFileSync(join(process.cwd(), 'content', 'series', slug, 'rounds.json'), 'utf8'));
+    raw = JSON.parse(contentFs.readFileSync(join(process.cwd(), 'content', 'series', slug, 'rounds.json')));
   } catch {
     return [];
   }
@@ -395,6 +410,7 @@ async function calendarRounds(slug: string, calendar: CalendarEntry[] | null, ra
   const out: CalendarRound[] = [];
   for (const r of list as Partial<SeriesRoundEntry>[]) {
     if (typeof r?.round !== 'number' || typeof r.startDate !== 'string' || typeof r.endDate !== 'string' || typeof r.name !== 'string') continue;
+    if (r.cancelled) continue;
     let venue: string | null = null;
     if (!rally && r.venue) venue = r.venue;
     else if (!rally) {
@@ -577,6 +593,10 @@ async function main(): Promise<number> {
   const { health } = built;
   const pages = ONLY ? built.pages.filter(p => p.path.startsWith(ONLY)) : built.pages;
   if (ONLY) log('R', `--only ${ONLY}: ${pages.length} of ${built.pages.length} pages`);
+  if (ONLY && pages.length === 0) {
+    log('=', `FAILED: --only ${ONLY} matches no page`);
+    return 1;
+  }
   const counts = { OK: 0, STALE: 0, MISSING: 0 };
   for (const h of health) counts[h.status]++;
   let ok = !(health.length > 0 && health.every(h => h.status === 'MISSING'));
