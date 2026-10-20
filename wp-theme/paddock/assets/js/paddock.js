@@ -120,15 +120,14 @@
 
 	// ── The Calendar (O12) ──────────────────────────────────────────────────
 	// The publisher writes each month in UTC (lib/wp/render.ts calendarMonthPages). This moves every session to
-	// the reader's own day, adds the views, the series chips and the follow switch, and marks the clock change.
+	// the reader's own day, adds the views and the Filters tab, fits the month to the window, and marks the clock change.
 	var fOff = null, fAbbr = null;
 	try { fOff = fmt( { timeZoneName: 'shortOffset' } ); fAbbr = fmt( { timeZoneName: 'short' } ); } catch {}
 	var calStore = {
 		get: function ( k ) { try { return window.localStorage.getItem( k ); } catch { return null; } },
 		set: function ( k, v ) { try { window.localStorage.setItem( k, v ); } catch {} }
 	};
-	var followed = function () { return ( calStore.get( 'pd-follow' ) || '' ).split( ',' ).filter( Boolean ); };
-	var onlyMine = function () { return calStore.get( 'pd-follow-only' ) === '1'; };
+	var hiddenOf = function ( key ) { return ( calStore.get( key ) || '' ).split( ',' ).filter( Boolean ); };
 	var byStart = function ( a, b ) { return a.getAttribute( 'data-utc' ) < b.getAttribute( 'data-utc' ) ? -1 : 1; };
 	var wallClock = function ( ms ) { return new Date( ms ).toISOString().slice( 11, 16 ); };
 
@@ -171,7 +170,8 @@
 	function regroupCard( card ) {
 		var days = card.querySelector( '.pd-wc-days' );
 		if ( ! days ) { return; }
-		var items = Array.prototype.slice.call( days.querySelectorAll( '.pd-wc-s' ) ).sort( byStart );
+		// A session whose time does not parse is left out, rather than stop the script.
+		var items = Array.prototype.filter.call( days.querySelectorAll( '.pd-wc-s' ), function ( s ) { return isFinite( Date.parse( s.getAttribute( 'data-utc' ) ) ); } ).sort( byStart );
 		var rows = {};
 		days.textContent = '';
 		items.forEach( function ( s ) {
@@ -192,80 +192,156 @@
 		} );
 	}
 
-	/** The month view lists three sessions a day, then "+N more"; the week view lists every one. */
-	function limitCells( cal ) {
-		var week = cal.getAttribute( 'data-view' ) === 'week';
-		cal.querySelectorAll( '.pd-cal-ses' ).forEach( function ( cell ) {
-			var old = cell.querySelector( '.pd-cal-more' ), shown = 0, extra = 0;
-			if ( old ) { old.remove(); }
-			cell.querySelectorAll( '.pd-cs' ).forEach( function ( item ) {
-				item.classList.remove( 'is-more' );
-				if ( item.classList.contains( 'is-filtered' ) || ( ! week && item.getAttribute( 'data-key' ) !== '1' ) ) { return; }
-				if ( ! week && shown >= 3 ) { item.classList.add( 'is-more' ); extra++; } else { shown++; }
-			} );
-			if ( extra ) {
-				var more = document.createElement( 'span' );
-				more.className = 'pd-cal-more';
-				more.textContent = '+' + extra + ' more';
-				cell.appendChild( more );
-			}
-		} );
-	}
-
-	function applyFilter( cal ) {
-		var mine = followed(), on = onlyMine() && mine.length > 0;
-		cal.querySelectorAll( '.pd-cs, .pd-cal-band, .pd-wc' ).forEach( function ( el ) {
-			el.classList.toggle( 'is-filtered', on && mine.indexOf( el.getAttribute( 'data-s' ) ) < 0 );
-		} );
-		limitCells( cal );
-	}
-
-	/** The series chips become follow toggles, kept in this browser; then the switch, the views and the week steps. */
-	function buildControls( cal, today ) {
-		cal.querySelectorAll( 'span.pd-cal-chip' ).forEach( function ( chip ) {
-			var s = chip.getAttribute( 'data-s' ), b = document.createElement( 'button' );
-			b.type = 'button';
-			b.className = chip.className;
-			b.setAttribute( 'data-s', s );
-			b.setAttribute( 'aria-pressed', String( followed().indexOf( s ) >= 0 ) );
-			b.setAttribute( 'aria-label', 'Follow ' + chip.textContent );
-			b.textContent = chip.textContent;
-			b.addEventListener( 'click', function () {
-				var mine = followed(), at = mine.indexOf( s );
-				if ( at >= 0 ) { mine.splice( at, 1 ); } else { mine.push( s ); }
-				calStore.set( 'pd-follow', mine.join( ',' ) );
-				b.setAttribute( 'aria-pressed', String( at < 0 ) );
-				applyFilter( cal );
-			} );
-			chip.replaceWith( b );
-		} );
-		var slot = cal.querySelector( '[data-pd-follow]' );
-		if ( slot ) {
-			var sw = document.createElement( 'button' ), note = document.createElement( 'small' );
-			sw.type = 'button';
-			sw.className = 'pd-cal-switch';
-			sw.setAttribute( 'role', 'switch' );
-			sw.setAttribute( 'aria-checked', String( onlyMine() ) );
-			sw.appendChild( document.createElement( 'i' ) );
-			sw.appendChild( document.createTextNode( 'Only series I follow' ) );
-			note.textContent = 'on this device';
-			sw.addEventListener( 'click', function () {
-				var on = ! onlyMine();
-				calStore.set( 'pd-follow-only', on ? '1' : '0' );
-				sw.setAttribute( 'aria-checked', String( on ) );
-				applyFilter( cal );
-			} );
-			slot.appendChild( sw );
-			slot.appendChild( note );
+	/** The events packed into each week's rows again, so a filtered series leaves no gap. In Month view the weeks
+	 *  share the window's height (24px day row, 19px band rows, as style.css draws them) and a week with more events
+	 *  than fit says "+N more" on the days it hides; a click opens the week. */
+	function fitMonth( cal ) {
+		var grid = cal.querySelector( '.pd-cal-grid' ), weeks = cal.querySelectorAll( '.pd-cal-wk' ), fit = 99;
+		cal.querySelectorAll( '.pd-cal-over' ).forEach( function ( el ) { el.remove(); } );
+		if ( ! grid || ! weeks.length ) { return; }
+		if ( cal.getAttribute( 'data-view' ) === 'month' ) {
+			var dow = grid.querySelector( '.pd-cal-dow' );
+			var room = window.innerHeight - ( grid.getBoundingClientRect().top + window.scrollY ) - ( dow ? dow.offsetHeight : 0 ) - 12;
+			var height = Math.max( 100, Math.min( 176, Math.floor( room / weeks.length ) ) );
+			cal.style.setProperty( '--pd-wk-h', height + 'px' );
+			fit = Math.floor( ( height - 24 ) / 19 );
 		}
+		var at = function ( band, letter ) { return Number( ( new RegExp( '\\bpd-' + letter + '(\\d)\\b' ).exec( band.className ) || [ 0, 1 ] )[ 1 ] ); };
+		weeks.forEach( function ( week ) {
+			var rows = [], placed = [], over = [ 0, 0, 0, 0, 0, 0, 0 ];
+			week.querySelectorAll( '.pd-cal-band' ).forEach( function ( band ) {
+				if ( band.classList.contains( 'is-filtered' ) ) { return; }
+				var a = at( band, 'c' ) - 1, b = a + at( band, 'w' ) - 1, r = 0;
+				while ( rows[ r ] && rows[ r ].some( function ( x ) { return ! ( b < x[ 0 ] || a > x[ 1 ] ); } ) ) { r++; }
+				( rows[ r ] = rows[ r ] || [] ).push( [ a, b ] );
+				placed.push( [ band, r, a, b ] );
+			} );
+			var limit = rows.length > fit ? fit - 1 : fit;
+			placed.forEach( function ( p ) {
+				p[ 0 ].style.gridRow = String( p[ 1 ] + 2 );
+				p[ 0 ].classList.toggle( 'is-over', p[ 1 ] >= limit );
+				for ( var d = p[ 2 ]; p[ 1 ] >= limit && d <= p[ 3 ]; d++ ) { over[ d ]++; }
+			} );
+			over.forEach( function ( count, d ) {
+				if ( ! count ) { return; }
+				var more = document.createElement( 'button' );
+				more.type = 'button';
+				more.className = 'pd-cal-over pd-c' + ( d + 1 );
+				more.style.gridRow = String( limit + 2 );
+				more.textContent = '+' + count + ' more';
+				week.appendChild( more );
+			} );
+		} );
+	}
+
+	/** The series and the kinds of session the reader has unticked are hidden, with any card, day or weekend left
+	 *  empty by them; the Filters tab counts them. */
+	function applyFilter( cal ) {
+		var offSeries = hiddenOf( 'pd-off-series' ), offKinds = hiddenOf( 'pd-off-kinds' );
+		cal.querySelectorAll( '.pd-cs, .pd-cal-band, .pd-wc, .pd-wc-s' ).forEach( function ( el ) {
+			var series = el.getAttribute( 'data-s' ), kind = el.getAttribute( 'data-kind' );
+			el.classList.toggle( 'is-filtered', ( series !== null && offSeries.indexOf( series ) >= 0 ) || ( kind !== null && offKinds.indexOf( kind ) >= 0 ) );
+		} );
+		cal.querySelectorAll( '.pd-wc-day' ).forEach( function ( day ) { day.classList.toggle( 'is-filtered', ! day.querySelector( '.pd-wc-s:not(.is-filtered)' ) ); } );
+		cal.querySelectorAll( '.pd-wc' ).forEach( function ( card ) {
+			if ( card.querySelector( '.pd-wc-s' ) && ! card.querySelector( '.pd-wc-s:not(.is-filtered)' ) ) { card.classList.add( 'is-filtered' ); }
+		} );
+		cal.querySelectorAll( '.pd-cal-wkend' ).forEach( function ( wk ) { wk.classList.toggle( 'is-filtered', ! wk.querySelector( '.pd-wc:not(.is-filtered)' ) ); } );
+		var tab = cal.querySelector( '.pd-cal-ftab' ), count = offSeries.length + offKinds.length;
+		if ( tab ) { tab.textContent = count ? 'Filters · ' + count : 'Filters'; }
+		fitMonth( cal );
+		calendarStates( cal, nowAt(), isoDay( nowAt() ) );
+	}
+
+	/** One dropdown of checkboxes: ticked shows, unticked hides, All and None below; kept in this browser under `key`. */
+	function filterMenu( cal, title, key, items ) {
+		var menu = document.createElement( 'details' ), head = document.createElement( 'summary' ), list = document.createElement( 'div' );
+		menu.className = 'pd-cal-menu';
+		head.textContent = title;
+		list.className = 'pd-cal-mlist';
+		var boxes = items.map( function ( item ) {
+			var label = document.createElement( 'label' ), box = document.createElement( 'input' );
+			box.type = 'checkbox';
+			box.checked = hiddenOf( key ).indexOf( item[ 0 ] ) < 0;
+			if ( item[ 2 ] ) { label.className = item[ 2 ]; }
+			box.addEventListener( 'change', function () {
+				var off = hiddenOf( key ), at = off.indexOf( item[ 0 ] );
+				if ( box.checked && at >= 0 ) { off.splice( at, 1 ); }
+				if ( ! box.checked && at < 0 ) { off.push( item[ 0 ] ); }
+				calStore.set( key, off.join( ',' ) );
+				applyFilter( cal );
+			} );
+			label.appendChild( box );
+			label.appendChild( document.createTextNode( item[ 1 ] ) );
+			list.appendChild( label );
+			return box;
+		} );
+		var foot = document.createElement( 'div' );
+		foot.className = 'pd-cal-mfoot';
+		[ [ 'All', '' ], [ 'None', items.map( function ( item ) { return item[ 0 ]; } ).join( ',' ) ] ].forEach( function ( choice ) {
+			var b = document.createElement( 'button' );
+			b.type = 'button';
+			b.textContent = choice[ 0 ];
+			b.addEventListener( 'click', function () {
+				calStore.set( key, choice[ 1 ] );
+				boxes.forEach( function ( box ) { box.checked = choice[ 1 ] === ''; } );
+				applyFilter( cal );
+			} );
+			foot.appendChild( b );
+		} );
+		list.appendChild( foot );
+		menu.appendChild( head );
+		menu.appendChild( list );
+		return menu;
+	}
+
+	/** The Filters tab opens a bar with a Series dropdown (from the published chips) and a Sessions dropdown. */
+	function buildFilters( cal ) {
+		var source = cal.querySelector( '.pd-cal-filter' ), views = cal.querySelector( '[data-pd-views]' );
+		if ( ! source || ! views ) { return; }
+		var bar = document.createElement( 'div' ), tab = document.createElement( 'button' );
+		bar.className = 'pd-cal-fbar';
+		bar.hidden = true;
+		// A series with nothing this month stays in the list, greyed, as its chip was.
+		var series = Array.prototype.map.call( source.querySelectorAll( '.pd-cal-chip' ), function ( chip ) {
+			return [ chip.getAttribute( 'data-s' ), chip.textContent, 'pd-s-' + chip.getAttribute( 'data-s' ) + ( chip.classList.contains( 'pd-dim' ) ? ' pd-dim' : '' ) ];
+		} );
+		bar.appendChild( filterMenu( cal, 'Series', 'pd-off-series', series ) ).classList.add( 'is-series' );
+		bar.appendChild( filterMenu( cal, 'Sessions', 'pd-off-kinds', [ [ 'practice', 'Practice' ], [ 'qualifying', 'Qualifying' ], [ 'race', 'Race' ] ] ) );
+		source.replaceWith( bar );
+		tab.type = 'button';
+		tab.className = 'pd-cal-ftab';
+		tab.setAttribute( 'aria-expanded', 'false' );
+		tab.addEventListener( 'click', function () {
+			bar.hidden = ! bar.hidden;
+			tab.setAttribute( 'aria-expanded', String( ! bar.hidden ) );
+			fitMonth( cal );
+		} );
+		views.parentNode.insertBefore( tab, views.nextSibling );
+		// One dropdown open at a time; a click elsewhere or Escape closes it.
+		document.addEventListener( 'click', function ( e ) {
+			bar.querySelectorAll( '.pd-cal-menu[open]' ).forEach( function ( menu ) { if ( ! menu.contains( e.target ) ) { menu.open = false; } } );
+		} );
+		document.addEventListener( 'keydown', function ( e ) {
+			if ( e.key !== 'Escape' ) { return; }
+			bar.querySelectorAll( '.pd-cal-menu[open]' ).forEach( function ( menu ) { menu.open = false; menu.querySelector( 'summary' ).focus(); } );
+		} );
+	}
+
+	/** The views (Month, Week, Agenda) and the week steps. */
+	function buildControls( cal, today ) {
 		var weeks = Array.prototype.slice.call( cal.querySelectorAll( '.pd-cal-wk' ) ), shown = 0;
 		weeks.forEach( function ( w, i ) { if ( w.querySelector( '[data-date="' + today + '"]' ) ) { shown = i; } } );
 		var showWeek = function () { weeks.forEach( function ( w, i ) { w.classList.toggle( 'is-week', i === shown ); } ); };
 		var views = cal.querySelector( '[data-pd-views]' );
+		// The view a reader picks follows them to the next month, for this visit.
+		var kept = null;
+		try { kept = window.sessionStorage.getItem( 'pd-cal-view' ); } catch {}
 		var setView = function ( v ) {
 			cal.setAttribute( 'data-view', v );
+			try { window.sessionStorage.setItem( 'pd-cal-view', v ); } catch {}
 			if ( views ) { views.querySelectorAll( '[data-v]' ).forEach( function ( b ) { b.setAttribute( 'aria-pressed', String( b.getAttribute( 'data-v' ) === v ) ); } ); }
-			limitCells( cal );
+			fitMonth( cal );
 		};
 		if ( views ) {
 			[ [ 'month', 'Month' ], [ 'week', 'Week' ], [ 'agenda', 'Agenda' ] ].forEach( function ( v ) {
@@ -286,13 +362,23 @@
 				views.appendChild( b );
 			} );
 		}
+		// Month view shows the events; a click on a week opens it with every session.
+		weeks.forEach( function ( w, i ) {
+			w.addEventListener( 'click', function () {
+				if ( cal.getAttribute( 'data-view' ) !== 'month' ) { return; }
+				shown = i;
+				showWeek();
+				setView( 'week' );
+			} );
+		} );
 		showWeek();
-		setView( window.matchMedia && window.matchMedia( '(max-width: 699px)' ).matches ? 'agenda' : 'month' );
+		setView( /^(month|week|agenda)$/.test( kept || '' ) ? kept : window.matchMedia && window.matchMedia( '(max-width: 699px)' ).matches ? 'agenda' : 'month' );
 	}
 
 	function setupCalendar( cal ) {
 		cal.querySelectorAll( '.pd-cs[data-utc]' ).forEach( function ( item ) {
-			var cell = cal.querySelector( '.pd-cal-ses[data-date="' + isoDay( item.getAttribute( 'data-utc' ) ) + '"]' );
+			var t = Date.parse( item.getAttribute( 'data-utc' ) );
+			var cell = isFinite( t ) && cal.querySelector( '.pd-cal-ses[data-date="' + isoDay( t ) + '"]' );
 			if ( cell ) { cell.appendChild( item ); } else { item.remove(); }
 		} );
 		cal.querySelectorAll( '.pd-cal-ses' ).forEach( function ( cell ) {
@@ -305,6 +391,7 @@
 		cal.querySelectorAll( '[data-pd-calzone]' ).forEach( function ( el ) { el.textContent = 'Times in your zone: ' + zone.split( '/' ).pop().replace( /_/g, ' ' ); } );
 		clockNote( cal );
 		buildControls( cal, isoDay( nowAt() ) );
+		buildFilters( cal );
 		applyFilter( cal );
 	}
 
@@ -313,7 +400,9 @@
 		var items = Array.prototype.slice.call( card.querySelectorAll( '.pd-wc-s' ) );
 		var span = function ( s ) { var a = Date.parse( s.getAttribute( 'data-utc' ) ); return [ a, Date.parse( s.getAttribute( 'data-end' ) ) || a ]; };
 		var live = items.filter( function ( s ) { var t = span( s ); return now >= t[ 0 ] && now < t[ 1 ]; } )[ 0 ] || null;
-		var next = live ? items.filter( function ( s ) { return span( s )[ 0 ] > now; } )[ 0 ] || null : null;
+		// Once the weekend is under way, the first session still to come (and not filtered out) is Next.
+		var begun = live || items.some( function ( s ) { return span( s )[ 1 ] <= now; } );
+		var next = begun ? items.filter( function ( s ) { return span( s )[ 0 ] > now && ! s.classList.contains( 'is-filtered' ); } )[ 0 ] || null : null;
 		items.forEach( function ( s ) {
 			var clock = s.querySelector( '.pd-t' ), old = s.querySelector( 'em' );
 			var state = s === live ? 'live' : s === next ? 'next' : span( s )[ 1 ] <= now ? 'done' : '';
@@ -349,23 +438,23 @@
 		var day = new Date( today + 'T00:00:00Z' );
 		var fri = new Date( day.getTime() + ( 4 - ( day.getUTCDay() + 6 ) % 7 ) * 864e5 ).toISOString().slice( 0, 10 );
 		var nextFri = new Date( Date.parse( fri + 'T00:00:00Z' ) + 7 * 864e5 ).toISOString().slice( 0, 10 );
-		var weekends = cal.querySelectorAll( '.pd-cal-wkend' ), past = 0;
+		var weekends = cal.querySelectorAll( '.pd-cal-wkend' ), past = 0, shown = 0;
 		weekends.forEach( function ( wk ) {
 			var head = wk.querySelector( '.pd-cal-wkh span' ), count = wk.querySelector( '.pd-cal-wkh small' );
 			if ( ! head || ! count ) { return; }
-			if ( ! head.hasAttribute( 'data-dates' ) ) {
-				head.setAttribute( 'data-dates', head.textContent );
-				count.setAttribute( 'data-count', count.textContent );
-			}
+			if ( ! head.hasAttribute( 'data-dates' ) ) { head.setAttribute( 'data-dates', head.textContent ); }
 			var from = wk.getAttribute( 'data-from' ), name = from === fri ? 'This weekend' : from === nextFri ? 'Next weekend' : '';
+			var n = wk.querySelectorAll( '.pd-wc:not(.is-filtered)' ).length;
 			head.textContent = name || head.getAttribute( 'data-dates' );
-			count.textContent = ( name ? head.getAttribute( 'data-dates' ) + ' · ' : '' ) + count.getAttribute( 'data-count' );
+			count.textContent = ( name ? head.getAttribute( 'data-dates' ) + ' · ' : '' ) + n + ' event' + ( n === 1 ? '' : 's' );
 			var gone = wk.getAttribute( 'data-to' ) < today;
 			wk.classList.toggle( 'is-past', gone );
+			if ( wk.classList.contains( 'is-filtered' ) ) { return; }
+			shown++;
 			if ( gone ) { past++; }
 		} );
 		var agenda = cal.querySelector( '.pd-cal-agenda' ), button = agenda && agenda.querySelector( '.pd-cal-earlier' );
-		if ( past && past === weekends.length ) { cal.classList.add( 'is-earlier' ); }
+		if ( past && past === shown ) { cal.classList.add( 'is-earlier' ); }
 		if ( agenda && past && ! button && ! cal.classList.contains( 'is-earlier' ) ) {
 			button = document.createElement( 'button' );
 			button.type = 'button';
@@ -373,10 +462,18 @@
 			button.addEventListener( 'click', function () { cal.classList.add( 'is-earlier' ); button.remove(); } );
 			agenda.insertBefore( button, agenda.firstChild );
 		}
-		if ( button && button.isConnected ) { button.textContent = 'Show ' + past + ' earlier weekend' + ( past === 1 ? '' : 's' ); }
+		if ( button && button.isConnected ) {
+			button.hidden = ! past;
+			button.textContent = 'Show ' + past + ' earlier weekend' + ( past === 1 ? '' : 's' );
+		}
 	}
 
 	document.querySelectorAll( '.pd-cal' ).forEach( setupCalendar );
+	var refit = 0;
+	window.addEventListener( 'resize', function () {
+		if ( refit ) { return; }
+		refit = window.requestAnimationFrame( function () { refit = 0; document.querySelectorAll( '.pd-cal' ).forEach( fitMonth ); } );
+	} );
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
 

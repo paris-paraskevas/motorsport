@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.281 — 2026-10-21
+
+Behind the scenes: the new calendar, tuned. A whole month fits on a laptop screen, a click opens a week with every session, the weekend cards name their series and sit two to a row, and a Filters tab picks the championships and the kinds of session you want to see. Nothing changes for readers yet.
+
 ## 1.0.280 — 2026-10-20
 
 Behind the scenes: the calendar, ready for the new site. Every series' month at a glance, each session on your own day and in your own time, this weekend's races as cards on a phone, and the series you follow remembered on your device. Nothing changes for readers yet.

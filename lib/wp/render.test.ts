@@ -11,6 +11,7 @@ import {
   planSync,
   resultRounds,
   seriesPages,
+  sessionKind,
   splitRaceName,
   standingsTables,
   tableBlock,
@@ -343,16 +344,16 @@ describe('calendarMonthPages', () => {
   });
 
   it('links the months either side, and none past the last', () => {
-    expect(october.body).toContain('<a href="/calendar/2026-11/" aria-label="November 2026">›</a>');
+    expect(october.body).toContain('<a href="/calendar/2026-11/" aria-label="Next month: November 2026">›</a>');
     expect(october.body).toContain('<span aria-hidden="true">‹</span>');
-    expect(pages[2].body).toContain('<a href="/calendar/2026-10/" aria-label="October 2026">‹</a>');
+    expect(pages[2].body).toContain('<a href="/calendar/2026-10/" aria-label="Previous month: October 2026">‹</a>');
   });
 
   it('puts each session in its UTC day, marks race, sprint and qualifying, and prints UTC', () => {
     const cell = (day: string) => october.body.split(`<div class="pd-cal-ses pd-c`).find(c => c.startsWith(`${c[0]}" data-date="${day}">`)) ?? '';
     expect(cell('2026-10-24')).toContain('<b>F1 Qualifying</b>');
-    expect(cell('2026-10-24')).toContain('data-key="1"');
-    expect(cell('2026-10-23')).toContain('data-key="0"');
+    expect(cell('2026-10-24')).toContain('data-kind="qualifying"');
+    expect(cell('2026-10-23')).toContain('data-kind="practice"');
     expect(cell('2026-10-24')).toContain('data-f="t">21:00</span>');
     expect(october.body).toContain('Times in UTC');
   });
@@ -383,6 +384,22 @@ describe('calendarMonthPages', () => {
   it('says so when a month has no race weekend', () => {
     const quiet: SeriesData = { ...f1, calendar: [], rounds: [] };
     expect(calendarMonthPages([quiet], now)[0].body).toContain('No race weekends this month.');
+  });
+
+  it('sorts sessions into practice, qualifying and race for the Sessions filter', () => {
+    expect(['Practice 1', 'FP2', 'Warm Up', 'Bronze Test', 'Free Practice 1'].map(sessionKind)).toEqual(Array(5).fill('practice'));
+    expect(['Qualifying', 'Q2', 'Sprint Qualifying', 'Sprint Shootout', 'Superpole', 'Hyperpole'].map(sessionKind)).toEqual(Array(6).fill('qualifying'));
+    expect(['Race', 'Sprint', 'Superpole Race', 'Race 2', 'YellaWood 500', '3 Hours of Portimão (Race)'].map(sessionKind)).toEqual(Array(6).fill('race'));
+    expect(['Race 4h (NLS4 ADAC 24h Qualifiers — Saturday evening)', 'Freedom 100', 'Race (London R17) — Season Finale'].map(sessionKind)).toEqual(Array(3).fill('race'));
+    expect(['Indianapolis 500 Firestone Fast Six', '24h Top Qualifying (NLS5 ADAC 24h Qualifiers)'].map(sessionKind)).toEqual(Array(2).fill('qualifying'));
+    expect(['Nürburgring Scrutineering (Thu)', 'Ceremonial Start Jyväskylä (Finland)', 'Free Training (NLS1 71st ADAC Westfalenfahrt)', 'Nürburgring Pit Walk / Track Walk'].map(sessionKind)).toEqual(Array(4).fill('practice'));
+  });
+
+  it('draws up to twelve overlapping rounds in a week, and refuses a thirteenth rather than overlap the sessions', () => {
+    const busy = (n: number): SeriesData[] =>
+      Array.from({ length: n }, (_, i) => ({ ...f1, slug: `s${i}`, name: `S${i}`, short: `S${i}`, calendar: [], rounds: [{ round: 1, name: 'R', startDate: '2026-10-23', endDate: '2026-10-25', venue: null }] }));
+    expect(calendarMonthPages(busy(12), now)[0].body).toContain('<div class="pd-cal-wk pd-b12">');
+    expect(() => calendarMonthPages(busy(13), now)).toThrow(/13 overlapping rounds/);
   });
 
   it("names a band shortly: GP, NASCAR's track, no trailing Round", () => {
@@ -434,6 +451,8 @@ describe('planSync', () => {
   it('adds the template to the hash only when a page names one', () => {
     expect(hashOf({ title: 'A', body: 'x', template: 'page-wide' })).not.toBe(hashOf({ title: 'A', body: 'x' }));
     expect(hashOf({ title: 'A', body: 'x', template: undefined })).toBe(hashOf({ title: 'A', body: 'x' }));
+    // sha256("A\nx"): the hash every published page was written with, before templates.
+    expect(hashOf({ title: 'A', body: 'x' })).toBe('87c7567107483d30d6903f5370fffee21ec5dc1ffff3cc05fa141eb1fa2fee2e');
   });
 });
 
