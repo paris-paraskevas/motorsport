@@ -43,7 +43,8 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 3. The site plan’s open decisions and the brief’s two (champions pages, information pages).
 4. Pass 3, the publisher’s redesign, as a slot of its own; then the workflow re-enabled and the first publish, the redirect list as a Redirection CSV, and the test page 5046 removed on the word.
 5. #1163 (O9) closed or merged on the word; B.4 a week after the site is stable (the last dump first, an Inbox line).
-6. This records branch, `records/session-69-design` (local, from next): the push and its PR on the word.
+6. `records/session-69-design` (local): its two records commits reached next inside #1166; the branch can go on the word (not deleted).
+7. This records branch, `o12/records` (pushed, no PR): the merge and publish of #1168; it rides with the next slot's PR, or goes as a records PR on the word.
 
 ## ⚡ Next session pickup — 2026-10-13 (session 68 closed on the 13th: the robots’ bill and two Cloudflare rules; the daily merge of 1.0.266–1.0.271, B4 checked live; B5 narrowed; O7 and the F plan into next)
 
