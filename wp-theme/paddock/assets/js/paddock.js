@@ -129,6 +129,8 @@
 	};
 	var hiddenOf = function ( key ) { return ( calStore.get( key ) || '' ).split( ',' ).filter( Boolean ); };
 	var byStart = function ( a, b ) { return a.getAttribute( 'data-utc' ) < b.getAttribute( 'data-utc' ) ? -1 : 1; };
+	// A grid day's data-date is a calendar date, not an instant: named in UTC so no zone shifts it.
+	var fDayName = new Intl.DateTimeFormat( 'en-GB', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' } );
 	var wallClock = function ( ms ) { return new Date( ms ).toISOString().slice( 11, 16 ); };
 
 	function zonePart( f, t ) {
@@ -194,12 +196,14 @@
 
 	/** The events packed into each week's rows again, so a filtered series leaves no gap. In Month view the weeks
 	 *  share the window's height (24px day row, 19px band rows, as style.css draws them) and a week with more events
-	 *  than fit says "+N more" on the days it hides; a click opens the week. */
+	 *  than fit says "+N more" on the days it hides; a click opens the week. Week view takes as many 23px band rows
+	 *  as the packing needs, the sessions below them. */
 	function fitMonth( cal ) {
 		var grid = cal.querySelector( '.pd-cal-grid' ), weeks = cal.querySelectorAll( '.pd-cal-wk' ), fit = 99;
+		var month = cal.getAttribute( 'data-view' ) === 'month';
 		cal.querySelectorAll( '.pd-cal-over' ).forEach( function ( el ) { el.remove(); } );
 		if ( ! grid || ! weeks.length ) { return; }
-		if ( cal.getAttribute( 'data-view' ) === 'month' ) {
+		if ( month ) {
 			var dow = grid.querySelector( '.pd-cal-dow' );
 			var room = window.innerHeight - ( grid.getBoundingClientRect().top + window.scrollY ) - ( dow ? dow.offsetHeight : 0 ) - 12;
 			var height = Math.max( 100, Math.min( 176, Math.floor( room / weeks.length ) ) );
@@ -217,6 +221,8 @@
 				placed.push( [ band, r, a, b ] );
 			} );
 			var limit = rows.length > fit ? fit - 1 : fit;
+			week.style.gridTemplateRows = month ? '' : '30px ' + ( rows.length ? 'repeat(' + rows.length + ', 23px) ' : '' ) + 'minmax(64px, auto)';
+			week.querySelectorAll( '.pd-cal-ses' ).forEach( function ( cell ) { cell.style.gridRow = month ? '' : String( rows.length + 2 ); } );
 			placed.forEach( function ( p ) {
 				p[ 0 ].style.gridRow = String( p[ 1 ] + 2 );
 				p[ 0 ].classList.toggle( 'is-over', p[ 1 ] >= limit );
@@ -229,6 +235,8 @@
 				more.className = 'pd-cal-over pd-c' + ( d + 1 );
 				more.style.gridRow = String( limit + 2 );
 				more.textContent = '+' + count + ' more';
+				var dn = week.querySelector( '.pd-cal-dn.pd-c' + ( d + 1 ) );
+				if ( dn ) { more.setAttribute( 'aria-label', count + ' more event' + ( count === 1 ? '' : 's' ) + ' on ' + fDayName.format( new Date( dn.getAttribute( 'data-date' ) + 'T12:00:00Z' ) ) + ', open the week' ); }
 				week.appendChild( more );
 			} );
 		} );
@@ -334,12 +342,12 @@
 		weeks.forEach( function ( w, i ) { if ( w.querySelector( '[data-date="' + today + '"]' ) ) { shown = i; } } );
 		var showWeek = function () { weeks.forEach( function ( w, i ) { w.classList.toggle( 'is-week', i === shown ); } ); };
 		var views = cal.querySelector( '[data-pd-views]' );
-		// The view a reader picks follows them to the next month, for this visit.
+		// The view a reader picks (never the default) follows them to the next month, for this visit.
 		var kept = null;
 		try { kept = window.sessionStorage.getItem( 'pd-cal-view' ); } catch {}
-		var setView = function ( v ) {
+		var setView = function ( v, picked ) {
 			cal.setAttribute( 'data-view', v );
-			try { window.sessionStorage.setItem( 'pd-cal-view', v ); } catch {}
+			if ( picked ) { try { window.sessionStorage.setItem( 'pd-cal-view', v ); } catch {} }
 			if ( views ) { views.querySelectorAll( '[data-v]' ).forEach( function ( b ) { b.setAttribute( 'aria-pressed', String( b.getAttribute( 'data-v' ) === v ) ); } ); }
 			fitMonth( cal );
 		};
@@ -349,7 +357,7 @@
 				b.type = 'button';
 				b.setAttribute( 'data-v', v[ 0 ] );
 				b.textContent = v[ 1 ];
-				b.addEventListener( 'click', function () { setView( v[ 0 ] ); } );
+				b.addEventListener( 'click', function () { setView( v[ 0 ], true ); } );
 				views.appendChild( b );
 			} );
 			[ [ -1, '‹', 'Earlier week' ], [ 1, '›', 'Later week' ] ].forEach( function ( step ) {
@@ -368,7 +376,7 @@
 				if ( cal.getAttribute( 'data-view' ) !== 'month' ) { return; }
 				shown = i;
 				showWeek();
-				setView( 'week' );
+				setView( 'week', true );
 			} );
 		} );
 		showWeek();
@@ -453,17 +461,18 @@
 			shown++;
 			if ( gone ) { past++; }
 		} );
+		// Past weekends open on the button, or by themselves while every weekend in view is past; the filters can undo the second.
 		var agenda = cal.querySelector( '.pd-cal-agenda' ), button = agenda && agenda.querySelector( '.pd-cal-earlier' );
-		if ( past && past === shown ) { cal.classList.add( 'is-earlier' ); }
-		if ( agenda && past && ! button && ! cal.classList.contains( 'is-earlier' ) ) {
+		cal.classList.toggle( 'is-earlier', cal.hasAttribute( 'data-earlier' ) || ( past > 0 && past === shown ) );
+		if ( agenda && past && ! button ) {
 			button = document.createElement( 'button' );
 			button.type = 'button';
 			button.className = 'pd-cal-earlier';
-			button.addEventListener( 'click', function () { cal.classList.add( 'is-earlier' ); button.remove(); } );
+			button.addEventListener( 'click', function () { cal.setAttribute( 'data-earlier', '' ); cal.classList.add( 'is-earlier' ); button.hidden = true; } );
 			agenda.insertBefore( button, agenda.firstChild );
 		}
-		if ( button && button.isConnected ) {
-			button.hidden = ! past;
+		if ( button ) {
+			button.hidden = ! past || cal.classList.contains( 'is-earlier' );
 			button.textContent = 'Show ' + past + ' earlier weekend' + ( past === 1 ? '' : 's' );
 		}
 	}
@@ -474,6 +483,8 @@
 		if ( refit ) { return; }
 		refit = window.requestAnimationFrame( function () { refit = 0; document.querySelectorAll( '.pd-cal' ).forEach( fitMonth ); } );
 	} );
+	// Archivo arriving can move the grid's top by a few pixels, so the month is fitted again once the fonts are in.
+	if ( document.fonts && document.fonts.ready ) { document.fonts.ready.then( function () { document.querySelectorAll( '.pd-cal' ).forEach( fitMonth ); } ); }
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
 

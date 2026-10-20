@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.4
+Version: 0.1.5
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -253,8 +253,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
    Month view fits the window (the operator, 20 Oct): the events only, each week as tall as the script measures, and
    "+N more" where a week holds more events than fit; Week view and the Agenda carry the session times. */
 .pd-cal { max-width: 1248px; margin: 0 auto; padding: 18px max(16px, 2.8vw) 16px; }
-.pd-cal-top { display: grid; grid-template-columns: auto auto auto auto auto 1fr auto; align-items: center; gap: 10px; }
-.pd-cal-top > * { grid-row: 1; }
+.pd-cal-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .pd-cal-h1 { margin: 0 6px 0 0; font-size: 2rem; line-height: 1; font-weight: 800; letter-spacing: -.025em; }
 .pd-cal-month { display: inline-flex; align-items: center; height: 36px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); }
 .pd-cal-month a, .pd-cal-month > span { display: grid; place-items: center; width: 40px; height: 100%; font-weight: 700; color: var(--pd-muted); text-decoration: none; }
@@ -267,10 +266,10 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal-views .pd-cal-wstep { display: none; width: 36px; margin-left: 8px; padding: 0; border-left-width: 1px; }
 .pd-cal-views .pd-cal-wstep + .pd-cal-wstep { margin-left: 0; border-left-width: 0; }
 .pd-cal[data-view="week"] .pd-cal-wstep { display: inline-block; }
-.pd-cal-ftab { grid-column: 4; height: 36px; padding: 0 14px; border: 1px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .84rem; font-weight: 800; cursor: pointer; }
+.pd-cal-ftab { height: 36px; padding: 0 14px; border: 1px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .84rem; font-weight: 800; cursor: pointer; }
 .pd-cal-ftab[aria-expanded="true"] { background: var(--pd-ink); border-color: var(--pd-ink); color: var(--pd-ground); }
-.pd-cal-emails { grid-column: 5; justify-self: start; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1.5px solid var(--pd-ink); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
-.pd-cal-today { grid-column: 7; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
+.pd-cal-emails { order: 1; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1.5px solid var(--pd-ink); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
+.pd-cal-today { order: 2; margin-left: auto; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
 
 /* Without the script the chips name the series; with it, the Filters tab's bar takes their place (the operator,
    20 Oct): a Series dropdown and a Sessions dropdown of checkboxes. */
@@ -393,15 +392,14 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 	.pd-cal.is-earlier .pd-cal-wkend.is-past { display: grid; }
 }
 @media (max-width: 699px) {
-	.pd-cal-top { grid-template-columns: auto 1fr auto; }
-	.pd-cal-top > * { grid-row: auto; }
-	.pd-cal-h1 { grid-column: 1 / -1; font-size: 1.75rem; }
-	.pd-cal-month { grid-column: 1; }
+	.pd-cal-top { display: grid; grid-template-columns: auto 1fr; }
+	.pd-cal-h1 { grid-area: 1 / 1; font-size: 1.75rem; }
+	.pd-cal-today { grid-area: 1 / 2; justify-self: end; margin-left: 0; }
+	.pd-cal-month { grid-area: 2 / 1; }
 	.pd-cal-month b { min-width: 120px; }
 	.pd-cal-views { display: none; }
-	.pd-cal-ftab { grid-column: 2; justify-self: start; }
-	.pd-cal-today { grid-column: 3; }
-	.pd-cal-emails { grid-column: 1 / -1; }
+	.pd-cal-ftab { grid-area: 2 / 2; justify-self: start; }
+	.pd-cal-emails { grid-area: 3 / 1 / auto / -1; justify-self: start; }
 	.pd-cal-filter { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * max(16px, 2.8vw)); padding: 0 max(16px, 2.8vw) 4px; scrollbar-width: none; }
 	.pd-cal-chip, .pd-cal-lbl { flex: none; }
 	.pd-cal-menu.is-series .pd-cal-mlist { grid-template-columns: minmax(150px, 1fr); }

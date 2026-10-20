@@ -538,8 +538,8 @@ export function seriesPages(d: SeriesData, now: Date): Page[] {
 //
 // One page a month, laid out in UTC: each session sits in its UTC day's cell and prints its UTC
 // time. The theme's script (wp-theme/paddock/assets/js/paddock.js) moves every session to the
-// reader's own day and time, marks today, greys what has run and adds the controls (views,
-// series, follow); without it the UTC page stands. Only classes and data-* attributes carry the
+// reader's own day and time, marks today, greys what has run and adds the controls (the views
+// and the Filters tab); without it the UTC page stands. Only classes and data-* attributes carry the
 // layout, so the site's content filter keeps all of it, and nothing in the markup depends on the
 // hour it was written, so a page changes only when its data does.
 
@@ -637,18 +637,19 @@ function gridWeek(week: string[], ym: string, held: Held[], byDay: Map<string, P
       rows[row].push([band.a, band.b]);
       return { ...band, row };
     });
-  // style.css draws pd-b1…pd-b12 and pd-r1…pd-r12; a busier week would overlap its own sessions.
-  if (rows.length > 12) throw new Error(`the week of ${first} holds ${rows.length} overlapping rounds, more than the grid's 12 rows`);
+  // style.css draws pd-b1…pd-b12 and pd-r1…pd-r12 (2026's busiest week holds 8). Past twelve the theme's script
+  // packs the week itself; without it the extra rounds share the twelfth row.
+  const cap = (n: number): number => Math.min(n, 12);
   const days = week.map((day, i) => {
     const cls = `pd-c${i + 1}${day.slice(0, 7) === ym ? '' : ' pd-out'}${i >= 4 ? ' pd-fss' : ''}`;
     return `<span class="pd-cal-bg ${cls}" data-date="${day}"></span><span class="pd-cal-dn ${cls}" data-date="${day}">${Number(day.slice(8))}</span>`;
   });
   const strips = bands.map(
     ({ d, r, a, b, row }) =>
-      `<span class="pd-cal-band pd-s-${slugAttr(d)} pd-c${a + 1} pd-w${b - a + 1} pd-r${row + 1}" data-s="${slugAttr(d)}" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}">${escapeHtml(`${chipLabel(d)} · ${bandLabel(d.slug, r.name)}`)}</span>`,
+      `<span class="pd-cal-band pd-s-${slugAttr(d)} pd-c${a + 1} pd-w${b - a + 1} pd-r${cap(row + 1)}" data-s="${slugAttr(d)}" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}">${escapeHtml(`${chipLabel(d)} · ${bandLabel(d.slug, r.name)}`)}</span>`,
   );
   const sessions = week.map((day, i) => `<div class="pd-cal-ses pd-c${i + 1}" data-date="${day}">${(byDay.get(day) ?? []).map(gridSession).join('')}</div>`);
-  return `<div class="pd-cal-wk pd-b${rows.length}">${days.join('')}${strips.join('')}${sessions.join('')}</div>`;
+  return `<div class="pd-cal-wk pd-b${cap(rows.length)}">${days.join('')}${strips.join('')}${sessions.join('')}</div>`;
 }
 
 /** The month as round 2's grid, Monday first, with the days either side that finish its weeks. A session

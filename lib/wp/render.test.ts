@@ -395,11 +395,14 @@ describe('calendarMonthPages', () => {
     expect(['Nürburgring Scrutineering (Thu)', 'Ceremonial Start Jyväskylä (Finland)', 'Free Training (NLS1 71st ADAC Westfalenfahrt)', 'Nürburgring Pit Walk / Track Walk'].map(sessionKind)).toEqual(Array(4).fill('practice'));
   });
 
-  it('draws up to twelve overlapping rounds in a week, and refuses a thirteenth rather than overlap the sessions', () => {
+  it('gives a week at most the twelve rows style.css draws, however many rounds overlap', () => {
     const busy = (n: number): SeriesData[] =>
       Array.from({ length: n }, (_, i) => ({ ...f1, slug: `s${i}`, name: `S${i}`, short: `S${i}`, calendar: [], rounds: [{ round: 1, name: 'R', startDate: '2026-10-23', endDate: '2026-10-25', venue: null }] }));
     expect(calendarMonthPages(busy(12), now)[0].body).toContain('<div class="pd-cal-wk pd-b12">');
-    expect(() => calendarMonthPages(busy(13), now)).toThrow(/13 overlapping rounds/);
+    const thirteen = calendarMonthPages(busy(13), now)[0].body;
+    expect(thirteen).toContain('<div class="pd-cal-wk pd-b12">');
+    expect(thirteen).not.toMatch(/pd-[rb]13/);
+    expect(thirteen.match(/pd-r12"/g)).toHaveLength(2);
   });
 
   it("names a band shortly: GP, NASCAR's track, no trailing Round", () => {
