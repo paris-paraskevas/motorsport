@@ -58,7 +58,7 @@ import {
   type Table,
   type WpPageRow,
 } from '../lib/wp/render';
-import { decideFeed, statusPage, type FeedHealth, type FeedKind, type Fresh } from '../lib/wp/health';
+import { decideFeed, resultsShrank, statusPage, type FeedHealth, type FeedKind, type Fresh } from '../lib/wp/health';
 
 const argv = process.argv.slice(2);
 const opt = (name: string): string | undefined => {
@@ -136,9 +136,12 @@ function wordpress() {
       }
       return rows;
     },
-    async createPage(fields: { title: string; slug: string; parent: number; status: 'publish' | 'draft'; content: string }): Promise<number> {
+    /** The new page's id and the slug WordPress gave it, which can differ from the one asked for. */
+    async createPage(fields: { title: string; slug: string; parent: number; status: 'publish' | 'draft'; content: string }): Promise<{ id: number; slug: string }> {
       const { json } = await call('POST', 'pages', fields);
-      return (json as WpRestPage).id;
+      const page = json as Partial<WpRestPage> | null;
+      if (typeof page?.id !== 'number') throw new Error('POST /wp-json/wp/v2/pages answered without a page id');
+      return { id: page.id, slug: typeof page.slug === 'string' ? page.slug : '' };
     },
     async updatePage(id: number, fields: { title: string; content: string; status?: 'draft' }): Promise<void> {
       await call('POST', `pages/${id}`, fields);
@@ -165,19 +168,20 @@ async function testPage(wp: WordPress): Promise<number> {
     ].join('\n\n'),
   };
   const hash = hashOf(page);
-  const content = withMarker(page.body, hash);
+  const content = withMarker(page.body, hash, page.path);
   const row = wpPaths(await wp.listPages()).get(page.path);
   if (row && !MARKER.test(row.content)) {
     log('P', `FAIL ${page.path} exists as page ${row.id} without the publisher's mark: left alone`);
     return 1;
   }
-  const id = row ? row.id : await wp.createPage({ title: page.title, slug: 'paddock-publisher-test', parent: 0, status: 'draft', content });
+  const id = row ? row.id : (await wp.createPage({ title: page.title, slug: 'paddock-publisher-test', parent: 0, status: 'draft', content })).id;
   if (row) await wp.updatePage(id, { title: page.title, content, status: 'draft' });
   const back = await wp.getPage(id);
   const raw = back.content?.raw ?? '';
+  const mark = MARKER.exec(raw);
   const checks: [string, boolean][] = [
     ['the page is a draft', back.status === 'draft'],
-    ['the marker came back with the same hash', MARKER.exec(raw)?.[1] === hash],
+    ['the marker came back first, with the same hash and address', mark?.[1] === hash && mark?.[2] === page.path],
     ['the table came back', /<table[\s>]/.test(raw) && raw.includes('</table>')],
     ['the markup in a name stayed text', raw.includes(escapeHtml('Kimi <b>Antonelli</b> & "Co"'))],
     ['the link came back', raw.includes('<a href="/series/">Series</a>')],
@@ -357,14 +361,30 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
+/** The commit time at a ref: the moment a re-rendered status page was checked. */
+function refTime(ref: string): Date | null {
+  try {
+    const t = Date.parse(execFileSync('git', ['log', '-1', '--format=%cI', ref], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim());
+    return Number.isFinite(t) ? new Date(t) : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Fetch (or read what is stored at --from-ref), decide every feed, keep the data, render the pages. */
 async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }> {
   const slugs = (await listSeriesSlugs()).sort();
+  // listSeriesSlugs answers [] on any error, which would empty /series/, /calendar/ and /status/.
+  if (slugs.length === 0) throw new Error('no series found under content/series');
   const names = new Map<string, string>();
   for (const slug of slugs) names.set(slug, (await loadSeriesMeta(slug)).name);
 
   const fetched: Fetched | null = FROM_REF ? null : await fetchEverything(slugs, now);
   if (FROM_REF) log('F', `no fetch: rendering the data stored at ${FROM_REF}`);
+  // Re-rendering stored data, each feed keeps the status its run recorded beside it.
+  const recorded = FROM_REF ? readStored<FeedHealth[]>('health.json') : null;
+  const recordedFor = (slug: string, kind: FeedKind): FeedHealth | undefined =>
+    Array.isArray(recorded) ? recorded.find(h => h?.slug === slug && h?.kind === kind) : undefined;
 
   const health: FeedHealth[] = [];
   const all: SeriesData[] = [];
@@ -374,11 +394,17 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
     for (const kind of KINDS) {
       const rel = relOf(slug, kind);
       const previous = readStored<unknown>(rel);
-      const fresh = fetched ? fetched[kind].get(slug) : undefined;
-      // No such feed for this series (NLS and the ADAC 24h have no standings), or nothing stored at the ref.
-      if (fetched ? fresh === undefined : previous === null) continue;
-      // Rendering stored data there is no fetch: what is stored is the data, and it is OK.
-      const decision = fresh ? decideFeed<unknown>(fresh, previous, usable[kind]) : { data: previous, status: 'OK' as const, note: '' };
+      let fresh = fetched ? fetched[kind].get(slug) : undefined;
+      // No such feed for this series (NLS and the ADAC 24h have no standings), or nothing usable stored at the ref.
+      if (fetched ? fresh === undefined : previous === null || !usable[kind](previous)) continue;
+      // A season answering with fewer races than the stored one is a short answer, not news.
+      if (kind === 'results' && fresh && fresh.data !== null && usable.results(previous) && resultsShrank(fresh.data as ResultRound[], previous as ResultRound[])) {
+        fresh = { ...fresh, partial: true, error: 'fewer races than stored' };
+      }
+      const r = recordedFor(slug, kind);
+      const decision = fresh
+        ? decideFeed<unknown>(fresh, previous, usable[kind])
+        : { data: previous, status: r?.status === 'STALE' || r?.status === 'MISSING' ? r.status : ('OK' as const), note: typeof r?.note === 'string' ? r.note : '' };
       const changed = fresh !== undefined && decision.status === 'OK' && decision.data !== null && writeStored(rel, decision.data);
       if (changed) dataChanged++;
       if (kind === 'standings') d.standings = decision.data as Table[] | null;
@@ -395,7 +421,8 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
   if (fetched) writeStored('health.json', health);
   log('W', DATA && fetched ? `${dataChanged} data files changed in ${DATA}` : 'no data written');
 
-  const pages: Page[] = [seriesIndexPage(all, now), calendarPage(all, now), statusPage(health, now), ...all.flatMap(d => seriesPages(d, now))];
+  const checkedAt = FROM_REF ? (refTime(FROM_REF) ?? now) : now;
+  const pages: Page[] = [seriesIndexPage(all, now), calendarPage(all, now), statusPage(health, checkedAt), ...all.flatMap(d => seriesPages(d, now))];
   log('R', `${pages.length} pages`);
   return { pages, health };
 }
@@ -420,7 +447,8 @@ function writeDryRun(pages: Page[], out: string): void {
   log('P', `dry run: ${pages.length} pages written to ${out}; WordPress not called`);
 }
 
-/** Every page to WordPress, parents first; false when a step failed or a page was not ours to write. */
+/** Every page to WordPress, parents first; false when a step failed, a page was not ours to
+ *  write, or WordPress gave one of ours another address. */
 async function publish(pages: Page[]): Promise<boolean> {
   let wp: WordPress | null = null;
   try {
@@ -432,31 +460,44 @@ async function publish(pages: Page[]): Promise<boolean> {
     log('P', 'WP_SITE_URL, WP_USER and WP_APP_PASSWORD are not all set: nothing published');
     return false;
   }
-  const tally = { create: 0, update: 0, same: 0, conflict: 0, failed: 0 };
+  const tally = { create: 0, update: 0, same: 0, conflict: 0, moved: 0, failed: 0 };
+  const moved = (path: string, at: string) => {
+    tally.moved++;
+    log('P', `MOVED ${path} lives at ${at}: WordPress gave it another slug, as a page or file of the same name holds that one; free the name and the next run keeps writing it where it is`);
+  };
   try {
     const existing = await wp.listPages();
     const ids = new Map<string, number>();
     for (const [path, row] of wpPaths(existing)) ids.set(path, row.id);
     for (const step of planSync(pages, existing)) {
       const { path, title } = step.page;
+      if (step.kind === 'conflict') {
+        tally.conflict++;
+        const under = pages.some(p => p.path !== path && p.path.startsWith(path)) ? '; the pages below it are still written under it' : '';
+        log('P', `CONFLICT ${path} is page ${step.id} without the publisher's mark: left alone${under}`);
+        continue;
+      }
+      if (step.kind !== 'create') {
+        // Children find a parent of ours by the address it was written for, wherever WordPress put it.
+        ids.set(path, step.id);
+        if (step.at !== path) moved(path, step.at);
+      }
       if (step.kind === 'same') {
         tally.same++;
         continue;
       }
-      if (step.kind === 'conflict') {
-        tally.conflict++;
-        log('P', `CONFLICT ${path} is page ${step.id} without the publisher's mark: left alone`);
-        continue;
-      }
       const started = Date.now();
       try {
-        const content = withMarker(step.page.body, step.hash);
+        const content = withMarker(step.page.body, step.hash, path);
         if (step.kind === 'create') {
           const segments = path.split('/').filter(Boolean);
+          const slug = segments[segments.length - 1];
           const parentPath = segments.length > 1 ? `/${segments.slice(0, -1).join('/')}/` : null;
           const parent = parentPath === null ? 0 : ids.get(parentPath);
           if (parent === undefined) throw new Error(`its parent ${parentPath} does not exist`);
-          ids.set(path, await wp.createPage({ title, slug: segments[segments.length - 1], parent, status: 'publish', content }));
+          const made = await wp.createPage({ title, slug, parent, status: 'publish', content });
+          ids.set(path, made.id);
+          if (made.slug !== slug) moved(path, `${parentPath ?? '/'}${made.slug}/`);
         } else {
           await wp.updatePage(step.id, { title, content });
         }
@@ -471,13 +512,23 @@ async function publish(pages: Page[]): Promise<boolean> {
     tally.failed++;
     log('P', `FAILED listing the pages on ${wp.host}: ${errorText(err)}`);
   }
-  log('P', `${wp.host}: ${tally.create} created, ${tally.update} updated, ${tally.same} unchanged, ${tally.conflict} conflicts, ${tally.failed} failed`);
-  return tally.failed === 0 && tally.conflict === 0;
+  log(
+    'P',
+    `${wp.host}: ${tally.create} created, ${tally.update} updated, ${tally.same} unchanged, ${tally.conflict} conflicts, ${tally.moved} moved, ${tally.failed} failed`,
+  );
+  return tally.failed === 0 && tally.conflict === 0 && tally.moved === 0;
 }
 
 async function main(): Promise<number> {
   const now = new Date();
-  const { pages, health } = await build(now);
+  let built: { pages: Page[]; health: FeedHealth[] };
+  try {
+    built = await build(now);
+  } catch (err) {
+    log('=', `FAILED before publishing: ${errorText(err)}`);
+    return 1;
+  }
+  const { pages, health } = built;
   const counts = { OK: 0, STALE: 0, MISSING: 0 };
   for (const h of health) counts[h.status]++;
   let ok = !(health.length > 0 && health.every(h => h.status === 'MISSING'));

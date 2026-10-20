@@ -44,9 +44,6 @@ jobs:
       contents: write
       issues: write
     env:
-      WP_SITE_URL: ${{ secrets.WP_SITE_URL }}
-      WP_USER: ${{ secrets.WP_USER }}
-      WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
       MODE: ${{ inputs.mode || 'publish' }}
     steps:
       - uses: actions/checkout@v7
@@ -63,15 +60,31 @@ jobs:
       # The data branch lives in a second working tree beside the code. Fetched in
       # full: the status page dates each feed from its file's last commit. Made
       # here, never inside paddock-data/, where FETCH_HEAD does not exist (O9).
+      # Only a branch that is really missing starts afresh (ls-remote exit 2); a
+      # failed fetch fails the job instead of publishing without the stored data.
       - name: Check out the data branch into paddock-data/
         run: |
-          if git fetch --no-tags origin paddock-data 2>/dev/null; then
+          set +e
+          git ls-remote --exit-code --heads origin paddock-data > /dev/null
+          found=$?
+          set -e
+          if [ "$found" -eq 0 ]; then
+            git fetch --no-tags origin paddock-data
             git worktree add -B paddock-data paddock-data FETCH_HEAD
-          else
+          elif [ "$found" -eq 2 ]; then
             git worktree add --orphan -b paddock-data paddock-data
+          else
+            echo "Could not ask GitHub for the data branch (git ls-remote exit $found)."
+            exit 1
           fi
 
+      # The WordPress secrets reach this step alone, not npm's install scripts.
       - name: Fetch, keep and publish
+        id: run
+        env:
+          WP_SITE_URL: ${{ secrets.WP_SITE_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
         run: |
           case "$MODE" in
             dry-run)   npx tsx scripts/wp-publish.mts --data paddock-data --dry-run --out wp-out ;;
@@ -87,8 +100,11 @@ jobs:
           path: wp-out
           retention-days: 14
 
+      # Also after a failed publish (a page not ours at one of its addresses, WordPress
+      # down): the data fetched this run is good on its own, and the stale rule reads
+      # this branch, so it must not freeze while the site is unreachable.
       - name: Commit the data only when it changed
-        if: success() && env.MODE == 'publish'
+        if: always() && env.MODE == 'publish' && steps.run.outcome != 'skipped'
         working-directory: paddock-data
         run: |
           git config user.name "github-actions[bot]"

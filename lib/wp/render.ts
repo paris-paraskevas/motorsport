@@ -162,19 +162,20 @@ export function standingsTables(slug: string, payload: unknown): Table[] {
 
 /** The event a race belongs to and the race's own label, from the feeds' naming:
  *  "<event> — <label>" (MotoGP, WorldSBK, DTM) or "<country> Feature|Sprint Race"
- *  (F2, F3: lib/results/fom-api.ts:222). Anything else is the event itself. */
+ *  (F2, F3: lib/results/fom-api.ts:222), numbered when a race was carried over
+ *  ("Azerbaijan Feature Race 2", lib/results/fom-api.test.ts:343). Anything else is the event itself. */
 export function splitRaceName(raceName: string, fallback: string): { event: string; label: string } {
   const at = raceName.lastIndexOf(' — ');
   if (at > 0) return { event: raceName.slice(0, at).trim(), label: raceName.slice(at + 3).trim() };
-  const fom = /^(.*?)\s+(Feature|Sprint) Race$/.exec(raceName);
-  if (fom) return { event: fom[1].trim(), label: fom[2] };
+  const fom = /^(.*?)\s+(Feature|Sprint) Race(?:\s+(\d+))?$/.exec(raceName);
+  if (fom) return { event: fom[1].trim(), label: fom[3] ? `${fom[2]} ${fom[3]}` : fom[2] };
   return { event: raceName.trim(), label: fallback };
 }
 
 /** Running order inside a round, from the labels the feeds use. */
 function sessionRank(label: string): number {
-  if (/^(sprint|race 1)$/i.test(label)) return 1;
-  if (/^(race 2|feature|grand prix)$/i.test(label)) return 3;
+  if (/^(sprint|race 1)\b/i.test(label)) return 1;
+  if (/^(race 2|feature|grand prix)\b/i.test(label)) return 3;
   return 2;
 }
 
@@ -251,17 +252,23 @@ function dayOf(v: unknown): string | null {
 }
 
 /** IndyCar's feed numbers its columns, which drift from the championship rounds,
- *  so its races are keyed by date as the site does (lib/results/session-classification.ts:103). */
+ *  so its races are keyed by date as the site does (lib/results/session-classification.ts:103);
+ *  a race in no round's window stays unnumbered here, where the site leaves it out. */
 function roundByDate(rounds: readonly SeriesRoundEntry[], day: string): number | null {
   for (const r of rounds) if (day >= r.startDate && day <= r.endDate) return r.round;
   return null;
 }
 
+/** Oldest first, as one total order: by date (a moved round sits where its date puts it; an undated
+ *  one counts as oldest, so the results page, newest first, prints it last), then number, then name. */
 function compareRounds(a: ResultRound, b: ResultRound): number {
-  if (a.round !== null && b.round !== null && a.round !== b.round) return a.round - b.round;
-  if (a.round === null && b.round !== null) return 1;
-  if (a.round !== null && b.round === null) return -1;
-  return (a.date ?? '').localeCompare(b.date ?? '') || a.name.localeCompare(b.name);
+  const ad = a.date ?? '';
+  const bd = b.date ?? '';
+  if (ad !== bd) return ad < bd ? -1 : 1;
+  const ar = a.round ?? Number.MAX_SAFE_INTEGER;
+  const br = b.round ?? Number.MAX_SAFE_INTEGER;
+  if (ar !== br) return ar - br;
+  return a.name.localeCompare(b.name);
 }
 
 /** A season's results as rounds, oldest first, each race's top ten. The payload is
@@ -277,7 +284,8 @@ export function resultRounds(slug: string, payload: unknown, rounds: readonly Se
       r = { round, name, date, sessions: [] };
       byKey.set(key, r);
     }
-    if (r.date === null && date !== null) r.date = date;
+    // The round's date is its last race's: a sprint weekend is dated by its Sunday.
+    if (date !== null && (r.date === null || date > r.date)) r.date = date;
     r.sessions.push(session);
   };
   const person = slug === 'motogp' || slug === 'wsbk' ? 'Rider' : 'Driver';
@@ -287,7 +295,9 @@ export function resultRounds(slug: string, payload: unknown, rounds: readonly Se
       const { event, label } = splitRaceName(str(race.raceName), fallback);
       const date = dayOf(race.date);
       let round = num(race.round);
-      if (slug === 'indycar' && date !== null) round = roundByDate(rounds, date) ?? round;
+      // With a schedule, an IndyCar race is keyed by its date alone; one in no round's window stays
+      // unnumbered instead of joining whichever round holds its column number.
+      if (slug === 'indycar' && rounds.length > 0) round = date === null ? null : roundByDate(rounds, date);
       const t = raceTable(label, race.results, person);
       if (t) add(round, event, date, { label, tables: [t] });
     }
@@ -399,10 +409,6 @@ export function whenCells(e: Pick<CalendarEntry, 'start' | 'dateOnly'>): [string
   const d = new Date(e.start);
   if (e.dateOnly) return [`${DAY_UTC.format(d)}, time TBC`, ''];
   return [AT_UTC.format(d), AT_ATHENS.format(d)];
-}
-
-export function formatUtc(d: Date): string {
-  return AT_UTC.format(d);
 }
 
 /** "25 Oct 2026" for a stored YYYY-MM-DD. */
@@ -546,15 +552,16 @@ export function seriesIndexPage(all: SeriesData[], now: Date): Page {
 
 // ── The page as WordPress stores it ──────────────────────────────────────────
 
-/** The publisher's mark on every page it owns: the hash of what it last wrote. */
-export const MARKER = /<!-- paddock:sha256=([0-9a-f]{64}) -->/;
+/** The publisher's mark, first in every page it owns: the hash of what it last wrote, and the address
+ *  it wrote the page for, so a page WordPress gave another slug is still found as its own. */
+export const MARKER = /^\s*<!-- paddock:sha256=([0-9a-f]{64})(?: path=(\/[a-z0-9/-]*))? -->/;
 
 export function hashOf(page: Pick<Page, 'title' | 'body'>): string {
   return createHash('sha256').update(`${page.title}\n${page.body}`).digest('hex');
 }
 
-export function withMarker(body: string, hash: string): string {
-  return `<!-- paddock:sha256=${hash} -->\n${body}`;
+export function withMarker(body: string, hash: string, path: string): string {
+  return `<!-- paddock:sha256=${hash} path=${path} -->\n${body}`;
 }
 
 /** A WordPress page as the REST API returns it with context=edit, flattened. */
@@ -566,10 +573,11 @@ export interface WpPageRow {
   content: string;
 }
 
+/** `at` is where the page lives now: its own path, or another address WordPress gave it. */
 export type SyncStep =
   | { kind: 'create'; page: Page; hash: string }
-  | { kind: 'update'; id: number; page: Page; hash: string }
-  | { kind: 'same'; id: number; page: Page }
+  | { kind: 'update'; id: number; page: Page; hash: string; at: string }
+  | { kind: 'same'; id: number; page: Page; at: string }
   | { kind: 'conflict'; id: number; page: Page };
 
 /** Each page's path from its slug chain ("/series/f1/standings/"); the lowest id wins
@@ -601,17 +609,25 @@ const depthOf = (path: string): number => path.split('/').filter(Boolean).length
 
 /** What to do with each desired page, parents before children. Only a page that
  *  carries the publisher's marker is ever updated; any other page at the same
- *  path is a conflict and is left alone. */
+ *  path is a conflict and is left alone. A page of ours that WordPress gave
+ *  another slug is found by the path in its marker, so it is updated, never made twice. */
 export function planSync(desired: Page[], existing: WpPageRow[]): SyncStep[] {
   const byPath = wpPaths(existing);
+  const pathOf = new Map([...byPath].map(([path, row]) => [row.id, path]));
+  const byMarkedPath = new Map<string, WpPageRow>();
+  for (const row of [...existing].sort((a, b) => a.id - b.id)) {
+    const marked = MARKER.exec(row.content)?.[2];
+    if (marked && !byMarkedPath.has(marked)) byMarkedPath.set(marked, row);
+  }
   return [...desired]
     .sort((a, b) => depthOf(a.path) - depthOf(b.path) || a.path.localeCompare(b.path))
     .map((page): SyncStep => {
       const hash = hashOf(page);
-      const row = byPath.get(page.path);
+      const row = byPath.get(page.path) ?? byMarkedPath.get(page.path);
       if (!row) return { kind: 'create', page, hash };
       const mark = MARKER.exec(row.content);
       if (!mark) return { kind: 'conflict', id: row.id, page };
-      return mark[1] === hash ? { kind: 'same', id: row.id, page } : { kind: 'update', id: row.id, page, hash };
+      const at = pathOf.get(row.id) ?? page.path;
+      return mark[1] === hash ? { kind: 'same', id: row.id, page, at } : { kind: 'update', id: row.id, page, hash, at };
     });
 }

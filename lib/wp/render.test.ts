@@ -2,9 +2,11 @@ import { describe, it, expect } from 'vitest';
 import type { Series, Session } from '../types';
 import {
   calendarEntries,
+  calendarPage,
   escapeHtml,
   hashOf,
   latestRace,
+  MARKER,
   planSync,
   resultRounds,
   seriesPages,
@@ -92,6 +94,10 @@ describe('splitRaceName', () => {
     expect(splitRaceName('Bahrain Feature Race', 'Race')).toEqual({ event: 'Bahrain', label: 'Feature' });
     expect(splitRaceName('Australian Grand Prix', 'Sprint')).toEqual({ event: 'Australian Grand Prix', label: 'Sprint' });
   });
+
+  it('keeps the number of a carried-over race (lib/results/fom-api.test.ts:343)', () => {
+    expect(splitRaceName('Azerbaijan Feature Race 2', 'Race')).toEqual({ event: 'Azerbaijan', label: 'Feature 2' });
+  });
 });
 
 describe('resultRounds', () => {
@@ -121,6 +127,8 @@ describe('resultRounds', () => {
     expect(round.name).toBe('Miami Grand Prix');
     expect(round.sessions.map(s => s.label)).toEqual(['Sprint', 'Race']);
     expect(round.sessions[1].tables[0].rows[0]).toEqual(['1', 'Winner', 'Team', '1:30:00.000', '25']);
+    // A sprint weekend is dated by its Sunday, not by the sprint's Saturday.
+    expect(round.date).toBe('2026-05-03');
   });
 
   it("reads F2's feature and sprint lists by their FOM names", () => {
@@ -132,6 +140,18 @@ describe('resultRounds', () => {
     expect(round.sessions.map(s => s.label)).toEqual(['Sprint', 'Feature']);
   });
 
+  it('tells two feature races of one round apart, after the sprint', () => {
+    const [round] = resultRounds('f2', {
+      feature: [
+        { round: 12, raceName: 'Azerbaijan Feature Race 1', date: new Date('2026-09-26T00:00:00Z'), circuit: '', results: [entry(1, 'One')] },
+        { round: 12, raceName: 'Azerbaijan Feature Race 2', date: new Date('2026-09-26T00:00:00Z'), circuit: '', results: [entry(1, 'Two')] },
+      ],
+      sprint: [{ round: 12, raceName: 'Azerbaijan Sprint Race', date: new Date('2026-09-25T00:00:00Z'), circuit: '', results: [entry(1, 'S')] }],
+    });
+    expect(round.name).toBe('Azerbaijan');
+    expect(round.sessions.map(s => s.label)).toEqual(['Sprint', 'Feature 1', 'Feature 2']);
+  });
+
   it("keys IndyCar's races by date, not by the feed's column number", () => {
     const rounds = resultRounds(
       'indycar',
@@ -139,6 +159,29 @@ describe('resultRounds', () => {
       [{ round: 4, startDate: '2026-05-22', endDate: '2026-05-24', name: 'Indianapolis 500' }],
     );
     expect(rounds[0].round).toBe(4);
+  });
+
+  it('keeps an IndyCar race in no round of the schedule apart and unnumbered, in date order', () => {
+    const rounds = resultRounds(
+      'indycar',
+      [
+        { round: 11, raceName: 'Honda Indy 200', date: new Date('2026-07-05T00:00:00Z'), circuit: '', results: [entry(1, 'A')] },
+        { round: 12, raceName: 'Music City', date: new Date('2026-07-12T00:00:00Z'), circuit: '', results: [entry(1, 'B')] },
+      ],
+      [{ round: 11, startDate: '2026-07-10', endDate: '2026-07-12', name: 'Music City' }],
+    );
+    expect(rounds.map(r => [r.round, r.name, r.date])).toEqual([
+      [null, 'Honda Indy 200', '2026-07-05'],
+      [11, 'Music City', '2026-07-12'],
+    ]);
+  });
+
+  it('puts an undated, unnumbered race first, so the newest-first page prints it last', () => {
+    const rounds = resultRounds('gt-world', [
+      { raceId: 1, raceName: 'Main Race', eventName: 'Monza', championship: 'endurance', round: 2, entries: [{ position: 1, carNumber: '7', drivers: ['X'], team: 'T', cupLabel: 'Pro' }] },
+      { raceId: 2, raceName: 'Race 1', eventName: 'Unknown', championship: 'sprint', entries: [{ position: 1, carNumber: '9', drivers: ['Y'], team: 'U', cupLabel: 'Pro' }] },
+    ], [{ round: 2, startDate: '2026-05-30', endDate: '2026-05-31', name: 'Monza' }]);
+    expect(rounds.map(r => r.name)).toEqual(['Unknown', 'Monza']);
   });
 
   it('leaves out synthetic places (DTM 90+) and drops the points column when nobody scored', () => {
@@ -256,6 +299,23 @@ describe('seriesPages', () => {
   });
 });
 
+describe('calendarPage', () => {
+  it('lists the sessions of the next 30 days and none beyond', () => {
+    const at = (start: string, event: string) => ({ start, end: start, dateOnly: false, event, session: 'Race', round: 1 });
+    const d = {
+      slug: 'f1',
+      name: 'Formula 1',
+      standings: null,
+      results: null,
+      calendar: [at('2026-10-19T12:00:00.000Z', 'Gone'), at('2026-11-18T23:59:00.000Z', 'Inside'), at('2026-11-19T00:01:00.000Z', 'Outside')],
+    };
+    const body = calendarPage([d], new Date('2026-10-20T00:00:00Z')).body;
+    expect(body).toContain('Inside');
+    expect(body).not.toContain('Outside');
+    expect(body).not.toContain('Gone');
+  });
+});
+
 describe('planSync', () => {
   const page = (path: string, title = path): Page => ({ path, title, body: `<p>${title}</p>` });
 
@@ -265,9 +325,9 @@ describe('planSync', () => {
     const f1 = page('/series/f1/');
     const standings = page('/series/f1/standings/');
     const existing: WpPageRow[] = [
-      { id: 1, slug: 'series', parent: 0, status: 'publish', content: withMarker(series.body, hashOf(series)) },
+      { id: 1, slug: 'series', parent: 0, status: 'publish', content: withMarker(series.body, hashOf(series), '/series/') },
       { id: 2, slug: 'f1', parent: 1, status: 'publish', content: '<p>written by hand</p>' },
-      { id: 3, slug: 'calendar', parent: 0, status: 'publish', content: withMarker('<p>old</p>', 'a'.repeat(64)) },
+      { id: 3, slug: 'calendar', parent: 0, status: 'publish', content: withMarker('<p>old</p>', 'a'.repeat(64), '/calendar/') },
     ];
     const steps = planSync([standings, f1, calendar, series], existing);
     expect(steps.map(s => [s.kind, s.page.path])).toEqual([
@@ -276,6 +336,19 @@ describe('planSync', () => {
       ['conflict', '/series/f1/'],
       ['create', '/series/f1/standings/'],
     ]);
+  });
+
+  it('finds its own page where WordPress gave it another slug, and never creates it twice', () => {
+    const status = page('/status/');
+    const existing: WpPageRow[] = [{ id: 7, slug: 'status-2', parent: 0, status: 'publish', content: withMarker(status.body, hashOf(status), '/status/') }];
+    expect(planSync([status], existing)).toEqual([{ kind: 'same', id: 7, page: status, at: '/status-2/' }]);
+  });
+
+  it('counts a page as its own only when the marker opens it', () => {
+    const calendar = page('/calendar/');
+    const quoted = `<p>Our pages begin with ${withMarker('', hashOf(calendar), '/calendar/')}</p>`;
+    expect(MARKER.test(quoted)).toBe(false);
+    expect(planSync([calendar], [{ id: 4, slug: 'calendar', parent: 0, status: 'publish', content: quoted }])[0].kind).toBe('conflict');
   });
 
   it('hashes the title with the body, so a new title is an update', () => {

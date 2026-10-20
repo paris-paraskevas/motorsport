@@ -23,7 +23,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 4. **Phase C, the publisher (O10), #1165 into next, on “build go”:**
    - Built and checked: a dry run with live fetches, a local stand-in for the REST API, `--from-ref`, and the tests (the PR entry has the figures).
    - Not active: GitHub runs a schedule or a dispatch only from the default branch, and merging next into main redeploys the Worker with its crons.
-   - The fresh-context Sonnet review is running; its verdict and folds go in the PR entry.
+   - The fresh-context Sonnet review said MERGEABLE AFTER FIXES. Every blocker and should-fix item is folded and checked against the stand-in (the PR entry lists them). The first was the weekly backup copying drafts to the data branch, which is public like the repository: it now copies published, unprotected items only.
 5. **What Phase D must know (checked 20 Oct):**
    - WordPress.com’s own catalogue (its MCP `wpcom-plans-list`) lists plugin installs, `atomic` and daily backups on Personal, so the Redirection plugin works there.
    - Changing the permalink structure (`options-permalink`) is Business only, so posts get the default dated addresses and `/blog/<slug>` needs the redirect list.
@@ -33,7 +33,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 **DO NEXT, IN ORDER:**
 1. The operator saves the sitemap, then B.3 (the pause).
 2. The word on the default branch. The default: `next` until the old stack is deleted. The alternative: Workers Builds stopped and the daily merge kept.
-3. The review folded, then #1165 merged into next on the word.
+3. #1165 merged into next on the word (the review is folded). Once the workflow runs, the first `mode: dry-run` artifact is read for the times: the tests ran on Node 24, the job runs Node 22.
 4. Phase D:
    - the operator buys Personal on the new account, connects the WordPress.com connector, enables MCP, creates the application password `paddock-publisher` and adds `WP_SITE_URL`, `WP_USER` and `WP_APP_PASSWORD`;
    - then the test page (`mode: test-page`), the first publish, the theme and menus, the posts’ import from `posts.json`, the Redirection plugin, and the domain with the DNS records grey-clouded.

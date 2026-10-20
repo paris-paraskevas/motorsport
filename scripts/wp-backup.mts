@@ -1,10 +1,13 @@
-// The weekly copy of the WordPress site's posts, pages and media list (slot O10).
+// The weekly copy of the WordPress site's published posts, pages and media list (slot O10).
 //
 // WordPress.com keeps its own daily backups; this is the copy off the platform,
 // as JSON on the `paddock-data` branch, where git history keeps every week
-// (.github/workflows/wp-backup.yml). The publisher's own pages are left out:
-// they carry its marker and are rebuilt from the data beside them. Media is the
-// list (addresses, captions, sizes), not the files.
+// (.github/workflows/wp-backup.yml). That branch is as public as the repository,
+// so the copy holds only what the site already shows: published items without a
+// password. Drafts, pending, private and protected items stay on WordPress.com.
+// The publisher's own pages are left out too: they carry its marker and are
+// rebuilt from the data beside them. Media is the list (addresses, captions,
+// sizes), not the files.
 //
 //   npx tsx scripts/wp-backup.mts --out paddock-data/backup
 //
@@ -40,7 +43,7 @@ type Item = Record<string, unknown> & { id: number };
 async function all(collection: string, query: string): Promise<Item[]> {
   const items: Item[] = [];
   for (let page = 1, total = 1; page <= total && page <= 100; page++) {
-    const res = await fetch(`${site}/wp-json/wp/v2/${collection}?context=edit&per_page=100&page=${page}&orderby=id&order=asc${query}`, {
+    const res = await fetch(`${site}/wp-json/wp/v2/${collection}?per_page=100&page=${page}&orderby=id&order=asc${query}`, {
       headers: { Authorization: auth, Accept: 'application/json' },
       signal: AbortSignal.timeout(30_000),
     });
@@ -56,23 +59,34 @@ async function all(collection: string, query: string): Promise<Item[]> {
   return items.sort((a, b) => a.id - b.id);
 }
 
-const ANY = '&status=publish,future,draft,pending,private';
+// The edit view for the raw block markup a restore needs; the public view for media,
+// whose edit view names the (possibly unpublished) post each file belongs to.
+const PUBLISHED = '&context=edit&status=publish';
 const raw = (item: Item): string => {
   const content = item.content as { raw?: unknown } | undefined;
   return typeof content?.raw === 'string' ? content.raw : '';
 };
+/** Published and readable by anyone: no password, and the field itself never copied. */
+const open = (item: Item): Item | null => {
+  if (item.status !== 'publish' || (typeof item.password === 'string' && item.password !== '')) return null;
+  const copy: Item = { ...item };
+  delete copy.password;
+  return copy;
+};
 
 try {
-  const posts = await all('posts', ANY);
-  const pages = (await all('pages', ANY)).filter(p => !MARKER.test(raw(p)));
-  const media = await all('media', '');
+  const posts = (await all('posts', PUBLISHED)).map(open).filter((p): p is Item => p !== null);
+  const pages = (await all('pages', PUBLISHED))
+    .map(open)
+    .filter((p): p is Item => p !== null && !MARKER.test(raw(p)));
+  const media = await all('media', '&context=view');
   mkdirSync(OUT, { recursive: true });
   for (const [name, items] of [['posts', posts], ['pages', pages], ['media', media]] as const) {
     writeFileSync(join(OUT, `${name}.json`), `${JSON.stringify(items, null, 2)}\n`);
   }
   console.error(`backup of ${new URL(site).host}: ${posts.length} posts, ${pages.length} pages, ${media.length} media items → ${OUT}`);
-  process.exit(0);
 } catch (err) {
   console.error(`backup failed: ${err instanceof Error ? err.message : String(err)}`);
-  process.exit(1);
+  // No process.exit() after the fetches: on Windows it can abort while handles close (exit 127, IDEAS.md:127).
+  process.exitCode = 1;
 }

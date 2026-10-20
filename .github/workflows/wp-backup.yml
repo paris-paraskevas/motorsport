@@ -1,10 +1,11 @@
 name: Copy the WordPress posts to git
 
 # Slot O10. WordPress.com keeps its own daily backups; this is the copy off the
-# platform: every post (drafts included), every page the publisher did not write
+# platform: the published posts, the published pages the publisher did not write
 # and the media list, as JSON under backup/ on the `paddock-data` branch
-# (scripts/wp-backup.mts). Git history keeps every week; a week with no edits
-# makes no commit. Same secrets as wp-publish.yml.
+# (scripts/wp-backup.mts). The repository is public, so drafts, private and
+# password-protected items are never copied here. Git history keeps every week; a
+# week with no edits makes no commit. Same secrets as wp-publish.yml.
 
 on:
   schedule:
@@ -23,10 +24,6 @@ jobs:
     permissions:
       contents: write
       issues: write
-    env:
-      WP_SITE_URL: ${{ secrets.WP_SITE_URL }}
-      WP_USER: ${{ secrets.WP_USER }}
-      WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -36,15 +33,29 @@ jobs:
       - run: npm ci
 
       # Made here, never inside paddock-data/, where FETCH_HEAD does not exist (O9).
+      # Only a branch that is really missing starts afresh (ls-remote exit 2).
       - name: Check out the data branch into paddock-data/
         run: |
-          if git fetch --no-tags origin paddock-data 2>/dev/null; then
+          set +e
+          git ls-remote --exit-code --heads origin paddock-data > /dev/null
+          found=$?
+          set -e
+          if [ "$found" -eq 0 ]; then
+            git fetch --no-tags origin paddock-data
             git worktree add -B paddock-data paddock-data FETCH_HEAD
-          else
+          elif [ "$found" -eq 2 ]; then
             git worktree add --orphan -b paddock-data paddock-data
+          else
+            echo "Could not ask GitHub for the data branch (git ls-remote exit $found)."
+            exit 1
           fi
 
-      - name: Copy the posts, pages and media list
+      # The WordPress secrets reach this step alone, not npm's install scripts.
+      - name: Copy the published posts, pages and media list
+        env:
+          WP_SITE_URL: ${{ secrets.WP_SITE_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
         run: npx tsx scripts/wp-backup.mts --out paddock-data/backup
 
       - name: Commit only when something changed
