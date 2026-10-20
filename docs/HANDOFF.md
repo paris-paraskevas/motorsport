@@ -6,39 +6,44 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-20 (LATEST, session 69: COST-3, the move to WordPress.com; the export done, the old stack’s schedules stopped, the publisher O10 at #1165)
+## ⚡ Next session pickup — 2026-10-20 (LATEST, session 69: COST-3, the move to WordPress.com; the old stack stopped and paused, the publisher merged, the site private with the posts in; the design passes started: the home drafted from round 2, the theme check running)
 
-**WHERE IT STANDS (20 Oct, about 09:40Z):**
+**WHERE IT STANDS (20 Oct, about 15:20Z; items 1–5 were first written at 09:40Z and are brought up to date):**
 1. **The decision (the operator, 20 Oct):** close Cloudflare (Workers CPU 19 times its allowance) and Supabase (egress 14.42 GB of 5.5 GB, the Fair Use restriction from the 20th) and move to WordPress.com Personal (€48 a year, on a new account). The blog, the standings, the results and the calendar stay; everything else may go. The brief is COST-3, phases A to D.
 2. **Phase A, the export (done, outside the repo, `C:\Dev\Personal\paddock-export\`):**
    - `posts.json`: 55 posts (46 published, 5 in review, 4 rejected), every post column plus the author’s slug, name, role, bio and links, no `app_user`; 519,491 bytes.
    - `assets.json`: the one asset row (the Fornaroli photo: caption, credit, licence); 605 bytes.
    - `media\2026\10\4923cb28-fb30-4faf-8baf-1ef2f3862be1.jpg`: 175,571 bytes, the row’s size.
    - No post points at `/media/`: their 40 images are on upload.wikimedia.org and outlive the closure.
-   - **Still the operator’s:** `sitemap.xml` saved from a browser (curl gets `403 Cf-Mitigated: challenge`).
+   - **The sitemap was never saved:** after the DNS switch the old site stopped answering, so the redirect list is built from `posts.json` and the routes instead.
 3. **Phase B (each on the operator’s word, 20 Oct):**
    - **B.1 done:** the Worker’s cron triggers cleared through the API (`PUT …/workers/scripts/motorsport/schedules` with `[]`, wrangler’s login), read back as 0. 12 were live; wrangler.jsonc lists 13 (`* * * * *` was already gone). **Never deploy:** a deploy restores them.
    - **B.2 done:** warm-live-data, data-freshness, export-design and seo-census read back `disabled_manually`; main-from-next stays active.
-   - **B.3 waits for `sitemap.xml`:** then `POST /v1/projects/dzelqrtajnauunzmxfic/pause` through the Management API. Free projects can be restored for 90 days, then only a backup download is offered (supabase.com changelog 27497). Supabase still answered ACTIVE_HEALTHY at 08:01Z.
+   - **B.3 done:** the project paused through the Management API (`POST /v1/projects/dzelqrtajnauunzmxfic/pause`, the scratchpad’s `mgmt.mjs pause`). Free projects can be restored for 90 days, then only a backup download is offered (supabase.com changelog 27497).
 4. **Phase C, the publisher (O10), #1165 into next, on “build go”:**
    - Built and checked: a dry run with live fetches, a local stand-in for the REST API, `--from-ref`, and the tests (the PR entry has the figures).
-   - Not active: GitHub runs a schedule or a dispatch only from the default branch, and merging next into main redeploys the Worker with its crons.
+   - **Merged** 12:38:16Z as 5b22cb4e on the word; `next` is the default branch on the word (GitHub runs a schedule or a dispatch only from the default branch). On GitHub the dry run passed and the test page passed its five checks on the live site; its draft page 5046 is still there. The publish workflow is **disabled** until the design passes settle (`gh workflow list`: disabled_manually); the weekly posts copy is active.
    - The fresh-context Sonnet review said MERGEABLE AFTER FIXES. Every blocker and should-fix item is folded and checked against the stand-in (the PR entry lists them). The first was the weekly backup copying drafts to the data branch, which is public like the repository: it now copies published, unprotected items only.
 5. **What Phase D must know (checked 20 Oct):**
    - WordPress.com’s own catalogue (its MCP `wpcom-plans-list`) lists plugin installs, `atomic` and daily backups on Personal, so the Redirection plugin works there.
    - Changing the permalink structure (`options-permalink`) is Business only, so posts get the default dated addresses and `/blog/<slug>` needs the redirect list.
    - WordPress.com documents application passwords only for its OAuth2 password grant (developer.wordpress.com/docs/api/oauth2/). Basic auth on `/wp-json` is proven only by the test page; the fallback is the OAuth2 route, which needs two more secrets.
    - GitHub turns off a public repository’s scheduled workflows after 60 days without activity (an Inbox line).
+6. **Phase D so far:** Personal bought on the new account; the domain connected with A records (DNS only). The posts imported from a WXR file built from `posts.json` (the scratchpad’s `wxr.mjs`): 51 posts (46 published, 5 drafts) with their slugs and dates, categories Formula 1, Formula 2, Formula 3 and MotoGP, links rewritten (1,162 unlinked, 107 to results, 180 to series pages, 2 between posts), the two images that failed re-added (an SVG WordPress refused, a 9.8 MB original); two or three body images still load from Wikimedia (an encoded `&` stopped the remap). The Redirection plugin installed, the three secrets added. The site stays private (Coming Soon) until the design is done.
+7. **The design (the operator, 20 Oct; the ledger’s change line of the 20th):** three passes, structure, look, data pages, and page by page: each page drafted with real data before it is built.
+   - **Pass 1, structure:** The Paddock Site Plan https://claude.ai/code/artifact/965a946b-7e4d-420a-a0d9-9b4937eb547d (64 public pages; six decisions open). The Front Page brief https://claude.ai/code/artifact/c7466390-64e2-473b-9fb6-cc2559143d18 (what a tracker’s home shows, sourced) adds two from September’s Search Console: keep the champions pages as pages (F2’s alone brought 100 of 338 clicks) and the 285 information pages (118 clicks), none at launch by default.
+   - **The drafts:** The Paddock Drafts https://claude.ai/code/artifact/a25e4f63-db5b-4c1a-b016-6760d5fdacad. The home is round 2’s design (the operator’s screenshots of the Paddock Prototype) redrawn with the feeds, seven marks on what WordPress forces. Decided: no accounts; Subscribe in the header and a newsletter box closing the home (Jetpack Newsletter, free on all plans); Buy me a coffee in the footer, after posts and on About; the phone bar Calendar · Home · Learn. The home itself waits for the word.
+   - **Pass 2, the look:** ready-made themes first, customised through their own settings, then the publisher’s block styles, custom CSS last, a theme of our own only if nothing fits. Personal includes every WordPress.com premium theme and takes uploaded themes (WordPress.com support pages). A Sonnet theme scout was running at 15:20Z, writing to the scratchpad’s `theme-scout.md`.
+   - **Round 2’s materials:** its photos sit in the design system artifact 2127ce7d; the 21 circuit outlines are `public/circuits/*.svg`; series colours in `content/series/*/meta.json`, team colours in `content/series/*/drivers.json`, venues in `content/circuits.json`. The drafts are built from the scratchpad’s `drafts-src.html` by `build-drafts.mjs`.
+8. **Corrections of the day:** custom CSS is on Personal, not Premium only; the site plan’s F1 sketch said round 19 of 23 (it is 18); the brief’s quiet weeks are 7 to 17 December (Formula E opens on the 18th). Six feed findings for pass 3 are Inbox lines.
 
 **DO NEXT, IN ORDER:**
-1. The operator saves the sitemap, then B.3 (the pause).
-2. The word on the default branch. The default: `next` until the old stack is deleted. The alternative: Workers Builds stopped and the daily merge kept.
-3. #1165 merged into next on the word (the review is folded). Once the workflow runs, the first `mode: dry-run` artifact is read for the times: the tests ran on Node 24, the job runs Node 22.
-4. Phase D:
-   - the operator buys Personal on the new account, connects the WordPress.com connector, enables MCP, creates the application password `paddock-publisher` and adds `WP_SITE_URL`, `WP_USER` and `WP_APP_PASSWORD`;
-   - then the test page (`mode: test-page`), the first publish, the theme and menus, the posts’ import from `posts.json`, the Redirection plugin, and the domain with the DNS records grey-clouded.
-5. #1163 (O9) is moot, since its workflow is disabled: close it or merge it, on the word.
-6. B.4, a week after the new site is stable: one last database dump without the personal tables (an Inbox line), then each deletion on its own word.
+1. The theme scout’s shortlist on a page, each demo beside round 2; then the best two tried on F1’s series page and a race report on the private site, switching its theme only on the word each time.
+2. The home draft’s word; then the drafts one at a time: the series page, the calendar, the series list, the post and blog list, About and privacy.
+3. The site plan’s open decisions and the brief’s two (champions pages, information pages).
+4. Pass 3, the publisher’s redesign, as a slot of its own; then the workflow re-enabled and the first publish, the redirect list as a Redirection CSV, and the test page 5046 removed on the word.
+5. #1163 (O9) closed or merged on the word; B.4 a week after the site is stable (the last dump first, an Inbox line).
+6. This records branch, `records/session-69-design` (local, from next): the push and its PR on the word.
 
 ## ⚡ Next session pickup — 2026-10-13 (session 68 closed on the 13th: the robots’ bill and two Cloudflare rules; the daily merge of 1.0.266–1.0.271, B4 checked live; B5 narrowed; O7 and the F plan into next)
 
