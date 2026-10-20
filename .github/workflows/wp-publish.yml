@@ -1,0 +1,150 @@
+name: Publish standings, results and calendars to WordPress
+
+# Slot O10. The site's data no longer lives in a database: this job runs the same
+# production fetchers the old loader ran, from GitHub's clean IPs, keeps what they
+# return as JSON on the `paddock-data` branch (a commit only when something
+# changed: git history is the backup), and writes the finished pages to WordPress
+# through its REST API (scripts/wp-publish.mts). Readers only see finished pages.
+#
+# REQUIRES these repo secrets (Settings -> Secrets and variables -> Actions):
+#   WP_SITE_URL       the site's https origin, no path
+#   WP_USER           the WordPress user the pages are written as
+#   WP_APP_PASSWORD   that user's application password `paddock-publisher`
+#
+# The first live run is `mode: test-page`: one draft page written and read back.
+#
+# The schedule is best-effort: the old loader's declared cadence measured about six
+# runs a day with gaps up to 7.9 hours (warm-live-data.yml:15-23), so new results
+# can take half a day to appear. Off the hour on purpose: GitHub delays the start of
+# every hour. Like every scheduled workflow, this one runs only from the default
+# branch, and GitHub turns it off after 60 days without activity in the repository.
+
+on:
+  schedule:
+    - cron: '13,43 * * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'publish; dry-run (pages kept as an artifact, WordPress not called, nothing committed); test-page (one draft page written and read back)'
+        type: choice
+        options: [publish, dry-run, test-page]
+        default: publish
+
+# One writer of the data branch at a time, shared with wp-backup.yml.
+concurrency:
+  group: paddock-data
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Least privilege: contents to push the data branch, issues for the alert below.
+    permissions:
+      contents: write
+      issues: write
+    env:
+      WP_SITE_URL: ${{ secrets.WP_SITE_URL }}
+      WP_USER: ${{ secrets.WP_USER }}
+      WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+      MODE: ${{ inputs.mode || 'publish' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # lib/ imports the generated content bundle (gitignored); without it the
+      # fetchers die on MODULE_NOT_FOUND (warm-live-data.yml:61-66).
+      - name: Generate the content bundle
+        run: npx tsx scripts/bundle-content.mts
+
+      # The data branch lives in a second working tree beside the code. Fetched in
+      # full: the status page dates each feed from its file's last commit. Made
+      # here, never inside paddock-data/, where FETCH_HEAD does not exist (O9).
+      - name: Check out the data branch into paddock-data/
+        run: |
+          if git fetch --no-tags origin paddock-data 2>/dev/null; then
+            git worktree add -B paddock-data paddock-data FETCH_HEAD
+          else
+            git worktree add --orphan -b paddock-data paddock-data
+          fi
+
+      - name: Fetch, keep and publish
+        run: |
+          case "$MODE" in
+            dry-run)   npx tsx scripts/wp-publish.mts --data paddock-data --dry-run --out wp-out ;;
+            test-page) npx tsx scripts/wp-publish.mts --test-page ;;
+            *)         npx tsx scripts/wp-publish.mts --data paddock-data ;;
+          esac
+
+      - name: Keep the rendered pages
+        if: always() && env.MODE == 'dry-run'
+        uses: actions/upload-artifact@v7
+        with:
+          name: wp-pages
+          path: wp-out
+          retention-days: 14
+
+      - name: Commit the data only when it changed
+        if: success() && env.MODE == 'publish'
+        working-directory: paddock-data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No change since the last run."
+            exit 0
+          fi
+          git commit -q -m "data: standings, results and calendars, $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push origin HEAD:paddock-data
+
+      # One issue per outage, closed by the next green run (the pattern of
+      # warm-live-data.yml:70-134): a red run in the Actions tab is not a notification.
+      - name: Open an issue when publishing fails
+        if: failure() && env.MODE == 'publish'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: wp-publish is failing
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing is already open for this outage; not commenting."
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body "$(cat <<EOF
+          \`wp-publish\` writes the standings, results and calendars to the WordPress
+          site. While it fails, the site keeps the pages it last wrote.
+
+          **Failing run:** $RUN_URL
+
+          The run's log names the cause on its \`P\` lines: a WordPress answer (an
+          expired application password answers 401), a page at one of the
+          publisher's addresses that it did not write (CONFLICT: it is left alone),
+          or WP_SITE_URL / WP_USER / WP_APP_PASSWORD missing. A source that does not
+          answer is not a failure: its page keeps the last data and /status/ says so.
+
+          This issue was opened automatically and **closes itself on the next
+          successful run**.
+          EOF
+          )"
+
+      - name: Close the outage issue once a run succeeds
+        if: success() && env.MODE == 'publish'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: wp-publish is failing
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -z "$existing" ]; then
+            exit 0
+          fi
+          gh issue close "$existing" --comment "Recovered: $RUN_URL succeeded, and the pages are being written again."

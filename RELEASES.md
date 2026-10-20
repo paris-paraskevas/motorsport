@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.278 — 2026-10-20
+
+Behind the scenes: the standings, results and calendars can now be published as finished pages, ready for the site’s move to a new home. Nothing changes for readers yet.
+
 ## 1.0.276 — 2026-10-13
 
 Formula 1’s standings and results name every team as Formula 1 does this season: Red Bull Racing, Racing Bulls, Alpine and Cadillac in place of their older names, and the Racing Bulls drivers link to their team’s page.
