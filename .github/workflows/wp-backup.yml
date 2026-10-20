@@ -1,0 +1,103 @@
+name: Copy the WordPress posts to git
+
+# Slot O10. WordPress.com keeps its own daily backups; this is the copy off the
+# platform: the published posts, the published pages the publisher did not write
+# and the media list, as JSON under backup/ on the `paddock-data` branch
+# (scripts/wp-backup.mts). The repository is public, so drafts, private and
+# password-protected items are never copied here. Git history keeps every week; a
+# week with no edits makes no commit. Same secrets as wp-publish.yml.
+
+on:
+  schedule:
+    - cron: '29 5 * * 0' # Sundays 05:29Z, off the hour
+  workflow_dispatch: {}
+
+# One writer of the data branch at a time, shared with wp-publish.yml.
+concurrency:
+  group: paddock-data
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # Made here, never inside paddock-data/, where FETCH_HEAD does not exist (O9).
+      # Only a branch that is really missing starts afresh (ls-remote exit 2).
+      - name: Check out the data branch into paddock-data/
+        run: |
+          set +e
+          git ls-remote --exit-code --heads origin paddock-data > /dev/null
+          found=$?
+          set -e
+          if [ "$found" -eq 0 ]; then
+            git fetch --no-tags origin paddock-data
+            git worktree add -B paddock-data paddock-data FETCH_HEAD
+          elif [ "$found" -eq 2 ]; then
+            git worktree add --orphan -b paddock-data paddock-data
+          else
+            echo "Could not ask GitHub for the data branch (git ls-remote exit $found)."
+            exit 1
+          fi
+
+      # The WordPress secrets reach this step alone, not npm's install scripts.
+      - name: Copy the published posts, pages and media list
+        env:
+          WP_SITE_URL: ${{ secrets.WP_SITE_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+        run: npx tsx scripts/wp-backup.mts --out paddock-data/backup
+
+      - name: Commit only when something changed
+        working-directory: paddock-data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No change since the last copy."
+            exit 0
+          fi
+          git commit -q -m "backup: WordPress posts, pages and media list, $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push origin HEAD:paddock-data
+
+      - name: Open an issue when the copy fails
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: wp-backup is failing
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing is already open; not commenting."
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body "The weekly copy of the WordPress posts failed: $RUN_URL. It closes itself on the next successful run."
+
+      - name: Close the issue once a copy succeeds
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: wp-backup is failing
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --limit 100 --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | .[0].number // empty")
+          if [ -z "$existing" ]; then
+            exit 0
+          fi
+          gh issue close "$existing" --comment "Recovered: $RUN_URL succeeded."
