@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.279 — 2026-10-20
+
+### O11 — the Paddock theme: a child of Twenty Twenty-Five carrying round 2
+
+The operator tried Ollie and Twenty Twenty-Five on the private WordPress.com site with round 2's settings in their global styles, preferred Twenty Twenty-Five, judged that neither came close to round 2 ("2025 better but nothing comes close to our custom"), and said go on a child theme. `wp-theme/paddock/` is that theme. `theme.json` keeps Twenty Twenty-Five's palette slugs with round 2's values and stores Archivo with the theme (latin and latin-ext, OFL). `style.css` styles round 2's parts by `pd-` class names (the hero with its session strip, the series cards, Up next, the standings with team bars, the results list, the newsletter box, the phone tab bar) and redefines the palette under `prefers-color-scheme: dark` for Night. `parts/header.html` and `parts/footer.html` carry Subscribe and Buy me a coffee; `templates/front-page.html` lets the publisher's home run full width; `assets/js/paddock.js` turns `span.pd-t[data-utc]` into the reader's zone and works out Live, Next and the countdown from `data-pd-start` and `data-pd-end`. `wp-theme/preview/` runs it in WordPress Playground (the CLI 3.1.57 through npx, the `theme-preview` launch entry) with a blueprint and the home as block markup from the feeds of 20 October.
+
+Checked: `theme.json` parses, `node --check` passes on the script, Playground serves the home with the theme's files and no PHP warning, and Playwright screenshots at 1440 and 390 px in Day and Night match round 2. Two snags found that way and fixed: WordPress 7.1 keeps a cover block's inner container at z-index 1 unless its markup is in the current order (image, background, content), and a cover's background span stays black unless the overlay is declared `!important`. The operator uploaded and activated the zip; the Home page (5053) is the front page of the still-private site.
+
 ## 1.0.278 — 2026-10-20
 
 ### O10 — the publisher: standings, results and calendars to WordPress
