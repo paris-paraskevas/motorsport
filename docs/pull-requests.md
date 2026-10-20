@@ -14,6 +14,30 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1165 · 1.0.278 · O10 (the publisher: standings, results and calendars to WordPress) · opened 2026-10-20 into `next` on “build go” for the COST-3 brief’s plan; the merge on the word
+**The publisher.** The operator closed Cloudflare and Supabase on 20 October and moved the site to WordPress.com Personal; the blog, the standings, the results and the calendar stay. GitHub Actions runs the production fetchers the old loader ran, keeps what they return as JSON on the `paddock-data` branch (a commit only on change) and writes about sixty finished pages through the WordPress REST API. A failed feed keeps its last committed data and shows as STALE on /status/. No page is ever written from an empty fetch, and a page the publisher did not write is never overwritten.
+- **Readers see:** nothing yet. The workflow runs only from the default branch, which waits for the word, and the WordPress site does not exist yet. Once both are in place: /calendar/, /series/, /status/ and each series’ page, standings, results and calendar, times in UTC and Athens time. The release notes carry one line.
+- **Editors get:** nothing in the old designer. On WordPress the publisher’s pages are machine-written (a hand edit is overwritten at the next change); a page made by hand at one of its addresses is left alone and reported.
+- **Files (17):**
+  - `lib/wp/render.ts` · new: the payloads as tables, the calendar through the site’s weekend grouping, the pages as block markup with every feed string escaped, the marker and the sync plan.
+  - `lib/wp/health.ts` · new: the stale rule and the /status/ page.
+  - `lib/wp/render.test.ts`, `lib/wp/health.test.ts` · new: 29 tests over the shapes, the escaping, the time zones, the stale rule and the page ownership.
+  - `scripts/wp-publish.mts` · new: fetch, keep, render, publish; `--dry-run --out`, `--data`, `--from-ref`, `--test-page`.
+  - `scripts/wp-backup.mts` · new: the weekly copy of the posts, the hand-made pages and the media list.
+  - `.github/workflows/wp-publish.yml` · new: cron `13,43 * * * *`, dispatch with three modes, one issue per outage.
+  - `.github/workflows/wp-backup.yml` · new: Sundays; one concurrency group with the publisher.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · slot O10 and two dated changes (the change of direction; the slot).
+  - `IDEAS.md` · four Inbox lines (venue-local times possible from circuits.json, IMSA’s crew names, GitHub’s 60-day rule, a last dump before the database is deleted).
+  - `docs/HANDOFF.md` · the session’s pickup.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · the trio, 1.0.278 (1.0.277 is #1163’s, still open).
+  - `docs/pull-requests.md` · this entry.
+- **Verified:**
+  - `npx tsc --noEmit` → exit 0; eslint on the six code files → exit 0; `npx vitest run lib/wp` → 29 passed; the ledger test → 6 passed.
+  - A dry run with live fetches: 42 of 42 feeds OK and 60 pages in about a minute. A second run changed one data file (F1’s results, from a label edit made in between) and no other. The pages were read in a browser.
+  - Against a local stand-in for the REST API: the first publish created 59 pages and left a hand-written /calendar/ alone (exit 1, as designed); the second left 58 unchanged and updated /status/. `--test-page` passed its five checks three runs out of three. `--from-ref` rendered the same 60 pages from stored data.
+  - UNVERIFIED until the site exists: Basic auth with an application password on WordPress.com, which documents its application passwords only for the OAuth2 password grant. The live test page is the proof.
+- **Review:** a fresh-context Sonnet reviewer on the diff (its verdict below once in).
+
 ## #1162 · 1.0.276 · B6 (F1’s teams named as formula1.com names them) · opened 2026-10-13 into `next` on the operator’s “find open items, do them” and the plan’s approval; the merge on the word
 **F1’s teams named as formula1.com names them.** jolpi.ca names four 2026 teams by older names (Red Bull, RB F1 Team, Alpine F1 Team, Cadillac F1 Team); formula1.com, the roster and OpenF1 print Red Bull Racing, Racing Bulls, Alpine and Cadillac, and the Racing Bulls rows linked to no team page. A curated map per season is applied where jolpi.ca’s current season is parsed, so every surface agrees.
 - **Readers see:** after the deploy and the loader’s next run, the F1 standings, results, home and chart name all eleven teams as formula1.com does, and the Racing Bulls drivers link to their team page; the release notes carry one line.

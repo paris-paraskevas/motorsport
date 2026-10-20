@@ -6,7 +6,41 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-13 (LATEST, session 68 closed on the 13th: the robots’ bill and two Cloudflare rules; the daily merge of 1.0.266–1.0.271, B4 checked live; B5 narrowed; O7 and the F plan into next)
+## ⚡ Next session pickup — 2026-10-20 (LATEST, session 69: COST-3, the move to WordPress.com; the export done, the old stack’s schedules stopped, the publisher O10 at #1165)
+
+**WHERE IT STANDS (20 Oct, about 12:30Z):**
+1. **The decision (the operator, 20 Oct):** close Cloudflare (Workers CPU 19 times its allowance) and Supabase (egress 14.42 GB of 5.5 GB, the Fair Use restriction from the 20th) and move to WordPress.com Personal (€48 a year, on a new account). The blog, the standings, the results and the calendar stay; everything else may go. The brief is COST-3, phases A to D.
+2. **Phase A, the export (done, outside the repo, `C:\Dev\Personal\paddock-export\`):**
+   - `posts.json`: 55 posts (46 published, 5 in review, 4 rejected), every post column plus the author’s slug, name, role, bio and links, no `app_user`; 519,491 bytes.
+   - `assets.json`: the one asset row (the Fornaroli photo: caption, credit, licence); 605 bytes.
+   - `media\2026\10\4923cb28-fb30-4faf-8baf-1ef2f3862be1.jpg`: 175,571 bytes, the row’s size.
+   - No post points at `/media/`: their 40 images are on upload.wikimedia.org and outlive the closure.
+   - **Still the operator’s:** `sitemap.xml` saved from a browser (curl gets `403 Cf-Mitigated: challenge`).
+3. **Phase B (each on the operator’s word, 20 Oct):**
+   - **B.1 done:** the Worker’s cron triggers cleared through the API (`PUT …/workers/scripts/motorsport/schedules` with `[]`, wrangler’s login), read back as 0. 12 were live; wrangler.jsonc lists 13 (`* * * * *` was already gone). **Never deploy:** a deploy restores them.
+   - **B.2 done:** warm-live-data, data-freshness, export-design and seo-census read back `disabled_manually`; main-from-next stays active.
+   - **B.3 waits for `sitemap.xml`:** then `POST /v1/projects/dzelqrtajnauunzmxfic/pause` through the Management API. Free projects can be restored for 90 days, then only a backup download is offered (supabase.com changelog 27497). Supabase still answered ACTIVE_HEALTHY at 11:01.
+4. **Phase C, the publisher (O10), #1165 into next, on “build go”:**
+   - Built and checked: a dry run with live fetches, a local stand-in for the REST API, `--from-ref`, and the tests (the PR entry has the figures).
+   - Not active: GitHub runs a schedule or a dispatch only from the default branch, and merging next into main redeploys the Worker with its crons.
+   - The fresh-context Sonnet review is running; its verdict and folds go in the PR entry.
+5. **What Phase D must know (checked 20 Oct):**
+   - WordPress.com’s own catalogue (its MCP `wpcom-plans-list`) lists plugin installs, `atomic` and daily backups on Personal, so the Redirection plugin works there.
+   - Changing the permalink structure (`options-permalink`) is Business only, so posts get the default dated addresses and `/blog/<slug>` needs the redirect list.
+   - WordPress.com documents application passwords only for its OAuth2 password grant (developer.wordpress.com/docs/api/oauth2/). Basic auth on `/wp-json` is proven only by the test page; the fallback is the OAuth2 route, which needs two more secrets.
+   - GitHub turns off a public repository’s scheduled workflows after 60 days without activity (an Inbox line).
+
+**DO NEXT, IN ORDER:**
+1. The operator saves the sitemap, then B.3 (the pause).
+2. The word on the default branch. The default: `next` until the old stack is deleted. The alternative: Workers Builds stopped and the daily merge kept.
+3. The review folded, then #1165 merged into next on the word.
+4. Phase D:
+   - the operator buys Personal on the new account, connects the WordPress.com connector, enables MCP, creates the application password `paddock-publisher` and adds `WP_SITE_URL`, `WP_USER` and `WP_APP_PASSWORD`;
+   - then the test page (`mode: test-page`), the first publish, the theme and menus, the posts’ import from `posts.json`, the Redirection plugin, and the domain with the DNS records grey-clouded.
+5. #1163 (O9) is moot, since its workflow is disabled: close it or merge it, on the word.
+6. B.4, a week after the new site is stable: one last database dump without the personal tables (an Inbox line), then each deletion on its own word.
+
+## ⚡ Next session pickup — 2026-10-13 (session 68 closed on the 13th: the robots’ bill and two Cloudflare rules; the daily merge of 1.0.266–1.0.271, B4 checked live; B5 narrowed; O7 and the F plan into next)
 
 **WHERE IT STANDS (13 Oct, about 12:40Z):**
 1. **Live** since the daily merge #1158 (09:06Z, prod 09:12Z): 1.0.266–1.0.271, i.e. #1150 records, #1151 O5, #1152 O6, #1153 N1, #1154 PF5, #1155 B4. The F1 standings equal formula1.com on all 23 drivers and 11 teams (checked 09:13Z). jolpi.ca names Racing Bulls “RB F1 Team” (an Inbox line).
