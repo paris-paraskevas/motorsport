@@ -8,7 +8,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ## ⚡ Next session pickup — 2026-10-20 (LATEST, session 69: COST-3, the move to WordPress.com; the export done, the old stack’s schedules stopped, the publisher O10 at #1165)
 
-**WHERE IT STANDS (20 Oct, about 12:30Z):**
+**WHERE IT STANDS (20 Oct, about 09:40Z):**
 1. **The decision (the operator, 20 Oct):** close Cloudflare (Workers CPU 19 times its allowance) and Supabase (egress 14.42 GB of 5.5 GB, the Fair Use restriction from the 20th) and move to WordPress.com Personal (€48 a year, on a new account). The blog, the standings, the results and the calendar stay; everything else may go. The brief is COST-3, phases A to D.
 2. **Phase A, the export (done, outside the repo, `C:\Dev\Personal\paddock-export\`):**
    - `posts.json`: 55 posts (46 published, 5 in review, 4 rejected), every post column plus the author’s slug, name, role, bio and links, no `app_user`; 519,491 bytes.
@@ -19,7 +19,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 3. **Phase B (each on the operator’s word, 20 Oct):**
    - **B.1 done:** the Worker’s cron triggers cleared through the API (`PUT …/workers/scripts/motorsport/schedules` with `[]`, wrangler’s login), read back as 0. 12 were live; wrangler.jsonc lists 13 (`* * * * *` was already gone). **Never deploy:** a deploy restores them.
    - **B.2 done:** warm-live-data, data-freshness, export-design and seo-census read back `disabled_manually`; main-from-next stays active.
-   - **B.3 waits for `sitemap.xml`:** then `POST /v1/projects/dzelqrtajnauunzmxfic/pause` through the Management API. Free projects can be restored for 90 days, then only a backup download is offered (supabase.com changelog 27497). Supabase still answered ACTIVE_HEALTHY at 11:01.
+   - **B.3 waits for `sitemap.xml`:** then `POST /v1/projects/dzelqrtajnauunzmxfic/pause` through the Management API. Free projects can be restored for 90 days, then only a backup download is offered (supabase.com changelog 27497). Supabase still answered ACTIVE_HEALTHY at 08:01Z.
 4. **Phase C, the publisher (O10), #1165 into next, on “build go”:**
    - Built and checked: a dry run with live fetches, a local stand-in for the REST API, `--from-ref`, and the tests (the PR entry has the figures).
    - Not active: GitHub runs a schedule or a dispatch only from the default branch, and merging next into main redeploys the Worker with its crons.
