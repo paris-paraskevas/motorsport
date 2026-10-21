@@ -370,8 +370,32 @@ describe('calendarMonthPages', () => {
   });
 
   it('draws each round as a band across its days, split where a week ends', () => {
-    expect(october.body).toContain('<span class="pd-cal-band pd-s-f1 pd-c5 pd-w3 pd-r1" data-s="f1" data-from="2026-10-23" data-to="2026-10-25">F1 · United States GP</span>');
-    expect(pages[2].body).toContain('pd-c5 pd-w3 pd-r1" data-s="f1" data-from="2026-10-30" data-to="2026-11-01">F1 · Mexico City GP</span>');
+    expect(october.body).toContain(
+      '<span class="pd-cal-band pd-s-f1 pd-c5 pd-w3 pd-r1" data-s="f1" data-from="2026-10-23" data-to="2026-10-25">F1 · United States GP · <span class="pd-cal-race">Race <span class="pd-t" data-utc="2026-10-25T20:00:00.000Z" data-f="wt">Sun 20:00</span></span></span>',
+    );
+    expect(pages[2].body).toContain('pd-c5 pd-w3 pd-r1" data-s="f1" data-from="2026-10-30" data-to="2026-11-01">F1 · Mexico City GP · <span class="pd-cal-race">Race <span class="pd-t" data-utc="2026-11-02T00:30:00.000Z" data-f="wt">Mon 00:30</span></span></span>');
+  });
+
+  it("ends each band with its round's last race, by its own name only when that says race", () => {
+    const october = (...calendar: CalendarEntry[]) => calendarMonthPages([{ ...f1, calendar }], now)[0].body;
+    expect(october(at('2026-10-24T22:00:00.000Z', 'Sprint'), at('2026-10-25T20:00:00.000Z', 'Race'))).toContain(
+      'F1 · United States GP · <span class="pd-cal-race">Race <span class="pd-t" data-utc="2026-10-25T20:00:00.000Z" data-f="wt">Sun 20:00</span>',
+    );
+    expect(october(at('2026-10-25T09:00:00.000Z', 'Feature Race'), at('2026-10-24T14:00:00.000Z', 'Sprint Race'))).toContain('<span class="pd-cal-race">Feature Race <span');
+    expect(october(at('2026-10-25T19:00:00.000Z', 'YellaWood 500'))).toContain('<span class="pd-cal-race">Race <span');
+    expect(october(at('2026-10-25T12:00:00.000Z', 'Race 4h (NLS4 ADAC 24h Qualifiers)'))).toContain('<span class="pd-cal-race">Race 4h <span');
+    expect(october(at('2026-10-25T14:00:00.000Z', 'Race (London R17) — Season Finale'))).toContain('<span class="pd-cal-race">Race <span');
+    expect(october(at('2026-10-25T20:00:00.000Z', 'Race <2>'))).toContain('<span class="pd-cal-race">Race &lt;2&gt; <span');
+    expect(october(at('2026-10-25T00:00:00.000Z', 'Race', 18, true), at('2026-10-24T21:00:00.000Z', 'Qualifying'))).toContain('F1 · United States GP</span>');
+  });
+
+  it('gives a rally its Power Stage, and nothing while the stages are untimed', () => {
+    const rally = (...calendar: CalendarEntry[]) => calendarMonthPages([{ ...f1, slug: 'wrc', short: 'WRC', calendar }], now)[0].body;
+    const stages = [at('2026-10-25T10:00:00.000Z', 'SS19 Alan / Senj 2 - Wolf Power Stage (Croatia)'), at('2026-10-25T07:00:00.000Z', 'SS18 Alan / Senj 1 (Croatia)')];
+    expect(rally(...stages, at('2026-10-25T12:00:00.000Z', 'Podium'))).toContain(
+      'WRC · United States GP · <span class="pd-cal-race">Power Stage <span class="pd-t" data-utc="2026-10-25T10:00:00.000Z" data-f="wt">Sun 10:00</span>',
+    );
+    expect(rally(stages[1])).toContain('WRC · United States GP</span>');
   });
 
   it('cards each weekend with its host and its sessions by day', () => {

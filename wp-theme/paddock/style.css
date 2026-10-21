@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.7
+Version: 0.1.8
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -342,6 +342,10 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal[data-view="month"] .pd-cal-dn { padding: 4px 8px 2px; font-size: .78rem; }
 .pd-cal[data-view="month"] .pd-cal-dn.is-today { margin-top: 3px; }
 .pd-cal[data-view="month"] .pd-cal-band { height: 17px; padding: 0 6px; font-size: .68rem; line-height: 17px; }
+/* The round's race rides in its bar in the month only; the week and the page without the script list every session.
+   The time comes last, so a bar too short for both loses it first. */
+.pd-cal-race { display: none; font-weight: 600; }
+.pd-cal[data-view="month"] .pd-cal-race { display: inline; }
 .pd-cal-over { z-index: 1; align-self: center; justify-self: start; height: 17px; margin: 0 3px; padding: 0 6px; border: 0; background: none; color: var(--pd-ink); font: inherit; font-size: .68rem; font-weight: 800; line-height: 17px; cursor: pointer; }
 .pd-cal-over:hover { text-decoration: underline; }
 .pd-cal-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; margin: 8px 0 0; color: var(--pd-muted); font-size: .81rem; }

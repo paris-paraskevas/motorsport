@@ -639,6 +639,23 @@ function gridSession({ d, e }: Placed): string {
   );
 }
 
+const CLOCK_AT_UTC = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+
+/** A round's race in its month bar (the operator, 21 Oct: "race in each bar"): its last race in running order, a race
+ *  named after its event (NASCAR's, GT World's) reading Race; a rally, which has no race, its Power Stage. The script
+ *  shows the time in the reader's zone. */
+function bandRace(d: SeriesData, r: CalendarRound): string {
+  const races = (d.calendar ?? [])
+    .filter(e => e.round === r.round && !e.dateOnly && sessionKind(e.session) === 'race')
+    .sort((x, y) => (x.start < y.start ? -1 : x.start > y.start ? 1 : 0));
+  const race = d.slug === 'wrc' ? races.find(e => /power stage/i.test(e.session)) : races.pop();
+  if (!race) return '';
+  // Formula E's "Race (London R17) — Season Finale" reads Race.
+  const name = race.session.replace(/\s*[(—].*$/, '');
+  const label = d.slug === 'wrc' ? 'Power Stage' : /^(race\b|grand prix|feature|sprint)/i.test(name) ? name : 'Race';
+  return ` · <span class="pd-cal-race">${escapeHtml(label)} <span class="pd-t" data-utc="${escapeHtml(race.start)}" data-f="wt">${CLOCK_AT_UTC.format(new Date(race.start))}</span></span>`;
+}
+
 /** One week of the grid: the days, the rounds as bands packed into the fewest rows, then each day's sessions. */
 function gridWeek(week: string[], ym: string, held: Held[], byDay: Map<string, Placed[]>): string {
   const first = week[0];
@@ -663,7 +680,7 @@ function gridWeek(week: string[], ym: string, held: Held[], byDay: Map<string, P
   });
   const strips = bands.map(
     ({ d, r, a, b, row }) =>
-      `<span class="pd-cal-band pd-s-${slugAttr(d)} pd-c${a + 1} pd-w${b - a + 1} pd-r${cap(row + 1)}" data-s="${slugAttr(d)}" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}">${escapeHtml(`${chipLabel(d)} · ${bandLabel(d.slug, r.name)}`)}</span>`,
+      `<span class="pd-cal-band pd-s-${slugAttr(d)} pd-c${a + 1} pd-w${b - a + 1} pd-r${cap(row + 1)}" data-s="${slugAttr(d)}" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}">${escapeHtml(`${chipLabel(d)} · ${bandLabel(d.slug, r.name)}`)}${bandRace(d, r)}</span>`,
   );
   const sessions = week.map((day, i) => `<div class="pd-cal-ses pd-c${i + 1}" data-date="${day}">${(byDay.get(day) ?? []).map(gridSession).join('')}</div>`);
   return `<div class="pd-cal-wk pd-b${cap(rows.length)}">${days.join('')}${strips.join('')}${sessions.join('')}</div>`;

@@ -14,6 +14,20 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1173 · 1.0.285 · O14 follow-up (each round's race in its month bar) · opened 2026-10-21 into `next` on the operator's "race in each bar"; the merge on the word
+**The race in each bar.** The operator asked why the Calendar's month shows no sessions; the drafts drew the month with and without the race, and the operator chose "race in each bar".
+- **Readers see:** nothing yet; the site is in Coming Soon. Once theme 0.1.8 is uploaded and the calendar republished: in the month view each event's bar ends with its race and its start in the reader's own time ("F1 · United States GP · Race Sun 22:00"), WRC's with its Power Stage; the week view and the agenda as before.
+- **Editors get:** nothing new to edit; the race comes from each series' timetable.
+- **Files (13):**
+  - `lib/wp/render.ts`, `lib/wp/render.test.ts` · `bandRace`: the round's last timed race, its label and its time in each band; the band test updated, two tests added (the labels, the rally).
+  - `wp-theme/paddock/style.css` · theme 0.1.8: `.pd-cal-race`, shown in the month only, weight 600.
+  - `wp-theme/preview/calendar.html` · the October page from a dry run (only the race spans differ).
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.285.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md` · O13 published and checked on the site; O14 merged and published; this follow-up and its change line.
+  - `IDEAS.md` · an Inbox line: a one-day bar shows "Rac…" with its time cut.
+- **Verified:** `npx vitest run` 279 files, 2,788 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; dry run `--from-ref origin/paddock-data --only /calendar/`: 15 pages, 245 of 265 bands with a race, the labels per series checked (Race, Race 2, Feature Race, Sprint Race 2, Race 4h, Power Stage; WRC's stages had read Race and Formula E's finale "Race (London R17) — Season Finale" before the fix); the Playground (WordPress 7.1.3, theme 0.1.8) with Playwright, the clock at 23 Oct 17:45Z in Europe/Athens: October's 20 bars with their race ("F1 · United States GP · Race Sun 22:00", after the clocks change), weight 600, none in the week view or at 390, a one-day bar cutting the time first.
+- **Review:** a fresh-context Sonnet reader, with #1169, #1170 and #1172, after the 5-hour window resets.
+
 ## #1172 · 1.0.284 · O13 follow-up (an --only family brings the pages above it) · opened 2026-10-21 into `next` on the operator's "go"; the merge on the word
 **Formula 1's page could not be written:** the first publish failed with `create /series/f1/: its parent /series/ does not exist`. The operator chose the fix: the publisher writes the pages above an `--only` family too.
 - **Readers see:** nothing; the site is in Coming Soon. After the merge and one publish run: `/series/` as the plain series list, and `/series/f1/` under it.
