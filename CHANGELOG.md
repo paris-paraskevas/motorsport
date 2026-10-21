@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.284 — 2026-10-21
+
+### O13's publish: an --only family brings the pages above it
+
+The first publish of Formula 1's page failed (run 39585303820): `create /series/f1/: its parent /series/ does not exist`. `--only /series/f1/` chose the family by its prefix and left out the page it is written under, and nothing of `/series/` was on the site yet. `onlyFamily` (lib/wp/render.ts) now adds every page above the chosen ones, so `--only /series/f1/` writes `/series/` and `/series/f1/`; an `--only` that matches nothing still stops the run. `/series/` goes up as today's plain series list until the series-list draft is built; the site stays in Coming Soon. The calendar's own run (39585569309) updated its 15 pages.
+
 ## 1.0.283 — 2026-10-21
 
 ### O14: the Calendar tab: one series for the visit, and race week in Paddock's yellow

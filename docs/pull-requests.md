@@ -14,6 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1172 · 1.0.284 · O13 follow-up (an --only family brings the pages above it) · opened 2026-10-21 into `next` on the operator's "go"; the merge on the word
+**Formula 1's page could not be written:** the first publish failed with `create /series/f1/: its parent /series/ does not exist`. The operator chose the fix: the publisher writes the pages above an `--only` family too.
+- **Readers see:** nothing; the site is in Coming Soon. After the merge and one publish run: `/series/` as the plain series list, and `/series/f1/` under it.
+- **Editors get:** `--only /series/f1/` writes `/series/` and `/series/f1/`, and logs the paths it chose.
+- **Files (10):**
+  - `lib/wp/render.ts`, `lib/wp/render.test.ts` · `onlyFamily` and two tests.
+  - `scripts/wp-publish.mts` · `--only` through `onlyFamily`; a prefix matching nothing still fails the run.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.284.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered) · O13's publish, the failure and this fix.
+- **Verified:** `npx vitest run lib/wp` 65 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; dry runs: `--only /series/f1/` 2 of 71 pages (`/series/`, `/series/f1/`), `--only /nowhere/` exit 1.
+- **Review:** with #1169 and #1170, after the 5-hour window resets.
+
 ## #1170 · 1.0.283 · O14 (the Calendar tab: one series for the visit, race week in Paddock's yellow) · opened 2026-10-21 into `next` on the operator's "merge then start the O14 calendar tab"; the merge on the word
 **The Calendar tab.** The series page's Calendar tab opens `/calendar/#f1`; the Calendar shows that series alone for the visit and marks race week, as the operator asked on 21 October and the drafts showed.
 - **Readers see:** nothing yet; the site is in Coming Soon. Once theme 0.1.7 is uploaded and the calendar republished: from a series page, the Calendar with only that series, a notice to show every series again, the Filters tab saying so, the month arrows keeping it; race week tinted yellow with its tag, on a phone heading that weekend.

@@ -850,6 +850,13 @@ export function wpPaths(rows: WpPageRow[]): Map<string, WpPageRow> {
 
 const depthOf = (path: string): number => path.split('/').filter(Boolean).length;
 
+/** The pages whose path starts with `prefix` (the publisher's --only), with every page of `all` above them: a page is
+ *  written under its parent, so /series/f1/ alone would fail on a site without /series/. */
+export function onlyFamily(all: Page[], prefix: string): Page[] {
+  const chosen = all.filter(p => p.path.startsWith(prefix));
+  return all.filter(p => chosen.includes(p) || chosen.some(c => c.path !== p.path && c.path.startsWith(p.path)));
+}
+
 /** What to do with each desired page, parents before children. Only a page that
  *  carries the publisher's marker is ever updated; any other page at the same
  *  path is a conflict and is left alone. A page of ours that WordPress gave
