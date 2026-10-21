@@ -227,8 +227,8 @@
     "slug": "nascar-cup",
     "name": "NASCAR Cup",
     "kind": "standings",
-    "status": "STALE",
-    "note": "empty answer",
+    "status": "OK",
+    "note": "",
     "since": "2026-10-20"
   },
   {
