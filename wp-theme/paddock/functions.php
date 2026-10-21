@@ -37,3 +37,49 @@ add_action(
 		add_editor_style( 'style.css' );
 	}
 );
+
+/*
+ * [pd_series_posts category="formula-1" title="Formula 1" series="f1"]: a series page's "From the blog", its
+ * category's three newest posts, written by the publisher (lib/wp/series.ts) as a shortcode so the page needs no
+ * category id; nothing at all when the category has no posts.
+ */
+add_shortcode(
+	'pd_series_posts',
+	function ( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'category' => '',
+				'title'    => '',
+				'series'   => '',
+			),
+			$atts,
+			'pd_series_posts'
+		);
+		$term = get_category_by_slug( sanitize_title( $atts['category'] ) );
+		if ( ! $term ) {
+			return '';
+		}
+		$posts = get_posts(
+			array(
+				'numberposts' => 3,
+				'category'    => $term->term_id,
+				'post_status' => 'publish',
+			)
+		);
+		if ( ! $posts ) {
+			return '';
+		}
+		$items = '';
+		foreach ( $posts as $post ) {
+			$items .= sprintf( '<li><small>%s</small><a href="%s">%s</a></li>', esc_html( get_the_date( 'j M', $post ) ), esc_url( get_permalink( $post ) ), esc_html( get_the_title( $post ) ) );
+		}
+		$name = '' !== $atts['title'] ? $atts['title'] : $term->name;
+		return sprintf(
+			'<section class="pd-sr-blog pd-s-%s"><div class="pd-sh"><h2>From the blog</h2><p><a href="%s">%s</a></p></div><ul class="pd-sr-posts">%s</ul></section>',
+			esc_attr( sanitize_title( $atts['series'] ) ),
+			esc_url( get_category_link( $term ) ),
+			esc_html( sprintf( 'All %s posts →', $name ) ),
+			$items
+		);
+	}
+);

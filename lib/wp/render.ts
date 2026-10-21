@@ -444,9 +444,22 @@ export interface SeriesData {
   standings: Table[] | null;
   results: ResultRound[] | null;
   calendar: CalendarEntry[] | null;
+  /** For round 2's series pages (lib/wp/series.ts): the season (meta.json), the overview text without its
+   *  front matter (overview.md), the teams with their colours and drivers (drivers.json), and the rounds
+   *  that will not run (rounds.json cancelledRounds). */
+  season?: number;
+  about?: string;
+  teams?: SeriesTeam[];
+  cancelled?: { round: number; name: string; place?: string }[];
 }
 
-export const seriesPath = (slug: string, sub?: 'standings' | 'results' | 'calendar'): string =>
+export interface SeriesTeam {
+  name: string;
+  colour?: string;
+  drivers: { name: string; code?: string }[];
+}
+
+export const seriesPath = (slug: string, sub?: 'standings' | 'results' | 'calendar' | 'champions'): string =>
   `/series/${slug}/${sub ? `${sub}/` : ''}`;
 
 /** Sessions not yet over (a live one counts), up to `withinMs` ahead. */
@@ -552,6 +565,10 @@ export interface CalendarRound {
   endDate: string;
   /** The host circuit's name (lib/circuits.ts), or null when none is known. */
   venue: string | null;
+  /** The season grid's name for the round (rounds.json `place`). */
+  place?: string;
+  /** The circuits.json key of the outline the theme carries for the host (wp-theme/paddock/assets/circuits), if any. */
+  outline?: string | null;
 }
 
 /** How far the calendar reaches either side of the current month. */

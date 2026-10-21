@@ -200,6 +200,9 @@ export interface SeriesRoundEntry {
   previousStartDate?: string;
   previousEndDate?: string;
   rescheduleNote?: string;
+  // The round's name on its tile in the series page's season grid, as round 2 draws it
+  // ("Miami", "Bahrain · Sepang"); without it the tile shows the round's name.
+  place?: string;
 }
 
 export interface CancelledRoundEntry {
@@ -214,6 +217,8 @@ export interface CancelledRoundEntry {
   // Free-form reschedule status: "under discussion", "rescheduled to 2026-09-15",
   // "no reschedule planned", etc.
   rescheduleStatus?: string;
+  // Its struck-through tile's name in the series page's season grid, as SeriesRoundEntry.place.
+  place?: string;
 }
 
 export interface SeriesRoundsFile {

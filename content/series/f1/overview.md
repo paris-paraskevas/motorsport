@@ -2,7 +2,7 @@
 title: Formula 1 — overview
 ---
 
-Formula 1 is the FIA's top single-seater open-wheel championship — twenty-plus race weekends across the calendar year, ten constructors fielding two cars each, and a points fight for both the Drivers' and Constructors' titles.
+Formula 1 is the FIA's top single-seater open-wheel championship — twenty-plus race weekends across the calendar year, eleven constructors fielding two cars each, and a points fight for both the Drivers' and Constructors' titles.
 
 ## Race weekend shape
 

@@ -939,6 +939,11 @@
    "date": "2026-10-20",
    "change": "The Calendar's month fits one laptop screen (the events in the month, the sessions in the week and the agenda, \"+N more\" where a week is full), the weekend cards name their series and sit two to a row, and a Filters tab with a Series and a Sessions dropdown replaces the series chips and the follow switch.",
    "word": "the operator, 2026-10-20: “i dont like the calendar, i dont want to have to scroll. can i be able to see all the month on a laptop viewport easily?”; “these cards should have F1 or MOTOGP written on wide screens between the title and the number. also the category/championship should be a colour in contrast to the rest”; “on laptop you can fit two boxes side by side here so do so”; “A filters tab, where you can tick checkboxes for championships in a series drop down and then in a session drop down choose to tick practice qualifying and/or race”"
+  },
+  {
+   "date": "2026-10-21",
+   "change": "The series pages are built from the answered drafts, one page a slot: Formula 1's Overview with the frame every series page shares (O13), the Calendar tab's one-series filter and race week (O14), Results in each weekend's own format (O15), Standings (O16) and Champions (O17); the other fourteen series follow (O18). Slots O13 to O18 opened.",
+   "word": "the operator, 2026-10-21: the series drafts answered (“each tab needs to be its own page, helps with indexing. not query string pages”; the Calendar tab “should take you to calendar with a filter showing only that series' sessions”; race week in “paddock's yellow tint”; the filter “lasts until you exit page”; greyed tabs for sessions without a classification; Around the site the defaults; the appeal marks kept), “go” for the build's plan, the plan approved"
   }
  ],
  "phases": {
@@ -2391,6 +2396,84 @@
    "status": "done",
    "evidence": "OPENED and BUILT 2026-10-20 (session 69) on the plan word, branch o12/calendar from next 403c23df. npx vitest run: 278 files, 2768 tests; tsc clean; lint 0 errors, the 2 known warnings. Dry run with a fresh fetch: 42 feeds OK, 15 calendar pages (/calendar/ 69 KB; December 2025 to January 2027, 9 to 112 KB). Playground with Playwright: F1 qualifying (24 Oct 21:00 UTC) on Sunday 00:00 in Europe/Athens and Saturday 17:00 in America/New_York; the clock note on 25 Oct in Athens (\"Clocks go back 04:00 → 03:00. Times from here are EET (UTC+2).\") and on 1 Nov in New York; the chips and switch keep across a reload; Month, Week, Agenda; the phone opens the agenda; without JavaScript the UTC grid; no console or PHP error. Venues checked round by round: seven curated (MotoGP rounds 5, 7, 8, 10; NASCAR rounds 5, 31, 36), NASCAR round 19 renamed the eero 400, WEC rounds 7 and 8 confirmed on fiawec.com. MERGED into next on the operator's word (\"so merge\"; squash deac5091, 20:43:45Z), the operator having uploaded theme 0.1.3. PUBLISHED on \"3. ok\": the workflow switched on, run 39494501323 (mode publish, only /calendar/): 15 created, 0 updated, 0 conflicts, 0 failed; feeds 42 OK; the workflow switched off again, no scheduled run between. On the site, signed in: paddock.js ver=0.1.3; every data attribute kept (95 sessions, 22 bands, 35 cells, 22 cards); F1 qualifying on Sunday 00:00 Athens; the clock note on 25 Oct; the phone opens the agenda with This weekend; anonymous visitors get Coming Soon. Open: the fresh-context review (running at the merge), its fixes in a follow-up PR. FOLLOW-UP on the operator's four asks of 20 October and the review of #1167 (merge after fixes: 0 high, 3 medium, 14 low), branch o12/follow-up, PR #1168, 1.0.281, theme 0.1.4: Month view the events only, the weeks sized to the window with \"+N more\", a week click opening Week view; the series in capitals beside the round's number from 700 px, the championship on an ink label, two cards a row from 1000 px; the Filters tab (Series and Sessions dropdowns, kept on the device) in place of the chips and the follow switch; sessionKind for the Sessions filter; M1 (Formula E round 1 the Anhembi Sambadrome Circuit, fiaformulae.com; IndyCar rounds 13 to 15 hosted from indycar.com/schedule), M2, M3 and L1, L3, L6, L8, L11a, L11d, L12 (the golden hash), L13 fixed; L4, L7 (the cross-month steps), L9, L10, the rest of L12 and L14 to IDEAS. npx vitest run: 278 files, 2770 tests; tsc clean; lint 0 errors, the 2 known warnings; dry runs 42 feeds OK, 15 pages; Playwright on the Playground: October whole at 1440x790 (the grid's foot at 781 px) and 1920x950, \"+N more\" at 1366x650, the filters and the view kept across a reload, the phone in America/New_York, no console error. Next: the review of #1168, the merge on the word, the operator uploads 0.1.4, one publish run with only=/calendar/. REVIEWED by a fresh-context Sonnet reader (merge after fixes: 2 medium, 8 low): F1 to F6, F8 and F10 fixed in theme 0.1.5 (the controls inside their row at 360 to 1440 px in Month and Week; the \"+N more\" label; the twelve-row cap a clamp, no throw); F7 and F9 noted. MERGED into next on the operator's word (\"merge and publish\"; squash af4f5cd2, 22:13:47Z). PUBLISHED the same way as before: the workflow switched on, run 39506601146 (mode publish, only /calendar/): 0 created, 15 updated, 0 conflicts, 0 failed; feeds 42 OK; the workflow switched off again, no scheduled run between. On the site, signed in: 190 sessions with their kind and none with the old data-key, Formula E round 1 at the Anhembi Sambadrome Circuit, IndyCar rounds 13 to 15 with their hosts, the arrows named Previous month and Next month, no console error; the theme still 0.1.4 (uploaded before the review's fixes) until the operator uploads 0.1.5. DONE 2026-10-20 ~22:45Z after the operator uploaded theme 0.1.5: on the site, signed in, paddock.js ver=0.1.5 and no console error; at 375 px the controls in three rows inside the screen (343 of 343 px, no sideways scroll) above the agenda in Athens time (the US Grand Prix's qualifying Sunday 00:00); at 768 x 1024 two rows and the whole month inside the window (the grid's foot at 1017 px); at 1440 x 790 the whole month under the admin bar (the grid's foot at 785 px, weeks 118 px, \"+N more\" read as \"2 more events on Friday 2 October, open the week\").",
    "scopeHash": "ceb6a4e38436"
+  },
+  {
+   "id": "O13",
+   "phase": "PO",
+   "title": "The series pages' frame and Formula 1's Overview, in round 2's design",
+   "scope": "The publisher writes /series/f1/ in round 2's design (lib/wp/series.ts, ROUND2_SERIES): the series band (the season in a line, a bar of the rounds, Follow and Session emails), the five tabs (Overview, Calendar opening /calendar/#f1, Standings, Results, Champions, each a page at its own address), the round on now or next and the last race as cards, the season a tile a round with its circuit's outline and its winner, the top ten drivers and every constructor with points bars and race wins, the series' three newest posts (the theme's [pd_series_posts] shortcode) and About from overview.md. The markup holds no now: theme 0.1.6's script names the weekend on now and the session on now or next, and keeps Follow; the outlines ship with the theme and are drawn as CSS masks.",
+   "fixedBy": "the operator, 2026-10-21: the series drafts answered (“each tab needs to be its own page, helps with indexing. not query string pages”; the Calendar tab “should take you to calendar with a filter showing only that series' sessions”; race week in “paddock's yellow tint”; the filter “lasts until you exit page”; greyed tabs for sessions without a classification; Around the site the defaults; the appeal marks kept), “go” for the build's plan, the plan approved",
+   "defaults": "Formula 1's family emits only new pages (the old plain F1 pages stop, never published); team colours and bar widths inline as --t and width, which WordPress keeps (safecss_filter_attr since 6.1), the rest by classes; the outlines from public/circuits in the theme, named by the circuits.json key, a curated venue taking one only from a circuit of that name; a place per round in rounds.json, round 2's tile names; From the blog as a theme shortcode by category slug (the plan's Query Loop with an id looked up at publish time would have made a dry run and the site differ); content checked first (eleven constructors on formula1.com; the Saudi round ruled out for 2026)",
+   "needsWord": "given with the plan: the slot order, the new files (lib/wp/series.ts, lib/wp/series.test.ts, wp-theme/paddock/assets/circuits/*.svg), round 16 as rounds.json names it; the theme upload (0.1.6) and one publish run with --only /series/f1/ after the merge",
+   "acceptance": "/series/f1/ renders like the draft (v11) at 1440 and 390 px, Day and Night, on the Playground with theme 0.1.6; the publisher's tests, the typecheck and lint pass; after the upload and the publish, the page on the site signed in, its stored content keeping every --t and width",
+   "status": "started",
+   "evidence": "OPENED and BUILT 2026-10-21 (session 69) on the plan's approval, branch o13/series-overview from o12/records (next af4f5cd2 and the records). npx vitest run: 279 files, 2,783 tests; tsc clean; lint 0 errors, the 2 known warnings. Dry run --from-ref origin/paddock-data --only /series/f1/: 1 of 71 pages, /series/f1/ 14,736 bytes. Playground (WordPress 7.1.3) with Playwright, the clock at 23 Oct 17:45Z, 1440 and 390 px, Day and Night: “round 18 this weekend”, “Practice 1 · on now”, the Live pill, 23 tiles and Saudi Arabia struck, outlines on 21 tiles, Follow kept across a reload, no horizontal scroll; the one console error is core's interactivity module, on every page (the Calendar and the Home too). PR #1169.",
+   "scopeHash": "f6c7b5adaf13"
+  },
+  {
+   "id": "O14",
+   "phase": "PO",
+   "title": "The Calendar tab: one series for the visit, race week in Paddock's yellow",
+   "scope": "/calendar/#<slug> shows only that series until the reader leaves the Calendar (the month arrows and Today carry it; never saved), with a notice and Show every series; month view tints race week (this week if it holds a race weekend of a series showing, otherwise the next week that does) in #ffb400 with its tag, and the agenda tags that weekend's heading. Theme only.",
+   "fixedBy": "the operator, 2026-10-21: the series drafts answered (“each tab needs to be its own page, helps with indexing. not query string pages”; the Calendar tab “should take you to calendar with a filter showing only that series' sessions”; race week in “paddock's yellow tint”; the filter “lasts until you exit page”; greyed tabs for sessions without a classification; Around the site the defaults; the appeal marks kept), “go” for the build's plan, the plan approved",
+   "defaults": "the filter in the address's hash, never in storage; the reader's own Filters untouched; the Filters tab reads the series meanwhile",
+   "needsWord": "the theme upload",
+   "acceptance": "/calendar/#f1 shows Formula 1 only and race week tinted at 1440 and 390 px, Day and Night; Show every series clears it; a month arrow keeps it; the reader's saved Filters unchanged",
+   "status": "planned",
+   "evidence": "",
+   "scopeHash": "d645ea88a2aa"
+  },
+  {
+   "id": "O15",
+   "phase": "PO",
+   "title": "Formula 1's Results: each round in its own weekend format",
+   "scope": "Every finisher stored (the top-ten cut moves from storage to display); /series/f1/results/: one line a round, the latest open, the Sprint weekend tag, the round's sessions as tabs from its timetable, each session's top ten then All N; qualifying from jolpi.ca's season list, practice and sprint qualifying from OpenF1's fetchSessionClassification, each stored once when final, at most 12 a run; a session without a classification keeps a greyed tab reading No classification published.",
+   "fixedBy": "the operator, 2026-10-21: the series drafts answered (“each tab needs to be its own page, helps with indexing. not query string pages”; the Calendar tab “should take you to calendar with a filter showing only that series' sessions”; race week in “paddock's yellow tint”; the filter “lasts until you exit page”; greyed tabs for sessions without a classification; Around the site the defaults; the appeal marks kept), “go” for the build's plan, the plan approved",
+   "defaults": "without the script the race shows and the other sessions follow as sections; round lines carry ids (#r17) for the Overview's tiles",
+   "needsWord": "the theme upload and one publish run",
+   "acceptance": "the Results page like the draft at 1440 and 390 px; a sprint weekend and a standard one each in their format; the stored results hold every finisher; a dry run within the job's 20 minutes",
+   "status": "planned",
+   "evidence": "",
+   "scopeHash": "b7e10fc74615"
+  },
+  {
+   "id": "O16",
+   "phase": "PO",
+   "title": "Formula 1's Standings: who can still win it, and the teammates",
+   "scope": "/series/f1/standings/: both tables with team-colour bars, gaps and race wins, the leader tinted, a dashed line under the last driver who can still win; Who can still win it on Formula 1's 2026 scales (content/series/f1/rules.md:13); the teammates from the points each driver scored for each team, a stand-in named with his rounds; the appeal marks from content/series/f1/standings-notes.json; the Drivers/Constructors/Both switch by script, both tables without it.",
+   "fixedBy": "the operator, 2026-10-21: the series drafts answered (“each tab needs to be its own page, helps with indexing. not query string pages”; the Calendar tab “should take you to calendar with a filter showing only that series' sessions”; race week in “paddock's yellow tint”; the filter “lasts until you exit page”; greyed tabs for sessions without a classification; Around the site the defaults; the appeal marks kept), “go” for the build's plan, the plan approved",
+   "defaults": "the scales in code with a test; the notes file named and shaped in its plan check",
+   "needsWord": "the new notes file's name and shape; the theme upload and one publish run",
+   "acceptance": "the Standings page like the draft at 1440 and 390 px; the points left and the drivers still in it match a hand count; the teammates add up to each constructor's total",
+   "status": "planned",
+   "evidence": "",
+   "scopeHash": "62b855a6b27e"
+  },
+  {
+   "id": "O17",
+   "phase": "PO",
+   "title": "Formula 1's Champions: the roll of honour",
+   "scope": "/series/f1/champions/: from champions.json, champion-notes.json, record-notes.json and historic-team-colors.json: the reigning champion's card (its season's title race the one button), the jump bar and its search, a table a decade (phone cards, one decade at a time with the script), the 1958 row, the team tallies, the three records, More Formula 1 (five doorways), Around the site (Calendar, All series, Formula 2 champions, Learn, News, About) and the calendar call-out.",
+   "fixedBy": "the operator, 2026-10-21: the series drafts answered (“each tab needs to be its own page, helps with indexing. not query string pages”; the Calendar tab “should take you to calendar with a filter showing only that series' sessions”; race week in “paddock's yellow tint”; the filter “lasts until you exit page”; greyed tabs for sessions without a classification; Around the site the defaults; the appeal marks kept), “go” for the build's plan, the plan approved",
+   "defaults": "no Driver profile (no driver pages); the search and the phone's decades by script, every decade without it",
+   "needsWord": "the theme upload and one publish run",
+   "acceptance": "the Champions page like the draft at 1440 and 390 px; the ×n marks, close margins and tallies match champions.json",
+   "status": "planned",
+   "evidence": "",
+   "scopeHash": "197386092117"
+  },
+  {
+   "id": "O18",
+   "phase": "PO",
+   "title": "The other fourteen series on the series pages",
+   "scope": "Each series moves to the family with its own weekend formats (its timetable's sessions; the results feed's names paired by kind and order), its champions file, Who can still win it only where its scale is simple, a blog section where its category exists; NASCAR's and IndyCar's timetables curated first. Planned in plan mode on its own, likely split by family.",
+   "fixedBy": "the operator, 2026-10-21: the series drafts answered (“each tab needs to be its own page, helps with indexing. not query string pages”; the Calendar tab “should take you to calendar with a filter showing only that series' sessions”; race week in “paddock's yellow tint”; the filter “lasts until you exit page”; greyed tabs for sessions without a classification; Around the site the defaults; the appeal marks kept), “go” for the build's plan, the plan approved",
+   "defaults": "",
+   "needsWord": "its own plan",
+   "acceptance": "each series' pages like Formula 1's, with its own data checked",
+   "status": "planned",
+   "evidence": "",
+   "scopeHash": "41b26eb7161c"
   }
  ]
 }

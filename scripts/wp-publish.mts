@@ -21,7 +21,7 @@
 // correlation id and a phase code: F fetch · N decide · W write data · R render · P publish.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
@@ -35,9 +35,10 @@ import { fetchAllGtWorldSeasonRaces } from '../lib/results/gt-world';
 import { fetchImsaSeasonResults } from '../lib/results/imsa';
 import { fetchWecSeasonResults } from '../lib/results/wec';
 import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
-import { matchCircuitEntry, venueCandidates } from '../lib/circuits';
+import { matchCircuitEntry, normalise, venueCandidates } from '../lib/circuits';
 import contentFs from '../lib/content-fs';
-import type { Series, SeriesRoundEntry } from '../lib/types';
+import type { CancelledRoundEntry, Series, SeriesRoundEntry } from '../lib/types';
+import { ROUND2_SERIES, seriesFamily } from '../lib/wp/series';
 import {
   calendarEntries,
   calendarMonthPages,
@@ -394,33 +395,62 @@ function refTime(ref: string): Date | null {
   }
 }
 
-/** A series' rounds from its content (no fetch; the content bundle, where the sessions come from too), each with
- *  its host: the curated venue as written (the matcher reads aliases inside names, so "Las Vegas Motor Speedway"
- *  would come back as the Strip Circuit), else the circuit the feed's location or the round's name matches
- *  (lib/circuits.ts). A rally has no circuit; a cancelled round has no band or card. */
-async function calendarRounds(slug: string, calendar: CalendarEntry[] | null, rally: boolean): Promise<CalendarRound[]> {
+/** content/series/<slug>/rounds.json through the content bundle: its rounds and its cancelled rounds, unchecked. */
+function roundsFile(slug: string): { rounds: Partial<SeriesRoundEntry>[]; cancelled: Partial<CancelledRoundEntry>[] } {
   let raw: unknown;
   try {
     raw = JSON.parse(contentFs.readFileSync(join(process.cwd(), 'content', 'series', slug, 'rounds.json')));
   } catch {
-    return [];
+    return { rounds: [], cancelled: [] };
   }
-  const list: unknown = Array.isArray(raw) ? raw : (raw as { rounds?: unknown } | null)?.rounds;
-  if (!Array.isArray(list)) return [];
+  const file = Array.isArray(raw) ? null : (raw as { rounds?: unknown; cancelledRounds?: unknown } | null);
+  const list: unknown = Array.isArray(raw) ? raw : file?.rounds;
+  return {
+    rounds: Array.isArray(list) ? (list as Partial<SeriesRoundEntry>[]) : [],
+    cancelled: Array.isArray(file?.cancelledRounds) ? (file.cancelledRounds as Partial<CancelledRoundEntry>[]) : [],
+  };
+}
+
+/** The circuits whose outline the theme carries (wp-theme/paddock/assets/circuits/<circuits.json key>.svg). */
+function themeOutlines(): Set<string> {
+  try {
+    return new Set(readdirSync(join(process.cwd(), 'wp-theme', 'paddock', 'assets', 'circuits')).filter(f => f.endsWith('.svg')).map(f => f.slice(0, -4)));
+  } catch {
+    return new Set();
+  }
+}
+
+/** A series' rounds from its content (no fetch; the content bundle, where the sessions come from too), each with
+ *  its host: the curated venue as written (the matcher reads aliases inside names, so "Las Vegas Motor Speedway"
+ *  would come back as the Strip Circuit), else the circuit the feed's location or the round's name matches
+ *  (lib/circuits.ts), and the host's outline when the theme carries it. A curated venue takes an outline only
+ *  from a circuit of that very name. A rally has no circuit; a cancelled round has no band or card. */
+async function calendarRounds(list: Partial<SeriesRoundEntry>[], calendar: CalendarEntry[] | null, rally: boolean, outlines: ReadonlySet<string>): Promise<CalendarRound[]> {
   const out: CalendarRound[] = [];
-  for (const r of list as Partial<SeriesRoundEntry>[]) {
+  for (const r of list) {
     if (typeof r?.round !== 'number' || typeof r.startDate !== 'string' || typeof r.endDate !== 'string' || typeof r.name !== 'string') continue;
     if (r.cancelled) continue;
     let venue: string | null = null;
-    if (!rally && r.venue) venue = r.venue;
-    else if (!rally) {
+    let outline: string | null = null;
+    if (!rally) {
       const location = calendar?.find(e => e.round === r.round && e.location)?.location;
-      const hit = await matchCircuitEntry(...venueCandidates({ location, title: r.name }));
-      venue = hit?.circuit.name ?? null;
+      const hit = await matchCircuitEntry(...venueCandidates({ venue: r.venue, location, title: r.name }));
+      const named = (s: string) => normalise(s) === normalise(r.venue ?? '');
+      venue = r.venue ?? hit?.circuit.name ?? null;
+      if (hit && outlines.has(hit.slug) && (!r.venue || named(hit.circuit.name) || hit.circuit.aliases.some(named))) outline = hit.slug;
     }
-    out.push({ round: r.round, name: r.name, startDate: r.startDate, endDate: r.endDate, venue });
+    out.push({ round: r.round, name: r.name, startDate: r.startDate, endDate: r.endDate, venue, ...(typeof r.place === 'string' ? { place: r.place } : {}), outline });
   }
   return out;
+}
+
+/** content/series/<slug>/overview.md without its front matter, or undefined. */
+function aboutText(slug: string): string | undefined {
+  try {
+    return contentFs.readFileSync(join(process.cwd(), 'content', 'series', slug, 'overview.md')).replace(/^---\r?\n[\s\S]*?\r?\n---\s*/, '');
+  } catch {
+    return undefined;
+  }
 }
 
 /** Fetch (or read what is stored at --from-ref), decide every feed, keep the data, render the pages. */
@@ -429,12 +459,13 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
   // listSeriesSlugs answers [] on any error, which would empty /series/, /calendar/ and /status/.
   if (slugs.length === 0) throw new Error('no series found under content/series');
   const names = new Map<string, string>();
-  const chips = new Map<string, { short?: string; order?: number; rally: boolean }>();
+  const chips = new Map<string, { short?: string; order?: number; rally: boolean; season?: number }>();
   for (const slug of slugs) {
     const meta = await loadSeriesMeta(slug);
     names.set(slug, meta.name);
-    chips.set(slug, { short: meta.shortName, order: meta.order, rally: meta.category === 'rally' });
+    chips.set(slug, { short: meta.shortName, order: meta.order, rally: meta.category === 'rally', season: meta.season });
   }
+  const outlines = themeOutlines();
 
   const fetched: Fetched | null = FROM_REF ? null : await fetchEverything(slugs, now);
   if (FROM_REF) log('F', `no fetch: rendering the data stored at ${FROM_REF}`);
@@ -476,14 +507,28 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
       health.push({ slug, name: d.name, kind, status, note, since });
       log('N', `${kind} ${slug} ${status}${note ? ` (${note})` : ''}${changed ? ' changed' : ''}`);
     }
-    d.rounds = await calendarRounds(slug, d.calendar, chip?.rally === true);
+    const file = roundsFile(slug);
+    d.rounds = await calendarRounds(file.rounds, d.calendar, chip?.rally === true, outlines);
+    if (ROUND2_SERIES.has(slug)) {
+      d.season = chip?.season;
+      d.about = aboutText(slug);
+      d.teams = ((await loadCuratedDrivers(slug))?.teams ?? []).map(t => ({ name: t.name, colour: t.color, drivers: t.drivers.map(x => ({ name: x.name, code: x.code })) }));
+      d.cancelled = file.cancelled.flatMap(c =>
+        typeof c?.originalRound === 'number' && typeof c.name === 'string' ? [{ round: c.originalRound, name: c.name, ...(typeof c.place === 'string' ? { place: c.place } : {}) }] : [],
+      );
+    }
     all.push(d);
   }
   if (fetched) writeStored('health.json', health);
   log('W', DATA && fetched ? `${dataChanged} data files changed in ${DATA}` : 'no data written');
 
   const checkedAt = FROM_REF ? (refTime(FROM_REF) ?? now) : now;
-  const pages: Page[] = [seriesIndexPage(all, now), ...calendarMonthPages(all, now), statusPage(health, checkedAt), ...all.flatMap(d => seriesPages(d, now))];
+  const pages: Page[] = [
+    seriesIndexPage(all, now),
+    ...calendarMonthPages(all, now),
+    statusPage(health, checkedAt),
+    ...all.flatMap(d => (ROUND2_SERIES.has(d.slug) ? seriesFamily(d) : seriesPages(d, now))),
+  ];
   log('R', `${pages.length} pages`);
   return { pages, health };
 }
