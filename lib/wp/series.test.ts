@@ -325,6 +325,11 @@ describe('seriesList', () => {
     expect(b).toContain('<div class="pd-sx-ctl" hidden>');
   });
 
+  it("opens the Calendar showing a weekend card's series, named for its round", () => {
+    expect(b).toMatch(/<header><b>Formula 1<\/b><small>Round (\d+)<\/small><\/header><div><a href="\/calendar\/#f1" aria-label="Formula 1, round \1: [^"]+, on the Calendar"><b>/);
+    expect(b).toContain('<a href="/calendar/#wrc" aria-label="WRC, round');
+  });
+
   it('closes a round raced twice only once its last race is over, and one without a result from the next UTC day', () => {
     const dtm: SeriesData = {
       ...base,

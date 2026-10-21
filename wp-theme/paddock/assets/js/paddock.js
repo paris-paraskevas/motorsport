@@ -282,6 +282,8 @@
 		// A series page's Calendar tab (/calendar/#f1) shows that series alone for the visit; the reader's own Filters stay as they were.
 		var visit = cal.getAttribute( 'data-visit' );
 		var offSeries = visit ? ( cal.pdSeries || [] ).filter( function ( s ) { return s !== visit; } ) : hiddenOf( 'pd-off-series' ), offKinds = hiddenOf( 'pd-off-kinds' );
+		// The Series dropdown shows what the page shows: a visit's one series, otherwise the reader's own.
+		cal.querySelectorAll( '.pd-cal-menu.is-series input' ).forEach( function ( box ) { box.checked = offSeries.indexOf( box.value ) < 0; } );
 		cal.querySelectorAll( '.pd-cs, .pd-cal-band, .pd-wc, .pd-wc-s' ).forEach( function ( el ) {
 			var series = el.getAttribute( 'data-s' ), kind = el.getAttribute( 'data-kind' );
 			el.classList.toggle( 'is-filtered', ( series !== null && offSeries.indexOf( series ) >= 0 ) || ( kind !== null && offKinds.indexOf( kind ) >= 0 ) );
@@ -306,13 +308,19 @@
 		why.textContent = 'because you came from the ' + cal.pdName[ slug ] + ' page, until you leave the Calendar';
 		all.type = 'button';
 		all.textContent = 'Show every series';
-		all.addEventListener( 'click', function () { endVisit( cal ); applyFilter( cal ); } );
+		// The button goes with the notice, so the keyboard's place moves to Filters.
+		all.addEventListener( 'click', function () {
+			endVisit( cal );
+			applyFilter( cal );
+			var tab = cal.querySelector( '.pd-cal-ftab' );
+			if ( tab ) { tab.focus(); }
+		} );
 		note.appendChild( what );
 		note.appendChild( why );
 		note.appendChild( all );
 		var top = cal.querySelector( '.pd-cal-top' );
 		if ( top ) { top.parentNode.insertBefore( note, top.nextSibling ); }
-		cal.querySelectorAll( '.pd-cal-month a[href], a.pd-cal-today' ).forEach( function ( a ) { a.setAttribute( 'href', a.getAttribute( 'href' ).split( '#' )[ 0 ] + '#' + slug ); } );
+		cal.querySelectorAll( 'a.pd-cal-step, a.pd-cal-today' ).forEach( function ( a ) { a.setAttribute( 'href', a.getAttribute( 'href' ).split( '#' )[ 0 ] + '#' + slug ); } );
 	}
 
 	function endVisit( cal ) {
@@ -320,7 +328,7 @@
 		cal.removeAttribute( 'data-visit' );
 		var note = cal.querySelector( '.pd-cal-only' );
 		if ( note ) { note.remove(); }
-		cal.querySelectorAll( '.pd-cal-month a[href], a.pd-cal-today' ).forEach( function ( a ) { a.setAttribute( 'href', a.getAttribute( 'href' ).split( '#' )[ 0 ] ); } );
+		cal.querySelectorAll( 'a.pd-cal-step, a.pd-cal-today' ).forEach( function ( a ) { a.setAttribute( 'href', a.getAttribute( 'href' ).split( '#' )[ 0 ] ); } );
 		try { history.replaceState( null, '', location.pathname + location.search ); } catch {}
 	}
 
@@ -333,12 +341,14 @@
 		var boxes = items.map( function ( item ) {
 			var label = document.createElement( 'label' ), box = document.createElement( 'input' );
 			box.type = 'checkbox';
+			box.value = item[ 0 ];
 			box.checked = hiddenOf( key ).indexOf( item[ 0 ] ) < 0;
 			if ( item[ 2 ] ) { label.className = item[ 2 ]; }
 			box.addEventListener( 'change', function () {
-				var off = hiddenOf( key ), at = off.indexOf( item[ 0 ] );
-				if ( box.checked && at >= 0 ) { off.splice( at, 1 ); }
-				if ( ! box.checked && at < 0 ) { off.push( item[ 0 ] ); }
+				// What the boxes show becomes the reader's own (during a visit, the visit's one series and this change); a
+				// series not in this dropdown keeps its stored state.
+				var off = hiddenOf( key ).filter( function ( s ) { return ! items.some( function ( i ) { return i[ 0 ] === s; } ); } );
+				boxes.forEach( function ( b ) { if ( ! b.checked ) { off.push( b.value ); } } );
 				calStore.set( key, off.join( ',' ) );
 				// Picking series by hand ends a series page's visit filter: the reader's own choice takes over.
 				if ( key === 'pd-off-series' ) { endVisit( cal ); }
@@ -400,6 +410,26 @@
 			if ( e.key !== 'Escape' ) { return; }
 			bar.querySelectorAll( '.pd-cal-menu[open]' ).forEach( function ( menu ) { menu.open = false; menu.querySelector( 'summary' ).focus(); } );
 		} );
+	}
+
+	/** The pinned bar (the operator, 22 Oct: "A with C"): once the month's steps have scrolled off the top of the screen, a
+	 *  slim bar holds them, the month's name and Today, and goes again when they come back. A plain block, so the page
+	 *  keeps one Months landmark. */
+	function pinBar( cal ) {
+		var top = cal.querySelector( '.pd-cal-top' ), nav = top && top.querySelector( '.pd-cal-month' ), h1 = top && top.querySelector( '.pd-cal-h1' );
+		if ( ! nav || ! h1 || ! ( 'IntersectionObserver' in window ) ) { return; }
+		var bar = document.createElement( 'div' ), name = document.createElement( 'b' );
+		var prev = nav.querySelector( '[rel="prev"]' ), next = nav.querySelector( '[rel="next"]' ), today = top.querySelector( '.pd-cal-today' );
+		bar.className = 'pd-cal-bar';
+		bar.hidden = true;
+		Array.prototype.forEach.call( h1.childNodes, function ( n ) { if ( n.nodeName !== 'SMALL' ) { name.appendChild( n.cloneNode( true ) ); } } );
+		[ prev, name, next, today ].forEach( function ( el ) { if ( el ) { bar.appendChild( el === name ? el : el.cloneNode( true ) ); } } );
+		top.parentNode.insertBefore( bar, top.nextSibling );
+		new IntersectionObserver( function ( entries ) {
+			var gone = ! entries[ 0 ].isIntersecting && entries[ 0 ].boundingClientRect.top < 0;
+			bar.hidden = ! gone;
+			cal.classList.toggle( 'is-pinned', gone );
+		} ).observe( nav );
 	}
 
 	/** The views (Month, Week, Agenda) and the week steps. */
@@ -476,6 +506,7 @@
 			cal.pdName[ s ] = chip.getAttribute( 'data-name' ) || chip.textContent;
 		} );
 		buildFilters( cal );
+		pinBar( cal );
 		var asked = location.hash.slice( 1 );
 		if ( cal.pdSeries.indexOf( asked ) >= 0 ) { startVisit( cal, asked ); }
 		applyFilter( cal );
@@ -540,11 +571,12 @@
 			if ( gone ) { past++; }
 		} );
 		// Race week (the operator, 21 Oct): the week holding today when it has a race weekend of a series on show, otherwise the
-		// next week on this page that has one, in Paddock's yellow; on the agenda the tag heads that week's weekend.
-		var race = null;
+		// next week on this page that has one, in Paddock's yellow; on the agenda the tag heads that week's weekend. Only the
+		// month whose grid holds today has one: a month further on would otherwise tint its own first race weekend.
+		var race = null, holds = cal.querySelector( '.pd-cal-dn[data-date="' + today + '"]' ) !== null;
 		cal.querySelectorAll( '.pd-cal-wk' ).forEach( function ( w ) {
 			var days = w.querySelectorAll( '.pd-cal-dn[data-date]' ), last = days.length ? days[ days.length - 1 ].getAttribute( 'data-date' ) : '';
-			var on = ! race && last >= today && Array.prototype.some.call( w.querySelectorAll( '.pd-cal-band:not(.is-filtered)' ), function ( b ) { return b.getAttribute( 'data-to' ) >= today; } );
+			var on = holds && ! race && last >= today && Array.prototype.some.call( w.querySelectorAll( '.pd-cal-band:not(.is-filtered)' ), function ( b ) { return b.getAttribute( 'data-to' ) >= today; } );
 			if ( on ) { race = { first: days[ 0 ].getAttribute( 'data-date' ), last: last }; }
 			w.classList.toggle( 'is-race', on );
 			if ( on && ! w.querySelector( '.pd-cal-rw' ) ) {

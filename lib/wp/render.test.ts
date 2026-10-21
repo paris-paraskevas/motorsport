@@ -484,10 +484,14 @@ describe('calendarMonthPages', () => {
     expect(october.body.startsWith('<!-- wp:html -->')).toBe(true);
   });
 
-  it('links the months either side, and none past the last', () => {
-    expect(october.body).toContain('<a href="/calendar/2026-11/" aria-label="Next month: November 2026">›</a>');
-    expect(october.body).toContain('<span aria-hidden="true">‹</span>');
-    expect(pages[2].body).toContain('<a href="/calendar/2026-10/" aria-label="Previous month: October 2026">‹</a>');
+  it('heads the page with its month and names the months either side, none past the last', () => {
+    expect(october.body).toContain('<h1 class="pd-cal-h1"><small>Calendar</small> October <span>2026</span></h1>');
+    expect(october.body).toContain(
+      '<nav class="pd-cal-month" aria-label="Months"><a class="pd-cal-step" rel="next" href="/calendar/2026-11/" aria-label="Next month: November 2026"><span class="pd-cal-full">November</span><span class="pd-cal-short">Nov</span><i aria-hidden="true">›</i></a></nav>',
+    );
+    expect(pages[2].body).toContain(
+      '<nav class="pd-cal-month" aria-label="Months"><a class="pd-cal-step" rel="prev" href="/calendar/2026-10/" aria-label="Previous month: October 2026"><i aria-hidden="true">‹</i><span class="pd-cal-full">October</span><span class="pd-cal-short">Oct</span></a></nav>',
+    );
   });
 
   it('puts each session in its UTC day, marks race, sprint and qualifying, and prints UTC', () => {
@@ -519,6 +523,10 @@ describe('calendarMonthPages', () => {
     expect(october(at('2026-10-25T19:00:00.000Z', 'YellaWood 500'))).toContain('<span class="pd-cal-race">Race <span');
     expect(october(at('2026-10-25T12:00:00.000Z', 'Race 4h (NLS4 ADAC 24h Qualifiers)'))).toContain('<span class="pd-cal-race">Race 4h <span');
     expect(october(at('2026-10-25T14:00:00.000Z', 'Race (London R17) — Season Finale'))).toContain('<span class="pd-cal-race">Race <span');
+    for (const split of ['Race - Season Finale', 'Race – Season Finale', 'Race: Season Finale']) {
+      expect(october(at('2026-10-25T14:00:00.000Z', split))).toContain('<span class="pd-cal-race">Race <span');
+    }
+    expect(october(at('2026-10-25T14:00:00.000Z', 'Sprint-Race'))).toContain('<span class="pd-cal-race">Sprint-Race <span');
     expect(october(at('2026-10-25T20:00:00.000Z', 'Race <2>'))).toContain('<span class="pd-cal-race">Race &lt;2&gt; <span');
     expect(october(at('2026-10-25T00:00:00.000Z', 'Race', 18, true), at('2026-10-24T21:00:00.000Z', 'Qualifying'))).toContain('F1 · United States GP</span>');
   });

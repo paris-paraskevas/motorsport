@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.290 — 2026-10-22
+
+### O24: the Calendar's month as its headline with a bar that stays, the calendar's follow-ups, and clickable cards on the series list
+
+The operator's test of 21 Oct asked for a month changer easier to see; the drafts of 22 Oct (Paddock Month Changer) drew round 2's box beside three ways, and the operator chose A with C. Mid-build the operator asked for the series list's cards to be clickable. The calendar's follow-ups from the reviews of #1170, #1173 and #1177 ride along.
+
+- **The month as the headline (A).** `calendarMonth` (lib/wp/render.ts) heads each month page with `<h1 class="pd-cal-h1"><small>Calendar</small> October <span>2026</span></h1>` and writes its steps as links named for the months they open (`.pd-cal-step`, `rel="prev"` and `"next"`, the full name on a laptop and `MONTH_SHORT`'s on a phone, since en-GB's own short September is "Sept"); a month at the edge of the reach has no step on that side. The theme sets the top as a grid (the heading, the steps and Today, then the views, Filters and Session emails): the month at 54.4 px on a laptop and 36.8 px on a phone, the steps 44 px.
+- **The bar that stays (C).** paddock.js's `pinBar` builds a slim bar from the steps, the month's name and Today, shown by an IntersectionObserver once the steps have left the top of the screen and hidden when they come back. It sits under WordPress's bar (`--wp-admin--admin-bar--height`) and at the very top at 600 px and below, where that bar scrolls away; the phone's sticky weekend headings stick under it (61 px, the steps and Today now `border-box`). The visit's `#slug` rides on its links too.
+- **#1170's three lows.** During a visit from a series page the Series dropdown shows the visit (`applyFilter` syncs its boxes) and a change there saves what the dropdown shows as the reader's own, a series not in it keeping its stored state; race week only on the month page whose grid holds today, so a month further on no longer tints its own first race weekend; Show every series hands the focus to Filters.
+- **#1173's low.** `bandRace` cuts a race's label at the first bracket, em dash, en dash, colon or spaced hyphen (`/(?:\s*[(—–:]|\s+-\s).*$/`); "Sprint-Race" stays whole.
+- **The Calendar's 11 px at 320.** `.pd-cal-wkh` wraps, so a long date line drops under its heading.
+- **The series list.** A series card leads to its series page as a whole, a stretched link from its name with the Follow tick and the links row above it; only Formula 1's while its page is the one built. Each Racing this weekend card opens the Calendar showing its series (`/calendar/#<slug>`) until the weekend pages exist. Hover inks the border, and the keyboard rings the card in the site's yellow and ink.
+- **#1177's two notes.** The header's 374 px comment says why 12.2vw - 25.5px, and the wordmark's cap is `min(1.0625rem, …)`.
+
+Theme 0.1.13. Tests: the heading and the named steps (none past the reach), the label cuts, each weekend card's link. The Month view keeps its fit: at 1440×900 no "+N more" before or after, at 1280×720 the same six hiding eleven events.
+
 ## 1.0.289 — 2026-10-21
 
 ### O23: no sideways scroll on the series band from 700 to 999 px, nor in the header below 375 px
