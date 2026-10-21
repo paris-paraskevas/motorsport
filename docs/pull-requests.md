@@ -14,6 +14,22 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1176 · 1.0.288 · O22 (the theme fixes from the operator's test, and a countdown on the series cards) · opened 2026-10-21 into `next` on the operator's "fold the countdown into the fixes PR … and start it now"; the merge on the word
+**Three theme changes, one PR.** The operator's test of theme 0.1.9 found a click on a tab leaving two lines and the From the blog cards without photos; the operator then asked for the days until each championship's next round on the series list, folded in so one review, one upload and one publish run cover all three. O21's records (the merge of #1175, its publish run, the check on the site, the ledger page) ride here.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the merge, theme 0.1.11 and one publish run with `--only /series/f1/`: no outline left by a mouse click (keyboard users keep the yellow ring, inside the tabs and chips); each series page's From the blog cards led by their cover photos; each racing card on /series/ reading the days to its next round beside Next ("in 37 days", "tomorrow"), nothing during its weekend.
+- **Editors get:** nothing new to edit; a post's featured image is its card's cover.
+- **Files (14):**
+  - `wp-theme/paddock/style.css` · theme 0.1.11: the outline only for keyboard focus, the rings inside the tabs and chips, the cover's 16:9 crop, the countdown label.
+  - `wp-theme/paddock/functions.php` · `pd_series_posts` leads each card with the post's featured image, linked, out of the tab order.
+  - `wp-theme/paddock/assets/js/paddock.js` · `render()` fills each `[data-pd-days]` with the whole days to the round's start, hidden once its weekend is on.
+  - `lib/wp/series.ts`, `lib/wp/series.test.ts` · the countdown's slot on each racing card (`data-pd-days`, the round's start date); tests for it, its absence on a finished card, a Sunday race counting to its Sunday.
+  - `wp-theme/preview/series.html` · from the dry run, with the six slots.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.288.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md`, `IDEAS.md` · O21 merged, published, checked and done; O22 opened with its scan and evidence; the countdown idea.
+- **Verified:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 279 files, 2,812 tests. Dry run `--only /series/f1/`: /series/ 21,752 bytes with six countdown slots, the Formula 1 pages unchanged. The Playground (theme 0.1.11, PHP 8.3 parsing it) with playwright-core in Europe/Athens: the countdown on Wed 21, Thu 22 and Fri 23 Oct as the PR describes; a mouse click on a tab, a Results row and a chip with no outline, the keyboard's ring on each; the cover 385 by 216 at 1440 and 356 by 200 at 390, loaded, out of the tab order; no sideways scroll on the three pages; no page error.
+- **Test after upload (0.1.11):** the four checks in the PR's description.
+- **Review:** waits for the operator's 5-hour figure; one fresh-context Sonnet reader, its cost stated first.
+
 ## #1175 · 1.0.287 · O21 (the series list in round 2's design) · opened 2026-10-21 into `next` on the plan's approval; the merge on the word
 **The series list.** The operator asked for `/series/` in round 2's design ("it looks dreadful atm"); it was drafted on The Paddock Drafts v13 to v16, answered and planned. Session 69 built it to the handoff; session 70 checked it in the browser, fixed what that found, wrote the six 2026 champions' notes the full suite required, and greyed Formula 1's unbuilt tabs on the operator's word.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the merge, theme 0.1.10 and one publish run with `--only /series/f1/`: `/series/` as round 2 drew it (the championships still racing, then the decided ones in gold with their 2026 champions, each grouped by type; a switch for the series you follow; Racing this weekend), and Formula 1's Standings and Champions tabs greyed until their pages exist.
