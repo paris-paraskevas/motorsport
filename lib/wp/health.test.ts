@@ -45,6 +45,13 @@ describe('resultsShrank', () => {
     expect(resultsShrank(season.slice(0, 1), null)).toBe(false);
     expect(resultsShrank([round(1, '2027-03-07', 2)], season)).toBe(false);
   });
+
+  it("counts races only, never a round's other sessions (O15: every finisher, practice and qualifying stored)", () => {
+    const practised = season.map(r => ({ ...r, others: [{ label: 'Practice 1', tables: [] }, { label: 'Qualifying', tables: [] }] }));
+    expect(resultsShrank(season, practised)).toBe(false);
+    expect(resultsShrank(practised, season)).toBe(false);
+    expect(resultsShrank(practised.slice(0, 2), season)).toBe(true);
+  });
 });
 
 describe('statusPage', () => {

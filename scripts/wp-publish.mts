@@ -26,8 +26,10 @@ import { dirname, join } from 'node:path';
 import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '../lib/series';
-import { loadCuratedDrivers } from '../lib/series-content';
+import { loadCuratedDrivers, loadTeamNames, officialTeamName } from '../lib/series-content';
+import { fetchUpstream } from '../lib/fetch-upstream';
 import { fetchF1SeasonSprints } from '../lib/results/f1';
+import { fetchOpenF1WeekendSessions, fetchSessionClassification, hasResolvedDrivers } from '../lib/results/openf1';
 import { fetchDTMSeasonResults } from '../lib/results/dtm';
 import { fetchNascarCupSeasonResults } from '../lib/results/nascar-cup';
 import { fetchNlsSeasonResults } from '../lib/results/nls';
@@ -42,13 +44,17 @@ import { ROUND2_SERIES, seriesFamily } from '../lib/wp/series';
 import {
   calendarEntries,
   calendarMonthPages,
+  carrySessions,
   escapeHtml,
   hashOf,
   heading,
   onlyFamily,
+  openf1Session,
+  openf1Wanted,
   paragraph,
   planSync,
   resultRounds,
+  withSession,
   seriesIndexPage,
   seriesPages,
   standingsTables,
@@ -69,7 +75,7 @@ import { decideFeed, resultsShrank, statusPage, type FeedHealth, type FeedKind, 
 const argv = process.argv.slice(2);
 // An unknown argument, or a flag missing its value, stops the run: "--only" with nothing after it would publish every page.
 for (let i = 0; i < argv.length; i++) {
-  if (['--out', '--data', '--from-ref', '--only'].includes(argv[i])) {
+  if (['--out', '--data', '--from-ref', '--only', '--openf1-max'].includes(argv[i])) {
     if (argv[i + 1] === undefined || argv[i + 1].startsWith('--')) {
       console.error(`${argv[i]} needs a value`);
       process.exit(1);
@@ -91,6 +97,9 @@ const DATA = opt('--data');
 const FROM_REF = opt('--from-ref');
 /** Only the pages whose path starts here ("/calendar/"): a page family goes live once its design does. */
 const ONLY = opt('--only');
+/** Formula 1 practices and sprint qualifyings a run fetches from OpenF1 (slot O15): each is four calls against its
+ *  30 a minute, so 12 take about two minutes; the season's backfill run takes more. */
+const OPENF1_MAX = Number(opt('--openf1-max') ?? 12);
 
 const RUN = process.env.GITHUB_RUN_ID ? `wp-publish#${process.env.GITHUB_RUN_ID}` : `local-${Date.now().toString(36)}`;
 const log = (phase: string, msg: string): void => console.error(`${RUN} ${phase} ${msg}`);
@@ -106,6 +115,11 @@ if (FROM_REF !== undefined && !/^[\w./-]+$/.test(FROM_REF)) {
 }
 if (ONLY !== undefined && !/^\/[a-z0-9/-]*$/.test(ONLY)) {
   console.error('--only takes a path that starts with /, such as /calendar/');
+  process.exit(1);
+}
+// 60 sessions are 240 calls, eight minutes of the run's twenty.
+if (!Number.isInteger(OPENF1_MAX) || OPENF1_MAX < 0 || OPENF1_MAX > 60) {
+  console.error('--openf1-max takes a whole number from 0 to 60');
   process.exit(1);
 }
 // A stray DATA_SOURCE=db turns every fetcher into a reader of a database this job does not have.
@@ -304,6 +318,104 @@ interface Fetched {
   calendar: Map<string, Fresh<CalendarEntry[]>>;
 }
 
+interface JolpiQualifyingPage {
+  MRData?: {
+    total?: string;
+    RaceTable?: {
+      Races?: Array<{
+        season?: string;
+        round?: string;
+        raceName?: string;
+        date?: string;
+        QualifyingResults?: Array<{
+          position?: string;
+          Driver?: { givenName?: string; familyName?: string };
+          Constructor?: { name?: string };
+          Q1?: string;
+          Q2?: string;
+          Q3?: string;
+        }>;
+      }>;
+    };
+  };
+}
+
+/** Formula 1's qualifying this season from jolpi.ca (slot O15), one entry a round, teams named as formula1.com names
+ *  them. Every page or none: jolpi.ca clamps a page to 100 entries (lib/results/f1.ts:9-14) and splits a round
+ *  across two, so a page that fails throws, and the stored qualifying is carried instead of a half classification. */
+async function fetchF1Qualifying(): Promise<unknown[]> {
+  const teamNames = await loadTeamNames('f1');
+  const rounds = new Map<string, { round: number; raceName: string; date: string; results: unknown[] }>();
+  for (let offset = 0; offset < 1200; offset += 100) {
+    const res = await fetchUpstream(`https://api.jolpi.ca/ergast/f1/current/qualifying.json?limit=100&offset=${offset}`);
+    if (!res.ok) throw new Error(`jolpi.ca qualifying answered ${res.status} at offset ${offset}`);
+    const page = (await res.json()) as JolpiQualifyingPage;
+    const races = page.MRData?.RaceTable?.Races ?? [];
+    for (const race of races) {
+      const key = race.round ?? '';
+      const r = rounds.get(key) ?? { round: Number(race.round), raceName: race.raceName ?? '', date: race.date ?? '', results: [] };
+      for (const q of race.QualifyingResults ?? []) {
+        r.results.push({
+          position: Number(q.position),
+          driverName: `${q.Driver?.givenName ?? ''} ${q.Driver?.familyName ?? ''}`.trim(),
+          team: officialTeamName(teamNames, race.season, q.Constructor?.name ?? ''),
+          q1: q.Q1 ?? '',
+          q2: q.Q2 ?? '',
+          q3: q.Q3 ?? '',
+        });
+      }
+      rounds.set(key, r);
+    }
+    const total = Number(page.MRData?.total);
+    if (!Number.isFinite(total)) throw new Error(`jolpi.ca qualifying gave no total at offset ${offset}`);
+    if (offset + 100 >= total) break;
+    if (races.length === 0) throw new Error(`jolpi.ca qualifying stopped at offset ${offset} of ${total}`);
+  }
+  return [...rounds.values()];
+}
+
+/** Formula 1's practices and sprint qualifying (slot O15): the season's stored ones carried, then up to OPENF1_MAX
+ *  sessions more from OpenF1, each logged, inside eight minutes so a throttled backfill never takes the whole job past
+ *  its twenty. A session is kept only with every driver named, by drivers.json's car numbers or OpenF1's own names,
+ *  so a throttled /drivers answer is fetched again by a later run instead of stored without names. */
+async function f1OpenF1Sessions(out: Fetched, now: Date, season: number, endOf: (round: number) => string | null): Promise<void> {
+  const fresh = out.results.get('f1');
+  if (!fresh?.data) return;
+  let rounds = carrySessions(fresh.data, readStored<ResultRound[]>(relOf('f1', 'results')), season);
+  const wanted = openf1Wanted(rounds, out.calendar.get('f1')?.data ?? [], now, OPENF1_MAX);
+  if (wanted.length > 0) {
+    const roster = new Map(
+      ((await loadCuratedDrivers('f1'))?.teams ?? []).flatMap(t => t.drivers.flatMap(d => (typeof d.number === 'number' ? [[String(d.number), { name: d.name, team: t.name }] as const] : []))),
+    );
+    const year = new Date(wanted[0].start).getUTCFullYear();
+    const listed = await timed(() => fetchOpenF1WeekendSessions(new Date(Date.UTC(year, 0, 1)), new Date(Date.UTC(year, 11, 31))), 60_000);
+    log('F', `results f1-openf1 ${listed.value?.length ?? 0} sessions listed, ${wanted.length} wanted${listed.error ? ` ERROR ${listed.error}` : ''}`);
+    const deadline = Date.now() + 8 * 60_000;
+    for (const [i, e] of wanted.entries()) {
+      if (Date.now() > deadline) {
+        log('F', `results f1-openf1 out of time: ${wanted.length - i} sessions left for the next run`);
+        break;
+      }
+      if (e.round === null) continue;
+      // OpenF1 has no round numbers: the session of that name nearest the timetable's start, within a day and a half.
+      const at = Date.parse(e.start);
+      const match = (listed.value ?? [])
+        .filter(s => s.session_name.toLowerCase() === e.session.toLowerCase() && Math.abs(Date.parse(s.date_start) - at) <= 36 * 3_600_000)
+        .sort((a, b) => Math.abs(Date.parse(a.date_start) - at) - Math.abs(Date.parse(b.date_start) - at))[0];
+      if (!match) {
+        log('F', `results f1-openf1 R${e.round} ${e.session} NOT LISTED`);
+        continue;
+      }
+      const t = await timed(() => fetchSessionClassification(match), 90_000);
+      const session = t.value && hasResolvedDrivers(t.value) ? openf1Session(e.session, t.value.entries, roster) : null;
+      if (session) rounds = withSession(rounds, e.round, e.event, endOf(e.round), session);
+      const outcome = session ? `OK ${session.tables[0].rows.length} rows` : t.error ? `ERROR ${t.error}` : t.value?.entries.length ? 'UNNAMED (kept for a later run)' : 'EMPTY';
+      log('F', `results f1-openf1 R${e.round} ${e.session} ${outcome} ${t.ms}ms`);
+    }
+  }
+  out.results.set('f1', { ...fresh, data: rounds });
+}
+
 async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   const out: Fetched = { standings: new Map(), results: new Map(), calendar: new Map() };
 
@@ -359,10 +471,12 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
     log('F', `results ${label} ${t.error ? 'ERROR' : rows ? 'OK' : 'EMPTY'} ${rows} items ${t.ms}ms${t.error ? ` ${t.error}` : ''}`);
     return t;
   };
-  // F1: the Grand Prix list from the registry, the sprint list beside it.
+  // F1: the Grand Prix list from the registry, the sprint list and the qualifying beside it, then the practices.
   const sprints = await extra('f1-sprints', () => fetchF1SeasonSprints());
+  const qualifying = await extra('f1-qualifying', () => fetchF1Qualifying());
   const f1 = registry.get('f1');
-  setResults('f1', f1?.value === undefined ? null : { races: f1.value, sprints: sprints.value ?? [] }, f1?.error);
+  setResults('f1', f1?.value === undefined ? null : { races: f1.value, sprints: sprints.value ?? [], qualifying: qualifying.value ?? [] }, f1?.error);
+  await f1OpenF1Sessions(out, now, seasonOf('f1'), round => roundsOf('f1').find(r => r.round === round)?.endDate ?? null);
   // IndyCar with the curated drivers, as the Results tab passes them (teams and names).
   const indycar = await extra('indycar', async () => fetchIndyCarSeasonResults({ drivers: await loadCuratedDrivers('indycar') }));
   setResults('indycar', indycar.value, indycar.error);

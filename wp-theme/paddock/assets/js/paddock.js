@@ -127,8 +127,10 @@
 		} );
 		document.querySelectorAll( '[data-pd-ses]' ).forEach( function ( card ) {
 			var list = card.getAttribute( 'data-pd-ses' ).split( ';' ).map( function ( s ) {
-				var p = s.split( '|' ), a = Date.parse( p[ 1 ] );
-				return { name: p[ 0 ], start: a, end: Date.parse( p[ 2 ] ) || a };
+				var p = s.split( '|' ), a = Date.parse( p[ 1 ] ), name = p[ 0 ];
+				// The publisher URI-encodes each name (O15); a page published before then carries them plain.
+				try { name = decodeURIComponent( name ); } catch { /* plain */ }
+				return { name: name, start: a, end: Date.parse( p[ 2 ] ) || a };
 			} ).filter( function ( s ) { return isFinite( s.start ); } );
 			var live = list.filter( function ( s ) { return now >= s.start && now < s.end; } )[ 0 ] || null;
 			var next = live ? null : list.filter( function ( s ) { return s.start > now; } )[ 0 ] || null;
@@ -597,6 +599,17 @@
 	} );
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
+
+	// Results (O15): a round's tile on the Overview links /series/<slug>/results/#r12, and that round's fold opens.
+	var openRound = function () {
+		var id = location.hash.slice( 1 ), el = /^r\d+$/.test( id ) ? document.getElementById( id ) : null;
+		if ( el && el.tagName === 'DETAILS' ) {
+			el.open = true;
+			el.scrollIntoView( { block: 'start' } );
+		}
+	};
+	openRound();
+	window.addEventListener( 'hashchange', openRound );
 
 	// The phone search: focus the field when it opens, close it on Escape.
 	document.querySelectorAll( 'details.pd-search-sm' ).forEach( function ( d ) {
