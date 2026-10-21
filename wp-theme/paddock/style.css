@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.11
+Version: 0.1.12
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -92,6 +92,18 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 	.pd-top .pd-nav, .pd-top .pd-nav .wp-block-navigation__container { column-gap: 10px; }
 	.pd-top .pd-nav { font-size: .8125rem; }
 	.pd-subscribe .wp-block-button__link { padding: 6px 10px; font-size: .78rem; }
+}
+/* Below 375 px the header's pieces (376 px with their margins) no longer fit: the gaps, the magnifier, the mark and
+   Subscribe tighten, and the wordmark shrinks with the screen, 17 px down to 348 px and 13.5 px at 320, WCAG's
+   reflow width. */
+@media (max-width: 374px) {
+	.pd-top-in { gap: 6px; }
+	.pd-brand { gap: 6px; }
+	.pd-mark { width: 18px; height: 18px; background-size: 7.65px 7.65px; }
+	.pd-top .wp-block-site-title { font-size: min(17px, calc(12.2vw - 25.5px)); }
+	.pd-tools { gap: 2px; }
+	.pd-search-sm summary { width: 32px; }
+	.pd-subscribe .wp-block-button__link { padding: 6px 8px; font-size: .75rem; }
 }
 
 /* The live strip */
@@ -434,6 +446,9 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
    "now" (lib/wp/series.ts); the script names the weekend on now and the session on now or next, and keeps Follow. */
 .pd-sr-band { background: var(--s); color: var(--pd-on); }
 .pd-sr-band-in { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 40px var(--pd-gutter) 30px; }
+/* The title column may be narrower than the round bar's fixed segments, which then shrink alike: without it the bar
+   (640 px for 23 rounds) held Follow and Session emails past the screen's edge from 700 to 999 px. */
+.pd-sr-ttl { min-width: 0; }
 .pd-sr-ttl h1 { margin: 0; color: var(--pd-on); font-size: clamp(3rem, 6vw, 4.75rem); line-height: .9; font-weight: 800; font-stretch: 80%; letter-spacing: -.035em; }
 .pd-sr .pd-sr-ttl p { margin: 12px 0; font-size: .94rem; font-weight: 600; }
 .pd-sr-bar { display: flex; gap: 4px; }
