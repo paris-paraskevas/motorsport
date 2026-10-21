@@ -570,9 +570,9 @@ export interface SeriesData {
   standings: Table[] | null;
   results: ResultRound[] | null;
   calendar: CalendarEntry[] | null;
-  /** For round 2's series pages (lib/wp/series.ts): the season (meta.json), the overview text without its
-   *  front matter (overview.md), the teams with their colours and drivers (drivers.json), and the rounds
-   *  that will not run (rounds.json cancelledRounds). */
+  /** The season (meta.json), every series; for round 2's series pages (lib/wp/series.ts), the overview text without
+   *  its front matter (overview.md), the teams with their colours and drivers (drivers.json), and the rounds that will
+   *  not run (rounds.json cancelledRounds). */
   season?: number;
   about?: string;
   teams?: SeriesTeam[];
@@ -928,7 +928,6 @@ export function calendarMonthPages(all: SeriesData[], now: Date): Page[] {
   ];
 }
 
-/** /series/: every series with a page, and its next session. */
 // ── The page as WordPress stores it ──────────────────────────────────────────
 
 /** The publisher's mark, first in every page it owns: the hash of what it last wrote, and the address

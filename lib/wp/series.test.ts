@@ -256,8 +256,9 @@ describe('seriesList', () => {
   const base = { standings: null, calendar: null, season: 2026 } as const;
   const all: SeriesData[] = [
     { ...base, slug: 'wrc', name: 'WRC', category: 'rally', colour: '#eab308', order: 9, rounds: rounds(2), results: [] },
-    { ...base, slug: 'nls', name: 'NLS <b>Nürburgring</b>', category: 'endurance', colour: 'red;x', order: 10, rounds: rounds(2), results: raced(1, 2) },
-    { ...base, slug: 'f3', name: 'Formula 3', category: 'formula', colour: '#818cf8', order: 14, rounds: rounds(2), results: raced(1, 2), champion: 'Ugo Ugochukwu' },
+    // Seasons over by 5 May: a result never closes a round before its dates have come.
+    { ...base, slug: 'nls', name: 'NLS <b>Nürburgring</b>', category: 'endurance', colour: 'red;x', order: 10, rounds: rounds(2, '04'), results: raced(1, 2) },
+    { ...base, slug: 'f3', name: 'Formula 3', category: 'formula', colour: '#818cf8', order: 14, rounds: rounds(2, '04'), results: raced(1, 2), champion: 'Ugo Ugochukwu' },
     { ...base, slug: 'f1', name: 'Formula 1', category: 'formula', colour: '#ff4136', order: 1, rounds: rounds(3), results: raced(1) },
     { ...base, slug: 'imsa', name: 'IMSA', category: 'endurance', colour: '#2dd4bf', order: 4, rounds: rounds(2, '04'), results: raced(1) },
     {
@@ -321,6 +322,40 @@ describe('seriesList', () => {
     expect(b).toContain('<div class="pd-sx-ctl" hidden>');
   });
 
+  it('closes a round raced twice only once its last race is over, and one without a result from the next UTC day', () => {
+    const dtm: SeriesData = {
+      ...base,
+      slug: 'dtm',
+      name: 'DTM',
+      category: 'gt',
+      colour: '#0ea5e9',
+      order: 7,
+      rounds: [{ round: 1, name: 'Hockenheim', startDate: '2026-05-09', endDate: '2026-05-10', venue: null }],
+      calendar: [
+        { start: '2026-05-09T12:00:00Z', end: '2026-05-09T13:00:00Z', dateOnly: false, event: 'Hockenheim', session: 'Race 1', round: 1 },
+        { start: '2026-05-10T12:00:00Z', end: '2026-05-10T13:00:00Z', dateOnly: false, event: 'Hockenheim', session: 'Race 2', round: 1 },
+      ],
+      results: [{ round: 1, name: 'Hockenheim', date: '2026-05-09', sessions: [{ label: 'Race 1', tables: [{ title: 'Race 1', columns: ['Pos', 'Driver', 'Team', 'Time', 'Pts'], rows: [['1', 'Winner', 'Team', '1:00:00.000', '25']] }] }] }],
+    };
+    const run = (d: SeriesData, at: string) => seriesList([d], new Date(at)).body.match(/<span>(\d+) of 1 rounds run<\/span>/)?.[1];
+    // Saturday night: Race 1 is in, Race 2 still to come, so the round stays Next and in Racing this weekend.
+    expect(run(dtm, '2026-05-09T20:00:00Z')).toBe('0');
+    expect(run(dtm, '2026-05-10T14:00:00Z')).toBe('1');
+    // A feed with nothing yet, and an American evening race ending after midnight UTC (the round's local date is the
+    // 10th): it reads run from the UTC day after the race ended, never while the race is still on.
+    const lagging: SeriesData = { ...dtm, results: [], calendar: [dtm.calendar![0], { ...dtm.calendar![1], start: '2026-05-10T23:40:00Z', end: '2026-05-11T02:10:00Z' }] };
+    expect(run(lagging, '2026-05-11T00:30:00Z')).toBe('0');
+    expect(run(lagging, '2026-05-11T23:00:00Z')).toBe('0');
+    expect(run(lagging, '2026-05-12T00:30:00Z')).toBe('1');
+  });
+
+  it('reads a Saturday round This weekend from the Friday too, and caps a group at four columns', () => {
+    const sat = seriesList([{ ...base, slug: 'nls', name: 'NLS', category: 'endurance', colour: '#f59e0b', order: 10, rounds: [{ round: 1, name: 'NLS 1', startDate: '2026-05-09', endDate: '2026-05-09', venue: null }], results: [] }], now).body;
+    expect(sat).toContain('<span class="pd-wk" data-from="2026-05-08" data-to="2026-05-09" data-on="This weekend">Next</span>');
+    const five = seriesList(Array.from({ length: 5 }, (_, i) => ({ ...base, slug: `s${i}`, name: `S${i}`, category: 'stock', colour: '#123456', order: i, rounds: rounds(1, '06'), results: [] })), now).body;
+    expect(five).toContain('<div class="pd-sx-type pd-sx-span-4" data-type="stock"><h3>Stock cars <small>5</small></h3><div class="pd-sx-grid pd-sx-cols-4">');
+  });
+
   it('dates a one-day round once, and reads it This weekend from that weekend’s Friday', () => {
     const day = seriesList([{ ...base, slug: 'nascar-cup', name: 'NASCAR Cup', category: 'stock', colour: '#facc15', order: 8, rounds: [{ round: 1, name: 'YellaWood 500', startDate: '2026-05-10', endDate: '2026-05-10', venue: null }], results: [] }], now).body;
     expect(day.match(/<span>10 May<\/span>/g)).toHaveLength(2);
@@ -333,9 +368,20 @@ describe('seriesList', () => {
   it('keeps feed and content text as text and a bad colour out of the style, and writes the same page all day', () => {
     expect(b).toContain('NLS &lt;b&gt;Nürburgring&lt;/b&gt;');
     expect(card('nls')).toContain('style="--t:#9aa3b2"');
+    const odd = seriesList(
+      [
+        { ...base, slug: 'x1', name: 'X', category: 'rally', colour: '#123456', order: 1, rounds: [{ round: 1, name: 'Rally <i>One</i>', startDate: '2026-05-08', endDate: '2026-05-10', venue: null }], results: [] },
+        { ...base, slug: 'x2', name: 'Y', category: 'rally', colour: '#123456', order: 2, rounds: [], results: null, champion: 'Ann <b>Bee</b>', calendar: [{ start: '2026-05-16T14:00:00Z', end: '2026-05-17T14:00:00Z', dateOnly: false, event: 'Y', session: 'Race', round: null }] },
+      ],
+      now,
+    ).body;
+    expect(odd).toContain('Rally &lt;i&gt;One&lt;/i&gt;');
+    expect(odd).toContain('Ann &lt;b&gt;Bee&lt;/b&gt;');
+    expect(odd).not.toMatch(/<i>One<\/i>|<b>Bee<\/b>/);
     vi.useFakeTimers();
     try {
-      vi.setSystemTime(new Date('2026-05-09T12:00:00Z'));
+      // The wall clock after F1's round 2 has ended: a page reading it instead of `now` would count that round run.
+      vi.setSystemTime(new Date('2026-05-12T12:00:00Z'));
       expect(seriesList(all, new Date('2026-05-05T23:59:00Z')).body).toBe(b);
     } finally {
       vi.useRealTimers();

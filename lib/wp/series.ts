@@ -6,7 +6,7 @@
 // so a page changes only when its data does. Inline style carries only `width` and `--t`, both of which
 // WordPress keeps in post content (safecss_filter_attr, WordPress 6.1 onward).
 
-import { calendarMonthPath, escapeHtml, seriesPath, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
+import { calendarMonthPath, escapeHtml, seriesPath, sessionKind, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
 
 /** The series drawn in round 2's design; the others keep the plain pages until slot O18. */
 export const ROUND2_SERIES: ReadonlySet<string> = new Set(['f1']);
@@ -366,13 +366,27 @@ interface ListEntry {
   over: boolean;
 }
 
-/** A round counts as run once it has a race result or its dates are past (`today`, the publish day): a feed can lag
- *  its season (IMSA's stored results stop at round 5 of 11), and a past round must never read as Next. The page so
- *  changes when a round ends, never within a day. */
-function listEntry(d: SeriesData, today: string): ListEntry {
+/** A round counts as run once its last race is over. With a result in the feed, when the last race the calendar times
+ *  for it has ended: a weekend's Saturday race alone never closes a round raced again on the Sunday (DTM, WorldSBK).
+ *  Without one, from the UTC day after that race ended, since a feed can lag its season (IMSA's stored results stop at
+ *  round 5 of 11) and a past round must never read as Next. A round the calendar does not time goes by its dates. */
+function listEntry(d: SeriesData, now: Date): ListEntry {
+  const today = now.toISOString().slice(0, 10);
   const rounds = d.rounds ?? [];
   const raced = new Set((d.results ?? []).filter(r => r.round !== null && raceOf(r)).map(r => r.round as number));
-  const ran = new Set(rounds.filter(r => raced.has(r.round) || r.endDate < today).map(r => r.round));
+  const lastRaceEnd = (r: CalendarRound): number | null => {
+    const ends = (d.calendar ?? [])
+      .filter(e => e.round === r.round && !e.dateOnly && sessionKind(e.session) === 'race')
+      .map(e => Date.parse(e.end))
+      .filter(t => !Number.isNaN(t));
+    return ends.length ? Math.max(...ends) : null;
+  };
+  const isRun = (r: CalendarRound): boolean => {
+    const end = lastRaceEnd(r);
+    if (end === null) return raced.has(r.round) ? r.endDate <= today : r.endDate < today;
+    return raced.has(r.round) ? end <= now.getTime() : end < Date.parse(`${today}T00:00:00Z`);
+  };
+  const ran = new Set(rounds.filter(isRun).map(r => r.round));
   const next = rounds.find(r => !ran.has(r.round));
   return { d, rounds, ran, next, over: rounds.length ? !next : Boolean(d.champion) };
 }
@@ -436,13 +450,12 @@ function weekendCards(list: ListEntry[]): string {
 
 /** /series/: every championship, still racing then completed, each split by type (the operator, 21 Oct). */
 export function seriesList(all: SeriesData[], now: Date): Page {
-  const today = now.toISOString().slice(0, 10);
   const rank = (d: SeriesData) => (LIST_ORDER.includes(d.slug) ? LIST_ORDER.indexOf(d.slug) : 50 + (d.order ?? 99));
   const typeAt = (d: SeriesData) => {
     const i = TYPES.findIndex(t => t[0] === d.category);
     return i < 0 ? TYPES.length : i;
   };
-  const list = [...all].sort((a, b) => typeAt(a) - typeAt(b) || rank(a) - rank(b) || a.name.localeCompare(b.name)).map(d => listEntry(d, today));
+  const list = [...all].sort((a, b) => typeAt(a) - typeAt(b) || rank(a) - rank(b) || a.name.localeCompare(b.name)).map(d => listEntry(d, now));
   const racing = list.filter(e => !e.over);
   const done = list.filter(e => e.over);
   const season = all.find(d => d.season)?.season;
@@ -453,7 +466,7 @@ export function seriesList(all: SeriesData[], now: Date): Page {
     .join('');
   const head =
     `<h1 class="pd-sx-h1">${NUMBER_WORDS[list.length] ?? list.length} championships</h1>` +
-    `<p class="pd-sx-sub">The ${season ?? ''} season, every series. Follow the ones you care about and the home page and calendar lead with them.</p>` +
+    `<p class="pd-sx-sub">The ${season ?? ''} season, every series. Follow the ones you care about.</p>` +
     `<div class="pd-sx-ctl" hidden><div class="pd-sx-sw"><button type="button" data-pd-sx-show="all">All</button><button type="button" data-pd-sx-show="following">Following <small data-pd-sx-following></small></button></div>` +
     `<div class="pd-sx-chips"><button type="button" data-pd-sx-type="all">All <small>${list.length}</small></button>${chips}</div></div>` +
     '<p class="pd-sx-none" hidden>Nothing followed yet: follow a championship with the + on its card.</p>';
