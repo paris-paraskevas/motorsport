@@ -45,6 +45,7 @@ import {
   escapeHtml,
   hashOf,
   heading,
+  onlyFamily,
   paragraph,
   planSync,
   resultRounds,
@@ -636,9 +637,9 @@ async function main(): Promise<number> {
     return 1;
   }
   const { health } = built;
-  const pages = ONLY ? built.pages.filter(p => p.path.startsWith(ONLY)) : built.pages;
-  if (ONLY) log('R', `--only ${ONLY}: ${pages.length} of ${built.pages.length} pages`);
-  if (ONLY && pages.length === 0) {
+  const pages = ONLY ? onlyFamily(built.pages, ONLY) : built.pages;
+  if (ONLY) log('R', `--only ${ONLY}: ${pages.length} of ${built.pages.length} pages (${pages.map(p => p.path).join(' ')})`);
+  if (ONLY && !pages.some(p => p.path.startsWith(ONLY))) {
     log('=', `FAILED: --only ${ONLY} matches no page`);
     return 1;
   }

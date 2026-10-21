@@ -6,6 +6,7 @@ import {
   calendarMonthPages,
   escapeHtml,
   hashOf,
+  onlyFamily,
   latestRace,
   MARKER,
   planSync,
@@ -415,6 +416,22 @@ describe('calendarMonthPages', () => {
     expect(bandLabel('f1', 'Bahrain Grand Prix')).toBe('Bahrain GP');
     expect(bandLabel('nascar-cup', 'Bank of America 400 (Charlotte oval)')).toBe('Charlotte');
     expect(bandLabel('dtm', 'Hockenheimring Round')).toBe('Hockenheimring');
+  });
+});
+
+describe('onlyFamily', () => {
+  const page = (path: string): Page => ({ path, title: path, body: '' });
+  const all = ['/series/', '/series/f1/', '/series/f1/standings/', '/series/f2/', '/calendar/', '/calendar/2026-10/', '/status/'].map(page);
+  const paths = (prefix: string) => onlyFamily(all, prefix).map(p => p.path);
+
+  it('brings the pages above a family along, so each has its parent', () => {
+    expect(paths('/series/f1/')).toEqual(['/series/', '/series/f1/', '/series/f1/standings/']);
+    expect(paths('/series/f1/standings/')).toEqual(['/series/', '/series/f1/', '/series/f1/standings/']);
+  });
+
+  it('adds nothing beside the family, and nothing when the prefix matches nothing', () => {
+    expect(paths('/calendar/')).toEqual(['/calendar/', '/calendar/2026-10/']);
+    expect(paths('/nowhere/')).toEqual([]);
   });
 });
 
