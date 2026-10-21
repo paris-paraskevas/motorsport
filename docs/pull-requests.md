@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1171 · 1.0.284 · O13 follow-up (an --only family brings the pages above it) · opened 2026-10-21 into `next` on the operator's "go"; the merge on the word
+## #1172 · 1.0.284 · O13 follow-up (an --only family brings the pages above it) · opened 2026-10-21 into `next` on the operator's "go"; the merge on the word
 **Formula 1's page could not be written:** the first publish failed with `create /series/f1/: its parent /series/ does not exist`. The operator chose the fix: the publisher writes the pages above an `--only` family too.
 - **Readers see:** nothing; the site is in Coming Soon. After the merge and one publish run: `/series/` as the plain series list, and `/series/f1/` under it.
 - **Editors get:** `--only /series/f1/` writes `/series/` and `/series/f1/`, and logs the paths it chose.
