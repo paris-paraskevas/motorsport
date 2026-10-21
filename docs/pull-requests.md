@@ -14,6 +14,19 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1170 · 1.0.283 · O14 (the Calendar tab: one series for the visit, race week in Paddock's yellow) · opened 2026-10-21 into `next` on the operator's "merge then start the O14 calendar tab"; the merge on the word
+**The Calendar tab.** The series page's Calendar tab opens `/calendar/#f1`; the Calendar shows that series alone for the visit and marks race week, as the operator asked on 21 October and the drafts showed.
+- **Readers see:** nothing yet; the site is in Coming Soon. Once theme 0.1.7 is uploaded and the calendar republished: from a series page, the Calendar with only that series, a notice to show every series again, the Filters tab saying so, the month arrows keeping it; race week tinted yellow with its tag, on a phone heading that weekend.
+- **Editors get:** each published chip carries the series' full name (`data-name`).
+- **Files (13):**
+  - `wp-theme/paddock/assets/js/paddock.js`, `wp-theme/paddock/style.css` · theme 0.1.7: the visit filter (`startVisit`, `endVisit`), the notice, the tab's label, the arrows' hash, race week and its tags.
+  - `lib/wp/render.ts`, `lib/wp/render.test.ts` · `data-name` on the chips, escaped; a test.
+  - `wp-theme/preview/calendar.html` · the October page from a dry run.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.283.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md` · O13 merged, O14's evidence.
+- **Verified:** `npx vitest run` 279 files, 2,784 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; dry run `--only /calendar/`: 15 pages, 15 chips named; the Playground (WordPress 7.1.3, theme 0.1.7) with Playwright, the clock at 23 Oct 17:45Z: `/calendar/#f1` at 1440 Day and Night (Formula 1 alone, the notice, "Filters · F1 only", the arrows and Today with `#f1`, race week 19–25 October tinted and tagged, today boxed), a saved filter untouched, Show every series clearing it all, and at 390 the agenda's This weekend tagged.
+- **Review:** a fresh-context Sonnet reader, with #1169, after the 5-hour window resets.
+
 ## #1169 · 1.0.282 · O13 (the series pages' frame and Formula 1's Overview, in round 2's design) · opened 2026-10-21 into `next` on the plan's approval; the merge on the word
 **The series pages begin.** The operator answered the series drafts (v8 to v11 of The Paddock Drafts) and said "go" for the build's plan: Formula 1's five pages first, one a slot (O13 to O17), the other fourteen series after (O18). This slot writes `/series/f1/` as round 2 drew it, and the frame every series page shares.
 - **Readers see:** nothing yet; the site is in Coming Soon. Once theme 0.1.6 is uploaded and the page published: Formula 1's band with the season in a line and a bar of its 23 rounds, Follow (kept on the device) and Session emails; five tabs, each a page of its own; this weekend's round with the session on now or next and the race in their own time, and the last race with its winner and margin; a tile for every round with its circuit and its winner, the cancelled Saudi round struck through; the top ten drivers and the constructors with points bars and wins; the three newest Formula 1 posts; and About.
