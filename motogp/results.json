@@ -86,6 +86,83 @@
                 "Honda HRC Castrol",
                 "+7.796",
                 "0"
+              ],
+              [
+                "11",
+                "Alex Marquez",
+                "BK8 Gresini Racing MotoGP",
+                "+8.504",
+                "0"
+              ],
+              [
+                "12",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+8.577",
+                "0"
+              ],
+              [
+                "13",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+11.970",
+                "0"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+12.395",
+                "0"
+              ],
+              [
+                "15",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+13.467",
+                "0"
+              ],
+              [
+                "16",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+15.079",
+                "0"
+              ],
+              [
+                "17",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+15.452",
+                "0"
+              ],
+              [
+                "18",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+15.876",
+                "0"
+              ],
+              [
+                "19",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+21.445",
+                "0"
+              ],
+              [
+                "20",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+25.860",
+                "0"
+              ],
+              [
+                "21",
+                "Michele Pirro",
+                "BK8 Gresini Racing MotoGP",
+                "+27.892",
+                "0"
               ]
             ]
           }
@@ -173,6 +250,69 @@
                 "Honda HRC Castrol",
                 "+19.101",
                 "6"
+              ],
+              [
+                "11",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+19.903",
+                "5"
+              ],
+              [
+                "12",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+23.386",
+                "4"
+              ],
+              [
+                "13",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+24.686",
+                "3"
+              ],
+              [
+                "14",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+30.823",
+                "2"
+              ],
+              [
+                "15",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+32.955",
+                "1"
+              ],
+              [
+                "16",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+36.545",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+39.194",
+                "0"
+              ],
+              [
+                "18",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+47.848",
+                "0"
+              ],
+              [
+                "19",
+                "Michele Pirro",
+                "BK8 Gresini Racing MotoGP",
+                "+63.598",
+                "0"
               ]
             ]
           }
@@ -267,6 +407,69 @@
                 "Pro Honda LCR",
                 "+10.329",
                 "0"
+              ],
+              [
+                "11",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+11.106",
+                "0"
+              ],
+              [
+                "12",
+                "Raul Fernandez",
+                "Trackhouse MotoGP Team",
+                "+14.213",
+                "0"
+              ],
+              [
+                "13",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+15.090",
+                "0"
+              ],
+              [
+                "14",
+                "Fermin Aldeguer",
+                "BK8 Gresini Racing MotoGP",
+                "+15.353",
+                "0"
+              ],
+              [
+                "15",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+15.528",
+                "0"
+              ],
+              [
+                "16",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+21.396",
+                "0"
+              ],
+              [
+                "17",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+22.706",
+                "0"
+              ],
+              [
+                "18",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+23.044",
+                "0"
+              ],
+              [
+                "19",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+23.807",
+                "0"
               ]
             ]
           }
@@ -354,6 +557,62 @@
                 "Trackhouse MotoGP Team",
                 "+16.370",
                 "6"
+              ],
+              [
+                "11",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+18.529",
+                "5"
+              ],
+              [
+                "12",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+19.980",
+                "4"
+              ],
+              [
+                "13",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+21.322",
+                "3"
+              ],
+              [
+                "14",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+22.699",
+                "2"
+              ],
+              [
+                "15",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+23.840",
+                "1"
+              ],
+              [
+                "16",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+26.403",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+30.287",
+                "0"
+              ],
+              [
+                "18",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+36.397",
+                "0"
               ]
             ]
           }
@@ -448,6 +707,55 @@
                 "BK8 Gresini Racing MotoGP",
                 "+12.860",
                 "0"
+              ],
+              [
+                "11",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+13.757",
+                "0"
+              ],
+              [
+                "12",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+14.567",
+                "0"
+              ],
+              [
+                "13",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+16.019",
+                "0"
+              ],
+              [
+                "14",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+17.006",
+                "0"
+              ],
+              [
+                "15",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+18.785",
+                "0"
+              ],
+              [
+                "16",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+51.120",
+                "0"
+              ],
+              [
+                "17",
+                "Marc Marquez",
+                "Ducati Lenovo Team",
+                "+0.000",
+                "0"
               ]
             ]
           }
@@ -535,6 +843,62 @@
                 "Ducati Lenovo Team",
                 "+14.544",
                 "6"
+              ],
+              [
+                "11",
+                "Fermin Aldeguer",
+                "BK8 Gresini Racing MotoGP",
+                "+21.063",
+                "5"
+              ],
+              [
+                "12",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+22.062",
+                "4"
+              ],
+              [
+                "13",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+22.201",
+                "3"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+24.371",
+                "2"
+              ],
+              [
+                "15",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+25.549",
+                "1"
+              ],
+              [
+                "16",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+26.309",
+                "0"
+              ],
+              [
+                "17",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+27.136",
+                "0"
+              ],
+              [
+                "18",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+38.701",
+                "0"
               ]
             ]
           }
@@ -629,6 +993,55 @@
                 "Monster Energy Yamaha MotoGP Team",
                 "+15.821",
                 "0"
+              ],
+              [
+                "11",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+16.190",
+                "0"
+              ],
+              [
+                "12",
+                "Pedro Acosta",
+                "Red Bull KTM Factory Racing",
+                "+17.985",
+                "0"
+              ],
+              [
+                "13",
+                "Augusto Fernandez",
+                "Yamaha Factory Racing",
+                "+19.777",
+                "0"
+              ],
+              [
+                "14",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+21.583",
+                "0"
+              ],
+              [
+                "15",
+                "Ai Ogura",
+                "Trackhouse MotoGP Team",
+                "+31.079",
+                "0"
+              ],
+              [
+                "16",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+44.686",
+                "0"
+              ],
+              [
+                "17",
+                "Fermin Aldeguer",
+                "BK8 Gresini Racing MotoGP",
+                "+58.756",
+                "0"
               ]
             ]
           }
@@ -716,6 +1129,76 @@
                 "Red Bull KTM Factory Racing",
                 "+22.431",
                 "6"
+              ],
+              [
+                "11",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+22.799",
+                "5"
+              ],
+              [
+                "12",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+24.867",
+                "4"
+              ],
+              [
+                "13",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+26.871",
+                "3"
+              ],
+              [
+                "14",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+29.532",
+                "2"
+              ],
+              [
+                "15",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+29.899",
+                "1"
+              ],
+              [
+                "16",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+32.921",
+                "0"
+              ],
+              [
+                "17",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+36.656",
+                "0"
+              ],
+              [
+                "18",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+37.577",
+                "0"
+              ],
+              [
+                "19",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+44.557",
+                "0"
+              ],
+              [
+                "20",
+                "Augusto Fernandez",
+                "Yamaha Factory Racing",
+                "+65.023",
+                "0"
               ]
             ]
           }
@@ -810,6 +1293,48 @@
                 "Castrol Honda LCR",
                 "+11.771",
                 "0"
+              ],
+              [
+                "11",
+                "Fermin Aldeguer",
+                "BK8 Gresini Racing MotoGP",
+                "+13.435",
+                "0"
+              ],
+              [
+                "12",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+14.708",
+                "0"
+              ],
+              [
+                "13",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+15.413",
+                "0"
+              ],
+              [
+                "14",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+16.968",
+                "0"
+              ],
+              [
+                "15",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+17.603",
+                "0"
+              ],
+              [
+                "16",
+                "Fabio Di Giannantonio",
+                "Pertamina Enduro VR46 Racing Team",
+                "+0.000",
+                "0"
               ]
             ]
           }
@@ -897,6 +1422,48 @@
                 "Honda HRC Castrol",
                 "+15.016",
                 "6"
+              ],
+              [
+                "11",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+16.549",
+                "5"
+              ],
+              [
+                "12",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+32.343",
+                "4"
+              ],
+              [
+                "13",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+32.476",
+                "3"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+32.774",
+                "2"
+              ],
+              [
+                "15",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+36.059",
+                "1"
+              ],
+              [
+                "16",
+                "Jonas Folger",
+                "Red Bull KTM Tech3",
+                "+73.229",
+                "0"
               ]
             ]
           }
@@ -991,6 +1558,62 @@
                 "Red Bull KTM Tech3",
                 "+7.869",
                 "0"
+              ],
+              [
+                "11",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+8.343",
+                "0"
+              ],
+              [
+                "12",
+                "Fermin Aldeguer",
+                "BK8 Gresini Racing MotoGP",
+                "+9.721",
+                "0"
+              ],
+              [
+                "13",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+10.042",
+                "0"
+              ],
+              [
+                "14",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+14.096",
+                "0"
+              ],
+              [
+                "15",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+14.166",
+                "0"
+              ],
+              [
+                "16",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+14.334",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+20.452",
+                "0"
+              ],
+              [
+                "18",
+                "Augusto Fernandez",
+                "Yamaha Factory Racing",
+                "+20.558",
+                "0"
               ]
             ]
           }
@@ -1078,6 +1701,55 @@
                 "Pertamina Enduro VR46 Racing Team",
                 "+7.160",
                 "6"
+              ],
+              [
+                "11",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+10.147",
+                "5"
+              ],
+              [
+                "12",
+                "Augusto Fernandez",
+                "Yamaha Factory Racing",
+                "+16.245",
+                "4"
+              ],
+              [
+                "13",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+17.250",
+                "3"
+              ],
+              [
+                "14",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+22.916",
+                "2"
+              ],
+              [
+                "15",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+26.452",
+                "1"
+              ],
+              [
+                "16",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+27.808",
+                "0"
+              ],
+              [
+                "17",
+                "Raul Fernandez",
+                "Trackhouse MotoGP Team",
+                "+31.066",
+                "0"
               ]
             ]
           }
@@ -1172,6 +1844,69 @@
                 "Pro Honda LCR",
                 "+12.932",
                 "0"
+              ],
+              [
+                "11",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+16.690",
+                "0"
+              ],
+              [
+                "12",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+17.043",
+                "0"
+              ],
+              [
+                "13",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+18.407",
+                "0"
+              ],
+              [
+                "14",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+20.619",
+                "0"
+              ],
+              [
+                "15",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+20.669",
+                "0"
+              ],
+              [
+                "16",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+22.907",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+25.423",
+                "0"
+              ],
+              [
+                "18",
+                "Michele Pirro",
+                "BK8 Gresini Racing MotoGP",
+                "+27.085",
+                "0"
+              ],
+              [
+                "19",
+                "Cal Crutchlow",
+                "Castrol Honda LCR",
+                "+39.671",
+                "0"
               ]
             ]
           }
@@ -1259,6 +1994,69 @@
                 "Pro Honda LCR",
                 "+21.366",
                 "6"
+              ],
+              [
+                "11",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+21.479",
+                "5"
+              ],
+              [
+                "12",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+21.795",
+                "4"
+              ],
+              [
+                "13",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+22.059",
+                "3"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+29.789",
+                "2"
+              ],
+              [
+                "15",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+32.289",
+                "1"
+              ],
+              [
+                "16",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+31.920",
+                "0"
+              ],
+              [
+                "17",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+32.717",
+                "0"
+              ],
+              [
+                "18",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+34.335",
+                "0"
+              ],
+              [
+                "19",
+                "Michele Pirro",
+                "BK8 Gresini Racing MotoGP",
+                "+40.553",
+                "0"
               ]
             ]
           }
@@ -1353,6 +2151,90 @@
                 "Pertamina Enduro VR46 Racing Team",
                 "+8.469",
                 "0"
+              ],
+              [
+                "11",
+                "Ai Ogura",
+                "SuperFile Trackhouse MotoGP Team",
+                "+11.609",
+                "0"
+              ],
+              [
+                "12",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+12.070",
+                "0"
+              ],
+              [
+                "13",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+14.173",
+                "0"
+              ],
+              [
+                "14",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+15.799",
+                "0"
+              ],
+              [
+                "15",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+15.961",
+                "0"
+              ],
+              [
+                "16",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+16.376",
+                "0"
+              ],
+              [
+                "17",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+17.070",
+                "0"
+              ],
+              [
+                "18",
+                "Iker Lecuona",
+                "BK8 Gresini Racing MotoGP",
+                "+17.381",
+                "0"
+              ],
+              [
+                "19",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+19.490",
+                "0"
+              ],
+              [
+                "20",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+20.662",
+                "0"
+              ],
+              [
+                "21",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+24.063",
+                "0"
+              ],
+              [
+                "22",
+                "Cal Crutchlow",
+                "Castrol Honda LCR",
+                "+30.947",
+                "0"
               ]
             ]
           }
@@ -1440,6 +2322,48 @@
                 "Red Bull KTM Factory Racing",
                 "+24.601",
                 "6"
+              ],
+              [
+                "11",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+25.135",
+                "5"
+              ],
+              [
+                "12",
+                "Fabio Di Giannantonio",
+                "Pertamina Enduro VR46 Racing Team",
+                "+28.386",
+                "4"
+              ],
+              [
+                "13",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+29.207",
+                "3"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+31.333",
+                "2"
+              ],
+              [
+                "15",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+48.536",
+                "1"
+              ],
+              [
+                "16",
+                "Cal Crutchlow",
+                "Castrol Honda LCR",
+                "+54.604",
+                "0"
               ]
             ]
           }
@@ -1534,6 +2458,41 @@
                 "Honda HRC Castrol",
                 "+11.103",
                 "0"
+              ],
+              [
+                "11",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+13.497",
+                "0"
+              ],
+              [
+                "12",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+14.942",
+                "0"
+              ],
+              [
+                "13",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+15.038",
+                "0"
+              ],
+              [
+                "14",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+16.151",
+                "0"
+              ],
+              [
+                "15",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+23.535",
+                "0"
               ]
             ]
           }
@@ -1621,6 +2580,55 @@
                 "Red Bull KTM Tech3",
                 "+22.273",
                 "6"
+              ],
+              [
+                "11",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+22.881",
+                "5"
+              ],
+              [
+                "12",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+22.942",
+                "4"
+              ],
+              [
+                "13",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+25.003",
+                "3"
+              ],
+              [
+                "14",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+25.806",
+                "2"
+              ],
+              [
+                "15",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+26.360",
+                "1"
+              ],
+              [
+                "16",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+33.121",
+                "0"
+              ],
+              [
+                "17",
+                "Cal Crutchlow",
+                "Castrol Honda LCR",
+                "+44.784",
+                "0"
               ]
             ]
           }
@@ -1715,6 +2723,69 @@
                 "Monster Energy Yamaha MotoGP Team",
                 "+11.134",
                 "0"
+              ],
+              [
+                "11",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+11.811",
+                "0"
+              ],
+              [
+                "12",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+12.983",
+                "0"
+              ],
+              [
+                "13",
+                "Alex Marquez",
+                "BK8 Gresini Racing MotoGP",
+                "+13.102",
+                "0"
+              ],
+              [
+                "14",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+13.414",
+                "0"
+              ],
+              [
+                "15",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+14.513",
+                "0"
+              ],
+              [
+                "16",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+15.286",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+19.188",
+                "0"
+              ],
+              [
+                "18",
+                "Augusto Fernandez",
+                "Yamaha Factory Racing",
+                "+29.001",
+                "0"
+              ],
+              [
+                "19",
+                "Cal Crutchlow",
+                "Castrol Honda LCR",
+                "+29.213",
+                "0"
               ]
             ]
           }
@@ -1802,6 +2873,48 @@
                 "Honda HRC Castrol",
                 "+20.669",
                 "6"
+              ],
+              [
+                "11",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+35.383",
+                "5"
+              ],
+              [
+                "12",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+37.244",
+                "4"
+              ],
+              [
+                "13",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+36.755",
+                "3"
+              ],
+              [
+                "14",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+38.127",
+                "2"
+              ],
+              [
+                "15",
+                "Augusto Fernandez",
+                "Yamaha Factory Racing",
+                "+76.826",
+                "1"
+              ],
+              [
+                "16",
+                "Cal Crutchlow",
+                "Castrol Honda LCR",
+                "+0.000",
+                "0"
               ]
             ]
           }
@@ -1896,6 +3009,69 @@
                 "Pro Honda LCR",
                 "+13.279",
                 "0"
+              ],
+              [
+                "11",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+13.406",
+                "0"
+              ],
+              [
+                "12",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+14.111",
+                "0"
+              ],
+              [
+                "13",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+15.007",
+                "0"
+              ],
+              [
+                "14",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+15.398",
+                "0"
+              ],
+              [
+                "15",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+17.977",
+                "0"
+              ],
+              [
+                "16",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+18.137",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+22.622",
+                "0"
+              ],
+              [
+                "18",
+                "Cal Crutchlow",
+                "Castrol Honda LCR",
+                "+22.929",
+                "0"
+              ],
+              [
+                "19",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+31.185",
+                "0"
               ]
             ]
           }
@@ -1983,6 +3159,41 @@
                 "Red Bull KTM Factory Racing",
                 "+22.137",
                 "6"
+              ],
+              [
+                "11",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+22.280",
+                "5"
+              ],
+              [
+                "12",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+26.154",
+                "4"
+              ],
+              [
+                "13",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+30.910",
+                "3"
+              ],
+              [
+                "14",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+31.511",
+                "2"
+              ],
+              [
+                "15",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+38.122",
+                "1"
               ]
             ]
           }
@@ -2077,6 +3288,76 @@
                 "Pro Honda LCR",
                 "+13.992",
                 "0"
+              ],
+              [
+                "11",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+14.142",
+                "0"
+              ],
+              [
+                "12",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+14.344",
+                "0"
+              ],
+              [
+                "13",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+14.540",
+                "0"
+              ],
+              [
+                "14",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+15.213",
+                "0"
+              ],
+              [
+                "15",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+16.892",
+                "0"
+              ],
+              [
+                "16",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+20.194",
+                "0"
+              ],
+              [
+                "17",
+                "Francesco Bagnaia",
+                "Ducati Lenovo Team",
+                "+23.722",
+                "0"
+              ],
+              [
+                "18",
+                "Pol Espargaro",
+                "Red Bull KTM Tech3",
+                "+24.380",
+                "0"
+              ],
+              [
+                "19",
+                "Augusto Fernandez",
+                "Yamaha Factory Racing",
+                "+27.593",
+                "0"
+              ],
+              [
+                "20",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+34.332",
+                "0"
               ]
             ]
           }
@@ -2164,6 +3445,48 @@
                 "Pro Honda LCR",
                 "+25.411",
                 "6"
+              ],
+              [
+                "11",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+26.301",
+                "5"
+              ],
+              [
+                "12",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+29.458",
+                "4"
+              ],
+              [
+                "13",
+                "Pol Espargaro",
+                "Red Bull KTM Tech3",
+                "+41.310",
+                "3"
+              ],
+              [
+                "14",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+41.492",
+                "2"
+              ],
+              [
+                "15",
+                "Augusto Fernandez",
+                "Yamaha Factory Racing",
+                "+42.379",
+                "1"
+              ],
+              [
+                "16",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+42.883",
+                "0"
               ]
             ]
           }
@@ -2258,6 +3581,69 @@
                 "Prima Pramac Yamaha MotoGP",
                 "+12.166",
                 "0"
+              ],
+              [
+                "11",
+                "Francesco Bagnaia",
+                "Ducati Lenovo Team",
+                "+14.575",
+                "0"
+              ],
+              [
+                "12",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+14.648",
+                "0"
+              ],
+              [
+                "13",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+15.776",
+                "0"
+              ],
+              [
+                "14",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+16.051",
+                "0"
+              ],
+              [
+                "15",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+16.761",
+                "0"
+              ],
+              [
+                "16",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+19.845",
+                "0"
+              ],
+              [
+                "17",
+                "Pol Espargaro",
+                "Red Bull KTM Tech3",
+                "+23.160",
+                "0"
+              ],
+              [
+                "18",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+25.074",
+                "0"
+              ],
+              [
+                "19",
+                "Lorenzo Savadori",
+                "SuperFile Trackhouse MotoGP Team",
+                "+27.798",
+                "0"
               ]
             ]
           }
@@ -2345,6 +3731,62 @@
                 "Red Bull KTM Factory Racing",
                 "+26.441",
                 "6"
+              ],
+              [
+                "11",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+27.206",
+                "5"
+              ],
+              [
+                "12",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+27.999",
+                "4"
+              ],
+              [
+                "13",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+28.276",
+                "3"
+              ],
+              [
+                "14",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+29.794",
+                "2"
+              ],
+              [
+                "15",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+30.003",
+                "1"
+              ],
+              [
+                "16",
+                "Pol Espargaro",
+                "Red Bull KTM Tech3",
+                "+35.874",
+                "0"
+              ],
+              [
+                "17",
+                "Lorenzo Savadori",
+                "SuperFile Trackhouse MotoGP Team",
+                "+49.761",
+                "0"
+              ],
+              [
+                "18",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+51.657",
+                "0"
               ]
             ]
           }
@@ -2439,6 +3881,83 @@
                 "Castrol Honda LCR",
                 "+14.534",
                 "0"
+              ],
+              [
+                "11",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+17.043",
+                "0"
+              ],
+              [
+                "12",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+17.405",
+                "0"
+              ],
+              [
+                "13",
+                "Francesco Bagnaia",
+                "Ducati Lenovo Team",
+                "+17.763",
+                "0"
+              ],
+              [
+                "14",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+18.181",
+                "0"
+              ],
+              [
+                "15",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+18.476",
+                "0"
+              ],
+              [
+                "16",
+                "Pol Espargaro",
+                "Red Bull KTM Tech3",
+                "+18.752",
+                "0"
+              ],
+              [
+                "17",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+21.113",
+                "0"
+              ],
+              [
+                "18",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+20.698",
+                "0"
+              ],
+              [
+                "19",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+21.740",
+                "0"
+              ],
+              [
+                "20",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+22.054",
+                "0"
+              ],
+              [
+                "21",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+24.419",
+                "0"
               ]
             ]
           }
@@ -2526,6 +4045,34 @@
                 "Monster Energy Yamaha MotoGP Team",
                 "+23.229",
                 "6"
+              ],
+              [
+                "11",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+23.905",
+                "5"
+              ],
+              [
+                "12",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+28.031",
+                "4"
+              ],
+              [
+                "13",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+28.927",
+                "3"
+              ],
+              [
+                "14",
+                "Pol Espargaro",
+                "Red Bull KTM Tech3",
+                "+31.792",
+                "2"
               ]
             ]
           }
@@ -2620,6 +4167,76 @@
                 "Pertamina Enduro VR46 Racing Team",
                 "+9.228",
                 "0"
+              ],
+              [
+                "11",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+11.580",
+                "0"
+              ],
+              [
+                "12",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+13.050",
+                "0"
+              ],
+              [
+                "13",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+15.076",
+                "0"
+              ],
+              [
+                "14",
+                "Pol Espargaro",
+                "Red Bull KTM Tech3",
+                "+18.373",
+                "0"
+              ],
+              [
+                "15",
+                "Takaaki Nakagami",
+                "Honda HRC Castrol",
+                "+19.201",
+                "0"
+              ],
+              [
+                "16",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+20.503",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+20.964",
+                "0"
+              ],
+              [
+                "18",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+21.054",
+                "0"
+              ],
+              [
+                "19",
+                "Raul Fernandez",
+                "SuperFile Trackhouse MotoGP Team",
+                "+22.646",
+                "0"
+              ],
+              [
+                "20",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+26.053",
+                "0"
               ]
             ]
           }
@@ -2707,6 +4324,83 @@
                 "Castrol Honda LCR",
                 "+16.266",
                 "6"
+              ],
+              [
+                "11",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+16.640",
+                "5"
+              ],
+              [
+                "12",
+                "Raul Fernandez",
+                "SuperFile Trackhouse MotoGP Team",
+                "+20.940",
+                "4"
+              ],
+              [
+                "13",
+                "Takaaki Nakagami",
+                "Honda HRC Castrol",
+                "+21.032",
+                "3"
+              ],
+              [
+                "14",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+22.391",
+                "2"
+              ],
+              [
+                "15",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+24.949",
+                "1"
+              ],
+              [
+                "16",
+                "Pol Espargaro",
+                "Red Bull KTM Tech3",
+                "+25.148",
+                "0"
+              ],
+              [
+                "17",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+30.140",
+                "0"
+              ],
+              [
+                "18",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+34.200",
+                "0"
+              ],
+              [
+                "19",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+34.413",
+                "0"
+              ],
+              [
+                "20",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+46.724",
+                "0"
+              ],
+              [
+                "21",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+67.530",
+                "0"
               ]
             ]
           }
@@ -2801,6 +4495,62 @@
                 "BK8 Gresini Racing MotoGP",
                 "+11.129",
                 "0"
+              ],
+              [
+                "11",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+13.632",
+                "0"
+              ],
+              [
+                "12",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+15.209",
+                "0"
+              ],
+              [
+                "13",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+19.873",
+                "0"
+              ],
+              [
+                "14",
+                "Somkiat Chantra",
+                "Honda HRC Castrol",
+                "+19.983",
+                "0"
+              ],
+              [
+                "15",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+20.469",
+                "0"
+              ],
+              [
+                "16",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+21.894",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+38.442",
+                "0"
+              ],
+              [
+                "18",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+41.284",
+                "0"
               ]
             ]
           }
@@ -2888,6 +4638,76 @@
                 "Honda HRC Castrol",
                 "+25.677",
                 "6"
+              ],
+              [
+                "11",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+25.853",
+                "5"
+              ],
+              [
+                "12",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+30.867",
+                "4"
+              ],
+              [
+                "13",
+                "Somkiat Chantra",
+                "Honda HRC Castrol",
+                "+31.333",
+                "3"
+              ],
+              [
+                "14",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+33.995",
+                "2"
+              ],
+              [
+                "15",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+34.590",
+                "1"
+              ],
+              [
+                "16",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+39.228",
+                "0"
+              ],
+              [
+                "17",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+39.562",
+                "0"
+              ],
+              [
+                "18",
+                "Fabio Di Giannantonio",
+                "Pertamina Enduro VR46 Racing Team",
+                "+50.816",
+                "0"
+              ],
+              [
+                "19",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+71.127",
+                "0"
+              ],
+              [
+                "20",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+0.000",
+                "0"
               ]
             ]
           }
@@ -2982,6 +4802,76 @@
                 "Monster Energy Yamaha MotoGP Team",
                 "+13.288",
                 "0"
+              ],
+              [
+                "11",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+16.834",
+                "0"
+              ],
+              [
+                "12",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+17.646",
+                "0"
+              ],
+              [
+                "13",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+18.285",
+                "0"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+18.956",
+                "0"
+              ],
+              [
+                "15",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+19.227",
+                "0"
+              ],
+              [
+                "16",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+19.293",
+                "0"
+              ],
+              [
+                "17",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+19.562",
+                "0"
+              ],
+              [
+                "18",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+23.472",
+                "0"
+              ],
+              [
+                "19",
+                "Toprak Razgatlioglu",
+                "Prima Pramac Yamaha MotoGP",
+                "+23.834",
+                "0"
+              ],
+              [
+                "20",
+                "Aleix Espargaro",
+                "Honda HRC Castrol",
+                "+38.336",
+                "0"
               ]
             ]
           }
@@ -3069,6 +4959,55 @@
                 "Red Bull KTM Tech3",
                 "+21.111",
                 "6"
+              ],
+              [
+                "11",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+21.912",
+                "5"
+              ],
+              [
+                "12",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+22.656",
+                "4"
+              ],
+              [
+                "13",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+26.260",
+                "3"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+28.012",
+                "2"
+              ],
+              [
+                "15",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+31.662",
+                "1"
+              ],
+              [
+                "16",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+34.168",
+                "0"
+              ],
+              [
+                "17",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+71.596",
+                "0"
               ]
             ]
           }

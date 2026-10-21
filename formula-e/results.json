@@ -86,6 +86,27 @@
                 "Lola Yamaha ABT",
                 "+6.095",
                 "1"
+              ],
+              [
+                "11",
+                "António Félix da Costa",
+                "Jaguar",
+                "+6.581",
+                "0"
+              ],
+              [
+                "12",
+                "Felipe Drugovich",
+                "Andretti-Porsche",
+                "+8.187",
+                "0"
+              ],
+              [
+                "13",
+                "Taylor Barnard",
+                "DS Penske",
+                "+1 lap",
+                "0"
               ]
             ]
           }
@@ -180,6 +201,55 @@
                 "Nissan",
                 "+5.843",
                 "1"
+              ],
+              [
+                "11",
+                "Mitch Evans",
+                "Jaguar",
+                "+6.168",
+                "0"
+              ],
+              [
+                "12",
+                "Maximilian Günther",
+                "DS Penske",
+                "+9.113",
+                "0"
+              ],
+              [
+                "13",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "+10.370",
+                "0"
+              ],
+              [
+                "14",
+                "Joel Eriksson",
+                "Envision-Jaguar",
+                "+10.614",
+                "0"
+              ],
+              [
+                "15",
+                "Felipe Drugovich",
+                "Andretti-Porsche",
+                "+13.200",
+                "0"
+              ],
+              [
+                "16",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "+27.458",
+                "0"
+              ],
+              [
+                "17",
+                "Sébastien Buemi",
+                "Envision-Jaguar",
+                "+1:00.202",
+                "0"
               ]
             ]
           }
@@ -274,6 +344,76 @@
                 "Andretti-Porsche",
                 "+21.102",
                 "1"
+              ],
+              [
+                "11",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "+21.817",
+                "0"
+              ],
+              [
+                "12",
+                "Oliver Rowland",
+                "Nissan",
+                "+31.075",
+                "0"
+              ],
+              [
+                "13",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "+33.315",
+                "0"
+              ],
+              [
+                "14",
+                "Taylor Barnard",
+                "DS Penske",
+                "+36.131",
+                "0"
+              ],
+              [
+                "15",
+                "Jean-Éric Vergne",
+                "DS Penske",
+                "+47.066",
+                "0"
+              ],
+              [
+                "16",
+                "Nick Cassidy",
+                "DS Penske",
+                "+1 lap",
+                "0"
+              ],
+              [
+                "17",
+                "Norman Nato",
+                "Nissan",
+                "+1 lap",
+                "0"
+              ],
+              [
+                "18",
+                "Felipe Drugovich",
+                "Andretti-Porsche",
+                "+1 lap",
+                "0"
+              ],
+              [
+                "19",
+                "Maximilian Günther",
+                "DS Penske",
+                "+ 2 laps",
+                "0"
+              ],
+              [
+                "20",
+                "Dan Ticktum",
+                "Cupra Kiro-Porsche",
+                "Finished",
+                "0"
               ]
             ]
           }
@@ -368,6 +508,76 @@
                 "DS Penske",
                 "+13.125",
                 "1"
+              ],
+              [
+                "11",
+                "Maximilian Günther",
+                "DS Penske",
+                "+16.048",
+                "0"
+              ],
+              [
+                "12",
+                "Dan Ticktum",
+                "Cupra Kiro-Porsche",
+                "+16.283",
+                "0"
+              ],
+              [
+                "13",
+                "Norman Nato",
+                "Nissan",
+                "+16.718",
+                "0"
+              ],
+              [
+                "14",
+                "Pepe Martí",
+                "Cupra Kiro-Porsche",
+                "+17.048",
+                "0"
+              ],
+              [
+                "15",
+                "Felipe Drugovich",
+                "Andretti-Porsche",
+                "+19.871",
+                "0"
+              ],
+              [
+                "16",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "+20.280",
+                "0"
+              ],
+              [
+                "17",
+                "Oliver Rowland",
+                "Nissan",
+                "+22.257",
+                "0"
+              ],
+              [
+                "18",
+                "Joel Eriksson",
+                "Envision-Jaguar",
+                "+43.191",
+                "0"
+              ],
+              [
+                "19",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "Finished",
+                "0"
+              ],
+              [
+                "20",
+                "Nyck de Vries",
+                "Mahindra",
+                "DNS",
+                "0"
               ]
             ]
           }
@@ -462,6 +672,76 @@
                 "DS Penske",
                 "+9.170",
                 "1"
+              ],
+              [
+                "11",
+                "Maximilian Günther",
+                "DS Penske",
+                "+9.476",
+                "0"
+              ],
+              [
+                "12",
+                "Felipe Drugovich",
+                "Andretti-Porsche",
+                "+14.206",
+                "0"
+              ],
+              [
+                "13",
+                "Joel Eriksson",
+                "Envision-Jaguar",
+                "+14.714",
+                "0"
+              ],
+              [
+                "14",
+                "Nick Cassidy",
+                "DS Penske",
+                "+14.769",
+                "0"
+              ],
+              [
+                "15",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "+14.787",
+                "0"
+              ],
+              [
+                "16",
+                "Nico Müller",
+                "Porsche",
+                "+15.979",
+                "0"
+              ],
+              [
+                "17",
+                "Norman Nato",
+                "Nissan",
+                "+17.951",
+                "0"
+              ],
+              [
+                "18",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "+23.342",
+                "0"
+              ],
+              [
+                "19",
+                "Jake Dennis",
+                "Andretti-Porsche",
+                "+1:08.185",
+                "0"
+              ],
+              [
+                "20",
+                "Nyck de Vries",
+                "Mahindra",
+                "+1:09.107",
+                "0"
               ]
             ]
           }
@@ -556,6 +836,76 @@
                 "Envision-Jaguar",
                 "+6.576",
                 "1"
+              ],
+              [
+                "11",
+                "Norman Nato",
+                "Nissan",
+                "+7.182",
+                "0"
+              ],
+              [
+                "12",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "+10.216",
+                "0"
+              ],
+              [
+                "13",
+                "Maximilian Günther",
+                "DS Penske",
+                "+15.686",
+                "0"
+              ],
+              [
+                "14",
+                "Jean-Éric Vergne",
+                "DS Penske",
+                "+16.345",
+                "0"
+              ],
+              [
+                "15",
+                "Felipe Drugovich",
+                "Andretti-Porsche",
+                "+26.016",
+                "0"
+              ],
+              [
+                "16",
+                "Oliver Rowland",
+                "Nissan",
+                "+26.917",
+                "0"
+              ],
+              [
+                "17",
+                "Nick Cassidy",
+                "DS Penske",
+                "+29.372",
+                "0"
+              ],
+              [
+                "18",
+                "Nyck de Vries",
+                "Mahindra",
+                "+53.664",
+                "0"
+              ],
+              [
+                "19",
+                "Taylor Barnard",
+                "DS Penske",
+                "+55.751",
+                "0"
+              ],
+              [
+                "20",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "+55.889",
+                "0"
               ]
             ]
           }
@@ -650,6 +1000,69 @@
                 "Jaguar",
                 "+13.051",
                 "1"
+              ],
+              [
+                "11",
+                "Maximilian Günther",
+                "DS Penske",
+                "+13.836",
+                "0"
+              ],
+              [
+                "12",
+                "Sébastien Buemi",
+                "Envision-Jaguar",
+                "+14.336",
+                "0"
+              ],
+              [
+                "13",
+                "Felipe Drugovich",
+                "Andretti-Porsche",
+                "+14.596",
+                "0"
+              ],
+              [
+                "14",
+                "Jean-Éric Vergne",
+                "DS Penske",
+                "+14.889",
+                "0"
+              ],
+              [
+                "15",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "+15.178",
+                "0"
+              ],
+              [
+                "16",
+                "Joel Eriksson",
+                "Envision-Jaguar",
+                "+16.046",
+                "0"
+              ],
+              [
+                "17",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "+17.195",
+                "0"
+              ],
+              [
+                "18",
+                "Norman Nato",
+                "Nissan",
+                "+18.138",
+                "0"
+              ],
+              [
+                "19",
+                "Pascal Wehrlein",
+                "Porsche",
+                "+49.648",
+                "0"
               ]
             ]
           }
@@ -744,6 +1157,62 @@
                 "Envision-Jaguar",
                 "+8.965",
                 "1"
+              ],
+              [
+                "11",
+                "Taylor Barnard",
+                "DS Penske",
+                "+10.216",
+                "0"
+              ],
+              [
+                "12",
+                "Pepe Martí",
+                "Cupra Kiro-Porsche",
+                "+11.712",
+                "0"
+              ],
+              [
+                "13",
+                "Nico Müller",
+                "Porsche",
+                "+12.747",
+                "0"
+              ],
+              [
+                "14",
+                "Dan Ticktum",
+                "Cupra Kiro-Porsche",
+                "+13.212",
+                "0"
+              ],
+              [
+                "15",
+                "Maximilian Günther",
+                "DS Penske",
+                "+14.774",
+                "0"
+              ],
+              [
+                "16",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "+14.873",
+                "0"
+              ],
+              [
+                "17",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "+15.372",
+                "0"
+              ],
+              [
+                "18",
+                "António Félix da Costa",
+                "Jaguar",
+                "+36.559",
+                "0"
               ]
             ]
           }
@@ -838,6 +1307,62 @@
                 "DS Penske",
                 "+29.817",
                 "1"
+              ],
+              [
+                "11",
+                "Nico Müller",
+                "Porsche",
+                "+35.817",
+                "0"
+              ],
+              [
+                "12",
+                "Dan Ticktum",
+                "Cupra Kiro-Porsche",
+                "+45.641",
+                "3"
+              ],
+              [
+                "13",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "+52.893",
+                "0"
+              ],
+              [
+                "14",
+                "Norman Nato",
+                "Nissan",
+                "+1:02.680",
+                "0"
+              ],
+              [
+                "15",
+                "Oliver Rowland",
+                "Nissan",
+                "+1:22.065",
+                "0"
+              ],
+              [
+                "16",
+                "Jean-Éric Vergne",
+                "DS Penske",
+                "+1 lap",
+                "0"
+              ],
+              [
+                "17",
+                "Edoardo Mortara",
+                "Mahindra",
+                "+1 lap",
+                "0"
+              ],
+              [
+                "18",
+                "Pascal Wehrlein",
+                "Porsche",
+                "+1 lap",
+                "0"
               ]
             ]
           }
@@ -932,6 +1457,62 @@
                 "Lola Yamaha ABT",
                 "+19.895",
                 "1"
+              ],
+              [
+                "11",
+                "Pascal Wehrlein",
+                "Porsche",
+                "+21.119",
+                "0"
+              ],
+              [
+                "12",
+                "Jake Dennis",
+                "Andretti-Porsche",
+                "+22.854",
+                "0"
+              ],
+              [
+                "13",
+                "Maximilian Günther",
+                "DS Penske",
+                "+24.160",
+                "0"
+              ],
+              [
+                "14",
+                "Dan Ticktum",
+                "Cupra Kiro-Porsche",
+                "+41.244",
+                "3"
+              ],
+              [
+                "15",
+                "Taylor Barnard",
+                "DS Penske",
+                "+45.359",
+                "0"
+              ],
+              [
+                "16",
+                "Jean-Éric Vergne",
+                "DS Penske",
+                "+54.175",
+                "0"
+              ],
+              [
+                "17",
+                "Sébastien Buemi",
+                "Envision-Jaguar",
+                "+1:06.715",
+                "0"
+              ],
+              [
+                "18",
+                "Nick Cassidy",
+                "DS Penske",
+                "+1:08.041",
+                "0"
               ]
             ]
           }
@@ -1026,6 +1607,41 @@
                 "Lola Yamaha ABT",
                 "+9.881",
                 "1"
+              ],
+              [
+                "11",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "+10.471",
+                "0"
+              ],
+              [
+                "12",
+                "Joel Eriksson",
+                "Envision-Jaguar",
+                "+11.264",
+                "0"
+              ],
+              [
+                "13",
+                "Sébastien Buemi",
+                "Envision-Jaguar",
+                "+12.491",
+                "0"
+              ],
+              [
+                "14",
+                "Pascal Wehrlein",
+                "Porsche",
+                "+12.742",
+                "0"
+              ],
+              [
+                "15",
+                "Dan Ticktum",
+                "Cupra Kiro-Porsche",
+                "+1:10.696",
+                "0"
               ]
             ]
           }
@@ -1182,6 +1798,76 @@
                 "DS Penske",
                 "10.456",
                 "1"
+              ],
+              [
+                "11",
+                "Lucas di Grassi",
+                "LOLA YAMAHA ABT",
+                "11.411",
+                "0"
+              ],
+              [
+                "12",
+                "Joel Eriksson",
+                "Envision Racing",
+                "14.380",
+                "0"
+              ],
+              [
+                "13",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "15.391",
+                "0"
+              ],
+              [
+                "14",
+                "Sebastien Buemi",
+                "Envision Racing",
+                "15.808",
+                "0"
+              ],
+              [
+                "15",
+                "Max Guenther",
+                "DS Penske",
+                "19.028",
+                "0"
+              ],
+              [
+                "16",
+                "Norman Nato",
+                "Nissan e.Dams",
+                "36.804",
+                "0"
+              ],
+              [
+                "17",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "46.973",
+                "0"
+              ],
+              [
+                "18",
+                "Nico Mueller",
+                "Porsche Team",
+                "1:04.205",
+                "0"
+              ],
+              [
+                "19",
+                "Zane Maloney",
+                "LOLA YAMAHA ABT",
+                "1:11.524",
+                "0"
+              ],
+              [
+                "20",
+                "Pascal Wehrlein",
+                "Porsche Team",
+                "Finished",
+                "0"
               ]
             ]
           }
@@ -1276,6 +1962,76 @@
                 "DS Penske",
                 "+ 0:05:140",
                 "1"
+              ],
+              [
+                "11",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "+ 0:05:604",
+                "0"
+              ],
+              [
+                "12",
+                "Zane Maloney",
+                "LOLA YAMAHA ABT",
+                "+ 0:06:049",
+                "0"
+              ],
+              [
+                "13",
+                "Lucas di Grassi",
+                "LOLA YAMAHA ABT",
+                "+ 0:06:349",
+                "0"
+              ],
+              [
+                "14",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "+ 0:06:826",
+                "0"
+              ],
+              [
+                "15",
+                "Pascal Wehrlein",
+                "Porsche Team",
+                "+ 0:08:375",
+                "0"
+              ],
+              [
+                "16",
+                "Antonio Felix da Costa",
+                "Jaguar Racing",
+                "+ 0:08:535",
+                "0"
+              ],
+              [
+                "17",
+                "Mitch Evans",
+                "Jaguar Racing",
+                "DNF",
+                "0"
+              ],
+              [
+                "18",
+                "Edo Mortara",
+                "Mahindra Racing",
+                "DNF",
+                "0"
+              ],
+              [
+                "19",
+                "Joel Eriksson",
+                "Envision Racing",
+                "DNF",
+                "0"
+              ],
+              [
+                "20",
+                "Pepe Marti",
+                "Cupra Kiro",
+                "DNF",
+                "0"
               ]
             ]
           }
@@ -1370,6 +2126,76 @@
                 "Nissan e.Dams",
                 "Finished",
                 "1"
+              ],
+              [
+                "11",
+                "Nico Mueller",
+                "Porsche Team",
+                "Finished",
+                "0"
+              ],
+              [
+                "12",
+                "Maximilian Gunther",
+                "DS Penske",
+                "Finished",
+                "0"
+              ],
+              [
+                "13",
+                "Nyck De Vries",
+                "Mahindra Racing",
+                "Finished",
+                "0"
+              ],
+              [
+                "14",
+                "Joel Eriksson",
+                "Envision Racing",
+                "Finished",
+                "0"
+              ],
+              [
+                "15",
+                "Norman Nato",
+                "Nissan e.Dams",
+                "Finished",
+                "0"
+              ],
+              [
+                "16",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "Finished",
+                "0"
+              ],
+              [
+                "17",
+                "Pepe Marti",
+                "Cupra Kiro",
+                "Finished",
+                "0"
+              ],
+              [
+                "18",
+                "Jean-Eric Vergne",
+                "DS Penske",
+                "Finished",
+                "0"
+              ],
+              [
+                "19",
+                "Lucas Di Grassi",
+                "Lola Yamaha ABT",
+                "DNF",
+                "0"
+              ],
+              [
+                "20",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "DNF",
+                "0"
               ]
             ]
           }
@@ -1464,6 +2290,76 @@
                 "Nissan e.Dams",
                 "24.990",
                 "1"
+              ],
+              [
+                "11",
+                "Maximilian Gunther",
+                "DS Penske",
+                "31.219",
+                "0"
+              ],
+              [
+                "12",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "35.367",
+                "0"
+              ],
+              [
+                "13",
+                "Nico Muller",
+                "Porsche Team",
+                "38.658",
+                "0"
+              ],
+              [
+                "14",
+                "Antonio Felix Da Costa",
+                "Jaguar TCS Racing",
+                "48.737",
+                "0"
+              ],
+              [
+                "15",
+                "Pascal Wehrlein",
+                "Porsche Team",
+                "49.110",
+                "0"
+              ],
+              [
+                "16",
+                "Zane Maloney",
+                "Lola Yamamaha ABT",
+                "59.710",
+                "0"
+              ],
+              [
+                "17",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:03.794",
+                "0"
+              ],
+              [
+                "18",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "+1 Lap",
+                "0"
+              ],
+              [
+                "19",
+                "Joel Eriksson",
+                "Envision Racing",
+                "DNF",
+                "0"
+              ],
+              [
+                "20",
+                "Lucas Di Grassi",
+                "Lola Yamaha ABT",
+                "DNF",
+                "0"
               ]
             ]
           }
