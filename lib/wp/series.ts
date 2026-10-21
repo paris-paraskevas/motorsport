@@ -6,7 +6,7 @@
 // so a page changes only when its data does. Inline style carries only `width` and `--t`, both of which
 // WordPress keeps in post content (safecss_filter_attr, WordPress 6.1 onward).
 
-import { calendarMonthPath, escapeHtml, seriesPath, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
+import { calendarMonthPath, escapeHtml, seriesPath, sessionKind, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
 
 /** The series drawn in round 2's design; the others keep the plain pages until slot O18. */
 export const ROUND2_SERIES: ReadonlySet<string> = new Set(['f1']);
@@ -23,8 +23,9 @@ const dayLabel = (day: string): string => DAY.format(new Date(`${day}T12:00:00Z`
 const clock = (iso: string): string => `<span class="pd-t" data-utc="${escapeHtml(iso)}" data-f="wt">${AT.format(new Date(iso))} UTC</span>`;
 const col = (columns: string[], ...names: string[]): number => columns.findIndex(c => names.includes(c));
 
-/** "23–25 Oct", or "30 Oct–1 Nov" across two months. */
+/** "23–25 Oct", "30 Oct–1 Nov" across two months, or "25 Oct" for a one-day round. */
 function dates(from: string, to: string): string {
+  if (from === to) return dayLabel(to);
   return from.slice(0, 7) === to.slice(0, 7) ? `${Number(from.slice(8))}–${dayLabel(to)}` : `${dayLabel(from)}–${dayLabel(to)}`;
 }
 
@@ -107,6 +108,9 @@ const winsLabel = (n: number): string => `${n} win${n === 1 ? '' : 's'}`;
 
 type SeriesTab = 'overview' | 'calendar' | 'standings' | 'results' | 'champions';
 
+/** The pages built in round 2's design for a series beyond its Overview; every link to one waits for it, greyed. */
+const BUILT: Readonly<Record<string, ReadonlySet<'standings' | 'results' | 'champions'>>> = { f1: new Set(['results']) };
+
 /** The five tabs, each a page at its own address; Calendar opens the site's Calendar showing only this series. */
 function tabs(d: SeriesData, on: SeriesTab): string {
   const links: Array<[SeriesTab, string, string]> = [
@@ -116,7 +120,10 @@ function tabs(d: SeriesData, on: SeriesTab): string {
     ['results', 'Results', seriesPath(d.slug, 'results')],
     ['champions', 'Champions', seriesPath(d.slug, 'champions')],
   ];
-  const items = links.map(([tab, label, href]) => `<a href="${escapeHtml(href)}"${tab === on ? ' aria-current="page"' : ''}>${label}</a>`);
+  const ready = (tab: SeriesTab) => tab === 'overview' || tab === 'calendar' || Boolean(BUILT[d.slug]?.has(tab));
+  const items = links.map(([tab, label, href]) =>
+    ready(tab) ? `<a href="${escapeHtml(href)}"${tab === on ? ' aria-current="page"' : ''}>${label}</a>` : `<span class="is-off">${label}</span>`,
+  );
   return `<nav class="pd-sr-tabs" aria-label="${escapeHtml(d.name)} pages"><div class="pd-sr-tabs-in">${items.join('')}</div></nav>`;
 }
 
@@ -200,7 +207,7 @@ function standings(d: SeriesData, wins: Map<number, RoundWin>): string {
   if (!drivers) return '';
   const head = (who: string, last: string) => `<div class="pd-sr-th"><span></span><span>${who}</span><span>Pts</span><span>${last}</span></div>`;
   const left =
-    `<div><div class="pd-sh"><h2>${escapeHtml(drivers.title)}</h2><p><a href="${seriesPath(d.slug, 'standings')}">All ${drivers.rows.length} →</a></p></div>` +
+    `<div><div class="pd-sh"><h2>${escapeHtml(drivers.title)}</h2><p>${BUILT[d.slug]?.has('standings') ? `<a href="${seriesPath(d.slug, 'standings')}">All ${drivers.rows.length} →</a>` : `<span class="is-off">All ${drivers.rows.length}</span>`}</p></div>` +
     `${head('Driver', 'Wins')}<ol class="pd-sr-tbl">${tableRows(d, drivers, wins, 10, true)}</ol></div>`;
   const right = teams
     ? `<div><div class="pd-sh"><h2>${escapeHtml(teams.title)}</h2></div>${head('Team', 'Wins')}<ol class="pd-sr-tbl">${tableRows(d, teams, wins, teams.rows.length, false)}</ol></div>`
@@ -321,6 +328,154 @@ export function seriesResults(d: SeriesData): Page {
     `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, wins, current)}${tabs(d, 'results')}` +
     `<div class="pd-sr-main"><section class="pd-sr-sec pd-rs-page"><div class="pd-sh"><h2>Results</h2><p>${escapeHtml(line)}</p></div>${list}</section></div></div>`;
   return { path: seriesPath(d.slug, 'results'), title: `${d.name} results`, body: htmlBlock(main), template: 'page-wide' };
+}
+
+// ── The series list (slot O21) ───────────────────────────────────────────────
+//
+// Round 2's "All series", answered on The Paddock Drafts (v13 to v16): the championships still racing, then the
+// completed ones in gold, each split by type, a type's group as wide as its cards. A round is run once it has a race
+// result or its dates are past on the publish day, and a one-race series is finished once its champion is written;
+// the theme's script names this weekend, fills Racing this weekend and runs the switch, the chips and the +.
+
+/** The type chips, in round 2's order: meta.json's category and its label. */
+const TYPES: ReadonlyArray<readonly [string, string]> = [
+  ['formula', 'Open-wheel'],
+  ['endurance', 'Endurance'],
+  ['gt', 'GT'],
+  ['motorcycle', 'Motorcycles'],
+  ['rally', 'Rally'],
+  ['stock', 'Stock cars'],
+];
+/** Round 2's order inside a type, where its screenshots show it; the rest by each series' calendar order. */
+const LIST_ORDER = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'adac-ravenol-24h'];
+const NUMBER_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty'];
+const MONTH = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', month: 'long' });
+
+/** A round on a Saturday or Sunday reads This weekend from that weekend's Friday, as Racing this weekend counts it. */
+function weekendFrom(day: string): string {
+  const d = new Date(`${day}T12:00:00Z`);
+  const back = [2, 0, 0, 0, 0, 0, 1][d.getUTCDay()];
+  return back ? new Date(d.getTime() - back * 864e5).toISOString().slice(0, 10) : day;
+}
+
+interface ListEntry {
+  d: SeriesData;
+  rounds: CalendarRound[];
+  ran: ReadonlySet<number>;
+  next: CalendarRound | undefined;
+  over: boolean;
+}
+
+/** A round counts as run once its last race is over. With a result in the feed, when the last race the calendar times
+ *  for it has ended: a weekend's Saturday race alone never closes a round raced again on the Sunday (DTM, WorldSBK).
+ *  Without one, from the UTC day after that race ended, since a feed can lag its season (IMSA's stored results stop at
+ *  round 5 of 11) and a past round must never read as Next. A round the calendar does not time goes by its dates. */
+function listEntry(d: SeriesData, now: Date): ListEntry {
+  const today = now.toISOString().slice(0, 10);
+  const rounds = d.rounds ?? [];
+  const raced = new Set((d.results ?? []).filter(r => r.round !== null && raceOf(r)).map(r => r.round as number));
+  const lastRaceEnd = (r: CalendarRound): number | null => {
+    const ends = (d.calendar ?? [])
+      .filter(e => e.round === r.round && !e.dateOnly && sessionKind(e.session) === 'race')
+      .map(e => Date.parse(e.end))
+      .filter(t => !Number.isNaN(t));
+    return ends.length ? Math.max(...ends) : null;
+  };
+  const isRun = (r: CalendarRound): boolean => {
+    const end = lastRaceEnd(r);
+    if (end === null) return raced.has(r.round) ? r.endDate <= today : r.endDate < today;
+    return raced.has(r.round) ? end <= now.getTime() : end < Date.parse(`${today}T00:00:00Z`);
+  };
+  const ran = new Set(rounds.filter(isRun).map(r => r.round));
+  const next = rounds.find(r => !ran.has(r.round));
+  return { d, rounds, ran, next, over: rounds.length ? !next : Boolean(d.champion) };
+}
+
+function listCard(e: ListEntry): string {
+  const { d, rounds, ran, next, over } = e;
+  const label = TYPES.find(t => t[0] === d.category)?.[1] ?? '';
+  const colour = HEX.test(d.colour ?? '') ? d.colour : NEUTRAL;
+  const built = BUILT[d.slug];
+  const name = built ? `<a href="${seriesPath(d.slug)}">${escapeHtml(d.name)}</a>` : escapeHtml(d.name);
+  const bar = rounds.length ? `<span class="pd-sx-bar" aria-hidden="true">${rounds.map(r => `<i${ran.has(r.round) ? ' class="is-done"' : r === next ? ' class="is-next"' : ''}></i>`).join('')}</span>` : '';
+  const run = rounds.length ? `<p class="pd-sx-run"><span>${rounds.filter(r => ran.has(r.round)).length} of ${rounds.length} rounds run</span><span>${escapeHtml(String(d.season ?? ''))}</span></p>` : '';
+  let state: string;
+  if (!rounds.length) {
+    const first = (d.calendar ?? []).map(c => c.start).sort()[0];
+    const when = first ? ` · ${MONTH.format(new Date(first))}` : '';
+    state = `<p class="pd-sx-st"><em class="pd-sx-tag">One race a year${when}</em></p>${d.champion ? `<p class="pd-sx-ev"><b>${escapeHtml(String(d.season ?? ''))} winners: ${escapeHtml(d.champion)}</b></p>` : ''}`;
+  } else if (next) {
+    state =
+      `<p class="pd-sx-st"><em class="pd-sx-pill">${wk({ ...next, startDate: weekendFrom(next.startDate) }, 'Next', 'This weekend')}</em></p>` +
+      `<p class="pd-sx-ev"><b>Round ${next.round} · ${escapeHtml(next.name)}</b><span>${dates(next.startDate, next.endDate)}</span></p>`;
+  } else {
+    const who = d.champion ? `${escapeHtml(String(d.season ?? ''))} champion: ${escapeHtml(d.champion)}` : `All ${rounds.length} rounds run`;
+    state = `<p class="pd-sx-st"><em class="pd-sx-tag">Season complete</em></p><p class="pd-sx-ev"><b>${who}</b></p>`;
+  }
+  const page = (tab: 'standings' | 'results' | 'champions', text: string) => (built?.has(tab) ? `<a href="${seriesPath(d.slug, tab)}">${text}</a>` : `<span class="is-off">${text}</span>`);
+  const links = `<nav class="pd-sx-links" aria-label="${escapeHtml(d.name)}"><a href="/calendar/#${escapeHtml(d.slug)}">Calendar</a>${page('standings', 'Standings')}${page('results', 'Results')}${page('champions', 'Champions')}</nav>`;
+  return (
+    `<article class="pd-sx-card${over ? ' is-over' : ''}" data-type="${escapeHtml(d.category ?? '')}" data-s="${escapeHtml(d.slug)}" style="--t:${colour}">` +
+    `<header class="pd-sx-head"><small>${label}</small><b>${name}</b><button type="button" class="pd-sx-fol" data-pd-follow="${escapeHtml(d.slug)}" data-on="✓" data-off="+" aria-label="Follow ${escapeHtml(d.name)}" hidden>+</button></header>` +
+    `<div class="pd-sx-body">${bar}${run}${state}${links}</div></article>`
+  );
+}
+
+/** A status's section, split by type: each type a group as wide as its cards, up to the row's four. */
+function listSection(title: string, note: string, list: ListEntry[], over: boolean): string {
+  if (!list.length) return '';
+  const groups = TYPES.map(([key, label]) => {
+    const cards = list.filter(e => e.d.category === key);
+    const n = Math.min(cards.length, 4);
+    return cards.length ? `<div class="pd-sx-type pd-sx-span-${n}" data-type="${key}"><h3>${label} <small>${cards.length}</small></h3><div class="pd-sx-grid pd-sx-cols-${n}">${cards.map(listCard).join('')}</div></div>` : '';
+  }).join('');
+  return `<section class="pd-sx-sec${over ? ' is-over' : ''}"><div class="pd-sh"><h2>${title}</h2><p>${note}</p></div><div class="pd-sx-groups">${groups}</div></section>`;
+}
+
+/** Racing this weekend: every series' next round, hidden; the script shows those within the reader's own Friday to
+ *  Sunday, and the section with them. */
+function weekendCards(list: ListEntry[]): string {
+  const cards = list
+    .filter(e => e.next)
+    .map(({ d, next }) => {
+      const r = next as CalendarRound;
+      return (
+        `<article class="pd-sx-wk" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}" style="--t:${HEX.test(d.colour ?? '') ? d.colour : NEUTRAL}" hidden>` +
+        `<header><b>${escapeHtml(d.name)}</b><small>Round ${r.round}</small></header><div><b>${escapeHtml(r.name.replace(/ Grand Prix\b/, ' GP'))}</b><span>${dates(r.startDate, r.endDate)}</span></div></article>`
+      );
+    })
+    .join('');
+  return cards ? `<section class="pd-sx-sec pd-sx-weekend" hidden><div class="pd-sh"><h2>Racing this weekend</h2><p data-pd-sx-count></p></div><div class="pd-sx-wks">${cards}</div></section>` : '';
+}
+
+/** /series/: every championship, still racing then completed, each split by type (the operator, 21 Oct). */
+export function seriesList(all: SeriesData[], now: Date): Page {
+  const rank = (d: SeriesData) => (LIST_ORDER.includes(d.slug) ? LIST_ORDER.indexOf(d.slug) : 50 + (d.order ?? 99));
+  const typeAt = (d: SeriesData) => {
+    const i = TYPES.findIndex(t => t[0] === d.category);
+    return i < 0 ? TYPES.length : i;
+  };
+  const list = [...all].sort((a, b) => typeAt(a) - typeAt(b) || rank(a) - rank(b) || a.name.localeCompare(b.name)).map(d => listEntry(d, now));
+  const racing = list.filter(e => !e.over);
+  const done = list.filter(e => e.over);
+  const season = all.find(d => d.season)?.season;
+  const counted = (n: number) => `${n} championship${n === 1 ? '' : 's'}`;
+  const chips = TYPES.map(([key, label]) => [key, label, list.filter(e => e.d.category === key).length] as const)
+    .filter(([, , n]) => n > 0)
+    .map(([key, label, n]) => `<button type="button" data-pd-sx-type="${key}">${label} <small>${n}</small></button>`)
+    .join('');
+  const head =
+    `<h1 class="pd-sx-h1">${NUMBER_WORDS[list.length] ?? list.length} championships</h1>` +
+    `<p class="pd-sx-sub">The ${season ?? ''} season, every series. Follow the ones you care about.</p>` +
+    `<div class="pd-sx-ctl" hidden><div class="pd-sx-sw"><button type="button" data-pd-sx-show="all">All</button><button type="button" data-pd-sx-show="following">Following <small data-pd-sx-following></small></button></div>` +
+    `<div class="pd-sx-chips"><button type="button" data-pd-sx-type="all">All <small>${list.length}</small></button>${chips}</div></div>` +
+    '<p class="pd-sx-none" hidden>Nothing followed yet: follow a championship with the + on its card.</p>';
+  const main =
+    `<div class="pd-sx">${head}${weekendCards(list)}` +
+    listSection('Still racing', counted(racing.length), racing, false) +
+    listSection('Completed', `${counted(done.length)}${season ? ` · the ${season} season over` : ''}`, done, true) +
+    '</div>';
+  return { path: '/series/', title: 'Series', body: htmlBlock(main), template: 'page-wide' };
 }
 
 /** A series' pages in round 2's design: the Overview and Results now; the weekend pages, Standings and Champions in

@@ -124,6 +124,7 @@
 			if ( ! el.hasAttribute( 'data-off' ) ) { el.setAttribute( 'data-off', el.textContent ); }
 			var on = day >= el.getAttribute( 'data-from' ) && day <= el.getAttribute( 'data-to' );
 			el.textContent = el.getAttribute( on ? 'data-on' : 'data-off' );
+			el.classList.toggle( 'is-on', on );
 		} );
 		document.querySelectorAll( '[data-pd-ses]' ).forEach( function ( card ) {
 			var list = card.getAttribute( 'data-pd-ses' ).split( ';' ).map( function ( s ) {
@@ -585,13 +586,15 @@
 		var slug = b.getAttribute( 'data-pd-follow' );
 		var show = function () {
 			var on = followed().indexOf( slug ) >= 0;
-			b.textContent = on ? 'Following ✓' : 'Follow';
+			// A card's + (the series list) names its own two states.
+			b.textContent = on ? b.getAttribute( 'data-on' ) || 'Following ✓' : b.getAttribute( 'data-off' ) || 'Follow';
 			b.setAttribute( 'aria-pressed', String( on ) );
 		};
 		b.addEventListener( 'click', function () {
 			var list = followed(), at = list.indexOf( slug );
 			if ( at >= 0 ) { list.splice( at, 1 ); } else { list.push( slug ); }
 			calStore.set( 'pd-follow', list.join( ',' ) );
+			document.dispatchEvent( new CustomEvent( 'pd-follow' ) );
 			show();
 		} );
 		b.hidden = false;
@@ -599,6 +602,51 @@
 	} );
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
+
+	// The series list (O21): the switch and the type chips filter the cards, the + follows (above), and Racing this
+	// weekend shows the next rounds that meet the reader's own Friday to Sunday. Without the script every card shows.
+	document.querySelectorAll( '.pd-sx' ).forEach( function ( page ) {
+		var show = 'all', type = 'all', cards = page.querySelectorAll( '.pd-sx-card' );
+		var apply = function () {
+			var mine = followed(), n = 0;
+			cards.forEach( function ( c ) {
+				var mineToo = mine.indexOf( c.getAttribute( 'data-s' ) ) >= 0;
+				if ( mineToo ) { n++; }
+				c.hidden = ! ( ( type === 'all' || c.getAttribute( 'data-type' ) === type ) && ( show === 'all' || mineToo ) );
+			} );
+			page.querySelectorAll( '.pd-sx-type' ).forEach( function ( g ) { g.hidden = ! g.querySelector( '.pd-sx-card:not([hidden])' ); } );
+			page.querySelectorAll( '.pd-sx-sec:not(.pd-sx-weekend)' ).forEach( function ( s ) { s.hidden = ! s.querySelector( '.pd-sx-card:not([hidden])' ); } );
+			var count = page.querySelector( '[data-pd-sx-following]' ), none = page.querySelector( '.pd-sx-none' );
+			if ( count ) { count.textContent = '· ' + n; }
+			if ( none ) { none.hidden = ! ( show === 'following' && n === 0 ); }
+			page.querySelectorAll( '[data-pd-sx-show]' ).forEach( function ( b ) { b.setAttribute( 'aria-pressed', String( b.getAttribute( 'data-pd-sx-show' ) === show ) ); } );
+			page.querySelectorAll( '[data-pd-sx-type]' ).forEach( function ( b ) { b.setAttribute( 'aria-pressed', String( b.getAttribute( 'data-pd-sx-type' ) === type ) ); } );
+		};
+		page.querySelectorAll( '[data-pd-sx-show]' ).forEach( function ( b ) { b.addEventListener( 'click', function () { show = b.getAttribute( 'data-pd-sx-show' ); apply(); } ); } );
+		page.querySelectorAll( '[data-pd-sx-type]' ).forEach( function ( b ) { b.addEventListener( 'click', function () { type = b.getAttribute( 'data-pd-sx-type' ); apply(); } ); } );
+		document.addEventListener( 'pd-follow', apply );
+		var ctl = page.querySelector( '.pd-sx-ctl' );
+		if ( ctl ) { ctl.hidden = false; }
+		apply();
+		var now = new Date( nowAt() ), dow = ( now.getDay() + 6 ) % 7;
+		var day = function ( n ) {
+			var d = new Date( now.getFullYear(), now.getMonth(), now.getDate() + n );
+			return d.getFullYear() + '-' + String( d.getMonth() + 1 ).padStart( 2, '0' ) + '-' + String( d.getDate() ).padStart( 2, '0' );
+		};
+		var fri = day( 4 - dow ), sun = day( 6 - dow ), shown = 0, wkSec = page.querySelector( '.pd-sx-weekend' );
+		page.querySelectorAll( '.pd-sx-wk' ).forEach( function ( c ) {
+			var on = c.getAttribute( 'data-from' ) <= sun && c.getAttribute( 'data-to' ) >= fri;
+			c.hidden = ! on;
+			if ( on ) { shown++; }
+		} );
+		if ( wkSec && shown ) {
+			var month = function ( iso ) { return new Date( iso + 'T12:00:00Z' ).toLocaleString( 'en-GB', { month: 'long', timeZone: 'UTC' } ); };
+			var span = fri.slice( 0, 7 ) === sun.slice( 0, 7 ) ? Number( fri.slice( 8 ) ) + '–' + Number( sun.slice( 8 ) ) + ' ' + month( sun ) : Number( fri.slice( 8 ) ) + ' ' + month( fri ) + ' – ' + Number( sun.slice( 8 ) ) + ' ' + month( sun );
+			var label = wkSec.querySelector( '[data-pd-sx-count]' );
+			if ( label ) { label.textContent = shown + ' championship' + ( shown === 1 ? '' : 's' ) + ' · ' + span; }
+			wkSec.hidden = false;
+		}
+	} );
 
 	// Results (O15): a round's tile on the Overview links /series/<slug>/results/#r12, and that round's fold opens.
 	var openRound = function () {

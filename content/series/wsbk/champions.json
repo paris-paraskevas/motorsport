@@ -1,4 +1,5 @@
 [
+  { "year": 2026, "driver": "Nicolò Bulega", "constructor": "Ducati", "constructorChampion": "Ducati", "points": 726, "runnerUp": "Iker Lecuona", "runnerUpPoints": 563 },
   { "year": 2025, "driver": "Toprak Razgatlıoğlu", "constructor": "BMW", "constructorChampion": "Ducati", "points": 616, "runnerUp": "Nicolò Bulega", "runnerUpPoints": 603 },
   { "year": 2024, "driver": "Toprak Razgatlıoğlu", "constructor": "BMW", "constructorChampion": "Ducati", "points": 527, "wins": 18, "runnerUp": "Nicolò Bulega", "runnerUpPoints": 484 },
   { "year": 2023, "driver": "Álvaro Bautista", "constructor": "Ducati", "constructorChampion": "Ducati" },

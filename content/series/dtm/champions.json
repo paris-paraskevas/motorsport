@@ -1,4 +1,5 @@
 [
+  { "year": 2026, "driver": "Thomas Preining", "constructor": "Manthey — Porsche", "constructorChampion": "Mercedes-Benz", "points": 225, "runnerUp": "Maro Engel", "runnerUpPoints": 213 },
   { "year": 2025, "driver": "Ayhancan Güven", "constructor": "Manthey EMA — Porsche", "constructorChampion": "Mercedes-Benz", "points": 192, "wins": 3, "runnerUp": "Lucas Auer", "runnerUpPoints": 188 },
   { "year": 2024, "driver": "Mirko Bortolotti", "constructor": "SSR Performance — Lamborghini", "constructorChampion": "Mercedes-Benz", "points": 238, "wins": 5, "runnerUp": "Kelvin van der Linde", "runnerUpPoints": 221 },
   { "year": 2023, "driver": "Thomas Preining", "constructor": "Manthey EMA — Porsche", "constructorChampion": "Porsche", "points": 246, "runnerUp": "Mirko Bortolotti", "runnerUpPoints": 213 },

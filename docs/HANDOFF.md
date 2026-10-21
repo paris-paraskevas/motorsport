@@ -6,7 +6,84 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-20 (LATEST, session 69: COST-3, the move to WordPress.com; the old stack stopped and paused, the publisher merged, the site private with the posts in; the design passes started: the home drafted from round 2, the theme check running)
+## ⚡ Next session pickup — 2026-10-21 (LATEST, session 70: O21 is PR #1175 with the six champions' notes and Formula 1's unbuilt tabs greyed, reviewed and folded, the merge on the word; the operator's first theme test recorded; then the fixes PR, the calendar drafts and O19 with Results redrawn)
+
+**WHERE IT STANDS (21 Oct, ~16:39Z):**
+1. **O21 is PR #1175** (o21/series-list), into next, open, reviewed and folded: the fresh-context Sonnet reader (536,313 tokens) said mergeable after fixes, 3 should-fix and 9 nits, folded as the PR log entry lists (a round now closes when the calendar's last race for it has ended; the other fourteen names stay unlinked as a departure for the operator's word; the subtitle trimmed); the nits left for later are IDEAS lines. No checks run on PRs into next. Theme zip 0.1.10 built (wp-theme/paddock.zip, gitignored, 40 files).
+   - The browser checks (playwright-core on the Playground, four widths, Day and Night, the clock at 23 Oct) found three faults, fixed: the phone's chips overflowing 190 px (`.pd-sx-ctl`'s grid sizes items to content: `max-width: 100%`), one-day rounds dated "25–25 Oct", and a Sunday round reading Next while under Racing this weekend (`weekendFrom`: This weekend from that Friday, as the draft draws).
+   - The six champions re-checked on primary pages (each note's sources). The full suite then failed 4 tests: `lib/sitemap-data.test.ts` holds every champions.json row to a champion note, and three record notes stated last year's counts. Six notes written and seven record-note lines updated, each with a 2026 source. The six defaults stood on the operator's word.
+   - Formula 1's Standings and Champions tabs and the Overview's "All 23" greyed until O16 and O17 (`BUILT` in lib/wp/series.ts).
+2. **The operator's first theme test (0.1.9), under the new rule:** items 2 and 3 passed; 1, 4 and 5 gave the items below (IDEAS lines, O13/O14/O15 evidence). The rule: every theme upload comes with its test list (rules.md § 6, the ledger's changes line of 21 Oct, memory feedback-paddock-theme-upload-tests).
+
+**DO NEXT, IN ORDER (the operator's order of 21 Oct):**
+1. **#1175:** the merge into next on the word; the operator uploads 0.1.10; one publish run with `--only /series/f1/` on the word (the procedure in the landmines of 21 Oct below); /series/ checked signed in; the operator tests with #1175's Test after upload list; O21 done.
+2. **The fixes PR, theme 0.1.11:** the click outline everywhere (Twenty Twenty-Five's `:where(.wp-site-blocks :focus)` draws 2 px in the text's colour on a mouse click; keep the yellow keyboard ring, drawn inside the tabs so their scroll does not cut it), and the From the blog cards' cover photos (functions.php's `pd_series_posts`, the post's featured image; posts without one keep today's card).
+3. **The calendar's small PR with the month changer drafted first:** A (the month as the headline, its neighbours named) and B (a month strip) beside round 2's small box, C (a sticky bar) on either; with #1170's and #1173's review lows.
+4. **O19 with Formula 1's Results redrawn**, drafted first with real data (Singapore as the sprint, Bahrain as the standard): distinct rows at the page's width, no box on a click, a sprint fold with S, R and Total for every scorer (11 to 14 a sprint weekend this season), points only in every fold, each round's title and See weekend → to /series/f1/2026/round-<n>/ (the address kept).
+5. Then O16, O17, O20 and O18. The ledger's O11, O13 and O14 are still "started" and need their closing checks.
+
+**Landmines met in session 70:**
+- Session 69's Playground still held port 9400: find the PID by the port and stop that PID.
+- The Playwright MCP's browser profile was held by session 69's Chrome. A scratch script on playwright-core 1.63 from the MCP's npx cache (`C:/Users/ppara/AppData/Local/npm-cache/_npx/e41f203b7505f1fb/node_modules/playwright-core`, chromium-1243 cached) drives the Playground; `context.clock.setFixedTime` pins the clock, and under it WordPress core's interactivity module throws `domContentLoadedEventStart` (the harness only).
+- Run the whole suite, not lib/wp: a new champions.json row needs its champion note, and can make a record note's count stale.
+- champion-notes.json keys are years, which JSON.parse reorders: insert entries as text.
+- imsa.com and Cadillac's newsroom refuse scripts (403); IMSA's official PDFs on imsa.results.alkamelcloud.com read with `pdftotext`. dtm.com's and worldsbk.com's standings are script apps; their news pages read.
+
+## ⚡ Next session pickup — 2026-10-21 (session 69 handed off at ~15:15Z on the 21st for a clean context: O15 done and live; O21, the series list, built on its branch with the six champions; its checks, records and PR left)
+
+**WHERE IT STANDS (21 Oct, ~15:15Z):**
+1. **O15 done.** #1174 merged as 10df3279, and the operator uploaded theme 0.1.9. The publish run 39610955800 (`--only /series/f1/`, `openf1_max` 50) stored 45 OpenF1 sessions (Practice 1–3, Sprint Qualifying) beside jolpi.ca's qualifying, updated /series/f1/ and created /series/f1/results/. The page was checked on the site signed in at 1440 and 390 px, Night and Day. The operator's "the /results still not loading" was asked before that run had created the page.
+2. **O21, the series list, is built on `o21/series-list`** (from next 10df3279). The approved plan is `C:\Users\ppara\.claude\plans\hazy-percolating-island.md`; the draft is The Paddock Drafts v16. The handoff commit on the branch (local, not pushed) holds:
+   - **The code.** `lib/wp/series.ts`: `seriesList(all, now)` with `listEntry`, `listCard`, `listSection` and `weekendCards`. `lib/wp/render.ts`: `SeriesData.category`, `.colour` and `.champion`; `seriesIndexPage` is gone. `scripts/wp-publish.mts`: meta's category and colour and the season's champion for every series, and `/series/` from `seriesList`. Tests are in `lib/wp/series.test.ts`; at the handoff `npx vitest run lib/wp lib/design/plan-ledger.test.ts lib/champions-integrity.test.ts lib/series-content` gave 217 passed and `npx tsc --noEmit` was clean.
+   - **Theme 0.1.10.** `style.css` has the `.pd-sx-*` block: gold `--gold: #e3b341` on a finished card, and the type groups in 4 columns, 2 at ≤1023 px and 1 at ≤699 px. `paddock.js` has the All / Following switch, the type chips, Follow's `data-on`/`data-off` and its `pd-follow` event, `.pd-wk` toggling `is-on`, and the weekend cards by `nowAt()`.
+   - **The six 2026 champions.** Written by the session "Write the 2026 champions for six series" (Sonnet), each checked on the series' own site; its evidence is in `C:\Users\ppara\AppData\Roaming\Claude\side-session-notes\local_5ee94c82-ab9f-4533-b7d0-db7bd21ed4c7\champions-2026-verification.md`. They are F3 Ugo Ugochukwu, IndyCar Álex Palou, DTM Thomas Preining, IMSA Jack Aitken (GTP), GT World Lucas Auer and Maro Engel, and WorldSBK Nicolò Bulega. Its defaults wait for the operator's word:
+     - IMSA was read from its official results host, because imsa.com refuses scripts.
+     - DTM's wins are left out: dtm.com's figures could not be read.
+     - DTM's manufacturers' champion is written "Mercedes-Benz", as in 2024 and 2025, although dtm.com prints "Mercedes-AMG".
+     - The spellings follow drivers.json (Álex, Nicolò).
+     - GT World's Overall Teams champion (Team WRT) has no field.
+   - **The records so far.** The ledger has O15 done and O21 started, with O21's evidence and change line, rendered. IDEAS gains one line: IMSA's stored results end at round 5 of 11.
+   - **The dry run of 21 Oct** (before the champions): /series/ was 21,650 bytes. Still racing: F1, F2 · WEC · MotoGP · WRC · NASCAR Cup. Completed, in gold: F3, Formula E, IndyCar · the 24h, IMSA, NLS · GT World, DTM · WorldSBK.
+3. **The pages:**
+   - The Paddock Ledger https://claude.ai/code/artifact/f3559052-b0ce-4d33-8654-8933095535cf (v41).
+   - The Paddock Roadmap https://claude.ai/code/artifact/44ac7ab8-2cc6-4d51-b982-7a4be7d90de6 (v2).
+   - The Paddock Drafts https://claude.ai/code/artifact/a25e4f63-db5b-4c1a-b016-6760d5fdacad (v16 is the series list).
+   - The Paddock Prototype https://claude.ai/code/artifact/d5c004c1-61e4-43f6-95ea-ca6546b1de9e (round 2; readable only in a browser signed in to claude.ai).
+   - Their sources are in session 69's scratchpad, `C:\Users\ppara\AppData\Local\Temp\claude\C--Dev-Personal-Motorsport\aea58bab-11ee-4cb6-b648-ab784e60d5a9\scratchpad\`: `ledger-page.html` (the latest patch script is `ledger-o21.mjs`), `roadmap.html` (`roadmap-o21.mjs`), `drafts-src.html` (`build-drafts.mjs`) and `series-index-draft.mjs`. The Artifact tool's read also returns each page.
+
+**DO NEXT, IN ORDER:**
+1. **O21 to its PR**, by the plan's verification:
+   - **a. Dry run.** Run `npx tsx scripts/bundle-content.mts`, then `MSYS_NO_PATHCONV=1 npx tsx scripts/wp-publish.mts --from-ref origin/paddock-data --dry-run --out <scratch>/o21-dry --only /series/f1/`. The gold cards should now name their champions.
+   - **b. Fixture.** Build `wp-theme/preview/series.html` (approved with the plan) from that dry run's `series/index.html`. Give the blueprint (`wp-theme/preview/blueprint.json`) its Series page from it, the way f1.html and f1-results.html are inserted. Restart `theme-preview` (port 9400; browse 127.0.0.1).
+   - **c. Browser checks.** Playwright on the Playground at 1440, 1024, 768 and 390 px, Day and Night, against draft v16. Check the sections and groups, gold, the switch and chips, the + (Following), and Racing this weekend with the clock on 23 Oct (`nowAt()` freezes only on localhost).
+   - **d. Gates.** `npx vitest run` (the whole suite), `npx tsc --noEmit`, `npm run lint` (0 errors, the 2 known warnings).
+   - **e. Records 1.0.287.** CHANGELOG, RELEASES, package.json, docs/pull-requests.md, the ledger's O21 evidence, and this handoff. The PR names the deviation (rounds run counts ended dates as well as results, because IMSA's feed stops at round 5) and the champions' defaults above.
+   - **f. PR.** Build the theme zip: `rm -f wp-theme/paddock.zip && /c/Windows/System32/tar.exe -a -c -f wp-theme/paddock.zip -C wp-theme paddock` (gitignored; the operator uploads it). Open the PR into next. A fresh-context Sonnet review follows, with the cost announced first and only while usage is under 60%; fold its fixes.
+   - **g. After the merge.** The operator uploads 0.1.10. Then, on the word, one publish run with `--only /series/f1/`, never `--only /series/`, which selects all 56 plain series pages. Check /series/ on the site, signed in.
+2. **The calendar's small PR**, for the fresh review's lows: #1170's dropdown sync during a visit, a far month's race week, and the focus after Show every series; #1173's label cut on a hyphen, en dash or colon.
+3. **O19** next: Formula 1's weekend pages at /series/f1/2026/round-<n>/, a layout per format, drafted first with real data. Then O16, O17, O20 and O18, the order of 21 Oct.
+4. **The ledger's O11, O13 and O14 are still "started".** Each needs its closing check recorded. O13's review fixes went live with run 39610955800. O14 was published on 0.1.9 in run 39603975320.
+5. The items in the 20th's section below stand: the site plan's open decisions, pass 3, #1163, B.4 and the records branches.
+
+**Landmines met on 21 Oct:**
+- `--only /series/` selects every plain series page (56). An `--only` family brings its ancestors, so `--only /series/f1/` writes /series/, /series/f1/ and /series/f1/results/.
+- The publish workflow is switched off between runs. The procedure: `gh workflow enable wp-publish.yml`, then `MSYS_NO_PATHCONV=1 gh workflow run wp-publish.yml --ref next -f mode=publish -f only=<prefix>` (add `-f openf1_max=50` for a backfill), watch it, then `gh workflow disable wp-publish.yml`. Keep away from :13 and :43.
+- A background `gh run watch` can exit 1, and the script then switches the workflow off, while the run still finishes green. Read the jobs first: `gh api repos/paris-paraskevas/motorsport/actions/runs/<id>/jobs`.
+- WordPress's kses keeps class, data-*, hidden, role, aria-labelledby and aria-controls, and style with width and --*. It strips aria-selected and aria-pressed (set them from the script) and every other inline style (use classes).
+- The pane's emulated 1440 renders tiny: measure with script, and take screenshots at the pane's own width.
+- docs/pull-requests.md, like this file, has CRLF line endings, so multi-line replaces fail: use single-line edits.
+
+### 🔴 Start here — the handoff prompt for the next BUILD session (copy it whole)
+
+```
+Session 70, the build session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
+Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md · docs/plan/ledger.json (O21 started; O19, O16, O17, O20, O18 planned) · docs/HANDOFF.md LATEST (21 Oct) · the plan C:\Users\ppara\.claude\plans\hazy-percolating-island.md · IDEAS.md's lines of 21 Oct · the memory feedback-paddock-* files.
+Then run `git status` and `git log --oneline -3` on o21/series-list, start the theme-preview launch entry, and give a time plan with a "won't touch this session" line.
+First task: O21 to its PR, the handoff's steps 1a–1g. Put the six champions' defaults to me in one message, each with its default, before the PR.
+Not without my word: any publish run, the theme upload, the old Next.js code, DNS, any prod write.
+```
+
+## ⚡ Next session pickup — 2026-10-20 (session 69: COST-3, the move to WordPress.com; the old stack stopped and paused, the publisher merged, the site private with the posts in; the design passes started: the home drafted from round 2, the theme check running)
 
 **WHERE IT STANDS (20 Oct, about 15:20Z; items 1–5 were first written at 09:40Z and are brought up to date):**
 1. **The decision (the operator, 20 Oct):** close Cloudflare (Workers CPU 19 times its allowance) and Supabase (egress 14.42 GB of 5.5 GB, the Fair Use restriction from the 20th) and move to WordPress.com Personal (€48 a year, on a new account). The blog, the standings, the results and the calendar stay; everything else may go. The brief is COST-3, phases A to D.
