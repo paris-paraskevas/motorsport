@@ -281,6 +281,9 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal-step i { font-size: 1.25rem; font-style: normal; line-height: 1; }
 .pd-cal-short { display: none; }
 .pd-cal-ctl { grid-area: ctl; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+@media (max-width: 899px) {
+	.pd-cal-top { column-gap: 16px; }
+}
 .pd-cal-views { display: inline-flex; align-items: center; }
 .pd-cal-views button { height: 36px; padding: 0 16px; border: 1px solid var(--pd-line-strong); border-left-width: 0; border-radius: 0; background: var(--pd-surface); color: var(--pd-muted); font: inherit; font-size: .84rem; font-weight: 700; cursor: pointer; }
 .pd-cal-views button[data-v="month"] { border-left-width: 1px; }
@@ -449,7 +452,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
    away. The phone's weekend headings stick under it while it shows. */
 .pd-cal-bar { position: fixed; z-index: 40; top: var(--wp-admin--admin-bar--height, 0px); left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: 8px max(16px, 2.8vw, calc((100vw - 1248px) / 2)); border-bottom: 1px solid var(--pd-line-strong); background: var(--pd-ground); box-shadow: 0 8px 16px -10px rgba(15, 18, 23, .35); }
 .pd-cal-bar[hidden] { display: none; }
-.pd-cal-bar b { margin-inline: 6px; font-size: 1.3rem; font-weight: 800; letter-spacing: -.02em; }
+.pd-cal-bar b { min-width: 0; margin-inline: 6px; overflow: hidden; font-size: 1.3rem; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; text-overflow: ellipsis; }
 .pd-cal-bar b span { color: var(--pd-muted); font-weight: 700; }
 .pd-cal-bar .pd-cal-today { margin: 0 0 0 auto; }
 .pd-cal.is-pinned .pd-cal-wkh { top: calc(var(--wp-admin--admin-bar--height, 0px) + 61px); }
@@ -463,6 +466,11 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 @media (max-width: 600px) {
 	.pd-cal-bar { top: 0; }
 	.pd-cal.is-pinned .pd-cal-wkh { top: 61px; }
+}
+/* A long month ("September 2026") stays on one line down to 320 px, so the bar keeps its 61 px. */
+@media (max-width: 360px) {
+	.pd-cal-bar .pd-cal-step { padding: 0 10px; }
+	.pd-cal-bar b { font-size: 1rem; }
 }
 
 /* The series pages (O13 onward): round 2's band and tabs, and the Overview. The publisher writes them in UTC with no
@@ -705,8 +713,12 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-sx-head b a::after, .pd-sx-wk a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
 .pd-sx-card:has(.pd-sx-head a:hover), .pd-sx-wk:has(a:hover) { border-color: var(--pd-ink); }
 .pd-sx-wk:has(a:hover) a b { text-decoration: underline; }
-.pd-sx-head b a:focus-visible, .pd-sx-wk a:focus-visible { outline: none; }
 .pd-sx-card:has(.pd-sx-head a:focus-visible), .pd-sx-wk:has(a:focus-visible) { outline: 3px solid #ffdd00; box-shadow: 0 0 0 6px var(--pd-ink); }
+.pd-sx-card.is-over:has(.pd-sx-head a:focus-visible) { box-shadow: inset 0 -4px 0 var(--gold), 0 0 0 6px var(--pd-ink); }
+/* The card wears the ring, so the link drops its own; a browser without :has() keeps the link's. */
+@supports selector(:has(*)) {
+	.pd-sx-head b a:focus-visible, .pd-sx-wk a:focus-visible { outline: none; box-shadow: none; }
+}
 .pd-sx-fol { z-index: 2; position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; padding: 0; border: 1.5px solid var(--pd-on); border-radius: 0; background: transparent; color: var(--pd-on); font: inherit; font-size: 1.2rem; line-height: 1; cursor: pointer; }
 .pd-sx-fol[aria-pressed="true"] { background: var(--pd-on); color: #ffffff; }
 .pd-sx-body { display: grid; flex: 1; align-content: start; gap: 10px; padding: 16px; }

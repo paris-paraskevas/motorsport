@@ -426,7 +426,7 @@
 		[ prev, name, next, today ].forEach( function ( el ) { if ( el ) { bar.appendChild( el === name ? el : el.cloneNode( true ) ); } } );
 		top.parentNode.insertBefore( bar, top.nextSibling );
 		new IntersectionObserver( function ( entries ) {
-			var gone = ! entries[ 0 ].isIntersecting && entries[ 0 ].boundingClientRect.top < 0;
+			var last = entries[ entries.length - 1 ], gone = ! last.isIntersecting && last.boundingClientRect.top < 0;
 			bar.hidden = ! gone;
 			cal.classList.toggle( 'is-pinned', gone );
 		} ).observe( nav );
