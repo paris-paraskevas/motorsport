@@ -295,7 +295,7 @@ describe('seriesList', () => {
     expect(card('f1')).toContain('<em class="pd-sx-pill"><span class="pd-wk" data-from="2026-05-08" data-to="2026-05-10" data-on="This weekend">Next</span></em>');
     // The countdown's slot, which the script fills with the days until the round's first day.
     expect(card('f1')).toContain('</em><span class="pd-sx-in" data-pd-days="2026-05-08" hidden></span></p>');
-    expect(card('f3')).not.toContain('data-pd-days');
+    for (const done of ['f3', 'nls', 'imsa', 'adac-ravenol-24h']) expect(card(done), done).not.toContain('data-pd-days');
     expect(card('f1')).toContain('<span class="pd-sx-bar" aria-hidden="true"><i class="is-done"></i><i class="is-next"></i><i></i></span>');
     expect(card('f1')).toContain('<span>1 of 3 rounds run</span>');
   });

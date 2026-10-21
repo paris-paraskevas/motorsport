@@ -14,7 +14,9 @@ The operator tested theme 0.1.9 on the site (session 70) and found two faults on
 - **The blog covers.** `[pd_series_posts]` (functions.php) leads each card with its post's featured image (`get_the_post_thumbnail`, medium_large, `sizes` for one or three columns), cropped 16:9 under the series' colour rule, linked to the post but out of the tab order and hidden from screen readers (the title stays the link they use); a post without one keeps the plain card.
 - **The countdown.** Each racing card on /series/ carries `<span class="pd-sx-in" data-pd-days="<start date>" hidden>` beside its Next pill (lib/wp/series.ts `listCard`); paddock.js's `render()` fills it every 30 s with the days from the reader's own date to the round's start date, whole days between two calendar dates (`Date.UTC`), "tomorrow" at one, and leaves it hidden once the round's pill reads This weekend. A Sunday race counts to its Sunday.
 
-Theme 0.1.11. Tests: the countdown's slot on a card, its absence on a finished one, a Sunday race counting to its own date.
+Theme 0.1.11. Tests: the countdown's slot on a card, its absence on every finished shape, a Sunday race counting to its own date.
+
+The fresh-context review (one Sonnet reader, 529,928 tokens): mergeable after fixes, 2 should-fix and 6 nits, all folded. The tab's keyboard ring had been a lone yellow line (1.35:1 on white in Day) painted over the label's first and last letters: it is now a 3 px ink outline at -3 px over a 6 px yellow inset band, with `padding-inline: 8px` and `margin-inline: -8px` so the label keeps its place. The countdown hides a date it cannot read (`! ( n >= 1 )`, NaN included); the cover is wrapped only when `get_the_post_thumbnail` returns an image (a thumbnail id leading to none left an empty link); the handoff and the PR log corrected.
 
 ## 1.0.287 — 2026-10-21
 

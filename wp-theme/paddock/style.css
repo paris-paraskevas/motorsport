@@ -450,8 +450,10 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-sr-tabs-in { display: flex; gap: 26px; padding: 0 var(--pd-gutter); overflow-x: auto; scrollbar-width: none; }
 .pd-sr-tabs a, .pd-sr-tabs .is-off { flex: none; padding: 15px 0 13px; border-bottom: 3px solid transparent; color: var(--pd-muted); font-size: .875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
 .pd-sr-tabs .is-off { opacity: .55; cursor: default; }
-/* The tab strip scrolls sideways, which cuts whatever is drawn outside a tab: the keyboard's ring goes inside. */
-.pd-sr-tabs a:focus-visible { outline-offset: -3px; box-shadow: none; }
+/* The tab strip scrolls sideways, which cuts whatever is drawn outside a tab, and a tab has no side padding: the
+   keyboard's ring goes inside, two-toned like the site's (ink, then yellow), with room made beside the label and the
+   negative margin keeping the strip where it was. */
+.pd-sr-tabs a:focus-visible { padding-inline: 8px; margin-inline: -8px; outline: 3px solid var(--pd-ink); outline-offset: -3px; box-shadow: inset 0 0 0 6px #ffdd00; }
 .pd-sr-tabs a[aria-current="page"] { border-bottom-color: var(--s); color: var(--pd-ink); font-weight: 800; }
 .pd-sr-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 30px var(--pd-gutter) 0; }
 .pd-sr-blog, .pd-sr-about { margin: 56px 0 0 !important; padding: 0 var(--pd-gutter); }

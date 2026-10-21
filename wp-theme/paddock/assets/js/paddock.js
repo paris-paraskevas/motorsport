@@ -132,7 +132,8 @@
 		document.querySelectorAll( '[data-pd-days]' ).forEach( function ( el ) {
 			var n = dayNo( el.getAttribute( 'data-pd-days' ) ) - dayNo( day );
 			el.textContent = n === 1 ? 'tomorrow' : 'in ' + n + ' days';
-			el.hidden = n < 1 || !! el.parentNode.querySelector( '.pd-wk.is-on' );
+			// `! ( n >= 1 )` and not `n < 1`: a date the arithmetic cannot read (NaN) stays hidden too.
+			el.hidden = ! ( n >= 1 ) || !! el.parentNode.querySelector( '.pd-wk.is-on' );
 		} );
 		document.querySelectorAll( '[data-pd-ses]' ).forEach( function ( card ) {
 			var list = card.getAttribute( 'data-pd-ses' ).split( ';' ).map( function ( s ) {
