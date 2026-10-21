@@ -335,6 +335,12 @@ describe('calendarMonthPages', () => {
   const pages = calendarMonthPages([f1], now);
   const october = pages.find(p => p.path === '/calendar/2026-10/')!;
 
+  it("names each chip's series in full, for the Calendar tab's notice", () => {
+    expect(october.body).toContain('<span class="pd-cal-chip pd-s-f1" data-s="f1" data-name="Formula 1">F1</span>');
+    const odd = calendarMonthPages([{ ...f1, name: 'F<1> "x"' }], now)[0].body;
+    expect(odd).toContain('data-name="F&lt;1&gt; &quot;x&quot;"');
+  });
+
   it('writes /calendar/ as this month, then every month the data reaches, on the wide template', () => {
     expect(pages.map(p => p.path)).toEqual(['/calendar/', '/calendar/2026-10/', '/calendar/2026-11/']);
     expect(pages[0].body).toBe(october.body);

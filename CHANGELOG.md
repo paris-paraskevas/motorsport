@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.283 — 2026-10-21
+
+### O14: the Calendar tab: one series for the visit, and race week in Paddock's yellow
+
+The operator's words of 21 October, drawn on The Paddock Drafts and approved: the series page's Calendar tab "should take you to calendar with a filter showing only that series' sessions", lasting "until you exit page, only is set because you accessed calendar through a series' page", and month view highlights race week ("your week, or next week with race weekend") in "paddock's yellow tint". Theme 0.1.7 does both. `/calendar/#f1` shows Formula 1 alone: the other series' bands, sessions and cards are hidden for the visit, never saved, so the reader's own Filters stay as they were; a notice names the series ("Formula 1 only, because you came from the Formula 1 page, until you leave the Calendar") with Show every series, the Filters tab reads "Filters · F1 only", and the month arrows and Today carry the hash. Picking series in the Filters tab ends the visit. Race week is the week holding today when it has a race weekend of a series on show (a band not finished), otherwise the next week on the page that has one; it is tinted #ffb400 at 18% with a "Race week" tag, and on a phone the tag heads that weekend in the agenda.
+
+The notice needs the series' full name, so the publisher writes `data-name` on each chip (escaped; a test covers it), and the calendar pages are republished once with the theme.
+
 ## 1.0.282 — 2026-10-21
 
 ### O13: the series pages begin: round 2's band and tabs, and Formula 1's Overview, written by the publisher

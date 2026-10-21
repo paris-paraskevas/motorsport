@@ -751,7 +751,8 @@ function calendarMonth(ym: string, months: string[], all: SeriesData[], path: st
     '<div class="pd-cal-views" data-pd-views></div><a class="pd-cal-today" href="/calendar/">Today</a><a class="pd-cal-emails" href="/subscribe/">Session emails</a></div>';
   const chips = ordered
     .filter(d => d.calendar?.length || d.rounds?.length)
-    .map(d => `<span class="pd-cal-chip pd-s-${slugAttr(d)}${busy.has(d.slug) ? '' : ' pd-dim'}" data-s="${slugAttr(d)}">${escapeHtml(chipLabel(d))}</span>`);
+    // data-name: the series' full name, for the Calendar tab's notice ("Formula 1 only") when a series page sends a reader here.
+    .map(d => `<span class="pd-cal-chip pd-s-${slugAttr(d)}${busy.has(d.slug) ? '' : ' pd-dim'}" data-s="${slugAttr(d)}" data-name="${escapeHtml(d.name)}">${escapeHtml(chipLabel(d))}</span>`);
   const filter = `<div class="pd-cal-filter"><span class="pd-cal-lbl">Series</span>${chips.join('')}</div>`;
   const legend =
     '<p class="pd-cal-legend"><span class="pd-cal-lg">Event, across its days</span><span>Pick a week for its session times</span>' +

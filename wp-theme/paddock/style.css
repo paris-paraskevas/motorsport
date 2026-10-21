@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.6
+Version: 0.1.7
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -406,6 +406,21 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 	.pd-cal-grid, .pd-cal-legend { display: none; }
 	.pd-cal-agenda, .pd-cal[data-view] .pd-cal-agenda { display: block; }
 	.pd-cal[data-view="month"] .pd-cal-grid, .pd-cal[data-view="week"] .pd-cal-grid { display: none; }
+}
+
+/* The Calendar tab (O14): a series page's one series for the visit, and race week in Paddock's yellow (the old site's
+   brand fill) with its tag; today keeps its orange box inside it. */
+.pd-cal-only { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 10px 0 0; padding: 8px 12px; border: 1px solid var(--pd-line-strong); border-left: 5px solid var(--s); background: var(--pd-surface); font-size: .875rem; }
+.pd-cal-only b { font-weight: 800; }
+.pd-cal-only span { color: var(--pd-muted); }
+.pd-cal-only button { margin-left: auto; padding: 0; border: 0; background: none; color: var(--pd-ink); font: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.pd-cal-wk.is-race { background: color-mix(in srgb, #ffb400 18%, transparent); }
+.pd-cal-rw { z-index: 2; grid-column: 7; grid-row: 1; justify-self: end; align-self: start; margin: 4px 6px 0 0; padding: 1px 6px; background: #ffb400; color: #0f1217; font-size: .62rem; font-style: normal; font-weight: 800; letter-spacing: .06em; line-height: 1.5; text-transform: uppercase; white-space: nowrap; }
+.pd-cal-wk:not(.is-race) > .pd-cal-rw, .pd-cal-wkend:not(.is-race) .pd-cal-rw { display: none; }
+.pd-cal-wkend.is-race .pd-cal-wkh { flex-wrap: wrap; }
+.pd-cal-wkh > .pd-cal-rw { flex: none; margin: 0 100% 6px 0; }
+@media (max-width: 699px) {
+	.pd-cal-only button { margin-left: 0; }
 }
 
 /* The series pages (O13 onward): round 2's band and tabs, and the Overview. The publisher writes them in UTC with no
