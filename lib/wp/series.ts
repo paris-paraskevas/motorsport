@@ -23,8 +23,9 @@ const dayLabel = (day: string): string => DAY.format(new Date(`${day}T12:00:00Z`
 const clock = (iso: string): string => `<span class="pd-t" data-utc="${escapeHtml(iso)}" data-f="wt">${AT.format(new Date(iso))} UTC</span>`;
 const col = (columns: string[], ...names: string[]): number => columns.findIndex(c => names.includes(c));
 
-/** "23–25 Oct", or "30 Oct–1 Nov" across two months. */
+/** "23–25 Oct", "30 Oct–1 Nov" across two months, or "25 Oct" for a one-day round. */
 function dates(from: string, to: string): string {
+  if (from === to) return dayLabel(to);
   return from.slice(0, 7) === to.slice(0, 7) ? `${Number(from.slice(8))}–${dayLabel(to)}` : `${dayLabel(from)}–${dayLabel(to)}`;
 }
 
@@ -107,6 +108,9 @@ const winsLabel = (n: number): string => `${n} win${n === 1 ? '' : 's'}`;
 
 type SeriesTab = 'overview' | 'calendar' | 'standings' | 'results' | 'champions';
 
+/** The pages built in round 2's design for a series beyond its Overview; every link to one waits for it, greyed. */
+const BUILT: Readonly<Record<string, ReadonlySet<'standings' | 'results' | 'champions'>>> = { f1: new Set(['results']) };
+
 /** The five tabs, each a page at its own address; Calendar opens the site's Calendar showing only this series. */
 function tabs(d: SeriesData, on: SeriesTab): string {
   const links: Array<[SeriesTab, string, string]> = [
@@ -116,7 +120,10 @@ function tabs(d: SeriesData, on: SeriesTab): string {
     ['results', 'Results', seriesPath(d.slug, 'results')],
     ['champions', 'Champions', seriesPath(d.slug, 'champions')],
   ];
-  const items = links.map(([tab, label, href]) => `<a href="${escapeHtml(href)}"${tab === on ? ' aria-current="page"' : ''}>${label}</a>`);
+  const ready = (tab: SeriesTab) => tab === 'overview' || tab === 'calendar' || Boolean(BUILT[d.slug]?.has(tab));
+  const items = links.map(([tab, label, href]) =>
+    ready(tab) ? `<a href="${escapeHtml(href)}"${tab === on ? ' aria-current="page"' : ''}>${label}</a>` : `<span class="is-off">${label}</span>`,
+  );
   return `<nav class="pd-sr-tabs" aria-label="${escapeHtml(d.name)} pages"><div class="pd-sr-tabs-in">${items.join('')}</div></nav>`;
 }
 
@@ -200,7 +207,7 @@ function standings(d: SeriesData, wins: Map<number, RoundWin>): string {
   if (!drivers) return '';
   const head = (who: string, last: string) => `<div class="pd-sr-th"><span></span><span>${who}</span><span>Pts</span><span>${last}</span></div>`;
   const left =
-    `<div><div class="pd-sh"><h2>${escapeHtml(drivers.title)}</h2><p><a href="${seriesPath(d.slug, 'standings')}">All ${drivers.rows.length} →</a></p></div>` +
+    `<div><div class="pd-sh"><h2>${escapeHtml(drivers.title)}</h2><p>${BUILT[d.slug]?.has('standings') ? `<a href="${seriesPath(d.slug, 'standings')}">All ${drivers.rows.length} →</a>` : `<span class="is-off">All ${drivers.rows.length}</span>`}</p></div>` +
     `${head('Driver', 'Wins')}<ol class="pd-sr-tbl">${tableRows(d, drivers, wins, 10, true)}</ol></div>`;
   const right = teams
     ? `<div><div class="pd-sh"><h2>${escapeHtml(teams.title)}</h2></div>${head('Team', 'Wins')}<ol class="pd-sr-tbl">${tableRows(d, teams, wins, teams.rows.length, false)}</ol></div>`
@@ -342,9 +349,14 @@ const TYPES: ReadonlyArray<readonly [string, string]> = [
 /** Round 2's order inside a type, where its screenshots show it; the rest by each series' calendar order. */
 const LIST_ORDER = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'adac-ravenol-24h'];
 const NUMBER_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty'];
-/** The pages built in round 2's design for a series beyond its Overview; its card links only those. */
-const BUILT: Readonly<Record<string, ReadonlySet<'standings' | 'results' | 'champions'>>> = { f1: new Set(['results']) };
 const MONTH = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', month: 'long' });
+
+/** A round on a Saturday or Sunday reads This weekend from that weekend's Friday, as Racing this weekend counts it. */
+function weekendFrom(day: string): string {
+  const d = new Date(`${day}T12:00:00Z`);
+  const back = [2, 0, 0, 0, 0, 0, 1][d.getUTCDay()];
+  return back ? new Date(d.getTime() - back * 864e5).toISOString().slice(0, 10) : day;
+}
 
 interface ListEntry {
   d: SeriesData;
@@ -380,7 +392,7 @@ function listCard(e: ListEntry): string {
     state = `<p class="pd-sx-st"><em class="pd-sx-tag">One race a year${when}</em></p>${d.champion ? `<p class="pd-sx-ev"><b>${escapeHtml(String(d.season ?? ''))} winners: ${escapeHtml(d.champion)}</b></p>` : ''}`;
   } else if (next) {
     state =
-      `<p class="pd-sx-st"><em class="pd-sx-pill">${wk(next, 'Next', 'This weekend')}</em></p>` +
+      `<p class="pd-sx-st"><em class="pd-sx-pill">${wk({ ...next, startDate: weekendFrom(next.startDate) }, 'Next', 'This weekend')}</em></p>` +
       `<p class="pd-sx-ev"><b>Round ${next.round} · ${escapeHtml(next.name)}</b><span>${dates(next.startDate, next.endDate)}</span></p>`;
   } else {
     const who = d.champion ? `${escapeHtml(String(d.season ?? ''))} champion: ${escapeHtml(d.champion)}` : `All ${rounds.length} rounds run`;

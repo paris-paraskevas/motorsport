@@ -55,15 +55,19 @@ describe('seriesOverview', () => {
     expect(ROUND2_SERIES.has('f1')).toBe(true);
   });
 
-  it('carries the five tabs at their own addresses, the Calendar showing only this series', () => {
-    const tabs = [...body.matchAll(/<a href="([^"]+)"( aria-current="page")?>(Overview|Calendar|Standings|Results|Champions)<\/a>/g)].map(m => [m[3], m[1], Boolean(m[2])]);
+  it('carries the five tabs at their own addresses, the Calendar showing only this series, a page not yet built greyed', () => {
+    const tabs = [...body.matchAll(/<a href="([^"]+)"( aria-current="page")?>(Overview|Calendar|Standings|Results|Champions)<\/a>|<span class="is-off">(Standings|Champions)<\/span>/g)].map(m =>
+      m[4] ? [m[4], null, false] : [m[3], m[1], Boolean(m[2])],
+    );
     expect(tabs).toEqual([
       ['Overview', '/series/f1/', true],
       ['Calendar', '/calendar/#f1', false],
-      ['Standings', '/series/f1/standings/', false],
+      ['Standings', null, false],
       ['Results', '/series/f1/results/', false],
-      ['Champions', '/series/f1/champions/', false],
+      ['Champions', null, false],
     ]);
+    expect(body).not.toContain('/series/f1/standings/');
+    expect(body).not.toContain('/series/f1/champions/');
   });
 
   it('draws the band: the season in a line, a bar of the rounds, the round to come named by the script', () => {
@@ -97,7 +101,8 @@ describe('seriesOverview', () => {
   });
 
   it('shows the top ten drivers with bars against the leader and race wins, and every constructor', () => {
-    expect(body).toContain('<a href="/series/f1/standings/">All 12 →</a>');
+    // The Standings page comes with O16: until then the count stands greyed, linking nowhere.
+    expect(body).toContain('<h2>Drivers</h2><p><span class="is-off">All 12</span></p>');
     expect(body.match(/<li><span class="pd-p">/g)).toHaveLength(10 + 3);
     expect(body).toContain('<li><span class="pd-p">2</span><span class="pd-d"><b>Charles Leclerc</b> <small>Ferrari</small><i class="pd-sr-pts"><i style="width:75.0%;--t:#DC0000"></i></i></span><span class="pd-pt">30</span><span class="pd-w">0 wins</span></li>');
     expect(body).toContain('<b>Red Bull Racing</b><i class="pd-sr-pts"><i style="width:100.0%;--t:#1E3A8A"></i></i></span><span class="pd-pt">40</span><span class="pd-w">1</span>');
@@ -314,6 +319,15 @@ describe('seriesList', () => {
     expect(b).toContain('<section class="pd-sx-sec pd-sx-weekend" hidden>');
     expect([...b.matchAll(/<article class="pd-sx-wk" data-from="([\d-]+)" data-to="([\d-]+)"[^>]*hidden><header><b>([^<]+)<\/b>/g)].map(m => `${m[3]} ${m[1]}`)).toEqual(['Formula 1 2026-05-08', 'WRC 2026-05-08']);
     expect(b).toContain('<div class="pd-sx-ctl" hidden>');
+  });
+
+  it('dates a one-day round once, and reads it This weekend from that weekend’s Friday', () => {
+    const day = seriesList([{ ...base, slug: 'nascar-cup', name: 'NASCAR Cup', category: 'stock', colour: '#facc15', order: 8, rounds: [{ round: 1, name: 'YellaWood 500', startDate: '2026-05-10', endDate: '2026-05-10', venue: null }], results: [] }], now).body;
+    expect(day.match(/<span>10 May<\/span>/g)).toHaveLength(2);
+    expect(day).not.toContain('10–10 May');
+    // A Sunday race: the card's label from Friday 8 May, the weekend card on its own date.
+    expect(day).toContain('<span class="pd-wk" data-from="2026-05-08" data-to="2026-05-10" data-on="This weekend">Next</span>');
+    expect(day).toContain('<article class="pd-sx-wk" data-from="2026-05-10" data-to="2026-05-10"');
   });
 
   it('keeps feed and content text as text and a bad colour out of the style, and writes the same page all day', () => {

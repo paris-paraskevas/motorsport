@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.287 — 2026-10-21
+
+### O21: the series list in round 2's design
+
+`/series/` leaves the plain table (`seriesIndexPage`, gone from lib/wp/render.ts) for `seriesList(all, now)` in lib/wp/series.ts: "Fifteen championships", the All / Following switch and the type chips (the theme's script), Racing this weekend (each series' next round as a hidden `.pd-sx-wk` card the script shows when it meets the reader's own Friday to Sunday), then Still racing and Completed, each split by type in the chips' order (Open-wheel, Endurance, GT, Motorcycles, Rally, Stock cars) in a group as wide as its cards (`pd-sx-span-N`, `pd-sx-cols-N`). A card carries its type, its name (Formula 1's links its Overview), Follow (+, the series pages' `pd-follow` store), the bar of rounds and "N of M rounds run", then Next, which the script turns into This weekend (from the weekend's Friday for a Saturday or Sunday round, `weekendFrom`), or Season complete with the champion as champions.json writes it; a finished card is gold (`--gold: #e3b341`). A round counts as run with a race result or a past end date, because IMSA's stored results stop at round 5 of 11 (the plan said results only). Every card links the Calendar showing only that series; Standings, Results and Champions stand greyed until their pages exist (`BUILT`). A one-day round prints one date ("25 Oct", `dates`). `SeriesData` gains `category`, `colour` and `champion`, which scripts/wp-publish.mts reads for every series from meta.json and champions.json.
+
+Formula 1's tabs on the Overview and Results, and the Overview's standings count, read the same `BUILT` list: Standings and Champions stand greyed (`.is-off`) until O16 and O17 publish them; they had linked to pages the publisher does not write.
+
+Theme 0.1.10 (wp-theme/paddock): the `.pd-sx-*` styles (Day and Night; four columns, two at 1023 px and below, one at 699 px and below; on a phone the chips scroll inside their row, capped to it with `max-width: 100%` because `.pd-sx-ctl`'s grid sizes its items to their content), the greyed tabs and count. paddock.js: the switch, the chips, the + (`data-on` / `data-off` and a `pd-follow` event), `.pd-wk` toggling `is-on`, the weekend cards by `nowAt()`.
+
+The 2026 champions of Formula 3 (Ugo Ugochukwu), IndyCar (Álex Palou), DTM (Thomas Preining), IMSA (Jack Aitken, GTP), GT World Challenge Europe (Lucas Auer and Maro Engel) and WorldSBK (Nicolò Bulega) join their champions.json, each checked on the series' own site, with a champion note each (lib/sitemap-data.test.ts holds every champions row to one) and the record notes the new seasons made stale: DTM's and WorldSBK's manufacturers' counts, IMSA's Cadillac count and seasons, IndyCar's Palou, Formula 3's and GT World's lines, each with a 2026 source added.
+
+The preview: wp-theme/preview/series.html (new, approved with the plan) from the dry run, the blueprint's Series page from it on the Wide template; f1.html and f1-results.html refreshed from the same run.
+
+Rules: docs/plan/rules.md § 6 and the ledger's changes line of 21 October carry the operator's rule that every theme upload comes with its test list.
+
 ## 1.0.286 — 2026-10-21
 
 ### O15: Formula 1's Results page, and every session of the weekend stored

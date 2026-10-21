@@ -156,6 +156,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-sh h2 small { margin-left: 6px; font-size: 1.19rem; font-weight: 500; letter-spacing: 0; color: var(--pd-muted); }
 .pd-sh p { margin: 0; font-size: .84rem; font-weight: 700; }
 .pd-sh p a { text-decoration: none; }
+.pd-sh p .is-off { color: var(--pd-muted); opacity: .55; }
 
 /* Cards */
 .pd-cards { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px !important; }
@@ -445,7 +446,8 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-sr-emails::before { content: ""; width: 17px; height: 17px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='3' y='5' width='18' height='14'/%3E%3Cpath d='m3 6 9 7 9-7'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='3' y='5' width='18' height='14'/%3E%3Cpath d='m3 6 9 7 9-7'/%3E%3C/svg%3E") center / contain no-repeat; }
 .pd-sr-tabs { background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
 .pd-sr-tabs-in { display: flex; gap: 26px; padding: 0 var(--pd-gutter); overflow-x: auto; scrollbar-width: none; }
-.pd-sr-tabs a { flex: none; padding: 15px 0 13px; border-bottom: 3px solid transparent; color: var(--pd-muted); font-size: .875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.pd-sr-tabs a, .pd-sr-tabs .is-off { flex: none; padding: 15px 0 13px; border-bottom: 3px solid transparent; color: var(--pd-muted); font-size: .875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.pd-sr-tabs .is-off { opacity: .55; cursor: default; }
 .pd-sr-tabs a[aria-current="page"] { border-bottom-color: var(--s); color: var(--pd-ink); font-weight: 800; }
 .pd-sr-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 30px var(--pd-gutter) 0; }
 .pd-sr-blog, .pd-sr-about { margin: 56px 0 0 !important; padding: 0 var(--pd-gutter); }
@@ -682,7 +684,8 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 	.pd-sx { padding: 22px 16px 0; }
 	.pd-sx-groups, .pd-sx-grid { grid-template-columns: minmax(0, 1fr); }
 	.pd-sx-type { grid-column: auto; }
-	.pd-sx-chips { flex-wrap: nowrap; overflow-x: auto; }
+	/* The controls' grid sizes its items to their content (justify-items: start), so the one-line chips need a cap to scroll. */
+	.pd-sx-chips { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; }
 	.pd-sx-chips button { flex: none; }
 	.pd-sx-wks { display: flex; overflow-x: auto; }
 	.pd-sx-wk { flex: 0 0 160px; }

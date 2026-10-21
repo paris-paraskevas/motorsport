@@ -47,6 +47,7 @@ Adopted 2026-09-10 (session 47) on the operator's word: "i have no other rules e
 - Every PR states the bundle size from the dry run; an alarm at 80 percent of the 64 MiB ceiling. [skill: /gates]
 - A fresh-context reviewer checks the diff against the slot before merge and reports requirement gaps only. [agent]
 - **v3** Every component render and every loader step logs with a correlation id and a short phase code, from the server and from the browser, into one Debug panel. (Debugging, run 13; Appendix D, run 14) [test: the instrumentation helper]
+- Every theme version handed over for upload comes with its test list: each change, the page to open, what to look for, at laptop and phone width, Day and Night, and the known issues that are not failures; after the upload the operator tests it on the site, and the result goes into the slot's evidence. (The operator, 2026-10-21) [behaviour; the PR's Test after upload list]
 
 ## 7. Agents and tokens
 - Every subagent runs on Sonnet; Haiku for pure extraction; Fable never inherits. [settings: CLAUDE_CODE_SUBAGENT_MODEL + FORCE, repo-local; hook: PreToolUse denies an Agent call without an allowed model]
