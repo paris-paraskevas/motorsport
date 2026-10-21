@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.285 — 2026-10-21
+
+### O14 follow-up: each round's race in its month bar
+
+The operator asked on 21 October why the Calendar's month shows no sessions. Since 20 October the month fits one laptop screen by showing the events, and the week holds the sessions; The Paddock Drafts drew the month with and without the race, and the operator chose "race in each bar". Each band now ends with its round's race and its start, which the theme's script writes in the reader's zone and weekday (`data-f="wt"`; UTC without the script). The race is the round's last timed race in running order, so a Saturday sprint gives way to Sunday's race and F2's Baku weekend shows its second feature race; it keeps its own name when that says race ("Race 2", "Feature Race", "Race 4h"), reads "Race" when the session is named after its event (NASCAR's races, GT World's "3 Hours of Portimão"), and is cut at its first bracket or dash ("Race (London R17) — Season Finale" reads Race). WRC has no race, so its bar shows the Power Stage, and nothing while its stages are untimed; a round with no timed race shows its name alone. Theme 0.1.8 shows the race in the month only, in weight 600, since the week and the page without the script list every session; on a one-day bar the time is cut first, as drawn. On the 15 month pages, 245 of 265 bands carry a race.
+
 ## 1.0.284 — 2026-10-21
 
 ### O13's publish: an --only family brings the pages above it
