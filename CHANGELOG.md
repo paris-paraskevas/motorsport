@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.282 — 2026-10-21
+
+### O13: the series pages begin: round 2's band and tabs, and Formula 1's Overview, written by the publisher
+
+The series pages were drafted and answered on The Paddock Drafts (versions 8 to 11), and the build was planned in plan mode on the operator's "go": Formula 1's five pages first (O13 to O17), the other fourteen series after (O18). This first slot writes `/series/f1/` in round 2's design: the series band (the season in a line, a bar of the 23 rounds, Follow and Session emails), the five tabs, each a page at its own address (Overview, Calendar opening `/calendar/#f1`, Standings, Results, Champions), the round on now or next and the last race as cards, the season a tile a round with its circuit's outline and its winner, the top ten drivers and every constructor with points bars and race wins, the series' three newest posts, and About from `overview.md`.
+
+`lib/wp/series.ts` is the new family (`ROUND2_SERIES` holds `f1`); the publisher routes Formula 1 to it and the other series keep the plain pages until O18. The markup holds no "now": the round to come is the first without a race result, its sessions ride in `data-pd-ses`, a weekend's label in `.pd-wk[data-from][data-to][data-on]`, and theme 0.1.6's script names "this weekend", the session on now or next and the Live pill, and keeps Follow in `localStorage` (`pd-follow`). Team colours and bar widths are inline `--t` and `width`, which WordPress keeps in post content (`safecss_filter_attr` since 6.1); the rest is classes. The 21 outlines of `public/circuits` ship with the theme and are drawn as CSS masks in the text's colour; the publisher names one only when the theme carries it, and a curated venue takes one only from a circuit of that very name. "From the blog" is a theme shortcode, `[pd_series_posts category="formula-1"]`, which finds the category by its slug and writes nothing when it has no posts. The plan had a Query Loop block with a category id looked up at publish time; the shortcode keeps a dry run and the site's page the same, and needs no id.
+
+Content checked before it ships: `overview.md` said ten constructors, and formula1.com lists eleven teams for 2026. The Saudi Arabian Grand Prix's `rescheduleStatus` said "under discussion"; the round stayed cancelled when Bahrain moved to Sepang (Sky Sports, 26 July; the promoter's own notice), so it reads "ruled out for 2026". Each F1 round gains a `place`, round 2's tile name ("Bahrain · Sepang" for round 16, the plan's default).
+
 ## 1.0.281 — 2026-10-21
 
 ### O12, after the first look: the month on one screen, the Filters tab, and the review's fixes

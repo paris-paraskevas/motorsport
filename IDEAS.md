@@ -33,6 +33,8 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 
 Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), the changelog restructure, the og:image fault, the mobile calendar, the blog covers, the landing retirement and the AdSense audit. **Those blocks are deleted rather than archived — git, `CHANGELOG.md` and `docs/HANDOFF.md` are the record**, and this file is for open work only. The items they raised that are STILL open have been folded into the Inbox below.
 
+- (2026-10-21, session 69, O13) content/series/f1/overview.md's “What to watch for in 2026” still reads as a pre-season preview (“Expect upset results early in the season”); the series page shows it as About, so refresh or retitle it before the series pages go live.
+- (2026-10-21, session 69, O13) Two of the season’s venues have no outline (Madrid’s Madring, round 14, and Sepang, round 16): their tiles show none; an SVG for each in public/circuits and the theme would complete the grid.
 - (2026-10-21, session 69, O12 review L4) The 24h Nürburgring has no rounds.json, so its May weekend draws no band and no card on the calendar (its 17 sessions sit in the grid only); a rounds.json for it is a new file, for the word.
 - (2026-10-21, session 69, O12 review L7) Week view stops at its own month’s edge: the ‹ › week steps could carry on into the next month’s page at its first week.
 - (2026-10-21, session 69, O12 review L10) Calendar pages never retire: a month that leaves the year’s window stays live and unlinked, and /calendar/ repeats the current month’s page; a canonical on the twin and a retire step (draft) for old months.

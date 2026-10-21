@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.5
+Version: 0.1.6
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -406,4 +406,133 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 	.pd-cal-grid, .pd-cal-legend { display: none; }
 	.pd-cal-agenda, .pd-cal[data-view] .pd-cal-agenda { display: block; }
 	.pd-cal[data-view="month"] .pd-cal-grid, .pd-cal[data-view="week"] .pd-cal-grid { display: none; }
+}
+
+/* The series pages (O13 onward): round 2's band and tabs, and the Overview. The publisher writes them in UTC with no
+   "now" (lib/wp/series.ts); the script names the weekend on now and the session on now or next, and keeps Follow. */
+.pd-sr-band { background: var(--s); color: var(--pd-on); }
+.pd-sr-band-in { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 40px var(--pd-gutter) 30px; }
+.pd-sr-ttl h1 { margin: 0; color: var(--pd-on); font-size: clamp(3rem, 6vw, 4.75rem); line-height: .9; font-weight: 800; font-stretch: 80%; letter-spacing: -.035em; }
+.pd-sr .pd-sr-ttl p { margin: 12px 0; font-size: .94rem; font-weight: 600; }
+.pd-sr-bar { display: flex; gap: 4px; }
+.pd-sr-bar i { width: 24px; height: 6px; background: color-mix(in srgb, var(--pd-on) 22%, var(--s)); }
+.pd-sr-bar i.is-done { background: var(--pd-on); }
+.pd-sr-bar i.is-now { background: #ffffff; box-shadow: inset 0 0 0 1.5px var(--pd-on); }
+.pd-sr-acts { display: flex; gap: 10px; }
+.pd-sr-follow, .pd-sr-emails { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 0; font: inherit; font-size: .875rem; font-weight: 800; white-space: nowrap; text-decoration: none; cursor: pointer; }
+.pd-sr-follow { border: 0; background: var(--pd-on); color: #ffffff; }
+.pd-sr-follow[hidden] { display: none; }
+.pd-sr-emails { border: 1.5px solid var(--pd-on); color: var(--pd-on); }
+.pd-sr-emails::before { content: ""; width: 17px; height: 17px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='3' y='5' width='18' height='14'/%3E%3Cpath d='m3 6 9 7 9-7'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='3' y='5' width='18' height='14'/%3E%3Cpath d='m3 6 9 7 9-7'/%3E%3C/svg%3E") center / contain no-repeat; }
+.pd-sr-tabs { background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
+.pd-sr-tabs-in { display: flex; gap: 26px; padding: 0 var(--pd-gutter); overflow-x: auto; scrollbar-width: none; }
+.pd-sr-tabs a { flex: none; padding: 15px 0 13px; border-bottom: 3px solid transparent; color: var(--pd-muted); font-size: .875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.pd-sr-tabs a[aria-current="page"] { border-bottom-color: var(--s); color: var(--pd-ink); font-weight: 800; }
+.pd-sr-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 30px var(--pd-gutter) 0; }
+.pd-sr-blog, .pd-sr-about { margin: 56px 0 0 !important; padding: 0 var(--pd-gutter); }
+.pd-sr h2, .pd-sr p, .pd-sr-blog h2, .pd-sr-about h2 { margin-block: 0; }
+
+/* The round to come, the last race and the season's tiles */
+.pd-sr-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.pd-sr-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 22px 26px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
+.pd-sr .pd-sr-card h2 { margin: 6px 0 4px; font-size: 1.69rem; line-height: 1.1; letter-spacing: -.02em; }
+.pd-sr-lab { display: flex; align-items: center; gap: 8px; font-size: .84rem; color: var(--pd-muted); }
+.pd-sr-lab .pd-pill[hidden] { display: none; }
+.pd-sr .pd-sr-line { margin-top: 14px; font-size: .9rem; }
+.pd-sr-line b { font-weight: 800; }
+.pd-sr-line b:not(:empty)::after { content: " · "; font-weight: 400; color: var(--pd-muted); }
+.pd-sr-race[hidden] { display: none; }
+.pd-sr-num { font-size: 4.5rem; font-style: normal; line-height: 1; font-weight: 800; font-stretch: 80%; letter-spacing: -.03em; color: var(--pd-line-strong); }
+.pd-sr-win { display: inline-flex; align-items: center; gap: 6px; font-size: .81rem; color: var(--pd-muted); }
+.pd-sr-win::before { content: ""; width: 4px; height: 18px; background: var(--t); }
+.pd-sr-win b { color: var(--pd-ink); font-weight: 800; }
+.pd-sr-card .pd-sr-win { font-size: .94rem; }
+.pd-ol { display: block; flex: none; width: 40px; height: 40px; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
+.pd-ol-big { width: 92px; height: 92px; }
+.pd-ol-albert-park { -webkit-mask-image: url(assets/circuits/albert-park.svg); mask-image: url(assets/circuits/albert-park.svg); }
+.pd-ol-baku { -webkit-mask-image: url(assets/circuits/baku.svg); mask-image: url(assets/circuits/baku.svg); }
+.pd-ol-barcelona { -webkit-mask-image: url(assets/circuits/barcelona.svg); mask-image: url(assets/circuits/barcelona.svg); }
+.pd-ol-cota { -webkit-mask-image: url(assets/circuits/cota.svg); mask-image: url(assets/circuits/cota.svg); }
+.pd-ol-hungaroring { -webkit-mask-image: url(assets/circuits/hungaroring.svg); mask-image: url(assets/circuits/hungaroring.svg); }
+.pd-ol-interlagos { -webkit-mask-image: url(assets/circuits/interlagos.svg); mask-image: url(assets/circuits/interlagos.svg); }
+.pd-ol-las-vegas { -webkit-mask-image: url(assets/circuits/las-vegas.svg); mask-image: url(assets/circuits/las-vegas.svg); }
+.pd-ol-lusail { -webkit-mask-image: url(assets/circuits/lusail.svg); mask-image: url(assets/circuits/lusail.svg); }
+.pd-ol-marina-bay { -webkit-mask-image: url(assets/circuits/marina-bay.svg); mask-image: url(assets/circuits/marina-bay.svg); }
+.pd-ol-mexico-city { -webkit-mask-image: url(assets/circuits/mexico-city.svg); mask-image: url(assets/circuits/mexico-city.svg); }
+.pd-ol-miami { -webkit-mask-image: url(assets/circuits/miami.svg); mask-image: url(assets/circuits/miami.svg); }
+.pd-ol-monaco { -webkit-mask-image: url(assets/circuits/monaco.svg); mask-image: url(assets/circuits/monaco.svg); }
+.pd-ol-montreal { -webkit-mask-image: url(assets/circuits/montreal.svg); mask-image: url(assets/circuits/montreal.svg); }
+.pd-ol-monza { -webkit-mask-image: url(assets/circuits/monza.svg); mask-image: url(assets/circuits/monza.svg); }
+.pd-ol-red-bull-ring { -webkit-mask-image: url(assets/circuits/red-bull-ring.svg); mask-image: url(assets/circuits/red-bull-ring.svg); }
+.pd-ol-shanghai { -webkit-mask-image: url(assets/circuits/shanghai.svg); mask-image: url(assets/circuits/shanghai.svg); }
+.pd-ol-silverstone { -webkit-mask-image: url(assets/circuits/silverstone.svg); mask-image: url(assets/circuits/silverstone.svg); }
+.pd-ol-spa { -webkit-mask-image: url(assets/circuits/spa.svg); mask-image: url(assets/circuits/spa.svg); }
+.pd-ol-suzuka { -webkit-mask-image: url(assets/circuits/suzuka.svg); mask-image: url(assets/circuits/suzuka.svg); }
+.pd-ol-yas-marina { -webkit-mask-image: url(assets/circuits/yas-marina.svg); mask-image: url(assets/circuits/yas-marina.svg); }
+.pd-ol-zandvoort { -webkit-mask-image: url(assets/circuits/zandvoort.svg); mask-image: url(assets/circuits/zandvoort.svg); }
+.pd-sr-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); border-top: 1px solid var(--pd-line); border-left: 1px solid var(--pd-line); }
+.pd-sr-tile { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto 1fr auto; column-gap: 6px; min-height: 132px; padding: 12px 12px 14px; border-right: 1px solid var(--pd-line); border-bottom: 1px solid var(--pd-line); background: var(--pd-surface); color: var(--pd-ink); text-decoration: none; }
+a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-surface)); }
+.pd-sr-tile small { grid-column: 1; grid-row: 1; font-size: .75rem; font-weight: 700; color: var(--pd-muted); }
+/* The name takes the tile's whole width under the outline, so "Netherlands" fits a phone's third of the screen. */
+.pd-sr-tile > b { grid-column: 1 / -1; grid-row: 2; min-width: 0; margin-top: 4px; font-size: .94rem; line-height: 1.2; font-weight: 800; overflow-wrap: break-word; }
+.pd-sr-tile .pd-ol { grid-column: 2; grid-row: 1; }
+.pd-sr-tile .pd-sr-win, .pd-sr-tile .pd-sr-when { grid-column: 1 / -1; grid-row: 4; margin-top: 14px; }
+.pd-sr-when { font-size: .81rem; color: var(--pd-muted); }
+.pd-sr-tile.is-ahead > b { color: var(--pd-muted); }
+.pd-sr-tile.is-now, a.pd-sr-tile.is-now:hover { background: var(--s); }
+.pd-sr-tile.is-now, .pd-sr-tile.is-now small, .pd-sr-tile.is-now > b, .pd-sr-tile.is-now .pd-sr-when { color: var(--pd-on); }
+.pd-sr-tile.is-off { background: repeating-linear-gradient(135deg, var(--pd-surface) 0 10px, var(--pd-sunken) 10px 20px); }
+.pd-sr-tile.is-off s { color: var(--pd-muted); }
+
+/* The standings' top, the series' posts and About */
+.pd-sr-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; }
+.pd-sr-th, .pd-sr-tbl li { display: grid; grid-template-columns: 26px minmax(0, 1fr) 54px 60px; gap: 10px; }
+.pd-sr-th { padding: 0 0 8px; border-bottom: 1px solid var(--pd-line); font-size: .75rem; color: var(--pd-muted); }
+.pd-sr-th span:nth-child(n+3) { text-align: right; }
+.pd-sr-tbl { list-style: none; margin: 0; padding: 0; }
+.pd-sr-tbl li { align-items: center; padding: 9px 0; border-bottom: 1px solid var(--pd-line); }
+.pd-sr-tbl .pd-p { font-weight: 800; text-align: center; }
+.pd-sr-tbl .pd-d b { font-size: .94rem; font-weight: 800; }
+.pd-sr-tbl .pd-d small { font-size: .81rem; color: var(--pd-muted); }
+.pd-sr-pts { display: block; height: 6px; margin-top: 6px; background: var(--pd-sunken); }
+.pd-sr-pts i { display: block; height: 100%; background: var(--t); }
+.pd-sr-tbl .pd-pt { font-size: 1rem; font-weight: 800; text-align: right; }
+.pd-sr-tbl .pd-w { font-size: .78rem; color: var(--pd-muted); text-align: right; }
+.pd-sr-posts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; list-style: none; margin: 0; padding: 0; }
+.pd-sr-posts li { display: grid; align-content: start; gap: 6px; padding: 16px 18px 18px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--s); }
+.pd-sr-posts small { font-size: .78rem; color: var(--pd-muted); }
+.pd-sr-posts a { color: var(--pd-ink); font-size: 1.19rem; line-height: 1.2; font-weight: 800; letter-spacing: -.01em; text-decoration: none; }
+.pd-sr-posts a:hover { text-decoration: underline; }
+.pd-sr-prose { columns: 2 420px; column-gap: 48px; max-width: 1040px; }
+.pd-sr-prose h3 { margin: 0 0 6px; font-size: 1rem; break-after: avoid; }
+.pd-sr-prose p { margin: 0 0 14px; font-size: .94rem; line-height: 1.6; color: var(--pd-muted); }
+.pd-sr-prose b { color: var(--pd-ink); }
+@media (max-width: 999px) {
+	.pd-sr-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (max-width: 699px) {
+	.pd-sr-band-in { flex-direction: column; align-items: stretch; gap: 18px; padding: 24px 16px 20px; }
+	.pd-sr-ttl h1 { font-size: 3rem; }
+	.pd-sr-ttl p { font-size: .875rem; }
+	.pd-sr-bar { gap: 3px; }
+	.pd-sr-bar i { flex: 1 1 0; width: auto; }
+	.pd-sr-acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.pd-sr-follow, .pd-sr-emails { padding: 0 10px; font-size: .84rem; }
+	.pd-sr-tabs-in { gap: 22px; padding: 0 16px; }
+	.pd-sr-main { gap: 40px; padding: 20px 16px 0; }
+	.pd-sr-blog, .pd-sr-about { margin-top: 40px !important; padding: 0 16px; }
+	.pd-sr-cards { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+	.pd-sr-card { padding: 18px; }
+	.pd-sr .pd-sr-card h2 { font-size: 1.44rem; }
+	.pd-sr-num { font-size: 3.5rem; }
+	.pd-ol-big { width: 64px; height: 64px; }
+	.pd-sr-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	.pd-sr-tile { min-height: 118px; padding: 10px; }
+	.pd-sr-tile .pd-ol { width: 28px; height: 28px; }
+	.pd-sr-tile > b { font-size: .875rem; }
+	.pd-sr-two { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+	.pd-sr-th, .pd-sr-tbl li { grid-template-columns: 24px minmax(0, 1fr) 44px 52px; gap: 8px; }
+	.pd-sr-posts { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+	.pd-sr-prose { columns: 1; }
 }

@@ -116,6 +116,28 @@
 		} );
 
 		document.querySelectorAll( '.pd-cal' ).forEach( function ( cal ) { calendarStates( cal, now, isoDay( now ) ); } );
+
+		// The series pages (O13): a round's label while the reader's own date is within its dates, and the round
+		// card's session on now or next ("Practice 1 · on now"), with its Live pill; the race is named once.
+		var day = isoDay( now );
+		document.querySelectorAll( '.pd-wk[data-from][data-to][data-on]' ).forEach( function ( el ) {
+			if ( ! el.hasAttribute( 'data-off' ) ) { el.setAttribute( 'data-off', el.textContent ); }
+			var on = day >= el.getAttribute( 'data-from' ) && day <= el.getAttribute( 'data-to' );
+			el.textContent = el.getAttribute( on ? 'data-on' : 'data-off' );
+		} );
+		document.querySelectorAll( '[data-pd-ses]' ).forEach( function ( card ) {
+			var list = card.getAttribute( 'data-pd-ses' ).split( ';' ).map( function ( s ) {
+				var p = s.split( '|' ), a = Date.parse( p[ 1 ] );
+				return { name: p[ 0 ], start: a, end: Date.parse( p[ 2 ] ) || a };
+			} ).filter( function ( s ) { return isFinite( s.start ); } );
+			var live = list.filter( function ( s ) { return now >= s.start && now < s.end; } )[ 0 ] || null;
+			var next = live ? null : list.filter( function ( s ) { return s.start > now; } )[ 0 ] || null;
+			var shown = live || next, last = list[ list.length - 1 ];
+			var pill = card.querySelector( '.pd-pill-live' ), ses = card.querySelector( '.pd-sr-ses' ), race = card.querySelector( '.pd-sr-race' );
+			if ( pill ) { pill.hidden = ! live; }
+			if ( ses ) { ses.textContent = ! shown ? '' : live ? live.name + ' · on now' : next.name + ' · ' + fWd.format( new Date( next.start ) ) + ' ' + fT.format( new Date( next.start ) ); }
+			if ( race ) { race.hidden = !! shown && shown === last; }
+		} );
 	}
 
 	// ── The Calendar (O12) ──────────────────────────────────────────────────
@@ -485,6 +507,25 @@
 	} );
 	// Archivo arriving can move the grid's top by a few pixels, so the month is fitted again once the fonts are in.
 	if ( document.fonts && document.fonts.ready ) { document.fonts.ready.then( function () { document.querySelectorAll( '.pd-cal' ).forEach( fitMonth ); } ); }
+
+	// Follow (O13): the series a reader follows, kept in this browser; the button shows only with the script.
+	var followed = function () { return ( calStore.get( 'pd-follow' ) || '' ).split( ',' ).filter( Boolean ); };
+	document.querySelectorAll( 'button[data-pd-follow]' ).forEach( function ( b ) {
+		var slug = b.getAttribute( 'data-pd-follow' );
+		var show = function () {
+			var on = followed().indexOf( slug ) >= 0;
+			b.textContent = on ? 'Following ✓' : 'Follow';
+			b.setAttribute( 'aria-pressed', String( on ) );
+		};
+		b.addEventListener( 'click', function () {
+			var list = followed(), at = list.indexOf( slug );
+			if ( at >= 0 ) { list.splice( at, 1 ); } else { list.push( slug ); }
+			calStore.set( 'pd-follow', list.join( ',' ) );
+			show();
+		} );
+		b.hidden = false;
+		show();
+	} );
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
 
