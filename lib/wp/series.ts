@@ -406,7 +406,8 @@ function listCard(e: ListEntry): string {
     state = `<p class="pd-sx-st"><em class="pd-sx-tag">One race a year${when}</em></p>${d.champion ? `<p class="pd-sx-ev"><b>${escapeHtml(String(d.season ?? ''))} winners: ${escapeHtml(d.champion)}</b></p>` : ''}`;
   } else if (next) {
     state =
-      `<p class="pd-sx-st"><em class="pd-sx-pill">${wk({ ...next, startDate: weekendFrom(next.startDate) }, 'Next', 'This weekend')}</em></p>` +
+      `<p class="pd-sx-st"><em class="pd-sx-pill">${wk({ ...next, startDate: weekendFrom(next.startDate) }, 'Next', 'This weekend')}</em>` +
+      `<span class="pd-sx-in" data-pd-days="${escapeHtml(next.startDate)}" hidden></span></p>` +
       `<p class="pd-sx-ev"><b>Round ${next.round} · ${escapeHtml(next.name)}</b><span>${dates(next.startDate, next.endDate)}</span></p>`;
   } else {
     const who = d.champion ? `${escapeHtml(String(d.season ?? ''))} champion: ${escapeHtml(d.champion)}` : `All ${rounds.length} rounds run`;

@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.10
+Version: 0.1.11
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -50,6 +50,8 @@ Text Domain: paddock
 }
 body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
 :where(.wp-site-blocks) :focus-visible { outline: 3px solid #ffdd00; outline-offset: 0; box-shadow: 0 0 0 6px var(--pd-ink); }
+/* Twenty Twenty-Five outlines every focus, a mouse click's too (:where(.wp-site-blocks :focus)); the ring is the keyboard's only. */
+:where(.wp-site-blocks) :focus:not(:focus-visible) { outline: none; }
 
 /* Header */
 .pd-top { position: relative; background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
@@ -448,6 +450,8 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-sr-tabs-in { display: flex; gap: 26px; padding: 0 var(--pd-gutter); overflow-x: auto; scrollbar-width: none; }
 .pd-sr-tabs a, .pd-sr-tabs .is-off { flex: none; padding: 15px 0 13px; border-bottom: 3px solid transparent; color: var(--pd-muted); font-size: .875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
 .pd-sr-tabs .is-off { opacity: .55; cursor: default; }
+/* The tab strip scrolls sideways, which cuts whatever is drawn outside a tab: the keyboard's ring goes inside. */
+.pd-sr-tabs a:focus-visible { outline-offset: -3px; box-shadow: none; }
 .pd-sr-tabs a[aria-current="page"] { border-bottom-color: var(--s); color: var(--pd-ink); font-weight: 800; }
 .pd-sr-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 30px var(--pd-gutter) 0; }
 .pd-sr-blog, .pd-sr-about { margin: 56px 0 0 !important; padding: 0 var(--pd-gutter); }
@@ -525,6 +529,8 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-sr-posts small { font-size: .78rem; color: var(--pd-muted); }
 .pd-sr-posts a { color: var(--pd-ink); font-size: 1.19rem; line-height: 1.2; font-weight: 800; letter-spacing: -.01em; text-decoration: none; }
 .pd-sr-posts a:hover { text-decoration: underline; }
+.pd-sr-posts .pd-sr-post-cover { display: block; margin: -16px -18px 6px; line-height: 0; }
+.pd-sr-posts .pd-sr-post-img { display: block; width: 100%; max-width: none; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
 .pd-sr-prose { columns: 2 420px; column-gap: 48px; max-width: 1040px; }
 .pd-sr-prose h3 { margin: 0 0 6px; font-size: 1rem; break-after: avoid; }
 .pd-sr-prose p { margin: 0 0 14px; font-size: .94rem; line-height: 1.6; color: var(--pd-muted); }
@@ -629,6 +635,8 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-sx-sw button[aria-pressed="true"], .pd-sx-chips button[aria-pressed="true"] { background: var(--pd-ink); border-color: var(--pd-ink); color: var(--pd-ground); }
 .pd-sx-sw small, .pd-sx-chips small { font-weight: 500; opacity: .75; }
 .pd-sx-sw button:focus-visible, .pd-sx-chips button:focus-visible, .pd-sx-fol:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
+.pd-sx-chips button:focus-visible { outline-offset: -2px; box-shadow: none; }
+.pd-sx-in { margin-left: 8px; font-size: .81rem; font-weight: 700; color: var(--pd-muted); }
 .pd-sx .pd-sx-none { margin: 18px 0 0; color: var(--pd-muted); }
 .pd-sx-sec { margin-top: 40px; }
 .pd-sx-wks { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }

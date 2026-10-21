@@ -126,6 +126,14 @@
 			el.textContent = el.getAttribute( on ? 'data-on' : 'data-off' );
 			el.classList.toggle( 'is-on', on );
 		} );
+		// The series list (O22): the days until a round's first day by the reader's own date, beside its Next; nothing
+		// once its weekend is on, when the pill reads This weekend. Whole days, counted between two calendar dates.
+		var dayNo = function ( iso ) { var p = iso.split( '-' ); return Date.UTC( +p[ 0 ], p[ 1 ] - 1, +p[ 2 ] ) / 864e5; };
+		document.querySelectorAll( '[data-pd-days]' ).forEach( function ( el ) {
+			var n = dayNo( el.getAttribute( 'data-pd-days' ) ) - dayNo( day );
+			el.textContent = n === 1 ? 'tomorrow' : 'in ' + n + ' days';
+			el.hidden = n < 1 || !! el.parentNode.querySelector( '.pd-wk.is-on' );
+		} );
 		document.querySelectorAll( '[data-pd-ses]' ).forEach( function ( card ) {
 			var list = card.getAttribute( 'data-pd-ses' ).split( ';' ).map( function ( s ) {
 				var p = s.split( '|' ), a = Date.parse( p[ 1 ] ), name = p[ 0 ];

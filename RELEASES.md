@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.288 — 2026-10-21
+
+Behind the scenes: a click on a tab or a results row no longer leaves an outline behind it, while keyboard users keep theirs; the latest posts on a series page show their cover photos; and the list of series counts the days to each championship's next round. Nothing changes for readers yet.
+
 ## 1.0.287 — 2026-10-21
 
 Behind the scenes: the list of series in the new design. The championships still racing come first and the decided ones after, each grouped by type, the decided ones in gold beside their 2026 champions, with a switch to show only the series you follow and the championships racing this weekend at the top. Nothing changes for readers yet.
