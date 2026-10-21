@@ -71,7 +71,22 @@ add_shortcode(
 		}
 		$items = '';
 		foreach ( $posts as $post ) {
-			$items .= sprintf( '<li><small>%s</small><a href="%s">%s</a></li>', esc_html( get_the_date( 'j M', $post ) ), esc_url( get_permalink( $post ) ), esc_html( get_the_title( $post ) ) );
+			// The post's cover leads its card, linked but out of the tab order: the title stays the link a keyboard and a
+			// screen reader use. A post without one, or whose thumbnail id leads to no image, keeps the plain card.
+			$img   = get_the_post_thumbnail(
+				$post,
+				'medium_large',
+				array(
+					'class'   => 'pd-sr-post-img',
+					'alt'     => '',
+					'loading' => 'lazy',
+					'sizes'   => '(max-width: 699px) 100vw, 33vw',
+				)
+			);
+			$cover = '' !== $img
+				? sprintf( '<a class="pd-sr-post-cover" href="%s" tabindex="-1" aria-hidden="true">%s</a>', esc_url( get_permalink( $post ) ), $img )
+				: '';
+			$items .= sprintf( '<li>%s<small>%s</small><a href="%s">%s</a></li>', $cover, esc_html( get_the_date( 'j M', $post ) ), esc_url( get_permalink( $post ) ), esc_html( get_the_title( $post ) ) );
 		}
 		$name = '' !== $atts['title'] ? $atts['title'] : $term->name;
 		return sprintf(

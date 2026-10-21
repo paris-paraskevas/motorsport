@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.288 — 2026-10-21
+
+### O22: the theme fixes from the operator's test, and a countdown on the series cards
+
+The operator tested theme 0.1.9 on the site (session 70) and found two faults on Formula 1's page, then asked for a countdown on /series/; the three ride one PR.
+
+- **The click outline.** Twenty Twenty-Five's `:where(.wp-site-blocks :focus)` outlines every focused element in its text colour, a mouse click's focus too: a tab drew two vertical lines (the tab strip's `overflow-x: auto` cut the outline's top and bottom) and a Results row a box. `:where(.wp-site-blocks) :focus:not(:focus-visible) { outline: none; }` keeps the outline for the keyboard only, where the theme's yellow ring applies; the ring is drawn inside the series tabs (`outline-offset: -3px`) and the type chips (`-2px`), whose scrollers would cut it.
+- **The blog covers.** `[pd_series_posts]` (functions.php) leads each card with its post's featured image (`get_the_post_thumbnail`, medium_large, `sizes` for one or three columns), cropped 16:9 under the series' colour rule, linked to the post but out of the tab order and hidden from screen readers (the title stays the link they use); a post without one keeps the plain card.
+- **The countdown.** Each racing card on /series/ carries `<span class="pd-sx-in" data-pd-days="<start date>" hidden>` beside its Next pill (lib/wp/series.ts `listCard`); paddock.js's `render()` fills it every 30 s with the days from the reader's own date to the round's start date, whole days between two calendar dates (`Date.UTC`), "tomorrow" at one, and leaves it hidden once the round's pill reads This weekend. A Sunday race counts to its Sunday.
+
+Theme 0.1.11. Tests: the countdown's slot on a card, its absence on every finished shape, a Sunday race counting to its own date.
+
+The fresh-context review (one Sonnet reader, 529,928 tokens): mergeable after fixes, 2 should-fix and 6 nits, all folded. The tab's keyboard ring had been a lone yellow line (1.35:1 on white in Day) painted over the label's first and last letters: it is now a 3 px ink outline at -3 px over a 6 px yellow inset band, with `padding-inline: 8px` and `margin-inline: -8px` so the label keeps its place. The countdown hides a date it cannot read (`! ( n >= 1 )`, NaN included); the cover is wrapped only when `get_the_post_thumbnail` returns an image (a thumbnail id leading to none left an empty link); the handoff and the PR log corrected.
+
 ## 1.0.287 — 2026-10-21
 
 ### O21: the series list in round 2's design

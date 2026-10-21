@@ -293,6 +293,9 @@ describe('seriesList', () => {
 
   it('carries the next round as a label the script turns into This weekend, and the bar of rounds', () => {
     expect(card('f1')).toContain('<em class="pd-sx-pill"><span class="pd-wk" data-from="2026-05-08" data-to="2026-05-10" data-on="This weekend">Next</span></em>');
+    // The countdown's slot, which the script fills with the days until the round's first day.
+    expect(card('f1')).toContain('</em><span class="pd-sx-in" data-pd-days="2026-05-08" hidden></span></p>');
+    for (const done of ['f3', 'nls', 'imsa', 'adac-ravenol-24h']) expect(card(done), done).not.toContain('data-pd-days');
     expect(card('f1')).toContain('<span class="pd-sx-bar" aria-hidden="true"><i class="is-done"></i><i class="is-next"></i><i></i></span>');
     expect(card('f1')).toContain('<span>1 of 3 rounds run</span>');
   });
@@ -362,6 +365,8 @@ describe('seriesList', () => {
     expect(day).not.toContain('10–10 May');
     // A Sunday race: the card's label from Friday 8 May, the weekend card on its own date.
     expect(day).toContain('<span class="pd-wk" data-from="2026-05-08" data-to="2026-05-10" data-on="This weekend">Next</span>');
+    // The countdown counts to the race's own day, the Sunday.
+    expect(day).toContain('<span class="pd-sx-in" data-pd-days="2026-05-10" hidden></span>');
     expect(day).toContain('<article class="pd-sx-wk" data-from="2026-05-10" data-to="2026-05-10"');
   });
 
