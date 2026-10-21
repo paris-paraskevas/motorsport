@@ -26,7 +26,7 @@ import { dirname, join } from 'node:path';
 import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '../lib/series';
-import { loadCuratedDrivers, loadTeamNames, officialTeamName } from '../lib/series-content';
+import { loadCuratedChampions, loadCuratedDrivers, loadTeamNames, officialTeamName } from '../lib/series-content';
 import { fetchUpstream } from '../lib/fetch-upstream';
 import { fetchF1SeasonSprints } from '../lib/results/f1';
 import { fetchOpenF1WeekendSessions, fetchSessionClassification, hasResolvedDrivers } from '../lib/results/openf1';
@@ -40,7 +40,7 @@ import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
 import { matchCircuitEntry, normalise, venueCandidates } from '../lib/circuits';
 import contentFs from '../lib/content-fs';
 import type { CancelledRoundEntry, Series, SeriesRoundEntry } from '../lib/types';
-import { ROUND2_SERIES, seriesFamily } from '../lib/wp/series';
+import { ROUND2_SERIES, seriesFamily, seriesList } from '../lib/wp/series';
 import {
   calendarEntries,
   calendarMonthPages,
@@ -55,7 +55,6 @@ import {
   planSync,
   resultRounds,
   withSession,
-  seriesIndexPage,
   seriesPages,
   standingsTables,
   tableBlock,
@@ -574,11 +573,11 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
   // listSeriesSlugs answers [] on any error, which would empty /series/, /calendar/ and /status/.
   if (slugs.length === 0) throw new Error('no series found under content/series');
   const names = new Map<string, string>();
-  const chips = new Map<string, { short?: string; order?: number; rally: boolean; season?: number }>();
+  const chips = new Map<string, { short?: string; order?: number; rally: boolean; season?: number; category?: string; colour?: string }>();
   for (const slug of slugs) {
     const meta = await loadSeriesMeta(slug);
     names.set(slug, meta.name);
-    chips.set(slug, { short: meta.shortName, order: meta.order, rally: meta.category === 'rally', season: meta.season });
+    chips.set(slug, { short: meta.shortName, order: meta.order, rally: meta.category === 'rally', season: meta.season, category: meta.category, colour: meta.color });
   }
   const outlines = themeOutlines();
 
@@ -597,6 +596,11 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
     const chip = chips.get(slug);
     if (chip?.short) d.short = chip.short;
     if (chip?.order !== undefined) d.order = chip.order;
+    // The series list (O21) reads every series' type, colour, season and the season's champion as champions.json writes it.
+    d.category = chip?.category;
+    d.colour = chip?.colour;
+    d.season = chip?.season;
+    d.champion = (await loadCuratedChampions(slug))?.find(c => c.year === chip?.season)?.driver;
     for (const kind of KINDS) {
       const rel = relOf(slug, kind);
       const previous = readStored<unknown>(rel);
@@ -625,7 +629,6 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
     const file = roundsFile(slug);
     d.rounds = await calendarRounds(file.rounds, d.calendar, chip?.rally === true, outlines);
     if (ROUND2_SERIES.has(slug)) {
-      d.season = chip?.season;
       d.about = aboutText(slug);
       d.teams = ((await loadCuratedDrivers(slug))?.teams ?? []).map(t => ({ name: t.name, colour: t.color, drivers: t.drivers.map(x => ({ name: x.name, code: x.code })) }));
       d.cancelled = file.cancelled.flatMap(c =>
@@ -639,7 +642,7 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
 
   const checkedAt = FROM_REF ? (refTime(FROM_REF) ?? now) : now;
   const pages: Page[] = [
-    seriesIndexPage(all, now),
+    seriesList(all, now),
     ...calendarMonthPages(all, now),
     statusPage(health, checkedAt),
     ...all.flatMap(d => (ROUND2_SERIES.has(d.slug) ? seriesFamily(d) : seriesPages(d, now))),

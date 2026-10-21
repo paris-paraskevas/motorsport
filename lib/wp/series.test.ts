@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import type { ResultRound, SeriesData } from './render';
-import { categorySlug, prose, ROUND2_SERIES, seriesFamily, seriesOverview, seriesResults } from './series';
+import { categorySlug, prose, ROUND2_SERIES, seriesFamily, seriesList, seriesOverview, seriesResults } from './series';
 
 const race = (round: number, name: string, date: string, rows: string[][]): ResultRound => ({
   round,
@@ -241,6 +241,91 @@ describe('seriesResults', () => {
       vi.useRealTimers();
     }
     expect(seriesResults({ ...fr, results: null }).body).toContain('<p class="pd-mut">No results yet this season.</p>');
+  });
+});
+
+describe('seriesList', () => {
+  const rounds = (n: number, month = '05') =>
+    Array.from({ length: n }, (_, i) => ({ round: i + 1, name: `Round ${i + 1} Grand Prix`, startDate: `2026-${month}-${String(i * 7 + 1).padStart(2, '0')}`, endDate: `2026-${month}-${String(i * 7 + 3).padStart(2, '0')}`, venue: null }));
+  const raced = (...ns: number[]) => ns.map(n => race(n, `Round ${n}`, `2026-05-0${n}`, [['1', 'Winner', 'Team', '1:00:00.000', '25']]));
+  const base = { standings: null, calendar: null, season: 2026 } as const;
+  const all: SeriesData[] = [
+    { ...base, slug: 'wrc', name: 'WRC', category: 'rally', colour: '#eab308', order: 9, rounds: rounds(2), results: [] },
+    { ...base, slug: 'nls', name: 'NLS <b>Nürburgring</b>', category: 'endurance', colour: 'red;x', order: 10, rounds: rounds(2), results: raced(1, 2) },
+    { ...base, slug: 'f3', name: 'Formula 3', category: 'formula', colour: '#818cf8', order: 14, rounds: rounds(2), results: raced(1, 2), champion: 'Ugo Ugochukwu' },
+    { ...base, slug: 'f1', name: 'Formula 1', category: 'formula', colour: '#ff4136', order: 1, rounds: rounds(3), results: raced(1) },
+    { ...base, slug: 'imsa', name: 'IMSA', category: 'endurance', colour: '#2dd4bf', order: 4, rounds: rounds(2, '04'), results: raced(1) },
+    {
+      ...base,
+      slug: 'adac-ravenol-24h',
+      name: 'ADAC Ravenol 24h Nürburgring',
+      category: 'endurance',
+      colour: '#fbbf24',
+      order: 15,
+      rounds: [],
+      results: null,
+      champion: 'Maro Engel, Maxime Martin',
+      calendar: [{ start: '2026-05-16T14:00:00Z', end: '2026-05-17T14:00:00Z', dateOnly: false, event: '24h', session: 'Race', round: null }],
+    },
+  ];
+  // 5 May: WRC's first round has ended without a result in its feed, and IMSA's whole April season has, with one.
+  const now = new Date('2026-05-05T12:00:00Z');
+  const page = seriesList(all, now);
+  const b = page.body;
+  const card = (slug: string) => b.slice(b.indexOf(`data-s="${slug}"`), b.indexOf('</article>', b.indexOf(`data-s="${slug}"`)));
+
+  it('is /series/ on the Wide template, counting its championships in words', () => {
+    expect(page).toMatchObject({ path: '/series/', title: 'Series', template: 'page-wide' });
+    expect(b).toContain('<h1 class="pd-sx-h1">Six championships</h1>');
+  });
+
+  it('splits by status, then by type in the chips’ order, each group as wide as its cards', () => {
+    const shape = [...b.matchAll(/<h2>([^<]+)<\/h2>|<div class="pd-sx-type pd-sx-span-(\d)" data-type="([a-z]+)">|data-s="([a-z0-9-]+)" style/g)].map(m => m[1] ?? (m[3] ? `${m[3]}×${m[2]}` : m[4]));
+    expect(shape).toEqual(['Racing this weekend', 'Still racing', 'formula×1', 'f1', 'rally×1', 'wrc', 'Completed', 'formula×1', 'f3', 'endurance×3', 'adac-ravenol-24h', 'imsa', 'nls']);
+    expect(b).toContain('<div class="pd-sx-type pd-sx-span-3" data-type="endurance"><h3>Endurance <small>3</small></h3><div class="pd-sx-grid pd-sx-cols-3">');
+  });
+
+  it('carries the next round as a label the script turns into This weekend, and the bar of rounds', () => {
+    expect(card('f1')).toContain('<em class="pd-sx-pill"><span class="pd-wk" data-from="2026-05-08" data-to="2026-05-10" data-on="This weekend">Next</span></em>');
+    expect(card('f1')).toContain('<span class="pd-sx-bar" aria-hidden="true"><i class="is-done"></i><i class="is-next"></i><i></i></span>');
+    expect(card('f1')).toContain('<span>1 of 3 rounds run</span>');
+  });
+
+  it('marks a finished championship with its champion as champions.json writes it, else its rounds run', () => {
+    expect(b).toContain('<article class="pd-sx-card is-over" data-type="formula" data-s="f3"');
+    expect(card('f3')).toContain('<em class="pd-sx-tag">Season complete</em></p><p class="pd-sx-ev"><b>2026 champion: Ugo Ugochukwu</b></p>');
+    expect(card('nls')).toContain('<b>All 2 rounds run</b>');
+    // A feed that stops early (IMSA's) never leaves a past round as Next: its dates count it run.
+    expect(card('imsa')).toContain('<span>2 of 2 rounds run</span>');
+    expect(card('imsa')).toContain('<b>All 2 rounds run</b>');
+    expect(card('wrc')).toContain('<span>1 of 2 rounds run</span>');
+    expect(card('adac-ravenol-24h')).toContain('<em class="pd-sx-tag">One race a year · May</em></p><p class="pd-sx-ev"><b>2026 winners: Maro Engel, Maxime Martin</b>');
+    expect(b).toContain('<article class="pd-sx-card" data-type="rally" data-s="wrc"');
+  });
+
+  it('links what exists: Formula 1 its Overview and Results, every card the Calendar showing only that series', () => {
+    expect(card('f1')).toContain('<b><a href="/series/f1/">Formula 1</a></b>');
+    expect(card('f1')).toContain('<a href="/calendar/#f1">Calendar</a><span class="is-off">Standings</span><a href="/series/f1/results/">Results</a><span class="is-off">Champions</span>');
+    expect(card('wrc')).toContain('<b>WRC</b>');
+    expect(card('wrc')).toContain('<a href="/calendar/#wrc">Calendar</a><span class="is-off">Standings</span><span class="is-off">Results</span>');
+  });
+
+  it('holds every next round as a hidden weekend card, the section hidden until the script finds this weekend', () => {
+    expect(b).toContain('<section class="pd-sx-sec pd-sx-weekend" hidden>');
+    expect([...b.matchAll(/<article class="pd-sx-wk" data-from="([\d-]+)" data-to="([\d-]+)"[^>]*hidden><header><b>([^<]+)<\/b>/g)].map(m => `${m[3]} ${m[1]}`)).toEqual(['Formula 1 2026-05-08', 'WRC 2026-05-08']);
+    expect(b).toContain('<div class="pd-sx-ctl" hidden>');
+  });
+
+  it('keeps feed and content text as text and a bad colour out of the style, and writes the same page all day', () => {
+    expect(b).toContain('NLS &lt;b&gt;Nürburgring&lt;/b&gt;');
+    expect(card('nls')).toContain('style="--t:#9aa3b2"');
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date('2026-05-09T12:00:00Z'));
+      expect(seriesList(all, new Date('2026-05-05T23:59:00Z')).body).toBe(b);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

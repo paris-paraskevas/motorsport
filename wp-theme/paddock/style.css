@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.9
+Version: 0.1.10
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -610,4 +610,80 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 	.pd-rs-c4 { grid-template-columns: 24px minmax(0, 1fr) repeat(4, 50px); }
 	.pd-rs-c3 .pd-d small, .pd-rs-c4 .pd-d small { display: none; }
 	.pd-rs-tbl .pd-v { font-size: .78rem; }
+}
+
+/* The series list (O21): round 2's "All series". Still racing, then Completed, each split by type, a type's group as
+   wide as its cards (pd-sx-span-N, pd-sx-cols-N); a finished championship in gold, always a fill under dark text, so
+   it reads in Day and Night alike. The switch, the chips, the + and Racing this weekend come with the script. */
+.pd-sx { padding: 34px var(--pd-gutter) 0; }
+.pd-sx-h1 { margin: 0; font-size: clamp(2.25rem, 4.6vw, 3.5rem); line-height: 1; font-weight: 800; letter-spacing: -.03em; }
+.pd-sx .pd-sx-sub { margin: 12px 0 22px; max-width: 70ch; color: var(--pd-muted); }
+.pd-sx-ctl { display: grid; gap: 12px; justify-items: start; }
+.pd-sx-ctl[hidden], .pd-sx-none[hidden], .pd-sx-sec[hidden], .pd-sx-wk[hidden], .pd-sx-type[hidden], .pd-sx-card[hidden], .pd-sx-fol[hidden] { display: none; }
+.pd-sx-sw { display: inline-flex; border: 1px solid var(--pd-line-strong); }
+.pd-sx-sw button, .pd-sx-chips button { padding: 8px 14px; border: 0; border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .875rem; font-weight: 700; cursor: pointer; }
+.pd-sx-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.pd-sx-chips button { border: 1px solid var(--pd-line-strong); }
+.pd-sx-sw button[aria-pressed="true"], .pd-sx-chips button[aria-pressed="true"] { background: var(--pd-ink); border-color: var(--pd-ink); color: var(--pd-ground); }
+.pd-sx-sw small, .pd-sx-chips small { font-weight: 500; opacity: .75; }
+.pd-sx-sw button:focus-visible, .pd-sx-chips button:focus-visible, .pd-sx-fol:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
+.pd-sx .pd-sx-none { margin: 18px 0 0; color: var(--pd-muted); }
+.pd-sx-sec { margin-top: 40px; }
+.pd-sx-wks { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.pd-sx-wk { border: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-sx-wk header { padding: 10px 12px 12px; background: var(--t); color: var(--pd-on); }
+.pd-sx-wk header b { display: block; font-size: 1.05rem; line-height: 1.15; font-weight: 800; }
+.pd-sx-wk header small { font-size: .81rem; font-weight: 700; }
+.pd-sx-wk > div { display: grid; gap: 4px; padding: 12px; }
+.pd-sx-wk > div span { font-size: .81rem; color: var(--pd-muted); }
+.pd-sx-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 16px; align-items: start; }
+.pd-sx-span-1 { grid-column: span 1; } .pd-sx-span-2 { grid-column: span 2; } .pd-sx-span-3 { grid-column: span 3; } .pd-sx-span-4 { grid-column: span 4; }
+.pd-sx-type h3 { margin: 0 0 10px; font-size: .81rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--pd-muted); }
+.pd-sx-type h3 small { font-size: .81rem; font-weight: 600; letter-spacing: 0; }
+.pd-sx-grid { display: grid; gap: 16px; }
+.pd-sx-cols-1 { grid-template-columns: minmax(0, 1fr); } .pd-sx-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pd-sx-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .pd-sx-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pd-sx-card { display: flex; flex-direction: column; border: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-sx-head { position: relative; display: grid; gap: 4px; padding: 14px 16px 16px; background: var(--t); color: var(--pd-on); }
+.pd-sx-head small { font-size: .81rem; font-weight: 700; }
+.pd-sx-head b { padding-right: 44px; font-size: 1.6rem; line-height: 1.05; font-weight: 800; letter-spacing: -.02em; }
+.pd-sx-head b a { color: inherit; text-decoration: none; }
+.pd-sx-head b a:hover { text-decoration: underline; }
+.pd-sx-fol { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; padding: 0; border: 1.5px solid var(--pd-on); border-radius: 0; background: transparent; color: var(--pd-on); font: inherit; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+.pd-sx-fol[aria-pressed="true"] { background: var(--pd-on); color: #ffffff; }
+.pd-sx-body { display: grid; flex: 1; align-content: start; gap: 10px; padding: 16px; }
+.pd-sx-bar { display: flex; gap: 3px; }
+.pd-sx-bar i { flex: 1 1 0; height: 6px; background: var(--pd-line); }
+.pd-sx-bar i.is-done { background: var(--pd-ink); }
+.pd-sx-bar i.is-next { background: var(--pd-accent); }
+.pd-sx .pd-sx-run { display: flex; justify-content: space-between; margin: 0; font-size: .875rem; color: var(--pd-muted); }
+.pd-sx .pd-sx-st { margin: 4px 0 0; }
+.pd-sx-pill { display: inline-block; padding: 2px 8px; background: var(--pd-line); font-size: .81rem; font-style: normal; font-weight: 800; }
+.pd-sx-pill:has(.pd-wk.is-on) { background: var(--pd-accent); color: var(--pd-on); }
+.pd-sx-tag { display: inline-block; padding: 1px 7px; border: 1px solid var(--pd-ink); font-size: .78rem; font-style: normal; font-weight: 800; }
+.pd-sx .pd-sx-ev { display: grid; gap: 4px; margin: 0; }
+.pd-sx-ev b { font-size: 1.1rem; line-height: 1.2; font-weight: 800; }
+.pd-sx-ev span { font-size: .875rem; color: var(--pd-muted); }
+.pd-sx-links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--pd-line); font-size: .9rem; font-weight: 800; }
+.pd-sx-links a { color: var(--pd-ink); text-decoration: none; }
+.pd-sx-links a:hover { text-decoration: underline; }
+.pd-sx-links .is-off { color: var(--pd-muted); font-weight: 600; opacity: .55; }
+.pd-sx-card.is-over { --gold: #e3b341; box-shadow: inset 0 -4px 0 var(--gold); }
+.pd-sx-card.is-over .pd-sx-bar i { background: var(--gold); }
+.pd-sx-card.is-over .pd-sx-run span:first-child { padding: 1px 7px; background: var(--gold); color: #0f1217; font-weight: 800; }
+.pd-sx-card.is-over .pd-sx-tag { background: var(--gold); border-color: var(--gold); color: #0f1217; }
+.pd-sx-card.is-over .pd-sx-ev b { padding-left: 10px; border-left: 4px solid var(--gold); }
+@media (max-width: 1023px) {
+	.pd-sx-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.pd-sx-span-3, .pd-sx-span-4 { grid-column: span 2; }
+	.pd-sx-cols-3, .pd-sx-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 699px) {
+	.pd-sx { padding: 22px 16px 0; }
+	.pd-sx-groups, .pd-sx-grid { grid-template-columns: minmax(0, 1fr); }
+	.pd-sx-type { grid-column: auto; }
+	.pd-sx-chips { flex-wrap: nowrap; overflow-x: auto; }
+	.pd-sx-chips button { flex: none; }
+	.pd-sx-wks { display: flex; overflow-x: auto; }
+	.pd-sx-wk { flex: 0 0 160px; }
 }

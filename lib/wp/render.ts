@@ -577,6 +577,11 @@ export interface SeriesData {
   about?: string;
   teams?: SeriesTeam[];
   cancelled?: { round: number; name: string; place?: string }[];
+  /** For the series list (slot O21), every series: its type (meta.json category), its colour, and the champion of
+   *  its season as champions.json writes it, when it does. */
+  category?: string;
+  colour?: string;
+  champion?: string;
 }
 
 export interface SeriesTeam {
@@ -924,16 +929,6 @@ export function calendarMonthPages(all: SeriesData[], now: Date): Page[] {
 }
 
 /** /series/: every series with a page, and its next session. */
-export function seriesIndexPage(all: SeriesData[], now: Date): Page {
-  const rows = all
-    .filter(d => d.standings?.length || d.results?.length || d.calendar)
-    .map(d => {
-      const next = d.calendar ? upcoming(d.calendar, now)[0] : undefined;
-      return [{ text: d.name, href: seriesPath(d.slug) }, next ? `${next.event} · ${next.session}` : '', next ? whenCells(next)[0] : ''] as Cell[];
-    });
-  return { path: '/series/', title: 'Series', body: tableBlock(['Series', 'Next session', 'UTC'], rows) };
-}
-
 // ── The page as WordPress stores it ──────────────────────────────────────────
 
 /** The publisher's mark, first in every page it owns: the hash of what it last wrote, and the address
