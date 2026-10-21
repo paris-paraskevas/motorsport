@@ -6,7 +6,30 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-21 (LATEST, session 69 handed off at ~15:15Z on the 21st for a clean context: O15 done and live; O21, the series list, built on its branch with the six champions; its checks, records and PR left)
+## ⚡ Next session pickup — 2026-10-21 (LATEST, session 70: O21 is PR #1175 with the six champions' notes and Formula 1's unbuilt tabs greyed, its review waiting for the operator's 5-hour figure; the operator's first theme test recorded; then the fixes PR, the calendar drafts and O19 with Results redrawn)
+
+**WHERE IT STANDS (21 Oct, ~16:39Z):**
+1. **O21 is PR #1175** (o21/series-list: 6d9467c0, 2bbe3969 and this records commit), into next, open; no checks run on PRs into next. Theme zip 0.1.10 built (wp-theme/paddock.zip, gitignored, 40 files).
+   - The browser checks (playwright-core on the Playground, four widths, Day and Night, the clock at 23 Oct) found three faults, fixed: the phone's chips overflowing 190 px (`.pd-sx-ctl`'s grid sizes items to content: `max-width: 100%`), one-day rounds dated "25–25 Oct", and a Sunday round reading Next while under Racing this weekend (`weekendFrom`: This weekend from that Friday, as the draft draws).
+   - The six champions re-checked on primary pages (each note's sources). The full suite then failed 4 tests: `lib/sitemap-data.test.ts` holds every champions.json row to a champion note, and three record notes stated last year's counts. Six notes written and seven record-note lines updated, each with a 2026 source. The six defaults stood on the operator's word.
+   - Formula 1's Standings and Champions tabs and the Overview's "All 23" greyed until O16 and O17 (`BUILT` in lib/wp/series.ts).
+2. **The operator's first theme test (0.1.9), under the new rule:** items 2 and 3 passed; 1, 4 and 5 gave the items below (IDEAS lines, O13/O14/O15 evidence). The rule: every theme upload comes with its test list (rules.md § 6, the ledger's changes line of 21 Oct, memory feedback-paddock-theme-upload-tests).
+
+**DO NEXT, IN ORDER (the operator's order of 21 Oct):**
+1. **#1175's review:** ask the operator's 5-hour figure, state the cost (one Sonnet reader; #1174's took 461k tokens), run it, fold its fixes. Then the merge into next on the word; the operator uploads 0.1.10; one publish run with `--only /series/f1/` on the word (the procedure in the landmines of 21 Oct below); /series/ checked signed in; the operator tests with #1175's Test after upload list; O21 done.
+2. **The fixes PR, theme 0.1.11:** the click outline everywhere (Twenty Twenty-Five's `:where(.wp-site-blocks :focus)` draws 2 px in the text's colour on a mouse click; keep the yellow keyboard ring, drawn inside the tabs so their scroll does not cut it), and the From the blog cards' cover photos (functions.php's `pd_series_posts`, the post's featured image; posts without one keep today's card).
+3. **The calendar's small PR with the month changer drafted first:** A (the month as the headline, its neighbours named) and B (a month strip) beside round 2's small box, C (a sticky bar) on either; with #1170's and #1173's review lows.
+4. **O19 with Formula 1's Results redrawn**, drafted first with real data (Singapore as the sprint, Bahrain as the standard): distinct rows at the page's width, no box on a click, a sprint fold with S, R and Total for every scorer (11 to 14 a sprint weekend this season), points only in every fold, each round's title and See weekend → to /series/f1/2026/round-<n>/ (the address kept).
+5. Then O16, O17, O20 and O18. The ledger's O11, O13 and O14 are still "started" and need their closing checks.
+
+**Landmines met in session 70:**
+- Session 69's Playground still held port 9400: find the PID by the port and stop that PID.
+- The Playwright MCP's browser profile was held by session 69's Chrome. A scratch script on playwright-core 1.63 from the MCP's npx cache (`C:/Users/ppara/AppData/Local/npm-cache/_npx/e41f203b7505f1fb/node_modules/playwright-core`, chromium-1243 cached) drives the Playground; `context.clock.setFixedTime` pins the clock, and under it WordPress core's interactivity module throws `domContentLoadedEventStart` (the harness only).
+- Run the whole suite, not lib/wp: a new champions.json row needs its champion note, and can make a record note's count stale.
+- champion-notes.json keys are years, which JSON.parse reorders: insert entries as text.
+- imsa.com and Cadillac's newsroom refuse scripts (403); IMSA's official PDFs on imsa.results.alkamelcloud.com read with `pdftotext`. dtm.com's and worldsbk.com's standings are script apps; their news pages read.
+
+## ⚡ Next session pickup — 2026-10-21 (session 69 handed off at ~15:15Z on the 21st for a clean context: O15 done and live; O21, the series list, built on its branch with the six champions; its checks, records and PR left)
 
 **WHERE IT STANDS (21 Oct, ~15:15Z):**
 1. **O15 done.** #1174 merged as 10df3279, and the operator uploaded theme 0.1.9. The publish run 39610955800 (`--only /series/f1/`, `openf1_max` 50) stored 45 OpenF1 sessions (Practice 1–3, Sprint Qualifying) beside jolpi.ca's qualifying, updated /series/f1/ and created /series/f1/results/. The page was checked on the site signed in at 1440 and 390 px, Night and Day. The operator's "the /results still not loading" was asked before that run had created the page.
