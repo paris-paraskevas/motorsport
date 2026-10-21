@@ -31,6 +31,10 @@ export interface ResultRound {
   /** YYYY-MM-DD, or null when neither the feed nor rounds.json gives one. */
   date: string | null;
   sessions: ResultSession[];
+  /** The round's sessions that are not races, as classified (slot O15): Formula 1's qualifying from jolpi.ca, its
+   *  practices and sprint qualifying from OpenF1, in running order. Apart from `sessions`, whose last is the round's
+   *  main race (latestRace) and whose count the health check compares. */
+  others?: ResultSession[];
 }
 
 export interface CalendarEntry {
@@ -46,7 +50,7 @@ export interface CalendarEntry {
   location?: string;
 }
 
-/** Rows a results table keeps, and a series page's standings excerpt. */
+/** Rows a plain results table shows, and a series page's standings excerpt. */
 const TOP = 10;
 
 type Obj = Record<string, unknown>;
@@ -181,16 +185,17 @@ function sessionRank(label: string): number {
   return 2;
 }
 
-/** Top ten of a single-class race. Position 0 (IndyCar's non-finishers) and 90+
- *  (DTM's synthetic DNF slots) are not classified places. */
+/** A single-class race's classified finishers, every one (the pages cut to ten when they draw). Position 0
+ *  (IndyCar's non-finishers) and 90+ (DTM's synthetic DNF slots) are not classified places. A lapped car reads
+ *  Lapped: jolpi.ca gives it a time behind the winner over a lap fewer ("+2.171" for Singapore 2026's eleventh,
+ *  a lap down), which reads as a gap it never had. */
 function raceTable(title: string, entries: unknown, person: string): Table | null {
   if (!Array.isArray(entries)) return null;
   const lines = entries
     .filter(isObj)
-    .map(e => ({ pos: num(e.position), name: str(e.driverName), team: str(e.team), time: str(e.time) || str(e.status), points: num(e.points) }))
+    .map(e => ({ pos: num(e.position), name: str(e.driverName), team: str(e.team), time: /^lapped$/i.test(str(e.status)) ? 'Lapped' : str(e.time) || str(e.status), points: num(e.points) }))
     .filter((l): l is typeof l & { pos: number } => l.pos !== null && l.pos >= 1 && l.pos < 90 && l.name !== '')
-    .sort((a, b) => a.pos - b.pos)
-    .slice(0, TOP);
+    .sort((a, b) => a.pos - b.pos);
   if (lines.length === 0) return null;
   const withTeam = lines.some(l => l.team !== '');
   const withTime = lines.some(l => l.time !== '');
@@ -208,15 +213,14 @@ function raceTable(title: string, entries: unknown, person: string): Table | nul
   };
 }
 
-/** Top ten of one class (IMSA, WEC: lib/results/imsa.ts ImsaRaceEntry, wec.ts WecRaceEntry). */
+/** One class's classified finishers (IMSA, WEC: lib/results/imsa.ts ImsaRaceEntry, wec.ts WecRaceEntry). */
 function classTable(title: string, entries: unknown): Table | null {
   if (!Array.isArray(entries)) return null;
   const lines = entries
     .filter(isObj)
     .map(e => ({ pos: num(e.position), car: str(e.carNumber), drivers: str(e.drivers), team: str(e.team), gap: str(e.gap) || str(e.status) }))
     .filter((l): l is typeof l & { pos: number } => l.pos !== null && l.pos >= 1)
-    .sort((a, b) => a.pos - b.pos)
-    .slice(0, TOP);
+    .sort((a, b) => a.pos - b.pos);
   if (lines.length === 0) return null;
   return {
     title,
@@ -225,7 +229,7 @@ function classTable(title: string, entries: unknown): Table | null {
   };
 }
 
-/** Top ten overall of a GT World race, every cup in one classification (lib/results/gt-world.ts). */
+/** A GT World race's classified finishers overall, every cup in one classification (lib/results/gt-world.ts). */
 function gtTable(title: string, entries: unknown): Table | null {
   if (!Array.isArray(entries)) return null;
   const lines = entries
@@ -238,8 +242,7 @@ function gtTable(title: string, entries: unknown): Table | null {
       cup: str(e.cupLabel),
     }))
     .filter((l): l is typeof l & { pos: number } => l.pos !== null && l.pos >= 1)
-    .sort((a, b) => a.pos - b.pos)
-    .slice(0, TOP);
+    .sort((a, b) => a.pos - b.pos);
   if (lines.length === 0) return null;
   return {
     title,
@@ -247,6 +250,60 @@ function gtTable(title: string, entries: unknown): Table | null {
     rows: lines.map(l => [String(l.pos), l.car, l.drivers, l.team, l.cup]),
   };
 }
+
+/** A qualifying's classification by its parts, the parts nobody ran left out: jolpi.ca's QualifyingResults as the
+ *  publisher maps them ({ position, driverName, team, q1, q2, q3 }), or OpenF1's sprint qualifying, whose parts
+ *  are SQ1 to SQ3. */
+function qualifyingTable(title: string, entries: unknown, part = 'Q'): Table | null {
+  if (!Array.isArray(entries)) return null;
+  const lines = entries
+    .filter(isObj)
+    .map(e => ({ pos: num(e.position), name: str(e.driverName), team: str(e.team), times: [str(e.q1), str(e.q2), str(e.q3)] }))
+    .filter((l): l is typeof l & { pos: number } => l.pos !== null && l.pos >= 1 && l.name !== '')
+    .sort((a, b) => a.pos - b.pos);
+  if (lines.length === 0) return null;
+  const parts = [0, 1, 2].filter(i => lines.some(l => l.times[i] !== ''));
+  return {
+    title,
+    columns: ['Pos', 'Driver', 'Team', ...parts.map(i => `${part}${i + 1}`)],
+    rows: lines.map(l => [String(l.pos), l.name, l.team, ...parts.map(i => l.times[i])]),
+  };
+}
+
+/** A practice's classification by best lap (OpenF1's SessionClassificationEntry: time, gap, laps). */
+function practiceTable(title: string, entries: unknown): Table | null {
+  if (!Array.isArray(entries)) return null;
+  const lines = entries
+    .filter(isObj)
+    .map(e => ({ pos: num(e.position), name: str(e.driverName), team: str(e.team), time: str(e.time), gap: str(e.gap), laps: str(e.laps) }))
+    .filter((l): l is typeof l & { pos: number } => l.pos !== null && l.pos >= 1 && l.name !== '')
+    .sort((a, b) => a.pos - b.pos);
+  if (lines.length === 0) return null;
+  return {
+    title,
+    columns: ['Pos', 'Driver', 'Team', 'Time', 'Gap', 'Laps'],
+    rows: lines.map(l => [String(l.pos), l.name, l.team, l.time, l.gap, l.laps]),
+  };
+}
+
+/** An OpenF1 classification of one of the sessions OPENF1_SESSIONS names, as the session the round stores. */
+export function openf1Session(label: string, entries: unknown): ResultSession | null {
+  const t = /qualifying/i.test(label) ? qualifyingTable(label, entries, 'SQ') : practiceTable(label, entries);
+  return t ? { label, tables: [t] } : null;
+}
+
+/** Running order of a round's other sessions: the practices, then sprint qualifying, then qualifying. */
+function otherRank(label: string): number {
+  const practice = /^practice (\d)$/i.exec(label);
+  if (practice) return Number(practice[1]);
+  return /^sprint qualifying$/i.test(label) ? 4 : /^qualifying$/i.test(label) ? 5 : 6;
+}
+
+const byRunningOrder = (sessions: ResultSession[]): ResultSession[] =>
+  sessions
+    .map((s, i) => ({ s, i }))
+    .sort((a, b) => otherRank(a.s.label) - otherRank(b.s.label) || a.i - b.i)
+    .map(x => x.s);
 
 function dayOf(v: unknown): string | null {
   const t = v instanceof Date ? v.getTime() : typeof v === 'string' ? Date.parse(v) : NaN;
@@ -273,19 +330,24 @@ function compareRounds(a: ResultRound, b: ResultRound): number {
   return a.name.localeCompare(b.name);
 }
 
-/** A season's results as rounds, oldest first, each race's top ten. The payload is
- *  whatever the series' fetcher returns: RaceResult[]; F2's { feature, sprint };
- *  F1's { races, sprints } (the Grand Prix list and the sprint list); IMSA's and
- *  WEC's per-class rounds; GT World's races. [] when nothing is usable. */
+/** A season's results as rounds, oldest first, each race's classified finishers. The payload
+ *  is whatever the series' fetcher returns: RaceResult[]; F2's { feature, sprint }; F1's
+ *  { races, sprints, qualifying } (the Grand Prix list, the sprint list and jolpi.ca's
+ *  qualifying, which goes to the round's `others`); IMSA's and WEC's per-class rounds;
+ *  GT World's races. [] when nothing is usable. */
 export function resultRounds(slug: string, payload: unknown, rounds: readonly SeriesRoundEntry[] = []): ResultRound[] {
   const byKey = new Map<string, ResultRound>();
-  const add = (round: number | null, name: string, date: string | null, session: ResultSession) => {
+  const roundOf = (round: number | null, name: string): ResultRound => {
     const key = round !== null ? `r${round}` : `e${name}`;
     let r = byKey.get(key);
     if (!r) {
-      r = { round, name, date, sessions: [] };
+      r = { round, name, date: null, sessions: [] };
       byKey.set(key, r);
     }
+    return r;
+  };
+  const add = (round: number | null, name: string, date: string | null, session: ResultSession) => {
+    const r = roundOf(round, name);
     // The round's date is its last race's: a sprint weekend is dated by its Sunday.
     if (date !== null && (r.date === null || date > r.date)) r.date = date;
     r.sessions.push(session);
@@ -311,6 +373,12 @@ export function resultRounds(slug: string, payload: unknown, rounds: readonly Se
   } else if (isObj(payload) && 'races' in payload) {
     flat(payload.sprints, 'Sprint');
     flat(payload.races, 'Race');
+    // Qualifying dates nothing: a round with no race yet takes its dates from rounds.json below.
+    for (const q of Array.isArray(payload.qualifying) ? payload.qualifying.filter(isObj) : []) {
+      const round = num(q.round);
+      const t = round === null ? null : qualifyingTable('Qualifying', q.results);
+      if (t) (roundOf(round, str(q.raceName)).others ??= []).push({ label: 'Qualifying', tables: [t] });
+    }
   } else if (Array.isArray(payload)) {
     const items = payload.filter(isObj);
     if (items.some(i => isObj(i.perClass))) {
@@ -337,7 +405,48 @@ export function resultRounds(slug: string, payload: unknown, rounds: readonly Se
       .map((s, i) => ({ s, i }))
       .sort((a, b) => sessionRank(a.s.label) - sessionRank(b.s.label) || a.i - b.i)
       .map(x => x.s);
+    if (r.others) r.others = byRunningOrder(r.others);
   }
+  return out.sort(compareRounds);
+}
+
+/** The Formula 1 sessions OpenF1 classifies for the results page (slot O15). */
+export const OPENF1_SESSIONS = /^(practice [123]|sprint qualifying)$/i;
+
+/** Formula 1's fresh rounds with what a run does not fetch again (slot O15): every stored session of a round's
+ *  `others` that the fresh round lacks (OpenF1's practices and sprint qualifying, fetched once each, and jolpi.ca's
+ *  qualifying on a day it does not answer), a stored round with no race yet kept for them. */
+export function carrySessions(fresh: ResultRound[], stored: ResultRound[] | null): ResultRound[] {
+  const out = fresh.map(r => ({ ...r, ...(r.others ? { others: [...r.others] } : {}) }));
+  for (const s of stored ?? []) {
+    if (s.round === null || !s.others?.length) continue;
+    let r = out.find(x => x.round === s.round);
+    if (!r) {
+      r = { round: s.round, name: s.name, date: s.date, sessions: [] };
+      out.push(r);
+    }
+    const have = new Set((r.others ?? []).map(o => o.label));
+    const kept = s.others.filter(o => !have.has(o.label));
+    if (kept.length) r.others = byRunningOrder([...(r.others ?? []), ...kept]);
+  }
+  return out.sort(compareRounds);
+}
+
+/** The sessions of OPENF1_SESSIONS a run fetches: over an hour ago, not yet held by their round, the newest first,
+ *  at most `max`. */
+export function openf1Wanted(rounds: ResultRound[], calendar: CalendarEntry[], now: Date, max: number): CalendarEntry[] {
+  const held = new Set(rounds.flatMap(r => (r.others ?? []).map(o => `${r.round}|${o.label.toLowerCase()}`)));
+  return calendar
+    .filter(e => e.round !== null && !e.dateOnly && OPENF1_SESSIONS.test(e.session) && Date.parse(e.end) + 3_600_000 <= now.getTime())
+    .filter(e => !held.has(`${e.round}|${e.session.toLowerCase()}`))
+    .sort((a, b) => (a.start < b.start ? 1 : a.start > b.start ? -1 : 0))
+    .slice(0, Math.max(0, max));
+}
+
+/** A fetched classification into its round, in running order; a round the season has not raced yet is made for it. */
+export function withSession(rounds: ResultRound[], round: number, name: string, date: string | null, session: ResultSession): ResultRound[] {
+  const out = rounds.map(r => (r.round === round ? { ...r, others: byRunningOrder([...(r.others ?? []).filter(o => o.label !== session.label), session]) } : r));
+  if (!out.some(r => r.round === round)) out.push({ round, name, date, sessions: [], others: [session] });
   return out.sort(compareRounds);
 }
 
@@ -522,7 +631,7 @@ function resultsPage(d: SeriesData, rounds: ResultRound[]): Page {
       if (r.sessions.length > 1) parts.push(heading(s.label, 3));
       for (const t of s.tables) {
         if (s.tables.length > 1) parts.push(heading(t.title, 4));
-        parts.push(tableBlock(t.columns, t.rows));
+        parts.push(tableBlock(t.columns, t.rows.slice(0, TOP)));
       }
     }
   }

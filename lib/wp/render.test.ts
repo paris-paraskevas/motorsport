@@ -4,13 +4,17 @@ import {
   bandLabel,
   calendarEntries,
   calendarMonthPages,
+  carrySessions,
   escapeHtml,
   hashOf,
   onlyFamily,
   latestRace,
   MARKER,
+  openf1Session,
+  openf1Wanted,
   planSync,
   resultRounds,
+  withSession,
   seriesPages,
   sessionKind,
   splitRaceName,
@@ -106,7 +110,7 @@ describe('splitRaceName', () => {
 });
 
 describe('resultRounds', () => {
-  it('turns a newest-first feed into rounds oldest first, sprint before the main race, top ten classified', () => {
+  it('turns a newest-first feed into rounds oldest first, sprint before the main race, every finisher classified', () => {
     const twelve = Array.from({ length: 12 }, (_, i) => entry(i + 1, `Rider ${i + 1}`));
     const rounds = resultRounds('motogp', [
       { round: 2, raceName: 'Grand Prix of Japan — Grand Prix', date: new Date('2026-04-12T00:00:00Z'), circuit: '', results: twelve },
@@ -121,7 +125,43 @@ describe('resultRounds', () => {
     expect(rounds[1].sessions[0].tables[0].rows).toEqual([['1', 'S', 'Team', 'Finished', '25']]);
     const main = rounds[1].sessions[1].tables[0];
     expect(main.columns).toEqual(['Pos', 'Rider', 'Team', 'Time', 'Pts']);
-    expect(main.rows).toHaveLength(10);
+    // Stored whole since O15; the plain pages cut to ten when they draw.
+    expect(main.rows).toHaveLength(12);
+    const motogp: SeriesData = { slug: 'motogp', name: 'MotoGP', standings: null, results: rounds, calendar: null };
+    const plain = seriesPages(motogp, new Date('2026-10-20T00:00:00Z')).find(p => p.path === '/series/motogp/results/')!;
+    expect(plain.body).toContain('Rider 10');
+    expect(plain.body).not.toContain('Rider 11');
+  });
+
+  it("files F1's qualifying with the round's other sessions, the parts nobody ran left out", () => {
+    const quali = (position: number, driverName: string, q3 = '') => ({ position, driverName, team: 'McLaren', q1: '1:20.0', q2: '1:19.5', q3 });
+    const rounds = resultRounds(
+      'f1',
+      {
+        races: [{ round: 6, raceName: 'Miami Grand Prix', date: '2026-05-03T00:00:00.000Z', circuit: 'Miami', results: [entry(1, 'Winner')] }],
+        sprints: [],
+        qualifying: [
+          { round: 6, raceName: 'Miami Grand Prix', date: '2026-05-02', results: [quali(2, 'Second', '1:19.0'), quali(1, 'Pole', '1:18.9')] },
+          { round: 7, raceName: 'Canadian Grand Prix', date: '2026-05-23', results: [{ position: 1, driverName: 'Fast', team: 'T', q1: '1:12.0', q2: '', q3: '' }] },
+        ],
+      },
+      [{ round: 7, name: 'Canadian Grand Prix', startDate: '2026-05-22', endDate: '2026-05-24' }],
+    );
+    expect(rounds.map(r => [r.round, r.date, r.sessions.map(s => s.label), (r.others ?? []).map(s => s.label)])).toEqual([
+      [6, '2026-05-03', ['Race'], ['Qualifying']],
+      // No race yet: the round takes its Sunday from rounds.json, and its race stays the only thing latestRace reads.
+      [7, '2026-05-24', [], ['Qualifying']],
+    ]);
+    expect(rounds[0].others?.[0].tables[0]).toEqual({
+      title: 'Qualifying',
+      columns: ['Pos', 'Driver', 'Team', 'Q1', 'Q2', 'Q3'],
+      rows: [
+        ['1', 'Pole', 'McLaren', '1:20.0', '1:19.5', '1:18.9'],
+        ['2', 'Second', 'McLaren', '1:20.0', '1:19.5', '1:19.0'],
+      ],
+    });
+    expect(rounds[1].others?.[0].tables[0].columns).toEqual(['Pos', 'Driver', 'Team', 'Q1']);
+    expect(latestRace(rounds)?.round.round).toBe(6);
   });
 
   it("joins F1's Grand Prix list and sprint list into one round", () => {
@@ -132,6 +172,12 @@ describe('resultRounds', () => {
     expect(round.name).toBe('Miami Grand Prix');
     expect(round.sessions.map(s => s.label)).toEqual(['Sprint', 'Race']);
     expect(round.sessions[1].tables[0].rows[0]).toEqual(['1', 'Winner', 'Team', '1:30:00.000', '25']);
+    // jolpi.ca times a lapped car against the winner over a lap fewer: it reads Lapped, as it is.
+    const [singapore] = resultRounds('f1', {
+      races: [{ round: 17, raceName: 'Singapore Grand Prix', date: '2026-10-11', circuit: 'Marina Bay', results: [entry(1, 'Max', { time: '1:42:00.785' }), entry(11, 'Pierre', { status: 'Lapped', time: '+2.171' }), entry(18, 'Alex', { status: 'Retired', time: '' })] }],
+      sprints: [],
+    });
+    expect(singapore.sessions[0].tables[0].rows.map(r => r[3])).toEqual(['1:42:00.785', 'Lapped', 'Retired']);
     // A sprint weekend is dated by its Sunday, not by the sprint's Saturday.
     expect(round.date).toBe('2026-05-03');
   });
@@ -225,6 +271,79 @@ describe('resultRounds', () => {
     );
     expect(round).toMatchObject({ round: 2, name: 'Monza', date: '2026-05-31' });
     expect(round.sessions[0].tables[0].rows[0]).toEqual(['1', '7', 'X, Y', 'T', 'Pro']);
+  });
+});
+
+describe("F1's practices and sprint qualifying (O15)", () => {
+  const table = (title: string) => ({ title, columns: ['Pos', 'Driver'], rows: [['1', 'A']] });
+  const s = (label: string) => ({ label, tables: [table(label)] });
+  const at = (round: number, session: string, start: string, hours = 1, dateOnly = false): CalendarEntry => ({
+    start,
+    end: new Date(Date.parse(start) + hours * 3_600_000).toISOString(),
+    dateOnly,
+    event: `Round ${round}`,
+    session,
+    round,
+  });
+
+  it('carries every stored session the fresh rounds lack, a round with no race yet kept for them, in running order', () => {
+    const fresh: ResultRound[] = [{ round: 1, name: 'One', date: '2026-03-08', sessions: [s('Race')], others: [s('Qualifying')] }];
+    const stored: ResultRound[] = [
+      { round: 1, name: 'One', date: '2026-03-08', sessions: [s('Race')], others: [{ label: 'Qualifying', tables: [] }, s('Practice 2'), s('Practice 1')] },
+      { round: 2, name: 'Two', date: '2026-03-15', sessions: [], others: [s('Practice 1')] },
+      { round: 3, name: 'Three', date: '2026-03-22', sessions: [s('Race')] },
+    ];
+    const out = carrySessions(fresh, stored);
+    expect(out.map(r => [r.round, r.sessions.map(x => x.label), (r.others ?? []).map(x => x.label)])).toEqual([
+      [1, ['Race'], ['Practice 1', 'Practice 2', 'Qualifying']],
+      [2, [], ['Practice 1']],
+    ]);
+    // The fresh qualifying wins over the stored one; a stored race is never carried (the health check sees it go).
+    expect(out[0].others?.[2].tables).toHaveLength(1);
+    expect(fresh[0].others?.map(x => x.label)).toEqual(['Qualifying']);
+    expect(carrySessions(fresh, null)).toEqual(fresh);
+  });
+
+  it('wants the practices and sprint qualifying over an hour ago that no round holds, the newest first, at most max', () => {
+    const rounds: ResultRound[] = [{ round: 1, name: 'One', date: '2026-03-08', sessions: [], others: [s('Practice 1')] }];
+    const calendar = [
+      at(1, 'Practice 1', '2026-03-06T01:30:00Z'),
+      at(1, 'Practice 2', '2026-03-06T05:00:00Z'),
+      at(1, 'Qualifying', '2026-03-07T05:00:00Z'),
+      at(2, 'Practice 1', '2026-03-13T03:30:00Z'),
+      at(2, 'Sprint Qualifying', '2026-03-13T07:30:00Z'),
+      at(2, 'Practice 3', '2026-03-13T00:00:00Z', 0, true),
+      // Ended 30 minutes before now: OpenF1's free data is not final yet.
+      at(3, 'Practice 1', '2026-03-20T10:30:00Z'),
+    ];
+    const now = new Date('2026-03-20T12:00:00Z');
+    expect(openf1Wanted(rounds, calendar, now, 12).map(e => `${e.round} ${e.session}`)).toEqual(['2 Sprint Qualifying', '2 Practice 1', '1 Practice 2']);
+    expect(openf1Wanted(rounds, calendar, now, 1).map(e => `${e.round} ${e.session}`)).toEqual(['2 Sprint Qualifying']);
+    expect(openf1Wanted(rounds, calendar, now, 0)).toEqual([]);
+  });
+
+  it('files a fetched session into its round, replacing one of the same name, or makes the round', () => {
+    const rounds: ResultRound[] = [{ round: 1, name: 'One', date: '2026-03-08', sessions: [s('Race')], others: [s('Qualifying'), { label: 'Practice 1', tables: [] }] }];
+    const one = withSession(rounds, 1, 'One', null, s('Practice 1'));
+    expect(one[0].others?.map(x => [x.label, x.tables.length])).toEqual([['Practice 1', 1], ['Qualifying', 1]]);
+    const two = withSession(one, 2, 'Two', '2026-03-15', s('Practice 1'));
+    expect(two.map(r => [r.round, r.date, r.sessions.length])).toEqual([[1, '2026-03-08', 1], [2, '2026-03-15', 0]]);
+    expect(rounds[0].others?.[1].tables).toEqual([]);
+  });
+
+  it("reads OpenF1's classification: a practice by best lap, sprint qualifying by its three parts", () => {
+    const practice = openf1Session('Practice 2', [
+      { position: 2, driverName: 'B', team: 'Ferrari', time: '1:31.002', gap: '+0.120', laps: 24 },
+      { position: 1, driverName: 'A', team: 'McLaren', time: '1:30.882', laps: 26 },
+      { position: null, driverName: 'C', team: 'Haas', laps: 0 },
+    ]);
+    expect(practice).toEqual({
+      label: 'Practice 2',
+      tables: [{ title: 'Practice 2', columns: ['Pos', 'Driver', 'Team', 'Time', 'Gap', 'Laps'], rows: [['1', 'A', 'McLaren', '1:30.882', '', '26'], ['2', 'B', 'Ferrari', '1:31.002', '+0.120', '24']] }],
+    });
+    const sq = openf1Session('Sprint Qualifying', [{ position: 1, driverName: 'A', team: 'McLaren', q1: '1:31.1', q2: '1:30.9' }]);
+    expect(sq?.tables[0].columns).toEqual(['Pos', 'Driver', 'Team', 'SQ1', 'SQ2']);
+    expect(openf1Session('Practice 1', [])).toBeNull();
   });
 });
 

@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.286 — 2026-10-21
+
+Behind the scenes: Formula 1's results page in the new design, each round with its race and its whole field, and every practice and qualifying session kept for the weekend pages to come. Nothing changes for readers yet.
+
 ## 1.0.285 — 2026-10-21
 
 Behind the scenes: the calendar's month view names each event's race and its start, in your own time, inside the event's bar. Nothing changes for readers yet.

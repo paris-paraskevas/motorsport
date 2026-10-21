@@ -14,6 +14,22 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1174 · 1.0.286 · O15 (Formula 1's Results page, and every session of the weekend stored) · opened 2026-10-21 into `next` on the operator's "go"; the merge on the word
+**Formula 1's Results, and the weekend's data.** The approved plan put each weekend in its fold as tabs; the page it made outgrew the plan's 500 KB line, the operator chose a page per weekend at `/series/f1/2026/round-17/` with a layout per format, drafted first (O19), and said "go" for this PR as the data and the Results list.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the merge, theme 0.1.9 and a publish run: `/series/f1/results/`, a fold a round with its race, the latest open, ten rows then All 22, the Sprint weekend tag, the winner in the team's colour; the Overview's tiles opening their round's fold.
+- **Editors get:** every finisher of every series stored; Formula 1's qualifying, practices and sprint qualifying stored a round at a time; the workflow's `openf1_max` input (12 by default; 50 for the season's backfill).
+- **Files (21):**
+  - `lib/wp/render.ts`, `lib/wp/render.test.ts` · the cut moves to display; `others` on a round; jolpi.ca's qualifying read; `openf1Session`, `carrySessions`, `openf1Wanted`, `withSession`; a lapped car reads Lapped; tests for each.
+  - `lib/wp/series.ts`, `lib/wp/series.test.ts` · `seriesResults` and its folds; the review's fixes (a sprint never the race, the season escaped, the names URI-encoded, the hour tests on fake timers); tests.
+  - `lib/wp/health.test.ts` · the health check counts races, never a round's other sessions.
+  - `scripts/wp-publish.mts`, `.github/workflows/wp-publish.yml` · the qualifying fetch, the OpenF1 step, `--openf1-max` and its input.
+  - `wp-theme/paddock/style.css`, `wp-theme/paddock/assets/js/paddock.js` · theme 0.1.9: the folds and the classification; a `#r17` address opens its fold; the next card reads encoded names.
+  - `wp-theme/preview/f1-results.html` (new, on the plan's approval), `wp-theme/preview/f1.html`, `wp-theme/preview/blueprint.json` · the Results page and the Overview from a live dry run, for the Playground.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.286; the four reviews written into #1169's, #1170's, #1172's and #1173's entries.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md`, `IDEAS.md` · O15's evidence and rescope, O19 and O20 opened, O18 rescoped, the order of 21 Oct; the reviews in O13's and O14's evidence; an Inbox line on keeping more than one season.
+- **Verified:** `npx vitest run` 279 files, 2,801 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; a live fetch into a scratch copy of paddock-data with `--openf1-max 3`: jolpi.ca qualifying 17 rounds, OpenF1 131 sessions listed and three stored at 22 rows (R17 Sprint Qualifying and Practice 1, R16 Practice 3), every race 22 rows, 109 lapped rows reading Lapped, `/series/f1/results/` 91 KB; the size simulation behind the question (477 KB back-filled, 647 KB by Abu Dhabi); the Playground (theme 0.1.9) with Playwright at 1440 and 390, Day and Night: R17 open with ten rows and All 22, `#r12` and the Overview's R16 tile opening their fold, the next card naming Practice 1 on now, no sideways scroll.
+- **Review:** a fresh-context Sonnet reader before the merge.
+
 ## #1173 · 1.0.285 · O14 follow-up (each round's race in its month bar) · opened 2026-10-21 into `next` on the operator's "race in each bar"; the merge on the word
 **The race in each bar.** The operator asked why the Calendar's month shows no sessions; the drafts drew the month with and without the race, and the operator chose "race in each bar".
 - **Readers see:** nothing yet; the site is in Coming Soon. Once theme 0.1.8 is uploaded and the calendar republished: in the month view each event's bar ends with its race and its start in the reader's own time ("F1 · United States GP · Race Sun 22:00"), WRC's with its Power Stage; the week view and the agenda as before.
@@ -26,7 +42,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md` · O13 published and checked on the site; O14 merged and published; this follow-up and its change line.
   - `IDEAS.md` · an Inbox line: a one-day bar shows "Rac…" with its time cut.
 - **Verified:** `npx vitest run` 279 files, 2,788 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; dry run `--from-ref origin/paddock-data --only /calendar/`: 15 pages, 245 of 265 bands with a race, the labels per series checked (Race, Race 2, Feature Race, Sprint Race 2, Race 4h, Power Stage; WRC's stages had read Race and Formula E's finale "Race (London R17) — Season Finale" before the fix); the Playground (WordPress 7.1.3, theme 0.1.8) with Playwright, the clock at 23 Oct 17:45Z in Europe/Athens: October's 20 bars with their race ("F1 · United States GP · Race Sun 22:00", after the clocks change), weight 600, none in the week view or at 390, a one-day bar cutting the time first.
-- **Review:** a fresh-context Sonnet reader, with #1169, #1170 and #1172, after the 5-hour window resets.
+- **Review:** done 21 Oct after the merge, with #1169, #1170 and #1172 (one fresh-context Sonnet reader, 474k tokens): one low, the label cut at the first bracket or em dash only, so a hyphen, an en dash or a colon passes (no stored feed has one); for the calendar follow-up.
 
 ## #1172 · 1.0.284 · O13 follow-up (an --only family brings the pages above it) · opened 2026-10-21 into `next` on the operator's "go"; the merge on the word
 **Formula 1's page could not be written:** the first publish failed with `create /series/f1/: its parent /series/ does not exist`. The operator chose the fix: the publisher writes the pages above an `--only` family too.
@@ -38,7 +54,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.284.
   - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered) · O13's publish, the failure and this fix.
 - **Verified:** `npx vitest run lib/wp` 65 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; dry runs: `--only /series/f1/` 2 of 71 pages (`/series/`, `/series/f1/`), `--only /nowhere/` exit 1.
-- **Review:** with #1169 and #1170, after the 5-hour window resets.
+- **Review:** done 21 Oct after the merge, with #1169, #1170 and #1173: no findings (`onlyFamily` is safe by segment, a prefix matching nothing still stops the run, an unmarked parent stays a CONFLICT).
 
 ## #1170 · 1.0.283 · O14 (the Calendar tab: one series for the visit, race week in Paddock's yellow) · opened 2026-10-21 into `next` on the operator's "merge then start the O14 calendar tab"; the merge on the word
 **The Calendar tab.** The series page's Calendar tab opens `/calendar/#f1`; the Calendar shows that series alone for the visit and marks race week, as the operator asked on 21 October and the drafts showed.
@@ -51,7 +67,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.283.
   - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md` · O13 merged, O14's evidence.
 - **Verified:** `npx vitest run` 279 files, 2,784 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; dry run `--only /calendar/`: 15 pages, 15 chips named; the Playground (WordPress 7.1.3, theme 0.1.7) with Playwright, the clock at 23 Oct 17:45Z: `/calendar/#f1` at 1440 Day and Night (Formula 1 alone, the notice, "Filters · F1 only", the arrows and Today with `#f1`, race week 19–25 October tinted and tagged, today boxed), a saved filter untouched, Show every series clearing it all, and at 390 the agenda's This weekend tagged.
-- **Review:** a fresh-context Sonnet reader, with #1169, after the 5-hour window resets.
+- **Review:** done 21 Oct after the merge, with #1169, #1172 and #1173: three low, for the calendar follow-up: during a visit the Series dropdown keeps the reader's own ticks, so its first click saves a hide; a far month tints its own first race week; Show every series drops the focus.
 
 ## #1169 · 1.0.282 · O13 (the series pages' frame and Formula 1's Overview, in round 2's design) · opened 2026-10-21 into `next` on the plan's approval; the merge on the word
 **The series pages begin.** The operator answered the series drafts (v8 to v11 of The Paddock Drafts) and said "go" for the build's plan: Formula 1's five pages first, one a slot (O13 to O17), the other fourteen series after (O18). This slot writes `/series/f1/` as round 2 drew it, and the frame every series page shares.
@@ -68,7 +84,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.282.
   - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md`, `IDEAS.md` · slots O13 to O18 and the change line; the handoff's next steps; two Inbox lines (overview.md's pre-season paragraph; the two venues without an outline). The branch starts from `o12/records`, so #1168's merge and publish records ride here.
 - **Verified:** `npx vitest run` 279 files, 2,783 tests; `npx tsc --noEmit` clean; `npm run lint` 0 errors, the 2 known warnings; dry run `--from-ref origin/paddock-data --only /series/f1/`: 1 of 71 pages, `/series/f1/` 14,736 bytes; the Playground (WordPress 7.1.3, theme 0.1.6) with Playwright, the clock at 23 Oct 17:45Z, 1440 and 390 px, Day and Night: "round 18 this weekend", "Practice 1 · on now" with the Live pill, the race in the reader's time, 23 tiles with outlines on 21 and Saudi Arabia struck, the names whole on a phone, Follow kept across a reload, the posts shortcode listing the preview's post, no horizontal scroll; the one console error is core's interactivity module, on every page.
-- **Review:** a fresh-context Sonnet reader before the merge.
+- **Review:** after the merge (the 5-hour window stood at 83%), done 21 Oct with #1170, #1172 and #1173 (one fresh-context Sonnet reader, 474k tokens against an estimate of 200k): one medium, a sprint weekend's Saturday counting the Sprint as the round's race (the run count, the last-race card, the tile and the wins), and three low (the hour test could not fail, a session name holding the list's separators, the season unescaped); all four fixed in O15.
 
 ## #1168 · 1.0.281 · O12 follow-up (the month on one screen, the Filters tab, the review's fixes) · opened 2026-10-21 into `next` on the operator's four asks of 20 October; the merge on the word
 **The Calendar, after the first look.** The operator asked for the whole month on a laptop screen without scrolling, the series on wide cards beside the round's number, the championship in a contrasting colour, two cards to a row, and "A filters tab, where you can tick checkboxes for championships in a series drop down and then in a session drop down choose to tick practice qualifying and/or race". The review of #1167, which came in after its merge, is folded in.
