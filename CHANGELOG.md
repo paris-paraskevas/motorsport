@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.289 — 2026-10-21
+
+### O23: no sideways scroll on the series band from 700 to 999 px, nor in the header below 375 px
+
+Checking O22 on the site found /series/f1/ scrolling sideways between 700 and 999 px; the operator asked for it first, with the header's overflow on narrow phones in the same PR.
+
+- **The band.** `.pd-sr-ttl`, the band's title column, is a flex item with the automatic minimum width, so it could not be narrower than its round bar: 23 segments of 24 px and 22 gaps of 4 px, 640 px for Formula 1. That held Follow and Session emails (`.pd-sr-acts`) at a right edge of 941 px: the page scrolled sideways from 700 to 940 px (241 px at 700, 41 at 900), and the buttons sat in the right margin up to 956. `.pd-sr-ttl { min-width: 0; }` lets the column narrow and the segments shrink alike, as a phone's already flex: the bar is 383 px at 700, 451 at 768 and 640 again from 957, where Formula 1's band is as it was, as it is on phones. A longer calendar shortens its bar at wider screens too: NASCAR Cup's 36 rounds make a 1,004 px bar, which would have pushed the buttons off a screen up to about 1,380 px wide (seen by giving Formula 1's bar 36 segments; only Formula 1's page is in the new design today).
+- **The header.** The brand, the menu and Subscribe do not shrink, and with the gaps and margins they need 376 px: the page scrolled 40 px at 320 and 16 at 344, and Subscribe sat against the edge at 360. At 374 px and below the gaps tighten (8 to 6 px, the brand's 9 to 6, the tools' 10 to 2), the magnifier narrows to 32 px, the mark to 18, Subscribe's side padding to 8 px and its text to .75rem, and the wordmark shrinks with the screen, `min(17px, calc(12.2vw - 25.5px))`: 17 px down to 349 px, 13.5 at 320, WCAG's reflow width. Nothing changes from 375 px.
+
+Theme 0.1.12, CSS only (no publish run). Checked on the Playground signed out: no sideways scroll on Home, /series/, /series/f1/ and /series/f1/results/ at 18 widths from 300 to 1440, Day and Night; 80 full-page screenshots at the widths that already fit identical to 0.1.11's. The Calendar's own 11 px at 320 (a week's heading that does not wrap) is an IDEAS line for its PR.
+
+The fresh-context review (one Sonnet reader, 309,948 tokens, 103 tool calls): mergeable after fixes, no blocker, 1 should-fix and 7 nits, and no code change needed. It reproduced the figures (5 pages at 42 widths from 280 to 1440, Day and Night, next's stylesheet against this one) and found the band's cause by elimination. Folded in the records: the band's exact ranges and the longer calendars (the should-fix), the brand's gap and the wordmark's 349 px, selectors for the ledger's line numbers, the handoff's numbering. Theme 0.1.12 was already uploaded, so the two nits that change the stylesheet wait for the next theme change: a comment saying why 12.2vw − 25.5px (the wordmark is 8.19 px wide per px of type, so it gives up 1 px of width per px of screen) and the wordmark's cap in rem, which matters only with a larger default text size. The focus rings that touch their neighbours below 375 px and the site at larger text sizes are IDEAS lines.
+
 ## 1.0.288 — 2026-10-21
 
 ### O22: the theme fixes from the operator's test, and a countdown on the series cards
