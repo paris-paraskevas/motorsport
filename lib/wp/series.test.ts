@@ -199,6 +199,11 @@ describe('seriesResults', () => {
   it('folds a round that has raced, the latest first and open, with the ids the Overview tiles link', () => {
     // Round 2 has run its first practice only: it joins the list with its race.
     expect([...b.matchAll(/<details class="pd-rs-round" id="(r\d+)"( open)?>/g)].map(m => [m[1], Boolean(m[2])])).toEqual([['r1', true]]);
+    const later = seriesResults({ ...fr, results: [...fr.results!, race(3, 'Mexico City Grand Prix', '2026-11-01', [['1', 'Charles Leclerc', 'Ferrari', '1:40:00.000', '25']])] }).body;
+    expect([...later.matchAll(/<details class="pd-rs-round" id="(r\d+)"( open)?>/g)].map(m => [m[1], Boolean(m[2])])).toEqual([
+      ['r3', true],
+      ['r1', false],
+    ]);
   });
 
   it("lines a round up as rounds.json names it, with its format, its winner in the team's colour and its date", () => {

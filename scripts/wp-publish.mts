@@ -367,24 +367,35 @@ async function fetchF1Qualifying(): Promise<unknown[]> {
       rounds.set(key, r);
     }
     const total = Number(page.MRData?.total);
-    if (races.length === 0 || !Number.isFinite(total) || offset + 100 >= total) break;
+    if (!Number.isFinite(total)) throw new Error(`jolpi.ca qualifying gave no total at offset ${offset}`);
+    if (offset + 100 >= total) break;
+    if (races.length === 0) throw new Error(`jolpi.ca qualifying stopped at offset ${offset} of ${total}`);
   }
   return [...rounds.values()];
 }
 
-/** Formula 1's practices and sprint qualifying (slot O15): the stored ones carried, then up to OPENF1_MAX sessions
- *  more from OpenF1, each logged. A session is kept only with its drivers named, so a throttled /drivers answer is
- *  fetched again by a later run instead of stored without names. */
-async function f1OpenF1Sessions(out: Fetched, now: Date, endOf: (round: number) => string | null): Promise<void> {
+/** Formula 1's practices and sprint qualifying (slot O15): the season's stored ones carried, then up to OPENF1_MAX
+ *  sessions more from OpenF1, each logged, inside eight minutes so a throttled backfill never takes the whole job past
+ *  its twenty. A session is kept only with every driver named, by drivers.json's car numbers or OpenF1's own names,
+ *  so a throttled /drivers answer is fetched again by a later run instead of stored without names. */
+async function f1OpenF1Sessions(out: Fetched, now: Date, season: number, endOf: (round: number) => string | null): Promise<void> {
   const fresh = out.results.get('f1');
   if (!fresh?.data) return;
-  let rounds = carrySessions(fresh.data, readStored<ResultRound[]>(relOf('f1', 'results')));
+  let rounds = carrySessions(fresh.data, readStored<ResultRound[]>(relOf('f1', 'results')), season);
   const wanted = openf1Wanted(rounds, out.calendar.get('f1')?.data ?? [], now, OPENF1_MAX);
   if (wanted.length > 0) {
+    const roster = new Map(
+      ((await loadCuratedDrivers('f1'))?.teams ?? []).flatMap(t => t.drivers.flatMap(d => (typeof d.number === 'number' ? [[String(d.number), { name: d.name, team: t.name }] as const] : []))),
+    );
     const year = new Date(wanted[0].start).getUTCFullYear();
     const listed = await timed(() => fetchOpenF1WeekendSessions(new Date(Date.UTC(year, 0, 1)), new Date(Date.UTC(year, 11, 31))), 60_000);
     log('F', `results f1-openf1 ${listed.value?.length ?? 0} sessions listed, ${wanted.length} wanted${listed.error ? ` ERROR ${listed.error}` : ''}`);
-    for (const e of wanted) {
+    const deadline = Date.now() + 8 * 60_000;
+    for (const [i, e] of wanted.entries()) {
+      if (Date.now() > deadline) {
+        log('F', `results f1-openf1 out of time: ${wanted.length - i} sessions left for the next run`);
+        break;
+      }
       if (e.round === null) continue;
       // OpenF1 has no round numbers: the session of that name nearest the timetable's start, within a day and a half.
       const at = Date.parse(e.start);
@@ -396,9 +407,10 @@ async function f1OpenF1Sessions(out: Fetched, now: Date, endOf: (round: number) 
         continue;
       }
       const t = await timed(() => fetchSessionClassification(match), 90_000);
-      const session = t.value && hasResolvedDrivers(t.value) ? openf1Session(e.session, t.value.entries) : null;
+      const session = t.value && hasResolvedDrivers(t.value) ? openf1Session(e.session, t.value.entries, roster) : null;
       if (session) rounds = withSession(rounds, e.round, e.event, endOf(e.round), session);
-      log('F', `results f1-openf1 R${e.round} ${e.session} ${session ? `OK ${session.tables[0].rows.length} rows` : t.error ? `ERROR ${t.error}` : 'EMPTY'} ${t.ms}ms`);
+      const outcome = session ? `OK ${session.tables[0].rows.length} rows` : t.error ? `ERROR ${t.error}` : t.value?.entries.length ? 'UNNAMED (kept for a later run)' : 'EMPTY';
+      log('F', `results f1-openf1 R${e.round} ${e.session} ${outcome} ${t.ms}ms`);
     }
   }
   out.results.set('f1', { ...fresh, data: rounds });
@@ -464,7 +476,7 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   const qualifying = await extra('f1-qualifying', () => fetchF1Qualifying());
   const f1 = registry.get('f1');
   setResults('f1', f1?.value === undefined ? null : { races: f1.value, sprints: sprints.value ?? [], qualifying: qualifying.value ?? [] }, f1?.error);
-  await f1OpenF1Sessions(out, now, round => roundsOf('f1').find(r => r.round === round)?.endDate ?? null);
+  await f1OpenF1Sessions(out, now, seasonOf('f1'), round => roundsOf('f1').find(r => r.round === round)?.endDate ?? null);
   // IndyCar with the curated drivers, as the Results tab passes them (teams and names).
   const indycar = await extra('indycar', async () => fetchIndyCarSeasonResults({ drivers: await loadCuratedDrivers('indycar') }));
   setResults('indycar', indycar.value, indycar.error);

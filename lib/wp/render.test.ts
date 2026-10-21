@@ -293,7 +293,7 @@ describe("F1's practices and sprint qualifying (O15)", () => {
       { round: 2, name: 'Two', date: '2026-03-15', sessions: [], others: [s('Practice 1')] },
       { round: 3, name: 'Three', date: '2026-03-22', sessions: [s('Race')] },
     ];
-    const out = carrySessions(fresh, stored);
+    const out = carrySessions(fresh, stored, 2026);
     expect(out.map(r => [r.round, r.sessions.map(x => x.label), (r.others ?? []).map(x => x.label)])).toEqual([
       [1, ['Race'], ['Practice 1', 'Practice 2', 'Qualifying']],
       [2, [], ['Practice 1']],
@@ -301,7 +301,10 @@ describe("F1's practices and sprint qualifying (O15)", () => {
     // The fresh qualifying wins over the stored one; a stored race is never carried (the health check sees it go).
     expect(out[0].others?.[2].tables).toHaveLength(1);
     expect(fresh[0].others?.map(x => x.label)).toEqual(['Qualifying']);
-    expect(carrySessions(fresh, null)).toEqual(fresh);
+    expect(carrySessions(fresh, null, 2026)).toEqual(fresh);
+    // At a new season the stored rounds are last year's, whose numbers the new rounds reuse: none is carried.
+    const first2027: ResultRound[] = [{ round: 1, name: 'One', date: '2027-03-07', sessions: [s('Race')] }];
+    expect(carrySessions(first2027, stored, 2027)).toEqual(first2027);
   });
 
   it('wants the practices and sprint qualifying over an hour ago that no round holds, the newest first, at most max', () => {
@@ -344,6 +347,18 @@ describe("F1's practices and sprint qualifying (O15)", () => {
     const sq = openf1Session('Sprint Qualifying', [{ position: 1, driverName: 'A', team: 'McLaren', q1: '1:31.1', q2: '1:30.9' }]);
     expect(sq?.tables[0].columns).toEqual(['Pos', 'Driver', 'Team', 'SQ1', 'SQ2']);
     expect(openf1Session('Practice 1', [])).toBeNull();
+  });
+
+  it('names each driver as the roster does, else tidies OpenF1’s capitals, and keeps nothing a number still stands for', () => {
+    const roster = new Map([['27', { name: 'Nico Hülkenberg', team: 'Audi' }]]);
+    const at = (position: number, carNumber: string, driverName: string) => ({ position, carNumber, driverName, team: 'Kick Sauber', time: '1:31.0', laps: 20 });
+    const named = openf1Session('Practice 1', [at(1, '27', 'Nico HULKENBERG'), at(2, '1', 'Max VERSTAPPEN')], roster);
+    expect(named?.tables[0].rows.map(r => [r[1], r[2]])).toEqual([
+      ['Nico Hülkenberg', 'Audi'],
+      ['Max Verstappen', 'Kick Sauber'],
+    ]);
+    // A throttled /drivers answer leaves a number for a driver the roster does not know: the session waits for a later run.
+    expect(openf1Session('Practice 1', [at(1, '27', 'Nico HULKENBERG'), at(2, '38', '#38')], roster)).toBeNull();
   });
 });
 

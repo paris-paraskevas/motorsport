@@ -286,9 +286,25 @@ function practiceTable(title: string, entries: unknown): Table | null {
   };
 }
 
-/** An OpenF1 classification of one of the sessions OPENF1_SESSIONS names, as the session the round stores. */
-export function openf1Session(label: string, entries: unknown): ResultSession | null {
-  const t = /qualifying/i.test(label) ? qualifyingTable(label, entries, 'SQ') : practiceTable(label, entries);
+/** OpenF1 writes the surname in capitals ("Max VERSTAPPEN"); lib/openf1/drivers.ts tidies it the same way. */
+const tidyName = (name: string): string =>
+  name
+    .split(/\s+/)
+    .map(w => (/^\p{Lu}{2,}$/u.test(w) ? w[0] + w.slice(1).toLowerCase() : w))
+    .join(' ');
+
+/** An OpenF1 classification of one of the sessions OPENF1_SESSIONS names, as the session the round stores: each driver
+ *  named as the roster (drivers.json, by car number) names them, so a practice reads as the race does, else OpenF1's name
+ *  tidied. Nothing when a driver is still only a number ("#38", a throttled /drivers answer): the session is stored once
+ *  and never fetched again, so it waits for a run that can name everyone. */
+export function openf1Session(label: string, entries: unknown, roster: ReadonlyMap<string, { name: string; team: string }> = new Map()): ResultSession | null {
+  if (!Array.isArray(entries)) return null;
+  const named = entries.filter(isObj).map(e => {
+    const known = roster.get(str(e.carNumber));
+    return { ...e, driverName: known?.name ?? tidyName(str(e.driverName)), team: known?.team ?? str(e.team) };
+  });
+  if (named.some(e => /^#\d+$/.test(e.driverName))) return null;
+  const t = /qualifying/i.test(label) ? qualifyingTable(label, named, 'SQ') : practiceTable(label, named);
   return t ? { label, tables: [t] } : null;
 }
 
@@ -415,11 +431,12 @@ export const OPENF1_SESSIONS = /^(practice [123]|sprint qualifying)$/i;
 
 /** Formula 1's fresh rounds with what a run does not fetch again (slot O15): every stored session of a round's
  *  `others` that the fresh round lacks (OpenF1's practices and sprint qualifying, fetched once each, and jolpi.ca's
- *  qualifying on a day it does not answer), a stored round with no race yet kept for them. */
-export function carrySessions(fresh: ResultRound[], stored: ResultRound[] | null): ResultRound[] {
+ *  qualifying on a day it does not answer), a stored round with no race yet kept for them. Only the season's own: at
+ *  a new season the stored rounds are last year's, whose numbers the new rounds reuse. */
+export function carrySessions(fresh: ResultRound[], stored: ResultRound[] | null, season: number): ResultRound[] {
   const out = fresh.map(r => ({ ...r, ...(r.others ? { others: [...r.others] } : {}) }));
   for (const s of stored ?? []) {
-    if (s.round === null || !s.others?.length) continue;
+    if (s.round === null || !s.others?.length || s.date?.slice(0, 4) !== String(season)) continue;
     let r = out.find(x => x.round === s.round);
     if (!r) {
       r = { round: s.round, name: s.name, date: s.date, sessions: [] };
