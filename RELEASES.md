@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.291 — 2026-10-22
 
-Behind the scenes: the site now keeps the weather measured through each Formula 1 session, each driver's tyres in every race and sprint, the forecast for each coming weekend, and a map of each circuit, ready for the weekend pages. Nothing changes for readers yet.
+Behind the scenes: the site now keeps the weather measured through each Formula 1 session, when a session started late or was stopped, each driver's tyres in every race and sprint, the forecast for each coming weekend, and a map of each circuit, ready for the weekend pages. Nothing changes for readers yet.
 
 ## 1.0.290 — 2026-10-22
 

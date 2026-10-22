@@ -11,16 +11,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 The operator took every default on Paddock Weekend Drafts (version 3) on 22 Oct, and the plan approved in plan mode builds O19 in two PRs: this one fetches and keeps the data, so the season backfills while the pages are built in the second. No page changes: rendered from the stored data, all 72 pages keep their hash.
 
 - **OpenF1, per finished session** (`lib/openf1/weekend.ts`, new; called from the publisher's new `f1Weekend`):
-  - the weather measured through it (air, track and humidity as low, middle and high, the track sensor's zeros dropped, and whether rain fell);
-  - race control's marks: a late start, only when race control said so ("DELAYED START"), at the new time it gave, read in the track's zone (`trackTimeToUtc`), else when the session started; and each red flag with its lap and whether the session started again (one stoppage announced twice counts once);
+  - the weather measured through it, read from 15 minutes before its start to its finish: air and track as low, middle and high (the track sensor's zeros dropped), humidity as low and high, and whether rain fell;
+  - race control's marks: a late start, only when race control said so ("DELAYED START"), at the last new time it gave before the session started, read in the track's zone (`trackTimeToUtc`, a time past midnight on the next day), else when the session started; and each red flag with its lap and whether the session started again (one stoppage announced twice counts once; a note about a red-flag infringement, or the flag lifted, is not one);
   - each driver's tyres in races and sprints.
-  - It is asked half an hour after a session ends, OpenF1's live window being paid, for up to `--openf1-max` sessions a run inside five minutes; a part it did not give is asked again a day later. Kept in `f1/sessions.json`.
+  - When to ask is decided in `lib/wp/render.ts`, tested: `weekendDue` takes the finished sessions not yet whole, the newest first, half an hour after the later of the timetable's end and OpenF1's own (`askableAt`), OpenF1's live window being paid; a part OpenF1 did not give is asked again within the hour while the session is less than a day over, then daily (`nextAsk`); the session's real end is race control's SESSION FINISHED (`finishedAt`).
+  - Up to `--openf1-max` sessions a run inside five minutes, each call 2.1 s after the last: OpenF1 allows 30 calls a minute and the shared client lets 30 go at once, so a test run lost four sessions of twelve to 429s before the spacing. A failure in this part leaves the stored files as they were, and the run goes on. Kept in `f1/sessions.json`.
 - **Circuit maps** from each circuit's latest pole lap:
-  - `fetchLaps`, `fastestLapsByDriver` and `fetchLapLocation` find the lap and its positions; `buildTrackPath` lays them out; `circuitMap` splits them at the lap's sector times.
-  - A circuit without this season's qualifying takes last season's at the same circuit.
-  - Up to six a run, drawn before the session backfill so it cannot starve them. Kept in `f1/maps.json`.
-- **MET Norway's forecast** (`lib/met-norway.ts`, new) for each circuit racing within ten days:
-  - its terms followed: an identifying User-Agent, coordinates of four decimals, no request before Expires, If-Modified-Since with Last-Modified;
+  - `fetchLaps`, `fastestLapsByDriver` and `fetchLapLocation` find the lap and its positions; `buildTrackPath` lays them out; `circuitMap` splits them at the lap's sector times and refuses a lap whose positions have a gap or stop short.
+  - `mapsDue` (tested) takes a circuit's latest qualifying this season, whichever of its rounds that was; until there is one, a circuit without a map takes last season's at the same circuit.
+  - Up to six a run, drawn before the session backfill so it cannot starve them; a failed draw is tried again a day later and keeps the map it had. Kept in `f1/maps.json`.
+- **MET Norway's forecast** (`lib/met-norway.ts`, new) for each circuit with a session not yet over in the next ten days:
+  - its terms followed: an identifying User-Agent, coordinates of four decimals, no request before Expires, If-Modified-Since with Last-Modified (a 304 keeps the forecast as it was), and the lighter `compact` answer;
+  - a kept forecast serves for three hours at least, the publisher running every half hour; a refusal (429, 403) holds it three hours more;
   - the steps trimmed to the next ten days and kept in `f1/forecast.json`;
   - `stepFor` picks the step a session starts in, `symbolLabel` names it.
 - **The publisher:**
@@ -28,20 +30,17 @@ The operator took every default on Paddock Weekend Drafts (version 3) on 22 Oct,
   - `calendarRounds` keeps the host's circuits.json key and zone on each `CalendarRound`;
   - `--only` takes several families separated by commas, and fails naming any that match no page;
   - the workflow's scheduled default becomes `/calendar/,/series/f1/`, though the schedule stays off until launch.
-- Found in the stored data, for the pages to check against Formula 1's reports before they show them:
-  - Sepang's race started 40 minutes late, in rain;
-  - Monaco's race was stopped on lap 73 and not restarted.
+- Found in the data, for the pages to check against Formula 1's reports before they show them:
+  - round 16's race (the timetable's Bahrain Grand Prix, which OpenF1 places at Kuala Lumpur) started at 08:33Z, 93 minutes late, in rain: race control set the formation lap for 15:40 local, suspended the start, then set it for 16:33;
+  - Monaco's race had one red flag, on lap 68, and restarted.
+- Reviewed by one fresh-context Sonnet reader (0 blockers, 5 should-fix, 8 nits), every finding folded: this part kept from failing the run; the hourly retry and the real end; the last announced start; MET's three hours and its 304; the planners moved into `render.ts` and tested; the map checks and misses; the marks' edge cases; the forecast by a session's end; humidity and the weather window; the comments; tests for the days the clocks change, a lap with a gap and MET's change of step.
 
 Verified:
-- `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 281 files, 2,836 tests.
-- The tests run on OpenF1's own rows: Singapore's Sprint late at 17:30 local, 09:30Z; Monza's race red-flagged on lap 3 and restarted; the track time in four zones, summer and winter.
-- Two local fetch runs into a copy of the paddock-data branch, WordPress not called:
-  - feeds 42 OK;
-  - 85 sessions kept (rounds 1 to 17), among them Singapore's Sprint late with rain and Monza's red flag;
-  - 12 maps of 17;
-  - Austin's and Mexico City's forecasts, 90 steps each; a second run kept Austin's (not yet expired) and asked again for Mexico City's.
-  - The files: sessions 193 KB, maps 173 KB, forecast 27 KB.
-- Rendering from `origin/paddock-data` with this branch and with `next`: 72 of 72 pages with the same hash.
+- `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 281 files, 2,853 tests.
+- The tests run on OpenF1's own rows: Singapore's Sprint late at 17:30 local, 09:30Z; Monza's race red-flagged on lap 3 and restarted; the track time in four zones, summer and winter, and on the days the clocks change.
+- The marks re-derived from OpenF1's race control for six sessions: round 16's race late until 08:33Z (the first runs kept 07:40Z, the first time announced); Monaco's lap-73 stewards' note no longer counted as a red flag; the four others as before.
+- A local fetch run from an empty weekend store into a copy of the paddock-data branch, WordPress not called: feeds 42 OK; 12 sessions asked, all 12 whole, no 429; 6 maps; Austin's and Mexico City's forecasts, 88 steps each; 162 s. The files: sessions 39 KB for 12 sessions (193 KB for the season's 85 in the first runs), maps 85 KB for 6, forecast 26 KB.
+- Rendering from `origin/paddock-data` with this branch and with `next`: 72 of 72 pages with the same hash, before and after the review's fixes.
 
 ## 1.0.290 — 2026-10-22
 

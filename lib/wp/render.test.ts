@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import type { Series, Session } from '../types';
+import type { CircuitMap, MapsStore, SessionExtras, SessionsStore, SessionWeather } from '../openf1/weekend';
 import {
+  askableAt,
   bandLabel,
   calendarEntries,
   calendarMonthPages,
@@ -9,7 +11,10 @@ import {
   hashOf,
   onlyFamily,
   latestRace,
+  mapsDue,
   MARKER,
+  nearestOpenF1,
+  nextAsk,
   openf1Session,
   openf1Wanted,
   planSync,
@@ -20,10 +25,14 @@ import {
   splitRaceName,
   standingsTables,
   tableBlock,
+  weekendDue,
+  weekendWhole,
   whenCells,
   withMarker,
   wpPaths,
   type CalendarEntry,
+  type CalendarRound,
+  type ListedSession,
   type Page,
   type ResultRound,
   type SeriesData,
@@ -359,6 +368,169 @@ describe("F1's practices and sprint qualifying (O15)", () => {
     ]);
     // A throttled /drivers answer leaves a number for a driver the roster does not know: the session waits for a later run.
     expect(openf1Session('Practice 1', [at(1, '27', 'Nico HULKENBERG'), at(2, '38', '#38')], roster)).toBeNull();
+  });
+});
+
+describe("Formula 1's weekend data: what a run asks OpenF1 for (O19)", () => {
+  const at = (round: number, session: string, start: string, hours = 1, dateOnly = false): CalendarEntry => ({
+    start,
+    end: new Date(Date.parse(start) + hours * 3_600_000).toISOString(),
+    dateOnly,
+    event: `Round ${round}`,
+    session,
+    round,
+  });
+  const listed = (session_key: number, session_name: string, date_start: string, date_end?: string): ListedSession => ({ session_key, session_name, date_start, date_end });
+  const weather: SessionWeather = { air: [27, 28, 29], track: [40, 44, 47], humidity: [60, 70], rain: false };
+  const extras = (parts: Partial<SessionExtras> = {}): SessionExtras => ({ key: 1, at: '2026-03-08T07:00:00.000Z', ...parts });
+
+  it("matches a timetable session to OpenF1's of the same name nearest its start, within a day and a half", () => {
+    const races = [listed(11, 'Race', '2026-03-08T04:00:00+00:00'), listed(12, 'Race', '2026-03-15T07:00:00+00:00')];
+    expect(nearestOpenF1(races, at(2, 'race', '2026-03-15T07:00:00Z'))?.session_key).toBe(12);
+    // A start moved by a day still matches; two days do not, nor does another session's name.
+    expect(nearestOpenF1(races, at(1, 'Race', '2026-03-09T04:00:00Z'))?.session_key).toBe(11);
+    expect(nearestOpenF1(races, at(1, 'Race', '2026-03-10T05:00:00Z'))).toBeUndefined();
+    expect(nearestOpenF1(races, at(1, 'Sprint', '2026-03-08T04:00:00Z'))).toBeUndefined();
+  });
+
+  it("waits out OpenF1's live window: half an hour after the later of the timetable's end and OpenF1's own", () => {
+    const e = at(17, 'Sprint', '2026-10-10T09:00:00Z', 0.5);
+    const iso = (ms: number) => new Date(ms).toISOString();
+    expect(iso(askableAt(e, listed(1, 'Sprint', '2026-10-10T09:00:00+00:00', '2026-10-10T10:15:00+00:00')))).toBe('2026-10-10T10:45:00.000Z');
+    expect(iso(askableAt(e, listed(1, 'Sprint', '2026-10-10T09:00:00+00:00', '2026-10-10T09:20:00+00:00')))).toBe('2026-10-10T10:00:00.000Z');
+    expect(iso(askableAt(e, listed(1, 'Sprint', '2026-10-10T09:00:00+00:00')))).toBe('2026-10-10T10:00:00.000Z');
+  });
+
+  it('asks again within the hour while a session is less than a day over, then a day later', () => {
+    const now = new Date('2026-10-11T14:00:00Z');
+    expect(nextAsk(Date.parse('2026-10-11T13:00:00Z'), now)).toBe('2026-10-11T15:00:00.000Z');
+    expect(nextAsk(Date.parse('2026-10-10T14:00:01Z'), now)).toBe('2026-10-11T15:00:00.000Z');
+    expect(nextAsk(Date.parse('2026-10-10T14:00:00Z'), now)).toBe('2026-10-12T14:00:00.000Z');
+  });
+
+  it('calls a session whole with its weather and marks, and its tyres when it is a race or a sprint', () => {
+    expect(weekendWhole(undefined, 'Race')).toBe(false);
+    expect(weekendWhole(extras({ weather, marks: {} }), 'Practice 1')).toBe(true);
+    expect(weekendWhole(extras({ weather, marks: {} }), 'Sprint Qualifying')).toBe(true);
+    expect(weekendWhole(extras({ weather, marks: {} }), 'Sprint')).toBe(false);
+    expect(weekendWhole(extras({ weather, marks: {}, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(true);
+    expect(weekendWhole(extras({ marks: {} }), 'Practice 1')).toBe(false);
+  });
+
+  describe('weekendDue', () => {
+    const calendar = [
+      at(1, 'Practice 1', '2026-03-06T01:30:00Z'),
+      at(1, 'Practice 2', '2026-03-06T00:00:00Z', 0, true),
+      at(1, 'Race', '2026-03-08T04:00:00Z', 2),
+      at(2, 'Practice 1', '2026-03-13T03:30:00Z'),
+      at(2, 'Sprint Qualifying', '2026-03-13T07:30:00Z'),
+      at(2, 'Sprint', '2026-03-14T03:00:00Z'),
+      at(2, 'Qualifying', '2026-03-14T07:00:00Z'),
+      at(2, 'Race', '2026-03-15T07:00:00Z', 2),
+      // Last season's finale: another season's file.
+      at(24, 'Race', '2025-12-07T13:00:00Z', 2),
+    ];
+    const list = [
+      listed(9001, 'Practice 1', '2026-03-06T01:30:00+00:00', '2026-03-06T02:30:00+00:00'),
+      listed(9002, 'Race', '2026-03-08T04:00:00+00:00', '2026-03-08T06:00:00+00:00'),
+      listed(9003, 'Practice 1', '2026-03-13T03:30:00+00:00', '2026-03-13T04:30:00+00:00'),
+      listed(9004, 'Sprint', '2026-03-14T03:00:00+00:00', '2026-03-14T04:00:00+00:00'),
+      // Ran twenty minutes over: OpenF1's own end keeps it in the live window a little longer.
+      listed(9005, 'Qualifying', '2026-03-14T07:00:00+00:00', '2026-03-14T08:20:00+00:00'),
+    ];
+    const store: SessionsStore = {
+      '2026': {
+        '1': { 'Practice 1': extras({ weather, marks: {} }), Race: extras({ weather, marks: {}, next: '2026-03-09T06:00:00.000Z' }) },
+        '2': { 'Practice 1': extras({ weather, next: '2026-03-14T09:00:00.000Z' }) },
+      },
+      // Last season's round 2 was another weekend.
+      '2025': { '2': { Sprint: extras({ weather, marks: {}, stints: [[1, [['SOFT', 1, 19]]]] }) } },
+    };
+    const keys = (due: { entry: CalendarEntry; session: ListedSession }[]) => due.map(d => `${d.entry.round} ${d.entry.session} ${d.session.session_key}`);
+    const named = (entries: CalendarEntry[]) => entries.map(e => `${e.round} ${e.session}`);
+
+    it('asks for the finished sessions not yet whole once OpenF1 can be asked, the newest first, and sets the unlisted apart', () => {
+      const got = weekendDue(calendar, list, store, 2026, new Date('2026-03-14T08:45:00Z'), 12);
+      // The qualifying ended 25 minutes ago by OpenF1's clock; the first practice waits for its next ask; the race lacks
+      // its tyres; OpenF1 does not list the sprint qualifying.
+      expect(keys(got.due)).toEqual(['2 Sprint 9004', '1 Race 9002']);
+      expect(named(got.unlisted)).toEqual(['2 Sprint Qualifying']);
+    });
+
+    it('takes the rest as their times come, at most max', () => {
+      const later = new Date('2026-03-14T09:00:00Z');
+      expect(keys(weekendDue(calendar, list, store, 2026, later, 12).due)).toEqual(['2 Qualifying 9005', '2 Sprint 9004', '2 Practice 1 9003', '1 Race 9002']);
+      expect(keys(weekendDue(calendar, list, store, 2026, later, 1).due)).toEqual(['2 Qualifying 9005']);
+      const none = weekendDue(calendar, list, store, 2026, later, 0);
+      expect(none.due).toEqual([]);
+      expect(named(none.unlisted)).toEqual(['2 Sprint Qualifying']);
+      // OpenF1's list did not answer: nothing is asked, and the log names what waits.
+      expect(named(weekendDue(calendar, [], store, 2026, later, 12).unlisted)).toEqual(['2 Qualifying', '2 Sprint', '2 Sprint Qualifying', '2 Practice 1', '1 Race']);
+    });
+  });
+
+  describe('mapsDue', () => {
+    const round = (n: number, circuit: string | null, startDate: string): CalendarRound => ({ round: n, name: `Round ${n}`, startDate, endDate: startDate, venue: null, circuit });
+    const map = (year: number, session: number, next?: string): CircuitMap => ({
+      year, session, driver: 1, lap: 90, sectors: [30, 30, 30], w: 1000, h: 600, points: [[0, 0], [1, 1]], split: [0, 1], ...(next ? { next } : {}),
+    });
+    const due = (got: { circuit: string; session: ListedSession | null }[]) => got.map(d => [d.circuit, d.session?.session_key ?? null]);
+
+    it("draws each circuit from its latest pole lap, last season's until this season's qualifying, the nearest rounds first", () => {
+      const rounds = [
+        round(9, 'spielberg', '2026-06-26'),
+        round(10, 'spielberg', '2026-07-03'),
+        round(12, null, '2026-07-24'),
+        round(14, 'zandvoort', '2026-08-21'),
+        round(15, 'monza', '2026-09-04'),
+        round(16, 'baku', '2026-09-25'),
+        round(17, 'marina-bay', '2026-10-09'),
+        round(18, 'americas', '2026-10-23'),
+        round(19, 'mexico', '2026-10-30'),
+        round(20, 'interlagos', '2026-11-06'),
+      ];
+      const calendar = [
+        at(9, 'Qualifying', '2026-06-27T14:00:00Z'),
+        at(10, 'Qualifying', '2026-07-04T14:00:00Z'),
+        at(14, 'Qualifying', '2026-08-22T13:00:00Z'),
+        at(15, 'Qualifying', '2026-09-05T14:00:00Z'),
+        at(16, 'Qualifying', '2026-09-26T12:00:00Z'),
+        at(17, 'Qualifying', '2026-10-10T13:00:00Z'),
+        at(18, 'Qualifying', '2026-10-24T21:00:00Z'),
+      ];
+      // OpenF1 does not list Monza's qualifying; Austin's is still to run.
+      const list = [
+        listed(9909, 'Qualifying', '2026-06-27T14:00:00+00:00', '2026-06-27T15:00:00+00:00'),
+        listed(9910, 'Qualifying', '2026-07-04T14:00:00+00:00', '2026-07-04T15:00:00+00:00'),
+        listed(9914, 'Qualifying', '2026-08-22T13:00:00+00:00', '2026-08-22T14:00:00+00:00'),
+        listed(9916, 'Qualifying', '2026-09-26T12:00:00+00:00', '2026-09-26T13:00:00+00:00'),
+        listed(9917, 'Qualifying', '2026-10-10T13:00:00+00:00', '2026-10-10T14:00:00+00:00'),
+      ];
+      const maps: MapsStore = {
+        // Drawn from the first of its two rounds; the second has run since.
+        spielberg: map(2026, 9909),
+        // A redraw failed this morning: tried again tomorrow.
+        zandvoort: map(2025, 7014, '2026-10-23T06:00:00.000Z'),
+        monza: map(2025, 7015),
+        baku: map(2026, 9916),
+        'marina-bay': map(2025, 7017),
+        mexico: { miss: '2026-10-22T06:00:00.000Z', next: '2026-10-23T06:00:00.000Z' },
+        interlagos: { miss: '2026-10-20T06:00:00.000Z', next: '2026-10-21T06:00:00.000Z' },
+      };
+      const now = new Date('2026-10-22T09:00:00Z');
+      expect(due(mapsDue(rounds, calendar, list, maps, 2026, now, 12))).toEqual([['americas', null], ['marina-bay', 9917], ['interlagos', null], ['spielberg', 9910]]);
+      expect(due(mapsDue(rounds, calendar, list, maps, 2026, now, 2))).toEqual([['americas', null], ['marina-bay', 9917]]);
+    });
+
+    it("redraws last season's map once this season's qualifying is past OpenF1's live window, then keeps it", () => {
+      const austin = [round(18, 'americas', '2026-10-23')];
+      const calendar = [at(18, 'Qualifying', '2026-10-24T21:00:00Z')];
+      const list = [listed(9918, 'Qualifying', '2026-10-24T21:00:00+00:00', '2026-10-24T22:05:00+00:00')];
+      const run = (maps: MapsStore, now: string) => due(mapsDue(austin, calendar, list, maps, 2026, new Date(now), 6));
+      expect(run({ americas: map(2025, 7018) }, '2026-10-24T22:30:00Z')).toEqual([]);
+      expect(run({ americas: map(2025, 7018) }, '2026-10-24T22:35:00Z')).toEqual([['americas', 9918]]);
+      expect(run({ americas: map(2026, 9918) }, '2026-10-25T12:00:00Z')).toEqual([]);
+    });
   });
 });
 

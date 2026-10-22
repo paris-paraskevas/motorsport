@@ -54,38 +54,56 @@ describe('symbolLabel', () => {
   });
 });
 
+describe('stepFor across the change from hourly steps to six-hour ones', () => {
+  // As MET's answers run: hourly to 23:00, then six-hour blocks from midnight.
+  const series = { properties: { timeseries: [21, 22, 23].map(h => ({ time: `2026-10-24T${h}:00:00Z`, data: { instant: { details: { air_temperature: 25 } }, next_1_hours: { summary: { symbol_code: 'cloudy' }, details: { precipitation_amount: 0 } } } })).concat([{ time: '2026-10-25T00:00:00Z', data: { instant: { details: { air_temperature: 22 } }, next_6_hours: { summary: { symbol_code: 'rain' }, details: { precipitation_amount: 1.4 } } } } as never]) } };
+  const steps = parseLocationforecast(series, NOW);
+
+  it('takes the last hourly step before midnight and the six-hour block after it', () => {
+    expect(stepFor(steps, '2026-10-24T23:30:00Z')).toEqual({ t: '2026-10-24T23:00:00.000Z', air: 25, symbol: 'cloudy', mm: 0, hours: 1 });
+    expect(stepFor(steps, '2026-10-25T02:30:00Z')).toEqual({ t: '2026-10-25T00:00:00.000Z', air: 22, symbol: 'rain', mm: 1.4, hours: 6 });
+    expect(stepFor(steps, '2026-10-25T06:00:00Z')).toBeNull();
+  });
+});
+
 describe('venueForecast', () => {
-  const kept: VenueForecast = { fetched: '2026-10-22T08:00:00.000Z', expires: 'Thu, 22 Oct 2026 08:30:00 GMT', lastModified: 'Thu, 22 Oct 2026 08:24:17 GMT', steps: parseLocationforecast(answer, NOW) };
+  // Fetched at 05:00, more than three hours before NOW, and expired at 05:30: due to be asked again.
+  const kept: VenueForecast = { fetched: '2026-10-22T05:00:00.000Z', expires: 'Thu, 22 Oct 2026 05:30:00 GMT', lastModified: 'Thu, 22 Oct 2026 04:54:17 GMT', steps: parseLocationforecast(answer, NOW) };
   const reply = (status: number, body: unknown = answer, headers: Record<string, string> = {}) =>
     vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async () => new Response(status === 304 ? null : JSON.stringify(body), { status, headers }));
 
-  it('asks nothing while the kept answer has not expired', async () => {
+  it('asks nothing within three hours of the last answer, or while it has not expired', async () => {
     const f = reply(200);
-    const fresh = { ...kept, expires: 'Thu, 22 Oct 2026 09:30:00 GMT' };
-    expect(await venueForecast(30.1328, -97.6411, fresh, NOW, f as unknown as typeof fetch)).toBe(fresh);
+    const recent = { ...kept, fetched: '2026-10-22T07:00:00.000Z' };
+    expect(await venueForecast(30.1328, -97.6411, recent, NOW, f as unknown as typeof fetch)).toEqual({ value: recent, status: 'kept' });
+    const unexpired = { ...kept, expires: 'Thu, 22 Oct 2026 10:00:00 GMT' };
+    expect(await venueForecast(30.1328, -97.6411, unexpired, NOW, f as unknown as typeof fetch)).toEqual({ value: unexpired, status: 'kept' });
     expect(f).not.toHaveBeenCalled();
   });
 
-  it('asks with its name, four decimals and If-Modified-Since, and keeps the steps on 304', async () => {
+  it('asks the compact forecast with its name, four decimals and If-Modified-Since, and keeps what it had on 304', async () => {
     const f = reply(304, null, { expires: 'Thu, 22 Oct 2026 09:40:00 GMT' });
     const got = await venueForecast(30.13281, -97.641149, kept, NOW, f as unknown as typeof fetch);
     const [url, init] = f.mock.calls[0];
-    expect(url).toBe('https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=30.1328&lon=-97.6411');
+    expect(url).toBe('https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=30.1328&lon=-97.6411');
     expect((init?.headers as Record<string, string>)['User-Agent']).toBe(MET_USER_AGENT);
     expect((init?.headers as Record<string, string>)['If-Modified-Since']).toBe(kept.lastModified);
-    expect(got).toEqual({ ...kept, expires: 'Thu, 22 Oct 2026 09:40:00 GMT' });
+    expect(got).toEqual({ value: kept, status: 'not modified' });
+    expect(got.value).toBe(kept);
   });
 
   it('takes a new answer with its headers', async () => {
     const f = reply(200, answer, { expires: 'Thu, 22 Oct 2026 09:40:00 GMT', 'last-modified': 'Thu, 22 Oct 2026 09:10:00 GMT' });
     const got = await venueForecast(30.1328, -97.6411, null, NOW, f as unknown as typeof fetch);
-    expect(got).toEqual({ fetched: NOW.toISOString(), expires: 'Thu, 22 Oct 2026 09:40:00 GMT', lastModified: 'Thu, 22 Oct 2026 09:10:00 GMT', steps: kept.steps });
+    expect(got).toEqual({ value: { fetched: NOW.toISOString(), expires: 'Thu, 22 Oct 2026 09:40:00 GMT', lastModified: 'Thu, 22 Oct 2026 09:10:00 GMT', steps: kept.steps }, status: 'new' });
   });
 
-  it('keeps what it had when MET refuses, breaks or cannot be reached', async () => {
-    expect(await venueForecast(1, 2, kept, NOW, reply(429) as unknown as typeof fetch)).toBe(kept);
-    expect(await venueForecast(1, 2, kept, NOW, reply(200, { nothing: true }) as unknown as typeof fetch)).toBe(kept);
+  it('holds what it had for three hours when MET refuses, and keeps it when MET breaks or cannot be reached', async () => {
+    expect(await venueForecast(1, 2, kept, NOW, reply(429) as unknown as typeof fetch)).toEqual({ value: { ...kept, expires: 'Thu, 22 Oct 2026 12:00:00 GMT' }, status: 'refused 429' });
+    expect(await venueForecast(1, 2, null, NOW, reply(403) as unknown as typeof fetch)).toEqual({ value: null, status: 'refused 403' });
+    expect(await venueForecast(1, 2, kept, NOW, reply(500) as unknown as typeof fetch)).toEqual({ value: kept, status: 'error' });
+    expect(await venueForecast(1, 2, kept, NOW, reply(200, { nothing: true }) as unknown as typeof fetch)).toEqual({ value: kept, status: 'empty' });
     const down = vi.fn(async () => { throw new Error('offline'); });
-    expect(await venueForecast(1, 2, null, NOW, down as unknown as typeof fetch)).toBeNull();
+    expect(await venueForecast(1, 2, null, NOW, down as unknown as typeof fetch)).toEqual({ value: null, status: 'error' });
   });
 });

@@ -33,11 +33,11 @@ import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '../lib/series';
 import { loadCuratedChampions, loadCuratedDrivers, loadTeamNames, officialTeamName } from '../lib/series-content';
 import { fetchUpstream } from '../lib/fetch-upstream';
 import { fetchF1SeasonSprints } from '../lib/results/f1';
-import { fetchOpenF1WeekendSessions, fetchSessionClassification, hasResolvedDrivers, type OpenF1Session } from '../lib/results/openf1';
+import { fetchOpenF1WeekendSessions, fetchSessionClassification, hasResolvedDrivers } from '../lib/results/openf1';
 import { fetchOpenF1, OF1_REVALIDATE } from '../lib/openf1/client';
 import { fastestLapsByDriver, fetchLapLocation, fetchLaps } from '../lib/openf1/laps';
 import type { OF1RaceControl, OF1Session, OF1Stint, OF1Weather } from '../lib/openf1/types';
-import { circuitMap, driverStints, poleLap, sessionMarks, weatherSummary, type MapsStore, type SessionExtras, type SessionsStore } from '../lib/openf1/weekend';
+import { circuitMap, driverStints, finishedAt, poleLap, sessionMarks, weatherSummary, type MapsStore, type SessionExtras, type SessionsStore } from '../lib/openf1/weekend';
 import { venueForecast, type VenueForecast } from '../lib/met-norway';
 import { fetchDTMSeasonResults } from '../lib/results/dtm';
 import { fetchNascarCupSeasonResults } from '../lib/results/nascar-cup';
@@ -57,7 +57,13 @@ import {
   escapeHtml,
   hashOf,
   heading,
+  mapsDue,
+  nearestOpenF1,
+  nextAsk,
   onlyFamily,
+  racingSession,
+  weekendDue,
+  weekendWhole,
   openf1Session,
   openf1Wanted,
   paragraph,
@@ -105,8 +111,10 @@ const DATA = opt('--data');
 const FROM_REF = opt('--from-ref');
 /** Only the pages whose path starts here ("/calendar/"): a page family goes live once its design does. */
 const ONLY = opt('--only');
-/** Formula 1 practices and sprint qualifyings a run fetches from OpenF1 (slot O15): each is four calls against its
- *  30 a minute, so 12 take about two minutes; the season's backfill run takes more. */
+/** Formula 1 sessions a run asks OpenF1 about, against its 30 calls a minute: up to this many practice and sprint
+ *  qualifying classifications (slot O15, four calls each, inside eight minutes), and as many sessions' weekend data
+ *  (slot O19, two or three calls each, inside five minutes with up to six maps); 0 asks OpenF1 nothing. 12 take about
+ *  two minutes of each; the season's backfill run takes more. */
 const OPENF1_MAX = Number(opt('--openf1-max') ?? 12);
 
 const RUN = process.env.GITHUB_RUN_ID ? `wp-publish#${process.env.GITHUB_RUN_ID}` : `local-${Date.now().toString(36)}`;
@@ -125,7 +133,7 @@ if (ONLY !== undefined && !/^\/[a-z0-9/-]*(,\/[a-z0-9/-]*)*$/.test(ONLY)) {
   console.error('--only takes a path that starts with /, such as /calendar/, or several separated by commas');
   process.exit(1);
 }
-// 60 sessions are 240 calls, eight minutes of the run's twenty.
+// 60 sessions are 240 calls, eight minutes of the run's twenty, then five at most for their weekend data.
 if (!Number.isInteger(OPENF1_MAX) || OPENF1_MAX < 0 || OPENF1_MAX > 60) {
   console.error('--openf1-max takes a whole number from 0 to 60');
   process.exit(1);
@@ -420,24 +428,31 @@ async function f1OpenF1Sessions(out: Fetched, now: Date, season: number, endOf: 
   out.results.set('f1', { ...fresh, data: rounds });
 }
 
-/** OpenF1 has no round numbers: the listed session of the timetable's name nearest its start, within a day and a half. */
-function nearestOpenF1(listed: OpenF1Session[], e: CalendarEntry): OpenF1Session | undefined {
-  const at = Date.parse(e.start);
-  return listed
-    .filter(s => s.session_name.toLowerCase() === e.session.toLowerCase() && Math.abs(Date.parse(s.date_start) - at) <= 36 * 3_600_000)
-    .sort((a, b) => Math.abs(Date.parse(a.date_start) - at) - Math.abs(Date.parse(b.date_start) - at))[0];
-}
-
-/** Formula 1's weekend pages (slot O19) keep three files beside its results: each finished session's weather, race
- *  control's marks and the tyres from OpenF1 (f1/sessions.json), the forecast for each circuit racing within ten days
- *  from MET Norway (f1/forecast.json), and each circuit's map from its latest pole lap (f1/maps.json). OpenF1 is asked
- *  half an hour after a session ends (its live window is paid), for up to OPENF1_MAX sessions and six maps a run inside
- *  five minutes; a part it did not give is asked for again a day later. What is kept is carried from run to run. */
+/** Formula 1's weekend pages (slot O19) keep three files beside its results: each circuit's map from its latest pole
+ *  lap (f1/maps.json), the forecast for each circuit racing within ten days from MET Norway (f1/forecast.json), and
+ *  each finished session's weather, race control's marks and tyres from OpenF1 (f1/sessions.json). What to ask for is
+ *  decided in lib/wp/render.ts (mapsDue, weekendDue, nextAsk), where it is tested; this fetches and keeps. A part
+ *  OpenF1 did not give is asked for again within the hour while the session is less than a day over, then daily.
+ *  `--openf1-max 0` asks OpenF1 nothing. */
 const F1_SESSIONS = 'f1/sessions.json';
 const F1_FORECAST = 'f1/forecast.json';
 const F1_MAPS = 'f1/maps.json';
-const LIVE_TAIL_MS = 30 * 60_000;
-const RETRY_MS = 24 * 3_600_000;
+/** Maps a run draws (about three calls each), and the minutes the weekend data may take of the run's twenty. */
+const MAPS_A_RUN = 6;
+const WEEKEND_MS = 5 * 60_000;
+const DAY_MS = 24 * 3_600_000;
+
+/** OpenF1 allows 30 calls a minute, and the shared client's bucket starts full, so a run sent 30 at once and 30 more
+ *  within the minute: OpenF1 answered 429 and four of a dozen sessions came back empty (2026-10-22). The weekend
+ *  data's calls go 2.1 s apart instead, 28 a minute at most. */
+const OPENF1_GAP_MS = 2_100;
+let openf1At = 0;
+async function spaced<T>(call: () => Promise<T>): Promise<T> {
+  const wait = openf1At + OPENF1_GAP_MS - Date.now();
+  if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
+  openf1At = Date.now();
+  return call();
+}
 
 async function f1Weekend(out: Fetched, now: Date, season: number): Promise<void> {
   const calendar = out.calendar.get('f1')?.data ?? [];
@@ -446,92 +461,89 @@ async function f1Weekend(out: Fetched, now: Date, season: number): Promise<void>
   const roundOf = new Map(rounds.map(r => [r.round, r]));
   const circuits = await loadCircuits();
   const t = now.getTime();
-  const deadline = Date.now() + 5 * 60_000;
+  const deadline = Date.now() + WEEKEND_MS;
+  let changed = 0;
 
-  // MET Norway: every circuit with a session in the next ten days; the others drop out of the file.
+  // MET Norway: every circuit with a session not yet over in the next ten days; the others drop out of the file.
   const keptForecasts = readStored<Record<string, VenueForecast>>(F1_FORECAST) ?? {};
   const soon = new Set<string>();
   for (const e of calendar) {
-    const at = Date.parse(e.start);
     const key = e.round === null ? null : roundOf.get(e.round)?.circuit;
-    if (key && !e.dateOnly && at > t && at < t + 10 * 86_400_000) soon.add(key);
+    if (key && !e.dateOnly && Date.parse(e.end) > t && Date.parse(e.start) < t + 10 * DAY_MS) soon.add(key);
   }
   const forecasts: Record<string, VenueForecast> = {};
   for (const key of soon) {
     const c = circuits[key];
     if (!c) continue;
-    const kept = keptForecasts[key] ?? null;
-    const f = await venueForecast(c.lat, c.lon, kept, now);
-    if (f) forecasts[key] = f;
-    log('F', `forecast f1 ${key} ${!f ? 'NONE' : f === kept ? 'KEPT' : `OK ${f.steps.length} steps`}`);
+    const got = await venueForecast(c.lat, c.lon, keptForecasts[key] ?? null, now);
+    if (got.value) forecasts[key] = got.value;
+    log('F', `forecast f1 ${key} ${got.status}${got.value ? ` ${got.value.steps.length} steps` : ''}`);
   }
-  writeStored(F1_FORECAST, forecasts);
+  if (writeStored(F1_FORECAST, forecasts)) changed++;
 
-  // OpenF1's sessions this season, matched to the timetable as f1OpenF1Sessions matches them.
-  const listed = await timed(() => fetchOpenF1WeekendSessions(new Date(Date.UTC(season, 0, 1)), new Date(Date.UTC(season, 11, 31))), 60_000);
+  if (OPENF1_MAX === 0) {
+    log('F', 'weekend f1 OpenF1 not asked (--openf1-max 0)');
+    log('W', `weekend f1 ${changed} files changed`);
+    return;
+  }
+  const listed = await timed(() => spaced(() => fetchOpenF1WeekendSessions(new Date(Date.UTC(season, 0, 1)), new Date(Date.UTC(season, 11, 31)))), 60_000);
   const sessions = listed.value ?? [];
+  log('F', `weekend f1 ${sessions.length} OpenF1 sessions listed${listed.error ? ` ERROR ${listed.error}` : ''}`);
 
-  // Each circuit's map first (a few calls each, and every weekend page shows one): this season's pole lap once its
-  // qualifying has run, else last season's at the same circuit.
+  // Each circuit's map first: a few calls each, and every weekend page shows one. A failed redraw keeps the map it had.
   const maps = readStored<MapsStore>(F1_MAPS) ?? {};
   let lastSeason: OF1Session[] | null = null;
-  let drawn = 0;
-  for (const r of rounds) {
-    if (!r.circuit || drawn >= 6 || Date.now() > deadline) continue;
-    const q = calendar.find(e => e.round === r.round && !e.dateOnly && /^qualifying$/i.test(e.session));
-    const ran = q !== undefined && Date.parse(q.end) + LIVE_TAIL_MS < t;
-    const have = maps[r.circuit];
-    if (have && (have.year >= season || !ran)) continue;
-    let source: { key: number; year: number } | null = null;
-    if (ran && q) {
-      const s = nearestOpenF1(sessions, q);
-      if (s) source = { key: s.session_key, year: season };
-    } else if (!have) {
-      lastSeason ??= await fetchOpenF1<OF1Session>('sessions', { year: season - 1, session_name: 'Qualifying' }, { revalidate: OF1_REVALIDATE.daily });
-      for (const s of lastSeason) {
-        if ((await matchCircuitEntry(s.location, s.circuit_short_name))?.slug === r.circuit) source = { key: s.session_key, year: season - 1 };
-      }
-    }
-    if (!source) continue;
-    drawn++;
-    const pole = poleLap(fastestLapsByDriver(await fetchLaps(source.key)));
-    const map = pole ? circuitMap(pole, await fetchLapLocation(source.key, pole), source.year, source.key) : null;
-    if (map) maps[r.circuit] = map;
-    log('F', `map f1 ${r.circuit} ${map ? `OK ${source.year} ${map.points.length} points` : 'NONE'}`);
-  }
-  writeStored(F1_MAPS, maps);
-
-  // Each finished session's weather, race control and (races and sprints) tyres.
-  const store = readStored<SessionsStore>(F1_SESSIONS) ?? {};
-  const year = (store[String(season)] ??= {});
-  const ask = <T,>(endpoint: string, key: number) => fetchOpenF1<T>(endpoint, { session_key: key }, { revalidate: OF1_REVALIDATE.immutable });
-  let asked = 0;
-  for (const e of calendar) {
-    if (e.round === null || e.dateOnly || !e.start.startsWith(String(season)) || Date.parse(e.end) + LIVE_TAIL_MS > t) continue;
-    const racing = /^(race|sprint)$/i.test(e.session);
-    const have = year[String(e.round)]?.[e.session];
-    if (have?.weather && have.marks && (!racing || have.stints)) continue;
-    if (have && Date.parse(have.at) + RETRY_MS > t) continue;
-    if (asked >= OPENF1_MAX || Date.now() > deadline) {
-      log('F', `weekend f1 out of budget after ${asked} sessions: the rest for the next run`);
+  for (const want of mapsDue(rounds, calendar, sessions, maps, season, now, MAPS_A_RUN)) {
+    if (Date.now() > deadline) {
+      log('F', 'map f1 out of time: the rest for the next run');
       break;
     }
-    const s = nearestOpenF1(sessions, e);
-    if (!s) {
-      log('F', `weekend f1 R${e.round} ${e.session} NOT LISTED`);
-      continue;
+    let source = want.session ? { key: want.session.session_key, year: season } : null;
+    if (!want.session) {
+      lastSeason ??= await spaced(() => fetchOpenF1<OF1Session>('sessions', { year: season - 1, session_name: 'Qualifying' }, { revalidate: OF1_REVALIDATE.daily }));
+      for (const s of lastSeason) {
+        if ((await matchCircuitEntry(s.location, s.circuit_short_name))?.slug === want.circuit) source = { key: s.session_key, year: season - 1 };
+      }
+    }
+    const pole = source ? poleLap(fastestLapsByDriver(await spaced(() => fetchLaps(source.key)))) : null;
+    const map = source && pole ? circuitMap(pole, await spaced(() => fetchLapLocation(source.key, pole)), source.year, source.key) : null;
+    const tomorrow = new Date(t + DAY_MS).toISOString();
+    const had = maps[want.circuit];
+    maps[want.circuit] = map ?? (had && 'points' in had ? { ...had, next: tomorrow } : { miss: now.toISOString(), next: tomorrow });
+    log('F', `map f1 ${want.circuit} ${map ? `OK ${source?.year} ${map.points.length} points` : `${source ? 'NONE' : 'NO QUALIFYING FOUND'}: tried again tomorrow`}`);
+  }
+  if (writeStored(F1_MAPS, maps)) changed++;
+
+  // Each finished session's race control, weather and (races and sprints) tyres, the newest first.
+  const store = readStored<SessionsStore>(F1_SESSIONS) ?? {};
+  const year = (store[String(season)] ??= {});
+  const ask = <T,>(endpoint: string, key: number) => spaced(() => fetchOpenF1<T>(endpoint, { session_key: key }, { revalidate: OF1_REVALIDATE.immutable }));
+  const { due, unlisted } = weekendDue(calendar, sessions, store, season, now, OPENF1_MAX);
+  if (unlisted.length) log('F', `weekend f1 ${unlisted.length} finished sessions OpenF1 does not list, such as R${unlisted[0].round} ${unlisted[0].session}`);
+  let asked = 0;
+  for (const { entry: e, session: s } of due) {
+    if (Date.now() > deadline) {
+      log('F', `weekend f1 out of time after ${asked} sessions: the rest for the next run`);
+      break;
     }
     asked++;
-    const weather = weatherSummary(await ask<OF1Weather>('weather', s.session_key)) ?? have?.weather;
+    const round = e.round as number;
+    const have = year[String(round)]?.[e.session];
+    const racing = racingSession(e.session);
     const messages = await ask<OF1RaceControl>('race_control', s.session_key);
-    const marks = messages.length ? sessionMarks(messages, e.start, roundOf.get(e.round)?.tz) : have?.marks;
+    // The session's real end: when race control said it finished, else the later planned end with an hour to spare.
+    const ended = finishedAt(messages) ?? Math.max(Date.parse(e.end), Date.parse(s.date_end) || 0) + 3_600_000;
+    const weather = weatherSummary(await ask<OF1Weather>('weather', s.session_key), { from: Date.parse(e.start) - 15 * 60_000, to: ended }) ?? have?.weather;
+    const marks = messages.length ? sessionMarks(messages, e.start, roundOf.get(round)?.tz) : have?.marks;
     const tyres = racing ? await ask<OF1Stint>('stints', s.session_key) : [];
     const stints = tyres.length ? driverStints(tyres) : have?.stints;
     const extras: SessionExtras = { key: s.session_key, at: now.toISOString(), ...(weather ? { weather } : {}), ...(marks ? { marks } : {}), ...(racing && stints?.length ? { stints } : {}) };
-    (year[String(e.round)] ??= {})[e.session] = extras;
-    log('F', `weekend f1 R${e.round} ${e.session} weather ${weather ? 'OK' : 'NONE'} marks ${marks ? JSON.stringify(marks) : 'NONE'}${racing ? ` tyres ${stints?.length ?? 0}` : ''}`);
+    if (!weekendWhole(extras, e.session)) extras.next = nextAsk(ended, now);
+    (year[String(round)] ??= {})[e.session] = extras;
+    log('F', `weekend f1 R${round} ${e.session} weather ${weather ? 'OK' : 'NONE'} marks ${marks ? JSON.stringify(marks) : 'NONE'}${racing ? ` tyres ${stints?.length ?? 0}` : ''}${extras.next ? `; again after ${extras.next.slice(0, 16)}Z` : ''}`);
   }
-  writeStored(F1_SESSIONS, store);
+  if (writeStored(F1_SESSIONS, store)) changed++;
+  log('W', `weekend f1 ${asked} sessions asked; ${changed} of 3 files changed`);
 }
 
 async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
@@ -595,7 +607,12 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   const f1 = registry.get('f1');
   setResults('f1', f1?.value === undefined ? null : { races: f1.value, sprints: sprints.value ?? [], qualifying: qualifying.value ?? [] }, f1?.error);
   await f1OpenF1Sessions(out, now, seasonOf('f1'), round => roundsOf('f1').find(r => r.round === round)?.endDate ?? null);
-  await f1Weekend(out, now, seasonOf('f1'));
+  // The weekend pages' data never stops the run: an error is logged, and the stored files stay as they were.
+  try {
+    await f1Weekend(out, now, seasonOf('f1'));
+  } catch (err) {
+    log('F', `weekend f1 ERROR ${errorText(err)}: the stored weekend files stay as they were`);
+  }
   // IndyCar with the curated drivers, as the Results tab passes them (teams and names).
   const indycar = await extra('indycar', async () => fetchIndyCarSeasonResults({ drivers: await loadCuratedDrivers('indycar') }));
   setResults('indycar', indycar.value, indycar.error);

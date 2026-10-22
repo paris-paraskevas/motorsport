@@ -26,7 +26,8 @@ export interface VenueForecast {
   steps: ForecastStep[];
 }
 
-const URL_BASE = 'https://api.met.no/weatherapi/locationforecast/2.0/complete';
+/** `compact` carries every field used here (air temperature, the symbol, rain) and is the lighter answer. */
+const URL_BASE = 'https://api.met.no/weatherapi/locationforecast/2.0/compact';
 export const MET_USER_AGENT = 'paddock-tracker.com https://github.com/paris-paraskevas/motorsport';
 const HORIZON_MS = 10 * 86_400_000;
 
@@ -78,10 +79,19 @@ export function symbolLabel(symbol: string): string {
   return known[base] ?? (base ? base.charAt(0).toUpperCase() + base.slice(1) : '');
 }
 
+/** A kept forecast is used, without asking, for at least this long after MET answered, and for as long as its Expires
+ *  allows when that is longer: the publisher runs every half hour, and a forecast a few hours old is still the
+ *  forecast, while a new answer each run would mean a commit each run on the data branch. */
+const KEEP_MS = 3 * 3_600_000;
+
+/** What became of a request: kept without asking, not modified, a new answer, refused, or nothing usable. */
+export type ForecastStatus = 'kept' | 'not modified' | 'new' | 'empty' | 'error' | `refused ${number}`;
+
 /**
- * A circuit's forecast, from MET Norway or from what is kept. Kept and not yet expired: kept, no request. Otherwise a
- * request with If-Modified-Since; 304 keeps the steps (re-trimmed to now) with the new Expires. Any failure keeps what
- * was kept (null when nothing was), so a refused or broken answer never empties a page.
+ * A circuit's forecast, from MET Norway or from what is kept. Kept within its time: kept, no request. Otherwise a
+ * request with If-Modified-Since; a 304 keeps what was kept unchanged. A refusal (429, 403) holds the kept forecast
+ * three hours longer, so MET is not asked again at once; any failure keeps what was kept (null when nothing was), so a
+ * refused or broken answer never empties a page.
  */
 export async function venueForecast(
   lat: number,
@@ -89,23 +99,23 @@ export async function venueForecast(
   kept: VenueForecast | null,
   now: Date,
   fetcher: typeof fetch = fetch,
-): Promise<VenueForecast | null> {
-  if (kept?.expires && Date.parse(kept.expires) > now.getTime()) return kept;
+): Promise<{ value: VenueForecast | null; status: ForecastStatus }> {
+  const t = now.getTime();
+  if (kept && t < Math.max(Date.parse(kept.expires ?? '') || 0, Date.parse(kept.fetched) + KEEP_MS)) return { value: kept, status: 'kept' };
   const url = `${URL_BASE}?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`;
   const headers: Record<string, string> = { 'User-Agent': MET_USER_AGENT, Accept: 'application/json' };
   if (kept?.lastModified) headers['If-Modified-Since'] = kept.lastModified;
   try {
     const res = await fetcher(url, { headers, signal: AbortSignal.timeout(20_000) });
-    const expires = res.headers.get('expires');
-    const lastModified = res.headers.get('last-modified');
-    if (res.status === 304 && kept) {
-      const from = now.getTime() - 3_600_000;
-      return { ...kept, expires, steps: kept.steps.filter(s => Date.parse(s.t) >= from) };
+    if (res.status === 304) return { value: kept, status: 'not modified' };
+    if (res.status === 429 || res.status === 403) {
+      return { value: kept ? { ...kept, expires: new Date(t + KEEP_MS).toUTCString() } : null, status: `refused ${res.status}` };
     }
-    if (!res.ok) return kept;
+    if (!res.ok) return { value: kept, status: 'error' };
     const steps = parseLocationforecast(await res.json(), now);
-    return steps.length ? { fetched: now.toISOString(), expires, lastModified, steps } : kept;
+    if (!steps.length) return { value: kept, status: 'empty' };
+    return { value: { fetched: now.toISOString(), expires: res.headers.get('expires'), lastModified: res.headers.get('last-modified'), steps }, status: 'new' };
   } catch {
-    return kept;
+    return { value: kept, status: 'error' };
   }
 }

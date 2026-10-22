@@ -9,6 +9,7 @@
 import { createHash } from 'node:crypto';
 import type { Series, SeriesRoundEntry } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
+import type { MapsStore, SessionExtras, SessionsStore } from '@/lib/openf1/weekend';
 
 // ── Stored shapes: what `<slug>/{standings,results,calendar}.json` hold ─────
 
@@ -465,6 +466,109 @@ export function withSession(rounds: ResultRound[], round: number, name: string, 
   const out = rounds.map(r => (r.round === round ? { ...r, others: byRunningOrder([...(r.others ?? []).filter(o => o.label !== session.label), session]) } : r));
   if (!out.some(r => r.round === round)) out.push({ round, name, date, sessions: [], others: [session] });
   return out.sort(compareRounds);
+}
+
+// ── Formula 1's weekend data (slot O19): what a run asks OpenF1 for ──────────
+
+/** The fields of an OpenF1 session as listed (lib/results/openf1.ts fetchOpenF1WeekendSessions) that the planning reads. */
+export interface ListedSession {
+  session_key: number;
+  session_name: string;
+  date_start: string;
+  date_end?: string;
+}
+
+/** OpenF1 has no round numbers: the listed session of the timetable's name nearest its start, within a day and a half. */
+export function nearestOpenF1<T extends ListedSession>(listed: readonly T[], e: CalendarEntry): T | undefined {
+  const at = Date.parse(e.start);
+  return listed
+    .filter(s => s.session_name.toLowerCase() === e.session.toLowerCase() && Math.abs(Date.parse(s.date_start) - at) <= 36 * 3_600_000)
+    .sort((a, b) => Math.abs(Date.parse(a.date_start) - at) - Math.abs(Date.parse(b.date_start) - at))[0];
+}
+
+/** OpenF1's paid live window closes half an hour after a session ends. */
+const LIVE_TAIL_MS = 30 * 60_000;
+const HOUR_MS = 3_600_000;
+
+/** When OpenF1 can be asked about a session (ms): half an hour after the later of the timetable's end and its own. */
+export function askableAt(e: CalendarEntry, s: ListedSession): number {
+  return Math.max(Date.parse(e.end), Date.parse(s.date_end ?? '') || 0) + LIVE_TAIL_MS;
+}
+
+/** When to ask again for a part still missing (ISO): within the hour while the session is less than a day over (a
+ *  session that ran late can still be in OpenF1's live window at the first ask), a day later after that. */
+export function nextAsk(endedAt: number, now: Date): string {
+  const t = now.getTime();
+  return new Date(t + (t - endedAt < 24 * HOUR_MS ? HOUR_MS : 24 * HOUR_MS)).toISOString();
+}
+
+export const racingSession = (session: string): boolean => /^(race|sprint)$/i.test(session);
+
+/** A session's weekend data is whole: its weather and marks, and its tyres when it is a race or a sprint. */
+export function weekendWhole(x: SessionExtras | undefined, session: string): boolean {
+  return Boolean(x?.weather && x.marks && (!racingSession(session) || x.stints));
+}
+
+/** Formula 1's finished sessions whose weekend data a run asks for: listed by OpenF1, past their live window, not
+ *  whole, past their next ask; the newest first, at most `max`. Those OpenF1 does not list come back apart, for the log. */
+export function weekendDue<T extends ListedSession>(
+  calendar: readonly CalendarEntry[],
+  listed: readonly T[],
+  store: SessionsStore,
+  season: number,
+  now: Date,
+  max: number,
+): { due: { entry: CalendarEntry; session: T }[]; unlisted: CalendarEntry[] } {
+  const t = now.getTime();
+  const year = store[String(season)] ?? {};
+  const due: { entry: CalendarEntry; session: T }[] = [];
+  const unlisted: CalendarEntry[] = [];
+  const finished = calendar
+    .filter(e => e.round !== null && !e.dateOnly && e.start.startsWith(String(season)) && Date.parse(e.end) + LIVE_TAIL_MS < t)
+    .sort((a, b) => (a.start < b.start ? 1 : a.start > b.start ? -1 : 0));
+  for (const e of finished) {
+    const have = year[String(e.round)]?.[e.session];
+    if (weekendWhole(have, e.session) || (have?.next && Date.parse(have.next) > t)) continue;
+    const s = nearestOpenF1(listed, e);
+    if (!s) unlisted.push(e);
+    else if (askableAt(e, s) <= t && due.length < max) due.push({ entry: e, session: s });
+  }
+  return { due, unlisted };
+}
+
+/** The circuits whose map a run draws, at most `max`, the rounds nearest today first. A map comes from the circuit's
+ *  latest qualifying this season past its live window, whichever of its rounds that was; until there is one, a circuit
+ *  with no map takes last season's (`session` null) and a drawn map stays. A map from another session is redrawn; a
+ *  miss or a failed redraw waits for its next try. */
+export function mapsDue<T extends ListedSession>(
+  rounds: readonly CalendarRound[],
+  calendar: readonly CalendarEntry[],
+  listed: readonly T[],
+  maps: MapsStore,
+  season: number,
+  now: Date,
+  max: number,
+): { circuit: string; session: T | null }[] {
+  const t = now.getTime();
+  const seen = new Set<string>();
+  const out: { circuit: string; session: T | null }[] = [];
+  const nearest = [...rounds].sort((a, b) => Math.abs(Date.parse(a.startDate) - t) - Math.abs(Date.parse(b.startDate) - t));
+  for (const { circuit } of nearest) {
+    if (!circuit || seen.has(circuit) || out.length >= max) continue;
+    seen.add(circuit);
+    const have = maps[circuit];
+    if (have?.next && Date.parse(have.next) > t) continue;
+    const held = new Set(rounds.filter(r => r.circuit === circuit).map(r => r.round));
+    let latest: T | null = null;
+    for (const q of calendar) {
+      if (q.round === null || !held.has(q.round) || q.dateOnly || !q.start.startsWith(String(season)) || !/^qualifying$/i.test(q.session)) continue;
+      const s = nearestOpenF1(listed, q);
+      if (s && askableAt(q, s) <= t && (!latest || Date.parse(s.date_start) > Date.parse(latest.date_start))) latest = s;
+    }
+    if (have !== undefined && 'points' in have && (!latest || latest.session_key === have.session)) continue;
+    out.push({ circuit, session: latest });
+  }
+  return out;
 }
 
 // ── Calendar ─────────────────────────────────────────────────────────────────
