@@ -37,7 +37,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
     - #1183's MERGED, UPLOADED and CHECKED evidence, O19 done;
     - O16's OPENED, ANSWERED, PLANNED, BUILT and VERIFIED evidence;
     - IDEAS: dark team colours in Night, Who can still win it early in a season, the bars at 2,560 px.
-- **Needs the operator's word:** the line "next update after Sunday's United States Grand Prix", where the drafts read "race in Austin" (rounds.json's place is a country for some rounds).
+- **Answered:** the line reads "next update after Sunday's United States Grand Prix" where the drafts read "race in Austin", since rounds.json's place is a country for some rounds; kept as built on the operator's word ("Keep "next update after Sunday's United States Grand Prix" as built.").
 - **Verified:**
   - the dry run's hand count at round 17: 150 points left, six drivers in, Piastri out by 52, 258 for the constructors with Ferrari, McLaren and Red Bull Racing alive; all 11 teams' teammates add up to the constructors' table;
   - on the theme preview (0.1.17): 20 widths from 300 to 2,560 px, Day and Night, no sideways scroll and no name cut; the switch by real clicks at 1,440 and 390 px; both tables without the script; six links to the page clicked; 0 page errors;

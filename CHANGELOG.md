@@ -23,7 +23,7 @@ The operator's order of 22 Oct puts the Standings after the weekend pages, and o
   - style.css: `.pd-st-*` under `.pd-stp`, one column below 1,200 px, the phone's rules at 699 px, names wrapping below 360 px;
   - paddock.js: the switch, Both on a laptop and Drivers on a phone (which has no Both), the view kept for the visit only; without the script both tables stand.
 - **Corrections to the plan:**
-  - the line reads "next update after Sunday's United States Grand Prix" where the drafts read "race in Austin": rounds.json's place is a country for some rounds ("United States", "Bahrain · Sepang"), so the round's name stands in;
+  - the line reads "next update after Sunday's United States Grand Prix" where the drafts read "race in Austin": rounds.json's place is a country for some rounds ("United States", "Bahrain · Sepang"), so the round's name stands in, kept as built on the operator's word;
   - the page's root is `.pd-stp`, since `.pd-st` is the home's session state;
   - the pair is the first two of a team's drivers.json seats who raced for it, since drivers.json lists Tsunoda third under Racing Bulls, for his car number;
   - the drafts date the ruling 4 September, the day formula1.com reported it; the Court decided on 3 September (fia.com's decision page).
