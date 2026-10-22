@@ -35,7 +35,12 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   2. The same page on a phone: one card a row.
   3. `/series/f1/2026/round-16/`, a standard weekend: Practice 1 beside Practice 2, Practice 3 beside Qualifying.
 - **After the merge:** the upload of 0.1.16; CSS only, so no publish run.
-- **Review:** waits for the operator's 5-hour figure (rule 6: a fresh-context Sonnet reader before every merge).
+- **Review:** one fresh-context Sonnet reader, on the operator's word (“My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1183.”).
+  - Cost: 284,799 tokens against an estimate of 100,000 to 200,000; 94 tool calls; about 19 minutes.
+  - Verdict: mergeable after fixes; 0 blockers, 1 should-fix, 4 nits. Measured clean: 33 widths from 300 to 2,560 px in Day and Night, 13 odd cases, rounds 1 to 17 injected into the page.
+  - Folded: the handoff's item 8 rewritten (a wrong time, a stale line, the plan's path without its backslashes); the CHANGELOG's "a day's two" made exact (the pairing follows the running order).
+  - Accepted: a long name's ellipsis in the 283 to 331 px cards between 1,000 and 1,099 px; at 150% text between 1,000 and 1,013 px, a card's weather up to 6 px past its edge (a wrapping header would move the weather under the title on every phone). Both are IDEAS lines.
+  - Checked again at 1,600 px, inside 0.1.15's three-and-one range: two a row.
 
 ## #1181 · 1.0.293 · O19, part 2 (Formula 1's weekend pages: the season, each round's Overview, a page per session; Results redrawn) · opened 2026-10-22 into `next` on the operator's "Start O19's PR 2, the weekend pages, built full width from o27/records." and the plan approved in plan mode; the merge on the word
 **The weekend pages.** The operator settled them on Paddock Weekend Drafts (version 3) and approved a build in two PRs. Part 1 (#1179) keeps the data, and the backfill filled rounds 6 to 17; this part writes the pages, full width as O27 set. The records of #1180's merge ride in from the local o27/records.
