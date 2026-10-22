@@ -83,8 +83,8 @@
     "slug": "f3",
     "name": "Formula 3",
     "kind": "standings",
-    "status": "STALE",
-    "note": "partial answer",
+    "status": "OK",
+    "note": "",
     "since": "2026-10-20"
   },
   {
