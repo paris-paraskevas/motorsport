@@ -4,6 +4,88 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.293 — 2026-10-22
+
+### O19, part 2: Formula 1's weekend pages
+
+The operator approved the weekend pages on Paddock Weekend Drafts (version 3) and a build in two PRs. Part 1 (#1179) keeps the data on paddock-data, backfilled on 22 Oct for rounds 6 to 17. This part writes the pages, full width as O27 set, with theme 0.1.15.
+
+- **The season** at `/series/f1/2026/`, under the series band and tabs, none of them lit:
+  - a tile for each weekend in date order, each opening its weekend page;
+  - a moved round also tiled where it was first set (round 16, first set for 10–12 April);
+  - a round called off struck through, with its reason from rounds.json.
+- **A weekend's Overview** at `/series/f1/2026/round-<n>/`, one for each of the 23 rounds, with these parts:
+  - **The band:** crumbs, the round's name, circuit, country and dates, its number, and a moved round's tag.
+  - **The strip:** once the race has a result, Final with who won (from pole; the sprint too, or who won it). Before that, the next session with its countdown (the theme's `[data-pd-ses]`), Session emails and Follow.
+  - **The bar:** the Overview, then each session's page with its time in the reader's zone, its winner once run, the page you are on lit, and a session to come dashed.
+  - **After the race:**
+    - Race result: the podium, the top ten, the weather OpenF1 measured, race control's marks;
+    - Pit wall: the top ten's tyres and stops, lap by lap;
+    - the weekend's points, on a sprint weekend;
+    - Earlier in the weekend: a card for each session in running order, with 3 rows from practice, 10 from qualifying and sprint qualifying, and the sprint's 8 scorers.
+  - **Before and during the weekend:**
+    - the sessions run so far as cards;
+    - the rest by the track's days, in the reader's time and the track's, with MET Norway's forecast for the hour each starts while it is within ten days.
+  - **The side:**
+    - the championship before or after the round: the official table after the latest round raced, else summed from the stored races and sprints, with level drivers split on Grand Prix finishes;
+    - At the track: the circuit, the country, the track's time beside the reader's, the format;
+    - the next and previous rounds.
+  - **The circuit**, big, from the latest pole lap: its sectors, the start/finish line and the way the cars run. North is up, as OpenF1 records positions and as the drafts drew it.
+  - **The sources credited** where used: OpenF1 (CC BY-NC-SA 4.0) and "Data from MET Norway" (CC BY 4.0).
+- **A session's page** at `round-<n>/<session>/`, one for every timed session:
+  - the classification, every driver; in qualifying, every part, the parts before the last hidden on a phone;
+  - race control's marks;
+  - Pit wall for every driver in a race or sprint;
+  - the weather measured through the session, or the forecast for its start.
+- **Results redrawn**, as approved in the drafts' first round:
+  - a row for each round, edged in its winner's colour: the place and dates, Sprint, the winner and team, the sprint's winner when it was someone else, and See weekend →;
+  - open, the weekend's points: S, R and Total for every scorer on a sprint weekend; Pos, Driver, Team and Pts on a standard one;
+  - "All N and every session on the weekend page →", and the line "N of M rounds run".
+- **Links to the weekends** from:
+  - the series Overview's tiles and its next and last cards;
+  - the Results rows;
+  - Formula 1's Racing this weekend card on `/series/`;
+  - the Calendar's Formula 1 weekend cards (Weekend page →).
+- **The address:** WordPress gives a page slug made only of digits a "-2" (`wp_unique_post_slug`), and its rewrite rules read `/series/f1/2026/` as page 2026 of `/series/f1/`. Two hooks in functions.php keep the address:
+  - a filter returns a four-digit slug under a parent unchanged while no sibling holds it;
+  - one rewrite rule sends the address to that page, the rules flushed once whenever the theme's version changes.
+- **Theme 0.1.15:**
+  - style.css: the weekend pages' styles (band, strip, bar, cards, tables, Pit wall with a line every five laps, the circuit, the season's tiles) and the Results rows, at 999 and 699 px as well;
+  - paddock.js: the strip's countdown to the next session; the track's hours ahead of or behind the reader; Pit wall's tooltip on hover, focus and tap; the circuit drawn from `data-pd-map` (WordPress keeps no inline SVG);
+  - functions.php: the two hooks.
+- **The publisher:**
+  - `lib/wp/weekend.ts` (new) writes the pages beside `seriesFamily` for `WEEKEND_PAGES`;
+  - the series data carries the weekend files, the drivers' car numbers (Pit wall's stints are keyed by number), and the cancelled rounds' dates and reasons;
+  - `calendarRounds` gives a round its country (rounds.json `countryCode`, else the circuit's) and its move (`rescheduleNote`, `previousStartDate`, `previousEndDate`).
+- **Preview fixtures:**
+  - new: f1-season.html, f1-weekend.html (round 17) and f1-session.html (round 17's qualifying);
+  - the blueprint inserts the pages 2026, round-17 and qualifying under Formula 1, proving the slug hook at boot;
+  - f1.html, f1-results.html, series.html and calendar.html regenerated.
+- **Facts checked** against Formula 1's and the FIA's reports:
+  - round 16, the Bahrain Grand Prix held at Sepang on 4 October after its April date was called off, started 93 minutes late behind the safety car;
+  - Monaco's race (round 6) was red-flagged on lap 68 and restarted.
+- **Found while testing:**
+  - the caption of a map from last season read with two colons, now "Drawn from the pole lap in qualifying here in 2025";
+  - a stint whose tyre OpenF1 did not record (Norris's third in round 11's race) showed "UNKNOWN", now "Tyre not recorded";
+  - a standard round with a single scorer read "The 1 drivers who scored";
+  - the sprint's winner was read from the second column instead of by its name.
+- **Tests:**
+  - `lib/wp/weekend.test.ts` (new, 26): every page at before, during and after, on a sprint and a standard weekend; the countback with sprints left out; the official table after the latest round; the marks; the moved and called-off tiles; Pit wall's placing and tooltips; the forecast's reach; the links; escaping; an unknown zone.
+  - `series.test.ts`: nine tests rewritten for the redraw and the links, each keeping its guard (escaping, the colour check, the sprint never the round's race), and the old links still tested for a series without a season.
+  - `render.test.ts`: the Calendar's link.
+
+Verified:
+- **Gates:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors and the 2 known warnings; `npx vitest run` 282 files, 2,880 tests.
+- **Dry run** from origin/paddock-data (e7913e97), WordPress not called: 142 pages for `--only /series/f1/`, the largest Results at 50,107 bytes; 15 for `--only /calendar/`.
+- **Theme preview** (WordPress Playground, the working tree mounted, the clock fixed on 22 Oct in Athens):
+  - `/series/f1/2026/` resolves to the page "2026" and `/series/f1/2026-2/` is not found;
+  - no sideways scroll at 20 widths from 300 to 2,560 on 7 pages;
+  - the circuit drawn with its sectors and badges;
+  - the bar in the reader's time with each session's winner, and "UTC+8 · 5 h ahead of you";
+  - Pit wall's tooltip by a real mouse, the keyboard and a tap at 390 px;
+  - every new link followed by a real click;
+  - 0 page errors.
+
 ## 1.0.292 — 2026-10-22
 
 ### O27: full width, every page we built uses the whole screen

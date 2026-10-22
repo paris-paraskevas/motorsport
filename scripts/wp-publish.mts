@@ -50,6 +50,7 @@ import { loadCircuits, matchCircuitEntry, normalise, venueCandidates } from '../
 import contentFs from '../lib/content-fs';
 import type { CancelledRoundEntry, Series, SeriesRoundEntry } from '../lib/types';
 import { ROUND2_SERIES, seriesFamily, seriesList } from '../lib/wp/series';
+import { weekendPages } from '../lib/wp/weekend';
 import {
   calendarEntries,
   calendarMonthPages,
@@ -76,6 +77,7 @@ import {
   withMarker,
   wpPaths,
   MARKER,
+  WEEKEND_PAGES,
   type CalendarEntry,
   type CalendarRound,
   type Page,
@@ -662,6 +664,9 @@ function roundsFile(slug: string): { rounds: Partial<SeriesRoundEntry>[]; cancel
   };
 }
 
+/** A country's English name from its ISO 3166-1 code ("MY" → "Malaysia"). */
+const COUNTRY = new Intl.DisplayNames(['en'], { type: 'region' });
+
 /** The circuits whose outline the theme carries (wp-theme/paddock/assets/circuits/<circuits.json key>.svg). */
 function themeOutlines(): Set<string> {
   try {
@@ -683,14 +688,22 @@ async function calendarRounds(list: Partial<SeriesRoundEntry>[], calendar: Calen
     if (r.cancelled) continue;
     let venue: string | null = null;
     let outline: string | null = null;
-    let host: { slug: string; tz?: string } | null = null;
+    let host: { slug: string; tz?: string; countryCode?: string } | null = null;
     if (!rally) {
       const location = calendar?.find(e => e.round === r.round && e.location)?.location;
       const hit = await matchCircuitEntry(...venueCandidates({ venue: r.venue, location, title: r.name }));
       const named = (s: string) => normalise(s) === normalise(r.venue ?? '');
       venue = r.venue ?? hit?.circuit.name ?? null;
       if (hit && outlines.has(hit.slug) && (!r.venue || named(hit.circuit.name) || hit.circuit.aliases.some(named))) outline = hit.slug;
-      if (hit) host = { slug: hit.slug, tz: hit.circuit.tz };
+      if (hit) host = { slug: hit.slug, tz: hit.circuit.tz, countryCode: hit.circuit.countryCode };
+    }
+    // The host country by name (O19's weekend band): rounds.json's own code first, as for a relocated round.
+    const code = r.countryCode ?? host?.countryCode;
+    let country: string | undefined;
+    try {
+      country = code ? (COUNTRY.of(code.toUpperCase()) ?? undefined) : undefined;
+    } catch {
+      country = undefined;
     }
     out.push({
       round: r.round,
@@ -702,6 +715,10 @@ async function calendarRounds(list: Partial<SeriesRoundEntry>[], calendar: Calen
       outline,
       circuit: host?.slug ?? null,
       ...(host?.tz ? { tz: host.tz } : {}),
+      ...(country ? { country } : {}),
+      ...(typeof r.rescheduleNote === 'string'
+        ? { moved: { note: r.rescheduleNote, ...(typeof r.previousStartDate === 'string' && typeof r.previousEndDate === 'string' ? { from: r.previousStartDate, to: r.previousEndDate } : {}) } }
+        : {}),
     });
   }
   return out;
@@ -779,10 +796,28 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
     d.rounds = await calendarRounds(file.rounds, d.calendar, chip?.rally === true, outlines);
     if (ROUND2_SERIES.has(slug)) {
       d.about = aboutText(slug);
-      d.teams = ((await loadCuratedDrivers(slug))?.teams ?? []).map(t => ({ name: t.name, colour: t.color, drivers: t.drivers.map(x => ({ name: x.name, code: x.code })) }));
+      d.teams = ((await loadCuratedDrivers(slug))?.teams ?? []).map(t => ({
+        name: t.name,
+        colour: t.color,
+        drivers: t.drivers.map(x => ({ name: x.name, code: x.code, ...(typeof x.number === 'number' ? { number: x.number } : {}) })),
+      }));
       d.cancelled = file.cancelled.flatMap(c =>
-        typeof c?.originalRound === 'number' && typeof c.name === 'string' ? [{ round: c.originalRound, name: c.name, ...(typeof c.place === 'string' ? { place: c.place } : {}) }] : [],
+        typeof c?.originalRound === 'number' && typeof c.name === 'string'
+          ? [
+              {
+                round: c.originalRound,
+                name: c.name,
+                ...(typeof c.place === 'string' ? { place: c.place } : {}),
+                ...(typeof c.originalStartDate === 'string' && typeof c.originalEndDate === 'string' ? { from: c.originalStartDate, to: c.originalEndDate } : {}),
+                ...(typeof c.reason === 'string' ? { reason: c.reason } : {}),
+              },
+            ]
+          : [],
       );
+    }
+    // The weekend pages' data (O19), as f1Weekend keeps it: fetched this run, or stored at --from-ref.
+    if (WEEKEND_PAGES.has(slug)) {
+      d.weekend = { sessions: readStored<SessionsStore>(F1_SESSIONS) ?? {}, maps: readStored<MapsStore>(F1_MAPS) ?? {}, forecast: readStored<Record<string, VenueForecast>>(F1_FORECAST) ?? {} };
     }
     all.push(d);
   }
@@ -794,7 +829,7 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
     seriesList(all, now),
     ...calendarMonthPages(all, now),
     statusPage(health, checkedAt),
-    ...all.flatMap(d => (ROUND2_SERIES.has(d.slug) ? seriesFamily(d) : seriesPages(d, now))),
+    ...all.flatMap(d => (ROUND2_SERIES.has(d.slug) ? [...seriesFamily(d), ...weekendPages(d)] : seriesPages(d, now))),
   ];
   log('R', `${pages.length} pages`);
   return { pages, health };

@@ -10,6 +10,7 @@ import { createHash } from 'node:crypto';
 import type { Series, SeriesRoundEntry } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
 import type { MapsStore, SessionExtras, SessionsStore } from '@/lib/openf1/weekend';
+import type { VenueForecast } from '@/lib/met-norway';
 
 // ── Stored shapes: what `<slug>/{standings,results,calendar}.json` hold ─────
 
@@ -680,7 +681,12 @@ export interface SeriesData {
   season?: number;
   about?: string;
   teams?: SeriesTeam[];
-  cancelled?: { round: number; name: string; place?: string }[];
+  /** With the first dates and the reason (rounds.json originalStartDate, originalEndDate, reason), for the season page's
+   *  struck-through tile (O19). */
+  cancelled?: { round: number; name: string; place?: string; from?: string; to?: string; reason?: string }[];
+  /** Formula 1's weekend data (O19) as the publisher keeps it beside the results: each session's weather, marks and
+   *  tyres, each circuit's map, and the forecast for each circuit racing within ten days. */
+  weekend?: { sessions: SessionsStore; maps: MapsStore; forecast: Record<string, VenueForecast> };
   /** For the series list (slot O21), every series: its type (meta.json category), its colour, and the champion of
    *  its season as champions.json writes it, when it does. */
   category?: string;
@@ -691,11 +697,23 @@ export interface SeriesData {
 export interface SeriesTeam {
   name: string;
   colour?: string;
-  drivers: { name: string; code?: string }[];
+  /** The car number (drivers.json) ties OpenF1's tyres, which it keys by number, to a classification's names. */
+  drivers: { name: string; code?: string; number?: number }[];
 }
 
 export const seriesPath = (slug: string, sub?: 'standings' | 'results' | 'calendar' | 'champions'): string =>
   `/series/${slug}/${sub ? `${sub}/` : ''}`;
+
+/** The series whose weekends have pages of their own (slot O19). */
+export const WEEKEND_PAGES: ReadonlySet<string> = new Set(['f1']);
+/** A season's page, each weekend under it at round-<n>/, and each session under its weekend ("Practice 1" → practice-1/). */
+export const seasonPath = (slug: string, season: number): string => `/series/${slug}/${season}/`;
+export const weekendPath = (slug: string, season: number, round: number): string => `${seasonPath(slug, season)}round-${round}/`;
+export const sessionSlug = (session: string): string =>
+  session
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 
 /** Sessions not yet over (a live one counts), up to `withinMs` ahead. */
 export function upcoming(entries: CalendarEntry[], now: Date, withinMs = Infinity): CalendarEntry[] {
@@ -808,6 +826,10 @@ export interface CalendarRound {
    *  forecast and track time); null for a rally or an unmatched venue. */
   circuit?: string | null;
   tz?: string;
+  /** The host country's name, from rounds.json's countryCode or else the circuit's (O19: a weekend's band). */
+  country?: string;
+  /** A round moved from its first dates (rounds.json rescheduleNote, previousStartDate, previousEndDate). */
+  moved?: { note: string; from?: string; to?: string };
 }
 
 /** How far the calendar reaches either side of the current month. */
@@ -964,7 +986,9 @@ function weekendCard({ d, r }: Held): string {
     `<article class="pd-wc pd-s-${slugAttr(d)}" data-s="${slugAttr(d)}"><header class="pd-wc-band"><small>${escapeHtml(d.name)} · Round ${r.round}</small>` +
     `<b>${escapeHtml(r.name.replace(/\s*\([^)]*\)\s*$/, ''))}</b>${host ? `<span>${escapeHtml(host)}</span>` : ''}<i class="pd-wc-num" aria-hidden="true"><b class="pd-wc-series">${escapeHtml(chipLabel(d))}</b>${r.round}</i></header>` +
     (list.length ? `<div class="pd-wc-days">${days.join('')}</div>` : '<p class="pd-wc-none">Times not published yet.</p>') +
-    `<footer class="pd-wc-foot"><span>${list.length} session${list.length === 1 ? '' : 's'} · <span data-pd-zonename>UTC</span></span></footer></article>`
+    `<footer class="pd-wc-foot"><span>${list.length} session${list.length === 1 ? '' : 's'} · <span data-pd-zonename>UTC</span></span>` +
+    (WEEKEND_PAGES.has(d.slug) && d.season ? `<a href="${weekendPath(d.slug, d.season, r.round)}">Weekend page →</a>` : '') +
+    '</footer></article>'
   );
 }
 

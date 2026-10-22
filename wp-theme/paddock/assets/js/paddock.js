@@ -32,6 +32,22 @@
 		return p.year + '-' + p.month + '-' + p.day;
 	}
 
+	/** A weekend's strip (O19): the countdown runs to the next session's start, and Next shows while one is still to
+	 *  come; the [data-pd-ses] pass in render() names the session, or the one on now with its Live pill. */
+	function weekendStrips( now ) {
+		document.querySelectorAll( '.pd-wk-nx[data-pd-ses]' ).forEach( function ( strip ) {
+			var list = strip.getAttribute( 'data-pd-ses' ).split( ';' ).map( function ( s ) {
+				var p = s.split( '|' ), a = Date.parse( p[ 1 ] );
+				return { start: a, end: Date.parse( p[ 2 ] ) || a };
+			} ).filter( function ( s ) { return isFinite( s.start ); } );
+			var live = list.some( function ( s ) { return now >= s.start && now < s.end; } );
+			var next = live ? null : list.filter( function ( s ) { return s.start > now; } )[ 0 ] || null;
+			var count = strip.querySelector( '[data-pd-target]' ), pill = strip.querySelector( '.pd-wk-pill' );
+			if ( count ) { count.setAttribute( 'data-pd-target', next ? new Date( next.start ).toISOString() : '' ); }
+			if ( pill ) { pill.hidden = ! next; }
+		} );
+	}
+
 	function render() {
 		var now = nowAt();
 		var today = fDay.format( new Date( now ) );
@@ -68,6 +84,16 @@
 			}
 		} );
 		document.querySelectorAll( '[data-pd-zone]' ).forEach( function ( el ) { el.textContent = zone.split( '/' ).pop().replace( /_/g, ' ' ); } );
+
+		weekendStrips( now );
+		// A track's zone beside the reader's (O19): its offset in minutes east of UTC, against the reader's own.
+		document.querySelectorAll( '[data-pd-ahead]' ).forEach( function ( el ) {
+			var diff = Number( el.getAttribute( 'data-pd-ahead' ) ) + new Date( now ).getTimezoneOffset();
+			if ( ! isFinite( diff ) ) { return; }
+			var a = Math.abs( diff ), h = Math.floor( a / 60 ), m = a % 60;
+			var span = ( h ? h + ' h' : '' ) + ( m ? ( h ? ' ' : '' ) + m + ' min' : '' );
+			el.textContent = diff === 0 ? ' · the same as yours' : ' · ' + span + ( diff > 0 ? ' ahead of' : ' behind' ) + ' you';
+		} );
 
 		document.querySelectorAll( '[data-pd-target]' ).forEach( function ( el ) {
 			var left = Date.parse( el.getAttribute( 'data-pd-target' ) ) - now;
@@ -646,6 +672,83 @@
 		b.hidden = false;
 		show();
 	} );
+
+	// Pit wall (O19): a stint's laps and its pit lap on hover or keyboard focus; a tap keeps it open on a phone.
+	// WordPress keeps no tabindex in a page, so each stint gets its keyboard stop here.
+	document.querySelectorAll( '.pd-pw' ).forEach( function ( pw ) {
+		var tip = pw.querySelector( '.pd-pw-tip' ), pinned = null;
+		if ( ! tip ) { return; }
+		var show = function ( el ) {
+			tip.textContent = el.getAttribute( 'data-tip' );
+			tip.hidden = false;
+			var r = el.getBoundingClientRect(), b = pw.getBoundingClientRect(), w = tip.offsetWidth / 2;
+			tip.style.left = Math.min( Math.max( r.left + r.width / 2 - b.left, w + 4 ), b.width - w - 4 ) + 'px';
+			tip.style.top = ( r.top - b.top ) + 'px';
+		};
+		var hide = function () { if ( ! pinned ) { tip.hidden = true; } };
+		pw.querySelectorAll( '.pd-pw-bar i[data-tip]' ).forEach( function ( el ) {
+			el.tabIndex = 0;
+			el.addEventListener( 'mouseenter', function () { show( el ); } );
+			el.addEventListener( 'mouseleave', hide );
+			el.addEventListener( 'focus', function () { show( el ); } );
+			el.addEventListener( 'blur', function () { pinned = null; hide(); } );
+			el.addEventListener( 'click', function () {
+				pinned = pinned === el ? null : el;
+				if ( pinned ) { show( el ); } else { tip.hidden = true; }
+			} );
+		} );
+	} );
+
+	// The circuit (O19): a pole lap's points as the publisher stores them in data-pd-map (its box, the points where
+	// sectors 2 and 3 begin, then x,y pairs, north up). WordPress keeps no SVG in a page, so it is drawn here: the three
+	// sectors, their ticks, the start/finish line, the way the cars run, and each sector's number.
+	var SVG = 'http://www.w3.org/2000/svg';
+	document.querySelectorAll( '.pd-cm-draw[data-pd-map]' ).forEach( function ( box ) {
+		var parts = box.getAttribute( 'data-pd-map' ).split( '|' );
+		if ( parts.length !== 3 ) { return; }
+		var size = parts[ 0 ].split( ' ' ).map( Number ), split = parts[ 1 ].split( ' ' ).map( Number );
+		var pts = parts[ 2 ].split( ' ' ).map( function ( p ) { return p.split( ',' ).map( Number ); } ).filter( function ( p ) { return isFinite( p[ 0 ] ) && isFinite( p[ 1 ] ); } );
+		if ( pts.length < 50 || ! ( split[ 0 ] > 0 && split[ 1 ] > split[ 0 ] && split[ 1 ] < pts.length - 1 ) ) { return; }
+		var r1 = function ( v ) { return v.toFixed( 1 ); };
+		var node = function ( tag, attrs, text ) {
+			var n = document.createElementNS( SVG, tag );
+			Object.keys( attrs ).forEach( function ( k ) { n.setAttribute( k, attrs[ k ] ); } );
+			if ( text ) { n.textContent = text; }
+			return n;
+		};
+		var path = function ( a, b ) { return pts.slice( a, b + 1 ).map( function ( p, j ) { return ( j ? 'L' : 'M' ) + r1( p[ 0 ] ) + ',' + r1( p[ 1 ] ); } ).join( '' ); };
+		var dir = function ( i ) {
+			var a = pts[ Math.max( i - 2, 0 ) ], b = pts[ Math.min( i + 2, pts.length - 1 ) ], dx = b[ 0 ] - a[ 0 ], dy = b[ 1 ] - a[ 1 ], l = Math.hypot( dx, dy ) || 1;
+			return [ dx / l, dy / l ];
+		};
+		var across = function ( i, len, cls ) {
+			var p = pts[ i ], d = dir( i );
+			return node( 'line', { 'class': cls, x1: r1( p[ 0 ] - d[ 1 ] * len ), y1: r1( p[ 1 ] + d[ 0 ] * len ), x2: r1( p[ 0 ] + d[ 1 ] * len ), y2: r1( p[ 1 ] - d[ 0 ] * len ) } );
+		};
+		var last = pts.length - 1, s = pts[ 0 ];
+		var svg = node( 'svg', { viewBox: '-40 -40 ' + ( size[ 0 ] + 80 ) + ' ' + ( size[ 1 ] + 80 ), 'aria-hidden': 'true', focusable: 'false' } );
+		var s1 = path( 0, split[ 0 ] ), s2 = path( split[ 0 ], split[ 1 ] ), s3 = path( split[ 1 ], last ) + 'L' + r1( s[ 0 ] ) + ',' + r1( s[ 1 ] );
+		svg.appendChild( node( 'path', { 'class': 'pd-cm-under', d: s1 + s2.replace( /^M/, 'L' ) + s3.replace( /^M/, 'L' ) } ) );
+		[ s1, s2, s3 ].forEach( function ( d, k ) { svg.appendChild( node( 'path', { 'class': 'pd-cm-s pd-cm-s' + ( k + 1 ), d: d } ) ); } );
+		svg.appendChild( across( split[ 0 ], 17, 'pd-cm-tick' ) );
+		svg.appendChild( across( split[ 1 ], 17, 'pd-cm-tick' ) );
+		svg.appendChild( across( 0, 26, 'pd-cm-sf' ) );
+		svg.appendChild( across( 0, 26, 'pd-cm-sf2' ) );
+		var ia = Math.min( 9, last ), a = pts[ ia ], ad = dir( ia );
+		var tri = [ [ a[ 0 ] + ad[ 0 ] * 15, a[ 1 ] + ad[ 1 ] * 15 ], [ a[ 0 ] - ad[ 0 ] * 9 - ad[ 1 ] * 10, a[ 1 ] - ad[ 1 ] * 9 + ad[ 0 ] * 10 ], [ a[ 0 ] - ad[ 0 ] * 9 + ad[ 1 ] * 10, a[ 1 ] - ad[ 1 ] * 9 - ad[ 0 ] * 10 ] ];
+		svg.appendChild( node( 'polygon', { 'class': 'pd-cm-ar', points: tri.map( function ( q ) { return r1( q[ 0 ] ) + ',' + r1( q[ 1 ] ); } ).join( ' ' ) } ) );
+		[ [ 0, split[ 0 ] ], [ split[ 0 ], split[ 1 ] ], [ split[ 1 ], last ] ].forEach( function ( range, k ) {
+			var i = Math.round( ( range[ 0 ] + range[ 1 ] ) / 2 ), p = pts[ i ], d = dir( i ), g = node( 'g', { 'class': 'pd-cm-badge' } );
+			var cx = p[ 0 ] - d[ 1 ] * 34, cy = p[ 1 ] + d[ 0 ] * 34;
+			g.appendChild( node( 'circle', { 'class': 'pd-cm-k' + ( k + 1 ), cx: r1( cx ), cy: r1( cy ), r: '16' } ) );
+			g.appendChild( node( 'text', { x: r1( cx ), y: r1( cy ) }, String( k + 1 ) ) );
+			svg.appendChild( g );
+		} );
+		var d0 = dir( 0 ), lx = s[ 0 ] + d0[ 1 ] * 40, ly = s[ 1 ] - d0[ 0 ] * 40 + 6;
+		svg.appendChild( node( 'text', { 'class': 'pd-cm-lbl', x: r1( lx ), y: r1( ly ), 'text-anchor': lx > size[ 0 ] - 220 ? 'end' : lx < 220 ? 'start' : 'middle' }, 'Start / finish' ) );
+		box.appendChild( svg );
+	} );
+
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
 

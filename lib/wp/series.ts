@@ -6,7 +6,7 @@
 // so a page changes only when its data does. Inline style carries only `width` and `--t`, both of which
 // WordPress keeps in post content (safecss_filter_attr, WordPress 6.1 onward).
 
-import { calendarMonthPath, escapeHtml, seriesPath, sessionKind, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
+import { calendarMonthPath, escapeHtml, seriesPath, sessionKind, WEEKEND_PAGES, weekendPath, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
 
 /** The series drawn in round 2's design; the others keep the plain pages until slot O18. */
 export const ROUND2_SERIES: ReadonlySet<string> = new Set(['f1']);
@@ -17,25 +17,28 @@ const AT = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short',
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 const NEUTRAL = '#9aa3b2';
 
-const htmlBlock = (inner: string): string => `<!-- wp:html -->\n${inner}\n<!-- /wp:html -->`;
+export const htmlBlock = (inner: string): string => `<!-- wp:html -->\n${inner}\n<!-- /wp:html -->`;
 // en-GB writes September as "Sept"; round 2 writes "Sep".
-const dayLabel = (day: string): string => DAY.format(new Date(`${day}T12:00:00Z`)).replace('Sept', 'Sep');
+export const dayLabel = (day: string): string => DAY.format(new Date(`${day}T12:00:00Z`)).replace('Sept', 'Sep');
 const clock = (iso: string): string => `<span class="pd-t" data-utc="${escapeHtml(iso)}" data-f="wt">${AT.format(new Date(iso))} UTC</span>`;
-const col = (columns: string[], ...names: string[]): number => columns.findIndex(c => names.includes(c));
+export const col = (columns: string[], ...names: string[]): number => columns.findIndex(c => names.includes(c));
+
+/** A series' weekend page for a round, when its weekends have pages (O19); null for the others. */
+const weekendOf = (d: SeriesData, round: number): string | null => (WEEKEND_PAGES.has(d.slug) && d.season ? weekendPath(d.slug, d.season, round) : null);
 
 /** "23–25 Oct", "30 Oct–1 Nov" across two months, or "25 Oct" for a one-day round. */
-function dates(from: string, to: string): string {
+export function dates(from: string, to: string): string {
   if (from === to) return dayLabel(to);
   return from.slice(0, 7) === to.slice(0, 7) ? `${Number(from.slice(8))}–${dayLabel(to)}` : `${dayLabel(from)}–${dayLabel(to)}`;
 }
 
 /** A label the theme's script turns into `on` while the reader's own date is within the round's dates. */
-function wk(r: CalendarRound, off: string, on: string): string {
+export function wk(r: CalendarRound, off: string, on: string): string {
   return `<span class="pd-wk" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}" data-on="${escapeHtml(on)}">${escapeHtml(off)}</span>`;
 }
 
 /** The host's outline, which the theme draws as a mask in the text's colour; nothing when it carries none. */
-function outline(key: string | null | undefined, extra = ''): string {
+export function outline(key: string | null | undefined, extra = ''): string {
   return key && /^[a-z0-9-]+$/.test(key) ? `<i class="pd-ol pd-ol-${key}${extra}" aria-hidden="true"></i>` : '';
 }
 
@@ -43,7 +46,7 @@ function outline(key: string | null | undefined, extra = ''): string {
 
 // The feeds write "Haas F1 Team" where drivers.json writes "Haas".
 const plain = (team: string): string => team.toLowerCase().replace(/\s+f1 team$/, '').trim();
-const teamLabel = (team: string): string => team.replace(/ F1 Team$/, '');
+export const teamLabel = (team: string): string => team.replace(/ F1 Team$/, '');
 const bare = (name: string): string => (name.split(' ').pop() ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 function teamOf(d: SeriesData, team: string): SeriesTeam | undefined {
@@ -51,20 +54,29 @@ function teamOf(d: SeriesData, team: string): SeriesTeam | undefined {
   return d.teams?.find(t => plain(t.name) === key);
 }
 
-function colourOf(d: SeriesData, team: string): string {
+export function colourOf(d: SeriesData, team: string): string {
   const c = teamOf(d, team)?.colour ?? '';
   return HEX.test(c) ? c : NEUTRAL;
 }
 
 /** A driver's three-letter code from drivers.json, matched by surname; else the surname's first three letters. */
-function codeOf(d: SeriesData, name: string): string {
+export function codeOf(d: SeriesData, name: string): string {
   for (const t of d.teams ?? []) for (const x of t.drivers) if (x.code && bare(x.name) === bare(name)) return x.code;
   return bare(name).slice(0, 3).toUpperCase();
 }
 
+/** A driver's car number from drivers.json, matched by surname as codeOf is; null when it holds none. */
+export function numberOf(d: SeriesData, name: string): number | null {
+  for (const t of d.teams ?? []) for (const x of t.drivers) if (typeof x.number === 'number' && bare(x.name) === bare(name)) return x.number;
+  return null;
+}
+
+/** A team's colour as a tick before a name: `--t` is one of the two inline styles WordPress keeps. */
+export const tick = (d: SeriesData, team: string): string => `<i class="pd-tc" style="--t:${colourOf(d, team)}"></i>`;
+
 // ── The season's races ───────────────────────────────────────────────────────
 
-interface RoundWin {
+export interface RoundWin {
   round: number;
   /** The results feed's name, for a round rounds.json does not know. */
   title: string;
@@ -77,7 +89,7 @@ interface RoundWin {
 
 /** Each round's race, the last session in its running order that is not a sprint: the winner, the team and the
  *  margin. Sprints are not wins, and a sprint weekend's Saturday, when the round holds its Sprint alone, has no race. */
-function raceWins(d: SeriesData): Map<number, RoundWin> {
+export function raceWins(d: SeriesData): Map<number, RoundWin> {
   const out = new Map<number, RoundWin>();
   for (const r of d.results ?? []) {
     if (r.round === null) continue;
@@ -110,9 +122,11 @@ type SeriesTab = 'overview' | 'calendar' | 'standings' | 'results' | 'champions'
 
 /** The pages built in round 2's design for a series beyond its Overview; every link to one waits for it, greyed. */
 const BUILT: Readonly<Record<string, ReadonlySet<'standings' | 'results' | 'champions'>>> = { f1: new Set(['results']) };
+export const built = (slug: string, tab: 'standings' | 'results' | 'champions'): boolean => Boolean(BUILT[slug]?.has(tab));
 
-/** The five tabs, each a page at its own address; Calendar opens the site's Calendar showing only this series. */
-function tabs(d: SeriesData, on: SeriesTab): string {
+/** The five tabs, each a page at its own address; Calendar opens the site's Calendar showing only this series. A page
+ *  below the tabs that none of them names (a season, O19) lights none. */
+export function tabs(d: SeriesData, on: SeriesTab | null): string {
   const links: Array<[SeriesTab, string, string]> = [
     ['overview', 'Overview', seriesPath(d.slug)],
     ['calendar', 'Calendar', `/calendar/#${d.slug}`],
@@ -128,7 +142,7 @@ function tabs(d: SeriesData, on: SeriesTab): string {
 }
 
 /** The series band: its name, the season in a line, a bar of its rounds, Follow (the theme's script) and Session emails. */
-function band(d: SeriesData, wins: Map<number, RoundWin>, current: CalendarRound | undefined): string {
+export function band(d: SeriesData, wins: Map<number, RoundWin>, current: CalendarRound | undefined): string {
   const rounds = d.rounds ?? [];
   const line = [d.season ? `${escapeHtml(String(d.season))} season` : '', `${rounds.length} rounds`, `${rounds.filter(r => wins.has(r.round)).length} run`].filter(Boolean).join(' · ');
   const next = current ? ` · ${wk(current, `next: round ${current.round}`, `round ${current.round} this weekend`)}` : '';
@@ -147,10 +161,11 @@ function nextCard(d: SeriesData, r: CalendarRound): string {
   const sessions = (d.calendar ?? []).filter(e => e.round === r.round && !e.dateOnly).sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
   const race = [...sessions].reverse().find(e => /^race$/i.test(e.session)) ?? sessions[sessions.length - 1];
   const where = [r.venue ?? '', dates(r.startDate, r.endDate)].filter(Boolean).map(escapeHtml).join(' · ');
+  const page = weekendOf(d, r.round);
   return (
     `<article class="pd-sr-card pd-sr-next" data-pd-ses="${escapeHtml(sessions.map(e => `${encodeURIComponent(e.session)}|${e.start}|${e.end}`).join(';'))}"><div class="pd-sr-card-in">` +
     `<p class="pd-sr-lab"><span class="pd-pill pd-pill-live" hidden>● Live</span><span>Round ${r.round} · ${wk(r, 'next', 'this weekend')}</span></p>` +
-    `<h2>${escapeHtml(r.name)}</h2><p class="pd-mut">${where}</p>` +
+    `<h2>${page ? `<a href="${page}">${escapeHtml(r.name)}</a>` : escapeHtml(r.name)}</h2><p class="pd-mut">${where}</p>` +
     (race ? `<p class="pd-sr-line"><b class="pd-sr-ses"></b><span class="pd-sr-race">${escapeHtml(race.session)} ${clock(race.start)}</span></p>` : '') +
     `</div><i class="pd-sr-num" aria-hidden="true">${r.round}</i></article>`
   );
@@ -159,23 +174,27 @@ function nextCard(d: SeriesData, r: CalendarRound): string {
 function lastCard(d: SeriesData, w: RoundWin, r: CalendarRound | undefined): string {
   const where = [r?.venue ?? '', w.date ? dayLabel(w.date) : ''].filter(Boolean).map(escapeHtml).join(' · ');
   const how = `${escapeHtml(teamLabel(w.team))}${w.margin ? ` · won by ${escapeHtml(w.margin)} s` : ''}`;
+  const page = weekendOf(d, w.round);
+  const name = escapeHtml(r?.name ?? w.title);
   return (
-    `<article class="pd-sr-card"><div class="pd-sr-card-in"><p class="pd-sr-lab">Last race · Round ${w.round}</p><h2>${escapeHtml(r?.name ?? w.title)}</h2><p class="pd-mut">${where}</p>` +
+    `<article class="pd-sr-card"><div class="pd-sr-card-in"><p class="pd-sr-lab">Last race · Round ${w.round}</p><h2>${page ? `<a href="${page}">${name}</a>` : name}</h2><p class="pd-mut">${where}</p>` +
     `<p class="pd-sr-line"><span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(w.winner)}</b></span> <span class="pd-mut">${how}</span></p></div>` +
     `${outline(r?.outline, ' pd-ol-big')}</article>`
   );
 }
 
-/** A round's tile: a finished round opens its line on the Results page, a round to come its month on the Calendar. */
+/** A round's tile: its weekend page where the series has them (O19); else a finished round opens its line on the
+ *  Results page, and a round to come its month on the Calendar. */
 function tile(d: SeriesData, r: CalendarRound, w: RoundWin | undefined, current: CalendarRound | undefined): string {
   const head = `<small>R${r.round}</small><b>${escapeHtml(r.place ?? r.name)}</b>${outline(r.outline)}`;
+  const page = weekendOf(d, r.round);
   if (w) {
     const won = `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(codeOf(d, w.winner))}</b>${w.date ? dayLabel(w.date) : ''}</span>`;
-    return `<a class="pd-sr-tile" href="${seriesPath(d.slug, 'results')}#r${r.round}">${head}${won}</a>`;
+    return `<a class="pd-sr-tile" href="${page ?? `${seriesPath(d.slug, 'results')}#r${r.round}`}">${head}${won}</a>`;
   }
   const when = dates(r.startDate, r.endDate);
   const label = r === current ? wk(r, `Next · ${when}`, `This weekend · ${when}`) : escapeHtml(when);
-  return `<a class="pd-sr-tile ${r === current ? 'is-now' : 'is-ahead'}" href="${calendarMonthPath(r.startDate.slice(0, 7))}#${escapeHtml(d.slug)}">${head}<span class="pd-sr-when">${label}</span></a>`;
+  return `<a class="pd-sr-tile ${r === current ? 'is-now' : 'is-ahead'}" href="${page ?? `${calendarMonthPath(r.startDate.slice(0, 7))}#${escapeHtml(d.slug)}`}">${head}<span class="pd-sr-when">${label}</span></a>`;
 }
 
 /** The top of a standings table with points bars sized against the leader; the driver's wins, races only. */
@@ -264,53 +283,85 @@ export function seriesOverview(d: SeriesData): Page {
 
 // ── Results ──────────────────────────────────────────────────────────────────
 
-/** A session's first rows; the rest wait in a fold (the operator, 21 Oct: "top 10 and then option to extend to 22"). */
-const FIRST_ROWS = 10;
-
-/** One session's classification: the first ten, then the rest in a fold; a team's colour beside each name. */
-function classification(d: SeriesData, t: Table): string {
-  const posAt = col(t.columns, 'Pos');
-  const nameAt = col(t.columns, 'Driver', 'Rider');
-  const teamAt = col(t.columns, 'Team');
-  const figures = t.columns.map((c, i) => i).filter(i => i !== posAt && i !== nameAt && i !== teamAt);
-  if (nameAt < 0) return '';
-  const cols = `pd-rs-c${Math.min(figures.length, 4)}`;
-  const row = (cells: string[]): string => {
-    const team = teamAt >= 0 ? cells[teamAt] : '';
-    return (
-      `<li><span class="pd-p">${escapeHtml(posAt >= 0 ? cells[posAt] : '')}</span><span class="pd-d"><i class="pd-rs-tb" style="--t:${colourOf(d, team)}"></i>` +
-      `<b>${escapeHtml(cells[nameAt])}</b>${team ? ` <small>${escapeHtml(teamLabel(team))}</small>` : ''}</span>` +
-      figures.map(i => `<span class="pd-v">${escapeHtml(cells[i] ?? '')}</span>`).join('') +
-      '</li>'
-    );
-  };
-  const head = `<div class="pd-rs-th ${cols}"><span>Pos</span><span>${escapeHtml(t.columns[nameAt])}</span>${figures.map(i => `<span>${escapeHtml(t.columns[i])}</span>`).join('')}</div>`;
-  const first = `<ol class="pd-rs-tbl ${cols}">${t.rows.slice(0, FIRST_ROWS).map(row).join('')}</ol>`;
-  const rest = t.rows.length > FIRST_ROWS
-    ? `<details class="pd-rs-more"><summary>All ${t.rows.length} · ${t.rows.length - FIRST_ROWS} more</summary><ol class="pd-rs-tbl ${cols}">${t.rows.slice(FIRST_ROWS).map(row).join('')}</ol></details>`
-    : '';
-  return head + first + rest;
-}
-
 /** The round's race: a sprint is never it (raceWins). */
-const raceOf = (r: ResultRound): ResultSession | undefined => r.sessions.find(s => s.label === 'Race') ?? [...r.sessions].reverse().find(s => !/^sprint/i.test(s.label));
+export const raceOf = (r: ResultRound): ResultSession | undefined => r.sessions.find(s => s.label === 'Race') ?? [...r.sessions].reverse().find(s => !/^sprint/i.test(s.label));
 
-/** A round as one fold: its line (its number, its name as rounds.json has it, its format, its winner, its date), then
- *  its race ten rows deep with the rest in a fold. The weekend's other sessions are stored (O15) for the weekend
- *  pages, which come in a slot of their own, a layout per format (the operator, 21 Oct: "one template cant cover all"). */
-function resultFold(d: SeriesData, r: ResultRound & { round: number }, race: ResultSession, w: RoundWin | undefined, open: boolean): string {
-  const name = d.rounds?.find(x => x.round === r.round)?.name ?? r.name;
-  const sprint = r.sessions.some(s => /^sprint$/i.test(s.label)) || (d.calendar ?? []).some(e => e.round === r.round && /^sprint$/i.test(e.session));
-  const when = w?.date ? dayLabel(w.date) : r.date ? dayLabel(r.date) : '';
-  const summary =
-    `<summary><span class="pd-rs-rn">R${r.round}</span><span class="pd-rs-name"><b>${escapeHtml(name)}</b>${sprint ? '<em class="pd-rs-fmt">Sprint<span> weekend</span></em>' : ''}</span>` +
-    (w ? `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(w.winner)}</b></span>` : '<span class="pd-rs-tbc"></span>') +
-    `<span class="pd-rs-dt">${escapeHtml(when)}</span></summary>`;
-  const tables = race.tables.map(t => `${race.tables.length > 1 ? `<h4>${escapeHtml(t.title)}</h4>` : ''}${classification(d, t)}`).join('');
-  return `<details class="pd-rs-round" id="r${r.round}"${open ? ' open' : ''}>${summary}<div class="pd-rs-body"><h3>${escapeHtml(race.label)}</h3>${tables}</div></details>`;
+/** A sprint weekend: a Sprint stored for the round, or timed for it. */
+export const sprintWeekend = (d: SeriesData, round: number, r?: ResultRound): boolean =>
+  (r?.sessions ?? []).some(s => /^sprint$/i.test(s.label)) || (d.calendar ?? []).some(e => e.round === round && /^sprint$/i.test(e.session));
+
+export interface WeekendScore {
+  name: string;
+  team: string;
+  /** The sprint's points, the race's and their total. */
+  s: number;
+  r: number;
+  t: number;
+  /** The race's finishing place; 99 for a driver who scored in the sprint alone. */
+  pos: number;
 }
 
-/** /series/<slug>/results/: a fold a round that has raced, the latest first and open. */
+/** Every driver who scored at a round: the sprint's points and the race's, by the weekend's total, equal totals by the
+ *  race's result (the operator, 21 Oct: "points only in every fold"). */
+export function weekendPoints(r: ResultRound): WeekendScore[] {
+  const rows = new Map<string, WeekendScore>();
+  const add = (t: Table | undefined, key: 's' | 'r') => {
+    if (!t) return;
+    const nameAt = col(t.columns, 'Driver');
+    const teamAt = col(t.columns, 'Team');
+    const ptsAt = col(t.columns, 'Pts', 'Points');
+    const posAt = col(t.columns, 'Pos');
+    if (nameAt < 0 || ptsAt < 0) return;
+    for (const row of t.rows) {
+      const x = rows.get(row[nameAt]) ?? { name: row[nameAt], team: teamAt >= 0 ? row[teamAt] : '', s: 0, r: 0, t: 0, pos: 99 };
+      x[key] = Number.parseFloat(row[ptsAt]) || 0;
+      if (key === 'r') x.pos = Number(posAt >= 0 ? row[posAt] : '') || 99;
+      rows.set(x.name, x);
+    }
+  };
+  add(r.sessions.find(s => s.label === 'Race')?.tables[0], 'r');
+  add(r.sessions.find(s => /^sprint$/i.test(s.label))?.tables[0], 's');
+  return [...rows.values()].map(x => ({ ...x, t: x.s + x.r })).filter(x => x.t > 0).sort((a, b) => b.t - a.t || a.pos - b.pos);
+}
+
+/** A round's points as a table: a sprint weekend's S, R and Total for every scorer, a standard one's Pos, Driver, Team
+ *  and Pts. */
+export function pointsTable(d: SeriesData, rows: WeekendScore[], sprint: boolean): string {
+  const who = (x: WeekendScore) => `<td class="d">${tick(d, x.team)}<b>${escapeHtml(codeOf(d, x.name))}</b><span>${escapeHtml(x.name)}</span></td><td class="tm">${escapeHtml(teamLabel(x.team))}</td>`;
+  const head = sprint
+    ? '<tr><th class="d">Driver</th><th class="tm">Team</th><th class="n" title="Sprint">S</th><th class="n" title="Race">R</th><th class="n tot">Total</th></tr>'
+    : '<tr><th class="p">Pos</th><th class="d">Driver</th><th class="tm">Team</th><th class="n tot">Pts</th></tr>';
+  const body = rows
+    .map(x => (sprint ? `<tr>${who(x)}<td class="n">${x.s || '–'}</td><td class="n">${x.r || '–'}</td><td class="n tot">${x.t}</td></tr>` : `<tr><td class="p">${x.pos === 99 ? '–' : x.pos}</td>${who(x)}<td class="n tot">${x.t}</td></tr>`))
+    .join('');
+  const note = sprint ? `Every driver who scored this weekend (${rows.length}), by the weekend's total; equal totals by the race result.` : rows.length === 1 ? 'The driver who scored.' : `The ${rows.length} drivers who scored.`;
+  return rows.length ? `<table class="pd-wk-tbl pd-wk-pts"><thead>${head}</thead><tbody>${body}</tbody></table><p class="pd-wk-note">${note}</p>` : '';
+}
+
+/** A round as one row in its winner's colour (approved as drawn on Paddock Weekend Drafts): its number, its name, place
+ *  and dates, its winner, and See weekend → to its weekend page; open, the weekend's points. */
+function resultRow(d: SeriesData, r: ResultRound & { round: number }, race: ResultSession, w: RoundWin | undefined, open: boolean): string {
+  const cr = d.rounds?.find(x => x.round === r.round);
+  const name = cr?.name ?? r.name;
+  const sprint = sprintWeekend(d, r.round, r);
+  const st = r.sessions.find(s => /^sprint$/i.test(s.label))?.tables[0];
+  const sprintWin = st?.rows[0]?.[col(st.columns, 'Driver')];
+  const when = cr ? dates(cr.startDate, cr.endDate) : w?.date ? dayLabel(w.date) : r.date ? dayLabel(r.date) : '';
+  const where = [cr?.place ?? '', when].filter(Boolean).map(escapeHtml).join(' · ');
+  const page = weekendOf(d, r.round);
+  const also = sprintWin && w ? (sprintWin === w.winner ? ' · won the sprint too' : ` · sprint: ${escapeHtml(sprintWin)}`) : '';
+  const winner = w
+    ? `<span class="pd-rs-win">${tick(d, w.team)}<b>${escapeHtml(w.winner)}</b><small>${escapeHtml(teamLabel(w.team))}${also}</small></span>`
+    : '<span class="pd-rs-win"></span>';
+  const summary =
+    `<summary><span class="pd-rs-n">${r.round}</span><span class="pd-rs-name"><b>${escapeHtml(name)}</b><small>${where}${sprint ? ' · <em>Sprint</em>' : ''}</small></span>` +
+    `${winner}${page ? `<a class="pd-rs-go" href="${page}">See weekend →</a>` : '<span></span>'}</summary>`;
+  const all = race.tables[0]?.rows.length ?? 0;
+  const more = page ? `<a class="pd-rs-all" href="${page}">All ${all} and every session on the weekend page →</a>` : '';
+  return `<details class="pd-rs-row" id="r${r.round}" style="--t:${w ? colourOf(d, w.team) : NEUTRAL}"${open ? ' open' : ''}>${summary}<div class="pd-rs-fold">${pointsTable(d, weekendPoints(r), sprint)}${more}</div></details>`;
+}
+
+/** /series/<slug>/results/: a row a round that has raced, the latest first and open. */
 export function seriesResults(d: SeriesData): Page {
   const wins = raceWins(d);
   const current = (d.rounds ?? []).find(r => !wins.has(r.round));
@@ -320,9 +371,9 @@ export function seriesResults(d: SeriesData): Page {
       return r.round !== null && race ? [{ r: r as ResultRound & { round: number }, race }] : [];
     })
     .sort((a, b) => b.r.round - a.r.round);
-  const line = [d.season ? String(d.season) : '', `${wins.size} round${wins.size === 1 ? '' : 's'} run`, 'the latest first'].filter(Boolean).join(' · ');
+  const line = [d.season ? String(d.season) : '', `${wins.size} of ${(d.rounds ?? []).length || wins.size} rounds run`, 'the latest first'].filter(Boolean).join(' · ');
   const list = raced.length
-    ? `<div class="pd-rs">${raced.map(({ r, race }, i) => resultFold(d, r, race, wins.get(r.round), i === 0)).join('')}</div>`
+    ? `<div class="pd-rs">${raced.map(({ r, race }, i) => resultRow(d, r, race, wins.get(r.round), i === 0)).join('')}</div>`
     : '<p class="pd-mut">No results yet this season.</p>';
   const main =
     `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, wins, current)}${tabs(d, 'results')}` +
@@ -442,10 +493,13 @@ function weekendCards(list: ListEntry[]): string {
     .map(({ d, next }) => {
       const r = next as CalendarRound;
       const name = r.name.replace(/ Grand Prix\b/, ' GP');
+      // A series with weekend pages (O19) opens its weekend; the others open the Calendar showing that series.
+      const page = weekendOf(d, r.round);
+      const where = page ? 'its weekend page' : 'on the Calendar';
       return (
         `<article class="pd-sx-wk" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}" style="--t:${HEX.test(d.colour ?? '') ? d.colour : NEUTRAL}" hidden>` +
         `<header><b>${escapeHtml(d.name)}</b><small>Round ${r.round}</small></header>` +
-        `<div><a href="/calendar/#${escapeHtml(d.slug)}" aria-label="${escapeHtml(`${d.name}, round ${r.round}: ${name}, on the Calendar`)}"><b>${escapeHtml(name)}</b></a><span>${dates(r.startDate, r.endDate)}</span></div></article>`
+        `<div><a href="${page ?? `/calendar/#${escapeHtml(d.slug)}`}" aria-label="${escapeHtml(`${d.name}, round ${r.round}: ${name}, ${where}`)}"><b>${escapeHtml(name)}</b></a><span>${dates(r.startDate, r.endDate)}</span></div></article>`
       );
     })
     .join('');
