@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.294 — 2026-10-22
+
+### O19: the earlier sessions two a row, as drafted
+
+The operator, after the publish of 22 Oct, with a screenshot of round 17: "layout of previous sessions is odd on a weekend overview for a sprint weekend". The Overview's Earlier in the weekend (and Done so far, before a race) gave its cards as many 340 px columns as fit: three at the operator's screen, so a sprint weekend's four sat three and one, a three-row practice card beside ten-row ones. Correction: the approved drafts set two a row; the build's auto-fill was a deviation of mine. Shown three layouts as drawings, the operator chose two a row, by day. Theme 0.1.16, CSS only, so no publish run.
+
+- **Two cards a row** (`.pd-sc-grid`), one a row at 699 px and below. The cards keep the order the sessions ran, so whenever every session has its result each row holds a day's two: Friday's practice and sprint qualifying, then Saturday's sprint and qualifying; on a standard weekend Practice 1 and 2, then Practice 3 and qualifying.
+- **One height a row:** the cards stretch to the taller of the two, each with its link at the bottom (`.pd-sc` a column, `.pd-sc-go` pushed down).
+- **Records:** O19 stays started until the operator's test; IDEAS gains Antonelli's two names on one weekend.
+
+Verified on the theme preview (0.1.16, round 17, the clock fixed on 22 Oct): at 1,885, 1,600, 1,440, 1,024, 768 and 700 px the rows read Practice 1 + Sprint Qualifying, then Sprint + Qualifying, each pair one height with its links at the bottom; at 699, 390 and 300 px one card a row; no sideways scroll; 0 page errors. `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,893 tests.
+
+**Review.** One fresh-context Sonnet reader, on the operator's word: 284,799 tokens against an estimate of 100,000 to 200,000, 94 tool calls, about 19 minutes. Mergeable after fixes: 0 blockers, 1 should-fix, 4 nits. The reader measured 33 widths from 300 to 2,560 px in Day and Night, 13 odd cases (one, two, three and five cards; a card without rows; a standard weekend; Done so far) and rounds 1 to 17 injected into the page, all clean.
+- **Folded:**
+  - the handoff's item 8 rewritten: it gave the publish a wrong time, left a stale line about the next PR, and showed the plan's path without its backslashes;
+  - "each row holds a day's two" made exact above: the pairing follows the running order, so a session whose result lags would pair across days until the next run (IDEAS).
+- **Accepted:**
+  - between 1,000 and 1,099 px, beside the side column, a card is 283 to 331 px wide and a long name ends in an ellipsis, while its code always shows;
+  - at 150% text in a browser between 1,000 and 1,013 px, a card's weather passes its edge by up to 6 px (measured again: 6 px at 1,000, 3 at 1,007, none at 1,014). A wrapping header would fix it but would also move the weather under the title on every phone, so it stays (IDEAS).
+- **Checked again:** at 1,600 px, inside the range of 1,491 to 1,860 px where 0.1.15 showed three and one, the cards read two a row.
+
 ## 1.0.293 — 2026-10-22
 
 ### O19, part 2: Formula 1's weekend pages

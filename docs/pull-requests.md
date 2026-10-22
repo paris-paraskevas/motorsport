@@ -14,6 +14,34 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1183 · 1.0.294 · O19, a follow-up (the earlier sessions two a row, as drafted, each pair one height) · opened 2026-10-22 into `next` on the operator's report ("layout of previous sessions is odd on a weekend overview for a sprint weekend") and their choice of "Two a row, by day" from three drawings; the merge on the word
+**Two a row, as drafted.** After the publish, the operator found a sprint weekend's earlier sessions sitting three and one: the cards took as many 340 px columns as fit, where the approved drafts set two. The records of #1181's merge, its publish and the check on the site ride in from the local o19/pages-records.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.16, a weekend's earlier sessions sit two to a row, a day's two together, each pair the same height; one a row on a phone.
+- **Editors get:** nothing.
+- **Files (10):**
+  - `wp-theme/paddock/style.css` · 0.1.16: `.pd-sc-grid` two columns, one at 699 px and below; `.pd-sc` a column with `.pd-sc-go` at its bottom.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.294.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md`, `IDEAS.md`:
+    - #1181's MERGED, UPLOADED, PUBLISHED and CHECKED evidence;
+    - the operator's report, the answer and this fix;
+    - a landmine for dispatching the publish workflow from Git Bash;
+    - IDEAS: Antonelli's two names on one weekend.
+- **Verified:**
+  - on the theme preview (0.1.16, round 17): two a row, each pair one height, from 700 to 1,885 px; one a row at 699, 390 and 300 px; no sideways scroll; 0 page errors;
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,893 tests;
+  - theme zip built: 33 files, Version 0.1.16.
+- **Test after upload:**
+  1. `/series/f1/2026/round-17/` on a laptop: Practice 1 beside Sprint Qualifying, Sprint beside Qualifying, each pair the same height, its links on one line at the bottom.
+  2. The same page on a phone: one card a row.
+  3. `/series/f1/2026/round-16/`, a standard weekend: Practice 1 beside Practice 2, Practice 3 beside Qualifying.
+- **After the merge:** the upload of 0.1.16; CSS only, so no publish run.
+- **Review:** one fresh-context Sonnet reader, on the operator's word (“My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1183.”).
+  - Cost: 284,799 tokens against an estimate of 100,000 to 200,000; 94 tool calls; about 19 minutes.
+  - Verdict: mergeable after fixes; 0 blockers, 1 should-fix, 4 nits. Measured clean: 33 widths from 300 to 2,560 px in Day and Night, 13 odd cases, rounds 1 to 17 injected into the page.
+  - Folded: the handoff's item 8 rewritten (a wrong time, a stale line, the plan's path without its backslashes); the CHANGELOG's "a day's two" made exact (the pairing follows the running order).
+  - Accepted: a long name's ellipsis in the 283 to 331 px cards between 1,000 and 1,099 px; at 150% text between 1,000 and 1,013 px, a card's weather up to 6 px past its edge (a wrapping header would move the weather under the title on every phone). Both are IDEAS lines.
+  - Checked again at 1,600 px, inside 0.1.15's three-and-one range: two a row.
+
 ## #1181 · 1.0.293 · O19, part 2 (Formula 1's weekend pages: the season, each round's Overview, a page per session; Results redrawn) · opened 2026-10-22 into `next` on the operator's "Start O19's PR 2, the weekend pages, built full width from o27/records." and the plan approved in plan mode; the merge on the word
 **The weekend pages.** The operator settled them on Paddock Weekend Drafts (version 3) and approved a build in two PRs. Part 1 (#1179) keeps the data, and the backfill filled rounds 6 to 17; this part writes the pages, full width as O27 set. The records of #1180's merge ride in from the local o27/records.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the merge, the upload of 0.1.15 and the two publish runs:
