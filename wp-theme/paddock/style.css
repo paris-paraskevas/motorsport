@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.15
+Version: 0.1.16
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -755,8 +755,10 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-wk-next span { font-size: .8rem; color: var(--pd-muted); }
 .pd-wk-ol { position: absolute; top: 12px; right: 14px; width: 54px; height: 54px; color: var(--pd-ink); }
 .pd-wkp .pd-wk-prev { font-size: .82rem; font-weight: 700; color: var(--pd-muted); }
-.pd-sc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; align-items: start; }
-.pd-sc { display: grid; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--s, #ff4136); }
+/* Two cards a row, as the drafts drew them: the sessions run in order, so a row holds a day's two (Friday's, then
+   Saturday's); the cards in a row share one height, each with its link at the bottom (the operator, 22 Oct). */
+.pd-sc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.pd-sc { display: flex; flex-direction: column; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--s, #ff4136); }
 .pd-sc header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 12px 14px 10px; border-bottom: 1px solid var(--pd-line); }
 .pd-sc h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
 .pd-sc header p { margin: 2px 0 0; font-size: .76rem; color: var(--pd-muted); }
@@ -770,7 +772,7 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-sc-rows .nm { overflow: hidden; color: var(--pd-muted); text-overflow: ellipsis; white-space: nowrap; }
 .pd-sc-rows .tt { text-align: right; white-space: nowrap; }
 .pd-sc-rows .pp { text-align: right; font-weight: 800; }
-.pd-wkp .pd-sc-go { padding: 9px 14px; border-top: 1px solid var(--pd-line); font-size: .82rem; font-weight: 800; }
+.pd-wkp .pd-sc-go { margin-top: auto; padding: 9px 14px; border-top: 1px solid var(--pd-line); font-size: .82rem; font-weight: 800; }
 .pd-wk-credit { margin: 0; padding: 0 var(--pd-gutter) 28px; font-size: .74rem; color: var(--pd-muted); }
 /* Pit wall: each driver's tyres, lap by lap, a line every five laps, a stint's laps on hover, focus or a tap. */
 .pd-pw { position: relative; display: grid; gap: 6px; padding: 14px 16px 12px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
@@ -869,6 +871,7 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 	.pd-wk-row .pd-wk-wx b { margin-right: 6px; font-size: .9rem; }
 	.pd-wk-row .pd-wk-go { grid-area: go; }
 	.pd-wk-row .pd-wk-go .t, .pd-sc-rows .nm { display: none; }
+	.pd-sc-grid { grid-template-columns: minmax(0, 1fr); }
 	.pd-pw { padding: 12px 10px 10px; }
 	.pd-pw-axis, .pd-pw-row { grid-template-columns: 46px minmax(0, 1fr) 40px; gap: 6px; }
 	.pd-pw-d .pd-tc, .pd-pw-scale span.o { display: none; }

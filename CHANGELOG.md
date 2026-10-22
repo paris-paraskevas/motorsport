@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.294 — 2026-10-22
+
+### O19: the earlier sessions two a row, as drafted
+
+The operator, after the publish of 22 Oct, with a screenshot of round 17: "layout of previous sessions is odd on a weekend overview for a sprint weekend". The Overview's Earlier in the weekend (and Done so far, before a race) gave its cards as many 340 px columns as fit: three at the operator's screen, so a sprint weekend's four sat three and one, a three-row practice card beside ten-row ones. Correction: the approved drafts set two a row; the build's auto-fill was a deviation of mine. Shown three layouts as drawings, the operator chose two a row, by day. Theme 0.1.16, CSS only, so no publish run.
+
+- **Two cards a row** (`.pd-sc-grid`), one a row at 699 px and below. The sessions run in order, so each row holds a day's two: Friday's practice and sprint qualifying, then Saturday's sprint and qualifying; on a standard weekend Practice 1 and 2, then Practice 3 and qualifying.
+- **One height a row:** the cards stretch to the taller of the two, each with its link at the bottom (`.pd-sc` a column, `.pd-sc-go` pushed down).
+- **Records:** O19 stays started until the operator's test; IDEAS gains Antonelli's two names on one weekend.
+
+Verified on the theme preview (0.1.16, round 17, the clock fixed on 22 Oct): at 1,885, 1,440, 1,024, 768 and 700 px the rows read Practice 1 + Sprint Qualifying, then Sprint + Qualifying, each pair one height with its links at the bottom; at 699, 390 and 300 px one card a row; no sideways scroll; 0 page errors. `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,893 tests.
+
 ## 1.0.293 — 2026-10-22
 
 ### O19, part 2: Formula 1's weekend pages
