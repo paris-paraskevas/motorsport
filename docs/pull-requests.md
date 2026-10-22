@@ -14,6 +14,24 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1179 · 1.0.291 · O19, part 1 (the weekend pages' data: OpenF1's session weather, marks and tyres, circuit maps, MET Norway's forecast) · opened 2026-10-22 into `next` on the operator's "The defaults on both pages stand: O19's six and the control room's three. Plan O19's build in plan mode." and the plan approved in plan mode; the merge on the word
+**The data first.** The operator settled Formula 1's weekend pages on Paddock Weekend Drafts (version 3) and approved a build in two PRs; this one keeps what the pages will show on the paddock-data branch, so the season backfills while the pages are built. Session 70's records ride in from o24/records: rule 12, the narrowed content law, O25 and O26, the drafts' rounds.
+- **Readers see:** nothing; no page changes (rendered from the stored data with this branch and with `next`, 72 of 72 pages keep their hash).
+- **Editors get:** nothing.
+- **Files (20):**
+  - `lib/openf1/weekend.ts`, `lib/openf1/weekend.test.ts` · new: the weather (`weatherSummary`), race control's marks (`sessionMarks`, `trackTimeToUtc`), the tyres (`driverStints`), the pole lap (`poleLap`) and its map (`circuitMap`); tested on OpenF1's own rows from Singapore's Sprint and Monza's race.
+  - `lib/met-norway.ts`, `lib/met-norway.test.ts` · new: MET Norway's forecast with its terms' caching (`venueForecast`), the step a session starts in (`stepFor`), the symbol in words (`symbolLabel`).
+  - `lib/openf1/types.ts` · `OF1Weather`.
+  - `scripts/wp-publish.mts` · `f1Weekend` (the forecasts, the maps, then the sessions, within budget and five minutes), `nearestOpenF1` shared with the classifications, `calendarRounds` keeping the host's key and zone, `--only` with commas.
+  - `lib/wp/render.ts`, `lib/wp/render.test.ts` · `CalendarRound.circuit` and `tz`; `onlyFamily` with commas, tested.
+  - `.github/workflows/wp-publish.yml` · the scheduled default `/calendar/,/series/f1/` (the schedule stays off until launch); the inputs' descriptions.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.291.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md`, `docs/plan/rules.md`, `CLAUDE.md`, `IDEAS.md` · session 70's records from o24/records (O19's drafts and decisions, rule 12, the content law narrowed, O25 and O26, the IDEAS lines) and O19's evidence for this PR.
+- **Verified:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 281 files, 2,836 tests. Two local fetch runs into a copy of paddock-data (WordPress not called): feeds 42 OK; 85 sessions kept (rounds 1 to 17), Singapore's Sprint late at 09:30Z with rain and Monza's race red-flagged on lap 3 and restarted among them; 12 maps of 17; Austin's and Mexico City's forecasts (90 steps; the second run kept Austin's, not yet expired); the files 193 KB, 173 KB and 27 KB. Rendered from `origin/paddock-data` with this branch and with `next`: 72 of 72 pages with the same hash.
+- **Test after upload:** none; no theme change.
+- **After the merge:** one dispatch with `openf1_max` 60 to backfill the season, on the operator's word.
+- **Review:** waiting for the operator's 5-hour figure.
+
 ## #1178 · 1.0.290 · O24 (the Calendar's month changer, A with C, the calendar's follow-ups and clickable series cards) · opened 2026-10-22 into `next` on the operator's "A with C: build it in the Calendar's small PR" and the plan approved in plan mode; the merge on the word
 **The month as the headline, with a bar that stays.** The operator asked for an easier month changer in the test of 21 Oct, chose A with C from the drafts of 22 Oct, and asked mid-build for the series list's cards to be clickable; the calendar's follow-ups from the reviews of #1170, #1173 and #1177 ride here, with O23's records (the merge of #1177 and the drafts).
 - **Readers see:** nothing yet; the site is in Coming Soon. After the merge, theme 0.1.13 and two publish runs (`--only /calendar/`, `--only /series/f1/`): the Calendar's month as the page's headline, with buttons named for the months either side and a slim bar holding them at the top of the screen once they scroll away, and the Month view fitting the screen under that bar, every event shown; the Series dropdown matching a visit from a series page; race week only in the month that holds today; a race's label cut cleanly; no sideways scroll at 320 px; on /series/, Formula 1's whole card opening its page and the cards racing this weekend opening the Calendar showing their series.
