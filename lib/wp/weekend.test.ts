@@ -288,7 +288,7 @@ describe('a weekend before it starts', () => {
     expect(before).toContain(
       '<li><span class="p">1</span><i class="pd-tc" style="--t:#1E3A8A"></i><span class="d"><b>Max Verstappen</b><small>Red Bull Racing</small></span><span class="g">Leader</span><b class="pt">57</b></li>',
     );
-    expect(before).toContain('<span class="pd-wk-more is-off">Full standings →</span>');
+    expect(before).toContain('<a class="pd-wk-more" href="/series/f1/standings/">Full standings →</a>');
     expect(before).toContain(
       '<dt>Circuit</dt><dd>Suzuka International Racing Course</dd><dt>Country</dt><dd>Japan</dd><dt>Track time</dt><dd>UTC+9<span class="pd-wk-ahead" data-pd-ahead="540" data-pd-at="2026-03-27T02:30:00Z"></span></dd><dt>Format</dt><dd>Standard weekend</dd>',
     );

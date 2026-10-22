@@ -14,6 +14,51 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1184 · 1.0.295 · O16 (Formula 1's Standings: who can still win it, and the teammates) · opened 2026-10-22 into `next` on the operator's "Start O16: Formula 1's Standings. Show me the notes file you need my word on first.", the notes file approved ("As shown, drivers only"), the switch answered ("Both by default on a laptop") and the plan approved in plan mode; the merge on the word
+**The Standings page.** Built as drawn on The Paddock Drafts, full width. The Court of Appeal's Monaco ruling is in the feeds' totals with no sign of it, so its small numbers come from a notes file of ours. The records of #1183's merge, the upload of 0.1.16, the check on the site and O16's opening ride in from the local o19/cards-records.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.17 and one publish run:
+  - `/series/f1/standings/`: the drivers and Who can still win it beside the constructors, then the teammates; a switch for Drivers, Constructors or Both;
+  - the Standings tab live on every Formula 1 page, and the Overview's "All 23 →", the series list's Standings and the weekend pages' "Full standings →" leading to it.
+- **Editors get:** `content/series/f1/standings-notes.json`, a ruling a line, for the small numbers and the line under the table.
+- **Files (25):**
+  - `lib/wp/series.ts` · `seriesStandings`, with `pointsLeft`, `stillIn` and `teammates`; `BUILT` gains Formula 1's standings; `seriesFamily` returns the page.
+  - `lib/wp/series.test.ts` · 14 new tests, two of them from the review; four changed where a greyed Standings link became a link.
+  - `lib/wp/weekend.test.ts` · one changed: "Full standings →" is a link.
+  - `lib/series-content.ts` · `loadStandingsNotes` and the notes' types.
+  - `lib/wp/render.ts` · `SeriesData.standingsNotes`.
+  - `scripts/wp-publish.mts` · reads the season's notes for Formula 1.
+  - `content/series/f1/standings-notes.json` · new: the 2026 ruling of 3 September with its sources.
+  - `wp-theme/paddock/style.css` · 0.1.17: `.pd-st-*` under `.pd-stp`, one column below 1,200 px, the phone's rules at 699 px, names wrapping below 360 px.
+  - `wp-theme/paddock/assets/js/paddock.js` · the switch.
+  - `wp-theme/preview/f1-standings.html` · new, from the dry run; `blueprint.json` inserts it under Formula 1.
+  - `wp-theme/preview/f1.html`, `f1-results.html`, `f1-season.html`, `f1-weekend.html`, `series.html` · regenerated: the Standings links.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.295.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md`, `IDEAS.md`:
+    - #1183's MERGED, UPLOADED and CHECKED evidence, O19 done;
+    - O16's OPENED, ANSWERED, PLANNED, BUILT and VERIFIED evidence;
+    - IDEAS: dark team colours in Night, Who can still win it early in a season, the bars at 2,560 px, a long name cutting its small number.
+    - `docs/HANDOFF.md` keeps its CRLF endings: the records commit 1059facc had turned them to LF, restored here.
+- **Answered:** the line reads "next update after Sunday's United States Grand Prix" where the drafts read "race in Austin", since rounds.json's place is a country for some rounds; kept as built on the operator's word ("Keep "next update after Sunday's United States Grand Prix" as built.").
+- **Verified:**
+  - the dry run's hand count at round 17: 150 points left, six drivers in, Piastri out by 52, 258 for the constructors with Ferrari, McLaren and Red Bull Racing alive; all 11 teams' teammates add up to the constructors' table;
+  - on the theme preview (0.1.17): 20 widths from 300 to 2,560 px, Day and Night, no sideways scroll and no name cut; the switch by real clicks at 1,440 and 390 px; both tables without the script; six links to the page clicked; 0 page errors;
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,905 tests;
+  - theme zip built: 40 files, Version 0.1.17.
+- **Test after upload:**
+  1. `/series/f1/standings/` on a laptop: Both pressed; the drivers on the left with the dashed line under Norris; Who can still win it and the constructors on the right.
+  2. Drivers, then Constructors, then Both: the constructors hide, stand alone full width, come back.
+  3. On a phone: Drivers pressed, no Both, short names; Constructors shows the constructors alone.
+  4. Piastri's +2, Hadjar's +3 and Gasly's −9; the line under the table links fia.com and formula1.com.
+  5. Teammates: "Also Lawson: 14 points in rounds 12 to 14" on Red Bull Racing's card.
+  6. The Standings tab and "All 23 →" on `/series/f1/`, and "Full standings →" on `/series/f1/2026/round-17/`, open the page.
+- **After the merge:** the upload of 0.1.17; one publish run `--only /series/f1/` (about 145 pages); the check on the site; the operator's test.
+- **Review:** one fresh-context Sonnet reader, on the operator's word ("Review now anyway", shown the weekly limit for all models at 95% until 24 Oct 21:00Z).
+  - Cost: 236,326 tokens against an estimate of about 100,000; 32 tool calls; about 13 minutes; the code diff only, no browser.
+  - Verdict: mergeable after fixes; 0 blockers, 1 should-fix, 7 nits. Probed on the stored data: no NaN or undefined, the hand count, all 11 teams' sums, escaping.
+  - Folded: a stored race closes its sprint (the should-fix: 158 left instead of 150 with a sprint result missing); the page written as of what the table counts when the standings lag the results; no second-team sentence for a table without teams; no one named in or out without the season's rounds.
+  - Accepted: the Teammates bar a share of the team's total, as drafted; a round without a zone in UTC and an untimed race without the clause, both tested; a long name cutting its small number on a phone (IDEAS).
+  - After the fold: 282 files, 2,907 tests; the dry run's 143 pages identical.
+
 ## #1183 · 1.0.294 · O19, a follow-up (the earlier sessions two a row, as drafted, each pair one height) · opened 2026-10-22 into `next` on the operator's report ("layout of previous sessions is odd on a weekend overview for a sprint weekend") and their choice of "Two a row, by day" from three drawings; the merge on the word
 **Two a row, as drafted.** After the publish, the operator found a sprint weekend's earlier sessions sitting three and one: the cards took as many 340 px columns as fit, where the approved drafts set two. The records of #1181's merge, its publish and the check on the site ride in from the local o19/pages-records.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.16, a weekend's earlier sessions sit two to a row, a day's two together, each pair the same height; one a row on a phone.

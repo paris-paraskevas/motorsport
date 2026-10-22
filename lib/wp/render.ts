@@ -11,6 +11,7 @@ import type { Series, SeriesRoundEntry } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
 import type { MapsStore, SessionExtras, SessionsStore } from '@/lib/openf1/weekend';
 import type { VenueForecast } from '@/lib/met-norway';
+import type { StandingsNote } from '@/lib/series-content';
 
 // ── Stored shapes: what `<slug>/{standings,results,calendar}.json` hold ─────
 
@@ -687,6 +688,8 @@ export interface SeriesData {
   /** Formula 1's weekend data (O19) as the publisher keeps it beside the results: each session's weather, marks and
    *  tyres, each circuit's map, and the forecast for each circuit racing within ten days. */
   weekend?: { sessions: SessionsStore; maps: MapsStore; forecast: Record<string, VenueForecast> };
+  /** The season's rulings that changed points after the races (standings-notes.json), for the Standings page (O16). */
+  standingsNotes?: StandingsNote[];
   /** For the series list (slot O21), every series: its type (meta.json category), its colour, and the champion of
    *  its season as champions.json writes it, when it does. */
   category?: string;

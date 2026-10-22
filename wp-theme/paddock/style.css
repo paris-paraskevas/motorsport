@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.16
+Version: 0.1.17
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -643,6 +643,94 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 	.pd-rs-win, .pd-rs-go { grid-column: 2; }
 	.pd-rs-go { font-size: .8rem; }
 	.pd-rs-fold { padding: 12px; }
+}
+
+/* Standings (O16), as approved on The Paddock Drafts: the drivers with bars against the leader, the gaps and race wins,
+   the leader tinted and a dashed line under the last driver who can still win; Who can still win it; the constructors;
+   the teammates. The script's switch sets data-show on .pd-stp (a laptop opens on Both, a phone on Drivers); without
+   it both tables stand. A team's colour rides in --t on its row. */
+.pd-st-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; margin-bottom: 18px; }
+.pd-sr .pd-st-h { margin: 0 0 6px; font-size: 2.125rem; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
+.pd-st-head p { font-size: .9rem; color: var(--pd-muted); }
+.pd-st-seg { display: inline-flex; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); }
+.pd-st-seg[hidden] { display: none; }
+.pd-st-seg button { padding: 10px 18px; border: 0; border-left: 1px solid var(--pd-line-strong); border-radius: 0; background: none; color: var(--pd-muted); font: inherit; font-size: .84rem; font-weight: 800; cursor: pointer; }
+.pd-st-seg button:first-child { border-left: 0; }
+.pd-st-seg button[aria-pressed="true"] { background: var(--pd-ink); color: var(--pd-ground); }
+.pd-st-seg button:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
+.pd-st-cols { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.pd-st-th, .pd-st-tbl li { display: grid; grid-template-columns: 30px 4px minmax(0, 1fr) 130px 48px 56px 40px; gap: 10px; }
+.pd-st-th.c, .pd-st-tbl.c li { grid-template-columns: 30px 4px minmax(0, 1fr) 48px 56px 40px; }
+.pd-st-th { padding: 10px 12px; border: 1px solid var(--pd-line); border-bottom: 0; background: var(--pd-sunken); font-size: .75rem; color: var(--pd-muted); }
+.pd-st-th span:nth-child(n+5), .pd-st-th.c span:nth-child(4) { text-align: right; }
+.pd-st-tbl { list-style: none; margin: 0; padding: 0; border: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-st-tbl li { align-items: center; padding: 7px 12px; border-top: 1px solid var(--pd-line); }
+.pd-st-tbl li:first-child { border-top: 0; }
+.pd-st-tbl li.lead { background: color-mix(in srgb, var(--pd-accent) 14%, var(--pd-surface)); }
+.pd-st-tbl li.cut + li { border-top: 1.5px dashed var(--pd-muted); }
+.pd-st-tbl .p { font-weight: 800; text-align: center; }
+.pd-st-tbl .tb { width: 4px; height: 26px; background: var(--t); }
+.pd-st-tbl .d { display: grid; min-width: 0; }
+.pd-st-tbl .d b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .906rem; font-weight: 800; }
+.pd-st-tbl .d .sn { display: none; }
+.pd-st-tbl .d sup { margin-left: 3px; font-size: .656rem; font-weight: 700; color: var(--pd-muted); }
+.pd-st-tbl .d small { font-size: .75rem; color: var(--pd-muted); }
+.pd-st-tbl .bar { height: 8px; background: var(--pd-sunken); }
+.pd-st-tbl .bar i { display: block; height: 100%; background: var(--t); }
+.pd-st-tbl .pt { font-size: 1rem; font-weight: 800; text-align: right; }
+.pd-st-tbl .g, .pd-st-tbl .w { font-size: .8125rem; text-align: right; color: var(--pd-muted); }
+.pd-sr .pd-st-foot { max-width: 760px; margin-top: 12px; font-size: .8125rem; line-height: 1.55; color: var(--pd-muted); }
+.pd-st-foot a { color: inherit; }
+.pd-st-who { border: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-sr .pd-st-who h3 { margin: 0; padding: 16px 16px 4px; font-size: 1.125rem; font-weight: 800; }
+.pd-sr .pd-st-who > p:first-of-type { padding: 0 16px 14px; border-bottom: 2px solid var(--pd-ink); font-size: .8125rem; line-height: 1.5; color: var(--pd-muted); }
+.pd-st-who ol { list-style: none; margin: 0; padding: 0; }
+.pd-st-who li { display: grid; grid-template-columns: 96px minmax(0, 1fr) 52px; align-items: center; gap: 10px; padding: 9px 16px; border-top: 1px solid var(--pd-line); font-size: .875rem; }
+.pd-st-who li:first-child { border-top: 0; }
+.pd-st-who li b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 800; }
+.pd-st-who .lab { font-size: .75rem; color: var(--pd-muted); }
+.pd-st-who .v { font-weight: 800; text-align: right; }
+.pd-st-who .wb { height: 14px; background: var(--pd-sunken); }
+.pd-st-who .wb i { display: block; height: 100%; background: var(--t); }
+.pd-st-who li.out { color: var(--pd-muted); }
+.pd-st-who li.out .wb { background: none; border: 1.5px solid var(--pd-muted); }
+.pd-st-who li.out .wb i { display: none; }
+.pd-sr .pd-st-sum { padding: 12px 16px 16px; border-top: 1px solid var(--pd-line); font-size: .8125rem; line-height: 1.5; color: var(--pd-muted); }
+.pd-sr .pd-st-ch { margin: 26px 0 10px; font-size: 1.375rem; font-weight: 800; }
+.pd-stp[data-show="drivers"] .pd-st-cons, .pd-stp[data-show="constructors"] .pd-st-left, .pd-stp[data-show="constructors"] .pd-st-who { display: none; }
+.pd-stp[data-show="constructors"] .pd-st-cols { grid-template-columns: minmax(0, 1fr); }
+.pd-sr .pd-stp[data-show="constructors"] .pd-st-ch { margin-top: 0; }
+.pd-st-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.pd-st-mate { padding: 14px 16px; border: 1px solid var(--pd-line); border-top: 4px solid var(--t); background: var(--pd-surface); }
+.pd-sr .pd-st-mate h3 { margin: 0 0 10px; font-size: .8125rem; font-weight: 700; color: var(--pd-muted); }
+.pd-sr .pd-st-mate p { display: flex; justify-content: space-between; gap: 8px; font-size: .906rem; }
+.pd-st-mate p b, .pd-st-mate p span { font-weight: 800; }
+.pd-st-mate p.b { color: var(--pd-muted); }
+.pd-st-mate p.b b { font-weight: 700; }
+.pd-sr .pd-st-mate p.c { display: block; margin-top: 8px; font-size: .75rem; color: var(--pd-muted); }
+.pd-st-mate .split { display: block; height: 8px; margin: 8px 0; border: 1px solid var(--t); }
+.pd-st-mate .split i { display: block; height: 100%; background: var(--t); }
+/* Below 1,200 px the drivers' seven columns no longer fit beside Who can still win it: one column, as on a phone. */
+@media (max-width: 1199px) {
+	.pd-st-cols { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 699px) {
+	.pd-sr .pd-st-h { font-size: 1.625rem; }
+	.pd-st-next { display: none; }
+	.pd-st-seg { display: flex; width: 100%; }
+	.pd-st-seg button { flex: 1; text-align: center; }
+	.pd-st-seg .both { display: none; }
+	.pd-st-cols { gap: 22px; }
+	.pd-st-th, .pd-st-th.c, .pd-st-tbl li, .pd-st-tbl.c li { grid-template-columns: 24px 4px minmax(0, 1fr) 40px 46px 32px; gap: 8px; padding-left: 10px; padding-right: 10px; }
+	.pd-st-th:not(.c) span:nth-child(4), .pd-st-tbl .bar { display: none; }
+	.pd-st-tbl .d .fn { display: none; }
+	.pd-st-tbl .d .sn { display: inline; }
+	.pd-st-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+	.pd-st-mate { padding: 12px; }
+}
+/* Below 360 px the name's column is under 125 px, too narrow for "A. Kimi Antonelli" on one line: names wrap, never cut. */
+@media (max-width: 359px) {
+	.pd-st-tbl .d b { white-space: normal; overflow-wrap: anywhere; }
 }
 
 /* Formula 1's weekend pages (O19), as approved on Paddock Weekend Drafts (version 3), full width (O27): the band, the

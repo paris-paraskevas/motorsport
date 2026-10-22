@@ -121,7 +121,7 @@ const winsLabel = (n: number): string => `${n} win${n === 1 ? '' : 's'}`;
 type SeriesTab = 'overview' | 'calendar' | 'standings' | 'results' | 'champions';
 
 /** The pages built in round 2's design for a series beyond its Overview; every link to one waits for it, greyed. */
-const BUILT: Readonly<Record<string, ReadonlySet<'standings' | 'results' | 'champions'>>> = { f1: new Set(['results']) };
+const BUILT: Readonly<Record<string, ReadonlySet<'standings' | 'results' | 'champions'>>> = { f1: new Set(['results', 'standings']) };
 export const built = (slug: string, tab: 'standings' | 'results' | 'champions'): boolean => Boolean(BUILT[slug]?.has(tab));
 
 /** The five tabs, each a page at its own address; Calendar opens the site's Calendar showing only this series. A page
@@ -381,6 +381,366 @@ export function seriesResults(d: SeriesData): Page {
   return { path: seriesPath(d.slug, 'results'), title: `${d.name} results`, body: htmlBlock(main), template: 'page-wide' };
 }
 
+// ── Standings (O16) ──────────────────────────────────────────────────────────
+//
+// As approved on The Paddock Drafts with the operator's answers of 22 Oct: the drivers with bars against the leader,
+// the gaps and race wins, the leader tinted and a dashed line under the last driver who can still draw level; Who can
+// still win it; the constructors; the points each driver scored for each team. The theme's script adds the switch
+// (Drivers, Constructors, Both) and sets data-show; without it both tables stand.
+
+/** Formula 1's 2026 scales (content/series/f1/rules.md, Points): a Grand Prix pays 25 and 18 to its first two, a sprint
+ *  8 and 7, and there is no fastest-lap point. A team can take at most its two cars' first two places. */
+const GP = [25, 18] as const;
+const SPRINT = [8, 7] as const;
+
+export interface PointsLeft {
+  races: number;
+  sprints: number;
+  /** Sprints already run, for "the sprints all run". */
+  sprintsRun: number;
+  /** The most a driver, and a team, can still score. */
+  driver: number;
+  team: number;
+}
+
+const sprintRun = (r: ResultRound | undefined): boolean => (r?.sessions ?? []).some(s => /^sprint$/i.test(s.label) && (s.tables[0]?.rows.length ?? 0) > 0);
+
+/** The points still to be won. A Grand Prix counts as run once its result is stored (raceWins) and a sprint likewise,
+ *  so on a sprint weekend's Saturday the sprint is run and the race is not; a round whose race is stored has run its
+ *  sprint, whether or not the sprint's result arrived. */
+export function pointsLeft(d: SeriesData): PointsLeft {
+  const wins = raceWins(d);
+  const stored = new Map((d.results ?? []).flatMap(r => (r.round === null ? [] : [[r.round, r] as const])));
+  let races = 0;
+  let sprints = 0;
+  let sprintsRun = 0;
+  for (const r of d.rounds ?? []) {
+    if (!wins.has(r.round)) races++;
+    if (!sprintWeekend(d, r.round, stored.get(r.round))) continue;
+    if (wins.has(r.round) || sprintRun(stored.get(r.round))) sprintsRun++;
+    else sprints++;
+  }
+  return { races, sprints, sprintsRun, driver: races * GP[0] + sprints * SPRINT[0], team: races * (GP[0] + GP[1]) + sprints * (SPRINT[0] + SPRINT[1]) };
+}
+
+interface Standing {
+  pos: string;
+  name: string;
+  team: string;
+  pts: number;
+  /** The points as the table writes them. */
+  shown: string;
+}
+
+function standingRows(t: Table | undefined, drivers: boolean): Standing[] {
+  if (!t) return [];
+  const posAt = col(t.columns, 'Pos');
+  const nameAt = drivers ? col(t.columns, 'Driver', 'Rider') : col(t.columns, 'Constructor', 'Team', 'Manufacturer');
+  const teamAt = drivers ? col(t.columns, 'Team') : nameAt;
+  const ptsAt = col(t.columns, 'Pts', 'Points');
+  if (nameAt < 0 || ptsAt < 0) return [];
+  return t.rows.map(row => ({
+    pos: (posAt >= 0 ? row[posAt] : '') ?? '',
+    name: row[nameAt] ?? '',
+    team: (teamAt >= 0 ? row[teamAt] : '') ?? '',
+    pts: Number.parseFloat(row[ptsAt] ?? '') || 0,
+    shown: row[ptsAt] ?? '',
+  }));
+}
+
+/** The stored results the official table counts. The standings and the results are fetched apart, so the table can lag the
+ *  results by a session: the last point in the running order where the points awarded so far equal the table's total marks
+ *  what it counts, and the page is written as of there. When none does (a deduction outside any race), every result. */
+function counted(d: SeriesData, drivers: Standing[]): SeriesData {
+  const total = drivers.reduce((n, x) => n + x.pts, 0);
+  const rounds = (d.results ?? []).filter(r => r.round !== null).sort((a, b) => (a.round ?? 0) - (b.round ?? 0));
+  let sum = 0;
+  let at: { round: number; sessions: number } | null = null;
+  for (const r of rounds) {
+    for (const [i, s] of r.sessions.entries()) {
+      const t = s.tables[0];
+      const ptsAt = t ? col(t.columns, 'Pts', 'Points') : -1;
+      if (t && ptsAt >= 0) for (const row of t.rows) sum += Number.parseFloat(row[ptsAt] ?? '') || 0;
+      if (Math.abs(sum - total) < 1e-6) at = { round: r.round ?? 0, sessions: i + 1 };
+    }
+  }
+  if (!drivers.length || !at) return d;
+  const { round, sessions } = at;
+  return { ...d, results: (d.results ?? []).flatMap(r => (r.round === null || r.round < round ? [r] : r.round === round ? [{ ...r, sessions: r.sessions.slice(0, sessions) }] : [])) };
+}
+
+/** How many of a table, from the top, can still draw level with the leader on points: on paper, with no countback. */
+export function stillIn(rows: readonly { pts: number }[], left: number): number {
+  const lead = rows[0]?.pts ?? 0;
+  const out = rows.findIndex(x => lead - x.pts > left);
+  return out < 0 ? rows.length : out;
+}
+
+export interface Mate {
+  name: string;
+  points: number;
+  rounds: number[];
+}
+
+export interface TeamSplit {
+  team: string;
+  /** The two race seats, the higher scorer first. */
+  pair: Mate[];
+  /** Anyone else who raced for the team: a stand-in. */
+  also: Mate[];
+  total: number;
+}
+
+/** Each team's points by the drivers who scored them for it, from every race and sprint stored, the teams in the
+ *  constructors' order. The pair is the first two of the team's drivers in drivers.json who raced for it (its seats; a
+ *  stand-in is listed after them, as Tsunoda is for his car number), else the two who raced for it most. */
+export function teammates(d: SeriesData): TeamSplit[] {
+  const by = new Map<string, { team: string; mates: Map<string, Mate> }>();
+  for (const r of d.results ?? []) {
+    if (r.round === null) continue;
+    for (const s of r.sessions) {
+      const t = s.tables[0];
+      if (!t) continue;
+      const nameAt = col(t.columns, 'Driver');
+      const teamAt = col(t.columns, 'Team');
+      const ptsAt = col(t.columns, 'Pts', 'Points');
+      if (nameAt < 0 || teamAt < 0) continue;
+      for (const row of t.rows) {
+        const name = row[nameAt] ?? '';
+        const team = row[teamAt] ?? '';
+        if (!name || !plain(team)) continue;
+        const entry = by.get(plain(team)) ?? { team, mates: new Map<string, Mate>() };
+        const m = entry.mates.get(name) ?? { name, points: 0, rounds: [] };
+        m.points += ptsAt >= 0 ? Number.parseFloat(row[ptsAt] ?? '') || 0 : 0;
+        if (!m.rounds.includes(r.round)) m.rounds.push(r.round);
+        entry.mates.set(name, m);
+        by.set(plain(team), entry);
+      }
+    }
+  }
+  const drivers = standingRows(d.standings?.[0], true);
+  const place = (name: string) => {
+    const i = drivers.findIndex(x => x.name === name);
+    return i < 0 ? drivers.length : i;
+  };
+  const order = standingRows(d.standings?.[1], false).map(x => plain(x.name));
+  const keys = [...order.filter(k => by.has(k)), ...[...by.keys()].filter(k => !order.includes(k))];
+  return keys.flatMap(key => {
+    const entry = by.get(key);
+    if (!entry) return [];
+    const all = [...entry.mates.values()];
+    const seats = (teamOf(d, entry.team)?.drivers ?? []).flatMap(x => all.filter(m => bare(m.name) === bare(x.name)));
+    const most = [...all].sort((a, b) => b.rounds.length - a.rounds.length || b.points - a.points || place(a.name) - place(b.name));
+    const pair = [...new Set([...seats, ...most])].slice(0, 2).sort((a, b) => b.points - a.points || place(a.name) - place(b.name));
+    const also = all.filter(m => !pair.includes(m)).sort((a, b) => Math.min(...a.rounds) - Math.min(...b.rounds));
+    return [{ team: entry.team, pair, also, total: all.reduce((n, m) => n + m.points, 0) }];
+  });
+}
+
+/** A day as "11 October", or a weekday as "Sunday", at the track (its IANA zone; UTC when it is unknown or bad). */
+function atTrack(iso: string, tz: string | undefined, part: 'day' | 'weekday'): string {
+  const at = new Date(iso);
+  if (!Number.isFinite(at.getTime())) return '';
+  const o: Intl.DateTimeFormatOptions = part === 'day' ? { day: 'numeric', month: 'long' } : { weekday: 'long' };
+  try {
+    return new Intl.DateTimeFormat('en-GB', { ...o, timeZone: tz || 'UTC' }).format(at);
+  } catch {
+    return new Intl.DateTimeFormat('en-GB', { ...o, timeZone: 'UTC' }).format(at);
+  }
+}
+/** "11 October" for a stored YYYY-MM-DD; '' when it is not one. */
+const longDay = (day: string): string => (/^\d{4}-\d{2}-\d{2}$/.test(day) ? atTrack(`${day}T12:00:00Z`, 'UTC', 'day') : '');
+const surname = (name: string): string => name.trim().split(/\s+/).pop() ?? '';
+/** "A. Kimi Antonelli", the phone's name for "Andrea Kimi Antonelli". */
+function initialled(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return parts.length > 1 ? `${Array.from(parts[0])[0]}. ${parts.slice(1).join(' ')}` : name;
+}
+const pointsText = (n: number): string => `${n} point${n === 1 ? '' : 's'}`;
+const gapText = (n: number): string => (n > 0 ? `−${n}` : '0');
+const inWords = (n: number): string => NUMBER_WORDS[n] ?? String(n);
+const andList = (items: string[]): string => (items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}` : (items[0] ?? ''));
+
+function roundsText(rounds: number[]): string {
+  const r = [...rounds].sort((a, b) => a - b);
+  if (r.length === 1) return `round ${r[0]}`;
+  return r.every((x, i) => i === 0 || x === r[i - 1] + 1) ? `rounds ${r[0]} to ${r[r.length - 1]}` : `rounds ${andList(r.map(String))}`;
+}
+
+/** Each driver's change in points from the season's rulings, by surname as codeOf matches names. */
+function marksOf(d: SeriesData): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const n of d.standingsNotes ?? []) {
+    for (const [name, delta] of Object.entries(n.drivers ?? {})) if (Number.isFinite(delta) && delta !== 0) out.set(bare(name), (out.get(bare(name)) ?? 0) + delta);
+  }
+  return out;
+}
+
+/** A source as a link named by its host ("fia.com"); only an https address is one. */
+function sourceLink(src: string): string {
+  try {
+    const u = new URL(src);
+    return u.protocol === 'https:' ? `<a href="${escapeHtml(u.href)}">${escapeHtml(u.hostname.replace(/^www\./, ''))}</a>` : '';
+  } catch {
+    return '';
+  }
+}
+
+/** "Standings after round 17" and "Singapore Grand Prix, 11 October" with when the next points are scored, the line as
+ *  markup. */
+function standingsHead(d: SeriesData, wins: Map<number, RoundWin>, stored: Map<number, ResultRound>): { title: string; line: string } {
+  const scored = [...stored.values()].filter(r => r.sessions.some(s => (s.tables[0]?.rows.length ?? 0) > 0)).sort((a, b) => (b.round ?? 0) - (a.round ?? 0))[0];
+  if (!scored || scored.round === null) return { title: 'Standings', line: 'No race has run yet this season.' };
+  const n = scored.round;
+  const cr = d.rounds?.find(r => r.round === n);
+  const name = escapeHtml(cr?.name ?? scored.name);
+  const timed = (round: number, session: RegExp) => (d.calendar ?? []).find(e => e.round === round && !e.dateOnly && session.test(e.session));
+  let title: string;
+  let line: string;
+  if (wins.has(n)) {
+    title = `Standings after round ${n}`;
+    line = [name, longDay(wins.get(n)?.date ?? cr?.endDate ?? '')].filter(Boolean).join(', ');
+  } else {
+    const sprint = timed(n, /^sprint$/i);
+    title = `Standings after the round ${n} sprint`;
+    line = [`${name} sprint`, sprint ? atTrack(sprint.start, cr?.tz, 'day') : ''].filter(Boolean).join(', ');
+  }
+  // The next points: a sprint weekend's sprint while it is still to run, else the round's Grand Prix.
+  const next = (d.rounds ?? []).find(r => !wins.has(r.round));
+  if (next) {
+    const sprint = sprintWeekend(d, next.round, stored.get(next.round)) && !sprintRun(stored.get(next.round));
+    const at = timed(next.round, sprint ? /^sprint$/i : /^race$/i);
+    const day = at ? atTrack(at.start, next.tz, 'weekday') : '';
+    if (day) line += `<span class="pd-st-next"> · next update after ${day}'s ${escapeHtml(next.name)}${sprint ? ' sprint' : ''}</span>`;
+  }
+  return { title, line };
+}
+
+/** /series/<slug>/standings/: the drivers and Who can still win it beside the constructors, then the teammates. The band
+ *  counts every stored result, as on the series' other pages; the rest is written as of what the table counts. */
+export function seriesStandings(d: SeriesData): Page {
+  const all = raceWins(d);
+  const current = (d.rounds ?? []).find(r => !all.has(r.round));
+  const drivers = standingRows(d.standings?.[0], true);
+  const teams = standingRows(d.standings?.[1], false);
+  const asOf = counted(d, drivers);
+  const wins = raceWins(asOf);
+  const stored = new Map((asOf.results ?? []).flatMap(r => (r.round === null ? [] : [[r.round, r] as const])));
+  const left = pointsLeft(asOf);
+  const head = standingsHead(asOf, wins, stored);
+  const marks = marksOf(d);
+  const lead = drivers[0]?.pts ?? 0;
+  // Without the season's rounds the points left are unknown: no line, and no one named in or out.
+  const known = (d.rounds ?? []).length > 0;
+  const inIt = known ? stillIn(drivers, left.driver) : drivers.length;
+  const cut = inIt > 0 && inIt < drivers.length ? inIt - 1 : -1;
+
+  // WordPress keeps no aria-pressed in a page; the script sets it with the view.
+  const seg = teams.length
+    ? '<div class="pd-st-seg" role="group" aria-label="Show" hidden><button type="button" data-pd-st="drivers">Drivers</button>' +
+      '<button type="button" data-pd-st="constructors">Constructors</button><button type="button" class="both" data-pd-st="both">Both</button></div>'
+    : '';
+  const top = `<div class="pd-st-head"><div><h2 class="pd-st-h">${escapeHtml(head.title)}</h2><p>${head.line}</p></div>${seg}</div>`;
+
+  const driverRows = drivers
+    .map((x, i) => {
+      const cls = [i === 0 ? 'lead' : '', i === cut ? 'cut' : ''].filter(Boolean).join(' ');
+      const width = lead > 0 ? Math.max(0, Math.min(100, (x.pts / lead) * 100)).toFixed(1) : '0.0';
+      const mark = marks.get(bare(x.name));
+      const sup = mark ? `<sup>${mark > 0 ? '+' : '−'}${Math.abs(mark)}</sup>` : '';
+      const n = driverWins(wins, x.name);
+      return (
+        `<li${cls ? ` class="${cls}"` : ''} style="--t:${colourOf(d, x.team)}"><span class="p">${escapeHtml(x.pos)}</span><i class="tb"></i>` +
+        `<span class="d"><b><span class="fn">${escapeHtml(x.name)}</span><span class="sn">${escapeHtml(initialled(x.name))}</span>${sup}</b><small>${escapeHtml(teamLabel(x.team))}</small></span>` +
+        `<i class="bar"><i style="width:${width}%"></i></i><span class="pt">${escapeHtml(x.shown)}</span><span class="g">${i === 0 ? '—' : gapText(lead - x.pts)}</span><span class="w">${n || ''}</span></li>`
+      );
+    })
+    .join('');
+
+  // The line under the drivers: the season's rulings with their sources, the dashed line, and every driver whose total
+  // holds points scored for a team other than the one the table names.
+  const splits = teammates(asOf);
+  const notes = (d.standingsNotes ?? []).filter(n => Object.keys(n.drivers ?? {}).some(k => drivers.some(x => bare(x.name) === bare(k))));
+  const foot = [
+    notes.length
+      ? `Small numbers next to a name: points changed ${notes
+          .map(n => {
+            const links = (n.sources ?? []).map(sourceLink).filter(Boolean);
+            const on = longDay(n.decided);
+            return `when ${escapeHtml(n.note)}${on ? ` on ${on}` : ''}${links.length ? ` (${links.join(', ')})` : ''}`;
+          })
+          .join(', and ')}.`
+      : '',
+    cut >= 0 ? 'The dashed line marks the last driver who can still mathematically win.' : '',
+    ...drivers.flatMap(x =>
+      splits
+        .filter(s => plain(x.team) !== '' && plain(s.team) !== plain(x.team))
+        .flatMap(s => [...s.pair, ...s.also].filter(m => m.name === x.name && m.points > 0).map(m => `${escapeHtml(surname(x.name))}'s ${escapeHtml(x.shown)} include ${m.points} for ${escapeHtml(teamLabel(s.team))}, in ${roundsText(m.rounds)}.`)),
+    ),
+  ].filter(Boolean);
+  const leftCol = drivers.length
+    ? `<div class="pd-st-left"><div class="pd-st-th"><span>Pos</span><span></span><span>Driver</span><span></span><span>Pts</span><span>Gap</span><span>Wins</span></div><ol class="pd-st-tbl">${driverRows}</ol>` +
+      `${foot.length ? `<p class="pd-st-foot">${foot.join(' ')}</p>` : ''}</div>`
+    : '<div class="pd-st-left"><p class="pd-mut">No standings yet this season.</p></div>';
+
+  // Who can still win it: the leader, everyone who can still draw level, and the first driver who cannot.
+  let who = '';
+  if (drivers.length && known) {
+    const bar = (gap: number) => (left.driver > 0 ? Math.min(100, (gap / left.driver) * 100) : gap > 0 ? 100 : 0).toFixed(1);
+    const out = drivers[inIt];
+    const items = [
+      `<li class="ld" style="--t:${colourOf(d, drivers[0].team)}"><b>${escapeHtml(surname(drivers[0].name))}</b><span class="lab">Leader</span><span class="v">${escapeHtml(drivers[0].shown)}</span></li>`,
+      ...drivers.slice(1, inIt).map(x => `<li style="--t:${colourOf(d, x.team)}"><b>${escapeHtml(surname(x.name))}</b><i class="wb"><i style="width:${bar(lead - x.pts)}%"></i></i><span class="v">${gapText(lead - x.pts)}</span></li>`),
+      out ? `<li class="out" style="--t:${colourOf(d, out.team)}"><b>${escapeHtml(surname(out.name))}</b><i class="wb"><i style="width:100.0%"></i></i><span class="v">${gapText(lead - out.pts)}</span></li>` : '',
+    ].join('');
+    const scales = [
+      left.races ? `${inWords(left.races).toLowerCase()} Grand${left.races === 1 ? '' : 's'} Prix at ${GP[0]}` : '',
+      left.sprints ? `${inWords(left.sprints).toLowerCase()} sprint${left.sprints === 1 ? '' : 's'} at ${SPRINT[0]}` : left.sprintsRun ? 'the sprints all run' : '',
+    ].filter(Boolean);
+    const intro = left.driver > 0 ? `${left.driver} points left: ${scales.join(', ')}. A bar is how much of that a driver needs just to draw level.` : 'No points left: the season is over.';
+    const alive = teams.slice(1, stillIn(teams, left.team)).map(x => escapeHtml(teamLabel(x.name)));
+    const sum = [
+      inIt > 1 ? `${inWords(inIt)} drivers are still in it on paper.` : `Only ${escapeHtml(surname(drivers[0].name))} can still win it.`,
+      out ? `${escapeHtml(surname(out.name))} is out by ${pointsText(lead - out.pts - left.driver)}.` : '',
+      teams.length ? `Constructors: ${left.team} left, ${alive.length ? `so ${andList(alive)} ${alive.length === 1 ? 'is' : 'are'} still alive` : `so only ${escapeHtml(teamLabel(teams[0].name))} can still win it`}.` : '',
+    ].filter(Boolean);
+    who = `<section class="pd-st-who"><h3>Who can still win it</h3><p>${intro}</p><ol>${items}</ol><p class="pd-st-sum">${sum.join(' ')}</p></section>`;
+  }
+
+  const teamLead = teams[0]?.pts ?? 0;
+  const cons = teams.length
+    ? `<div class="pd-st-cons"><h3 class="pd-st-ch">Constructors</h3><div class="pd-st-th c"><span>Pos</span><span></span><span>Constructor</span><span>Pts</span><span>Gap</span><span>Wins</span></div><ol class="pd-st-tbl c">` +
+      teams
+        .map((x, i) => {
+          const n = teamWins(wins, x.name);
+          return (
+            `<li${i === 0 ? ' class="lead"' : ''} style="--t:${colourOf(d, x.name)}"><span class="p">${escapeHtml(x.pos)}</span><i class="tb"></i><span class="d"><b>${escapeHtml(teamLabel(x.name))}</b></span>` +
+            `<span class="pt">${escapeHtml(x.shown)}</span><span class="g">${i === 0 ? '—' : gapText(teamLead - x.pts)}</span><span class="w">${n || ''}</span></li>`
+          );
+        })
+        .join('') +
+      '</ol></div>'
+    : '';
+
+  const mates = splits.length
+    ? `<section class="pd-sr-sec pd-st-mates"><div class="pd-sh"><h2>Teammates</h2><p>Points split inside each team</p></div><div class="pd-st-grid">${splits
+        .map(s => {
+          const [a, b] = s.pair;
+          const width = s.total > 0 && a ? ((a.points / s.total) * 100).toFixed(1) : '0.0';
+          const line = (m: Mate | undefined, k: 'a' | 'b') => (m ? `<p class="${k}"><b>${escapeHtml(surname(m.name))}</b><span>${m.points}</span></p>` : '');
+          const also = s.also.map(m => `<p class="c">Also ${escapeHtml(surname(m.name))}: ${pointsText(m.points)} in ${roundsText(m.rounds)}</p>`).join('');
+          const name = teams.find(x => plain(x.name) === plain(s.team))?.name ?? s.team;
+          return `<article class="pd-st-mate" style="--t:${colourOf(d, s.team)}"><h3>${escapeHtml(teamLabel(name))}</h3>${line(a, 'a')}<i class="split"><i style="width:${width}%"></i></i>${line(b, 'b')}${also}</article>`;
+        })
+        .join('')}</div></section>`
+    : '';
+
+  const main =
+    `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, all, current)}${tabs(d, 'standings')}<div class="pd-sr-main">` +
+    `<section class="pd-sr-sec pd-stp">${top}<div class="pd-st-cols">${leftCol}<div class="pd-st-right">${who}${cons}</div></div></section>${mates}</div></div>`;
+  return { path: seriesPath(d.slug, 'standings'), title: `${d.name} standings`, body: htmlBlock(main), template: 'page-wide' };
+}
+
 // ── The series list (slot O21) ───────────────────────────────────────────────
 //
 // Round 2's "All series", answered on The Paddock Drafts (v13 to v16): the championships still racing, then the
@@ -536,8 +896,8 @@ export function seriesList(all: SeriesData[], now: Date): Page {
   return { path: '/series/', title: 'Series', body: htmlBlock(main), template: 'page-wide' };
 }
 
-/** A series' pages in round 2's design: the Overview and Results now; the weekend pages, Standings and Champions in
- *  their slots. */
+/** A series' pages in round 2's design: the Overview, Results and Standings now (the weekend pages are weekend.ts's);
+ *  Champions in its slot. */
 export function seriesFamily(d: SeriesData): Page[] {
-  return [seriesOverview(d), seriesResults(d)];
+  return [seriesOverview(d), seriesResults(d), ...(built(d.slug, 'standings') ? [seriesStandings(d)] : [])];
 }

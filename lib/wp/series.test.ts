@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import type { ResultRound, SeriesData } from './render';
-import { categorySlug, prose, ROUND2_SERIES, seriesFamily, seriesList, seriesOverview, seriesResults } from './series';
+import { categorySlug, pointsLeft, prose, ROUND2_SERIES, seriesFamily, seriesList, seriesOverview, seriesResults, seriesStandings, stillIn, teammates } from './series';
 
 const race = (round: number, name: string, date: string, rows: string[][]): ResultRound => ({
   round,
@@ -51,7 +53,7 @@ const body = page.body;
 describe('seriesOverview', () => {
   it('is the series address on the Wide template', () => {
     expect(page).toMatchObject({ path: '/series/f1/', title: 'Formula 1', template: 'page-wide' });
-    expect(seriesFamily(f1).map(p => p.path)).toEqual(['/series/f1/', '/series/f1/results/']);
+    expect(seriesFamily(f1).map(p => p.path)).toEqual(['/series/f1/', '/series/f1/results/', '/series/f1/standings/']);
     expect(ROUND2_SERIES.has('f1')).toBe(true);
   });
 
@@ -62,11 +64,10 @@ describe('seriesOverview', () => {
     expect(tabs).toEqual([
       ['Overview', '/series/f1/', true],
       ['Calendar', '/calendar/#f1', false],
-      ['Standings', null, false],
+      ['Standings', '/series/f1/standings/', false],
       ['Results', '/series/f1/results/', false],
       ['Champions', null, false],
     ]);
-    expect(body).not.toContain('/series/f1/standings/');
     expect(body).not.toContain('/series/f1/champions/');
   });
 
@@ -107,8 +108,8 @@ describe('seriesOverview', () => {
   });
 
   it('shows the top ten drivers with bars against the leader and race wins, and every constructor', () => {
-    // The Standings page comes with O16: until then the count stands greyed, linking nowhere.
-    expect(body).toContain('<h2>Drivers</h2><p><span class="is-off">All 12</span></p>');
+    // The count opens the Standings page (O16).
+    expect(body).toContain('<h2>Drivers</h2><p><a href="/series/f1/standings/">All 12 →</a></p>');
     expect(body.match(/<li><span class="pd-p">/g)).toHaveLength(10 + 3);
     expect(body).toContain('<li><span class="pd-p">2</span><span class="pd-d"><b>Charles Leclerc</b> <small>Ferrari</small><i class="pd-sr-pts"><i style="width:75.0%;--t:#DC0000"></i></i></span><span class="pd-pt">30</span><span class="pd-w">0 wins</span></li>');
     expect(body).toContain('<b>Red Bull Racing</b><i class="pd-sr-pts"><i style="width:100.0%;--t:#1E3A8A"></i></i></span><span class="pd-pt">40</span><span class="pd-w">1</span>');
@@ -247,7 +248,7 @@ describe('seriesResults', () => {
     expect(b).not.toContain('1:42:00.785');
     expect(b).not.toContain('39:48.162');
     expect(b).not.toContain('1:29.8');
-    expect(seriesFamily(fr).map(p => p.path)).toEqual(['/series/f1/', '/series/f1/results/']);
+    expect(seriesFamily(fr).map(p => p.path)).toEqual(['/series/f1/', '/series/f1/results/', '/series/f1/standings/']);
   });
 
   it('keeps feed text as text and a bad colour out of the style', () => {
@@ -268,6 +269,277 @@ describe('seriesResults', () => {
       vi.useRealTimers();
     }
     expect(seriesResults({ ...fr, results: null }).body).toContain('<p class="pd-mut">No results yet this season.</p>');
+  });
+});
+
+describe('seriesStandings', () => {
+  const R = ['Pos', 'Driver', 'Team', 'Time', 'Pts'];
+  const ses = (label: string, rows: string[][]) => ({ label, tables: [{ title: label, columns: R, rows }] });
+  const at = (round: number, session: string, start: string) => ({ start, end: new Date(Date.parse(start) + 3_600_000).toISOString(), dateOnly: false, event: 'E', session, round });
+  // Round 1 a sprint weekend; in round 2 Lawson drives Hadjar's Red Bull and Tsunoda his Racing Bull; round 3, ahead, is
+  // Las Vegas, whose race starts on Saturday night at the track and on Sunday in UTC.
+  const sd: SeriesData = {
+    slug: 'f1',
+    name: 'Formula 1',
+    season: 2026,
+    standings: [
+      {
+        title: 'Drivers',
+        columns: ['Pos', 'Driver', 'Team', 'Pts'],
+        rows: [
+          ['1', 'Max Verstappen', 'Red Bull Racing', '51'],
+          ['2', 'Charles Leclerc', 'Ferrari', '44'],
+          ['3', 'Lewis Hamilton', 'Ferrari', '35'],
+          ['4', 'Liam Lawson', 'Racing Bulls', '32'],
+          ['5', 'Arvid Lindblad', 'Racing Bulls', '19'],
+          ['6', 'Isack Hadjar', 'Red Bull Racing', '18'],
+          ['7', 'Yuki Tsunoda', 'Racing Bulls', '10'],
+          ['8', 'Kimi <b>Antonelli</b>', 'Mercedes', '0'],
+        ],
+      },
+      { title: 'Constructors', columns: ['Pos', 'Constructor', 'Pts'], rows: [['1', 'Red Bull Racing', '87'], ['2', 'Ferrari', '79'], ['3', 'Racing Bulls', '43'], ['4', 'Mercedes', '0']] },
+    ],
+    results: [
+      {
+        round: 1,
+        name: 'Chinese GP',
+        date: '2026-03-15',
+        sessions: [
+          ses('Sprint', [['1', 'Max Verstappen', 'Red Bull Racing', '30:00.000', '8'], ['2', 'Charles Leclerc', 'Ferrari', '+1.0', '7'], ['3', 'Isack Hadjar', 'Red Bull Racing', '+2.0', '6'], ['4', 'Lewis Hamilton', 'Ferrari', '+3.0', '5'], ['5', 'Liam Lawson', 'Racing Bulls', '+4.0', '4'], ['6', 'Arvid Lindblad', 'Racing Bulls', '+5.0', '3']]),
+          ses('Race', [['1', 'Charles Leclerc', 'Ferrari', '1:30:00.000', '25'], ['2', 'Max Verstappen', 'Red Bull Racing', '+1.0', '18'], ['3', 'Lewis Hamilton', 'Ferrari', '+2.0', '15'], ['4', 'Isack Hadjar', 'Red Bull Racing', '+3.0', '12'], ['5', 'Liam Lawson', 'Racing Bulls', '+4.0', '10'], ['6', 'Arvid Lindblad', 'Racing Bulls', '+5.0', '8']]),
+        ],
+      },
+      {
+        round: 2,
+        name: 'Japanese GP',
+        date: '2026-03-29',
+        sessions: [ses('Race', [['1', 'Max Verstappen', 'Red Bull Racing', '1:30:00.000', '25'], ['2', 'Liam Lawson', 'Red Bull Racing', '+1.0', '18'], ['3', 'Lewis Hamilton', 'Ferrari', '+2.0', '15'], ['4', 'Charles Leclerc', 'Ferrari', '+3.0', '12'], ['5', 'Yuki Tsunoda', 'Racing Bulls', '+4.0', '10'], ['6', 'Arvid Lindblad', 'Racing Bulls', '+5.0', '8']])],
+      },
+    ],
+    calendar: [at(1, 'Sprint', '2026-03-14T03:00:00Z'), at(1, 'Race', '2026-03-15T07:00:00Z'), at(2, 'Race', '2026-03-29T05:00:00Z'), at(3, 'Race', '2026-11-22T04:00:00Z')],
+    rounds: [
+      { round: 1, name: 'Chinese Grand Prix', startDate: '2026-03-13', endDate: '2026-03-15', venue: null, tz: 'Asia/Shanghai' },
+      { round: 2, name: 'Japanese Grand Prix', startDate: '2026-03-27', endDate: '2026-03-29', venue: null, tz: 'Asia/Tokyo' },
+      { round: 3, name: 'Las Vegas Grand Prix', startDate: '2026-11-19', endDate: '2026-11-21', venue: null, tz: 'America/Los_Angeles' },
+    ],
+    teams: [
+      { name: 'Red Bull Racing', colour: '#1E3A8A', drivers: [{ name: 'Max Verstappen' }, { name: 'Isack Hadjar' }] },
+      { name: 'Ferrari', colour: '#DC0000', drivers: [{ name: 'Charles Leclerc' }, { name: 'Lewis Hamilton' }] },
+      // The stand-in is listed after the team's two seats, as drivers.json lists Tsunoda for his car number.
+      { name: 'Racing Bulls', colour: '#6692FF', drivers: [{ name: 'Liam Lawson' }, { name: 'Arvid Lindblad' }, { name: 'Yuki Tsunoda' }] },
+      { name: 'Mercedes', colour: 'red;background:url(x)', drivers: [] },
+    ],
+    standingsNotes: [
+      {
+        round: 1,
+        decided: '2026-04-02',
+        note: 'the stewards <i>reviewed</i> the start',
+        drivers: { 'Arvid Lindblad': 2, 'Charles Leclerc': -2 },
+        sources: ['https://www.fia.com/x?a=1&b=2', 'javascript:alert(1)', 'http://insecure.example/'],
+      },
+    ],
+  };
+  const page = seriesStandings(sd);
+  const b = page.body;
+  const between = (from: string, to: string, of = b) => of.slice(of.indexOf(from), of.indexOf(to, of.indexOf(from)) + to.length);
+
+  it('is the Standings address on the Wide template, its tab current', () => {
+    expect(page).toMatchObject({ path: '/series/f1/standings/', title: 'Formula 1 standings', template: 'page-wide' });
+    expect(b).toContain('<a href="/series/f1/standings/" aria-current="page">Standings</a>');
+  });
+
+  it('counts the points left on the 2026 scales: a Grand Prix to run, a sprint ahead, a sprint already run', () => {
+    expect(pointsLeft(sd)).toEqual({ races: 1, sprints: 0, sprintsRun: 1, driver: 25, team: 43 });
+    const sprintAhead: SeriesData = { ...sd, calendar: [...sd.calendar!, at(3, 'Sprint', '2026-11-21T22:00:00Z')] };
+    expect(pointsLeft(sprintAhead)).toEqual({ races: 1, sprints: 1, sprintsRun: 1, driver: 33, team: 58 });
+    const saturday: SeriesData = { ...sprintAhead, results: [...sd.results!, { round: 3, name: 'Las Vegas GP', date: null, sessions: [ses('Sprint', [['1', 'Charles Leclerc', 'Ferrari', '30:00.000', '8']])] }] };
+    expect(pointsLeft(saturday)).toEqual({ races: 1, sprints: 0, sprintsRun: 2, driver: 25, team: 43 });
+    expect(pointsLeft({ ...sd, rounds: sd.rounds!.slice(0, 2) })).toEqual({ races: 0, sprints: 0, sprintsRun: 1, driver: 0, team: 0 });
+    // A round whose race is stored has run its sprint, though the sprint's result never arrived.
+    const noSprint: SeriesData = { ...sd, results: [{ ...sd.results![0], sessions: [sd.results![0].sessions[1]] }, sd.results![1]] };
+    expect(pointsLeft(noSprint)).toEqual({ races: 1, sprints: 0, sprintsRun: 1, driver: 25, team: 43 });
+  });
+
+  it('writes the page as of what the table counts when the standings lag the results by a session', () => {
+    const table = (rows: string[][]): SeriesData => ({ ...sd, standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows }, sd.standings![1]] });
+    // The table after round 1 (121 points awarded), the results already holding round 2.
+    const afterRound1 = seriesStandings(
+      table([['1', 'Charles Leclerc', 'Ferrari', '32'], ['2', 'Max Verstappen', 'Red Bull Racing', '26'], ['3', 'Lewis Hamilton', 'Ferrari', '20'], ['4', 'Isack Hadjar', 'Red Bull Racing', '18'], ['5', 'Liam Lawson', 'Racing Bulls', '14'], ['6', 'Arvid Lindblad', 'Racing Bulls', '11']]),
+    ).body;
+    expect(afterRound1).toContain('<h2 class="pd-st-h">Standings after round 1</h2><p>Chinese Grand Prix, 15 March<span class="pd-st-next"> · next update after Sunday\'s Japanese Grand Prix</span></p>');
+    expect(afterRound1).toContain('<p>50 points left: two Grands Prix at 25, the sprints all run.');
+    // The band counts every stored result, as on the series' other pages.
+    expect(afterRound1).toContain('<p>2026 season · 3 rounds · 2 run · ');
+    // The table after round 1's sprint alone (33 points).
+    const afterSprint = seriesStandings(
+      table([['1', 'Max Verstappen', 'Red Bull Racing', '8'], ['2', 'Charles Leclerc', 'Ferrari', '7'], ['3', 'Isack Hadjar', 'Red Bull Racing', '6'], ['4', 'Lewis Hamilton', 'Ferrari', '5'], ['5', 'Liam Lawson', 'Racing Bulls', '4'], ['6', 'Arvid Lindblad', 'Racing Bulls', '3']]),
+    ).body;
+    expect(afterSprint).toContain('<h2 class="pd-st-h">Standings after the round 1 sprint</h2><p>Chinese Grand Prix sprint, 14 March<span class="pd-st-next"> · next update after Sunday\'s Chinese Grand Prix</span></p>');
+    expect(afterSprint).toContain('<p>75 points left: three Grands Prix at 25, the sprints all run.');
+    // A table matching no point in the running order (a deduction outside any race) is read as of every result.
+    expect(seriesStandings(table([['1', 'Max Verstappen', 'Red Bull Racing', '40']])).body).toContain('<h2 class="pd-st-h">Standings after round 2</h2>');
+  });
+
+  it('keeps in it everyone who can still draw level with the leader on points', () => {
+    const rows = [{ pts: 51 }, { pts: 44 }, { pts: 26 }, { pts: 25 }];
+    expect(stillIn(rows, 25)).toBe(3);
+    expect(stillIn(rows, 26)).toBe(4);
+    expect(stillIn(rows, 0)).toBe(1);
+    expect(stillIn([], 25)).toBe(0);
+    // Level at the cut: both are in.
+    expect(stillIn([{ pts: 50 }, { pts: 25 }, { pts: 25 }, { pts: 24 }], 25)).toBe(3);
+  });
+
+  it("heads the page with the round, its race and day, and the next points in the track's own weekday", () => {
+    expect(b).toContain(
+      '<div class="pd-st-head"><div><h2 class="pd-st-h">Standings after round 2</h2><p>Japanese Grand Prix, 29 March<span class="pd-st-next"> · next update after Saturday\'s Las Vegas Grand Prix</span></p></div>',
+    );
+    const sprintAhead = seriesStandings({ ...sd, calendar: [...sd.calendar!, at(3, 'Sprint', '2026-11-21T22:00:00Z')] }).body;
+    expect(sprintAhead).toContain('<span class="pd-st-next"> · next update after Saturday\'s Las Vegas Grand Prix sprint</span>');
+    // Saturday: the sprint's 8 points in the results and in the table.
+    const counted = { ...sd.standings![0], rows: [['1', 'Charles Leclerc', 'Ferrari', '52'], ['2', 'Max Verstappen', 'Red Bull Racing', '51'], ...sd.standings![0].rows.slice(2)] };
+    const saturday = seriesStandings({
+      ...sd,
+      standings: [counted, sd.standings![1]],
+      calendar: [...sd.calendar!, at(3, 'Sprint', '2026-11-21T22:00:00Z')],
+      results: [...sd.results!, { round: 3, name: 'Las Vegas GP', date: null, sessions: [ses('Sprint', [['1', 'Charles Leclerc', 'Ferrari', '30:00.000', '8']])] }],
+    }).body;
+    expect(saturday).toContain('<h2 class="pd-st-h">Standings after the round 3 sprint</h2><p>Las Vegas Grand Prix sprint, 21 November<span class="pd-st-next"> · next update after Saturday\'s Las Vegas Grand Prix</span></p>');
+    // The season over: no next update.
+    expect(seriesStandings({ ...sd, rounds: sd.rounds!.slice(0, 2) }).body).toContain('<p>Japanese Grand Prix, 29 March</p>');
+    // A zone that is not one reads the weekday in UTC (Las Vegas's Saturday night is Sunday there), and an untimed race none.
+    expect(seriesStandings({ ...sd, rounds: [...sd.rounds!.slice(0, 2), { ...sd.rounds![2], tz: 'Not/AZone' }] }).body).toContain("next update after Sunday's Las Vegas Grand Prix");
+    expect(seriesStandings({ ...sd, calendar: sd.calendar!.slice(0, 3) }).body).toContain('<p>Japanese Grand Prix, 29 March</p>');
+  });
+
+  it('names no one in or out without the season’s rounds, and no second team for a table without teams', () => {
+    const noRounds = seriesStandings({ ...sd, rounds: [] }).body;
+    expect(noRounds).not.toContain('pd-st-who');
+    expect(noRounds).not.toContain('class="cut"');
+    expect(noRounds).not.toContain('The dashed line');
+    const teamless = seriesStandings({ ...sd, standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Pts'], rows: sd.standings![0].rows.map(r => [r[0], r[1], r[3]]) }, sd.standings![1]] }).body;
+    expect(teamless).not.toContain(' include ');
+  });
+
+  it('carries the switch, hidden until the script shows it, and none without a constructors table', () => {
+    expect(b).toContain(
+      '<div class="pd-st-seg" role="group" aria-label="Show" hidden><button type="button" data-pd-st="drivers">Drivers</button><button type="button" data-pd-st="constructors">Constructors</button><button type="button" class="both" data-pd-st="both">Both</button></div>',
+    );
+    expect(b).toContain('<section class="pd-sr-sec pd-stp"><div class="pd-st-head">');
+    expect(seriesStandings({ ...sd, standings: [sd.standings![0]] }).body).not.toContain('pd-st-seg');
+  });
+
+  it('lists every driver with the team colour, both names, a bar against the leader, the gap and race wins, the leader tinted and the cut under the last one in', () => {
+    const rows = [...b.matchAll(/<li( class="[a-z ]+")? style="--t:[^"]+"><span class="p">/g)].map(m => m[1] ?? '');
+    expect(rows).toEqual([' class="lead"', '', '', ' class="cut"', '', '', '', '', ' class="lead"', '', '', '']);
+    expect(b).toContain(
+      '<li class="lead" style="--t:#1E3A8A"><span class="p">1</span><i class="tb"></i><span class="d"><b><span class="fn">Max Verstappen</span><span class="sn">M. Verstappen</span></b><small>Red Bull Racing</small></span><i class="bar"><i style="width:100.0%"></i></i><span class="pt">51</span><span class="g">—</span><span class="w">1</span></li>',
+    );
+    expect(b).toContain(
+      '<li style="--t:#DC0000"><span class="p">2</span><i class="tb"></i><span class="d"><b><span class="fn">Charles Leclerc</span><span class="sn">C. Leclerc</span><sup>−2</sup></b><small>Ferrari</small></span><i class="bar"><i style="width:86.3%"></i></i><span class="pt">44</span><span class="g">−7</span><span class="w">1</span></li>',
+    );
+    expect(b).toContain('<span class="fn">Arvid Lindblad</span><span class="sn">A. Lindblad</span><sup>+2</sup></b>');
+    // A driver with no race win shows none, and feed text stays text, a bad colour out of the style.
+    expect(b).toContain('<span class="pt">0</span><span class="g">−51</span><span class="w"></span></li>');
+    expect(b).toContain('<span class="fn">Kimi &lt;b&gt;Antonelli&lt;/b&gt;</span><span class="sn">K. &lt;b&gt;Antonelli&lt;/b&gt;</span>');
+    expect(b).toContain('<li style="--t:#9aa3b2"><span class="p">8</span>');
+    expect(b).not.toContain('url(x)');
+  });
+
+  it('writes under the drivers the ruling with its https sources, the dashed line, and a total scored for two teams', () => {
+    expect(b).toContain(
+      '<p class="pd-st-foot">Small numbers next to a name: points changed when the stewards &lt;i&gt;reviewed&lt;/i&gt; the start on 2 April (<a href="https://www.fia.com/x?a=1&amp;b=2">fia.com</a>). ' +
+        "The dashed line marks the last driver who can still mathematically win. Lawson's 32 include 18 for Red Bull Racing, in round 2.</p>",
+    );
+    expect(b).not.toContain('javascript:');
+    expect(b).not.toContain('insecure.example');
+    // Without rulings, a cut or a driver of two teams, no line at all.
+    const plainSeason = seriesStandings({ ...sd, standingsNotes: [], rounds: [...sd.rounds!, { round: 4, name: 'Qatar Grand Prix', startDate: '2026-11-27', endDate: '2026-11-29', venue: null }], results: [sd.results![0]] }).body;
+    expect(plainSeason).not.toContain('pd-st-foot');
+  });
+
+  it('names who can still win it: the leader, those in with the share of the points left they need, and the first one out', () => {
+    expect(between('<section class="pd-st-who">', '</section>')).toBe(
+      '<section class="pd-st-who"><h3>Who can still win it</h3><p>25 points left: one Grand Prix at 25, the sprints all run. A bar is how much of that a driver needs just to draw level.</p><ol>' +
+        '<li class="ld" style="--t:#1E3A8A"><b>Verstappen</b><span class="lab">Leader</span><span class="v">51</span></li>' +
+        '<li style="--t:#DC0000"><b>Leclerc</b><i class="wb"><i style="width:28.0%"></i></i><span class="v">−7</span></li>' +
+        '<li style="--t:#DC0000"><b>Hamilton</b><i class="wb"><i style="width:64.0%"></i></i><span class="v">−16</span></li>' +
+        '<li style="--t:#6692FF"><b>Lawson</b><i class="wb"><i style="width:76.0%"></i></i><span class="v">−19</span></li>' +
+        '<li class="out" style="--t:#6692FF"><b>Lindblad</b><i class="wb"><i style="width:100.0%"></i></i><span class="v">−32</span></li></ol>' +
+        '<p class="pd-st-sum">Four drivers are still in it on paper. Lindblad is out by 7 points. Constructors: 43 left, so Ferrari is still alive.</p></section>',
+    );
+    const over = seriesStandings({ ...sd, rounds: sd.rounds!.slice(0, 2) }).body;
+    expect(over).toContain('<p>No points left: the season is over.</p>');
+    expect(over).toContain('<p class="pd-st-sum">Only Verstappen can still win it. Leclerc is out by 7 points. Constructors: 0 left, so only Red Bull Racing can still win it.</p>');
+    const sprintAhead = seriesStandings({ ...sd, calendar: [...sd.calendar!, at(3, 'Sprint', '2026-11-21T22:00:00Z')] }).body;
+    expect(sprintAhead).toContain('<p>33 points left: one Grand Prix at 25, one sprint at 8.');
+  });
+
+  it('tables the constructors with their gaps and race wins', () => {
+    expect(b).toContain(
+      '<div class="pd-st-cons"><h3 class="pd-st-ch">Constructors</h3><div class="pd-st-th c"><span>Pos</span><span></span><span>Constructor</span><span>Pts</span><span>Gap</span><span>Wins</span></div><ol class="pd-st-tbl c">' +
+        '<li class="lead" style="--t:#1E3A8A"><span class="p">1</span><i class="tb"></i><span class="d"><b>Red Bull Racing</b></span><span class="pt">87</span><span class="g">—</span><span class="w">1</span></li>' +
+        '<li style="--t:#DC0000"><span class="p">2</span><i class="tb"></i><span class="d"><b>Ferrari</b></span><span class="pt">79</span><span class="g">−8</span><span class="w">1</span></li>',
+    );
+  });
+
+  it("splits each team's points by who scored them, the seats from drivers.json, a stand-in named with his rounds, each sum the constructors' total", () => {
+    const splits = teammates(sd);
+    expect(splits.map(s => [s.team, s.pair.map(m => `${m.name} ${m.points}`), s.also.map(m => `${m.name} ${m.points} ${m.rounds.join(',')}`)])).toEqual([
+      ['Red Bull Racing', ['Max Verstappen 51', 'Isack Hadjar 18'], ['Liam Lawson 18 2']],
+      ['Ferrari', ['Charles Leclerc 44', 'Lewis Hamilton 35'], []],
+      ['Racing Bulls', ['Arvid Lindblad 19', 'Liam Lawson 14'], ['Yuki Tsunoda 10 2']],
+    ]);
+    const official = new Map(sd.standings![1].rows.map(r => [r[1], Number(r[2])]));
+    for (const s of splits) expect(s.total, s.team).toBe(official.get(s.team));
+    expect(b).toContain('<section class="pd-sr-sec pd-st-mates"><div class="pd-sh"><h2>Teammates</h2><p>Points split inside each team</p></div><div class="pd-st-grid">');
+    expect(b).toContain(
+      '<article class="pd-st-mate" style="--t:#1E3A8A"><h3>Red Bull Racing</h3><p class="a"><b>Verstappen</b><span>51</span></p><i class="split"><i style="width:58.6%"></i></i><p class="b"><b>Hadjar</b><span>18</span></p><p class="c">Also Lawson: 18 points in round 2</p></article>',
+    );
+    expect(b).toContain('<p class="b"><b>Lawson</b><span>14</span></p><p class="c">Also Tsunoda: 10 points in round 2</p></article>');
+  });
+
+  it('writes the same page whatever the hour, and lines for a season with nothing yet', () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date('2026-11-21T23:00:00Z'));
+      expect(seriesStandings(sd).body).toBe(b);
+    } finally {
+      vi.useRealTimers();
+    }
+    const empty = seriesStandings({ ...sd, standings: null, results: null }).body;
+    expect(empty).toContain('<h2 class="pd-st-h">Standings</h2><p>No race has run yet this season.</p>');
+    expect(empty).toContain('<p class="pd-mut">No standings yet this season.</p>');
+    expect(empty).not.toContain('pd-st-who');
+    expect(empty).not.toContain('pd-st-mates');
+  });
+});
+
+describe('standings-notes.json', () => {
+  const read = (slug: string, file: string) => JSON.parse(readFileSync(path.join(process.cwd(), 'content', 'series', slug, file), 'utf8'));
+  const notes = read('f1', 'standings-notes.json') as Record<string, Array<{ round: number; decided: string; note: string; drivers: Record<string, number>; sources: string[] }>>;
+  const roster = new Set((read('f1', 'drivers.json').teams as Array<{ drivers: Array<{ name: string }> }>).flatMap(t => t.drivers.map(x => x.name)));
+
+  it('holds rulings by season, each dated, with drivers on the roster, whole points and an https source', () => {
+    expect(Object.keys(notes).length).toBeGreaterThan(0);
+    for (const [season, list] of Object.entries(notes)) {
+      expect(season).toMatch(/^\d{4}$/);
+      for (const n of list) {
+        expect(Number.isInteger(n.round) && n.round > 0, `${season} round`).toBe(true);
+        expect(n.decided, `${season} decided`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(new Date(`${n.decided}T00:00:00Z`).toISOString().slice(0, 10), `${season} decided`).toBe(n.decided);
+        expect(n.decided.startsWith(season), `${season} decided in its season`).toBe(true);
+        // The note completes "points changed when …", so it opens in lower case and ends without a stop.
+        expect(n.note, `${season} note`).toMatch(/^[a-z].*[^.]$/);
+        expect(Object.keys(n.drivers).length, `${season} drivers`).toBeGreaterThan(0);
+        for (const [name, delta] of Object.entries(n.drivers)) {
+          expect(roster.has(name), `${name} on the roster`).toBe(true);
+          expect(Number.isInteger(delta) && delta !== 0, `${name} delta`).toBe(true);
+        }
+        expect(n.sources.length, `${season} sources`).toBeGreaterThan(0);
+        for (const s of n.sources) expect(new URL(s).protocol, s).toBe('https:');
+      }
+    }
   });
 });
 
@@ -334,9 +606,9 @@ describe('seriesList', () => {
     expect(b).toContain('<article class="pd-sx-card" data-type="rally" data-s="wrc"');
   });
 
-  it('links what exists: Formula 1 its Overview and Results, every card the Calendar showing only that series', () => {
+  it('links what exists: Formula 1 its Overview, Standings and Results, every card the Calendar showing only that series', () => {
     expect(card('f1')).toContain('<b><a href="/series/f1/">Formula 1</a></b>');
-    expect(card('f1')).toContain('<a href="/calendar/#f1">Calendar</a><span class="is-off">Standings</span><a href="/series/f1/results/">Results</a><span class="is-off">Champions</span>');
+    expect(card('f1')).toContain('<a href="/calendar/#f1">Calendar</a><a href="/series/f1/standings/">Standings</a><a href="/series/f1/results/">Results</a><span class="is-off">Champions</span>');
     expect(card('wrc')).toContain('<b>WRC</b>');
     expect(card('wrc')).toContain('<a href="/calendar/#wrc">Calendar</a><span class="is-off">Standings</span><span class="is-off">Results</span>');
   });
