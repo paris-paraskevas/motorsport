@@ -6,7 +6,39 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-22 (LATEST, session 70: O21, O22, O23 and O24 done, merged, published and checked on the site; O24 the Calendar's month as its headline with a bar that stays, the Month view fitted under it, and clickable series cards; O19's first PR (the data, #1179) merged and backfilled; O27 full width merged; O19's PR 2, the pages, built and opened for review, with pages first in the order; O19 done; O16, Formula 1's Standings, built)
+## ⚡ Next session pickup — 2026-10-23 (LATEST, session 70 handed off at ~23:45Z on the 22nd for a fresh context: O16, Formula 1's Standings, done and live with theme 0.1.17; the operator's question of a lap-by-lap race position chart is the next session's first item)
+
+### 🔴 Start here — the handoff prompt for the next BUILD session (copy it whole)
+
+```
+Session 71, the build session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
+Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md · docs/plan/ledger.json (O16 and O19 done; O17 next) · docs/HANDOFF.md LATEST (23 Oct) · IDEAS.md's lines of 22 Oct · the memory feedback-paddock-* files.
+Then run `git status` and `git log --oneline -5` on the local branch o16/records, start the theme-preview launch entry, and give a time plan with a "won't touch this session" line.
+Mind the weekly limit: all models at 96% until 24 Oct 21:00 UTC. State each step's burn first; no agent runs before the reset without my word.
+First task: my question of 22 Oct, "could we have a driver position graph for the race showing lap by lap positions for drivers": find and verify the data source, then draw it with a real race (round 17) for my answers, before any slot or plan.
+Then O17, Formula 1's Champions, on my word.
+Not without my word: any publish run, the theme upload, the old Next.js code, DNS, any prod write.
+```
+
+1. **O16 is DONE** (22 Oct ~23:35Z): #1184 squash-merged into next as fb9a2659, published in run 39869354257 (1 created, 43 updated, 0 failed), theme 0.1.17 live (the operator's second upload replaced 0.1.16), checked on the site signed in at 1,440 and 390 px, the switch by real clicks. The operator's test with #1184's six checks follows (Paddock Theme Log). The whole story is item 9 of the 22 Oct section below.
+2. **Records not yet on GitHub:** the local branch o16/records (from next at fb9a2659) holds three records commits (670b84b2, ef9a58af, c7f3ff26) and this handoff. They ride in the next PR: branch the next slot from o16/records, as o19/cards-records rode in #1184.
+3. **The operator's tests waiting,** each list on Paddock Theme Log (https://claude.ai/code/artifact/e5eb7263-fd4f-4b82-b1fd-065970d367d7) or in its PR: 0.1.17 (#1184), 0.1.16 (#1183), 0.1.15 (#1181), 0.1.14 (#1180), 0.1.13 (#1178), and 0.1.10 to 0.1.12 (#1175 to #1177) if not done. Each result goes into its slot's evidence.
+4. **The operator's question of 22 Oct ~23:40Z, not yet evaluated:** “could we have a driver position graph for the race showing lap by lap positions for drivers”. Sources to verify first (never from memory): jolpi.ca's laps for a race (a position for every driver on every lap, the Ergast shape the results already come from) and OpenF1's /position and /laps. It would sit on the race's session page and the weekend Overview after the race, drawn by the theme's script from data-* as the circuit map is (WordPress keeps no inline SVG). A draft with round 17 and the operator's answers come before any slot (rules 1 and 3).
+5. **The order** (the operator, 22 Oct): Formula 1's weekends (done), standings (done), champions (O17, next), anything else for Formula 1, then the other championships; the control rooms once all are done.
+6. **Living pages:** The Paddock Ledger (v75, https://claude.ai/code/artifact/f3559052-b0ce-4d33-8654-8933095535cf) and Paddock Theme Log (v17). A new session reads each with the Artifact tool (`read` with its `url`) and publishes with `url`; session 70's copies are in its scratchpad (ledger-page.html, theme-log.html).
+7. **Usage:** the weekly limit for all models was at 96% at 23:30Z (resets 24 Oct 21:00Z); the 5-hour window at 30%. #1184's fresh-context review cost 236,326 tokens against an estimate of 100,000.
+8. **IDEAS lines of 22 Oct** wait for the operator's sort (first / next / parked / dropped, rules.md § 11): Night's dark team colours, Who can still win it early in a season, the Standings' bars at 2,560 px, a long name cutting its small number, the cards' pairing, 150% text, Antonelli's two names, the publisher's theme guard, the roster's teams in practice, and the position chart.
+
+**Landmines met late in session 70:**
+- A theme upload can leave the old version active: WordPress shows a comparison screen, and only “Replace active with uploaded” swaps it. Check the live stylesheet past the cache: `curl -s -D - "https://paddock-tracker.com/wp-content/themes/paddock/style.css?nc=$RANDOM"`, its Last-Modified and its Version line.
+- The site's REST API serves a published page's rendered content to anyone, Coming Soon or not (`https://paddock-tracker.com/wp-json/wp/v2/pages?slug=standings`): a check of what was published without signing in.
+- WordPress strips aria-pressed from a saved page (wp_kses_post keeps aria-label, role, hidden and data-*): a switch's state is the script's to set.
+- docs/HANDOFF.md is stored with CRLF endings: edit inside its lines, or re-add it with `git -c core.autocrlf=false add`, else every line shows as changed (1059facc did; restored in #1184).
+- The in-app browser pane can come back signed out after the app restarts; the operator signs in there, never Claude.
+
+---
+
+## ⚡ Next session pickup — 2026-10-22 (session 70: O21, O22, O23 and O24 done, merged, published and checked on the site; O24 the Calendar's month as its headline with a bar that stays, the Month view fitted under it, and clickable series cards; O19's first PR (the data, #1179) merged and backfilled; O27 full width merged; O19's PR 2, the pages, built and opened for review, with pages first in the order; O19 done; O16, Formula 1's Standings, built)
 
 **WHERE IT STANDS (21 Oct, ~23:01Z; 22 Oct in Athens):**
 1. **O21 is DONE** (21 Oct ~18:05Z): #1175 squash-merged into next at 17:39:34Z as 1d7d6b18, published in run 39647023663 (3 pages updated), theme 0.1.10 active (the first upload had not replaced 0.1.9) and checked on the site signed in at 304 and 1440 px; the operator's test with #1175's list follows. Reviewed and folded first: the fresh-context Sonnet reader (536,313 tokens) said mergeable after fixes, 3 should-fix and 9 nits, folded as the PR log entry lists (a round now closes when the calendar's last race for it has ended; the other fourteen names stay unlinked as a departure for the operator's word; the subtitle trimmed); the nits left for later are IDEAS lines. No checks run on PRs into next. Theme zip 0.1.10 built (wp-theme/paddock.zip, gitignored, 40 files).
