@@ -266,9 +266,10 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 
 /* The Calendar (O12): round 2's month grid on a desktop, its weekend cards on a phone. The publisher lays the
    month out in UTC; the script moves each session to the reader's day and adds the controls and data-view.
-   Month view fits the window (the operator, 20 Oct): the events only, each week as tall as the script measures, and
-   "+N more" where a week holds more events than fit; Week view and the Agenda carry the session times. */
-.pd-cal { max-width: 1248px; margin: 0 auto; padding: 18px max(16px, 2.8vw) 16px; }
+   Month view fits the screen under the pinned bar (the operator, 22 Oct; from 20 Oct it fitted the window): the events
+   only, each week as tall as the script measures, and "+N more" where a week holds more events than fit; Week view and
+   the Agenda carry the session times. --pd-cal-bar is the pinned bar's height, which the script reads. */
+.pd-cal { --pd-cal-bar: 61px; max-width: 1248px; margin: 0 auto; padding: 18px max(16px, 2.8vw) 16px; }
 /* The month is the page's title, Calendar a label above it, and the steps name the months they open (the operator,
    22 Oct: "A with C"); the views, Filters and Session emails take the row below. */
 .pd-cal-top { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; grid-template-areas: "head nav . today" "ctl ctl ctl ctl"; align-items: end; gap: 16px 28px; }
@@ -455,7 +456,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal-bar b { min-width: 0; margin-inline: 6px; overflow: hidden; font-size: 1.3rem; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; text-overflow: ellipsis; }
 .pd-cal-bar b span { color: var(--pd-muted); font-weight: 700; }
 .pd-cal-bar .pd-cal-today { margin: 0 0 0 auto; }
-.pd-cal.is-pinned .pd-cal-wkh { top: calc(var(--wp-admin--admin-bar--height, 0px) + 61px); }
+.pd-cal.is-pinned .pd-cal-wkh { top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--pd-cal-bar)); }
 @media (max-width: 699px) {
 	.pd-cal-only button { margin-left: 0; }
 	.pd-cal-bar { gap: 6px; padding: 8px 16px; }
@@ -465,7 +466,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 }
 @media (max-width: 600px) {
 	.pd-cal-bar { top: 0; }
-	.pd-cal.is-pinned .pd-cal-wkh { top: 61px; }
+	.pd-cal.is-pinned .pd-cal-wkh { top: var(--pd-cal-bar); }
 }
 /* A long month ("September 2026") stays on one line down to 320 px, so the bar keeps its 61 px. */
 @media (max-width: 360px) {

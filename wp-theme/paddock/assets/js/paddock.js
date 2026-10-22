@@ -229,9 +229,10 @@
 	}
 
 	/** The events packed into each week's rows again, so a filtered series leaves no gap. In Month view the weeks
-	 *  share the window's height (24px day row, 19px band rows, as style.css draws them) and a week with more events
-	 *  than fit says "+N more" on the days it hides; a click opens the week. Week view takes as many 23px band rows
-	 *  as the packing needs, the sessions below them. */
+	 *  share the screen's height under the pinned bar (the operator, 22 Oct: the headline scrolls away once and every
+	 *  event shows; until then the month fitted the window under the whole headline), at 24px a day row and 19px a band
+	 *  row as style.css draws them, and a week with more events than fit says "+N more" on the days it hides; a click
+	 *  opens the week. Week view takes as many 23px band rows as the packing needs, the sessions below them. */
 	function fitMonth( cal ) {
 		var grid = cal.querySelector( '.pd-cal-grid' ), weeks = cal.querySelectorAll( '.pd-cal-wk' ), fit = 99;
 		var month = cal.getAttribute( 'data-view' ) === 'month';
@@ -239,7 +240,9 @@
 		if ( ! grid || ! weeks.length ) { return; }
 		if ( month ) {
 			var dow = grid.querySelector( '.pd-cal-dow' );
-			var room = window.innerHeight - ( grid.getBoundingClientRect().top + window.scrollY ) - ( dow ? dow.offsetHeight : 0 ) - 12;
+			// The pinned bar's height (style.css) and WordPress's own bar above it, when a reader is signed in.
+			var bars = ( parseFloat( getComputedStyle( cal ).getPropertyValue( '--pd-cal-bar' ) ) || 0 ) + ( parseFloat( getComputedStyle( document.documentElement ).getPropertyValue( '--wp-admin--admin-bar--height' ) ) || 0 );
+			var room = window.innerHeight - bars - ( dow ? dow.offsetHeight : 0 ) - 12;
 			var height = Math.max( 100, Math.min( 176, Math.floor( room / weeks.length ) ) );
 			cal.style.setProperty( '--pd-wk-h', height + 'px' );
 			fit = Math.floor( ( height - 24 ) / 19 );
@@ -425,11 +428,13 @@
 		Array.prototype.forEach.call( h1.childNodes, function ( n ) { if ( n.nodeName !== 'SMALL' ) { name.appendChild( n.cloneNode( true ) ); } } );
 		[ prev, name, next, today ].forEach( function ( el ) { if ( el ) { bar.appendChild( el === name ? el : el.cloneNode( true ) ); } } );
 		top.parentNode.insertBefore( bar, top.nextSibling );
+		// Signed in, WordPress's own bar covers the top of the screen above 600 px: the steps are gone once under it.
+		var wp = window.innerWidth > 600 ? parseFloat( getComputedStyle( document.documentElement ).getPropertyValue( '--wp-admin--admin-bar--height' ) ) || 0 : 0;
 		new IntersectionObserver( function ( entries ) {
-			var last = entries[ entries.length - 1 ], gone = ! last.isIntersecting && last.boundingClientRect.top < 0;
+			var last = entries[ entries.length - 1 ], gone = ! last.isIntersecting && last.boundingClientRect.top < wp;
 			bar.hidden = ! gone;
 			cal.classList.toggle( 'is-pinned', gone );
-		} ).observe( nav );
+		}, { rootMargin: '-' + wp + 'px 0px 0px 0px' } ).observe( nav );
 	}
 
 	/** The views (Month, Week, Agenda) and the week steps. */
