@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.13
+Version: 0.1.14
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -46,7 +46,9 @@ Text Domain: paddock
 	--pd-line-strong: var(--wp--preset--color--pd-line-strong);
 	--pd-live: var(--wp--preset--color--pd-live);
 	--pd-on: #0f1217;
-	--pd-gutter: max(16px, calc((100vw - 1200px) / 2));
+	/* Every page runs the screen's whole width to this gutter, 16 px on a phone to 64 px on a wide screen (the operator,
+	   22 Oct 2026, O27); only running text keeps a measure. */
+	--pd-gutter: clamp(16px, 2.5vw, 64px);
 }
 body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
 :where(.wp-site-blocks) :focus-visible { outline: 3px solid #ffdd00; outline-offset: 0; box-shadow: 0 0 0 6px var(--pd-ink); }
@@ -55,7 +57,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 
 /* Header */
 .pd-top { position: relative; background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
-.pd-top-in { gap: 28px; min-height: 58px; padding: 6px max(16px, 2.8vw); }
+.pd-top-in { gap: 28px; min-height: 58px; padding: 6px var(--pd-gutter); }
 .pd-brand { gap: 9px; }
 .pd-mark { display: inline-block; width: 20px; height: 20px; border: 1.5px solid var(--pd-ink); background: repeating-conic-gradient(var(--pd-ink) 0 25%, transparent 0 50%) 0 0 / 8.5px 8.5px; }
 .pd-top .wp-block-site-title a { text-decoration: none; }
@@ -77,7 +79,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-search-sm summary { display: grid; place-items: center; width: 38px; height: 38px; list-style: none; cursor: pointer; color: var(--pd-ink); }
 .pd-search-sm summary::-webkit-details-marker { display: none; }
 .pd-search-sm summary svg { width: 18px; height: 18px; }
-.pd-search-sm form { position: absolute; z-index: 30; left: 0; right: 0; top: 100%; display: flex; gap: 8px; padding: 10px max(16px, 2.8vw); background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
+.pd-search-sm form { position: absolute; z-index: 30; left: 0; right: 0; top: 100%; display: flex; gap: 8px; padding: 10px var(--pd-gutter); background: var(--pd-surface); border-bottom: 1px solid var(--pd-line); }
 .pd-search-sm input { flex: 1; min-width: 0; height: 42px; padding: 0 12px; border: 1px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-ground); color: var(--pd-ink); font: inherit; font-size: 1rem; }
 .pd-search-sm button { height: 42px; padding: 0 16px; border: 0; border-radius: 0; background: var(--pd-accent); color: var(--pd-on); font: inherit; font-weight: 800; cursor: pointer; }
 .pd-subscribe .wp-block-button__link { background: transparent; color: var(--pd-ink); border: 1.5px solid var(--pd-ink); padding: 9px 16px; font-size: .84rem; white-space: nowrap; }
@@ -108,7 +110,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 }
 
 /* The live strip */
-.pd-live { margin: 0; padding: 10px max(16px, 2.8vw); background: color-mix(in srgb, var(--pd-live) 10%, var(--pd-ground)); border-bottom: 1px solid var(--pd-line); font-size: .84rem; }
+.pd-live { margin: 0; padding: 10px var(--pd-gutter); background: color-mix(in srgb, var(--pd-live) 10%, var(--pd-ground)); border-bottom: 1px solid var(--pd-line); font-size: .84rem; }
 .pd-live p { margin: 0; }
 .pd-live[hidden], .pd-live.is-off { display: none; }
 .pd-main, .pd-live + .pd-hero { margin-block-start: 0; }
@@ -121,7 +123,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-hero.wp-block-cover { padding: 64px var(--pd-gutter) 0; color: #f4f5f7; overflow: hidden; align-items: flex-end; }
 .pd-hero .wp-block-cover__image-background { object-position: 72% 38%; }
 .pd-hero .wp-block-cover__background { opacity: 1 !important; background: linear-gradient(90deg, rgba(10, 12, 15, .93) 0%, rgba(10, 12, 15, .74) 36%, rgba(10, 12, 15, .22) 68%, rgba(10, 12, 15, .38) 100%), linear-gradient(0deg, rgba(10, 12, 15, .9) 0%, rgba(10, 12, 15, 0) 38%) !important; }
-.wp-block-cover.pd-hero .wp-block-cover__inner-container { position: relative; z-index: 3; width: 100%; max-width: 1200px; margin: 0 auto; }
+.wp-block-cover.pd-hero .wp-block-cover__inner-container { position: relative; z-index: 3; width: 100%; }
 /* Flow layouts add a top margin to every second child; grids and flex rows of ours lay out by gap instead. */
 .pd-sessions > *, .pd-cards > *, .pd-card > *, .pd-card-top > *, .pd-champ > *, .pd-nextwk > *, .pd-sh > *, .pd-live > *, .pd-ses > * { margin-block: 0 !important; }
 .pd-hero h1, .pd-hero h2, .pd-hero p, .pd-hero a { color: #f4f5f7; }
@@ -152,7 +154,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-ses.is-live { box-shadow: inset 0 3px 0 var(--pd-live); } .pd-ses.is-live .pd-st { color: #ff7a7f; }
 .pd-ses.is-next { box-shadow: inset 0 3px 0 var(--pd-accent); } .pd-ses.is-next .pd-st { color: var(--pd-accent); }
 @media (max-width: 699px) {
-	.pd-hero.wp-block-cover { padding: 44px 16px 0; min-height: 0 !important; }
+	.pd-hero.wp-block-cover { padding: 44px var(--pd-gutter) 0; min-height: 0 !important; }
 	.pd-hero .wp-block-cover__background { background: linear-gradient(0deg, rgba(10, 12, 15, .97) 0%, rgba(10, 12, 15, .9) 46%, rgba(10, 12, 15, .4) 74%, rgba(10, 12, 15, .6) 100%) !important; }
 	.pd-bignum { display: none; }
 	.wp-block-cover.pd-hero .wp-block-cover__inner-container { display: flex; flex-direction: column; }
@@ -166,6 +168,9 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 
 /* Sections */
 .pd-sec { padding: 0 var(--pd-gutter); margin: 56px 0 0 !important; }
+/* The home's sections were saved with a 1,200 px content width (page 5053, built from wp-theme/preview/home.html):
+   lifted here over WordPress's own layout rule, so the page itself needs no edit. */
+.pd-sec.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)), .pd-sec.is-layout-constrained > .alignwide { max-width: none; }
 .pd-sh { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; margin-bottom: 16px; }
 .pd-sh h2, .pd-sh h3 { margin: 0; }
 .pd-sh h2 small { margin-left: 6px; font-size: 1.19rem; font-weight: 500; letter-spacing: 0; color: var(--pd-muted); }
@@ -238,7 +243,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-lead .wp-block-post-terms a { text-decoration: none; }
 .pd-lead .wp-block-post-title { margin: 0 0 10px; font-size: 2.25rem; line-height: 1.06; letter-spacing: -.025em; }
 .pd-lead .wp-block-post-title a { text-decoration: none; }
-.pd-lead .wp-block-post-excerpt { color: var(--pd-muted); }
+.pd-lead .wp-block-post-excerpt { max-width: 70ch; color: var(--pd-muted); }
 @media (max-width: 699px) {
 	.pd-rows li { grid-template-columns: 72px 56px minmax(0, 1fr) auto; gap: 8px; height: 46px; padding: 0 10px 0 12px; font-size: .78rem; }
 	.pd-rows li.pd-more { display: none; }
@@ -252,7 +257,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 
 /* Footer */
 .pd-foot { margin-top: 64px; border-top: 1px solid var(--pd-line); }
-.pd-foot-in { gap: 8px 24px; padding: 22px max(16px, 2.8vw); font-size: .78rem; color: var(--pd-muted); }
+.pd-foot-in { gap: 8px 24px; padding: 22px var(--pd-gutter); font-size: .78rem; color: var(--pd-muted); }
 .pd-foot-in p { margin: 0; }
 .pd-foot-nav .wp-block-navigation-item a { color: var(--pd-muted); text-decoration: none; }
 .pd-foot-nav .pd-coffee a { color: var(--pd-ink); font-weight: 700; }
@@ -269,7 +274,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
    Month view fits the screen under the pinned bar (the operator, 22 Oct; from 20 Oct it fitted the window): the events
    only, each week as tall as the script measures, and "+N more" where a week holds more events than fit; Week view and
    the Agenda carry the session times. --pd-cal-bar is the pinned bar's height, which the script reads. */
-.pd-cal { --pd-cal-bar: 61px; max-width: 1248px; margin: 0 auto; padding: 18px max(16px, 2.8vw) 16px; }
+.pd-cal { --pd-cal-bar: 61px; padding: 18px var(--pd-gutter) 16px; }
 /* The month is the page's title, Calendar a label above it, and the steps name the months they open (the operator,
    22 Oct: "A with C"); the views, Filters and Session emails take the row below. */
 .pd-cal-top { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; grid-template-areas: "head nav . today" "ctl ctl ctl ctl"; align-items: end; gap: 16px 28px; }
@@ -380,7 +385,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 
 /* Agenda: round 2's weekend cards, two to a row on a laptop; the championship on an ink label, and on a wide card
    the series beside the round's number (the operator, 20 Oct). */
-.pd-cal-agenda { display: none; max-width: 720px; margin-top: 8px; }
+.pd-cal-agenda { display: none; margin-top: 8px; }
 .pd-cal[data-view="agenda"] .pd-cal-agenda { display: block; }
 .pd-cal[data-view="agenda"] .pd-cal-grid, .pd-cal[data-view="agenda"] .pd-cal-legend { display: none; }
 .pd-cal-wkh { position: sticky; top: 0; z-index: 3; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px; margin: 18px 0 0; padding: 12px 0 8px; border-bottom: 2px solid var(--pd-ink); background: var(--pd-ground); font-size: 1.375rem; font-weight: 800; line-height: 1.1; letter-spacing: -.015em; }
@@ -415,7 +420,6 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-wc-none { margin: 0; padding: 12px; color: var(--pd-muted); font-size: .81rem; }
 @media (min-width: 700px) { .pd-wc-series { display: inline; } }
 @media (min-width: 1000px) {
-	.pd-cal-agenda { max-width: none; }
 	.pd-cal-wkend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; align-items: start; }
 	.pd-cal-wkh { grid-column: 1 / -1; }
 	.pd-wc::before { display: none; }
@@ -430,7 +434,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 	.pd-cal-full { display: none; }
 	.pd-cal-short { display: inline; }
 	.pd-cal-views { display: none; }
-	.pd-cal-filter { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * max(16px, 2.8vw)); padding: 0 max(16px, 2.8vw) 4px; scrollbar-width: none; }
+	.pd-cal-filter { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * var(--pd-gutter)); padding: 0 var(--pd-gutter) 4px; scrollbar-width: none; }
 	.pd-cal-chip, .pd-cal-lbl { flex: none; }
 	.pd-cal-menu.is-series .pd-cal-mlist { grid-template-columns: minmax(150px, 1fr); }
 	.pd-cal-grid, .pd-cal-legend { display: none; }
@@ -451,7 +455,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 /* Once the month's steps have scrolled off the screen, the script shows them, the month's name and Today in a slim
    bar (61 px): under WordPress's own bar while that stays put, at the very top at 600 px and below, where it scrolls
    away. The phone's weekend headings stick under it while it shows. */
-.pd-cal-bar { position: fixed; z-index: 40; top: var(--wp-admin--admin-bar--height, 0px); left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: 8px max(16px, 2.8vw, calc((100vw - 1248px) / 2)); border-bottom: 1px solid var(--pd-line-strong); background: var(--pd-ground); box-shadow: 0 8px 16px -10px rgba(15, 18, 23, .35); }
+.pd-cal-bar { position: fixed; z-index: 40; top: var(--wp-admin--admin-bar--height, 0px); left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: 8px var(--pd-gutter); border-bottom: 1px solid var(--pd-line-strong); background: var(--pd-ground); box-shadow: 0 8px 16px -10px rgba(15, 18, 23, .35); }
 .pd-cal-bar[hidden] { display: none; }
 .pd-cal-bar b { min-width: 0; margin-inline: 6px; overflow: hidden; font-size: 1.3rem; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; text-overflow: ellipsis; }
 .pd-cal-bar b span { color: var(--pd-muted); font-weight: 700; }
@@ -459,7 +463,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal.is-pinned .pd-cal-wkh { top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--pd-cal-bar)); }
 @media (max-width: 699px) {
 	.pd-cal-only button { margin-left: 0; }
-	.pd-cal-bar { gap: 6px; padding: 8px 16px; }
+	.pd-cal-bar { gap: 6px; }
 	.pd-cal-bar .pd-cal-step { padding: 0 12px; }
 	.pd-cal-bar b { margin-inline: auto; font-size: 1.12rem; }
 	.pd-cal-bar .pd-cal-today { display: none; }
@@ -588,16 +592,16 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 	.pd-sr-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 @media (max-width: 699px) {
-	.pd-sr-band-in { flex-direction: column; align-items: stretch; gap: 18px; padding: 24px 16px 20px; }
+	.pd-sr-band-in { flex-direction: column; align-items: stretch; gap: 18px; padding: 24px var(--pd-gutter) 20px; }
 	.pd-sr-ttl h1 { font-size: 3rem; }
 	.pd-sr-ttl p { font-size: .875rem; }
 	.pd-sr-bar { gap: 3px; }
 	.pd-sr-bar i { flex: 1 1 0; width: auto; }
 	.pd-sr-acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.pd-sr-follow, .pd-sr-emails { padding: 0 10px; font-size: .84rem; }
-	.pd-sr-tabs-in { gap: 22px; padding: 0 16px; }
-	.pd-sr-main { gap: 40px; padding: 20px 16px 0; }
-	.pd-sr-blog, .pd-sr-about { margin-top: 40px !important; padding: 0 16px; }
+	.pd-sr-tabs-in { gap: 22px; }
+	.pd-sr-main { gap: 40px; padding: 20px var(--pd-gutter) 0; }
+	.pd-sr-blog, .pd-sr-about { margin-top: 40px !important; }
 	.pd-sr-cards { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 	.pd-sr-card { padding: 18px; }
 	.pd-sr .pd-sr-card h2 { font-size: 1.44rem; }
@@ -616,7 +620,6 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 /* Results (O15): a fold a round that has raced, the latest open, with its race ten rows deep and the rest in a fold.
    pd-rs-c1 to c4 name a table's figure columns (Time and Pts for a race). The weekend pages, a layout per format,
    come in a slot of their own. */
-.pd-rs-page { max-width: 980px; }
 .pd-rs { border-top: 1px solid var(--pd-line); }
 .pd-rs-round { border-bottom: 1px solid var(--pd-line); }
 .pd-rs-round > summary { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto 64px; align-items: center; gap: 12px; padding: 14px 0; font-size: .97rem; list-style: none; cursor: pointer; }
@@ -750,7 +753,7 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 	.pd-sx-cols-3, .pd-sx-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 699px) {
-	.pd-sx { padding: 22px 16px 0; }
+	.pd-sx { padding: 22px var(--pd-gutter) 0; }
 	.pd-sx-groups, .pd-sx-grid { grid-template-columns: minmax(0, 1fr); }
 	.pd-sx-type { grid-column: auto; }
 	/* The controls' grid sizes its items to their content (justify-items: start), so the one-line chips need a cap to scroll. */

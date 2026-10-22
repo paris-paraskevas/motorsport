@@ -14,6 +14,59 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1180 · 1.0.292 · O27 (full width: every page we built uses the whole screen) · opened 2026-10-22 into `next` on the operator's "Full width as drawn: the 16 to 64 px gutter, running text kept to a readable line, its own small PR (theme 0.1.14) before O19's PR 2. Plan it." and the plan approved in plan mode; the merge on the word
+**The whole screen.** The operator found every page we built stopping at 1,200 px in the middle, 680 px in from each edge on their 2,560 px screen ("i want entire screens' width to be used"). Paddock Full Width drew the pages both ways, and the operator chose full width as drawn, in a small PR of its own before O19's weekend pages so that none is built narrow. The records of #1179's merge, the season's backfill and the operator's order of 22 Oct (pages first) ride in from the local o19/records.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the operator's upload of 0.1.14, every page we built runs to a slim gutter, from 16 px on a phone to 64 px on a wide screen, with the logo on the same edge. Phones look exactly as before. A post keeps its column until its drafts; its header and footer follow the gutter.
+- **Editors get:** nothing.
+- **Files (11):**
+  - `wp-theme/paddock/style.css` · 0.1.14:
+    - the gutter `clamp(16px, 2.5vw, 64px)`;
+    - the hero's, the Calendar's, its pinned bar's, the Agenda's and Results' caps lifted;
+    - one rule lifting the home's saved 1,200 px content width (page 5053);
+    - the header, its phone search, the live strip, the footer and the Calendar's chip row on the gutter;
+    - from the review: the phone rules from 641 to 699 px on the gutter, and the home's lead excerpt kept to 70 characters.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.292.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered):
+    - O27 with its decision scan and evidence;
+    - three dated lines: the full-width rule, O27 before O19's PR 2 (which moves to 1.0.293 with theme 0.1.15), and the post page's two answers;
+    - the order of 22 Oct, with O26 after O18;
+    - O19's and O26's needsWord brought up to date;
+    - O19's MERGED and BACKFILLED evidence.
+  - `docs/plan/rules.md` · § 12 gains "Full width".
+  - `docs/HANDOFF.md` · O19's merge and backfill, O27, the order, the 0.1.13 nits' correction.
+  - `IDEAS.md` · the post page's line, pages first; the waiting full-width line out.
+- **Verified:** on the theme preview with the clock fixed on Thu 22 Oct:
+  - 96 of 96 full-page screenshots pixel-identical to 0.1.13's from 320 to 480 px, Day and Night, on 8 views;
+  - at 1,440, 1,920 and 2,560 px the logo and the content at 36, 48 and 64 px on every page (before: the logo at 40, 54 and 72, the content at 96 to 680), and the Calendar's pinned bar in Agenda at the same edges;
+  - a post's column unchanged, its header and footer on the gutter;
+  - at 650 and 699 px, every edge on the gutter (16.25 and 17.47 px);
+  - no sideways scroll at 20 widths from 300 to 2,560;
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 281 files, 2,853 tests.
+  - Theme zip built: 40 files, Version 0.1.14.
+- **Test after upload:**
+  1. `/series/f1/`, `/series/f1/results/`, `/calendar/` (Month, Week, Agenda), `/series/` and the home, on the operator's 2,560 px screen and a laptop, Day and Night: everything runs to about 64 px from the edges (32 to 36 on a laptop), the logo on the same left edge.
+  2. `/calendar/` in Agenda, scrolled: the pinned bar lines up with the page.
+  3. A phone at 390 px: no change.
+  4. A post: its column as before; only its header and footer follow the new margin.
+- **After the merge:** the operator's upload of 0.1.14 and the test above. CSS only, so no publish run is needed.
+- **Review:** one fresh-context Sonnet reader, on the operator's word: “My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1180.”
+  - Cost: 335,000 tokens against an estimate of 250,000 to 350,000; 82 tool calls; about 88 minutes.
+  - Verdict: mergeable; 0 blockers, 0 should-fix, 7 nits.
+  - Six folded:
+    - the phone rules from 641 to 699 px on the gutter, where 16 px no longer matched it (up to 1.47 px off at 699);
+    - the home's lead excerpt kept to 70 characters a line;
+    - "a post unchanged" corrected to its column;
+    - the release note's "every page" made exact;
+    - rules.md § 12's title and its "two columns" measure;
+    - two stale handoff lines.
+  - No change on the seventh: the rule's `.alignwide` half outweighs WordPress's, three classes to two.
+  - The reader confirmed, by running it:
+    - the home's override wins over WordPress's layout CSS when that CSS comes after the theme's;
+    - only the intended measures remain, across 38 widths from 300 to 3,840;
+    - no sideways scroll on 8 views at those widths;
+    - the phone chip row bleeds exactly;
+    - the zip matches the branch.
+
 ## #1179 · 1.0.291 · O19, part 1 (the weekend pages' data: OpenF1's session weather, marks and tyres, circuit maps, MET Norway's forecast) · opened 2026-10-22 into `next` on the operator's "The defaults on both pages stand: O19's six and the control room's three. Plan O19's build in plan mode." and the plan approved in plan mode; the merge on the word
 **The data first.** The operator settled Formula 1's weekend pages on Paddock Weekend Drafts (version 3) and approved a build in two PRs; this one keeps what the pages will show on the paddock-data branch, so the season backfills while the pages are built. Session 70's records ride in from o24/records: rule 12, the narrowed content law, O25 and O26, the drafts' rounds.
 - **Readers see:** nothing; no page changes (rendered from the stored data with this branch and with `next`, 72 of 72 pages keep their hash).
