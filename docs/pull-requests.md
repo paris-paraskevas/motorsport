@@ -20,7 +20,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `/series/f1/standings/`: the drivers and Who can still win it beside the constructors, then the teammates; a switch for Drivers, Constructors or Both;
   - the Standings tab live on every Formula 1 page, and the Overview's "All 23 →", the series list's Standings and the weekend pages' "Full standings →" leading to it.
 - **Editors get:** `content/series/f1/standings-notes.json`, a ruling a line, for the small numbers and the line under the table.
-- **Files (26):**
+- **Files (25):**
   - `lib/wp/series.ts` · `seriesStandings`, with `pointsLeft`, `stillIn` and `teammates`; `BUILT` gains Formula 1's standings; `seriesFamily` returns the page.
   - `lib/wp/series.test.ts` · 14 new tests, two of them from the review; four changed where a greyed Standings link became a link.
   - `lib/wp/weekend.test.ts` · one changed: "Full standings →" is a link.
@@ -37,6 +37,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
     - #1183's MERGED, UPLOADED and CHECKED evidence, O19 done;
     - O16's OPENED, ANSWERED, PLANNED, BUILT and VERIFIED evidence;
     - IDEAS: dark team colours in Night, Who can still win it early in a season, the bars at 2,560 px, a long name cutting its small number.
+    - `docs/HANDOFF.md` keeps its CRLF endings: the records commit 1059facc had turned them to LF, restored here.
 - **Answered:** the line reads "next update after Sunday's United States Grand Prix" where the drafts read "race in Austin", since rounds.json's place is a country for some rounds; kept as built on the operator's word ("Keep "next update after Sunday's United States Grand Prix" as built.").
 - **Verified:**
   - the dry run's hand count at round 17: 150 points left, six drivers in, Piastri out by 52, 258 for the constructors with Ferrari, McLaren and Red Bull Racing alive; all 11 teams' teammates add up to the constructors' table;
