@@ -30,11 +30,11 @@ on:
         options: [publish, dry-run, test-page]
         default: publish
       only:
-        description: 'the pages whose path starts here; all: every page'
+        description: 'the pages whose path starts here, or several such paths separated by commas; all: every page'
         type: string
         default: /calendar/
       openf1_max:
-        description: 'Formula 1 practices and sprint qualifyings fetched from OpenF1 this run, 0 to 60 (the season backfill: 50)'
+        description: 'Formula 1 sessions fetched from OpenF1 this run, 0 to 60: up to this many practice and sprint qualifying classifications, and as many sessions'' weather, race control and tyres (the season backfill: 60)'
         type: string
         default: '12'
 
@@ -53,8 +53,9 @@ jobs:
       issues: write
     env:
       MODE: ${{ inputs.mode || 'publish' }}
-      # A page family goes live once its design has (O12: the calendar); a scheduled run has no inputs.
-      ONLY: ${{ inputs.only || '/calendar/' }}
+      # A page family goes live once its design has (O12: the calendar; O19: Formula 1's pages, whose weekends change
+      # through a race weekend); a scheduled run has no inputs.
+      ONLY: ${{ inputs.only || '/calendar/,/series/f1/' }}
       # Empty on a scheduled run, which takes the publisher's own 12.
       OPENF1_MAX: ${{ inputs.openf1_max }}
     steps:

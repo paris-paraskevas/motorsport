@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.291 — 2026-10-22
+
+Behind the scenes: the site now keeps the weather measured through each Formula 1 session, when a session started late or was stopped, each driver's tyres in every race and sprint, the forecast for each coming weekend, and a map of each circuit, ready for the weekend pages. Nothing changes for readers yet.
+
 ## 1.0.290 — 2026-10-22
 
 Behind the scenes: the calendar's month is now its headline, with buttons named for the months either side and a slim bar that keeps them at the top of the screen as you scroll. On the list of series, a whole card opens its championship, and the cards racing this weekend open the calendar showing that championship. Nothing changes for readers yet.

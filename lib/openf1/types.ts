@@ -85,6 +85,20 @@ export interface OF1Location {
   session_key: number;
 }
 
+/** A weather reading at the track (about once a minute). `track_temperature` reads 0 when the sensor has no value. */
+export interface OF1Weather {
+  date: string; // ISO
+  air_temperature: number; // °C
+  track_temperature: number; // °C
+  humidity: number; // %
+  pressure: number; // mbar
+  rainfall: number; // 0 or 1
+  wind_direction: number; // degrees
+  wind_speed: number; // m/s
+  session_key: number;
+  meeting_key: number;
+}
+
 /** A continuous tyre stint. */
 export interface OF1Stint {
   driver_number: number;
