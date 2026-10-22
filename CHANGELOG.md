@@ -4,6 +4,45 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.291 — 2026-10-22
+
+### O19, part 1: the data Formula 1's weekend pages will show
+
+The operator took every default on Paddock Weekend Drafts (version 3) on 22 Oct, and the plan approved in plan mode builds O19 in two PRs: this one fetches and keeps the data, so the season backfills while the pages are built in the second. No page changes: rendered from the stored data, all 72 pages keep their hash.
+
+- **OpenF1, per finished session** (`lib/openf1/weekend.ts`, new; called from the publisher's new `f1Weekend`):
+  - the weather measured through it (air, track and humidity as low, middle and high, the track sensor's zeros dropped, and whether rain fell);
+  - race control's marks: a late start, only when race control said so ("DELAYED START"), at the new time it gave, read in the track's zone (`trackTimeToUtc`), else when the session started; and each red flag with its lap and whether the session started again (one stoppage announced twice counts once);
+  - each driver's tyres in races and sprints.
+  - It is asked half an hour after a session ends, OpenF1's live window being paid, for up to `--openf1-max` sessions a run inside five minutes; a part it did not give is asked again a day later. Kept in `f1/sessions.json`.
+- **Circuit maps** from each circuit's latest pole lap:
+  - `fetchLaps`, `fastestLapsByDriver` and `fetchLapLocation` find the lap and its positions; `buildTrackPath` lays them out; `circuitMap` splits them at the lap's sector times.
+  - A circuit without this season's qualifying takes last season's at the same circuit.
+  - Up to six a run, drawn before the session backfill so it cannot starve them. Kept in `f1/maps.json`.
+- **MET Norway's forecast** (`lib/met-norway.ts`, new) for each circuit racing within ten days:
+  - its terms followed: an identifying User-Agent, coordinates of four decimals, no request before Expires, If-Modified-Since with Last-Modified;
+  - the steps trimmed to the next ten days and kept in `f1/forecast.json`;
+  - `stepFor` picks the step a session starts in, `symbolLabel` names it.
+- **The publisher:**
+  - `nearestOpenF1` is shared by the classifications and the new data;
+  - `calendarRounds` keeps the host's circuits.json key and zone on each `CalendarRound`;
+  - `--only` takes several families separated by commas, and fails naming any that match no page;
+  - the workflow's scheduled default becomes `/calendar/,/series/f1/`, though the schedule stays off until launch.
+- Found in the stored data, for the pages to check against Formula 1's reports before they show them:
+  - Sepang's race started 40 minutes late, in rain;
+  - Monaco's race was stopped on lap 73 and not restarted.
+
+Verified:
+- `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 281 files, 2,836 tests.
+- The tests run on OpenF1's own rows: Singapore's Sprint late at 17:30 local, 09:30Z; Monza's race red-flagged on lap 3 and restarted; the track time in four zones, summer and winter.
+- Two local fetch runs into a copy of the paddock-data branch, WordPress not called:
+  - feeds 42 OK;
+  - 85 sessions kept (rounds 1 to 17), among them Singapore's Sprint late with rain and Monza's red flag;
+  - 12 maps of 17;
+  - Austin's and Mexico City's forecasts, 90 steps each; a second run kept Austin's (not yet expired) and asked again for Mexico City's.
+  - The files: sessions 193 KB, maps 173 KB, forecast 27 KB.
+- Rendering from `origin/paddock-data` with this branch and with `next`: 72 of 72 pages with the same hash.
+
 ## 1.0.290 — 2026-10-22
 
 ### O24: the Calendar's month as its headline with a bar that stays, the calendar's follow-ups, and clickable cards on the series list

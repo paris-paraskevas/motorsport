@@ -599,6 +599,11 @@ describe('onlyFamily', () => {
     expect(paths('/calendar/')).toEqual(['/calendar/', '/calendar/2026-10/']);
     expect(paths('/nowhere/')).toEqual([]);
   });
+
+  it('takes several families separated by commas, each with its parents', () => {
+    expect(paths('/calendar/,/series/f1/')).toEqual(['/series/', '/series/f1/', '/series/f1/standings/', '/calendar/', '/calendar/2026-10/']);
+    expect(paths('/status/,/nowhere/')).toEqual(['/status/']);
+  });
 });
 
 describe('planSync', () => {

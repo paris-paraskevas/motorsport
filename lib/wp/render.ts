@@ -700,6 +700,10 @@ export interface CalendarRound {
   place?: string;
   /** The circuits.json key of the outline the theme carries for the host (wp-theme/paddock/assets/circuits), if any. */
   outline?: string | null;
+  /** The host's circuits.json key and IANA zone, whenever the venue matched one (O19: the weekend pages' map,
+   *  forecast and track time); null for a rally or an unmatched venue. */
+  circuit?: string | null;
+  tz?: string;
 }
 
 /** How far the calendar reaches either side of the current month. */
@@ -1000,7 +1004,9 @@ const depthOf = (path: string): number => path.split('/').filter(Boolean).length
 /** The pages whose path starts with `prefix` (the publisher's --only), with every page of `all` above them: a page is
  *  written under its parent, so /series/f1/ alone would fail on a site without /series/. */
 export function onlyFamily(all: Page[], prefix: string): Page[] {
-  const chosen = all.filter(p => p.path.startsWith(prefix));
+  // Several families at once, separated by commas ("/calendar/,/series/f1/"): the scheduled run keeps both current.
+  const prefixes = prefix.split(',').filter(Boolean);
+  const chosen = all.filter(p => prefixes.some(x => p.path.startsWith(x)));
   return all.filter(p => chosen.includes(p) || chosen.some(c => c.path !== p.path && c.path.startsWith(p.path)));
 }
 
