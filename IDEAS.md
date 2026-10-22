@@ -33,6 +33,7 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 
 Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), the changelog restructure, the og:image fault, the mobile calendar, the blog covers, the landing retirement and the AdSense audit. **Those blocks are deleted rather than archived — git, `CHANGELOG.md` and `docs/HANDOFF.md` are the record**, and this file is for open work only. The items they raised that are STILL open have been folded into the Inbox below.
 
+- (2026-10-22, session 70, the operator) “the "session emails" is of less importance”: on the Calendar's top and in a series page's band, Session emails is a full bordered button beside Filters and Follow; give it less weight (a quieter link, or moved down), drawn first, for the next Calendar or series-page PR.
 - (2026-10-22, session 70, #1177 review) Below 375 px the menu’s and the magnifier’s focus rings touch the wordmark and Subscribe (gaps of 6 and 2 px); both rings stay whole.
 - (2026-10-22, session 70, #1177 review) At larger text sizes (the browser's default font at 125 to 200%) the site scrolls sideways in 0.1.11 and 0.1.12 alike: the header at 375 to 390 px from 125%; at 200% a series title's longest word runs under Follow from 700 to 760 px. A text-size pass for the whole site.
 - (2026-10-22, session 70, #1177 review) The search results page (/?s=…) shows whole pages, the Calendar's content included, and on the Playground scrolls sideways below 375 px (61 px at 300, 41 at 320, 17 at 344, 1 at 360): check it on the site.
