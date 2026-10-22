@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.14
+Version: 0.1.15
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -617,59 +617,268 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 	.pd-sr-prose { columns: 1; }
 }
 
-/* Results (O15): a fold a round that has raced, the latest open, with its race ten rows deep and the rest in a fold.
-   pd-rs-c1 to c4 name a table's figure columns (Time and Pts for a race). The weekend pages, a layout per format,
-   come in a slot of their own. */
-.pd-rs { border-top: 1px solid var(--pd-line); }
-.pd-rs-round { border-bottom: 1px solid var(--pd-line); }
-.pd-rs-round > summary { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto 64px; align-items: center; gap: 12px; padding: 14px 0; font-size: .97rem; list-style: none; cursor: pointer; }
-.pd-rs-round > summary::-webkit-details-marker { display: none; }
-.pd-rs-round[open] > summary { border-bottom: 2px solid var(--pd-ink); }
-.pd-rs-round > summary:hover .pd-rs-name b { text-decoration: underline; text-underline-offset: 3px; }
-.pd-rs-round > summary:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
-.pd-rs-rn { font-weight: 800; color: var(--pd-muted); }
-.pd-rs-name { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.pd-rs-name b { min-width: 0; overflow: hidden; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
-.pd-rs-fmt { flex: none; padding: 2px 7px; background: var(--pd-ink); color: var(--pd-ground); font-size: .69rem; font-style: normal; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
-.pd-rs-dt { font-size: .81rem; color: var(--pd-muted); text-align: right; }
-.pd-rs-body { padding-bottom: 18px; }
-.pd-rs-body > h3 { margin: 18px 0 6px; font-size: .94rem; }
-.pd-rs-body > h4 { margin: 16px 0 4px; font-size: .84rem; color: var(--pd-muted); }
-.pd-rs-th, .pd-rs-tbl li { display: grid; align-items: center; gap: 10px; }
-.pd-rs-c1 { grid-template-columns: 26px minmax(0, 1fr) 96px; }
-.pd-rs-c2 { grid-template-columns: 26px minmax(0, 1fr) 96px 40px; }
-.pd-rs-c3 { grid-template-columns: 26px minmax(0, 1fr) repeat(3, 72px); }
-.pd-rs-c4 { grid-template-columns: 26px minmax(0, 1fr) repeat(4, 64px); }
-.pd-rs-tbl li { grid-template-columns: inherit; }
-.pd-rs-th { padding: 12px 0 8px; border-bottom: 1px solid var(--pd-line); font-size: .75rem; color: var(--pd-muted); }
-.pd-rs-th span:first-child { text-align: center; }
-.pd-rs-th span:nth-child(n+3), .pd-rs-tbl .pd-v { text-align: right; font-variant-numeric: tabular-nums; }
-.pd-rs-tbl { list-style: none; margin: 0; padding: 0; }
-.pd-rs-tbl li { padding: 8px 0; border-bottom: 1px solid var(--pd-line); font-size: .9rem; }
-.pd-rs-tbl .pd-p { font-weight: 800; text-align: center; }
-.pd-rs-tbl .pd-d { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.pd-rs-tbl .pd-d b { font-weight: 800; }
-.pd-rs-tbl .pd-d small { font-size: .81rem; color: var(--pd-muted); }
-.pd-rs-tb { display: inline-block; width: 4px; height: 18px; margin-right: 10px; vertical-align: -4px; background: var(--t); }
-.pd-rs-tbl .pd-v { font-size: .84rem; color: var(--pd-muted); }
-.pd-rs-c2 .pd-v:last-child { color: var(--pd-ink); font-size: .94rem; font-weight: 800; }
-.pd-rs-more > summary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 0 2px; font-size: .84rem; font-weight: 800; list-style: none; cursor: pointer; }
-.pd-rs-more > summary::-webkit-details-marker { display: none; }
-.pd-rs-more > summary::after { content: "▾"; color: var(--pd-muted); }
-.pd-rs-more[open] > summary::after { content: "▴"; }
-.pd-rs-more > summary:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
+/* Results (O19): a row a round that has raced, edged in its winner's colour, the latest open with the weekend's
+   points; See weekend → opens its weekend page (approved as drawn on Paddock Weekend Drafts). */
+.pd-rs { display: grid; gap: 8px; }
+.pd-rs-row { background: var(--pd-surface); border: 1px solid var(--pd-line); border-left: 5px solid var(--t); }
+.pd-rs-row > summary { display: grid; grid-template-columns: 54px minmax(0, 1.2fr) minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 12px 18px 12px 12px; list-style: none; cursor: pointer; }
+.pd-rs-row > summary::-webkit-details-marker { display: none; }
+.pd-rs-row > summary:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-surface)); }
+.pd-rs-row[open] { border-color: var(--pd-line-strong); border-left-color: var(--t); }
+.pd-rs-row[open] > summary { border-bottom: 1px solid var(--pd-line); }
+.pd-rs-n { font-size: 1.8rem; line-height: 1; font-weight: 800; font-stretch: 80%; text-align: center; color: var(--pd-muted); }
+.pd-rs-name { min-width: 0; }
+.pd-rs-name b { display: block; font-size: 1.05rem; font-weight: 800; }
+.pd-rs-name small, .pd-rs-win small { display: block; font-size: .8rem; color: var(--pd-muted); }
+.pd-rs-name em { font-style: normal; font-weight: 800; color: var(--pd-ink); }
+.pd-rs-win { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; min-width: 0; }
+.pd-rs-win .pd-tc { grid-row: span 2; height: 30px; }
+.pd-rs-win b { font-weight: 800; }
+.pd-rs-go { font-size: .84rem; font-weight: 800; white-space: nowrap; text-decoration: none; }
+.pd-rs-fold { display: grid; gap: 8px; padding: 14px 18px 16px; }
+.pd-rs-all { font-size: .84rem; font-weight: 800; }
 @media (max-width: 699px) {
-	.pd-rs-round > summary { grid-template-columns: 38px minmax(0, 1fr) auto; gap: 8px; font-size: .9rem; }
-	.pd-rs-dt { display: none; }
-	.pd-rs-round .pd-sr-win { font-size: .75rem; }
-	.pd-rs-fmt span { display: none; }
-	.pd-rs-th, .pd-rs-tbl li { gap: 8px; }
-	.pd-rs-c1 { grid-template-columns: 24px minmax(0, 1fr) 80px; }
-	.pd-rs-c2 { grid-template-columns: 24px minmax(0, 1fr) 80px 30px; }
-	.pd-rs-c3 { grid-template-columns: 24px minmax(0, 1fr) repeat(3, 60px); }
-	.pd-rs-c4 { grid-template-columns: 24px minmax(0, 1fr) repeat(4, 50px); }
-	.pd-rs-c3 .pd-d small, .pd-rs-c4 .pd-d small { display: none; }
-	.pd-rs-tbl .pd-v { font-size: .78rem; }
+	.pd-rs-row > summary { grid-template-columns: 34px minmax(0, 1fr); gap: 4px 10px; padding: 10px 12px 10px 8px; }
+	.pd-rs-n { grid-row: span 3; font-size: 1.4rem; }
+	.pd-rs-win, .pd-rs-go { grid-column: 2; }
+	.pd-rs-go { font-size: .8rem; }
+	.pd-rs-fold { padding: 12px; }
+}
+
+/* Formula 1's weekend pages (O19), as approved on Paddock Weekend Drafts (version 3), full width (O27): the band, the
+   strip and one bar for a weekend's pages; the Overview's sections and its side; a session's own page; Pit wall; the
+   circuit drawn by the script from data-pd-map; the season's tiles. A team's colour rides in --t, a stint's place in
+   --l and --w, the race's laps in --n: WordPress keeps no other inline style. */
+.pd-tc { display: inline-block; flex: none; width: 4px; height: 15px; margin-right: 8px; vertical-align: -2px; background: var(--t); }
+.pd-wkp { font-size: .9375rem; }
+.pd-wkp a { color: inherit; text-decoration: none; }
+.pd-wk-band { position: relative; overflow: hidden; background: var(--s); color: var(--pd-on); }
+.pd-wk-band-in { position: relative; padding: 26px 200px 24px var(--pd-gutter); }
+.pd-wk-crumb { margin: 0; font-size: .82rem; font-weight: 700; }
+.pd-wkp .pd-wk-crumb a, .pd-wk-credit a { text-decoration: underline; text-underline-offset: 3px; }
+.pd-wk-band h1 { margin: 8px 0 6px; color: var(--pd-on); font-size: clamp(2.2rem, 4.4vw, 3.4rem); line-height: .95; font-weight: 800; font-stretch: 80%; letter-spacing: -.035em; }
+.pd-wk-where { margin: 0; font-size: .95rem; font-weight: 600; }
+.pd-wk-dt { white-space: nowrap; }
+/* Words for a screen reader only: the bar's "still to run". */
+.pd-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.pd-wk-tag { display: inline-block; margin-top: 10px; padding: 2px 8px; background: var(--pd-on); color: #ffffff; font-size: .74rem; font-weight: 800; font-style: normal; }
+.pd-wk-num { position: absolute; right: var(--pd-gutter); bottom: -34px; font-size: 11rem; line-height: 1; font-weight: 800; font-stretch: 80%; letter-spacing: -.05em; color: color-mix(in srgb, var(--pd-on) 14%, var(--s)); pointer-events: none; }
+.pd-wk-strip { border-bottom: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-wk-strip-in { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px var(--pd-gutter); }
+.pd-wk-nx { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.pd-wk-pill { padding: 2px 8px; font-size: .72rem; font-weight: 800; font-style: normal; letter-spacing: .06em; text-transform: uppercase; }
+.pd-wk-pill.is-fin { background: var(--pd-ink); color: var(--pd-ground); }
+.pd-wk-pill.is-next { background: var(--pd-accent); color: var(--pd-on); }
+.pd-wk-sum { font-size: .98rem; }
+.pd-wk-sum b { font-weight: 800; }
+.pd-wk-count { font-size: .8rem; color: var(--pd-muted); }
+.pd-wk-count b { margin-left: 6px; color: var(--pd-ink); font-size: 1.5rem; font-weight: 800; }
+.pd-wk-acts { display: flex; gap: 8px; margin-left: auto; }
+.pd-wk-btn { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1.5px solid var(--pd-ink); border-radius: 0; background: none; color: var(--pd-ink); font: inherit; font-size: .84rem; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.pd-wk-btn[hidden], .pd-wk-pill[hidden] { display: none; }
+.pd-wb { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px var(--pd-gutter); border-bottom: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-wb a { display: grid; padding: 6px 12px; border: 1.5px solid var(--pd-line-strong); color: var(--pd-ink); font-size: .82rem; font-weight: 800; line-height: 1.25; white-space: nowrap; text-decoration: none; }
+.pd-wb a small { font-size: .7rem; font-weight: 600; color: var(--pd-muted); }
+.pd-wb a:hover { border-color: var(--pd-ink); }
+.pd-wb a[aria-current="page"] { border-color: var(--pd-ink); background: var(--pd-ink); color: var(--pd-ground); }
+.pd-wb a[aria-current="page"] small { color: inherit; opacity: .75; }
+.pd-wb a.is-up { border-style: dashed; }
+.pd-wk-main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 32px; padding: 26px var(--pd-gutter) 32px; }
+.pd-wk-col { display: grid; align-content: start; gap: 30px; min-width: 0; }
+.pd-wk-sec { display: grid; gap: 12px; }
+.pd-wk-sh { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+.pd-wk-sh h2 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -.015em; }
+.pd-wk-hint, .pd-wk-note { margin: 0; font-size: .8rem; color: var(--pd-muted); }
+.pd-wkp .pd-wk-link { font-size: .84rem; font-weight: 800; }
+.pd-wk-link::after { content: " →"; }
+.pd-wk-podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.pd-wk-podium li { display: grid; gap: 2px; padding: 12px 14px 13px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--t); }
+.pd-wk-podium li:first-child { background: color-mix(in srgb, var(--t) 12%, var(--pd-surface)); }
+.pd-wk-podium small { font-size: .74rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pd-muted); }
+.pd-wk-podium b { font-size: 1.05rem; font-weight: 800; line-height: 1.2; }
+.pd-wk-podium span { font-size: .82rem; color: var(--pd-muted); }
+.pd-wk-podium em { font-size: .86rem; font-style: normal; font-weight: 700; }
+.pd-wk-scroll { overflow-x: auto; }
+.pd-wk-tbl { width: 100%; margin: 0; border-collapse: collapse; background: var(--pd-surface); border: 1px solid var(--pd-line); font-size: .9rem; }
+.pd-wk-tbl th { padding: 8px 10px; border: 0; border-bottom: 1px solid var(--pd-line); background: var(--pd-sunken); color: var(--pd-muted); font-size: .74rem; font-weight: 700; text-align: left; }
+.pd-wk-tbl td { padding: 8px 10px; border: 0; border-top: 1px solid var(--pd-line); }
+.pd-wk-tbl tbody tr:first-child td { border-top: 0; }
+.pd-wk-tbl tbody tr:hover td { background: color-mix(in srgb, var(--pd-ink) 4%, transparent); }
+.pd-wk-tbl .p { width: 36px; text-align: center; font-weight: 800; }
+.pd-wk-tbl .d { white-space: nowrap; }
+.pd-wk-tbl .d b { margin-right: 8px; font-weight: 800; }
+.pd-wk-tbl .d span, .pd-wk-tbl .tm, .pd-wk-tbl td.q, .pd-wk-tbl th.q { color: var(--pd-muted); }
+.pd-wk-tbl .t, .pd-wk-tbl .n, .pd-wk-tbl .pt { text-align: right; white-space: nowrap; }
+.pd-wk-tbl .pt, .pd-wk-tbl .tot { text-align: right; font-weight: 800; }
+.pd-wk-pts .tot { background: color-mix(in srgb, var(--s, #ff4136) 9%, transparent); }
+.pd-wk-pts .n { width: 84px; }
+.pd-wk-day { margin: 6px 0 0; font-size: 1rem; font-weight: 800; }
+.pd-wk-rows { display: grid; border: 1px solid var(--pd-line); border-left: 4px solid var(--s, #ff4136); background: var(--pd-surface); }
+.pd-wkp .pd-wk-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 170px 80px; align-items: center; gap: 14px; padding: 11px 14px; border-top: 1px solid var(--pd-line); }
+.pd-wk-row:first-child { border-top: 0; }
+.pd-wk-row:hover { background: color-mix(in srgb, var(--pd-ink) 4%, transparent); }
+.pd-wk-when b { display: block; font-size: 1.05rem; font-weight: 800; white-space: nowrap; }
+.pd-wk-when small { font-size: .74rem; color: var(--pd-muted); white-space: nowrap; }
+.pd-wk-name { font-weight: 800; }
+.pd-wk-wx { display: grid; line-height: 1.25; }
+.pd-wk-wx b { font-size: 1.02rem; font-weight: 800; }
+.pd-wk-wx small { font-size: .74rem; color: var(--pd-muted); }
+.pd-wk-go { font-size: .82rem; font-weight: 800; text-align: right; white-space: nowrap; }
+.pd-wk-marks { display: flex; flex-wrap: wrap; gap: 6px; }
+.pd-wk-mark { display: block; width: fit-content; margin-top: 4px; padding: 1px 7px; background: #ffdd00; color: #0f1217; font-size: .72rem; font-weight: 800; font-style: normal; }
+.pd-wk-mark.is-red { background: #d0021b; color: #ffffff; }
+.pd-wk-empty { margin: 0; padding: 14px 16px; border: 1.5px dashed var(--pd-line-strong); color: var(--pd-muted); font-size: .9rem; }
+.pd-wk-aside { display: grid; align-content: start; gap: 16px; }
+.pd-wk-box { background: var(--pd-surface); border: 1px solid var(--pd-line); }
+.pd-wk-box h3 { margin: 0; padding: 10px 14px; border-bottom: 1px solid var(--pd-line); font-size: .9rem; font-weight: 800; }
+.pd-wk-champ h3 { border-bottom: 0; background: var(--s); color: var(--pd-on); }
+.pd-wk-champ ol { margin: 0; padding: 0; list-style: none; }
+.pd-wk-champ li { display: grid; grid-template-columns: 22px 10px minmax(0, 1fr) auto 38px; align-items: center; gap: 6px; padding: 8px 14px; border-top: 1px solid var(--pd-line); }
+.pd-wk-champ li:first-child { border-top: 0; }
+.pd-wk-champ .p { font-weight: 800; text-align: center; }
+.pd-wk-champ .pd-tc { height: 26px; margin: 0; }
+.pd-wk-champ .d { min-width: 0; }
+.pd-wk-champ .d b { display: block; font-size: .88rem; font-weight: 800; line-height: 1.2; }
+.pd-wk-champ .d small { font-size: .74rem; color: var(--pd-muted); }
+.pd-wk-champ .g { font-size: .74rem; color: var(--pd-muted); }
+.pd-wk-champ .pt { text-align: right; font-weight: 800; }
+.pd-wk-more { display: block; padding: 9px 14px; border-top: 1px solid var(--pd-line); font-size: .82rem; font-weight: 800; }
+.pd-wk-more.is-off { color: var(--pd-muted); opacity: .6; }
+.pd-wk-box dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 14px; margin: 0; padding: 12px 14px 14px; font-size: .84rem; }
+.pd-wk-box dt { color: var(--pd-muted); }
+.pd-wk-box dd { margin: 0; text-align: right; font-weight: 700; }
+.pd-wk-box .pd-wk-src { margin: 0; padding: 0 14px 12px; font-size: .74rem; color: var(--pd-muted); }
+.pd-wk-fc { padding: 12px 14px 8px; }
+.pd-wkp .pd-wk-next { position: relative; display: grid; gap: 2px; padding: 14px 80px 15px 16px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-left: 4px solid var(--s); }
+.pd-wk-next small { font-size: .76rem; color: var(--pd-muted); }
+.pd-wk-next b { font-size: 1.05rem; font-weight: 800; }
+.pd-wk-next span { font-size: .8rem; color: var(--pd-muted); }
+.pd-wk-ol { position: absolute; top: 12px; right: 14px; width: 54px; height: 54px; color: var(--pd-ink); }
+.pd-wkp .pd-wk-prev { font-size: .82rem; font-weight: 700; color: var(--pd-muted); }
+.pd-sc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; align-items: start; }
+.pd-sc { display: grid; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--s, #ff4136); }
+.pd-sc header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 12px 14px 10px; border-bottom: 1px solid var(--pd-line); }
+.pd-sc h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.pd-sc header p { margin: 2px 0 0; font-size: .76rem; color: var(--pd-muted); }
+.pd-sc .pd-wk-wx { flex: none; text-align: right; }
+.pd-sc-rows { margin: 0; padding: 4px 0; list-style: none; }
+.pd-sc-rows li { display: grid; grid-template-columns: 22px 12px auto minmax(0, 1fr) auto; align-items: center; gap: 6px; padding: 5px 14px; font-size: .86rem; }
+.pd-sc-rows li:has(.pp) { grid-template-columns: 22px 12px auto minmax(0, 1fr) auto 26px; }
+.pd-sc-rows .p { font-weight: 800; text-align: center; }
+.pd-sc-rows .pd-tc { height: 14px; margin: 0; }
+.pd-sc-rows b { font-weight: 800; }
+.pd-sc-rows .nm { overflow: hidden; color: var(--pd-muted); text-overflow: ellipsis; white-space: nowrap; }
+.pd-sc-rows .tt { text-align: right; white-space: nowrap; }
+.pd-sc-rows .pp { text-align: right; font-weight: 800; }
+.pd-wkp .pd-sc-go { padding: 9px 14px; border-top: 1px solid var(--pd-line); font-size: .82rem; font-weight: 800; }
+.pd-wk-credit { margin: 0; padding: 0 var(--pd-gutter) 28px; font-size: .74rem; color: var(--pd-muted); }
+/* Pit wall: each driver's tyres, lap by lap, a line every five laps, a stint's laps on hover, focus or a tap. */
+.pd-pw { position: relative; display: grid; gap: 6px; padding: 14px 16px 12px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
+.pd-pw-axis, .pd-pw-row { display: grid; grid-template-columns: 74px minmax(0, 1fr) 58px; align-items: center; gap: 10px; }
+.pd-pw-scale { position: relative; height: 16px; font-size: .7rem; color: var(--pd-muted); }
+.pd-pw-scale span { position: absolute; top: 0; left: var(--l); transform: translateX(-50%); }
+.pd-pw-scale .is-first { transform: none; }
+.pd-pw-scale .is-last { transform: translateX(-100%); }
+.pd-pw-d { display: flex; align-items: center; font-size: .84rem; white-space: nowrap; }
+.pd-pw-d b { font-weight: 800; }
+.pd-pw-axis .pd-pw-d { font-size: .7rem; color: var(--pd-muted); }
+.pd-pw-bar { position: relative; height: 18px; background: var(--pd-sunken); }
+.pd-pw-bar i { position: absolute; top: 0; bottom: 0; left: var(--l); width: var(--w); z-index: 0; display: grid; place-items: center; overflow: hidden; color: #0f1217; font-size: .66rem; font-style: normal; font-weight: 800; box-shadow: inset -2px 0 0 var(--pd-surface); cursor: pointer; }
+.pd-pw-bar i:hover, .pd-pw-bar i:focus-visible { z-index: 2; outline: 2px solid var(--pd-ink); outline-offset: -2px; box-shadow: none; }
+.pd-pw-g { position: absolute; inset: 0; z-index: 1; pointer-events: none; background-image: linear-gradient(to right, transparent calc(100% - 1px), rgba(15, 18, 23, .32) 0); background-size: calc(100% * 5 / var(--n)) 100%; }
+.pd-c-s { background: #da291c; color: #ffffff !important; }
+.pd-c-m { background: #ffd12e; }
+.pd-c-h { background: #f0f0ec; outline: 1px solid #9aa1ab; outline-offset: -1px; }
+.pd-c-i { background: #43b02a; color: #ffffff !important; }
+.pd-c-w { background: #0067ad; color: #ffffff !important; }
+.pd-c-u { background: #9aa3b2; }
+.pd-pw-n { font-size: .78rem; color: var(--pd-muted); text-align: right; white-space: nowrap; }
+.pd-pw-key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 4px 0 0; font-size: .76rem; color: var(--pd-muted); }
+.pd-pw-key i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -2px; }
+/* One line where it fits; on the narrowest phones the longest tip wraps inside the Pit wall. */
+.pd-pw-tip { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 6px)); width: max-content; max-width: calc(100% - 8px); padding: 6px 10px; background: var(--pd-ink); color: var(--pd-ground); font-size: .78rem; font-weight: 700; pointer-events: none; }
+.pd-pw-tip::after { content: ""; position: absolute; left: 50%; bottom: -5px; margin-left: -5px; border: 5px solid transparent; border-bottom: 0; border-top-color: var(--pd-ink); }
+/* A session's own page. */
+.pd-ss-band { background: var(--s); color: var(--pd-on); }
+.pd-ss-band-in { display: grid; gap: 4px; padding: 18px var(--pd-gutter); }
+.pd-ss-band h1 { margin: 2px 0 0; color: var(--pd-on); font-size: clamp(2rem, 3.6vw, 2.8rem); line-height: .95; font-weight: 800; font-stretch: 80%; letter-spacing: -.035em; }
+.pd-ss-sub { margin: 0; font-size: .92rem; font-weight: 600; }
+/* The circuit: drawn by the script from the pole lap's positions, its sectors and the start/finish line; a tall track
+   keeps to the screen's height. */
+.pd-cm { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 18px; padding: 0 var(--pd-gutter) 32px; }
+/* Without the script, or with a map it cannot draw, the section would be an empty frame. */
+.pd-cm:has(.pd-cm-draw:empty) { display: none; }
+.pd-cm-h { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+.pd-cm-h h2 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -.015em; }
+.pd-cm-draw { min-height: 120px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
+.pd-cm-draw svg { display: block; width: 100%; height: auto; max-height: min(78vh, 900px); }
+.pd-cm-under { fill: none; stroke: var(--pd-ink); stroke-opacity: .14; stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; }
+.pd-cm-s { fill: none; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+.pd-cm-s1, .pd-cm-k1 { stroke: #e8002d; background: #e8002d; }
+.pd-cm-s2, .pd-cm-k2 { stroke: #1e88e5; background: #1e88e5; }
+.pd-cm-s3, .pd-cm-k3 { stroke: #f2b100; background: #f2b100; }
+.pd-cm-sf { stroke: var(--pd-ink); stroke-width: 5; }
+.pd-cm-sf2 { stroke: var(--pd-surface); stroke-width: 5; stroke-dasharray: 5 5; }
+.pd-cm-tick { stroke: var(--pd-ink); stroke-width: 3; }
+.pd-cm-ar { fill: var(--pd-ink); }
+.pd-cm-badge circle { stroke: var(--pd-surface); stroke-width: 3; }
+.pd-cm-badge .pd-cm-k1 { fill: #e8002d; } .pd-cm-badge .pd-cm-k2 { fill: #1e88e5; } .pd-cm-badge .pd-cm-k3 { fill: #f2b100; }
+.pd-cm-badge text { fill: #ffffff; font-size: 17px; font-weight: 800; text-anchor: middle; dominant-baseline: central; }
+.pd-cm-lbl { fill: var(--pd-ink); font-size: 16px; font-weight: 800; paint-order: stroke; stroke: var(--pd-surface); stroke-width: 6px; stroke-linejoin: round; }
+.pd-cm-side { display: grid; align-content: start; gap: 10px; }
+.pd-cm-side dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; margin: 0; padding: 12px 14px; background: var(--pd-surface); border: 1px solid var(--pd-line); font-size: .86rem; }
+.pd-cm-side dt { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+.pd-cm-side dt i { display: inline-block; width: 14px; height: 6px; }
+.pd-cm-side dd { margin: 0; text-align: right; }
+.pd-cm-side p { margin: 0; font-size: .78rem; color: var(--pd-muted); }
+/* The season: a tile a weekend, a moved round also where it was first set, a round called off struck through. */
+.pd-sn { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 10px; }
+.pd-sn-t { position: relative; display: grid; align-content: start; gap: 3px; min-height: 128px; padding: 12px 64px 12px 14px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--t, var(--pd-line-strong)); color: var(--pd-ink); text-decoration: none; }
+a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--pd-ink)); }
+.pd-sn-t small { font-size: .72rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--pd-muted); }
+.pd-sn-t b { font-size: 1rem; font-weight: 800; line-height: 1.2; }
+.pd-sn-t > span { font-size: .82rem; color: var(--pd-muted); }
+.pd-sn-t .pd-ol { position: absolute; top: 12px; right: 12px; }
+.pd-sn-t.is-now { border-top-color: var(--pd-accent); }
+.pd-sn-next { color: var(--pd-ink); font-weight: 800; }
+.pd-sn-t.is-moved { border: 1.5px dashed var(--pd-line-strong); border-top: 4px solid #ffb400; background: var(--pd-sunken); }
+.pd-sn-t.is-off { border-top-color: var(--pd-ink); background: repeating-linear-gradient(135deg, var(--pd-surface) 0 10px, var(--pd-sunken) 10px 20px); }
+.pd-sn-t.is-off b { color: var(--pd-muted); text-decoration: line-through; }
+@media (max-width: 999px) {
+	.pd-wk-main { grid-template-columns: minmax(0, 1fr); }
+	.pd-cm { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 699px) {
+	.pd-wk-band-in { padding: 18px 104px 18px var(--pd-gutter); }
+	.pd-wk-where { font-size: .84rem; }
+	.pd-wk-num { top: 50%; bottom: auto; right: 10px; transform: translateY(-50%); font-size: 6.4rem; }
+	.pd-wk-acts { width: 100%; margin-left: 0; }
+	.pd-wk-acts .pd-wk-btn { flex: 1; justify-content: center; }
+	.pd-wb a { padding: 5px 9px; font-size: .78rem; }
+	.pd-wk-main { gap: 26px; padding: 18px var(--pd-gutter) 24px; }
+	.pd-wk-podium { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+	.pd-wk-podium li { grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; column-gap: 10px; padding: 9px 12px; border-top-width: 1px; border-left: 4px solid var(--t); }
+	.pd-wk-podium span { display: none; }
+	.pd-wk-tbl .tm, .pd-wk-tbl .d span, .pd-wk-tbl td.q, .pd-wk-tbl th.q { display: none; }
+	.pd-wk-pts .n { width: 60px; }
+	.pd-wkp .pd-wk-row { grid-template-columns: 84px minmax(0, 1fr) auto; grid-template-areas: "when name go" "when wx wx"; gap: 4px 10px; padding: 10px 12px; }
+	.pd-wk-row .pd-wk-when { grid-area: when; align-self: start; }
+	.pd-wk-row .pd-wk-when b { font-size: .95rem; }
+	.pd-wk-row .pd-wk-name { grid-area: name; }
+	.pd-wk-row .pd-wk-wx { grid-area: wx; display: block; }
+	.pd-wk-row .pd-wk-wx b { margin-right: 6px; font-size: .9rem; }
+	.pd-wk-row .pd-wk-go { grid-area: go; }
+	.pd-wk-row .pd-wk-go .t, .pd-sc-rows .nm { display: none; }
+	.pd-pw { padding: 12px 10px 10px; }
+	.pd-pw-axis, .pd-pw-row { grid-template-columns: 46px minmax(0, 1fr) 40px; gap: 6px; }
+	.pd-pw-d .pd-tc, .pd-pw-scale span.o { display: none; }
+	.pd-ss-band-in { padding: 14px var(--pd-gutter); }
+	.pd-cm { padding: 0 var(--pd-gutter) 24px; }
+	.pd-sn-t { min-height: 0; }
+}
+@media (max-width: 340px) {
+	/* The last lap's number would touch the five before it; the axis names the laps already. */
+	.pd-pw-scale .is-last { display: none; }
 }
 
 /* The series list (O21): round 2's "All series". Still racing, then Completed, each split by type, a type's group as

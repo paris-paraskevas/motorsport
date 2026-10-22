@@ -98,3 +98,56 @@ add_shortcode(
 		);
 	}
 );
+
+/*
+ * A season's page at /series/<series>/<year>/ (O19). WordPress gives a page slug of digits alone a "-2", since a
+ * trailing number reads as a page of its parent (wp_unique_post_slug), and its rewrite rules send /series/f1/2026/ to
+ * page 2026 of /series/f1/. A four-digit slug directly under a series' page keeps its name while no sibling holds it,
+ * and one rule sends the address to that page; the weekends below it resolve as pages always do. Anywhere else a slug of
+ * four digits still takes WordPress's "-2", since no rule would serve it. Replacing an installed theme is not a switch
+ * of themes, so the rules are flushed once whenever this theme's version changes.
+ */
+add_filter(
+	'wp_unique_post_slug',
+	function ( $slug, $post_id, $post_status, $post_type, $post_parent, $original_slug ) {
+		if ( 'page' !== $post_type || ! $post_parent || ! preg_match( '/^\d{4}$/', (string) $original_slug ) || $slug === $original_slug ) {
+			return $slug;
+		}
+		if ( ! preg_match( '#^series/[a-z0-9-]+$#', (string) get_page_uri( $post_parent ) ) ) {
+			return $slug;
+		}
+		$taken = get_posts(
+			array(
+				'post_type'      => 'page',
+				'name'           => $original_slug,
+				'post_parent'    => $post_parent,
+				'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
+				'post__not_in'   => array( (int) $post_id ),
+				'fields'         => 'ids',
+				'posts_per_page' => 1,
+			)
+		);
+		return $taken ? $slug : $original_slug;
+	},
+	10,
+	6
+);
+
+add_action(
+	'init',
+	function () {
+		add_rewrite_rule( '^series/([a-z0-9-]+)/([0-9]{4})/?$', 'index.php?pagename=series/$matches[1]/$matches[2]', 'top' );
+	}
+);
+
+// Flushed after init, so rules a plugin adds late in it are kept; the option first, so a request alongside skips it.
+add_action(
+	'wp_loaded',
+	function () {
+		$version = wp_get_theme()->get( 'Version' );
+		if ( get_option( 'paddock_rewrite_version' ) !== $version ) {
+			update_option( 'paddock_rewrite_version', $version );
+			flush_rewrite_rules( false );
+		}
+	}
+);

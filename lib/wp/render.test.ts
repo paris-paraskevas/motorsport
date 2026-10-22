@@ -719,6 +719,13 @@ describe('calendarMonthPages', () => {
     expect(october.body).toContain('<span>30 October – 1 November</span>');
   });
 
+  it("opens a Formula 1 weekend's page from its card, once the season is known (O19)", () => {
+    expect(october.body).not.toContain('Weekend page');
+    const seasoned = calendarMonthPages([{ ...f1, season: 2026 }], now)[0].body;
+    expect(seasoned).toContain('3 sessions · <span data-pd-zonename>UTC</span></span><a href="/series/f1/2026/round-18/">Weekend page →</a></footer>');
+    expect(calendarMonthPages([{ ...f1, slug: 'f2', season: 2026 }], now)[0].body).not.toContain('Weekend page');
+  });
+
   it('escapes what the feeds say', () => {
     const odd: SeriesData = { ...f1, calendar: [at('2026-10-24T21:00:00.000Z', '<img src=x onerror=alert(1)>')], rounds: [] };
     const body = calendarMonthPages([odd], now)[0].body;

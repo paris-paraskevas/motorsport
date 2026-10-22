@@ -14,6 +14,96 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1181 · 1.0.293 · O19, part 2 (Formula 1's weekend pages: the season, each round's Overview, a page per session; Results redrawn) · opened 2026-10-22 into `next` on the operator's "Start O19's PR 2, the weekend pages, built full width from o27/records." and the plan approved in plan mode; the merge on the word
+**The weekend pages.** The operator settled them on Paddock Weekend Drafts (version 3) and approved a build in two PRs. Part 1 (#1179) keeps the data, and the backfill filled rounds 6 to 17; this part writes the pages, full width as O27 set. The records of #1180's merge ride in from the local o27/records.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the merge, the upload of 0.1.15 and the two publish runs:
+  - the season at `/series/f1/2026/`;
+  - an Overview for each of the 23 rounds, and a page for each timed session under it;
+  - Formula 1's Results as a row for each round in its winner's colour, opening on the weekend's points;
+  - links to each weekend from the Overview, Results, the series list and the Calendar.
+- **Editors get:** nothing.
+- **Files (30):**
+  - `lib/wp/weekend.ts`, `lib/wp/weekend.test.ts` · new:
+    - the season, Overview and session pages (`weekendPages`);
+    - 37 tests on saved data before, during and after a weekend, sprint and standard, 11 of them from the review.
+  - `lib/wp/series.ts`, `lib/wp/series.test.ts`:
+    - Results redrawn (`resultRow`, `weekendPoints`, `pointsTable`);
+    - the weekend links from the tiles, the next and last cards and /series/'s card;
+    - the helpers the weekend pages share;
+    - ten tests changed: nine that failed on the redraw and the links, rewritten with their guards kept, and one given the next card's link.
+  - `lib/wp/render.ts`, `lib/wp/render.test.ts`:
+    - `WEEKEND_PAGES` and the season, weekend and session paths;
+    - `SeriesData.weekend`, the cancelled rounds' dates and reasons, the drivers' car numbers, a round's country and move;
+    - the Calendar's "Weekend page →", with its test.
+  - `scripts/wp-publish.mts`:
+    - the weekend files read into the series data;
+    - the country and the move for each round;
+    - the weekend pages written beside the series pages.
+  - `wp-theme/paddock/style.css` · 0.1.15: the weekend pages' styles and the Results rows.
+  - `wp-theme/paddock/assets/js/paddock.js`:
+    - the strip's countdown to the next session;
+    - the track's hours ahead of or behind the reader;
+    - Pit wall's tooltip;
+    - the circuit drawn from `data-pd-map`.
+  - `wp-theme/paddock/functions.php` · the slug filter and the rewrite rule that keep `/series/f1/2026/`; from the review, the filter only directly under a series' page, the flush after init.
+  - `lib/met-norway.ts`, `lib/met-norway.test.ts` · from the review: a forecast's air from the step nearest the start, and none where MET's steps carry a temperature alone.
+  - `content/series/f1/drivers.json` · from the review: Yuki Tsunoda (#22), Racing Bulls' stand-in for Lawson in rounds 12 to 14 (Formula 1's reports; OpenF1's drivers list).
+  - `wp-theme/preview/f1-season.html`, `f1-weekend.html`, `f1-session.html` (new), `f1.html`, `f1-results.html`, `series.html`, `calendar.html`, `blueprint.json` · the fixtures from the dry run; the blueprint inserts 2026, round-17 and qualifying.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.293.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md`, `IDEAS.md`:
+    - O19's BUILT, VERIFIED and CHECKED evidence;
+    - the records of #1180's merge;
+    - the Results line out of IDEAS, the map's turn in.
+- **Verified:**
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,893 tests (after the review's fold).
+  - A dry run from `origin/paddock-data` (e7913e97), WordPress not called: 142 pages, the largest Results at 50,107 bytes; 15 for the Calendar; the seven fixtures byte-identical to it.
+  - On the theme preview with 0.1.15, the clock fixed on 22 Oct in Athens:
+    - `/series/f1/2026/` resolves as the page "2026", and `/2026-2/` is not found;
+    - no sideways scroll at 20 widths from 300 to 2,560 on 7 pages;
+    - the circuit drawn;
+    - the bar in the reader's time with each session's winner, and "UTC+8 · 5 h ahead of you";
+    - Pit wall's tooltip by a real mouse, the keyboard and a tap;
+    - every new link followed by a real click;
+    - 0 page errors.
+  - Checked against Formula 1's and the FIA's reports and race control's messages:
+    - round 16, the Bahrain Grand Prix held at Sepang on 4 October, started 93 minutes late behind the safety car; race control suspended the starting procedure during the formation laps, which Formula 1's report calls a red flag, so the page marks the late start only;
+    - Monaco's race was red-flagged and restarted, as both reports say; the lap on the page, 68, is race control's. Correction: this entry first said both reports gave lap 68.
+  - After the review's fold, on the preview restarted with the new fixtures: every check above again; the round labels on /series/ at their parents' size; the circuit's badges 22 px and its label 12 px at 390 px; the longest tip inside the screen at 300 px; a pinned tip back after hovering another stint, Escape closing it; the hours ahead the same viewed on 22 October and 20 November; the strip's words after the last session; in a throwaway Playground, a 2019 page under /about/ named 2019-2 and a 2026 page under Formula 1 kept.
+  - Theme zip built: 33 files (40 entries with its 7 folders), Version 0.1.15. Correction: #1180's entry counted the entries, 40, as files.
+- **Test after upload:**
+  1. `/series/f1/2026/`, laptop and phone, Day and Night: the tiles in date order; round 16 also at 10–12 April as moved; the Saudi Arabian Grand Prix struck through; a tile opens its weekend.
+  2. `/series/f1/2026/round-17/` on a laptop, Night: "Max Verstappen won from pole, and the sprint too"; the bar with each session's time and winner; point at a stint in Pit wall for its laps and pit lap; the circuit in three sector colours; the championship after round 17.
+  3. The same page on a phone, Day: the bar wraps; a tap on a stint shows its tooltip; the circuit's numbered badges and its Start / finish label readable; no sideways scroll.
+  4. `/series/f1/2026/round-17/qualifying/`: Q1, Q2 and Q3 on a laptop, Q3 alone on a phone.
+  5. `/series/f1/2026/round-18/` (Austin, this weekend): Next with the countdown; the sessions by the track's days with the forecast; Follow and Session emails.
+  6. `/series/f1/results/`: rows edged in the winner's colour; open one for S, R and Total; See weekend → opens its weekend.
+  7. These open the weekend pages:
+     - the tiles and cards on `/series/f1/`;
+     - Formula 1's Racing this weekend card on `/series/` (from Friday);
+     - "Weekend page →" on the Calendar's Formula 1 card.
+  8. `/series/f1/2026/round-16/`: the tag "Relocated to Sepang, Malaysia, first set for 10–12 April", and the race card's "Started 93 minutes late".
+- **After the merge**, each on the operator's word:
+  - the upload of 0.1.15, which carries 0.1.14's full width;
+  - the publish runs `--only /series/f1/` and `--only /calendar/`;
+  - the check on the site, signed in, at 1440 and 390 px.
+- **Review:** one fresh-context Sonnet reader, on the operator's word (“My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1181.”).
+  - Cost: 602,640 tokens against an estimate of 350,000 to 500,000; 184 tool calls; about 62 minutes.
+  - Verdict: mergeable after fixes; 0 blockers, 10 should-fix, 15 nits.
+  - Folded, the should-fix:
+    - the labels' size on /series/ (the root class `.pd-wk` shared with them, now `.pd-wkp`);
+    - stints that end before they start, neither drawn nor counted;
+    - Tsunoda's tyres, with "no data" and "partial" where OpenF1 holds none or part;
+    - the championship's title for rounds beyond the next;
+    - the forecast's air from the nearest step, and none from a bare temperature;
+    - the hours ahead counted at the weekend;
+    - the circuit's badges and label scaled to stay readable;
+    - the slug filter narrowed to the rewrite rule's pages;
+    - the strip's words after the last session;
+    - 11 tests, a hostile feed among them.
+  - Folded, the nits: the pinned tip, Escape and `role="img"`, the tip and the last lap's label on narrow phones, "Did not start", the dead card count, a credit naming only what a page shows, the flush after init, the empty map frame without the script, "still to run" for a screen reader, the late start on the bar, the dates on one line, the records' counts and the facts' sources.
+  - Not changed: no guard in the publisher against a run before 0.1.15 is installed (the order stays upload, then publish; IDEAS); the Calendar cards' round number at 300 to 360 px predates the PR (IDEAS).
+  - Found while folding: OpenF1's practices for rounds 12 to 14 put Lawson in Racing Bulls, the roster's team; he drove for Red Bull Racing. The weekend pages take each driver's team from the round's race, sprint or qualifying.
+
 ## #1180 · 1.0.292 · O27 (full width: every page we built uses the whole screen) · opened 2026-10-22 into `next` on the operator's "Full width as drawn: the 16 to 64 px gutter, running text kept to a readable line, its own small PR (theme 0.1.14) before O19's PR 2. Plan it." and the plan approved in plan mode; the merge on the word
 **The whole screen.** The operator found every page we built stopping at 1,200 px in the middle, 680 px in from each edge on their 2,560 px screen ("i want entire screens' width to be used"). Paddock Full Width drew the pages both ways, and the operator chose full width as drawn, in a small PR of its own before O19's weekend pages so that none is built narrow. The records of #1179's merge, the season's backfill and the operator's order of 22 Oct (pages first) ride in from the local o19/records.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the operator's upload of 0.1.14, every page we built runs to a slim gutter, from 16 px on a phone to 64 px on a wide screen, with the logo on the same edge. Phones look exactly as before. A post keeps its column until its drafts; its header and footer follow the gutter.

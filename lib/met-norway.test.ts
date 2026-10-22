@@ -66,6 +66,21 @@ describe('stepFor across the change from hourly steps to six-hour ones', () => {
   });
 });
 
+describe('stepFor within a six-hour block and at the forecast’s end', () => {
+  const step = (t: string, air: number, symbol: string, mm: number | null) => ({ t, air, symbol, mm, hours: 6 as const });
+  // Mexico City's last steps as MET Norway sent them for round 19: the final one carries a temperature alone.
+  const steps = [step('2026-10-30T12:00:00.000Z', 20, 'rainshowers_day', 2.3), step('2026-10-30T18:00:00.000Z', 15, 'cloudy', 0.5), step('2026-10-31T12:00:00.000Z', 12, '', null)];
+
+  it('takes the sky and the rain of the block holding the start, the air of the step nearest to it', () => {
+    expect(stepFor(steps, '2026-10-30T16:00:00Z')).toEqual({ t: '2026-10-30T12:00:00.000Z', air: 15, symbol: 'rainshowers_day', mm: 2.3, hours: 6 });
+    expect(stepFor(steps, '2026-10-30T13:00:00Z')?.air).toBe(20);
+  });
+
+  it('gives nothing for a start only a bare temperature reaches', () => {
+    expect(stepFor(steps, '2026-10-31T17:30:00Z')).toBeNull();
+  });
+});
+
 describe('venueForecast', () => {
   // Fetched at 05:00, more than three hours before NOW, and expired at 05:30: due to be asked again.
   const kept: VenueForecast = { fetched: '2026-10-22T05:00:00.000Z', expires: 'Thu, 22 Oct 2026 05:30:00 GMT', lastModified: 'Thu, 22 Oct 2026 04:54:17 GMT', steps: parseLocationforecast(answer, NOW) };

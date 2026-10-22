@@ -54,15 +54,20 @@ export function parseLocationforecast(json: unknown, now: Date): ForecastStep[] 
   return out;
 }
 
-/** The step a session starts in: the one whose hours hold its start; null when the forecast does not reach it. */
+/** The forecast for a session's start: the sky and the rain of the step whose hours hold it (one hour near, six further
+ *  out), with the air of the step nearest to it, since a six-hour step's temperature is its first hour's. Null when no
+ *  step with a sky or a rain figure holds the start: MET's last steps carry a temperature alone. */
 export function stepFor(steps: readonly ForecastStep[], startIso: string): ForecastStep | null {
   const at = Date.parse(startIso);
   if (!Number.isFinite(at)) return null;
-  for (const s of steps) {
+  const block = steps.find(s => {
     const from = Date.parse(s.t);
-    if (at >= from && at < from + s.hours * 3_600_000) return s;
-  }
-  return null;
+    return at >= from && at < from + s.hours * 3_600_000 && (s.symbol !== '' || s.mm !== null);
+  });
+  if (!block) return null;
+  let near = block;
+  for (const s of steps) if (Math.abs(Date.parse(s.t) - at) < Math.abs(Date.parse(near.t) - at)) near = s;
+  return { ...block, air: near.air };
 }
 
 /** MET's symbol in words ("partlycloudy_day" → "Partly cloudy"). */
