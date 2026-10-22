@@ -406,7 +406,8 @@ export interface PointsLeft {
 const sprintRun = (r: ResultRound | undefined): boolean => (r?.sessions ?? []).some(s => /^sprint$/i.test(s.label) && (s.tables[0]?.rows.length ?? 0) > 0);
 
 /** The points still to be won. A Grand Prix counts as run once its result is stored (raceWins) and a sprint likewise,
- *  so on a sprint weekend's Saturday the sprint is run and the race is not. */
+ *  so on a sprint weekend's Saturday the sprint is run and the race is not; a round whose race is stored has run its
+ *  sprint, whether or not the sprint's result arrived. */
 export function pointsLeft(d: SeriesData): PointsLeft {
   const wins = raceWins(d);
   const stored = new Map((d.results ?? []).flatMap(r => (r.round === null ? [] : [[r.round, r] as const])));
@@ -416,7 +417,7 @@ export function pointsLeft(d: SeriesData): PointsLeft {
   for (const r of d.rounds ?? []) {
     if (!wins.has(r.round)) races++;
     if (!sprintWeekend(d, r.round, stored.get(r.round))) continue;
-    if (sprintRun(stored.get(r.round))) sprintsRun++;
+    if (wins.has(r.round) || sprintRun(stored.get(r.round))) sprintsRun++;
     else sprints++;
   }
   return { races, sprints, sprintsRun, driver: races * GP[0] + sprints * SPRINT[0], team: races * (GP[0] + GP[1]) + sprints * (SPRINT[0] + SPRINT[1]) };
@@ -445,6 +446,27 @@ function standingRows(t: Table | undefined, drivers: boolean): Standing[] {
     pts: Number.parseFloat(row[ptsAt] ?? '') || 0,
     shown: row[ptsAt] ?? '',
   }));
+}
+
+/** The stored results the official table counts. The standings and the results are fetched apart, so the table can lag the
+ *  results by a session: the last point in the running order where the points awarded so far equal the table's total marks
+ *  what it counts, and the page is written as of there. When none does (a deduction outside any race), every result. */
+function counted(d: SeriesData, drivers: Standing[]): SeriesData {
+  const total = drivers.reduce((n, x) => n + x.pts, 0);
+  const rounds = (d.results ?? []).filter(r => r.round !== null).sort((a, b) => (a.round ?? 0) - (b.round ?? 0));
+  let sum = 0;
+  let at: { round: number; sessions: number } | null = null;
+  for (const r of rounds) {
+    for (const [i, s] of r.sessions.entries()) {
+      const t = s.tables[0];
+      const ptsAt = t ? col(t.columns, 'Pts', 'Points') : -1;
+      if (t && ptsAt >= 0) for (const row of t.rows) sum += Number.parseFloat(row[ptsAt] ?? '') || 0;
+      if (Math.abs(sum - total) < 1e-6) at = { round: r.round ?? 0, sessions: i + 1 };
+    }
+  }
+  if (!drivers.length || !at) return d;
+  const { round, sessions } = at;
+  return { ...d, results: (d.results ?? []).flatMap(r => (r.round === null || r.round < round ? [r] : r.round === round ? [{ ...r, sessions: r.sessions.slice(0, sessions) }] : [])) };
 }
 
 /** How many of a table, from the top, can still draw level with the leader on points: on paper, with no countback. */
@@ -594,18 +616,23 @@ function standingsHead(d: SeriesData, wins: Map<number, RoundWin>, stored: Map<n
   return { title, line };
 }
 
-/** /series/<slug>/standings/: the drivers and Who can still win it beside the constructors, then the teammates. */
+/** /series/<slug>/standings/: the drivers and Who can still win it beside the constructors, then the teammates. The band
+ *  counts every stored result, as on the series' other pages; the rest is written as of what the table counts. */
 export function seriesStandings(d: SeriesData): Page {
-  const wins = raceWins(d);
-  const current = (d.rounds ?? []).find(r => !wins.has(r.round));
-  const stored = new Map((d.results ?? []).flatMap(r => (r.round === null ? [] : [[r.round, r] as const])));
+  const all = raceWins(d);
+  const current = (d.rounds ?? []).find(r => !all.has(r.round));
   const drivers = standingRows(d.standings?.[0], true);
   const teams = standingRows(d.standings?.[1], false);
-  const left = pointsLeft(d);
-  const head = standingsHead(d, wins, stored);
+  const asOf = counted(d, drivers);
+  const wins = raceWins(asOf);
+  const stored = new Map((asOf.results ?? []).flatMap(r => (r.round === null ? [] : [[r.round, r] as const])));
+  const left = pointsLeft(asOf);
+  const head = standingsHead(asOf, wins, stored);
   const marks = marksOf(d);
   const lead = drivers[0]?.pts ?? 0;
-  const inIt = stillIn(drivers, left.driver);
+  // Without the season's rounds the points left are unknown: no line, and no one named in or out.
+  const known = (d.rounds ?? []).length > 0;
+  const inIt = known ? stillIn(drivers, left.driver) : drivers.length;
   const cut = inIt > 0 && inIt < drivers.length ? inIt - 1 : -1;
 
   // WordPress keeps no aria-pressed in a page; the script sets it with the view.
@@ -632,7 +659,7 @@ export function seriesStandings(d: SeriesData): Page {
 
   // The line under the drivers: the season's rulings with their sources, the dashed line, and every driver whose total
   // holds points scored for a team other than the one the table names.
-  const splits = teammates(d);
+  const splits = teammates(asOf);
   const notes = (d.standingsNotes ?? []).filter(n => Object.keys(n.drivers ?? {}).some(k => drivers.some(x => bare(x.name) === bare(k))));
   const foot = [
     notes.length
@@ -647,7 +674,7 @@ export function seriesStandings(d: SeriesData): Page {
     cut >= 0 ? 'The dashed line marks the last driver who can still mathematically win.' : '',
     ...drivers.flatMap(x =>
       splits
-        .filter(s => plain(s.team) !== plain(x.team))
+        .filter(s => plain(x.team) !== '' && plain(s.team) !== plain(x.team))
         .flatMap(s => [...s.pair, ...s.also].filter(m => m.name === x.name && m.points > 0).map(m => `${escapeHtml(surname(x.name))}'s ${escapeHtml(x.shown)} include ${m.points} for ${escapeHtml(teamLabel(s.team))}, in ${roundsText(m.rounds)}.`)),
     ),
   ].filter(Boolean);
@@ -658,7 +685,7 @@ export function seriesStandings(d: SeriesData): Page {
 
   // Who can still win it: the leader, everyone who can still draw level, and the first driver who cannot.
   let who = '';
-  if (drivers.length) {
+  if (drivers.length && known) {
     const bar = (gap: number) => (left.driver > 0 ? Math.min(100, (gap / left.driver) * 100) : gap > 0 ? 100 : 0).toFixed(1);
     const out = drivers[inIt];
     const items = [
@@ -709,7 +736,7 @@ export function seriesStandings(d: SeriesData): Page {
     : '';
 
   const main =
-    `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, wins, current)}${tabs(d, 'standings')}<div class="pd-sr-main">` +
+    `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, all, current)}${tabs(d, 'standings')}<div class="pd-sr-main">` +
     `<section class="pd-sr-sec pd-stp">${top}<div class="pd-st-cols">${leftCol}<div class="pd-st-right">${who}${cons}</div></div></section>${mates}</div></div>`;
   return { path: seriesPath(d.slug, 'standings'), title: `${d.name} standings`, body: htmlBlock(main), template: 'page-wide' };
 }

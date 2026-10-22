@@ -22,7 +22,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
 - **Editors get:** `content/series/f1/standings-notes.json`, a ruling a line, for the small numbers and the line under the table.
 - **Files (26):**
   - `lib/wp/series.ts` · `seriesStandings`, with `pointsLeft`, `stillIn` and `teammates`; `BUILT` gains Formula 1's standings; `seriesFamily` returns the page.
-  - `lib/wp/series.test.ts` · 12 new tests; four changed where a greyed Standings link became a link.
+  - `lib/wp/series.test.ts` · 14 new tests, two of them from the review; four changed where a greyed Standings link became a link.
   - `lib/wp/weekend.test.ts` · one changed: "Full standings →" is a link.
   - `lib/series-content.ts` · `loadStandingsNotes` and the notes' types.
   - `lib/wp/render.ts` · `SeriesData.standingsNotes`.
@@ -36,7 +36,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `docs/HANDOFF.md`, `IDEAS.md`:
     - #1183's MERGED, UPLOADED and CHECKED evidence, O19 done;
     - O16's OPENED, ANSWERED, PLANNED, BUILT and VERIFIED evidence;
-    - IDEAS: dark team colours in Night, Who can still win it early in a season, the bars at 2,560 px.
+    - IDEAS: dark team colours in Night, Who can still win it early in a season, the bars at 2,560 px, a long name cutting its small number.
 - **Answered:** the line reads "next update after Sunday's United States Grand Prix" where the drafts read "race in Austin", since rounds.json's place is a country for some rounds; kept as built on the operator's word ("Keep "next update after Sunday's United States Grand Prix" as built.").
 - **Verified:**
   - the dry run's hand count at round 17: 150 points left, six drivers in, Piastri out by 52, 258 for the constructors with Ferrari, McLaren and Red Bull Racing alive; all 11 teams' teammates add up to the constructors' table;
@@ -51,6 +51,12 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   5. Teammates: "Also Lawson: 14 points in rounds 12 to 14" on Red Bull Racing's card.
   6. The Standings tab and "All 23 →" on `/series/f1/`, and "Full standings →" on `/series/f1/2026/round-17/`, open the page.
 - **After the merge:** the upload of 0.1.17; one publish run `--only /series/f1/` (about 145 pages); the check on the site; the operator's test.
+- **Review:** one fresh-context Sonnet reader, on the operator's word ("Review now anyway", shown the weekly limit for all models at 95% until 24 Oct 21:00Z).
+  - Cost: 236,326 tokens against an estimate of about 100,000; 32 tool calls; about 13 minutes; the code diff only, no browser.
+  - Verdict: mergeable after fixes; 0 blockers, 1 should-fix, 7 nits. Probed on the stored data: no NaN or undefined, the hand count, all 11 teams' sums, escaping.
+  - Folded: a stored race closes its sprint (the should-fix: 158 left instead of 150 with a sprint result missing); the page written as of what the table counts when the standings lag the results; no second-team sentence for a table without teams; no one named in or out without the season's rounds.
+  - Accepted: the Teammates bar a share of the team's total, as drafted; a round without a zone in UTC and an untimed race without the clause, both tested; a long name cutting its small number on a phone (IDEAS).
+  - After the fold: 282 files, 2,907 tests; the dry run's 143 pages identical.
 
 ## #1183 · 1.0.294 · O19, a follow-up (the earlier sessions two a row, as drafted, each pair one height) · opened 2026-10-22 into `next` on the operator's report ("layout of previous sessions is odd on a weekend overview for a sprint weekend") and their choice of "Two a row, by day" from three drawings; the merge on the word
 **Two a row, as drafted.** After the publish, the operator found a sprint weekend's earlier sessions sitting three and one: the cards took as many 340 px columns as fit, where the approved drafts set two. The records of #1181's merge, its publish and the check on the site ride in from the local o19/pages-records.

@@ -31,6 +31,18 @@ The operator's order of 22 Oct puts the Standings after the weekend pages, and o
 
 Verified: the dry run (`--from-ref origin/paddock-data --only /series/f1/`, 143 pages, the Standings page 16,305 bytes) gives the hand count at round 17: 150 points left, six drivers in, Piastri out by 52, 258 left for the constructors with Ferrari, McLaren and Red Bull Racing alive; all 11 teams' teammates add up to the constructors' table, and all 23 drivers' sums to the drivers' table. On the theme preview (0.1.17, the clock on 22 Oct): 20 widths from 300 to 2,560 px in Day and Night with no sideways scroll; the switch by real clicks at 1,440 and 390 px; both tables without the script; six links to the page clicked at 1,440 and 390 px; 0 page errors. `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,905 tests.
 
+**Review.** One fresh-context Sonnet reader, on the operator's word ("Review now anyway", shown the weekly limit for all models at 95% until 24 Oct 21:00Z): 236,326 tokens against an estimate of about 100,000, 32 tool calls, about 13 minutes, the code diff only and no browser. Mergeable after fixes: 0 blockers, 1 should-fix, 7 nits. It probed the stored data: no NaN or undefined in the markup, 150 left, six in, Piastri out by 52, all 11 teams' sums equal to the constructors' table, escaping complete.
+- **Folded:**
+  - a sprint weekend whose race is stored but whose sprint result never arrived counted the sprint as still to run (158 left instead of 150 with round 17's sprint dropped): a stored race now closes its sprint (`pointsLeft`);
+  - the standings and the results are fetched apart, so a table a session behind the results would read "after round 18" over round 17's totals and could name a driver out who is still in: the page is now written as of the last point in the running order where the points awarded so far equal the table's total (`counted`), and as of every result when none does; the band still counts every stored result;
+  - a standings table without a Team column gave every driver a sentence for his own team: none now;
+  - a season without its rounds read as over ("No points left"): no one is named in or out, and no line is drawn.
+- **Accepted:**
+  - the Teammates bar is a share of the team's total, the stand-in's points included (Red Bull Racing 66.6%), as drafted;
+  - a round without a zone reads its weekday in UTC, and a race with no time drops the next-update clause (both tested); every Formula 1 round has both;
+  - a long name on a phone could cut its small number with the ellipsis; no marked driver comes near it (IDEAS).
+- **Tests after the fold:** 14 new in all (a race stored without its sprint, a table a round and a sprint behind, a tie at the cut, a bad zone, an untimed race, no rounds, no teams); `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,907 tests; the dry run's 143 pages identical to before the fold.
+
 ## 1.0.294 — 2026-10-22
 
 ### O19: the earlier sessions two a row, as drafted

@@ -35,6 +35,7 @@ Sessions 35-37 closed the champion-notes programme (489/489, fifteen families), 
 
 - (2026-10-22, session 70, O16) Night: Audi's #00352F and Red Bull Racing's #1E3A8A almost vanish on the dark ground wherever a team's colour marks a row (the Standings, Results, the weekend pages, the Overview's bars); a Night shade for each team in drivers.json would keep them.
 - (2026-10-22, session 70, O16) Early in a season Who can still win it lists everyone still in, the whole grid for the first rounds; cap it at the leader and nine, with a count of the rest?
+- (2026-10-22, session 70, #1184 review) On the Standings, a driver's small number sits inside his name's ellipsis, so a long name on a phone could cut the mark; none comes near it today (the name in a span of its own, the mark beside it, would keep it).
 - (2026-10-22, session 70, O16) At 2,560 px the Standings' bars stay 130 px wide, as drafted, about 700 px from the names; let them grow on wide screens?
 - (2026-10-22, session 70, #1183 review) The Overview's session cards pair in running order, so a session whose result lags (an OpenF1 practice not yet fetched) pairs the next day's first card with this day's until the next run; one grid a track day in the renderer would hold every row to a day.
 - (2026-10-22, session 70, #1183 review) At 150% browser text between 1,000 and 1,013 px, a session card's weather passes its right edge by up to 6 px; a wrapping header fixes it but moves the weather under the title on every phone, so a container query on the card's width in em would be the narrower fix.

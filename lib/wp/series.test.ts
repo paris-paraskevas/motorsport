@@ -355,6 +355,29 @@ describe('seriesStandings', () => {
     const saturday: SeriesData = { ...sprintAhead, results: [...sd.results!, { round: 3, name: 'Las Vegas GP', date: null, sessions: [ses('Sprint', [['1', 'Charles Leclerc', 'Ferrari', '30:00.000', '8']])] }] };
     expect(pointsLeft(saturday)).toEqual({ races: 1, sprints: 0, sprintsRun: 2, driver: 25, team: 43 });
     expect(pointsLeft({ ...sd, rounds: sd.rounds!.slice(0, 2) })).toEqual({ races: 0, sprints: 0, sprintsRun: 1, driver: 0, team: 0 });
+    // A round whose race is stored has run its sprint, though the sprint's result never arrived.
+    const noSprint: SeriesData = { ...sd, results: [{ ...sd.results![0], sessions: [sd.results![0].sessions[1]] }, sd.results![1]] };
+    expect(pointsLeft(noSprint)).toEqual({ races: 1, sprints: 0, sprintsRun: 1, driver: 25, team: 43 });
+  });
+
+  it('writes the page as of what the table counts when the standings lag the results by a session', () => {
+    const table = (rows: string[][]): SeriesData => ({ ...sd, standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows }, sd.standings![1]] });
+    // The table after round 1 (121 points awarded), the results already holding round 2.
+    const afterRound1 = seriesStandings(
+      table([['1', 'Charles Leclerc', 'Ferrari', '32'], ['2', 'Max Verstappen', 'Red Bull Racing', '26'], ['3', 'Lewis Hamilton', 'Ferrari', '20'], ['4', 'Isack Hadjar', 'Red Bull Racing', '18'], ['5', 'Liam Lawson', 'Racing Bulls', '14'], ['6', 'Arvid Lindblad', 'Racing Bulls', '11']]),
+    ).body;
+    expect(afterRound1).toContain('<h2 class="pd-st-h">Standings after round 1</h2><p>Chinese Grand Prix, 15 March<span class="pd-st-next"> · next update after Sunday\'s Japanese Grand Prix</span></p>');
+    expect(afterRound1).toContain('<p>50 points left: two Grands Prix at 25, the sprints all run.');
+    // The band counts every stored result, as on the series' other pages.
+    expect(afterRound1).toContain('<p>2026 season · 3 rounds · 2 run · ');
+    // The table after round 1's sprint alone (33 points).
+    const afterSprint = seriesStandings(
+      table([['1', 'Max Verstappen', 'Red Bull Racing', '8'], ['2', 'Charles Leclerc', 'Ferrari', '7'], ['3', 'Isack Hadjar', 'Red Bull Racing', '6'], ['4', 'Lewis Hamilton', 'Ferrari', '5'], ['5', 'Liam Lawson', 'Racing Bulls', '4'], ['6', 'Arvid Lindblad', 'Racing Bulls', '3']]),
+    ).body;
+    expect(afterSprint).toContain('<h2 class="pd-st-h">Standings after the round 1 sprint</h2><p>Chinese Grand Prix sprint, 14 March<span class="pd-st-next"> · next update after Sunday\'s Chinese Grand Prix</span></p>');
+    expect(afterSprint).toContain('<p>75 points left: three Grands Prix at 25, the sprints all run.');
+    // A table matching no point in the running order (a deduction outside any race) is read as of every result.
+    expect(seriesStandings(table([['1', 'Max Verstappen', 'Red Bull Racing', '40']])).body).toContain('<h2 class="pd-st-h">Standings after round 2</h2>');
   });
 
   it('keeps in it everyone who can still draw level with the leader on points', () => {
@@ -363,6 +386,8 @@ describe('seriesStandings', () => {
     expect(stillIn(rows, 26)).toBe(4);
     expect(stillIn(rows, 0)).toBe(1);
     expect(stillIn([], 25)).toBe(0);
+    // Level at the cut: both are in.
+    expect(stillIn([{ pts: 50 }, { pts: 25 }, { pts: 25 }, { pts: 24 }], 25)).toBe(3);
   });
 
   it("heads the page with the round, its race and day, and the next points in the track's own weekday", () => {
@@ -371,10 +396,29 @@ describe('seriesStandings', () => {
     );
     const sprintAhead = seriesStandings({ ...sd, calendar: [...sd.calendar!, at(3, 'Sprint', '2026-11-21T22:00:00Z')] }).body;
     expect(sprintAhead).toContain('<span class="pd-st-next"> · next update after Saturday\'s Las Vegas Grand Prix sprint</span>');
-    const saturday = seriesStandings({ ...sd, calendar: [...sd.calendar!, at(3, 'Sprint', '2026-11-21T22:00:00Z')], results: [...sd.results!, { round: 3, name: 'Las Vegas GP', date: null, sessions: [ses('Sprint', [['1', 'Charles Leclerc', 'Ferrari', '30:00.000', '8']])] }] }).body;
+    // Saturday: the sprint's 8 points in the results and in the table.
+    const counted = { ...sd.standings![0], rows: [['1', 'Charles Leclerc', 'Ferrari', '52'], ['2', 'Max Verstappen', 'Red Bull Racing', '51'], ...sd.standings![0].rows.slice(2)] };
+    const saturday = seriesStandings({
+      ...sd,
+      standings: [counted, sd.standings![1]],
+      calendar: [...sd.calendar!, at(3, 'Sprint', '2026-11-21T22:00:00Z')],
+      results: [...sd.results!, { round: 3, name: 'Las Vegas GP', date: null, sessions: [ses('Sprint', [['1', 'Charles Leclerc', 'Ferrari', '30:00.000', '8']])] }],
+    }).body;
     expect(saturday).toContain('<h2 class="pd-st-h">Standings after the round 3 sprint</h2><p>Las Vegas Grand Prix sprint, 21 November<span class="pd-st-next"> · next update after Saturday\'s Las Vegas Grand Prix</span></p>');
     // The season over: no next update.
     expect(seriesStandings({ ...sd, rounds: sd.rounds!.slice(0, 2) }).body).toContain('<p>Japanese Grand Prix, 29 March</p>');
+    // A zone that is not one reads the weekday in UTC (Las Vegas's Saturday night is Sunday there), and an untimed race none.
+    expect(seriesStandings({ ...sd, rounds: [...sd.rounds!.slice(0, 2), { ...sd.rounds![2], tz: 'Not/AZone' }] }).body).toContain("next update after Sunday's Las Vegas Grand Prix");
+    expect(seriesStandings({ ...sd, calendar: sd.calendar!.slice(0, 3) }).body).toContain('<p>Japanese Grand Prix, 29 March</p>');
+  });
+
+  it('names no one in or out without the season’s rounds, and no second team for a table without teams', () => {
+    const noRounds = seriesStandings({ ...sd, rounds: [] }).body;
+    expect(noRounds).not.toContain('pd-st-who');
+    expect(noRounds).not.toContain('class="cut"');
+    expect(noRounds).not.toContain('The dashed line');
+    const teamless = seriesStandings({ ...sd, standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Pts'], rows: sd.standings![0].rows.map(r => [r[0], r[1], r[3]]) }, sd.standings![1]] }).body;
+    expect(teamless).not.toContain(' include ');
   });
 
   it('carries the switch, hidden until the script shows it, and none without a constructors table', () => {
