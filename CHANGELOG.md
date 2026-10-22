@@ -61,21 +61,51 @@ The operator approved the weekend pages on Paddock Weekend Drafts (version 3) an
   - new: f1-season.html, f1-weekend.html (round 17) and f1-session.html (round 17's qualifying);
   - the blueprint inserts the pages 2026, round-17 and qualifying under Formula 1, proving the slug hook at boot;
   - f1.html, f1-results.html, series.html and calendar.html regenerated.
-- **Facts checked** against Formula 1's and the FIA's reports:
-  - round 16, the Bahrain Grand Prix held at Sepang on 4 October after its April date was called off, started 93 minutes late behind the safety car;
-  - Monaco's race (round 6) was red-flagged on lap 68 and restarted.
+- **Facts checked** against Formula 1's and the FIA's reports and race control's own messages:
+  - round 16, the Bahrain Grand Prix held at Sepang on 4 October after its April date was called off, started 93 minutes late behind the safety car (race control suspended the starting procedure during the formation laps; Formula 1's report calls that a red flag, a word race control's messages do not use, so the page marks the late start only);
+  - Monaco's race (round 6) was red-flagged and restarted, as both reports say; the lap the page gives, 68, is race control's.
+  - Correction to the first records of this PR: they said both reports gave lap 68; neither does.
 - **Found while testing:**
   - the caption of a map from last season read with two colons, now "Drawn from the pole lap in qualifying here in 2025";
   - a stint whose tyre OpenF1 did not record (Norris's third in round 11's race) showed "UNKNOWN", now "Tyre not recorded";
   - a standard round with a single scorer read "The 1 drivers who scored";
   - the sprint's winner was read from the second column instead of by its name.
 - **Tests:**
-  - `lib/wp/weekend.test.ts` (new, 26): every page at before, during and after, on a sprint and a standard weekend; the countback with sprints left out; the official table after the latest round; the marks; the moved and called-off tiles; Pit wall's placing and tooltips; the forecast's reach; the links; escaping; an unknown zone.
-  - `series.test.ts`: nine tests rewritten for the redraw and the links, each keeping its guard (escaping, the colour check, the sprint never the round's race), and the old links still tested for a series without a season.
-  - `render.test.ts`: the Calendar's link.
+  - `lib/wp/weekend.test.ts` (new, 37): every page at before, during and after, on a sprint and a standard weekend; the countback with sprints left out; the official table after the latest round; the marks; the moved and called-off tiles; Pit wall's placing and tooltips; the forecast's reach; the links; an unknown zone; and from the review, a feed made hostile in every string, the track's own day, a tie, a lap under 1:10, the format before a sprint has run, the bar's late start and the team a practice cannot set.
+  - `series.test.ts`: ten tests changed, nine that failed on the redraw and the links rewritten, each keeping its guard (escaping, the colour check, the sprint never the round's race), and one given the next card's link; the old links still tested for a series without a season.
+  - `render.test.ts`: the Calendar's link. `lib/met-norway.test.ts`: the forecast's air from the nearest step and its end.
+
+**Review.** One fresh-context Sonnet reader, on the operator's word: 602,640 tokens against an estimate of 350,000 to 500,000, 184 tool calls, about 62 minutes. Verdict: mergeable after fixes, with 0 blockers, 10 should-fix and 15 nits. Folded:
+- **The round labels' size** on /series/ and /series/f1/: the weekend pages' root class `.pd-wk` was also the labels' class, which then grew from 12.96 to 15 px. The root is now `.pd-wkp`.
+- **Pit wall:**
+  - stints that end before they start (Monaco's and Sepang's races hold some) are neither drawn nor counted, so Piastri at Sepang reads 4 stops, not 5;
+  - a driver with no tyres stored reads "no data", and one whose first laps are missing reads "partial", where both read as no stop before;
+  - "Did not start" counts as out;
+  - each stint is an image with its words for a screen reader;
+  - Escape closes the tip, and a pinned tip comes back after hovering another stint;
+  - on the narrowest phones the tip wraps inside the wall, and the last lap's label hides where it would touch the one before it.
+- **Yuki Tsunoda (#22)** joins drivers.json under Racing Bulls. He stood in for Lawson in rounds 12 to 14 (Formula 1's reports; OpenF1's drivers list gives car 22 as TSU), and his rows had no tyres.
+- **The championship:** rounds 19 to 23 said "before round N" over the table after round 17; a round further off than the next now reads "after round 17".
+- **The forecast:**
+  - the air is now the nearest step's, not the six-hour block's first hour;
+  - MET's last steps, which carry a temperature alone, give no forecast: round 19's Practice 3 had read 12°, about ten degrees under its start;
+  - rain over six hours says so ("2.3 mm in 6 h");
+  - the notes say how far a forecast reaches.
+- **"N h ahead of you"** counts both clocks at the weekend's first session, so a change of clocks before it (Europe's on 25 October) no longer shifts it by an hour.
+- **The circuit's badges and label** grow with the drawing's scale, from about 5 px to 12 px on a phone. Without the script, the empty frame is hidden.
+- **The slug hook** keeps a four-digit slug only directly under a series' page, the one place the rewrite rule serves. Elsewhere, such a page had answered with a redirect away from it. The rules are now flushed after init, the option set first.
+- **Smaller fixes:**
+  - the strip reads "Every session has run · the results follow" between the last session and Final;
+  - the bar shows a session that ran late at its real start, and says "still to run" to a screen reader;
+  - a page credits only the OpenF1 data it shows;
+  - the band's dates stay on one line.
+- **Not changed:**
+  - the publisher has no guard against a run before 0.1.15 is installed; the order stays upload, then publish (IDEAS);
+  - the Calendar cards' round number touching a title at 300 to 360 px predates this PR (IDEAS).
+- **Found while folding:** OpenF1's practices for rounds 12 to 14 list Lawson under Racing Bulls, the roster's team, where he drove for Red Bull Racing. The weekend pages now take each driver's team from the round's race, sprint or qualifying. The publisher's naming that sets it is an IDEAS line.
 
 Verified:
-- **Gates:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors and the 2 known warnings; `npx vitest run` 282 files, 2,880 tests.
+- **Gates:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors and the 2 known warnings; `npx vitest run` 282 files, 2,893 tests.
 - **Dry run** from origin/paddock-data (e7913e97), WordPress not called: 142 pages for `--only /series/f1/`, the largest Results at 50,107 bytes; 15 for `--only /calendar/`.
 - **Theme preview** (WordPress Playground, the working tree mounted, the clock fixed on 22 Oct in Athens):
   - `/series/f1/2026/` resolves to the page "2026" and `/series/f1/2026-2/` is not found;
@@ -85,6 +115,16 @@ Verified:
   - Pit wall's tooltip by a real mouse, the keyboard and a tap at 390 px;
   - every new link followed by a real click;
   - 0 page errors.
+- **After the review's fold**, on the preview restarted with the new fixtures:
+  - all of the checks above again;
+  - the labels on /series/ and /series/f1/ at their parents' size;
+  - at 390 px, the circuit's badges 22 px across and its label 12 px; at 300 px, the longest tip inside the screen;
+  - a pinned tip back after hovering another stint, and Escape closing it;
+  - the band's dates on one line at 390 px, and the circuit hidden without the script;
+  - "5 h ahead of you" for Singapore whether viewed on 22 October or 20 November;
+  - the strip's words after the last session;
+  - in a throwaway Playground, a 2019 page under /about/ named 2019-2 and a 2026 page under Formula 1 kept as 2026.
+- **Dry run after the fold:** 142 pages, the seven fixtures byte-identical to it; Tsunoda's rows in rounds 12 to 14 carry his tyres, and no row reads "no data".
 
 ## 1.0.292 — 2026-10-22
 

@@ -7,14 +7,15 @@
 // WordPress keeps no inline SVG and no inline style but width and custom properties: the Pit wall places its stints
 // with --l and --w, and the theme's script (wp-theme/paddock/assets/js/paddock.js) draws the circuit from data-pd-map.
 
-import { stepFor, symbolLabel } from '@/lib/met-norway';
-import { isMap, type SessionExtras } from '@/lib/openf1/weekend';
+import { stepFor, symbolLabel, type ForecastStep } from '@/lib/met-norway';
+import { isMap, type DriverStints, type SessionExtras } from '@/lib/openf1/weekend';
 import { escapeHtml, seasonPath, seriesPath, sessionSlug, WEEKEND_PAGES, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
 import { band, built, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sprintWeekend, tabs, teamLabel, tick, weekendPoints, wk } from './series';
 
 /** The rows a session's card leads with (the operator, 22 Oct): three in practice, ten in qualifying and sprint
- *  qualifying, the eight who score in a sprint, ten in the race. */
-const CARD_ROWS: Readonly<Record<string, number>> = { Race: 10, Sprint: 8, Qualifying: 10, 'Sprint Qualifying': 10 };
+ *  qualifying, the eight who score in a sprint; the race's ten lead its own section. */
+const CARD_ROWS: Readonly<Record<string, number>> = { Sprint: 8, Qualifying: 10, 'Sprint Qualifying': 10 };
+const RACE_ROWS = 10;
 /** The Overview's Pit wall shows the race's top ten; a race's or a sprint's own page every driver. */
 const PIT_WALL_ROWS = 10;
 const UTC_WT = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
@@ -89,13 +90,20 @@ interface Weekend {
   /** The track's zone (circuits.json), UTC when no circuit matched. */
   tz: string;
   path: string;
+  /** Each driver's team as the round's official classifications give it (teamAt). */
+  teams: ReadonlyMap<string, string>;
 }
 
-/** Which sources a page drew on, for its credit line: OpenF1's measured data, MET Norway's forecast. */
+/** What a page drew from each source, for its credit line: from OpenF1 the weather, race control's marks, the tyres and
+ *  a circuit's pole lap; MET Norway's forecast. */
 interface Used {
-  of1: boolean;
+  weather: boolean;
+  marks: boolean;
+  tyres: boolean;
+  map: boolean;
   met: boolean;
 }
+const nothingUsed = (): Used => ({ weather: false, marks: false, tyres: false, map: false, met: false });
 
 function weekendOf(d: SeriesData, season: number, r: CalendarRound): Weekend {
   const seen = new Set<string>();
@@ -117,7 +125,14 @@ function weekendOf(d: SeriesData, season: number, r: CalendarRound): Weekend {
   } catch {
     // An unknown zone keeps UTC: the track's times then read as UTC, never wrong.
   }
-  return { d, season, r, result: (d.results ?? []).find(x => x.round === r.round), sessions, tz, path: weekendPath(d.slug, season, r.round) };
+  const result = (d.results ?? []).find(x => x.round === r.round);
+  const teams = new Map<string, string>();
+  for (const s of [...(result?.sessions ?? []), ...(result?.others ?? [])]) {
+    const t = /^(race|sprint|qualifying)$/i.test(s.label) ? s.tables[0] : undefined;
+    const c = t ? cols(t) : null;
+    if (t && c && c.name >= 0 && c.team >= 0) for (const row of t.rows) if (row[c.team]) teams.set(row[c.name], row[c.team]);
+  }
+  return { d, season, r, result, sessions, tz, path: weekendPath(d.slug, season, r.round), teams };
 }
 
 const sessionPath = (w: Weekend, label: string): string => `${w.path}${sessionSlug(label)}/`;
@@ -135,6 +150,10 @@ const extrasOf = (w: Weekend, label: string): SessionExtras | undefined => w.d.w
 function cols(t: Table): { pos: number; name: number; team: number; time: number; pts: number } {
   return { pos: col(t.columns, 'Pos'), name: col(t.columns, 'Driver'), team: col(t.columns, 'Team'), time: col(t.columns, 'Time'), pts: col(t.columns, 'Pts', 'Points') };
 }
+
+/** A row's team as the round's race, sprint or qualifying (Jolpica's) gives it: OpenF1's practices and sprint
+ *  qualifying carry the roster's, wrong for a driver who swapped seats (Lawson at Red Bull in rounds 12 to 14). */
+const teamAt = (w: Weekend, row: string[], c: { name: number; team: number }): string => w.teams.get(row[c.name] ?? '') ?? row[c.team] ?? '';
 
 /** A row's best time: qualifying's last part a driver reached, else the time. */
 function bestTime(t: Table, row: string[]): string {
@@ -154,22 +173,28 @@ const trackDay = (w: Weekend, iso: string): string => form(w.tz, 'day').format(n
 function measured(x: SessionExtras | undefined, used: Used): string {
   const w = x?.weather;
   if (!w) return '';
-  used.of1 = true;
+  used.weather = true;
   return `<span class="pd-wk-wx"><b>${w.air[1]}°</b><small>air · ${w.track ? `track ${w.track[1]}° · ` : ''}${w.rain ? 'rain' : 'dry'}</small></span>`;
 }
 
-/** MET Norway's forecast for the hour a session starts in, while the publisher holds one for its circuit. */
-function forecast(w: Weekend, iso: string, used: Used): string {
+/** MET Norway's forecast for a session's start (stepFor), while the publisher holds one for its circuit. */
+function forecastStep(w: Weekend, iso: string): ForecastStep | null {
   const f = w.r.circuit ? w.d.weekend?.forecast?.[w.r.circuit] : undefined;
-  const s = f ? stepFor(f.steps, iso) : null;
+  return f ? stepFor(f.steps, iso) : null;
+}
+
+/** The forecast as a line: the air, the sky, and the rain over the hour a session starts in, or over the six hours it
+ *  starts in further out. */
+function forecast(w: Weekend, iso: string, used: Used): string {
+  const s = forecastStep(w, iso);
   if (!s) return '';
   used.met = true;
-  const what = [symbolLabel(s.symbol), s.mm === null ? '' : `${s.mm} mm`].filter(Boolean).join(' · ');
+  const what = [symbolLabel(s.symbol), s.mm === null ? '' : `${s.mm} mm${s.hours === 6 ? ' in 6 h' : ''}`].filter(Boolean).join(' · ');
   return `<span class="pd-wk-wx"><b>${s.air}°</b><small>${esc(what)}</small></span>`;
 }
 
 /** Race control's marks on a session: a late start, and each red flag with its lap and whether the session started again. */
-function marks(w: Weekend, label: string): string {
+function marks(w: Weekend, label: string, used: Used): string {
   const m = extrasOf(w, label)?.marks;
   if (!m) return '';
   const out: string[] = [];
@@ -178,7 +203,9 @@ function marks(w: Weekend, label: string): string {
     if (mins > 0) out.push(`<em class="pd-wk-mark">Started ${mins} minute${mins === 1 ? '' : 's'} late</em>`);
   }
   for (const red of m.red ?? []) out.push(`<em class="pd-wk-mark is-red">Red flag${red.lap ? ` on lap ${red.lap}` : ''} · ${red.restarted ? 'restarted' : 'not restarted'}</em>`);
-  return out.length ? `<span class="pd-wk-marks">${out.join('')}</span>` : '';
+  if (!out.length) return '';
+  used.marks = true;
+  return `<span class="pd-wk-marks">${out.join('')}</span>`;
 }
 
 // ── The parts every page of a weekend shares ─────────────────────────────────
@@ -190,19 +217,20 @@ function weekendBand(w: Weekend): string {
   const moved = note ? `<em class="pd-wk-tag">${esc(note)}${r.moved?.from && r.moved.to ? `, first set for ${longDates(r.moved.from, r.moved.to)}` : ''}</em>` : '';
   return (
     `<section class="pd-wk-band"><div class="pd-wk-band-in"><p class="pd-wk-crumb"><a href="${seriesPath(d.slug)}">${esc(d.name)}</a> › <a href="${seasonPath(d.slug, w.season)}">${w.season} season</a> › Round ${r.round} of ${(d.rounds ?? []).length}</p>` +
-    `<h1>${esc(r.name)}</h1><p class="pd-wk-where">${where}${where ? ' · ' : ''}${longDates(r.startDate, r.endDate)}</p>${moved}<span class="pd-wk-num" aria-hidden="true">${r.round}</span></div></section>`
+    `<h1>${esc(r.name)}</h1><p class="pd-wk-where">${where}${where ? ' · ' : ''}<span class="pd-wk-dt">${longDates(r.startDate, r.endDate)}</span></p>${moved}<span class="pd-wk-num" aria-hidden="true">${r.round}</span></div></section>`
   );
 }
 
-/** One bar for every page of a weekend: its Overview, then each session's page with its time (and its winner once
- *  run), the page you are on lit, a session still to run dashed. */
+/** One bar for every page of a weekend: its Overview, then each session's page with its time (its real start when it
+ *  ran late) and its winner once run, the page you are on lit, a session still to run dashed and said so. */
 function weekendBar(w: Weekend, current: string | null): string {
   const here = (on: boolean) => (on ? ' aria-current="page"' : '');
   const items = [`<a href="${w.path}"${here(current === null)}>Overview<small>the weekend</small></a>`];
   for (const e of w.sessions) {
     const t = tableOf(w, e.session);
-    const who = t ? ` · ${esc(codeOf(w.d, t.rows[0][cols(t).name] ?? ''))}` : '';
-    items.push(`<a href="${sessionPath(w, e.session)}"${here(e.session === current)}${t ? '' : ' class="is-up"'}>${esc(e.session)}<small>${yours(e.start, 'wt')}${who}</small></a>`);
+    const who = t ? ` · ${esc(codeOf(w.d, t.rows[0][cols(t).name] ?? ''))}` : '<span class="pd-vh"> · still to run</span>';
+    const at = extrasOf(w, e.session)?.marks?.late?.started ?? e.start;
+    items.push(`<a href="${sessionPath(w, e.session)}"${here(e.session === current)}${t ? '' : ' class="is-up"'}>${esc(e.session)}<small>${yours(at, 'wt')}${who}</small></a>`);
   }
   return `<nav class="pd-wb" aria-label="${esc(`${w.r.name}: its pages`)}">${items.join('')}</nav>`;
 }
@@ -241,7 +269,7 @@ function circuit(w: Weekend, used: Used): string {
   const key = w.r.circuit;
   const m = key ? w.d.weekend?.maps?.[key] : undefined;
   if (!isMap(m) || m.points.length < 50) return '';
-  used.of1 = true;
+  used.map = true;
   const who = m.year === w.season ? driverByNumber(w.d, m.driver) : null;
   const when = m.year === w.season ? 'in qualifying' : `in qualifying here in ${m.year}`;
   const data = `${m.w} ${m.h}|${m.split[0]} ${m.split[1]}|${m.points.map(([x, y]) => `${x},${y}`).join(' ')}`;
@@ -261,10 +289,13 @@ function driverByNumber(d: SeriesData, n: number): string | null {
   return null;
 }
 
-/** The sources a page drew on, as their terms ask: OpenF1 (CC BY-NC-SA 4.0), MET Norway (CC BY 4.0). */
+/** The sources a page drew on, as their terms ask, naming only what it shows: OpenF1 (CC BY-NC-SA 4.0), MET Norway
+ *  (CC BY 4.0). */
 function credit(used: Used): string {
+  const from = [used.weather ? 'the weather' : '', used.marks ? 'race control’s marks' : '', used.tyres ? 'the tyres' : '', used.map ? 'the circuit’s pole lap' : ''].filter(Boolean);
+  const listed = from.length > 1 ? `${from.slice(0, -1).join(', ')} and ${from[from.length - 1]}` : (from[0] ?? '');
   const parts = [
-    used.of1 ? 'Weather, race control, tyres and the circuit’s lap from <a href="https://openf1.org/">OpenF1</a>' : '',
+    listed ? `${listed.charAt(0).toUpperCase()}${listed.slice(1)} from <a href="https://openf1.org/">OpenF1</a>` : '',
     used.met ? 'Forecasts: Data from <a href="https://www.met.no/en">MET Norway</a>' : '',
   ].filter(Boolean);
   return parts.length ? `<p class="pd-wk-credit">${parts.join(' · ')}</p>` : '';
@@ -276,8 +307,8 @@ function podium(w: Weekend, t: Table): string {
   const c = cols(t);
   const items = t.rows.slice(0, 3).map(
     row =>
-      `<li style="--t:${colourOf(w.d, row[c.team] ?? '')}"><small>${row[c.pos] === '1' ? 'Winner' : `P${esc(row[c.pos] ?? '')}`}</small><b>${esc(row[c.name] ?? '')}</b>` +
-      `<span>${esc(teamLabel(row[c.team] ?? ''))}</span><em>${esc(c.time >= 0 ? (row[c.time] ?? '') : '')}</em></li>`,
+      `<li style="--t:${colourOf(w.d, teamAt(w, row, c))}"><small>${row[c.pos] === '1' ? 'Winner' : `P${esc(row[c.pos] ?? '')}`}</small><b>${esc(row[c.name] ?? '')}</b>` +
+      `<span>${esc(teamLabel(teamAt(w, row, c)))}</span><em>${esc(c.time >= 0 ? (row[c.time] ?? '') : '')}</em></li>`,
   );
   return `<ol class="pd-wk-podium">${items.join('')}</ol>`;
 }
@@ -293,8 +324,8 @@ function classTable(w: Weekend, t: Table, limit = Infinity): string {
     .slice(0, limit)
     .map(
       row =>
-        `<tr><td class="p">${esc(row[c.pos] ?? '')}</td><td class="d">${tick(w.d, row[c.team] ?? '')}<b>${esc(codeOf(w.d, row[c.name] ?? ''))}</b><span>${esc(row[c.name] ?? '')}</span></td>` +
-        `<td class="tm">${esc(teamLabel(row[c.team] ?? ''))}</td>${figures.map(i => `<td class="${kind(i)}">${esc(row[i] ?? '') || '–'}</td>`).join('')}</tr>`,
+        `<tr><td class="p">${esc(row[c.pos] ?? '')}</td><td class="d">${tick(w.d, teamAt(w, row, c))}<b>${esc(codeOf(w.d, row[c.name] ?? ''))}</b><span>${esc(row[c.name] ?? '')}</span></td>` +
+        `<td class="tm">${esc(teamLabel(teamAt(w, row, c)))}</td>${figures.map(i => `<td class="${kind(i)}">${esc(row[i] ?? '') || '–'}</td>`).join('')}</tr>`,
     )
     .join('');
   return `<div class="pd-wk-scroll"><table class="pd-wk-tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
@@ -308,8 +339,11 @@ function pitWall(w: Weekend, label: string, limit: number, used: Used): string {
   if (!t || !stints?.length) return '';
   const total = Math.max(...stints.flatMap(([, list]) => list.map(s => s[2])));
   if (!(total > 0)) return '';
-  used.of1 = true;
-  const byCar = new Map(stints);
+  used.tyres = true;
+  // OpenF1 keeps a stint that ends before it starts (a set fitted and changed before a lap was run; Monaco's and
+  // Sepang's races hold some): no lap to draw and no stop to count.
+  const run = (list: DriverStints[1]): DriverStints[1] => list.filter(([, a, b]) => b >= a);
+  const byCar = new Map(stints.map(([car, list]) => [car, run(list)] as const));
   const c = cols(t);
   const pct = (v: number): string => `${((v / total) * 100).toFixed(2)}%`;
   const rows = t.rows.slice(0, limit).map(row => {
@@ -317,7 +351,7 @@ function pitWall(w: Weekend, label: string, limit: number, used: Used): string {
     const code = codeOf(w.d, name);
     const n = numberOf(w.d, name);
     const mine = n === null ? [] : (byCar.get(n) ?? []);
-    const out = /retired|dnf|dns|dsq|disqualified/i.test(c.time >= 0 ? (row[c.time] ?? '') : '');
+    const out = /retired|did not|dnf|dns|dsq|disqualified/i.test(c.time >= 0 ? (row[c.time] ?? '') : '');
     const segs = mine
       .map(([compound, a, b], i) => {
         // OpenF1 writes UNKNOWN for a stint whose tyre it did not record (Norris's third in round 11's race).
@@ -325,12 +359,13 @@ function pitWall(w: Weekend, label: string, limit: number, used: Used): string {
         const laps = a === b ? `lap ${a}` : `laps ${a}–${b}`;
         const end = i < mine.length - 1 ? `pitted at the end of lap ${b}` : out ? `out on lap ${b}` : 'to the flag';
         const tip = `${code} · ${word} · ${laps} · ${end}`;
-        return `<i class="${cls}" data-tip="${esc(tip)}" aria-label="${esc(tip)}" style="--l:${pct(a - 1)};--w:${pct(b - a + 1)}">${letter}</i>`;
+        return `<i class="${cls}" role="img" data-tip="${esc(tip)}" aria-label="${esc(tip)}" style="--l:${pct(a - 1)};--w:${pct(b - a + 1)}">${letter}</i>`;
       })
       .join('');
     const stops = Math.max(0, mine.length - 1);
-    const note = !mine.length ? '' : out ? 'out' : `${stops} stop${stops === 1 ? '' : 's'}`;
-    return `<div class="pd-pw-row"><span class="pd-pw-d">${tick(w.d, row[c.team] ?? '')}<b>${esc(code)}</b></span><span class="pd-pw-bar">${segs}<span class="pd-pw-g" style="--n:${total}"></span></span><span class="pd-pw-n">${note}</span></div>`;
+    // No stints (a driver the roster gives no number), or none for the first laps: said, never counted as no stop.
+    const note = out ? 'out' : !mine.length ? 'no data' : mine[0][1] > 1 ? 'partial' : `${stops} stop${stops === 1 ? '' : 's'}`;
+    return `<div class="pd-pw-row"><span class="pd-pw-d">${tick(w.d, teamAt(w, row, c))}<b>${esc(code)}</b></span><span class="pd-pw-bar">${segs}<span class="pd-pw-g" style="--n:${total}"></span></span><span class="pd-pw-n">${note}</span></div>`;
   });
   const fives: number[] = [];
   for (let l = 5; l < total; l += 5) fives.push(l);
@@ -340,7 +375,7 @@ function pitWall(w: Weekend, label: string, limit: number, used: Used): string {
     total - (fives[fives.length - 1] ?? 0) >= 4 ? `<span class="is-last" style="--l:100%">${total}</span>` : '',
   ].join('');
   const keys = Object.keys(COMPOUNDS)
-    .filter(k => stints.some(([, list]) => list.some(s => s[0] === k)))
+    .filter(k => [...byCar.values()].some(list => list.some(s => s[0] === k)))
     .map(k => `<span><i class="${COMPOUNDS[k][0]}"></i>${COMPOUNDS[k][2]}</span>`)
     .join('');
   return (
@@ -362,14 +397,14 @@ function sessionCard(w: Weekend, e: CalendarEntry, used: Used): string {
           .slice(0, n)
           .map(
             row =>
-              `<li><span class="p">${esc(row[c.pos] ?? '')}</span>${tick(w.d, row[c.team] ?? '')}<b>${esc(codeOf(w.d, row[c.name] ?? ''))}</b><span class="nm">${esc(row[c.name] ?? '')}</span>` +
+              `<li><span class="p">${esc(row[c.pos] ?? '')}</span>${tick(w.d, teamAt(w, row, c))}<b>${esc(codeOf(w.d, row[c.name] ?? ''))}</b><span class="nm">${esc(row[c.name] ?? '')}</span>` +
               `<span class="tt">${esc(bestTime(t, row))}</span>${c.pts >= 0 ? `<span class="pp">${esc(row[c.pts] ?? '')}</span>` : ''}</li>`,
           )
           .join('')
       : '';
   const wx = t ? measured(x, used) : forecast(w, e.start, used);
   return (
-    `<article class="pd-sc${n === 3 ? ' is-sm' : ''}"><header><div><h3>${esc(e.session)}</h3><p>${yours(at, 'wt')} your time · ${trackWeekday(w, at)} ${trackTime(w, at)} at the track</p>${marks(w, e.session)}</div>${wx}</header>` +
+    `<article class="pd-sc${n === 3 ? ' is-sm' : ''}"><header><div><h3>${esc(e.session)}</h3><p>${yours(at, 'wt')} your time · ${trackWeekday(w, at)} ${trackTime(w, at)} at the track</p>${marks(w, e.session, used)}</div>${wx}</header>` +
     `${rows ? `<ol class="pd-sc-rows">${rows}</ol>` : ''}<a class="pd-sc-go" href="${sessionPath(w, e.session)}">${t ? `All ${t.rows.length} on its page` : 'Its page'} →</a></article>`
   );
 }
@@ -462,21 +497,26 @@ function nextRound(w: Weekend): string {
 
 /** The side: the championship before or after the round, the track (its zone beside the reader's), the next round. */
 function aside(w: Weekend, raced: boolean): string {
-  const after = raced ? w.r.round : w.r.round - 1;
+  // A round further off than the next shows the table as it stands, after the latest round raced.
+  const latest = Math.max(0, ...raceWins(w.d).keys());
+  const after = raced ? w.r.round : Math.min(w.r.round - 1, latest);
+  const title = raced || after < w.r.round - 1 ? `after round ${after}` : `before round ${w.r.round}`;
   const top = after > 0 ? championship(w.d, after).slice(0, 5) : [];
   const lead = top[0]?.pts ?? 0;
   const more = built(w.d.slug, 'standings') ? `<a class="pd-wk-more" href="${seriesPath(w.d.slug, 'standings')}">Full standings →</a>` : '<span class="pd-wk-more is-off">Full standings →</span>';
   const champ = top.length
-    ? `<section class="pd-wk-box pd-wk-champ"><h3>Championship ${raced ? 'after' : 'before'} round ${w.r.round}</h3><ol>${top
+    ? `<section class="pd-wk-box pd-wk-champ"><h3>Championship ${title}</h3><ol>${top
         .map(
           (s, i) =>
             `<li><span class="p">${i + 1}</span>${tick(w.d, s.team)}<span class="d"><b>${esc(s.name)}</b><small>${esc(teamLabel(s.team))}</small></span><span class="g">${i ? `−${Math.round((lead - s.pts) * 10) / 10}` : 'Leader'}</span><b class="pt">${s.pts}</b></li>`,
         )
         .join('')}</ol>${more}</section>`
     : '';
+  // The track's offset, and the reader's in the script, both at the weekend's first session: a change of clocks between
+  // today and the weekend (Europe's on 25 October) must not shift the hours between them.
   const at = w.sessions[0]?.start ?? `${w.r.startDate}T12:00:00Z`;
   const off = offsetOf(w.tz, at);
-  const zone = w.tz === 'UTC' && !w.r.tz ? '' : `<dt>Track time</dt><dd>${utcLabel(off)}<span class="pd-wk-ahead" data-pd-ahead="${off}"></span></dd>`;
+  const zone = w.tz === 'UTC' && !w.r.tz ? '' : `<dt>Track time</dt><dd>${utcLabel(off)}<span class="pd-wk-ahead" data-pd-ahead="${off}" data-pd-at="${esc(at)}"></span></dd>`;
   const track =
     `<section class="pd-wk-box"><h3>At the track</h3><dl>${w.r.venue ? `<dt>Circuit</dt><dd>${esc(w.r.venue)}</dd>` : ''}${w.r.country ? `<dt>Country</dt><dd>${esc(w.r.country)}</dd>` : ''}` +
     `${zone}<dt>Format</dt><dd>${sprintWeekend(w.d, w.r.round, w.result) ? 'Sprint weekend' : 'Standard weekend'}</dd></dl></section>`;
@@ -491,7 +531,7 @@ const section = (title: string, hint: string, body: string, id?: string): string
 /** A round's Overview: after its race, the result, Pit wall, the weekend's points (sprint weekends) and the earlier
  *  sessions' cards; before it, the sessions run so far as cards and the rest by day with their forecasts. */
 function overviewPage(w: Weekend): Page {
-  const used: Used = { of1: false, met: false };
+  const used = nothingUsed();
   const race = tableOf(w, 'Race');
   const run = w.sessions.filter(e => tableOf(w, e.session));
   const ahead = w.sessions.filter(e => !tableOf(w, e.session));
@@ -500,10 +540,10 @@ function overviewPage(w: Weekend): Page {
     const x = extrasOf(w, 'Race');
     const e = w.sessions.find(s => s.session === 'Race');
     const at = x?.marks?.late?.started ?? e?.start;
-    if (x?.weather) used.of1 = true;
     const wx = x?.weather;
+    if (wx) used.weather = true;
     const hint = [at ? `${yours(at, 't')} your time` : '', wx ? `air ${wx.air[1]}°${wx.track ? `, track ${wx.track[1]}°` : ''}, ${wx.rain ? 'rain' : 'dry'}` : ''].filter(Boolean).join(' · ');
-    parts.push(section('Race result', hint, `${marks(w, 'Race')}${podium(w, race)}${classTable(w, race, 10)}<a class="pd-wk-link" href="${sessionPath(w, 'Race')}">All ${race.rows.length} on the race's page</a>`));
+    parts.push(section('Race result', hint, `${marks(w, 'Race', used)}${podium(w, race)}${classTable(w, race, RACE_ROWS)}<a class="pd-wk-link" href="${sessionPath(w, 'Race')}">All ${race.rows.length} on the race's page</a>`));
     const wall = pitWall(w, 'Race', PIT_WALL_ROWS, used);
     if (wall) parts.push(section('Pit wall', 'Each driver’s tyres and stops, lap by lap', wall));
     const points = sprintWeekend(w.d, w.r.round, w.result) && w.result ? pointsTable(w.d, weekendPoints(w.result), true) : '';
@@ -514,13 +554,14 @@ function overviewPage(w: Weekend): Page {
     if (run.length) parts.push(section('Done so far', 'Each finished session’s leading results', `<div class="pd-sc-grid">${run.map(e => sessionCard(w, e, used)).join('')}</div>`));
     if (ahead.length) {
       const rows = weekendRows(w, ahead, used);
-      const note = '<p class="pd-wk-note">A session’s forecast is for the hour it starts, while it is within ten days; after it, the weather measured at the track. Each session’s results join this page as it ends.</p>';
+      const note =
+        '<p class="pd-wk-note">A session’s forecast is for its start while it is within ten days: the rain over that hour, or over six hours when it is further off. After it, the weather measured at the track; each session’s results join this page as it ends.</p>';
       parts.push(section(run.length ? 'Still to come' : 'The weekend', 'The track’s days: your time, the track’s underneath', rows + note));
     }
     if (!w.sessions.length) parts.push(section('The weekend', '', '<p class="pd-wk-empty">The weekend’s session times are not published yet; they appear here as soon as they are.</p>'));
   }
   const body =
-    `<div class="pd-wk pd-s-${esc(w.d.slug)}">${weekendBand(w)}${strip(w)}${weekendBar(w, null)}` +
+    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${weekendBand(w)}${strip(w)}${weekendBar(w, null)}` +
     `<div class="pd-wk-main"><div class="pd-wk-col">${parts.join('')}</div>${aside(w, Boolean(race))}</div>${circuit(w, used)}${credit(used)}</div>`;
   return { path: w.path, title: `${w.r.name} ${w.season}`, body: htmlBlock(body), template: 'page-wide' };
 }
@@ -528,7 +569,7 @@ function overviewPage(w: Weekend): Page {
 /** A session's own page: its classification (every driver, every part), race control's marks, Pit wall for a race or
  *  a sprint, and the weather measured through it, or its forecast before it runs. */
 function sessionPage(w: Weekend, e: CalendarEntry): Page {
-  const used: Used = { of1: false, met: false };
+  const used = nothingUsed();
   const t = tableOf(w, e.session);
   const x = extrasOf(w, e.session);
   const at = x?.marks?.late?.started ?? e.start;
@@ -538,27 +579,28 @@ function sessionPage(w: Weekend, e: CalendarEntry): Page {
   const parts: string[] = [];
   if (t) {
     const hint = /^S?Q\d$/.test(t.columns[t.columns.length - 1] ?? '') ? `All ${t.rows.length}, as classified; each driver’s best time in each part` : `All ${t.rows.length}, as classified`;
-    parts.push(section('Classification', hint, `${marks(w, e.session)}${classTable(w, t)}`));
+    parts.push(section('Classification', hint, `${marks(w, e.session, used)}${classTable(w, t)}`));
     if (/^(race|sprint)$/i.test(e.session)) {
       const wall = pitWall(w, e.session, Infinity, used);
       if (wall) parts.push(section('Pit wall', 'Each driver’s tyres and stops, lap by lap', wall));
     }
   } else {
-    parts.push(section('Classification', '', `${marks(w, e.session)}<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>`));
+    parts.push(section('Classification', '', `${marks(w, e.session, used)}<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>`));
   }
   const wx = x?.weather;
   let weather = '';
   if (t && wx) {
-    used.of1 = true;
+    used.weather = true;
     weather =
       `<section class="pd-wk-box"><h3>Weather at the track</h3><dl><dt>Air</dt><dd>${wx.air[0]}–${wx.air[2]} °C</dd>${wx.track ? `<dt>Track</dt><dd>${wx.track[0]}–${wx.track[2]} °C</dd>` : ''}` +
       `${wx.humidity ? `<dt>Humidity</dt><dd>${wx.humidity[0]}–${wx.humidity[1]} %</dd>` : ''}<dt>Rain</dt><dd>${wx.rain ? 'Yes' : 'None'}</dd></dl><p class="pd-wk-src">Measured through the session</p></section>`;
   } else if (!t) {
     const f = forecast(w, e.start, used);
-    if (f) weather = `<section class="pd-wk-box"><h3>Forecast for its start</h3><div class="pd-wk-fc">${f}</div><p class="pd-wk-src">For the hour it starts</p></section>`;
+    const src = forecastStep(w, e.start)?.hours === 6 ? 'The sky and rain over the six hours it starts in' : 'For the hour it starts';
+    if (f) weather = `<section class="pd-wk-box"><h3>Forecast for its start</h3><div class="pd-wk-fc">${f}</div><p class="pd-wk-src">${src}</p></section>`;
   }
   const body =
-    `<div class="pd-wk pd-s-${esc(w.d.slug)}">${band}${weekendBar(w, e.session)}` +
+    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${band}${weekendBar(w, e.session)}` +
     `<div class="pd-wk-main"><div class="pd-wk-col">${parts.join('')}</div><aside class="pd-wk-aside">${weather}${nextRound(w)}</aside></div>${credit(used)}</div>`;
   return { path: sessionPath(w, e.session), title: `${w.r.name} ${w.season}: ${e.session}`, body: htmlBlock(body), template: 'page-wide' };
 }

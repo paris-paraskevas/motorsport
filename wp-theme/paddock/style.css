@@ -650,14 +650,17 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
    circuit drawn by the script from data-pd-map; the season's tiles. A team's colour rides in --t, a stint's place in
    --l and --w, the race's laps in --n: WordPress keeps no other inline style. */
 .pd-tc { display: inline-block; flex: none; width: 4px; height: 15px; margin-right: 8px; vertical-align: -2px; background: var(--t); }
-.pd-wk { font-size: .9375rem; }
-.pd-wk a { color: inherit; text-decoration: none; }
+.pd-wkp { font-size: .9375rem; }
+.pd-wkp a { color: inherit; text-decoration: none; }
 .pd-wk-band { position: relative; overflow: hidden; background: var(--s); color: var(--pd-on); }
 .pd-wk-band-in { position: relative; padding: 26px 200px 24px var(--pd-gutter); }
 .pd-wk-crumb { margin: 0; font-size: .82rem; font-weight: 700; }
-.pd-wk .pd-wk-crumb a, .pd-wk-credit a { text-decoration: underline; text-underline-offset: 3px; }
+.pd-wkp .pd-wk-crumb a, .pd-wk-credit a { text-decoration: underline; text-underline-offset: 3px; }
 .pd-wk-band h1 { margin: 8px 0 6px; color: var(--pd-on); font-size: clamp(2.2rem, 4.4vw, 3.4rem); line-height: .95; font-weight: 800; font-stretch: 80%; letter-spacing: -.035em; }
 .pd-wk-where { margin: 0; font-size: .95rem; font-weight: 600; }
+.pd-wk-dt { white-space: nowrap; }
+/* Words for a screen reader only: the bar's "still to run". */
+.pd-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .pd-wk-tag { display: inline-block; margin-top: 10px; padding: 2px 8px; background: var(--pd-on); color: #ffffff; font-size: .74rem; font-weight: 800; font-style: normal; }
 .pd-wk-num { position: absolute; right: var(--pd-gutter); bottom: -34px; font-size: 11rem; line-height: 1; font-weight: 800; font-stretch: 80%; letter-spacing: -.05em; color: color-mix(in srgb, var(--pd-on) 14%, var(--s)); pointer-events: none; }
 .pd-wk-strip { border-bottom: 1px solid var(--pd-line); background: var(--pd-surface); }
@@ -686,7 +689,7 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-wk-sh { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
 .pd-wk-sh h2 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -.015em; }
 .pd-wk-hint, .pd-wk-note { margin: 0; font-size: .8rem; color: var(--pd-muted); }
-.pd-wk .pd-wk-link { font-size: .84rem; font-weight: 800; }
+.pd-wkp .pd-wk-link { font-size: .84rem; font-weight: 800; }
 .pd-wk-link::after { content: " →"; }
 .pd-wk-podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
 .pd-wk-podium li { display: grid; gap: 2px; padding: 12px 14px 13px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--t); }
@@ -711,7 +714,7 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-wk-pts .n { width: 84px; }
 .pd-wk-day { margin: 6px 0 0; font-size: 1rem; font-weight: 800; }
 .pd-wk-rows { display: grid; border: 1px solid var(--pd-line); border-left: 4px solid var(--s, #ff4136); background: var(--pd-surface); }
-.pd-wk .pd-wk-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 170px 80px; align-items: center; gap: 14px; padding: 11px 14px; border-top: 1px solid var(--pd-line); }
+.pd-wkp .pd-wk-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 170px 80px; align-items: center; gap: 14px; padding: 11px 14px; border-top: 1px solid var(--pd-line); }
 .pd-wk-row:first-child { border-top: 0; }
 .pd-wk-row:hover { background: color-mix(in srgb, var(--pd-ink) 4%, transparent); }
 .pd-wk-when b { display: block; font-size: 1.05rem; font-weight: 800; white-space: nowrap; }
@@ -746,12 +749,12 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-wk-box dd { margin: 0; text-align: right; font-weight: 700; }
 .pd-wk-box .pd-wk-src { margin: 0; padding: 0 14px 12px; font-size: .74rem; color: var(--pd-muted); }
 .pd-wk-fc { padding: 12px 14px 8px; }
-.pd-wk .pd-wk-next { position: relative; display: grid; gap: 2px; padding: 14px 80px 15px 16px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-left: 4px solid var(--s); }
+.pd-wkp .pd-wk-next { position: relative; display: grid; gap: 2px; padding: 14px 80px 15px 16px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-left: 4px solid var(--s); }
 .pd-wk-next small { font-size: .76rem; color: var(--pd-muted); }
 .pd-wk-next b { font-size: 1.05rem; font-weight: 800; }
 .pd-wk-next span { font-size: .8rem; color: var(--pd-muted); }
 .pd-wk-ol { position: absolute; top: 12px; right: 14px; width: 54px; height: 54px; color: var(--pd-ink); }
-.pd-wk .pd-wk-prev { font-size: .82rem; font-weight: 700; color: var(--pd-muted); }
+.pd-wkp .pd-wk-prev { font-size: .82rem; font-weight: 700; color: var(--pd-muted); }
 .pd-sc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; align-items: start; }
 .pd-sc { display: grid; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--s, #ff4136); }
 .pd-sc header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 12px 14px 10px; border-bottom: 1px solid var(--pd-line); }
@@ -767,7 +770,7 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-sc-rows .nm { overflow: hidden; color: var(--pd-muted); text-overflow: ellipsis; white-space: nowrap; }
 .pd-sc-rows .tt { text-align: right; white-space: nowrap; }
 .pd-sc-rows .pp { text-align: right; font-weight: 800; }
-.pd-wk .pd-sc-go { padding: 9px 14px; border-top: 1px solid var(--pd-line); font-size: .82rem; font-weight: 800; }
+.pd-wkp .pd-sc-go { padding: 9px 14px; border-top: 1px solid var(--pd-line); font-size: .82rem; font-weight: 800; }
 .pd-wk-credit { margin: 0; padding: 0 var(--pd-gutter) 28px; font-size: .74rem; color: var(--pd-muted); }
 /* Pit wall: each driver's tyres, lap by lap, a line every five laps, a stint's laps on hover, focus or a tap. */
 .pd-pw { position: relative; display: grid; gap: 6px; padding: 14px 16px 12px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
@@ -792,7 +795,8 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-pw-n { font-size: .78rem; color: var(--pd-muted); text-align: right; white-space: nowrap; }
 .pd-pw-key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 4px 0 0; font-size: .76rem; color: var(--pd-muted); }
 .pd-pw-key i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -2px; }
-.pd-pw-tip { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 6px)); padding: 6px 10px; background: var(--pd-ink); color: var(--pd-ground); font-size: .78rem; font-weight: 700; white-space: nowrap; pointer-events: none; }
+/* One line where it fits; on the narrowest phones the longest tip wraps inside the Pit wall. */
+.pd-pw-tip { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 6px)); width: max-content; max-width: calc(100% - 8px); padding: 6px 10px; background: var(--pd-ink); color: var(--pd-ground); font-size: .78rem; font-weight: 700; pointer-events: none; }
 .pd-pw-tip::after { content: ""; position: absolute; left: 50%; bottom: -5px; margin-left: -5px; border: 5px solid transparent; border-bottom: 0; border-top-color: var(--pd-ink); }
 /* A session's own page. */
 .pd-ss-band { background: var(--s); color: var(--pd-on); }
@@ -802,6 +806,8 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 /* The circuit: drawn by the script from the pole lap's positions, its sectors and the start/finish line; a tall track
    keeps to the screen's height. */
 .pd-cm { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 18px; padding: 0 var(--pd-gutter) 32px; }
+/* Without the script, or with a map it cannot draw, the section would be an empty frame. */
+.pd-cm:has(.pd-cm-draw:empty) { display: none; }
 .pd-cm-h { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
 .pd-cm-h h2 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -.015em; }
 .pd-cm-draw { min-height: 120px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
@@ -855,7 +861,7 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 	.pd-wk-podium span { display: none; }
 	.pd-wk-tbl .tm, .pd-wk-tbl .d span, .pd-wk-tbl td.q, .pd-wk-tbl th.q { display: none; }
 	.pd-wk-pts .n { width: 60px; }
-	.pd-wk .pd-wk-row { grid-template-columns: 84px minmax(0, 1fr) auto; grid-template-areas: "when name go" "when wx wx"; gap: 4px 10px; padding: 10px 12px; }
+	.pd-wkp .pd-wk-row { grid-template-columns: 84px minmax(0, 1fr) auto; grid-template-areas: "when name go" "when wx wx"; gap: 4px 10px; padding: 10px 12px; }
 	.pd-wk-row .pd-wk-when { grid-area: when; align-self: start; }
 	.pd-wk-row .pd-wk-when b { font-size: .95rem; }
 	.pd-wk-row .pd-wk-name { grid-area: name; }
@@ -869,6 +875,10 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 	.pd-ss-band-in { padding: 14px var(--pd-gutter); }
 	.pd-cm { padding: 0 var(--pd-gutter) 24px; }
 	.pd-sn-t { min-height: 0; }
+}
+@media (max-width: 340px) {
+	/* The last lap's number would touch the five before it; the axis names the laps already. */
+	.pd-pw-scale .is-last { display: none; }
 }
 
 /* The series list (O21): round 2's "All series". Still racing, then Completed, each split by type, a type's group as

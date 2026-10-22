@@ -86,9 +86,11 @@
 		document.querySelectorAll( '[data-pd-zone]' ).forEach( function ( el ) { el.textContent = zone.split( '/' ).pop().replace( /_/g, ' ' ); } );
 
 		weekendStrips( now );
-		// A track's zone beside the reader's (O19): its offset in minutes east of UTC, against the reader's own.
+		// A track's zone beside the reader's (O19): its offset in minutes east of UTC against the reader's own, both at the
+		// weekend's first session (data-pd-at), so a change of clocks between today and the weekend is counted.
 		document.querySelectorAll( '[data-pd-ahead]' ).forEach( function ( el ) {
-			var diff = Number( el.getAttribute( 'data-pd-ahead' ) ) + new Date( now ).getTimezoneOffset();
+			var at = Date.parse( el.getAttribute( 'data-pd-at' ) || '' );
+			var diff = Number( el.getAttribute( 'data-pd-ahead' ) ) + new Date( isFinite( at ) ? at : now ).getTimezoneOffset();
 			if ( ! isFinite( diff ) ) { return; }
 			var a = Math.abs( diff ), h = Math.floor( a / 60 ), m = a % 60;
 			var span = ( h ? h + ' h' : '' ) + ( m ? ( h ? ' ' : '' ) + m + ' min' : '' );
@@ -173,7 +175,9 @@
 			var shown = live || next, last = list[ list.length - 1 ];
 			var pill = card.querySelector( '.pd-pill-live' ), ses = card.querySelector( '.pd-sr-ses' ), race = card.querySelector( '.pd-sr-race' );
 			if ( pill ) { pill.hidden = ! live; }
-			if ( ses ) { ses.textContent = ! shown ? '' : live ? live.name + ' · on now' : next.name + ' · ' + fWd.format( new Date( next.start ) ) + ' ' + fT.format( new Date( next.start ) ); }
+			// A weekend's strip (O19) between its last session's end and the publisher's next run, which writes Final.
+			var over = card.classList.contains( 'pd-wk-nx' ) ? 'Every session has run · the results follow' : '';
+			if ( ses ) { ses.textContent = ! shown ? over : live ? live.name + ' · on now' : next.name + ' · ' + fWd.format( new Date( next.start ) ) + ' ' + fT.format( new Date( next.start ) ); }
 			if ( race ) { race.hidden = !! shown && shown === last; }
 		} );
 	}
@@ -685,7 +689,9 @@
 			tip.style.left = Math.min( Math.max( r.left + r.width / 2 - b.left, w + 4 ), b.width - w - 4 ) + 'px';
 			tip.style.top = ( r.top - b.top ) + 'px';
 		};
-		var hide = function () { if ( ! pinned ) { tip.hidden = true; } };
+		// Leaving a stint while another is pinned shows the pinned one again; Escape closes the tip (WCAG 1.4.13).
+		var hide = function () { if ( pinned ) { show( pinned ); } else { tip.hidden = true; } };
+		pw.addEventListener( 'keydown', function ( ev ) { if ( ev.key === 'Escape' ) { pinned = null; tip.hidden = true; } } );
 		pw.querySelectorAll( '.pd-pw-bar i[data-tip]' ).forEach( function ( el ) {
 			el.tabIndex = 0;
 			el.addEventListener( 'mouseenter', function () { show( el ); } );
@@ -737,16 +743,36 @@
 		var ia = Math.min( 9, last ), a = pts[ ia ], ad = dir( ia );
 		var tri = [ [ a[ 0 ] + ad[ 0 ] * 15, a[ 1 ] + ad[ 1 ] * 15 ], [ a[ 0 ] - ad[ 0 ] * 9 - ad[ 1 ] * 10, a[ 1 ] - ad[ 1 ] * 9 + ad[ 0 ] * 10 ], [ a[ 0 ] - ad[ 0 ] * 9 + ad[ 1 ] * 10, a[ 1 ] - ad[ 1 ] * 9 - ad[ 0 ] * 10 ] ];
 		svg.appendChild( node( 'polygon', { 'class': 'pd-cm-ar', points: tri.map( function ( q ) { return r1( q[ 0 ] ) + ',' + r1( q[ 1 ] ); } ).join( ' ' ) } ) );
-		[ [ 0, split[ 0 ] ], [ split[ 0 ], split[ 1 ] ], [ split[ 1 ], last ] ].forEach( function ( range, k ) {
-			var i = Math.round( ( range[ 0 ] + range[ 1 ] ) / 2 ), p = pts[ i ], d = dir( i ), g = node( 'g', { 'class': 'pd-cm-badge' } );
-			var cx = p[ 0 ] - d[ 1 ] * 34, cy = p[ 1 ] + d[ 0 ] * 34;
-			g.appendChild( node( 'circle', { 'class': 'pd-cm-k' + ( k + 1 ), cx: r1( cx ), cy: r1( cy ), r: '16' } ) );
-			g.appendChild( node( 'text', { x: r1( cx ), y: r1( cy ) }, String( k + 1 ) ) );
-			svg.appendChild( g );
+		var badges = [ [ 0, split[ 0 ] ], [ split[ 0 ], split[ 1 ] ], [ split[ 1 ], last ] ].map( function ( range, k ) {
+			var i = Math.round( ( range[ 0 ] + range[ 1 ] ) / 2 ), g = svg.appendChild( node( 'g', { 'class': 'pd-cm-badge' } ) );
+			return { p: pts[ i ], d: dir( i ), c: g.appendChild( node( 'circle', { 'class': 'pd-cm-k' + ( k + 1 ) } ) ), t: g.appendChild( node( 'text', {}, String( k + 1 ) ) ) };
 		} );
-		var d0 = dir( 0 ), lx = s[ 0 ] + d0[ 1 ] * 40, ly = s[ 1 ] - d0[ 0 ] * 40 + 6;
-		svg.appendChild( node( 'text', { 'class': 'pd-cm-lbl', x: r1( lx ), y: r1( ly ), 'text-anchor': lx > size[ 0 ] - 220 ? 'end' : lx < 220 ? 'start' : 'middle' }, 'Start / finish' ) );
+		var d0 = dir( 0 ), lbl = svg.appendChild( node( 'text', { 'class': 'pd-cm-lbl' }, 'Start / finish' ) );
 		box.appendChild( svg );
+		// Drawn in the map's own units, the badges and the label would shrink with the drawing (to about 5 px on a phone):
+		// k grows them so that a badge is never under 11 px across on the screen, whatever the screen or the track's shape.
+		var fit = function () {
+			var r = svg.getBoundingClientRect();
+			if ( ! ( r.width > 0 && r.height > 0 ) ) { return; }
+			var k = Math.max( 1, 11 * Math.max( ( size[ 0 ] + 80 ) / r.width, ( size[ 1 ] + 80 ) / r.height ) / 16 );
+			badges.forEach( function ( b ) {
+				var cx = r1( b.p[ 0 ] - b.d[ 1 ] * 34 * k ), cy = r1( b.p[ 1 ] + b.d[ 0 ] * 34 * k );
+				b.c.setAttribute( 'cx', cx );
+				b.c.setAttribute( 'cy', cy );
+				b.c.setAttribute( 'r', r1( 16 * k ) );
+				b.t.setAttribute( 'x', cx );
+				b.t.setAttribute( 'y', cy );
+				b.t.style.fontSize = r1( 17 * k ) + 'px';
+			} );
+			var lx = s[ 0 ] + d0[ 1 ] * 40 * k;
+			lbl.setAttribute( 'x', r1( lx ) );
+			lbl.setAttribute( 'y', r1( s[ 1 ] - d0[ 0 ] * 40 * k + 6 * k ) );
+			lbl.setAttribute( 'text-anchor', lx > size[ 0 ] - 220 * k ? 'end' : lx < 220 * k ? 'start' : 'middle' );
+			lbl.style.fontSize = r1( 16 * k ) + 'px';
+			lbl.style.strokeWidth = r1( 6 * k ) + 'px';
+		};
+		fit();
+		if ( window.ResizeObserver ) { new ResizeObserver( fit ).observe( box ); } else { window.addEventListener( 'resize', fit ); }
 	} );
 
 	render();

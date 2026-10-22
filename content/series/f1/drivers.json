@@ -53,7 +53,8 @@
       "color": "#6692FF",
       "drivers": [
         { "name": "Liam Lawson", "code": "LAW", "number": 30 },
-        { "name": "Arvid Lindblad", "code": "LIN", "number": 41 }
+        { "name": "Arvid Lindblad", "code": "LIN", "number": 41 },
+        { "name": "Yuki Tsunoda", "code": "TSU", "number": 22 }
       ]
     },
     {
