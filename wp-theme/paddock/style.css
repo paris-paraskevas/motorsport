@@ -154,7 +154,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-ses.is-live { box-shadow: inset 0 3px 0 var(--pd-live); } .pd-ses.is-live .pd-st { color: #ff7a7f; }
 .pd-ses.is-next { box-shadow: inset 0 3px 0 var(--pd-accent); } .pd-ses.is-next .pd-st { color: var(--pd-accent); }
 @media (max-width: 699px) {
-	.pd-hero.wp-block-cover { padding: 44px 16px 0; min-height: 0 !important; }
+	.pd-hero.wp-block-cover { padding: 44px var(--pd-gutter) 0; min-height: 0 !important; }
 	.pd-hero .wp-block-cover__background { background: linear-gradient(0deg, rgba(10, 12, 15, .97) 0%, rgba(10, 12, 15, .9) 46%, rgba(10, 12, 15, .4) 74%, rgba(10, 12, 15, .6) 100%) !important; }
 	.pd-bignum { display: none; }
 	.wp-block-cover.pd-hero .wp-block-cover__inner-container { display: flex; flex-direction: column; }
@@ -243,7 +243,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-lead .wp-block-post-terms a { text-decoration: none; }
 .pd-lead .wp-block-post-title { margin: 0 0 10px; font-size: 2.25rem; line-height: 1.06; letter-spacing: -.025em; }
 .pd-lead .wp-block-post-title a { text-decoration: none; }
-.pd-lead .wp-block-post-excerpt { color: var(--pd-muted); }
+.pd-lead .wp-block-post-excerpt { max-width: 70ch; color: var(--pd-muted); }
 @media (max-width: 699px) {
 	.pd-rows li { grid-template-columns: 72px 56px minmax(0, 1fr) auto; gap: 8px; height: 46px; padding: 0 10px 0 12px; font-size: .78rem; }
 	.pd-rows li.pd-more { display: none; }
@@ -463,7 +463,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal.is-pinned .pd-cal-wkh { top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--pd-cal-bar)); }
 @media (max-width: 699px) {
 	.pd-cal-only button { margin-left: 0; }
-	.pd-cal-bar { gap: 6px; padding: 8px 16px; }
+	.pd-cal-bar { gap: 6px; }
 	.pd-cal-bar .pd-cal-step { padding: 0 12px; }
 	.pd-cal-bar b { margin-inline: auto; font-size: 1.12rem; }
 	.pd-cal-bar .pd-cal-today { display: none; }
@@ -592,16 +592,16 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 	.pd-sr-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 @media (max-width: 699px) {
-	.pd-sr-band-in { flex-direction: column; align-items: stretch; gap: 18px; padding: 24px 16px 20px; }
+	.pd-sr-band-in { flex-direction: column; align-items: stretch; gap: 18px; padding: 24px var(--pd-gutter) 20px; }
 	.pd-sr-ttl h1 { font-size: 3rem; }
 	.pd-sr-ttl p { font-size: .875rem; }
 	.pd-sr-bar { gap: 3px; }
 	.pd-sr-bar i { flex: 1 1 0; width: auto; }
 	.pd-sr-acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.pd-sr-follow, .pd-sr-emails { padding: 0 10px; font-size: .84rem; }
-	.pd-sr-tabs-in { gap: 22px; padding: 0 16px; }
-	.pd-sr-main { gap: 40px; padding: 20px 16px 0; }
-	.pd-sr-blog, .pd-sr-about { margin-top: 40px !important; padding: 0 16px; }
+	.pd-sr-tabs-in { gap: 22px; }
+	.pd-sr-main { gap: 40px; padding: 20px var(--pd-gutter) 0; }
+	.pd-sr-blog, .pd-sr-about { margin-top: 40px !important; }
 	.pd-sr-cards { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 	.pd-sr-card { padding: 18px; }
 	.pd-sr .pd-sr-card h2 { font-size: 1.44rem; }
@@ -753,7 +753,7 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 	.pd-sx-cols-3, .pd-sx-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 699px) {
-	.pd-sx { padding: 22px 16px 0; }
+	.pd-sx { padding: 22px var(--pd-gutter) 0; }
 	.pd-sx-groups, .pd-sx-grid { grid-template-columns: minmax(0, 1fr); }
 	.pd-sx-type { grid-column: auto; }
 	/* The controls' grid sizes its items to their content (justify-items: start), so the one-line chips need a cap to scroll. */

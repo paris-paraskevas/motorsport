@@ -30,8 +30,17 @@ Verified on the theme preview (WordPress Playground with the working tree mounte
 - **Phones:** 96 of 96 full-page screenshots pixel-identical to 0.1.13's at 320, 360, 375, 390, 414 and 480 px, Day and Night. They cover the home, the Calendar (Month, Week, Agenda), the series list, Formula 1's Overview and Results, and a post.
 - **Wide screens:** at 1,440, 1,920 and 2,560 px the logo and the content start at 36, 48 and 64 px on every page. Before, the logo sat at 40, 54 and 72, and the content between 96 and 680.
 - **Pinned bar:** the Calendar's, shown in Agenda, sits at 36, 48 and 64 px on both sides.
-- **Post:** unchanged.
+- **Post:** its column unchanged; its header and footer follow the new gutter like every page's.
 - **Sideways scroll:** none at 20 widths from 300 to 2,560.
+- **Between 641 and 699 px**, where the gutter first exceeds 16 px, every edge sits on it after the review's fold: 16.25 px at 650 and 17.47 px at 699 for the logo, hero, home sections, Formula 1's band, tabs and body, the series list, the Calendar and its pinned bar.
+- **Review:** one fresh-context Sonnet reader (335,000 tokens, 82 tool calls) found it mergeable, with 0 blockers, 0 should-fix and 7 nits.
+  - Six nits are folded:
+    - the phone rules for 641 to 699 px now use the gutter instead of 16 px;
+    - the home's lead excerpt is kept to 70 characters (682 px at 2,560);
+    - the post's and the release note's wording is fixed;
+    - rules.md § 12 gets a new title and the right measure;
+    - two stale handoff lines are corrected.
+  - The seventh needs no change: the `.alignwide` half of the home rule has three classes against WordPress's two.
 - **Gates:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 281 files, 2,853 tests.
 
 ## 1.0.291 — 2026-10-22

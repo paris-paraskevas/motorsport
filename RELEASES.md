@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.292 — 2026-10-22
 
-Behind the scenes: every page now uses the whole width of your screen, with a slim margin at the sides instead of a column in the middle, while long reading text keeps a comfortable line. Nothing changes for readers yet.
+Behind the scenes: the home, the calendar and the championship pages now use the whole width of your screen, with a slim margin at the sides instead of a column in the middle, while long reading text keeps a comfortable line. Nothing changes for readers yet.
 
 ## 1.0.291 — 2026-10-22
 
