@@ -4,6 +4,36 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.292 — 2026-10-22
+
+### O27: full width, every page we built uses the whole screen
+
+The operator, 22 Oct: "i want entire screens' width to be used". Paddock Full Width drew today's pages at their 2,560 px screen beside the same pages with the caps lifted. They chose it as drawn, with running text kept to a readable line, in its own small PR before O19's weekend pages, so no new page is built narrow. Theme 0.1.14, CSS only.
+
+- **The gutter** (`--pd-gutter`, style.css) becomes `clamp(16px, 2.5vw, 64px)`, replacing `max(16px, calc((100vw - 1200px) / 2))`. Pages now run to 16 px from the edge on a phone, 36 on a 1,440 px laptop, 48 at 1,920 and 64 at 2,560. Before, everything stopped at 1,200 px in the middle, 680 px in from each edge at 2,560.
+- **The caps lifted:**
+  - the hero's 1,200 px;
+  - the Calendar's 1,248 px, and its pinned bar's;
+  - the Agenda list's 720 px below 1,000 px wide;
+  - Results' 980 px.
+- **The home's sections** were saved with a 1,200 px content width in their own markup (page 5053, built from `wp-theme/preview/home.html`). One rule lifts it over WordPress's layout rule, so the page needs no edit.
+- **One edge for everything:** the header, its phone search, the live strip, the footer and the Calendar's chip row move from their own `max(16px, 2.8vw)` onto the gutter, so the logo lines up with the page.
+- **Kept as running text:**
+  - the series notes' two columns (1,040 px) and the series list's one-line subtitle (70 characters) keep their measure;
+  - posts, plain pages and WordPress's own lists keep their layout until the post and blog list are drafted. There, per the operator's answers in plan mode, a post's photo becomes a band of at most 60% of the screen's height, and its text column sits beside content from the site.
+- **Records:**
+  - O27 joins the ledger, and rules.md § 12 gains "Full width".
+  - The operator's order of 22 Oct puts pages first: O27, then O19, O16, O17, anything else for Formula 1, then O20 and O18. The control room and the Studio come after them.
+  - O19's PR 2 moves to 1.0.293 with theme 0.1.15.
+
+Verified on the theme preview (WordPress Playground with the working tree mounted), the clock fixed on Thu 22 Oct:
+- **Phones:** 96 of 96 full-page screenshots pixel-identical to 0.1.13's at 320, 360, 375, 390, 414 and 480 px, Day and Night. They cover the home, the Calendar (Month, Week, Agenda), the series list, Formula 1's Overview and Results, and a post.
+- **Wide screens:** at 1,440, 1,920 and 2,560 px the logo and the content start at 36, 48 and 64 px on every page. Before, the logo sat at 40, 54 and 72, and the content between 96 and 680.
+- **Pinned bar:** the Calendar's, shown in Agenda, sits at 36, 48 and 64 px on both sides.
+- **Post:** unchanged.
+- **Sideways scroll:** none at 20 widths from 300 to 2,560.
+- **Gates:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 281 files, 2,853 tests.
+
 ## 1.0.291 — 2026-10-22
 
 ### O19, part 1: the data Formula 1's weekend pages will show
