@@ -2547,8 +2547,8 @@
    "defaults": "the old site's weekend addresses (/series/f1/weekend/17/ and its session pages) redirect to the new ones in pass 3; the address stays /series/f1/<season>/round-<n>/, Results linking to it and the page linking back (the operator, 21 Oct); equal weekend totals ordered by the race result; Formula 1's Racing this weekend card on /series/ leads to its weekend page once written (O24 sends it to the Calendar meanwhile)",
    "needsWord": "the drafts' answers",
    "acceptance": "each format's page as drafted and answered, at 1440 and 390 px, Day and Night",
-   "status": "planned",
-   "evidence": "",
+   "status": "started",
+   "evidence": "OPENED 2026-10-22 (session 70) on the operator's word “Start O19: draft Formula 1's weekend pages and the Results redrawn with real data, for my answers.” DRAFTED 22 Oct ~07:20Z on a page of its own, Paddock Weekend Drafts (https://claude.ai/code/artifact/1141b5a5-4cd0-4ffd-9969-5cf25d1dda91), as O24's drafts were, rather than on The Paddock Drafts: round 2's weekend page from The Paddock Prototype (laptop and phone) as the reference; A, round 16 at Sepang (a standard weekend) after the race, and B, round 17 in Singapore (a sprint weekend), each at 1120 and 390 px; C, the Friday strip and the two odd cases drawn on real rows (neither has happened in 2026); D, Formula 1's Results redrawn: full-width rows edged in the winner's team colour, round 17's fold with S, R and Total for its 11 scorers, round 16's with its 10, See weekend → on each. Every value from the paddock-data branch's f1/results.json and f1/calendar.json with content/series/f1/drivers.json, rounds.json and content/circuits.json, worked out by a scratch script; the championship after round 16 computed from the stored results with the countback on Grand Prix finishes (Norris and Verstappen level on 188, Norris ahead on wins, two to one). One look in Chromium (no page errors, no sideways scroll in any frame) and one pass of fixes. Waiting: the operator's answers to the nine questions, each with a default; then the build planned in plan mode (theme 0.1.14).",
    "scopeHash": "d5818ca7553e"
   },
   {
