@@ -30,7 +30,7 @@ import { dirname, join } from 'node:path';
 import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '../lib/series';
-import { loadCuratedChampions, loadCuratedDrivers, loadTeamNames, officialTeamName } from '../lib/series-content';
+import { loadCuratedChampions, loadCuratedDrivers, loadStandingsNotes, loadTeamNames, officialTeamName } from '../lib/series-content';
 import { fetchUpstream } from '../lib/fetch-upstream';
 import { fetchF1SeasonSprints } from '../lib/results/f1';
 import { fetchOpenF1WeekendSessions, fetchSessionClassification, hasResolvedDrivers } from '../lib/results/openf1';
@@ -814,6 +814,8 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
             ]
           : [],
       );
+      // The Standings page's small numbers (O16): the rulings of this season that changed points after the races.
+      d.standingsNotes = d.season ? ((await loadStandingsNotes(slug))?.[String(d.season)] ?? []) : [];
     }
     // The weekend pages' data (O19), as f1Weekend keeps it: fetched this run, or stored at --from-ref.
     if (WEEKEND_PAGES.has(slug)) {

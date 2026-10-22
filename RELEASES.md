@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.295 — 2026-10-22
+
+Behind the scenes: Formula 1's standings get a page of their own. The drivers and the teams sit side by side with each one's gap to the leader and race wins, and a line marks the last driver who can still win the title. Beside them: how many points are left and how much each driver needs, and below, how each team's points split between its drivers. Nothing changes for readers yet.
+
 ## 1.0.294 — 2026-10-22
 
 Behind the scenes: on a weekend's page, the sessions run before the race now sit two to a row, a day's two together, each pair the same height. Nothing changes for readers yet.

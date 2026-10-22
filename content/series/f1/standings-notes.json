@@ -1,0 +1,20 @@
+{
+  "2026": [
+    {
+      "round": 6,
+      "decided": "2026-09-03",
+      "note": "the FIA International Court of Appeal reinstated Pierre Gasly's two Monaco penalties",
+      "drivers": {
+        "Isack Hadjar": 3,
+        "Oscar Piastri": 2,
+        "Liam Lawson": 2,
+        "Arvid Lindblad": 2,
+        "Pierre Gasly": -9
+      },
+      "sources": [
+        "https://www.fia.com/ica-decision-2026-06-07-08-09-hearing-25-08-26-mclaren-and-red-bull-2026-fia-formula-one-world",
+        "https://www.formula1.com/en/latest/article/gasly-loses-monaco-podium-as-penalties-reinstated-following-mclaren-and-red-bull-appeal.2DvZIUbpmqhnBSGJuDNjlv"
+      ]
+    }
+  ]
+}

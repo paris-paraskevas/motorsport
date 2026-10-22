@@ -4,6 +4,33 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.295 — 2026-10-22
+
+### O16: Formula 1's Standings
+
+The operator's order of 22 Oct puts the Standings after the weekend pages, and on "Start O16: Formula 1's Standings. Show me the notes file you need my word on first." the notes file was shown with its shape and rendering and approved ("As shown, drivers only"), the switch answered ("Both by default on a laptop"), and the plan approved in plan mode. As drawn on The Paddock Drafts, full width (O27); theme 0.1.17.
+
+- **The page** at `/series/f1/standings/` (`seriesStandings`, lib/wp/series.ts), under the series band with its Standings tab lit:
+  - the heading after the latest round with points, its race and day, and when the next points come ("next update after Sunday's United States Grand Prix", the weekday in the track's own zone); on a sprint weekend's Saturday, "Standings after the round N sprint";
+  - the drivers: the team's colour, the full name (the short one on a phone), the small numbers from the notes file, the team, a bar against the leader, the points, the gap and the race wins; the leader tinted; a dashed line under the last driver who can still draw level;
+  - the line under them, written from the data: the ruling with its sources, the dashed line, and a total scored for two teams ("Lawson's 75 include 14 for Red Bull Racing, in rounds 12 to 14.");
+  - Who can still win it: the points left on the 2026 scales (content/series/f1/rules.md: a Grand Prix pays a driver 25 and a team 43, a sprint 8 and 15, a sprint counted as run once its result is stored), the leader, everyone who can still draw level with the share of the points left they need, the first one out, and a sentence for the constructors;
+  - the constructors with their gaps and race wins;
+  - Teammates: each team's points by who scored them in the stored races and sprints, the pair as drivers.json lists the seats, a stand-in named with his rounds.
+- **The notes file** `content/series/f1/standings-notes.json` (new, approved 22 Oct): keyed by season, each ruling with its round, the day it was decided, the note, the drivers' changes and its sources. 2026 holds the FIA International Court of Appeal's ruling of 3 September on Monaco: Hadjar +3, Piastri +2, Lawson +2, Lindblad +2, Gasly −9. `loadStandingsNotes` (lib/series-content.ts) reads it into `SeriesData.standingsNotes` (scripts/wp-publish.mts).
+- **Links:** `BUILT` gains Formula 1's standings, so the Standings tab on every Formula 1 page, the Overview's "All 23 →", the series list's Standings and the weekend pages' "Full standings →" open the page.
+- **Theme 0.1.17:**
+  - style.css: `.pd-st-*` under `.pd-stp`, one column below 1,200 px, the phone's rules at 699 px, names wrapping below 360 px;
+  - paddock.js: the switch, Both on a laptop and Drivers on a phone (which has no Both), the view kept for the visit only; without the script both tables stand.
+- **Corrections to the plan:**
+  - the line reads "next update after Sunday's United States Grand Prix" where the drafts read "race in Austin": rounds.json's place is a country for some rounds ("United States", "Bahrain · Sepang"), so the round's name stands in;
+  - the page's root is `.pd-stp`, since `.pd-st` is the home's session state;
+  - the pair is the first two of a team's drivers.json seats who raced for it, since drivers.json lists Tsunoda third under Racing Bulls, for his car number;
+  - the drafts date the ruling 4 September, the day formula1.com reported it; the Court decided on 3 September (fia.com's decision page).
+- **Tests:** 12 new in lib/wp/series.test.ts (the points left with a sprint ahead and one run, who is still in, the heading in the track's zone, the switch, the rows, the line under them, Who can still win it, the constructors, the teammates' sums, the hour, the notes file's integrity); five changed where a greyed Standings link became a link, at equal strength (four in series.test.ts, one in weekend.test.ts).
+
+Verified: the dry run (`--from-ref origin/paddock-data --only /series/f1/`, 143 pages, the Standings page 16,305 bytes) gives the hand count at round 17: 150 points left, six drivers in, Piastri out by 52, 258 left for the constructors with Ferrari, McLaren and Red Bull Racing alive; all 11 teams' teammates add up to the constructors' table, and all 23 drivers' sums to the drivers' table. On the theme preview (0.1.17, the clock on 22 Oct): 20 widths from 300 to 2,560 px in Day and Night with no sideways scroll; the switch by real clicks at 1,440 and 390 px; both tables without the script; six links to the page clicked at 1,440 and 390 px; 0 page errors. `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,905 tests.
+
 ## 1.0.294 — 2026-10-22
 
 ### O19: the earlier sessions two a row, as drafted

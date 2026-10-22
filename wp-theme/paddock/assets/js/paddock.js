@@ -823,6 +823,22 @@
 		}
 	} );
 
+	// Standings (O16): Drivers, Constructors or Both, for the visit only. A laptop opens on Both and a phone on Drivers,
+	// which has no Both: a window narrowed to a phone's width while on Both turns to Drivers. Without the script both
+	// tables stand and the buttons stay hidden.
+	document.querySelectorAll( '.pd-stp' ).forEach( function ( page ) {
+		var seg = page.querySelector( '.pd-st-seg' ), phone = window.matchMedia( '(max-width: 699px)' );
+		if ( ! seg ) { return; }
+		var set = function ( show ) {
+			page.setAttribute( 'data-show', show );
+			seg.querySelectorAll( 'button[data-pd-st]' ).forEach( function ( b ) { b.setAttribute( 'aria-pressed', String( b.getAttribute( 'data-pd-st' ) === show ) ); } );
+		};
+		seg.querySelectorAll( 'button[data-pd-st]' ).forEach( function ( b ) { b.addEventListener( 'click', function () { set( b.getAttribute( 'data-pd-st' ) ); } ); } );
+		if ( phone.addEventListener ) { phone.addEventListener( 'change', function () { if ( phone.matches && page.getAttribute( 'data-show' ) === 'both' ) { set( 'drivers' ); } } ); }
+		seg.hidden = false;
+		set( phone.matches ? 'drivers' : 'both' );
+	} );
+
 	// Results (O15): a round's tile on the Overview links /series/<slug>/results/#r12, and that round's fold opens.
 	var openRound = function () {
 		var id = location.hash.slice( 1 ), el = /^r\d+$/.test( id ) ? document.getElementById( id ) : null;

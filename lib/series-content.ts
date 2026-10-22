@@ -168,6 +168,29 @@ export function hasWeekendNote(notes: WeekendNotesFile | null | undefined, seaso
   return typeof note?.note === 'string' && note.note.trim().length > 0;
 }
 
+/** The rulings that changed a season's points after its races (content/series/<slug>/standings-notes.json), keyed by
+ *  season as a string. The Standings page (O16) writes each driver's change beside his name and names the ruling under
+ *  the table, because the feeds' totals carry the change with no sign of it. Absent file or season: no marks. */
+export function loadStandingsNotes(slug: string): Promise<StandingsNotesFile | null> {
+  return readJsonIfExists<StandingsNotesFile>(
+    path.join(SERIES_ROOT, slug, 'standings-notes.json'),
+  );
+}
+
+/** One ruling. `note` completes "points changed when …"; `drivers` holds each driver's change in points, under the
+ *  name the feeds write; `sources` are the primary references it was checked against (RULE #1). */
+export interface StandingsNote {
+  round: number;
+  /** YYYY-MM-DD, the day the ruling was decided. */
+  decided: string;
+  note: string;
+  drivers: Record<string, number>;
+  sources: string[];
+}
+
+/** Sidecar shape: season-as-string → its rulings. */
+export type StandingsNotesFile = Record<string, StandingsNote[]>;
+
 /** Curated WRC per-stage classifications (content/series/wrc/stage-results.json).
  *  The rally results feed is winners-only, so the full per-stage field lives
  *  here as curated content (RULE #1: eWRC + wrc.com). Null when the file is
