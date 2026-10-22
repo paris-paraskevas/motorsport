@@ -708,6 +708,8 @@ const DAY_MS = 86_400_000;
 const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTH_YEAR = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', month: 'long', year: 'numeric' });
 const MONTH = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', month: 'long' });
+/** A month's short name on a phone's step; en-GB's own short September is "Sept". */
+const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const CLOCK_UTC = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
 
 const addDays = (day: string, n: number): string => new Date(Date.parse(`${day}T00:00:00Z`) + n * DAY_MS).toISOString().slice(0, 10);
@@ -781,8 +783,8 @@ function bandRace(d: SeriesData, r: CalendarRound): string {
     .sort((x, y) => (x.start < y.start ? -1 : x.start > y.start ? 1 : 0));
   const race = d.slug === 'wrc' ? races.find(e => /power stage/i.test(e.session)) : races.pop();
   if (!race) return '';
-  // Formula E's "Race (London R17) — Season Finale" reads Race.
-  const name = race.session.replace(/\s*[(—].*$/, '');
+  // Formula E's "Race (London R17) — Season Finale" reads Race; so does a name split by an en dash, a colon or a spaced hyphen.
+  const name = race.session.replace(/(?:\s*[(—–:]|\s+-\s).*$/, '');
   const label = d.slug === 'wrc' ? 'Power Stage' : /^(race\b|grand prix|feature|sprint)/i.test(name) ? name : 'Race';
   return ` · <span class="pd-cal-race">${escapeHtml(label)} <span class="pd-t" data-utc="${escapeHtml(race.start)}" data-f="wt">${CLOCK_AT_UTC.format(new Date(race.start))}</span></span>`;
 }
@@ -891,12 +893,20 @@ function calendarMonth(ym: string, months: string[], all: SeriesData[], path: st
     ...placed.filter(({ e }) => e.start.slice(0, 10) >= first && e.start.slice(0, 10) <= last).map(({ d }) => d.slug),
   ]);
   const at = months.indexOf(ym);
-  const step = (m: string | undefined, sign: string, way: string): string =>
-    m ? `<a href="${calendarMonthPath(m)}" aria-label="${way}: ${monthLabel(m)}">${sign}</a>` : `<span aria-hidden="true">${sign}</span>`;
+  // The month is the page's title and each step names the month it opens (the operator, 22 Oct: "A with C"); the script
+  // pins the steps in a slim bar once they have scrolled away. No step past the months the data reaches.
+  const step = (m: string | undefined, rel: 'prev' | 'next'): string => {
+    if (!m) return '';
+    const day = new Date(`${m}-01T00:00:00Z`);
+    const names = `<span class="pd-cal-full">${MONTH.format(day)}</span><span class="pd-cal-short">${MONTH_SHORT[day.getUTCMonth()]}</span>`;
+    const label = `${rel === 'prev' ? 'Previous' : 'Next'} month: ${monthLabel(m)}`;
+    return `<a class="pd-cal-step" rel="${rel}" href="${calendarMonthPath(m)}" aria-label="${label}">${rel === 'prev' ? `<i aria-hidden="true">‹</i>${names}` : `${names}<i aria-hidden="true">›</i>`}</a>`;
+  };
+  const shown = new Date(`${ym}-01T00:00:00Z`);
   const top =
-    `<div class="pd-cal-top"><h1 class="pd-cal-h1">Calendar</h1>` +
-    `<nav class="pd-cal-month" aria-label="Months">${step(at > 0 ? months[at - 1] : undefined, '‹', 'Previous month')}<b>${monthLabel(ym)}</b>${step(at >= 0 ? months[at + 1] : undefined, '›', 'Next month')}</nav>` +
-    '<div class="pd-cal-views" data-pd-views></div><a class="pd-cal-today" href="/calendar/">Today</a><a class="pd-cal-emails" href="/subscribe/">Session emails</a></div>';
+    `<div class="pd-cal-top"><h1 class="pd-cal-h1"><small>Calendar</small> ${MONTH.format(shown)} <span>${shown.getUTCFullYear()}</span></h1>` +
+    `<nav class="pd-cal-month" aria-label="Months">${step(at > 0 ? months[at - 1] : undefined, 'prev')}${step(at >= 0 ? months[at + 1] : undefined, 'next')}</nav>` +
+    '<a class="pd-cal-today" href="/calendar/">Today</a><div class="pd-cal-ctl"><div class="pd-cal-views" data-pd-views></div><a class="pd-cal-emails" href="/subscribe/">Session emails</a></div></div>';
   const chips = ordered
     .filter(d => d.calendar?.length || d.rounds?.length)
     // data-name: the series' full name, for the Calendar tab's notice ("Formula 1 only") when a series page sends a reader here.

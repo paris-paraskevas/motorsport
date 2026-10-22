@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.12
+Version: 0.1.13
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -94,13 +94,14 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 	.pd-subscribe .wp-block-button__link { padding: 6px 10px; font-size: .78rem; }
 }
 /* Below 375 px the header's pieces (376 px with their margins) no longer fit: the gaps, the magnifier, the mark and
-   Subscribe tighten, and the wordmark shrinks with the screen, 17 px down to 348 px and 13.5 px at 320, WCAG's
-   reflow width. */
+   Subscribe tighten, and the wordmark shrinks with the screen. "Paddock Tracker" in Archivo 800 is 8.19 px wide per
+   px of type, so 12.2vw - 25.5px gives up 1 px of its width per px of screen: the theme's 1.0625rem down to 349 px,
+   13.5 px at 320 (WCAG's reflow width), and no floor, so the row fits at any width. */
 @media (max-width: 374px) {
 	.pd-top-in { gap: 6px; }
 	.pd-brand { gap: 6px; }
 	.pd-mark { width: 18px; height: 18px; background-size: 7.65px 7.65px; }
-	.pd-top .wp-block-site-title { font-size: min(17px, calc(12.2vw - 25.5px)); }
+	.pd-top .wp-block-site-title { font-size: min(1.0625rem, calc(12.2vw - 25.5px)); }
 	.pd-tools { gap: 2px; }
 	.pd-search-sm summary { width: 32px; }
 	.pd-subscribe .wp-block-button__link { padding: 6px 8px; font-size: .75rem; }
@@ -265,15 +266,25 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 
 /* The Calendar (O12): round 2's month grid on a desktop, its weekend cards on a phone. The publisher lays the
    month out in UTC; the script moves each session to the reader's day and adds the controls and data-view.
-   Month view fits the window (the operator, 20 Oct): the events only, each week as tall as the script measures, and
-   "+N more" where a week holds more events than fit; Week view and the Agenda carry the session times. */
-.pd-cal { max-width: 1248px; margin: 0 auto; padding: 18px max(16px, 2.8vw) 16px; }
-.pd-cal-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.pd-cal-h1 { margin: 0 6px 0 0; font-size: 2rem; line-height: 1; font-weight: 800; letter-spacing: -.025em; }
-.pd-cal-month { display: inline-flex; align-items: center; height: 36px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); }
-.pd-cal-month a, .pd-cal-month > span { display: grid; place-items: center; width: 40px; height: 100%; font-weight: 700; color: var(--pd-muted); text-decoration: none; }
-.pd-cal-month > span { opacity: .35; }
-.pd-cal-month b { min-width: 150px; text-align: center; font-size: .97rem; font-weight: 800; }
+   Month view fits the screen under the pinned bar (the operator, 22 Oct; from 20 Oct it fitted the window): the events
+   only, each week as tall as the script measures, and "+N more" where a week holds more events than fit; Week view and
+   the Agenda carry the session times. --pd-cal-bar is the pinned bar's height, which the script reads. */
+.pd-cal { --pd-cal-bar: 61px; max-width: 1248px; margin: 0 auto; padding: 18px max(16px, 2.8vw) 16px; }
+/* The month is the page's title, Calendar a label above it, and the steps name the months they open (the operator,
+   22 Oct: "A with C"); the views, Filters and Session emails take the row below. */
+.pd-cal-top { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; grid-template-areas: "head nav . today" "ctl ctl ctl ctl"; align-items: end; gap: 16px 28px; }
+.pd-cal-h1 { grid-area: head; margin: 0; font-size: 3.4rem; line-height: .92; font-weight: 800; letter-spacing: -.035em; }
+.pd-cal-h1 small { display: block; margin-bottom: 8px; color: var(--pd-muted); font-size: .78rem; font-weight: 800; line-height: 1.2; letter-spacing: .12em; text-transform: uppercase; }
+.pd-cal-h1 span { color: var(--pd-muted); font-weight: 700; }
+.pd-cal-month { grid-area: nav; display: flex; gap: 8px; padding-bottom: 3px; }
+.pd-cal-step { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 44px; padding: 0 16px; border: 1.5px solid var(--pd-ink); background: var(--pd-surface); color: var(--pd-ink); font-size: .94rem; font-weight: 800; text-decoration: none; white-space: nowrap; }
+.pd-cal-step:hover { background: var(--pd-ink); color: var(--pd-ground); }
+.pd-cal-step i { font-size: 1.25rem; font-style: normal; line-height: 1; }
+.pd-cal-short { display: none; }
+.pd-cal-ctl { grid-area: ctl; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+@media (max-width: 899px) {
+	.pd-cal-top { column-gap: 16px; }
+}
 .pd-cal-views { display: inline-flex; align-items: center; }
 .pd-cal-views button { height: 36px; padding: 0 16px; border: 1px solid var(--pd-line-strong); border-left-width: 0; border-radius: 0; background: var(--pd-surface); color: var(--pd-muted); font: inherit; font-size: .84rem; font-weight: 700; cursor: pointer; }
 .pd-cal-views button[data-v="month"] { border-left-width: 1px; }
@@ -283,8 +294,8 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal[data-view="week"] .pd-cal-wstep { display: inline-block; }
 .pd-cal-ftab { height: 36px; padding: 0 14px; border: 1px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .84rem; font-weight: 800; cursor: pointer; }
 .pd-cal-ftab[aria-expanded="true"] { background: var(--pd-ink); border-color: var(--pd-ink); color: var(--pd-ground); }
-.pd-cal-emails { order: 1; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1.5px solid var(--pd-ink); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
-.pd-cal-today { order: 2; margin-left: auto; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
+.pd-cal-emails { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1.5px solid var(--pd-ink); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
+.pd-cal-today { grid-area: today; box-sizing: border-box; display: inline-flex; align-items: center; height: 44px; margin-bottom: 3px; padding: 0 16px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); color: var(--pd-ink); font-size: .84rem; font-weight: 800; text-decoration: none; }
 
 /* Without the script the chips name the series; with it, the Filters tab's bar takes their place (the operator,
    20 Oct): a Series dropdown and a Sessions dropdown of checkboxes. */
@@ -372,7 +383,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal-agenda { display: none; max-width: 720px; margin-top: 8px; }
 .pd-cal[data-view="agenda"] .pd-cal-agenda { display: block; }
 .pd-cal[data-view="agenda"] .pd-cal-grid, .pd-cal[data-view="agenda"] .pd-cal-legend { display: none; }
-.pd-cal-wkh { position: sticky; top: 0; z-index: 3; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 18px 0 0; padding: 12px 0 8px; border-bottom: 2px solid var(--pd-ink); background: var(--pd-ground); font-size: 1.375rem; font-weight: 800; line-height: 1.1; letter-spacing: -.015em; }
+.pd-cal-wkh { position: sticky; top: 0; z-index: 3; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px; margin: 18px 0 0; padding: 12px 0 8px; border-bottom: 2px solid var(--pd-ink); background: var(--pd-ground); font-size: 1.375rem; font-weight: 800; line-height: 1.1; letter-spacing: -.015em; }
 .pd-cal-wkh small { color: var(--pd-muted); font-size: .81rem; font-weight: 500; letter-spacing: 0; white-space: nowrap; }
 .pd-cal-wkend.is-past { display: none; }
 .pd-cal-earlier { margin-top: 14px; padding: 8px 14px; border: 1px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .84rem; font-weight: 700; cursor: pointer; }
@@ -411,14 +422,14 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 	.pd-cal.is-earlier .pd-cal-wkend.is-past { display: grid; }
 }
 @media (max-width: 699px) {
-	.pd-cal-top { display: grid; grid-template-columns: auto 1fr; }
-	.pd-cal-h1 { grid-area: 1 / 1; font-size: 1.75rem; }
-	.pd-cal-today { grid-area: 1 / 2; justify-self: end; margin-left: 0; }
-	.pd-cal-month { grid-area: 2 / 1; }
-	.pd-cal-month b { min-width: 120px; }
+	.pd-cal-top { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "head today" "nav nav" "ctl ctl"; gap: 14px 12px; }
+	.pd-cal-h1 { font-size: 2.3rem; }
+	.pd-cal-today { align-self: start; height: 40px; margin: 0; }
+	.pd-cal-month { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; }
+	.pd-cal-month [rel="next"] { grid-column: 2; }
+	.pd-cal-full { display: none; }
+	.pd-cal-short { display: inline; }
 	.pd-cal-views { display: none; }
-	.pd-cal-ftab { grid-area: 2 / 2; justify-self: start; }
-	.pd-cal-emails { grid-area: 3 / 1 / auto / -1; justify-self: start; }
 	.pd-cal-filter { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * max(16px, 2.8vw)); padding: 0 max(16px, 2.8vw) 4px; scrollbar-width: none; }
 	.pd-cal-chip, .pd-cal-lbl { flex: none; }
 	.pd-cal-menu.is-series .pd-cal-mlist { grid-template-columns: minmax(150px, 1fr); }
@@ -436,10 +447,31 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-cal-wk.is-race { background: color-mix(in srgb, #ffb400 18%, transparent); }
 .pd-cal-rw { z-index: 2; grid-column: 7; grid-row: 1; justify-self: end; align-self: start; margin: 4px 6px 0 0; padding: 1px 6px; background: #ffb400; color: #0f1217; font-size: .62rem; font-style: normal; font-weight: 800; letter-spacing: .06em; line-height: 1.5; text-transform: uppercase; white-space: nowrap; }
 .pd-cal-wk:not(.is-race) > .pd-cal-rw, .pd-cal-wkend:not(.is-race) .pd-cal-rw { display: none; }
-.pd-cal-wkend.is-race .pd-cal-wkh { flex-wrap: wrap; }
 .pd-cal-wkh > .pd-cal-rw { flex: none; margin: 0 100% 6px 0; }
+/* Once the month's steps have scrolled off the screen, the script shows them, the month's name and Today in a slim
+   bar (61 px): under WordPress's own bar while that stays put, at the very top at 600 px and below, where it scrolls
+   away. The phone's weekend headings stick under it while it shows. */
+.pd-cal-bar { position: fixed; z-index: 40; top: var(--wp-admin--admin-bar--height, 0px); left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: 8px max(16px, 2.8vw, calc((100vw - 1248px) / 2)); border-bottom: 1px solid var(--pd-line-strong); background: var(--pd-ground); box-shadow: 0 8px 16px -10px rgba(15, 18, 23, .35); }
+.pd-cal-bar[hidden] { display: none; }
+.pd-cal-bar b { min-width: 0; margin-inline: 6px; overflow: hidden; font-size: 1.3rem; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; text-overflow: ellipsis; }
+.pd-cal-bar b span { color: var(--pd-muted); font-weight: 700; }
+.pd-cal-bar .pd-cal-today { margin: 0 0 0 auto; }
+.pd-cal.is-pinned .pd-cal-wkh { top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--pd-cal-bar)); }
 @media (max-width: 699px) {
 	.pd-cal-only button { margin-left: 0; }
+	.pd-cal-bar { gap: 6px; padding: 8px 16px; }
+	.pd-cal-bar .pd-cal-step { padding: 0 12px; }
+	.pd-cal-bar b { margin-inline: auto; font-size: 1.12rem; }
+	.pd-cal-bar .pd-cal-today { display: none; }
+}
+@media (max-width: 600px) {
+	.pd-cal-bar { top: 0; }
+	.pd-cal.is-pinned .pd-cal-wkh { top: var(--pd-cal-bar); }
+}
+/* A long month ("September 2026") stays on one line down to 320 px, so the bar keeps its 61 px. */
+@media (max-width: 360px) {
+	.pd-cal-bar .pd-cal-step { padding: 0 10px; }
+	.pd-cal-bar b { font-size: 1rem; }
 }
 
 /* The series pages (O13 onward): round 2's band and tabs, and the Overview. The publisher writes them in UTC with no
@@ -657,12 +689,13 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-sx .pd-sx-none { margin: 18px 0 0; color: var(--pd-muted); }
 .pd-sx-sec { margin-top: 40px; }
 .pd-sx-wks { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
-.pd-sx-wk { border: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-sx-wk { position: relative; border: 1px solid var(--pd-line); background: var(--pd-surface); }
 .pd-sx-wk header { padding: 10px 12px 12px; background: var(--t); color: var(--pd-on); }
 .pd-sx-wk header b { display: block; font-size: 1.05rem; line-height: 1.15; font-weight: 800; }
 .pd-sx-wk header small { font-size: .81rem; font-weight: 700; }
 .pd-sx-wk > div { display: grid; gap: 4px; padding: 12px; }
 .pd-sx-wk > div span { font-size: .81rem; color: var(--pd-muted); }
+.pd-sx-wk a { color: inherit; text-decoration: none; }
 .pd-sx-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 16px; align-items: start; }
 .pd-sx-span-1 { grid-column: span 1; } .pd-sx-span-2 { grid-column: span 2; } .pd-sx-span-3 { grid-column: span 3; } .pd-sx-span-4 { grid-column: span 4; }
 .pd-sx-type h3 { margin: 0 0 10px; font-size: .81rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--pd-muted); }
@@ -670,13 +703,24 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-sx-grid { display: grid; gap: 16px; }
 .pd-sx-cols-1 { grid-template-columns: minmax(0, 1fr); } .pd-sx-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .pd-sx-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .pd-sx-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.pd-sx-card { display: flex; flex-direction: column; border: 1px solid var(--pd-line); background: var(--pd-surface); }
-.pd-sx-head { position: relative; display: grid; gap: 4px; padding: 14px 16px 16px; background: var(--t); color: var(--pd-on); }
+.pd-sx-card { position: relative; display: flex; flex-direction: column; border: 1px solid var(--pd-line); background: var(--pd-surface); }
+.pd-sx-head { display: grid; gap: 4px; padding: 14px 16px 16px; background: var(--t); color: var(--pd-on); }
 .pd-sx-head small { font-size: .81rem; font-weight: 700; }
 .pd-sx-head b { padding-right: 44px; font-size: 1.6rem; line-height: 1.05; font-weight: 800; letter-spacing: -.02em; }
 .pd-sx-head b a { color: inherit; text-decoration: none; }
 .pd-sx-head b a:hover { text-decoration: underline; }
-.pd-sx-fol { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; padding: 0; border: 1.5px solid var(--pd-on); border-radius: 0; background: transparent; color: var(--pd-on); font: inherit; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+/* A whole card leads where its title link goes (the operator, 22 Oct): the series page where it is built, a weekend
+   card the Calendar showing that series. The Follow tick and the links row keep their own targets above it. */
+.pd-sx-head b a::after, .pd-sx-wk a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.pd-sx-card:has(.pd-sx-head a:hover), .pd-sx-wk:has(a:hover) { border-color: var(--pd-ink); }
+.pd-sx-wk:has(a:hover) a b { text-decoration: underline; }
+.pd-sx-card:has(.pd-sx-head a:focus-visible), .pd-sx-wk:has(a:focus-visible) { outline: 3px solid #ffdd00; box-shadow: 0 0 0 6px var(--pd-ink); }
+.pd-sx-card.is-over:has(.pd-sx-head a:focus-visible) { box-shadow: inset 0 -4px 0 var(--gold), 0 0 0 6px var(--pd-ink); }
+/* The card wears the ring, so the link drops its own; a browser without :has() keeps the link's. */
+@supports selector(:has(*)) {
+	.pd-sx-head b a:focus-visible, .pd-sx-wk a:focus-visible { outline: none; box-shadow: none; }
+}
+.pd-sx-fol { z-index: 2; position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; padding: 0; border: 1.5px solid var(--pd-on); border-radius: 0; background: transparent; color: var(--pd-on); font: inherit; font-size: 1.2rem; line-height: 1; cursor: pointer; }
 .pd-sx-fol[aria-pressed="true"] { background: var(--pd-on); color: #ffffff; }
 .pd-sx-body { display: grid; flex: 1; align-content: start; gap: 10px; padding: 16px; }
 .pd-sx-bar { display: flex; gap: 3px; }
@@ -691,7 +735,7 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-sx .pd-sx-ev { display: grid; gap: 4px; margin: 0; }
 .pd-sx-ev b { font-size: 1.1rem; line-height: 1.2; font-weight: 800; }
 .pd-sx-ev span { font-size: .875rem; color: var(--pd-muted); }
-.pd-sx-links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--pd-line); font-size: .9rem; font-weight: 800; }
+.pd-sx-links { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--pd-line); font-size: .9rem; font-weight: 800; }
 .pd-sx-links a { color: var(--pd-ink); text-decoration: none; }
 .pd-sx-links a:hover { text-decoration: underline; }
 .pd-sx-links .is-off { color: var(--pd-muted); font-weight: 600; opacity: .55; }

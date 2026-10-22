@@ -434,15 +434,18 @@ function listSection(title: string, note: string, list: ListEntry[], over: boole
 }
 
 /** Racing this weekend: every series' next round, hidden; the script shows those within the reader's own Friday to
- *  Sunday, and the section with them. */
+ *  Sunday, and the section with them. Each card opens the Calendar showing its series (the operator, 22 Oct: "taking
+ *  you to the weekend thats coming up") until the weekend pages exist. */
 function weekendCards(list: ListEntry[]): string {
   const cards = list
     .filter(e => e.next)
     .map(({ d, next }) => {
       const r = next as CalendarRound;
+      const name = r.name.replace(/ Grand Prix\b/, ' GP');
       return (
         `<article class="pd-sx-wk" data-from="${escapeHtml(r.startDate)}" data-to="${escapeHtml(r.endDate)}" style="--t:${HEX.test(d.colour ?? '') ? d.colour : NEUTRAL}" hidden>` +
-        `<header><b>${escapeHtml(d.name)}</b><small>Round ${r.round}</small></header><div><b>${escapeHtml(r.name.replace(/ Grand Prix\b/, ' GP'))}</b><span>${dates(r.startDate, r.endDate)}</span></div></article>`
+        `<header><b>${escapeHtml(d.name)}</b><small>Round ${r.round}</small></header>` +
+        `<div><a href="/calendar/#${escapeHtml(d.slug)}" aria-label="${escapeHtml(`${d.name}, round ${r.round}: ${name}, on the Calendar`)}"><b>${escapeHtml(name)}</b></a><span>${dates(r.startDate, r.endDate)}</span></div></article>`
       );
     })
     .join('');
