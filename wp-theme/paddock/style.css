@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.17
+Version: 0.1.18
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -731,6 +731,135 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 /* Below 360 px the name's column is under 125 px, too narrow for "A. Kimi Antonelli" on one line: names wrap, never cut. */
 @media (max-width: 359px) {
 	.pd-st-tbl .d b { white-space: normal; overflow-wrap: anywhere; }
+}
+
+/* Champions (O17), as approved on The Paddock Drafts (21 Oct): the reigning champion on the team's colour, the jump bar,
+   a table a decade (cards on a phone), the team tallies, the three records and the doorways. A team's colour rides in
+   --t. The script fills .pd-ch-find with the search and, on a phone, sets data-one on .pd-chp to show one decade at a
+   time; without it every decade stands. */
+.pd-chp { display: grid; gap: 28px; }
+.pd-chp [hidden] { display: none !important; }
+.pd-chp .pd-ch-kick { margin: 0 0 6px; font-size: .8125rem; font-weight: 800; color: var(--pd-muted); }
+.pd-chp .pd-ch-h { margin: 0 0 8px; font-size: 2.625rem; line-height: 1.05; font-weight: 800; letter-spacing: -.025em; }
+.pd-chp .pd-ch-intro { max-width: 640px; margin: 0; font-size: 1rem; line-height: 1.5; color: var(--pd-muted); }
+.pd-ch-reign { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px; padding: 26px 30px 28px; background: var(--t); color: var(--pd-on); }
+.pd-ch-reign.is-dark { color: #ffffff; }
+.pd-ch-rin, .pd-ch-acts { position: relative; z-index: 1; }
+.pd-chp .pd-ch-lab { margin: 0 0 6px; font-size: .8125rem; font-weight: 700; }
+.pd-ch-lab span { margin-right: 8px; padding: 3px 8px; background: var(--pd-on); color: #ffffff; font-weight: 800; }
+.pd-ch-reign.is-dark .pd-ch-lab span { background: #ffffff; color: var(--pd-on); }
+.pd-chp .pd-ch-reign h3 { margin: 8px 0; font-size: 3.25rem; line-height: 1; font-weight: 800; letter-spacing: -.03em; color: inherit; }
+.pd-chp .pd-ch-sub { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0 0 16px; font-size: .875rem; }
+.pd-ch-tiles { display: inline-grid; grid-template-columns: repeat(3, minmax(120px, auto)); border: 1px solid color-mix(in srgb, currentColor 60%, transparent); }
+.pd-ch-tiles span { display: grid; padding: 10px 14px; border-left: 1px solid color-mix(in srgb, currentColor 60%, transparent); font-size: .75rem; font-weight: 700; }
+.pd-ch-tiles span:first-child { border-left: 0; }
+.pd-ch-tiles b { font-size: 1.625rem; line-height: 1.15; font-weight: 800; }
+.pd-chp .pd-ch-txt { max-width: 560px; margin: 16px 0 0; font-size: .875rem; line-height: 1.5; }
+.pd-ch-acts a { display: block; padding: 11px 18px; border: 1.5px solid currentColor; color: inherit; font-size: .875rem; font-weight: 800; text-align: center; text-decoration: none; }
+.pd-ch-acts a:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+.pd-ch-acts a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.pd-ch-big { position: absolute; right: 18px; bottom: -42px; font-size: 12.5rem; line-height: 1; font-style: normal; font-weight: 800; letter-spacing: -.05em; color: color-mix(in srgb, var(--t) 72%, var(--pd-on)); pointer-events: none; }
+.pd-ch-reign.is-dark .pd-ch-big { color: color-mix(in srgb, var(--t) 72%, #ffffff); }
+.pd-ch-jump { position: sticky; top: var(--wp-admin--admin-bar--height, 0px); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 12px 0; border-bottom: 1px solid var(--pd-line); background: var(--pd-ground); }
+.pd-ch-jump .lab { flex: none; margin-right: 6px; font-size: .8125rem; color: var(--pd-muted); }
+.pd-ch-jump a { flex: none; padding: 6px 11px; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); color: var(--pd-ink); font-size: .8125rem; font-weight: 800; text-decoration: none; }
+.pd-ch-jump a:hover { border-color: var(--pd-ink); }
+.pd-ch-jump a.on { border-color: var(--pd-ink); background: var(--pd-ink); color: var(--pd-ground); }
+.pd-ch-jump a:focus-visible, .pd-ch-find input:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
+.pd-ch-find { position: relative; display: inline-flex; width: 240px; margin-left: auto; }
+.pd-ch-find::before { content: ""; position: absolute; left: 10px; top: 50%; width: 15px; height: 15px; margin-top: -7.5px; background: var(--pd-muted); -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><circle cx='11' cy='11' r='7'/><path d='m20 20-4-4'/></svg>") center / contain no-repeat; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><circle cx='11' cy='11' r='7'/><path d='m20 20-4-4'/></svg>") center / contain no-repeat; pointer-events: none; }
+.pd-ch-find input { width: 100%; padding: 7px 10px 7px 32px; border: 1px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .8125rem; }
+.pd-ch-count { font-size: .8125rem; color: var(--pd-muted); font-variant-numeric: tabular-nums; }
+.pd-chp .pd-ch-none { margin: 0; padding: 14px 0; color: var(--pd-muted); }
+.pd-ch-decs { display: grid; gap: 28px; }
+.pd-ch-dec, .pd-ch-cards li.era, .pd-ch-tbl tr.era { scroll-margin-top: calc(var(--wp-admin--admin-bar--height, 0px) + 72px); }
+.pd-chp .pd-ch-dec h2 { margin: 0 0 10px; font-size: 1.625rem; font-weight: 800; }
+.pd-ch-dec h2 small { font-size: .8125rem; font-weight: 500; color: var(--pd-muted); }
+.pd-ch-tbl { width: 100%; border: 1px solid var(--pd-line); border-collapse: collapse; background: var(--pd-surface); }
+.pd-ch-tbl th { padding: 9px 12px; background: var(--pd-sunken); font-size: .75rem; font-weight: 700; text-align: left; color: var(--pd-muted); }
+.pd-ch-tbl th:nth-child(3), .pd-ch-tbl th:nth-child(4), .pd-ch-tbl th:nth-child(5) { text-align: right; }
+.pd-ch-tbl td { padding: 10px 12px; border-top: 1px solid var(--pd-line); font-size: .875rem; vertical-align: middle; }
+.pd-ch-tbl .yr { width: 64px; font-weight: 800; color: var(--pd-accent); }
+.pd-ch-tbl td.ch { position: relative; padding-left: 26px; }
+.pd-ch-tbl td.ch .tb { position: absolute; left: 12px; top: 10px; bottom: 10px; width: 4px; background: var(--t); }
+.pd-ch-tbl b { display: block; font-weight: 800; }
+.pd-ch-tbl small { font-size: .75rem; color: var(--pd-muted); }
+.pd-ch-tbl sup, .pd-ch-cards sup { margin-left: 4px; font-size: .656rem; font-weight: 700; color: var(--pd-muted); }
+.pd-ch-tbl .pt, .pd-ch-tbl .w, .pd-ch-tbl .mg { text-align: right; font-variant-numeric: tabular-nums; }
+.pd-ch-tbl .pt { font-weight: 800; }
+.pd-ch-tbl .mg.close { font-weight: 800; color: var(--pd-accent); }
+.pd-ch-tbl .ru b, .pd-ch-tbl .tc b { font-weight: 600; }
+.pd-ch-tbl tr.era td { padding: 8px 12px; background: var(--pd-sunken); font-size: .8125rem; color: var(--pd-muted); }
+.pd-ch-tbl tr.era b { display: inline; margin-right: 8px; color: var(--pd-ink); }
+.pd-ch-cards { display: none; }
+.pd-ch-cards li { padding: 14px 16px; border-top: 1px solid var(--pd-line); }
+.pd-ch-cards li:first-child { border-top: 0; }
+.pd-chp .pd-ch-cards .top { display: flex; justify-content: space-between; gap: 10px; margin: 0 0 8px; font-size: .8125rem; color: var(--pd-muted); }
+.pd-ch-cards .top .yr { font-size: .9375rem; color: var(--pd-accent); }
+.pd-ch-cards .top .close { font-weight: 800; color: var(--pd-accent); }
+.pd-chp .pd-ch-cards .nm { display: grid; margin: 0 0 8px; padding-left: 12px; border-left: 4px solid var(--t); }
+.pd-ch-cards .nm b { font-size: 1.0625rem; font-weight: 800; }
+.pd-ch-cards .nm small { font-size: .78rem; color: var(--pd-muted); }
+.pd-chp .pd-ch-cards .kv { display: grid; grid-template-columns: 84px minmax(0, 1fr); margin: 0; padding: 6px 0; border-top: 1px solid var(--pd-line); font-size: .844rem; }
+.pd-ch-cards .kv > span:first-child { font-size: .78rem; font-weight: 700; color: var(--pd-muted); }
+.pd-ch-cards li.era { background: var(--pd-sunken); font-size: .8125rem; color: var(--pd-muted); }
+.pd-ch-cards li.era b { margin-right: 8px; color: var(--pd-ink); }
+.pd-chp .pd-ch-foot { max-width: 820px; margin: -24px 0 0; font-size: .8125rem; line-height: 1.55; color: var(--pd-muted); }
+.pd-chp .pd-ch-teams h2, .pd-chp .pd-ch-more h2 { margin: 0 0 6px; font-size: 1.625rem; font-weight: 800; }
+.pd-chp .pd-ch-teams > .pd-mut { margin: 0; }
+.pd-ch-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; margin-top: 16px; }
+.pd-chp .pd-ch-tally h3, .pd-chp .pd-ch-rec h3 { margin: 0; padding-bottom: 8px; border-bottom: 2px solid var(--pd-ink); font-size: 1rem; font-weight: 800; }
+.pd-ch-tally ol, .pd-ch-rec ol { list-style: none; margin: 0; padding: 0; }
+.pd-ch-tally li, .pd-ch-rec li { display: grid; grid-template-columns: 160px minmax(0, 1fr) 36px; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--pd-line); font-size: .875rem; }
+.pd-ch-tally li b, .pd-ch-rec li b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 800; }
+.pd-ch-tally .sq, .pd-ch-rec .sq { display: flex; flex-wrap: wrap; gap: 3px; }
+.pd-ch-tally .sq i, .pd-ch-rec .sq i { width: 14px; height: 14px; background: var(--t); }
+.pd-ch-tally .n, .pd-ch-rec .n { font-size: 1rem; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+.pd-chp .pd-ch-tally .more { margin: 10px 0 0; font-size: .8125rem; color: var(--pd-muted); }
+.pd-ch-recs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.pd-ch-rec li { grid-template-columns: 162px minmax(0, 1fr) 30px; }
+.pd-ch-fights { border: 1px solid var(--pd-line); border-top: 0; background: var(--pd-surface); }
+.pd-ch-rec .pd-ch-fights li { grid-template-columns: 44px minmax(0, 1fr) 40px; padding: 9px 12px; }
+.pd-ch-fights .yr { font-weight: 800; }
+.pd-ch-fights .who { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pd-ch-rec .pd-ch-fights .who b { display: inline; }
+.pd-ch-fights small { font-size: .75rem; color: var(--pd-muted); }
+.pd-chp .pd-ch-rec blockquote { margin: 14px 0 0; padding: 4px 0 4px 14px; border-left: 4px solid var(--pd-ink); font-size: .844rem; line-height: 1.5; color: var(--pd-muted); }
+.pd-ch-rec blockquote b { color: var(--pd-ink); }
+.pd-ch-doors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.pd-ch-door { display: grid; align-content: start; gap: 4px; padding: 14px 16px; border: 1px solid var(--pd-line); border-top: 3px solid var(--s); background: var(--pd-surface); color: var(--pd-ink); text-decoration: none; }
+a.pd-ch-door:hover { border-color: var(--pd-line-strong); border-top-color: var(--s); background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-surface)); }
+a.pd-ch-door:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
+.pd-ch-door small { font-family: var(--wp--preset--font-family--fira-code, ui-monospace, Consolas, monospace); font-size: .72rem; color: var(--pd-muted); }
+.pd-ch-door b { font-size: 1.0625rem; font-weight: 800; }
+.pd-ch-door span { font-size: .8125rem; color: var(--pd-muted); }
+.pd-ch-door em { margin-top: 6px; font-size: .8125rem; font-style: normal; font-weight: 800; }
+.pd-ch-around .pd-ch-door { border-top-color: var(--pd-ink); }
+.pd-ch-door.is-off { opacity: .55; }
+.pd-ch-door.is-off em { color: var(--pd-muted); }
+.pd-ch-call { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; background: #eceef2; color: var(--pd-on); }
+.pd-ch-call b { display: block; font-size: 1.375rem; font-weight: 800; }
+.pd-ch-call span { font-size: .875rem; }
+.pd-ch-call a { flex: none; padding: 11px 18px; background: var(--pd-accent); color: var(--pd-on); font-weight: 800; text-decoration: none; }
+.pd-ch-call a:focus-visible { outline: 2px solid var(--pd-on); outline-offset: 2px; }
+@media (max-width: 1199px) {
+  .pd-ch-recs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 699px) {
+  .pd-chp .pd-ch-h { font-size: 1.875rem; }
+  .pd-ch-reign { grid-template-columns: minmax(0, 1fr); padding: 20px; }
+  .pd-chp .pd-ch-reign h3 { font-size: 2.5rem; }
+  .pd-ch-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pd-ch-big { bottom: -24px; font-size: 7.5rem; }
+  .pd-ch-jump { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
+  .pd-ch-find, .pd-ch-count { display: none; }
+  .pd-ch-tbl { display: none; }
+  .pd-chp[data-one]:not(.is-finding) .pd-ch-dec:not(.is-on) { display: none; }
+  .pd-ch-cards { display: grid; list-style: none; margin: 0; padding: 0; border: 1px solid var(--pd-line); background: var(--pd-surface); }
+  .pd-chp .pd-ch-foot { margin-top: -12px; }
+  .pd-ch-two, .pd-ch-recs, .pd-ch-doors { grid-template-columns: minmax(0, 1fr); }
+  .pd-ch-call { flex-direction: column; align-items: stretch; }
+  .pd-ch-call a { text-align: center; }
 }
 
 /* Formula 1's weekend pages (O19), as approved on Paddock Weekend Drafts (version 3), full width (O27): the band, the

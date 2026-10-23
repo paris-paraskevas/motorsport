@@ -839,6 +839,72 @@
 		set( phone.matches ? 'drivers' : 'both' );
 	} );
 
+	// Champions (O17): the search, and a phone's one decade at a time. The search filters every decade's rows and cards by
+	// year, champion, runner-up or team, and a decade with no match hides. On a phone the jump bar shows one decade, the
+	// newest first. Without the script every decade stands and the jump bar's links jump.
+	document.querySelectorAll( '.pd-chp' ).forEach( function ( page ) {
+		var jump = page.querySelector( '.pd-ch-jump' ), slot = page.querySelector( '.pd-ch-find' ), count = page.querySelector( '.pd-ch-count' );
+		var decs = Array.prototype.slice.call( page.querySelectorAll( '.pd-ch-dec' ) );
+		if ( ! jump || ! decs.length ) { return; }
+		var phone = window.matchMedia( '(max-width: 699px)' ), links = jump.querySelectorAll( 'a[data-dec]' ), of = count ? count.getAttribute( 'data-of' ) : '';
+		var show = function ( dec ) {
+			links.forEach( function ( a ) { a.classList.toggle( 'on', a.textContent === dec ); } );
+			decs.forEach( function ( s ) { s.classList.toggle( 'is-on', s.getAttribute( 'data-dec' ) === dec ); } );
+		};
+		var phoneMode = function () {
+			if ( phone.matches ) { page.setAttribute( 'data-one', '' ); } else { page.removeAttribute( 'data-one' ); }
+		};
+		jump.addEventListener( 'click', function ( e ) {
+			var a = e.target.closest( 'a[data-dec]' );
+			if ( ! a ) { return; }
+			var dec = a.getAttribute( 'data-dec' ), target = page.querySelector( '.pd-ch-dec[data-dec="' + dec + '"]' );
+			show( dec );
+			if ( phone.matches && target ) {
+				e.preventDefault();
+				var era = a.textContent === dec ? null : target.querySelector( 'li.era' );
+				( era || target ).scrollIntoView( { block: 'start' } );
+			}
+		} );
+		if ( phone.addEventListener ) { phone.addEventListener( 'change', phoneMode ); }
+		show( decs[ 0 ].getAttribute( 'data-dec' ) );
+		phoneMode();
+		if ( ! slot ) { return; }
+		var none = document.createElement( 'p' ), input = document.createElement( 'input' );
+		none.className = 'pd-ch-none';
+		none.textContent = 'No season or driver matches.';
+		none.hidden = true;
+		decs[ decs.length - 1 ].parentNode.appendChild( none );
+		input.type = 'search';
+		input.placeholder = 'Find a season or a driver';
+		input.setAttribute( 'aria-label', 'Find a season or a driver' );
+		slot.appendChild( input );
+		slot.hidden = false;
+		var filter = function () {
+			var q = input.value.trim().toLowerCase(), shown = 0;
+			page.classList.toggle( 'is-finding', q !== '' );
+			decs.forEach( function ( s ) {
+				var any = false;
+				s.querySelectorAll( '[data-find]' ).forEach( function ( el ) {
+					var hit = q === '' || el.getAttribute( 'data-find' ).indexOf( q ) !== -1;
+					el.hidden = ! hit;
+					if ( hit ) { any = true; }
+				} );
+				s.querySelectorAll( '.era' ).forEach( function ( el ) { el.hidden = q !== ''; } );
+				s.hidden = ! any;
+			} );
+			page.querySelectorAll( '.pd-ch-tbl tr[data-find]' ).forEach( function ( tr ) { if ( ! tr.hidden ) { shown++; } } );
+			if ( count ) { count.textContent = q === '' ? of + ' seasons' : shown + ' of ' + of + ' seasons'; }
+			none.hidden = shown > 0;
+		};
+		input.addEventListener( 'input', filter );
+		input.addEventListener( 'keydown', function ( e ) {
+			if ( e.key === 'Escape' && input.value ) {
+				input.value = '';
+				filter();
+			}
+		} );
+	} );
+
 	// Results (O15): a round's tile on the Overview links /series/<slug>/results/#r12, and that round's fold opens.
 	var openRound = function () {
 		var id = location.hash.slice( 1 ), el = /^r\d+$/.test( id ) ? document.getElementById( id ) : null;
