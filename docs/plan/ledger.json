@@ -1044,6 +1044,11 @@
    "date": "2026-10-22",
    "change": "The order, pages first: O27 (full width) now, so no page is built narrow; then Formula 1: its weekend pages (O19), Standings (O16), Champions (O17), then anything else Formula 1 needs; then the other championships (O20, O18). The control room (O26), the Studio (O25) and other tools follow once every championship's pages are done; O26 no longer comes before O16.",
    "word": "the operator, 2026-10-22 (session 70): “i more interested in prioritising pages. make f1 weekends, standings then champions, then anything else for f1, then other championships. once all are done then we can build control rooms etc. only the width task is important so no other pages are built narrow”"
+  },
+  {
+   "date": "2026-10-23",
+   "change": "O28 added: Formula 1's lap chart, each driver's place lap by lap from Jolpica's laps, on the race page between the Classification and Pit wall with a link from the Overview's race card; the race only; drafted with round 17 on Paddock Lap Chart and answered; placed after O17 by the order of 22 Oct.",
+   "word": "the operator, 2026-10-23 (session 71): “All six lap chart defaults stand.”"
   }
  ],
  "phases": {
@@ -2639,6 +2644,19 @@
    "status": "planned",
    "evidence": "",
    "scopeHash": "197386092117"
+  },
+  {
+   "id": "O28",
+   "phase": "PO",
+   "title": "Formula 1's lap chart: each driver's place, lap by lap",
+   "scope": "A lap chart on each Formula 1 race's page (/series/f1/<season>/round-<n>/race/), between the Classification and Pit wall and on Pit wall's lap scale: every driver's place at the end of every lap from Jolpica's laps, asked once a race by the publisher, OpenF1 kept as the check; each driver in the team's colour from drivers.json, the team's second driver dashed, the three-letter codes at the grid and at the finish with the places gained or lost, one driver brought forward by pointing, a tap or the arrow keys; pit stops as dots, virtual safety car and safety car laps shaded, a cross where a car stopped, the official result at the finish marked where it differs from the order at the flag; the credit “Laps: Jolpica F1 · CC BY-NC-SA 4.0”; drawn by the theme's script from data-*, the same places as a table without the script; a “Lap chart →” link on the Overview's race card. The race only, no sprint.",
+   "fixedBy": "the operator, 2026-10-23 (session 71): “All six lap chart defaults stand.”, answering Paddock Lap Chart (https://claude.ai/code/artifact/f62e3823-51da-4dc9-8a47-263e9f1c26d3): the data (Jolpica's laps, OpenF1 the check), the race only, the place (the race page between the Classification and Pit wall, a link on the Overview's race card), the lines (team colours, the second driver dashed, codes at both ends, one driver brought forward), the four marks, the name Lap chart; the operator's question of 22 Oct ~23:40Z (“could we have a driver position graph for the race showing lap by lap positions for drivers”); placed after O17 by the order of 22 Oct (after O17, anything else Formula 1 needs)",
+   "defaults": "the laps kept on paddock-data beside f1/results.json and asked once a race, when Jolpica holds every classified driver's laps; each race whose result differs from the order at the flag (in 2026: Miami, Monaco, Barcelona, Britain, Hungary and Azerbaijan) checked against Formula 1's or the FIA's report before its mark shows; rows of 22 px, 14 px on a phone, as drawn",
+   "needsWord": "the build's plan in plan mode, with the stored file's name and shape; then the theme upload and one publish run",
+   "acceptance": "round 17's lap chart on its race page as drafted at 1440 and 390 px, Day and Night; every place matches Jolpica's laps; the six races whose result differs from the order at the flag marked as their reports say",
+   "status": "planned",
+   "evidence": "DRAFTED 23 Oct (session 71), before any slot, on Paddock Lap Chart (https://claude.ai/code/artifact/f62e3823-51da-4dc9-8a47-263e9f1c26d3) with round 17 in Singapore. The source checked first: Jolpica's laps complete for all 17 races of 2026 (every lap holds places 1 to 22, none missing or doubled); Singapore's 1,236 places agree with OpenF1's timing both ways (the order at the line from /laps, and /position at the line); across the season OpenF1 agrees exactly in 8 races and is off by a place or more on some laps in the rest; the last lap matches the official result in 11 races and differs for 3 to 12 drivers in 6 (Miami, Monaco, Barcelona, Britain, Hungary, Azerbaijan); Jolpica has no sprint laps (404), and OpenF1's sprint order matched every finisher's result in 3 of 6 sprints; Jolpica's TERMS.md: free for non-commercial use, data under CC BY-NC-SA 4.0; its burst limit 4 requests a second. Drawn in the race page's main column (Pit wall's: 981 px at 1,440 px, measured on the site) with a 390 px phone beside it; the team colours run through the dataviz palette validator (Ferrari and Cadillac ΔE 4.7; four or more teams below 3:1 on Day's ground, Mercedes lowest at 1.3; Red Bull Racing 1.8 and Audi 1.4 to 1 on Night's), so the codes at both ends and the highlight carry identity. One look in Chromium at 1,440 px: no console errors, no sideways scroll, the highlight by a real mouse; the faded lines raised to 0.22 after it. Cost: one theme upload by the operator and one publish run; about 13 Jolpica requests a race, once; no database questions (paddock-data only); no deploy. ANSWERED 23 Oct (session 71): “All six lap chart defaults stand.”",
+   "scopeHash": "3c58318cb032"
   },
   {
    "id": "O20",
