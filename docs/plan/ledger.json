@@ -2641,8 +2641,8 @@
    "defaults": "no Driver profile (no driver pages); the search and the phone's decades by script, every decade without it",
    "needsWord": "the theme upload and one publish run",
    "acceptance": "the Champions page like the draft at 1440 and 390 px; the ×n marks, close margins and tallies match champions.json",
-   "status": "planned",
-   "evidence": "",
+   "status": "started",
+   "evidence": "OPENED 23 Oct (session 71) on the operator's word “Go: plan O17 in plan mode.” ANSWERED in plan mode, 23 Oct: the drafts call the six Around the site doorways pages the new site has, but its REST API holds no Formula 2 champions, Learn or News page or category; the operator chose “Greyed until built” (the three greyed with “Coming” and no link, each a link once its page exists). PLANNED 23 Oct in plan mode and approved (C:/Users/ppara/.claude/plans/humble-pondering-spring.md): the reference is The Paddock Drafts' Champions page as answered on 21 Oct (session 69's copy, drafts.html); the four data files and their loaders exist (lib/series-content.ts); seriesChampions in lib/wp/series.ts under a .pd-chp root, theme 0.1.18, 1.0.296, branch o17/champions from o16/records. Defaults taken in the plan: the reigning card's last line is the season note's first sentence, verbatim (the draft condensed it); team colours from the roster, then team-names.json's latest season, then historic-team-colors.json, then the neutral grey; the tallies' and the most-titles list's ties to whoever reached the count first, the margins' ties newest first; the Standings doorway's line from the standings at publish time; the footnote's facts checked against primary sources before the PR. Cost: one theme upload and one publish run (about 145 pages), no database questions, no deploy.",
    "scopeHash": "197386092117"
   },
   {
