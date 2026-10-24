@@ -5014,5 +5014,134 @@
         ]
       }
     ]
+  },
+  {
+    "round": 18,
+    "name": "Grand Prix Of Australia",
+    "date": "2026-10-25",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Marc Marquez",
+                "Ducati Lenovo Team",
+                "19:09.411",
+                "12"
+              ],
+              [
+                "2",
+                "Alex Marquez",
+                "BK8 Gresini Racing MotoGP",
+                "+0.323",
+                "9"
+              ],
+              [
+                "3",
+                "Fabio Di Giannantonio",
+                "Pertamina Enduro VR46 Racing Team",
+                "+0.590",
+                "7"
+              ],
+              [
+                "4",
+                "Marco Bezzecchi",
+                "Aprilia Racing",
+                "+1.074",
+                "6"
+              ],
+              [
+                "5",
+                "Pedro Acosta",
+                "Red Bull KTM Factory Racing",
+                "+3.689",
+                "5"
+              ],
+              [
+                "6",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+7.433",
+                "4"
+              ],
+              [
+                "7",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+7.782",
+                "3"
+              ],
+              [
+                "8",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+10.722",
+                "2"
+              ],
+              [
+                "9",
+                "Iker Lecuona",
+                "BK8 Gresini Racing MotoGP",
+                "+10.773",
+                "1"
+              ],
+              [
+                "10",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+11.215",
+                "0"
+              ],
+              [
+                "11",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+11.437",
+                "0"
+              ],
+              [
+                "12",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+11.568",
+                "0"
+              ],
+              [
+                "13",
+                "Ai Ogura",
+                "SuperFile Trackhouse MotoGP Team",
+                "+14.146",
+                "0"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+18.277",
+                "0"
+              ],
+              [
+                "15",
+                "Augusto Fernandez",
+                "Prima Pramac Yamaha MotoGP",
+                "+45.945",
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]

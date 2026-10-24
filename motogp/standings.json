@@ -10,39 +10,39 @@
     "rows": [
       [
         "1",
+        "Marc Marquez",
+        "Ducati Lenovo Team",
+        "365"
+      ],
+      [
+        "2",
         "Jorge Martin",
         "Aprilia Racing",
         "355"
       ],
       [
-        "2",
-        "Marc Marquez",
-        "Ducati Lenovo Team",
-        "353"
-      ],
-      [
         "3",
         "Marco Bezzecchi",
         "Aprilia Racing",
-        "309"
+        "315"
       ],
       [
         "4",
+        "Pedro Acosta",
+        "Red Bull KTM Factory Racing",
+        "263"
+      ],
+      [
+        "5",
         "Ai Ogura",
         "SuperFile Trackhouse MotoGP Team",
         "259"
       ],
       [
-        "5",
-        "Pedro Acosta",
-        "Red Bull KTM Factory Racing",
-        "258"
-      ],
-      [
         "6",
         "Fabio Di Giannantonio",
         "Pertamina Enduro VR46 Racing Team",
-        "245"
+        "252"
       ],
       [
         "7",
@@ -54,7 +54,7 @@
         "8",
         "Alex Marquez",
         "BK8 Gresini Racing MotoGP",
-        "172"
+        "181"
       ],
       [
         "9",
@@ -84,18 +84,18 @@
         "13",
         "Brad Binder",
         "Red Bull KTM Factory Racing",
-        "104"
+        "108"
       ],
       [
         "14",
-        "Fabio Quartararo",
-        "Monster Energy Yamaha MotoGP Team",
-        "74"
+        "Diogo Moreira",
+        "Pro Honda LCR",
+        "76"
       ],
       [
         "15",
-        "Diogo Moreira",
-        "Pro Honda LCR",
+        "Fabio Quartararo",
+        "Monster Energy Yamaha MotoGP Team",
         "74"
       ],
       [
@@ -120,7 +120,7 @@
         "19",
         "Jack Miller",
         "Prima Pramac Yamaha MotoGP",
-        "28"
+        "31"
       ],
       [
         "20",
@@ -144,12 +144,12 @@
         "23",
         "Iker Lecuona",
         "BK8 Gresini Racing MotoGP",
-        "9"
+        "10"
       ],
       [
         "24",
         "Augusto Fernandez",
-        "Yamaha Factory Racing",
+        "Prima Pramac Yamaha MotoGP",
         "6"
       ],
       [
