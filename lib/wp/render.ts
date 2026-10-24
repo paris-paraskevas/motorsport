@@ -7,11 +7,11 @@
 // every href is built here from a series slug, never taken from a feed.
 
 import { createHash } from 'node:crypto';
-import type { Series, SeriesRoundEntry } from '@/lib/types';
+import type { Champion, Series, SeriesRoundEntry } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
 import type { MapsStore, SessionExtras, SessionsStore } from '@/lib/openf1/weekend';
 import type { VenueForecast } from '@/lib/met-norway';
-import type { StandingsNote } from '@/lib/series-content';
+import type { ChampionNotesFile, HistoricTeamColor, RecordNotesFile, StandingsNote, TeamNamesFile } from '@/lib/series-content';
 
 // ── Stored shapes: what `<slug>/{standings,results,calendar}.json` hold ─────
 
@@ -690,6 +690,9 @@ export interface SeriesData {
   weekend?: { sessions: SessionsStore; maps: MapsStore; forecast: Record<string, VenueForecast> };
   /** The season's rulings that changed points after the races (standings-notes.json), for the Standings page (O16). */
   standingsNotes?: StandingsNote[];
+  /** The Champions page (O17): champions.json, the reigning season's note, the record notes, the heritage colours of teams
+   *  no longer racing, and team-names.json for the names the feeds wrote differently. */
+  champions?: ChampionsData;
   /** For the series list (slot O21), every series: its type (meta.json category), its colour, and the champion of
    *  its season as champions.json writes it, when it does. */
   category?: string;
@@ -702,6 +705,15 @@ export interface SeriesTeam {
   colour?: string;
   /** The car number (drivers.json) ties OpenF1's tyres, which it keys by number, to a classification's names. */
   drivers: { name: string; code?: string; number?: number }[];
+}
+
+/** What the Champions page (O17) reads, from the series' content files. */
+export interface ChampionsData {
+  seasons: Champion[];
+  notes: ChampionNotesFile | null;
+  records: RecordNotesFile | null;
+  historic: Record<string, HistoricTeamColor>;
+  names: TeamNamesFile | null;
 }
 
 export const seriesPath = (slug: string, sub?: 'standings' | 'results' | 'calendar' | 'champions'): string =>

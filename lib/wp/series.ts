@@ -6,6 +6,8 @@
 // so a page changes only when its data does. Inline style carries only `width` and `--t`, both of which
 // WordPress keeps in post content (safecss_filter_attr, WordPress 6.1 onward).
 
+import { slugify } from '@/lib/slug';
+import type { Champion } from '@/lib/types';
 import { calendarMonthPath, escapeHtml, seriesPath, sessionKind, WEEKEND_PAGES, weekendPath, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
 
 /** The series drawn in round 2's design; the others keep the plain pages until slot O18. */
@@ -121,7 +123,7 @@ const winsLabel = (n: number): string => `${n} win${n === 1 ? '' : 's'}`;
 type SeriesTab = 'overview' | 'calendar' | 'standings' | 'results' | 'champions';
 
 /** The pages built in round 2's design for a series beyond its Overview; every link to one waits for it, greyed. */
-const BUILT: Readonly<Record<string, ReadonlySet<'standings' | 'results' | 'champions'>>> = { f1: new Set(['results', 'standings']) };
+const BUILT: Readonly<Record<string, ReadonlySet<'standings' | 'results' | 'champions'>>> = { f1: new Set(['results', 'standings', 'champions']) };
 export const built = (slug: string, tab: 'standings' | 'results' | 'champions'): boolean => Boolean(BUILT[slug]?.has(tab));
 
 /** The five tabs, each a page at its own address; Calendar opens the site's Calendar showing only this series. A page
@@ -741,6 +743,292 @@ export function seriesStandings(d: SeriesData): Page {
   return { path: seriesPath(d.slug, 'standings'), title: `${d.name} standings`, body: htmlBlock(main), template: 'page-wide' };
 }
 
+// ── Champions (O17) ──────────────────────────────────────────────────────────
+//
+// /series/<slug>/champions/, as approved on The Paddock Drafts (21 Oct): the reigning champion in the team's colour, the
+// jump bar with the search, a table a decade (cards on a phone), the row where the teams' title begins, the team tallies,
+// the three records and the doorways. Every figure is champions.json's, points as counted at the time; a margin is derived,
+// never stored. The script adds the search and shows a phone one decade at a time; without it every decade stands.
+
+const ORDINAL_WORDS = ['', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth'];
+
+/** 1st, 2nd, 3rd, 4th; 11th to 13th. */
+export const ordinal = (n: number): string => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : (['th', 'st', 'nd', 'rd'][n % 10] ?? 'th')}`;
+const nthWord = (n: number): string => ORDINAL_WORDS[n] ?? ordinal(n);
+const article = (word: string): string => (/^(?:[aeiou]|8|11|18)/i.test(word) ? 'an' : 'a');
+const seasonsText = (n: number): string => `${n} season${n === 1 ? '' : 's'}`;
+/** Lower case without accents, so the search finds Räikkönen typed as "raikkonen" (the script folds the query alike). */
+const fold = (s: string): string => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+/** The pages a doorway may link beyond a series' own; any other stays greyed, "Coming", until it is listed (the operator,
+ *  23 Oct). A series page counts once BUILT holds it. */
+const LIVE_PAGES: ReadonlySet<string> = new Set(['/calendar/', '/series/', '/about/']);
+function isLive(href: string): boolean {
+  const m = /^\/series\/([^/]+)\/(standings|results|champions)\/$/.exec(href);
+  return LIVE_PAGES.has(href) || (m !== null && built(m[1], m[2] as 'standings' | 'results' | 'champions'));
+}
+
+/** A season's team as champions.json writes it. `constructor` is checked as a string: a row without one would otherwise
+ *  read Object's own constructor. */
+const teamIn = (s: Champion): string => (typeof s.constructor === 'string' ? s.constructor : '');
+const marginOf = (s: Champion): number | null => (typeof s.points === 'number' && typeof s.runnerUpPoints === 'number' ? s.points - s.runnerUpPoints : null);
+
+/** A champion's team colour: the roster's; then the roster's under team-names.json's newest season, for a name the feeds
+ *  wrote differently ("Red Bull" for Red Bull Racing); then the heritage colour of a team no longer racing; else grey. */
+export function championColour(d: SeriesData, team: string): string {
+  const own = teamOf(d, team)?.colour;
+  if (own && HEX.test(own)) return own;
+  const names = d.champions?.names ?? {};
+  const newest = Object.keys(names).filter(k => /^\d{4}$/.test(k)).sort().pop();
+  const lines = newest ? names[newest] : undefined;
+  const alias = lines && typeof lines === 'object' ? lines[team] : undefined;
+  const aliased = alias ? teamOf(d, alias)?.colour : undefined;
+  if (aliased && HEX.test(aliased)) return aliased;
+  const old = d.champions?.historic[slugify(team)]?.color;
+  return old && HEX.test(old) ? old : NEUTRAL;
+}
+
+/** Dark enough that the reigning card's text turns light (WCAG relative luminance under 0.18). */
+function darkColour(hex: string): boolean {
+  const h = hex.length === 4 ? hex.replace(/^#(.)(.)(.)$/, '#$1$1$2$2$3$3') : hex;
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(c => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.18;
+}
+
+export interface TitleMarks {
+  /** The driver's nth drivers' title, counted from the first season. */
+  nth: number;
+  /** The constructors' champion's nth title; null before the teams' title began. */
+  teamNth: number | null;
+}
+
+/** Each season's ×n and its constructors' champion's nth title, counted in season order. */
+export function titleCounts(seasons: readonly Champion[]): Map<number, TitleMarks> {
+  const drivers = new Map<string, number>();
+  const teams = new Map<string, number>();
+  const out = new Map<number, TitleMarks>();
+  for (const s of [...seasons].sort((a, b) => a.year - b.year)) {
+    const nth = (drivers.get(s.driver) ?? 0) + 1;
+    drivers.set(s.driver, nth);
+    let teamNth: number | null = null;
+    if (s.constructorChampion) {
+      teamNth = (teams.get(s.constructorChampion) ?? 0) + 1;
+      teams.set(s.constructorChampion, teamNth);
+    }
+    out.set(s.year, { nth, teamNth });
+  }
+  return out;
+}
+
+/** The teams by titles won, drivers' (by the champion's team) or constructors'; level teams in the order they reached it. */
+export function teamTallies(seasons: readonly Champion[], kind: 'drivers' | 'constructors'): { name: string; count: number }[] {
+  const by = new Map<string, { count: number; last: number }>();
+  for (const s of [...seasons].sort((a, b) => a.year - b.year)) {
+    const team = kind === 'drivers' ? teamIn(s) : (s.constructorChampion ?? '');
+    if (!team) continue;
+    by.set(team, { count: (by.get(team)?.count ?? 0) + 1, last: s.year });
+  }
+  return [...by]
+    .sort((a, b) => b[1].count - a[1].count || a[1].last - b[1].last || a[0].localeCompare(b[0]))
+    .map(([name, t]) => ({ name, count: t.count }));
+}
+
+/** The three records: the most drivers' titles (the top five and everyone level with the fifth, in the order they reached
+ *  the count), and the five closest and the five biggest title margins, level margins newest first. */
+export function recordLists(seasons: readonly Champion[]): { most: { name: string; titles: Champion[] }[]; closest: Champion[]; biggest: Champion[] } {
+  const by = new Map<string, Champion[]>();
+  for (const s of [...seasons].sort((a, b) => a.year - b.year)) by.set(s.driver, [...(by.get(s.driver) ?? []), s]);
+  const ranked = [...by]
+    .map(([name, titles]) => ({ name, titles }))
+    .sort((a, b) => b.titles.length - a.titles.length || a.titles[a.titles.length - 1].year - b.titles[b.titles.length - 1].year);
+  const fifth = ranked[4]?.titles.length ?? 0;
+  const margins = seasons.flatMap(s => {
+    const m = marginOf(s);
+    return m === null ? [] : [{ s, m }];
+  });
+  const pick = (sign: 1 | -1) => [...margins].sort((a, b) => sign * (a.m - b.m) || b.s.year - a.s.year).slice(0, 5).map(x => x.s);
+  return { most: ranked.filter((x, i) => i < 5 || x.titles.length === fifth), closest: pick(1), biggest: pick(-1) };
+}
+
+/** A note's first sentence: up to the first full stop, ! or ? after a word (not an initial) that a capital follows. */
+export function firstSentence(text: string): string {
+  const t = text.trim();
+  const m = /^([\s\S]*?[a-z0-9)’'”"][.!?])\s+(?=[A-Z‘“"'])/.exec(t);
+  return m ? m[1] : t;
+}
+
+function reigningCard(d: SeriesData, s: Champion, marks: Map<number, TitleMarks>, seasons: readonly Champion[]): string {
+  const team = teamIn(s);
+  const colour = championColour(d, team);
+  const m = marginOf(s);
+  const tiles = [
+    typeof s.points === 'number' ? `<span><b>${s.points}</b>Points</span>` : '',
+    typeof s.wins === 'number' ? `<span><b>${s.wins}</b>Wins</span>` : '',
+    m !== null && s.runnerUp ? `<span><b>+${m}</b>Over ${escapeHtml(surname(s.runnerUp))}</span>` : '',
+  ].join('');
+  const chips = `${team ? `<b>${escapeHtml(team)}</b>` : ''}<b>${nthWord(marks.get(s.year)?.nth ?? 1)} title</b>`;
+  let teams = '';
+  if (s.constructorChampion) {
+    let streak = 1;
+    while (seasons.find(x => x.year === s.year - streak)?.constructorChampion === s.constructorChampion) streak++;
+    const word = streak > 1 ? nthWord(streak).toLowerCase() : '';
+    const which = streak > 1 ? `${article(word)} ${word} title in a row` : `its ${ordinal(marks.get(s.year)?.teamNth ?? 1)} title`;
+    teams = `Teams' champion: <b>${escapeHtml(s.constructorChampion)}</b>, ${which}.`;
+  }
+  const note = d.champions?.notes?.[String(s.year)]?.note;
+  const txt = [teams, note ? escapeHtml(firstSentence(note)) : ''].filter(Boolean).join(' ');
+  const season = d.season;
+  const button =
+    typeof season === 'number' && built(d.slug, 'standings')
+      ? `<div class="pd-ch-acts"><a href="${seriesPath(d.slug, 'standings')}">${season} ${s.year >= season ? 'final standings' : 'title race'} →</a></div>`
+      : '';
+  return (
+    `<section class="pd-ch-reign${darkColour(colour) ? ' is-dark' : ''}" style="--t:${colour}"><div class="pd-ch-rin">` +
+    `<p class="pd-ch-lab"><span>Reigning champion</span> ${s.year} season</p><h3>${escapeHtml(s.driver)}</h3><p class="pd-ch-sub">${chips}</p>` +
+    `${tiles ? `<div class="pd-ch-tiles">${tiles}</div>` : ''}${txt ? `<p class="pd-ch-txt">${txt}</p>` : ''}</div>` +
+    `${button}<i class="pd-ch-big" aria-hidden="true">${s.year}</i></section>`
+  );
+}
+
+/** A doorway to another page; one whose page does not exist yet is greyed, with no link. */
+function door(href: string, label: string, title: string, line: string, live: boolean): string {
+  const inner = `<small>${escapeHtml(label)}</small><b>${escapeHtml(title)}</b><span>${line}</span>`;
+  return live ? `<a class="pd-ch-door" href="${escapeHtml(href)}">${inner}<em>Open →</em></a>` : `<span class="pd-ch-door is-off">${inner}<em>Coming</em></span>`;
+}
+
+/** /series/<slug>/champions/: the roll of honour. */
+export function seriesChampions(d: SeriesData): Page {
+  const all = raceWins(d);
+  const current = (d.rounds ?? []).find(r => !all.has(r.round));
+  const path = seriesPath(d.slug, 'champions');
+  const title = `${d.name} champions`;
+  const frame = (inner: string) => htmlBlock(`<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, all, current)}${tabs(d, 'champions')}<div class="pd-sr-main">${inner}</div></div>`);
+  const seasons = [...(d.champions?.seasons ?? [])].sort((a, b) => b.year - a.year);
+  if (!seasons.length) return { path, title, body: frame('<section class="pd-sr-sec pd-chp"><p class="pd-mut">No champions recorded yet.</p></section>'), template: 'page-wide' };
+
+  const marks = titleCounts(seasons);
+  const first = seasons[seasons.length - 1].year;
+  const firstTeams = [...seasons].reverse().find(s => s.constructorChampion)?.year;
+  const name = escapeHtml(d.name);
+  const champs = new Set(seasons.map(s => s.driver)).size;
+  const mast =
+    `<header class="pd-ch-mast"><p class="pd-ch-kick">${name} · Roll of honour</p><h2 class="pd-ch-h">${name} champions</h2>` +
+    `<p class="pd-ch-intro">Every drivers' champion since ${first}${firstTeams ? ` and every constructors' champion since ${firstTeams}` : ''}, year by year: ` +
+    `${seasonsText(seasons.length)}, ${champs} different driver${champs === 1 ? '' : 's'}.</p></header>`;
+
+  const decade = (y: number) => Math.floor(y / 10) * 10;
+  const decades = [...new Set(seasons.map(s => decade(s.year)))];
+  const jump =
+    `<nav class="pd-ch-jump" aria-label="Jump to"><span class="lab">Jump to</span>` +
+    decades.map((x, i) => `<a href="#pd-ch-${x}s" data-dec="${x}s"${i === 0 ? ' class="on"' : ''}>${x}s</a>`).join('') +
+    (firstTeams ? `<a href="#pd-ch-${firstTeams}" data-dec="${decade(firstTeams)}s">${firstTeams}: teams' title</a>` : '') +
+    `<span class="pd-ch-find" hidden></span><span class="pd-ch-count" data-of="${seasons.length}">${seasonsText(seasons.length)}</span></nav>`;
+  const decs = decades
+    .map(x => {
+      const list = seasons.filter(s => decade(s.year) === x);
+      const rows: string[] = [];
+      const cards: string[] = [];
+      for (const s of list) {
+        const team = teamIn(s);
+        const colour = championColour(d, team);
+        const mk = marks.get(s.year);
+        const sup = mk && mk.nth > 1 ? `<sup>×${mk.nth}</sup>` : '';
+        const m = marginOf(s);
+        const close = m !== null && m <= 5;
+        const margin = m === null ? '' : `+${m}`;
+        const find = escapeHtml(fold([s.year, s.driver, team, s.runnerUp, s.constructorChampion].filter(Boolean).join(' ')));
+        const teamsCell = s.constructorChampion ? `<b>${escapeHtml(s.constructorChampion)}</b><small>${ordinal(mk?.teamNth ?? 1)} title</small>` : '<small>—</small>';
+        rows.push(
+          `<tr data-find="${find}"><td class="yr">${s.year}</td><td class="ch"><i class="tb" style="--t:${colour}"></i><b>${escapeHtml(s.driver)}${sup}</b><small>${escapeHtml(team)}</small></td>` +
+            `<td class="pt">${s.points ?? ''}</td><td class="w">${s.wins ?? ''}</td><td class="mg${close ? ' close' : ''}">${margin}</td>` +
+            `<td class="ru">${s.runnerUp ? `<b>${escapeHtml(s.runnerUp)}</b>${typeof s.runnerUpPoints === 'number' ? `<small>${s.runnerUpPoints} pts</small>` : ''}` : ''}</td><td class="tc">${teamsCell}</td></tr>`,
+        );
+        const facts = [typeof s.points === 'number' ? `${s.points} pts` : '', typeof s.wins === 'number' ? `${s.wins} win${s.wins === 1 ? '' : 's'}` : '', margin].filter(Boolean).join(' · ');
+        cards.push(
+          `<li data-find="${find}"><p class="top"><b class="yr">${s.year}</b><span${close ? ' class="close"' : ''}>${facts}</span></p>` +
+            `<p class="nm" style="--t:${colour}"><b>${escapeHtml(s.driver)}${sup}</b><small>${escapeHtml(team)}</small></p>` +
+            (s.runnerUp ? `<p class="kv"><span>Runner-up</span><span><b>${escapeHtml(s.runnerUp)}</b>${typeof s.runnerUpPoints === 'number' ? ` · ${s.runnerUpPoints} pts` : ''}</span></p>` : '') +
+            (s.constructorChampion ? `<p class="kv"><span>Teams'</span><span><b>${escapeHtml(s.constructorChampion)}</b> · ${ordinal(mk?.teamNth ?? 1)} title</span></p>` : '') +
+            '</li>',
+        );
+        if (s.year === firstTeams) {
+          rows.push(`<tr class="era" id="pd-ch-${firstTeams}"><td colspan="7"><b>${firstTeams}</b> The constructors' championship begins: from here the last column names the teams' champion.</td></tr>`);
+        }
+      }
+      return (
+        `<section class="pd-ch-dec" id="pd-ch-${x}s" data-dec="${x}s"><h2>${x}s <small>${list.length} season${list.length === 1 ? '' : 's'}</small></h2>` +
+        `<table class="pd-ch-tbl"><thead><tr><th>Year</th><th>Champion</th><th>Pts</th><th>Wins</th><th>Margin</th><th>Runner-up</th><th>Constructors' champion</th></tr></thead>` +
+        `<tbody>${rows.join('')}</tbody></table><ol class="pd-ch-cards">${cards.join('')}</ol></section>`
+      );
+    })
+    .join('');
+  const foot =
+    '<p class="pd-ch-foot">Points as counted at the time: until 1990 only a driver\'s best results counted towards the title, and races stopped early paid half points (hence Lauda\'s 0.5 in 1984). ×2, ×3: the driver\'s second, third title. Orange margin: five points or fewer.</p>';
+
+  const squares = (colours: string[]) => `<span class="sq">${colours.map(c => `<i style="--t:${c}"></i>`).join('')}</span>`;
+  const tally = (heading: string, list: { name: string; count: number }[]) =>
+    `<div class="pd-ch-tally"><h3>${heading}</h3><ol>${list
+      .slice(0, 5)
+      .map(t => `<li><b>${escapeHtml(t.name)}</b>${squares(Array(t.count).fill(championColour(d, t.name)))}<span class="n">${t.count}</span></li>`)
+      .join('')}</ol>${list.length > 5 ? `<p class="more">+ ${list.length - 5} more teams</p>` : ''}</div>`;
+  const teamsSec =
+    `<section class="pd-ch-teams"><h2>Most successful teams</h2><p class="pd-mut">Drivers' titles since ${first}, counted by the champion's team${firstTeams ? `; constructors' titles since ${firstTeams}` : ''}.</p>` +
+    `<div class="pd-ch-two">${tally("Drivers' titles", teamTallies(seasons, 'drivers'))}${firstTeams ? tally("Constructors' titles", teamTallies(seasons, 'constructors')) : ''}</div></section>`;
+
+  const rec = recordLists(seasons);
+  const lead = d.champions?.records?.drivers?.lead?.trim();
+  const fights = (heading: string, list: Champion[]) =>
+    `<div class="pd-ch-rec"><h3>${heading}</h3><ol class="pd-ch-fights">${list
+      .map(s => `<li><span class="yr">${s.year}</span><span class="who"><b>${escapeHtml(surname(s.driver))}</b> <small>over ${escapeHtml(surname(s.runnerUp ?? ''))}</small></span><span class="n">${marginOf(s)}</span></li>`)
+      .join('')}</ol></div>`;
+  const recs =
+    `<section class="pd-ch-recs"><div class="pd-ch-rec"><h3>Most drivers' titles</h3><ol>${rec.most
+      .map(x => `<li><b>${escapeHtml(x.name)}</b>${squares(x.titles.map(s => championColour(d, teamIn(s))))}<span class="n">${x.titles.length}</span></li>`)
+      .join('')}</ol><blockquote>${lead ? `<b>${escapeHtml(/[.!?]$/.test(lead) ? lead : `${lead}.`)}</b> ` : ''}One square per title, in that season's team colour.</blockquote></div>` +
+    `${fights('Closest title fights', rec.closest)}${fights('Biggest winning margins', rec.biggest)}</section>`;
+
+  // The doorways' lines come from the data at publish time.
+  const drivers = standingRows(d.standings?.[0], true);
+  const left = pointsLeft(counted(d, drivers)).driver;
+  const rounds = (d.rounds ?? []).length;
+  let standLine = 'Both tables, and who can still win it.';
+  if (drivers.length > 1) {
+    const gap = drivers[0].pts - drivers[1].pts;
+    standLine =
+      gap > 0
+        ? `${escapeHtml(surname(drivers[0].name))} leads by ${gap}${rounds && left > 0 ? ` with ${left} points left` : ''}.`
+        : `${escapeHtml(surname(drivers[0].name))} and ${escapeHtml(surname(drivers[1].name))} are level on ${escapeHtml(drivers[0].shown)}.`;
+  }
+  const category = `/category/${categorySlug(d.name)}/`;
+  const more = [
+    door(seriesPath(d.slug), seriesPath(d.slug), d.name, `The season at a glance: next race, last race${rounds > 1 ? `, all ${rounds} rounds` : ''}.`, true),
+    built(d.slug, 'standings') ? door(seriesPath(d.slug, 'standings'), seriesPath(d.slug, 'standings'), `${d.name} standings`, standLine, true) : '',
+    built(d.slug, 'results') ? door(seriesPath(d.slug, 'results'), seriesPath(d.slug, 'results'), `${d.name} results`, "Every round's weekend, session by session.", true) : '',
+    door(`/calendar/#${d.slug}`, `/calendar/#${d.slug}`, `${d.name} on the calendar`, 'Every session in your own time zone.', true),
+    door(category, 'From the blog', `${d.name} posts`, 'Our race reports and analysis, newest first.', true),
+  ].join('');
+  // Around the site, as the operator chose it on 21 Oct; a page the new site does not have yet waits greyed.
+  const around = [
+    ['/calendar/', 'Calendar', 'Every session of fifteen championships in your time zone.'],
+    ['/series/', 'All series', 'Fifteen championships, each with its next event.'],
+    ['/series/f2/champions/', 'Formula 2 champions', 'Since 2005, including the GP2 years.'],
+    ['/learn/', 'Learn', 'Motorsport, explained.'],
+    ['/news/', 'News', 'Our stories, then the wire.'],
+    ['/about/', 'About', 'Who makes Paddock, and how.'],
+  ]
+    .map(([href, label, line]) => door(href, href, label, line, isLive(href)))
+    .join('');
+  const doors =
+    `<section class="pd-ch-more"><h2>More ${name}</h2><div class="pd-ch-doors">${more}</div></section>` +
+    `<section class="pd-ch-more pd-ch-around"><h2>Around the site</h2><div class="pd-ch-doors">${around}</div></section>`;
+  const call =
+    `<section class="pd-ch-call"><div><b>Every ${escapeHtml(d.short ?? d.name)} session in your time zone</b><span>Follow the ${typeof d.season === 'number' ? `${d.season} ` : ''}season on the calendar. No account needed.</span></div>` +
+    `<a href="/calendar/#${escapeHtml(d.slug)}">Open calendar</a></section>`;
+
+  const inner = `<div class="pd-sr-sec pd-chp">${mast}${reigningCard(d, seasons[0], marks, seasons)}${jump}<div class="pd-ch-decs">${decs}</div>${foot}${teamsSec}${recs}${doors}${call}</div>`;
+  return { path, title, body: frame(inner), template: 'page-wide' };
+}
+
 // ── The series list (slot O21) ───────────────────────────────────────────────
 //
 // Round 2's "All series", answered on The Paddock Drafts (v13 to v16): the championships still racing, then the
@@ -896,8 +1184,12 @@ export function seriesList(all: SeriesData[], now: Date): Page {
   return { path: '/series/', title: 'Series', body: htmlBlock(main), template: 'page-wide' };
 }
 
-/** A series' pages in round 2's design: the Overview, Results and Standings now (the weekend pages are weekend.ts's);
- *  Champions in its slot. */
+/** A series' pages in round 2's design: the Overview, Results, Standings and Champions (the weekend pages are weekend.ts's). */
 export function seriesFamily(d: SeriesData): Page[] {
-  return [seriesOverview(d), seriesResults(d), ...(built(d.slug, 'standings') ? [seriesStandings(d)] : [])];
+  return [
+    seriesOverview(d),
+    seriesResults(d),
+    ...(built(d.slug, 'standings') ? [seriesStandings(d)] : []),
+    ...(built(d.slug, 'champions') ? [seriesChampions(d)] : []),
+  ];
 }

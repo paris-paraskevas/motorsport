@@ -14,6 +14,52 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1185 · 1.0.296 · O17 (Formula 1's Champions: the roll of honour) · opened 2026-10-23 into `next` on the operator's "Push o17/champions and open the PR into next.", built on "Go: plan O17 in plan mode." and "Build O17 now in this session.", the plan approved in plan mode; the review and the merge on the word
+**The Champions page.** Built as drawn on The Paddock Drafts, full width; the three doorways to pages the new site does not have yet are greyed, as answered in plan mode. The records of the lap chart's draft (O28, answered "All six lap chart defaults stand.") and of O17's opening and plan ride in from the local o16/records.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.18 and one publish run:
+  - `/series/f1/champions/`: the reigning champion, every season by decade with the search, the team tallies, the three records and the doorways;
+  - the Champions tab live on every Formula 1 page that carries the tabs, and on the series list's Formula 1 card.
+- **Editors get:** nothing new; the page reads champions.json, champion-notes.json, record-notes.json and historic-team-colors.json, edited by hand as before.
+- **Files (21):**
+  - `lib/wp/series.ts` · `seriesChampions`, with `titleCounts`, `teamTallies`, `recordLists`, `championColour`, `firstSentence` and `ordinal`; `BUILT` gains Formula 1's champions; `seriesFamily` returns the page.
+  - `lib/wp/series.test.ts` · 14 new tests, reading champions.json up to 2025; three changed where the greyed Champions link became a link, one of them now checking that Formula 2's tabs stay greyed.
+  - `lib/wp/render.ts` · `SeriesData.champions` and `ChampionsData`.
+  - `scripts/wp-publish.mts` · reads the four files and team-names.json for Formula 1.
+  - `wp-theme/paddock/style.css` · 0.1.18: `.pd-ch-*` under `.pd-chp`.
+  - `wp-theme/paddock/assets/js/paddock.js` · the search and the phone's decade switch.
+  - `wp-theme/preview/f1-champions.html` · new, from the dry run; `blueprint.json` inserts it under Formula 1.
+  - `wp-theme/preview/f1.html`, `f1-results.html`, `f1-standings.html`, `f1-season.html` · regenerated from the dry run: the Champions tab. `series.html` · the Formula 1 card's Champions link only, the rest of the list depending on the publish day. `f1-weekend.html` and `f1-session.html` are unchanged: their bar carries no series tabs.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.296.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered), `IDEAS.md`:
+    - O28 added (the lap chart: its source checked, round 17 drawn on Paddock Lap Chart, the six defaults);
+    - O17's OPENED, ANSWERED, PLANNED, BUILT and VERIFIED evidence;
+    - IDEAS: the lap chart's line closed; no Learn or News page on the new site while the footer and the header name them.
+- **Answered:** the three doorways (the operator in plan mode: "Greyed until built").
+- **Reviewed** on the operator's "My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1185.": one fresh-context Sonnet reader, 334,419 tokens, 85 tool calls, about 18 minutes; mergeable after fixes, 0 blockers, 4 should-fix, 10 nits.
+- **Folded:** the search ignores accents and needs every word; a jump clears the jump bar where it wraps (its height measured into `--pd-ch-bar`); the tests read champions.json up to 2025; the phone cards follow the draft (no Teams' line before 1958, no 1958 card); a phone opens an address's decade or season; a query is cleared on a phone; the count aria-live; the tiles wrap at 300 px; singular counts; firstSentence ends at ! and ?; the footnote's dropped scores also against formula1.com. Accepted, with reasons in the CHANGELOG: an abbreviation in a note, the no-script phone 1958 link, the drafted colours, the footnote's Formula 1 lines (an IDEAS line for O18), the prefixed anchors, no automated test for paddock.js.
+- **Verified:**
+  - after the fold: `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,921 tests; the dry run's Champions page 75,321 bytes; on the preview, by real typing "raikkonen" and "Räikkönen" 3 of 76, "senna 1988" and "1988 senna" 1988, "norris verstappen" 2025 and 2024; a jump at 700 and 900 px lands 12 px under the two-row bar; `#pd-ch-1970s` and `#pd-ch-1958` open on a phone; a query is cleared on narrowing to a phone; no tile overflow at 300 px;
+  - the dry run (`--from-ref origin/paddock-data --only /series/f1/`, a9916c3b): 144 pages, the Champions page the largest at 75,895 bytes before the fold; hand counts: 76 rows and 76 cards in 8 decades, 76 seasons and 35 drivers, Ferrari 15 and 16, Schumacher and Hamilton 7, 1984's 0.5, "Antonelli leads by 102 with 150 points left.";
+  - the four regenerated Formula 1 fixtures match the dry run's pages exactly with only the Champions tab changed;
+  - on the theme preview (0.1.18):
+    - WordPress kept the markup: 152 `data-find`, 286 `--t`, 9 ids, the search's slot hidden, no `data-one` without the script;
+    - no sideways scroll at 20 widths from 300 to 2,560 px;
+    - the jump bar by a real click (1980s lands at 72 px, under the sticky bar);
+    - the search by real typing: "senna" 5 of 76 (1988 to 1991 and 1993), "brawn" 2009, "zzz" none with its line, Escape back to 76;
+    - the phone's decade switch by real taps: 1990s alone, then 1958 to the 1950s' row;
+    - every doorway's address answers (200; /about/ 404 in the preview only, the site has its page 1, about), two followed by real clicks (Standings, All series);
+    - Day and Night; no script error from the page;
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,920 tests;
+  - theme zip built: 33 files (40 entries with its 7 folders), Version 0.1.18.
+- **Test after upload:**
+  1. `/series/f1/champions/` on a laptop, Day and Night: Lando Norris's card in McLaren orange with 423, 7 and +2, "First title", McLaren's second title in a row and the Abu Dhabi line; "2026 title race →" opens the Standings.
+  2. The jump bar: 1980s, then "1958: teams' title"; the bar stays at the top and the decade, then the row, land under it.
+  3. The search: "senna" shows 5 of 76 seasons; "zzz" shows "No season or driver matches."; Escape brings every season back.
+  4. On a phone: cards, one decade at a time; tap 1990s, then 1958.
+  5. The doorways: the five Formula 1 ones and Calendar, All series and About open their pages; Formula 2 champions, Learn and News greyed, "Coming".
+  6. The Champions tab on the Overview, Results and Standings, and on the series list's Formula 1 card.
+- **Known issues, not failures:** Red Bull Racing's navy squares are faint in Night (the IDEAS line of 22 Oct on Night team colours); the search is a laptop's, hidden on a phone as drawn.
+
 ## #1184 · 1.0.295 · O16 (Formula 1's Standings: who can still win it, and the teammates) · opened 2026-10-22 into `next` on the operator's "Start O16: Formula 1's Standings. Show me the notes file you need my word on first.", the notes file approved ("As shown, drivers only"), the switch answered ("Both by default on a laptop") and the plan approved in plan mode; the merge on the word
 **The Standings page.** Built as drawn on The Paddock Drafts, full width. The Court of Appeal's Monaco ruling is in the feeds' totals with no sign of it, so its small numbers come from a notes file of ours. The records of #1183's merge, the upload of 0.1.16, the check on the site and O16's opening ride in from the local o19/cards-records.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.17 and one publish run:

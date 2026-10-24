@@ -4,6 +4,36 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.296 — 2026-10-23
+
+### O17: Formula 1's Champions
+
+The operator's order of 22 Oct puts Champions after the Standings. On "Go: plan O17 in plan mode." the plan was written and approved, with one answer in plan mode: the drafts took the six Around the site doorways for pages the new site has, but its REST API holds no Formula 2 champions, Learn or News page, so those three are greyed until their pages exist ("Greyed until built"). Built on "Build O17 now in this session." as drawn on The Paddock Drafts (the version answered on 21 Oct), full width (O27); theme 0.1.18.
+
+- **The page** at `/series/f1/champions/` (`seriesChampions`, lib/wp/series.ts), under the series band with its Champions tab lit:
+  - the mast: 76 seasons and 35 different drivers, counted from champions.json;
+  - the reigning champion on the team's colour (light text when the colour is dark): points, wins and the margin over the runner-up, the nth title, the constructors' champion with its streak or its nth title, the season note's first sentence (champion-notes.json), and "2026 title race →" to the Standings ("final standings" once the season's own champion is written);
+  - the jump bar, sticky: a link a decade and "1958: teams' title"; the script adds the search and the count;
+  - a table a decade, cards on a phone: ×n for a driver's nth title, the margin derived from the points (orange at five or fewer, half points kept), the runner-up, the constructors' champion with its nth title, "—" before 1958 and a row where the teams' title begins;
+  - the footnote; the team tallies (the top five, "+ N more teams"); the three records (the most titles with everyone level at the cut, the closest and the biggest margins, level ones newest first), the drivers' lead from record-notes.json;
+  - More Formula 1's five doorways with their lines from the data ("Antonelli leads by 102 with 150 points left."), and Around the site's six, Formula 2 champions, Learn and News greyed with "Coming" (`LIVE_PAGES` lists the pages that exist);
+  - the calendar call-out.
+- **Pure helpers, each tested:** `titleCounts`, `teamTallies`, `recordLists`, `championColour` (the roster, then team-names.json's newest season for "Red Bull", then historic-team-colors.json, then grey), `firstSentence`, `ordinal`. A season's team is read only as a string: a row without `constructor` would otherwise read Object's own constructor.
+- **Data:** `SeriesData.champions` (lib/wp/render.ts), read by `scripts/wp-publish.mts` for Formula 1 with the loaders that existed (`loadCuratedChampions`, `loadChampionNotes`, `loadRecordNotes`, `loadHistoricTeamColors`, `loadTeamNames`).
+- **`BUILT`** gains Formula 1's champions: the tab is a link on every Formula 1 page that carries the tabs and on the series list's card; `seriesFamily` returns the page.
+- **Theme 0.1.18:** `.pd-ch-*` under `.pd-chp` on the theme's tokens; the jump bar sticky under the admin bar, the decades and the 1958 row clearing it when jumped to; two records columns below 1,200 px; the phone's rules at 699 px (cards, one decade when the script marks it, a thin scrollbar on the jump strip). paddock.js: the search (year, champion, runner-up or team; a decade with no match hides; "No season or driver matches"; Escape clears; "5 of 76 seasons") and the phone's decade switch. WordPress keeps no input or inline SVG in a page, so the box is the script's and the magnifier a CSS mask.
+- **Facts on the page:** the footnote's half point checked against formula1.com ("Formula One racing's greatest title showdowns": Monaco 1984 halted after 31 laps, half points; Lauda by half a point); "until 1990 only a driver's best results counted" against Wikipedia's List of Formula One points systems and The Race ("What happened last time F1 used dropped scores?"); no formula1.com page found for the second.
+- **Tests:** 14 new; three changed where the greyed Champions link became a link, one of them now checking that Formula 2's tabs stay greyed. The page's tests read champions.json up to 2025, so adding 2026's champion by hand keeps them green; the colour test reads the whole file.
+- **Review** (#1185, one fresh-context Sonnet reader, 334,419 tokens, 85 tool calls, about 18 minutes): mergeable after fixes, 0 blockers, 4 should-fix, 10 nits. Folded:
+  - the search ignores accents and needs every word ("raikkonen" and "senna 1988" found nothing): `fold` in series.ts for each row's text, the same in paddock.js for the query;
+  - a jump landed under the jump bar where it wraps (700 to about 1,090 px): the script keeps the bar's height in `--pd-ch-bar`, measured again once the web font loads, with 100 px as the fallback there;
+  - the tests pinned the live champions.json (above);
+  - the phone cards follow the draft: no Teams' line before 1958 and no card for the 1958 row; the phone's "1958" jump goes to the 1958 season's card;
+  - an address naming a decade or a season opens it on a phone; a query left from a wider window is cleared on a phone, which has no box; the count is aria-live and the empty line role=status;
+  - the reigning card's tiles wrap at 300 px; "1 season", "1 different driver"; firstSentence also ends at ! and ?;
+  - the footnote's dropped scores also against formula1.com's points-system article ("a system that remained in play until 1991").
+  Accepted: firstSentence cuts at a lower-case abbreviation (no stored note has one); without the script a phone's "1958" link goes nowhere; orange text at 3.11:1 in Day and dark team squares in Night, as drawn; the footnote and the Around the site lines are Formula 1's (an IDEAS line for O18); the plan's anchors #d2020 and #era-1958 are #pd-ch-2020s and #pd-ch-1958, prefixed to stay clear of other ids; paddock.js has no automated test (checked by hand on the preview).
+
 ## 1.0.295 — 2026-10-22
 
 ### O16: Formula 1's Standings

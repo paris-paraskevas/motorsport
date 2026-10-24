@@ -30,7 +30,7 @@ import { dirname, join } from 'node:path';
 import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '../lib/series';
-import { loadCuratedChampions, loadCuratedDrivers, loadStandingsNotes, loadTeamNames, officialTeamName } from '../lib/series-content';
+import { loadChampionNotes, loadCuratedChampions, loadCuratedDrivers, loadHistoricTeamColors, loadRecordNotes, loadStandingsNotes, loadTeamNames, officialTeamName } from '../lib/series-content';
 import { fetchUpstream } from '../lib/fetch-upstream';
 import { fetchF1SeasonSprints } from '../lib/results/f1';
 import { fetchOpenF1WeekendSessions, fetchSessionClassification, hasResolvedDrivers } from '../lib/results/openf1';
@@ -766,7 +766,8 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
     d.category = chip?.category;
     d.colour = chip?.colour;
     d.season = chip?.season;
-    d.champion = (await loadCuratedChampions(slug))?.find(c => c.year === chip?.season)?.driver;
+    const seasons = await loadCuratedChampions(slug);
+    d.champion = seasons?.find(c => c.year === chip?.season)?.driver;
     for (const kind of KINDS) {
       const rel = relOf(slug, kind);
       const previous = readStored<unknown>(rel);
@@ -816,6 +817,10 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
       );
       // The Standings page's small numbers (O16): the rulings of this season that changed points after the races.
       d.standingsNotes = d.season ? ((await loadStandingsNotes(slug))?.[String(d.season)] ?? []) : [];
+      // The Champions page (O17): the roll of honour and what it reads beside it.
+      if (seasons?.length) {
+        d.champions = { seasons, notes: await loadChampionNotes(slug), records: await loadRecordNotes(slug), historic: await loadHistoricTeamColors(slug), names: await loadTeamNames(slug) };
+      }
     }
     // The weekend pages' data (O19), as f1Weekend keeps it: fetched this run, or stored at --from-ref.
     if (WEEKEND_PAGES.has(slug)) {
