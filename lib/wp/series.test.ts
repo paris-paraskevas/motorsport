@@ -576,7 +576,15 @@ describe('seriesChampions', () => {
     calendar: null,
     rounds: [],
     teams: roster.teams.map(t => ({ name: t.name, colour: t.color, drivers: t.drivers })),
-    champions: { seasons: file('champions.json'), notes: file('champion-notes.json'), records: file('record-notes.json'), historic: file('historic-team-colors.json').teams, names: file('team-names.json') },
+    // The page as of the 2025 champion, so adding 2026's by hand in December keeps these tests green; the colour test
+    // below reads the whole file.
+    champions: {
+      seasons: file('champions.json').filter((s: { year: number }) => s.year <= 2025),
+      notes: file('champion-notes.json'),
+      records: file('record-notes.json'),
+      historic: file('historic-team-colors.json').teams,
+      names: file('team-names.json'),
+    },
   };
   const page = seriesChampions(cd);
   const b = page.body;
@@ -657,7 +665,8 @@ describe('seriesChampions', () => {
   });
 
   it('colours every champion’s team from the roster, the alias or the heritage file, never grey', () => {
-    const teams = new Set(cd.champions!.seasons.flatMap(s => [typeof s.constructor === 'string' ? s.constructor : '', s.constructorChampion ?? ''].filter(Boolean)));
+    const whole: NonNullable<SeriesData['champions']> = { ...cd.champions!, seasons: file('champions.json') };
+    const teams = new Set(whole.seasons.flatMap(s => [typeof s.constructor === 'string' ? s.constructor : '', s.constructorChampion ?? ''].filter(Boolean)));
     for (const t of teams) expect(championColour(cd, t), t).not.toBe('#9aa3b2');
     expect(championColour(cd, 'Red Bull')).toBe('#1E3A8A');
     expect(championColour(cd, 'Lotus')).toBe('#C8A24B');
@@ -707,6 +716,24 @@ describe('seriesChampions', () => {
     expect(evil).toContain('&lt;img onerror=x&gt;');
     expect(evil).toContain('A&amp;B');
     expect(evil).toContain('&quot;Q&quot;');
+  });
+
+  it('folds accents for the search, keeps the draft’s cards before 1958, and reads the edge cases', () => {
+    expect(b).toContain('<tr data-find="2007 kimi raikkonen ferrari lewis hamilton ferrari">');
+    const card1957 = b.match(new RegExp('<li data-find="1957 [^"]*">.*?</li>'))?.[0] ?? '';
+    expect(card1957).toContain('Runner-up');
+    expect(card1957).not.toContain('Teams');
+    expect(b).not.toContain('<li class="era">');
+    expect(row(2016)).toContain('<td class="mg close">+5</td>');
+    expect(b).toContain('<li><b>Michael Schumacher</b><span class="sq"><i style="--t:#00A050"></i><i style="--t:#00A050"></i><i style="--t:#DC0000"></i>');
+    const ahead = seriesChampions({ ...cd, rounds: [{ round: 18, name: 'United States Grand Prix', startDate: '2026-10-23', endDate: '2026-10-25', venue: null }] }).body;
+    expect(ahead).toContain('<span>Antonelli leads by 102 with 25 points left.</span>');
+    // A season with no team: parsed, as the file is, so `constructor` is Object's own and the page must not print it.
+    const lone = seriesChampions({ ...cd, champions: { ...cd.champions!, seasons: [JSON.parse('{"year": 1999, "driver": "Nobody"}')] } }).body;
+    expect(lone).toContain('<h3>Nobody</h3>');
+    expect(lone).not.toContain('pd-ch-tiles');
+    expect(lone).toContain('1 season, 1 different driver.');
+    expect(firstSentence('He won! Then more.')).toBe('He won!');
   });
 
   it('says so when no champion is recorded', () => {

@@ -756,6 +756,9 @@ const ORDINAL_WORDS = ['', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth
 export const ordinal = (n: number): string => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : (['th', 'st', 'nd', 'rd'][n % 10] ?? 'th')}`;
 const nthWord = (n: number): string => ORDINAL_WORDS[n] ?? ordinal(n);
 const article = (word: string): string => (/^(?:[aeiou]|8|11|18)/i.test(word) ? 'an' : 'a');
+const seasonsText = (n: number): string => `${n} season${n === 1 ? '' : 's'}`;
+/** Lower case without accents, so the search finds Räikkönen typed as "raikkonen" (the script folds the query alike). */
+const fold = (s: string): string => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 /** The pages a doorway may link beyond a series' own; any other stays greyed, "Coming", until it is listed (the operator,
  *  23 Oct). A series page counts once BUILT holds it. */
@@ -847,10 +850,10 @@ export function recordLists(seasons: readonly Champion[]): { most: { name: strin
   return { most: ranked.filter((x, i) => i < 5 || x.titles.length === fifth), closest: pick(1), biggest: pick(-1) };
 }
 
-/** A note's first sentence: up to the first full stop after a word (not an initial) that a capital follows. */
+/** A note's first sentence: up to the first full stop, ! or ? after a word (not an initial) that a capital follows. */
 export function firstSentence(text: string): string {
   const t = text.trim();
-  const m = /^([\s\S]*?[a-z0-9)’'”"]\.)\s+(?=[A-Z‘“"'])/.exec(t);
+  const m = /^([\s\S]*?[a-z0-9)’'”"][.!?])\s+(?=[A-Z‘“"'])/.exec(t);
   return m ? m[1] : t;
 }
 
@@ -907,10 +910,11 @@ export function seriesChampions(d: SeriesData): Page {
   const first = seasons[seasons.length - 1].year;
   const firstTeams = [...seasons].reverse().find(s => s.constructorChampion)?.year;
   const name = escapeHtml(d.name);
+  const champs = new Set(seasons.map(s => s.driver)).size;
   const mast =
     `<header class="pd-ch-mast"><p class="pd-ch-kick">${name} · Roll of honour</p><h2 class="pd-ch-h">${name} champions</h2>` +
     `<p class="pd-ch-intro">Every drivers' champion since ${first}${firstTeams ? ` and every constructors' champion since ${firstTeams}` : ''}, year by year: ` +
-    `${seasons.length} seasons, ${new Set(seasons.map(s => s.driver)).size} different drivers.</p></header>`;
+    `${seasonsText(seasons.length)}, ${champs} different driver${champs === 1 ? '' : 's'}.</p></header>`;
 
   const decade = (y: number) => Math.floor(y / 10) * 10;
   const decades = [...new Set(seasons.map(s => decade(s.year)))];
@@ -918,10 +922,7 @@ export function seriesChampions(d: SeriesData): Page {
     `<nav class="pd-ch-jump" aria-label="Jump to"><span class="lab">Jump to</span>` +
     decades.map((x, i) => `<a href="#pd-ch-${x}s" data-dec="${x}s"${i === 0 ? ' class="on"' : ''}>${x}s</a>`).join('') +
     (firstTeams ? `<a href="#pd-ch-${firstTeams}" data-dec="${decade(firstTeams)}s">${firstTeams}: teams' title</a>` : '') +
-    `<span class="pd-ch-find" hidden></span><span class="pd-ch-count" data-of="${seasons.length}">${seasons.length} seasons</span></nav>`;
-
-  const begins = (cards: boolean) =>
-    `<b>${firstTeams}</b> The constructors' championship begins: from here the ${cards ? "Teams' line" : 'last column'} names the teams' champion.`;
+    `<span class="pd-ch-find" hidden></span><span class="pd-ch-count" data-of="${seasons.length}">${seasonsText(seasons.length)}</span></nav>`;
   const decs = decades
     .map(x => {
       const list = seasons.filter(s => decade(s.year) === x);
@@ -935,7 +936,7 @@ export function seriesChampions(d: SeriesData): Page {
         const m = marginOf(s);
         const close = m !== null && m <= 5;
         const margin = m === null ? '' : `+${m}`;
-        const find = escapeHtml([s.year, s.driver, team, s.runnerUp, s.constructorChampion].filter(Boolean).join(' ').toLowerCase());
+        const find = escapeHtml(fold([s.year, s.driver, team, s.runnerUp, s.constructorChampion].filter(Boolean).join(' ')));
         const teamsCell = s.constructorChampion ? `<b>${escapeHtml(s.constructorChampion)}</b><small>${ordinal(mk?.teamNth ?? 1)} title</small>` : '<small>—</small>';
         rows.push(
           `<tr data-find="${find}"><td class="yr">${s.year}</td><td class="ch"><i class="tb" style="--t:${colour}"></i><b>${escapeHtml(s.driver)}${sup}</b><small>${escapeHtml(team)}</small></td>` +
@@ -947,11 +948,11 @@ export function seriesChampions(d: SeriesData): Page {
           `<li data-find="${find}"><p class="top"><b class="yr">${s.year}</b><span${close ? ' class="close"' : ''}>${facts}</span></p>` +
             `<p class="nm" style="--t:${colour}"><b>${escapeHtml(s.driver)}${sup}</b><small>${escapeHtml(team)}</small></p>` +
             (s.runnerUp ? `<p class="kv"><span>Runner-up</span><span><b>${escapeHtml(s.runnerUp)}</b>${typeof s.runnerUpPoints === 'number' ? ` · ${s.runnerUpPoints} pts` : ''}</span></p>` : '') +
-            `<p class="kv"><span>Teams'</span><span>${s.constructorChampion ? `<b>${escapeHtml(s.constructorChampion)}</b> · ${ordinal(mk?.teamNth ?? 1)} title` : '—'}</span></p></li>`,
+            (s.constructorChampion ? `<p class="kv"><span>Teams'</span><span><b>${escapeHtml(s.constructorChampion)}</b> · ${ordinal(mk?.teamNth ?? 1)} title</span></p>` : '') +
+            '</li>',
         );
         if (s.year === firstTeams) {
-          rows.push(`<tr class="era" id="pd-ch-${firstTeams}"><td colspan="7">${begins(false)}</td></tr>`);
-          cards.push(`<li class="era">${begins(true)}</li>`);
+          rows.push(`<tr class="era" id="pd-ch-${firstTeams}"><td colspan="7"><b>${firstTeams}</b> The constructors' championship begins: from here the last column names the teams' champion.</td></tr>`);
         }
       }
       return (
@@ -1000,7 +1001,7 @@ export function seriesChampions(d: SeriesData): Page {
   }
   const category = `/category/${categorySlug(d.name)}/`;
   const more = [
-    door(seriesPath(d.slug), seriesPath(d.slug), d.name, `The season at a glance: next race, last race${rounds ? `, all ${rounds} rounds` : ''}.`, true),
+    door(seriesPath(d.slug), seriesPath(d.slug), d.name, `The season at a glance: next race, last race${rounds > 1 ? `, all ${rounds} rounds` : ''}.`, true),
     built(d.slug, 'standings') ? door(seriesPath(d.slug, 'standings'), seriesPath(d.slug, 'standings'), `${d.name} standings`, standLine, true) : '',
     built(d.slug, 'results') ? door(seriesPath(d.slug, 'results'), seriesPath(d.slug, 'results'), `${d.name} results`, "Every round's weekend, session by session.", true) : '',
     door(`/calendar/#${d.slug}`, `/calendar/#${d.slug}`, `${d.name} on the calendar`, 'Every session in your own time zone.', true),

@@ -22,7 +22,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
 - **Editors get:** nothing new; the page reads champions.json, champion-notes.json, record-notes.json and historic-team-colors.json, edited by hand as before.
 - **Files (21):**
   - `lib/wp/series.ts` · `seriesChampions`, with `titleCounts`, `teamTallies`, `recordLists`, `championColour`, `firstSentence` and `ordinal`; `BUILT` gains Formula 1's champions; `seriesFamily` returns the page.
-  - `lib/wp/series.test.ts` · 13 new tests; three changed where the greyed Champions link became a link, one of them now checking that Formula 2's tabs stay greyed.
+  - `lib/wp/series.test.ts` · 14 new tests, reading champions.json up to 2025; three changed where the greyed Champions link became a link, one of them now checking that Formula 2's tabs stay greyed.
   - `lib/wp/render.ts` · `SeriesData.champions` and `ChampionsData`.
   - `scripts/wp-publish.mts` · reads the four files and team-names.json for Formula 1.
   - `wp-theme/paddock/style.css` · 0.1.18: `.pd-ch-*` under `.pd-chp`.
@@ -35,8 +35,11 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
     - O17's OPENED, ANSWERED, PLANNED, BUILT and VERIFIED evidence;
     - IDEAS: the lap chart's line closed; no Learn or News page on the new site while the footer and the header name them.
 - **Answered:** the three doorways (the operator in plan mode: "Greyed until built").
+- **Reviewed** on the operator's "My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1185.": one fresh-context Sonnet reader, 334,419 tokens, 85 tool calls, about 18 minutes; mergeable after fixes, 0 blockers, 4 should-fix, 10 nits.
+- **Folded:** the search ignores accents and needs every word; a jump clears the jump bar where it wraps (its height measured into `--pd-ch-bar`); the tests read champions.json up to 2025; the phone cards follow the draft (no Teams' line before 1958, no 1958 card); a phone opens an address's decade or season; a query is cleared on a phone; the count aria-live; the tiles wrap at 300 px; singular counts; firstSentence ends at ! and ?; the footnote's dropped scores also against formula1.com. Accepted, with reasons in the CHANGELOG: an abbreviation in a note, the no-script phone 1958 link, the drafted colours, the footnote's Formula 1 lines (an IDEAS line for O18), the prefixed anchors, no automated test for paddock.js.
 - **Verified:**
-  - the dry run (`--from-ref origin/paddock-data --only /series/f1/`, a9916c3b): 144 pages, the Champions page the largest at 75,895 bytes; hand counts: 76 rows and 76 cards in 8 decades, 76 seasons and 35 drivers, Ferrari 15 and 16, Schumacher and Hamilton 7, 1984's 0.5, "Antonelli leads by 102 with 150 points left.";
+  - after the fold: `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,921 tests; the dry run's Champions page 75,321 bytes; on the preview, by real typing "raikkonen" and "Räikkönen" 3 of 76, "senna 1988" and "1988 senna" 1988, "norris verstappen" 2025 and 2024; a jump at 700 and 900 px lands 12 px under the two-row bar; `#pd-ch-1970s` and `#pd-ch-1958` open on a phone; a query is cleared on narrowing to a phone; no tile overflow at 300 px;
+  - the dry run (`--from-ref origin/paddock-data --only /series/f1/`, a9916c3b): 144 pages, the Champions page the largest at 75,895 bytes before the fold; hand counts: 76 rows and 76 cards in 8 decades, 76 seasons and 35 drivers, Ferrari 15 and 16, Schumacher and Hamilton 7, 1984's 0.5, "Antonelli leads by 102 with 150 points left.";
   - the four regenerated Formula 1 fixtures match the dry run's pages exactly with only the Champions tab changed;
   - on the theme preview (0.1.18):
     - WordPress kept the markup: 152 `data-find`, 286 `--t`, 9 ids, the search's slot hidden, no `data-one` without the script;

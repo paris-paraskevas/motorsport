@@ -23,7 +23,16 @@ The operator's order of 22 Oct puts Champions after the Standings. On "Go: plan 
 - **`BUILT`** gains Formula 1's champions: the tab is a link on every Formula 1 page that carries the tabs and on the series list's card; `seriesFamily` returns the page.
 - **Theme 0.1.18:** `.pd-ch-*` under `.pd-chp` on the theme's tokens; the jump bar sticky under the admin bar, the decades and the 1958 row clearing it when jumped to; two records columns below 1,200 px; the phone's rules at 699 px (cards, one decade when the script marks it, a thin scrollbar on the jump strip). paddock.js: the search (year, champion, runner-up or team; a decade with no match hides; "No season or driver matches"; Escape clears; "5 of 76 seasons") and the phone's decade switch. WordPress keeps no input or inline SVG in a page, so the box is the script's and the magnifier a CSS mask.
 - **Facts on the page:** the footnote's half point checked against formula1.com ("Formula One racing's greatest title showdowns": Monaco 1984 halted after 31 laps, half points; Lauda by half a point); "until 1990 only a driver's best results counted" against Wikipedia's List of Formula One points systems and The Race ("What happened last time F1 used dropped scores?"); no formula1.com page found for the second.
-- **Tests:** 13 new; three changed where the greyed Champions link became a link, one of them now checking that Formula 2's tabs stay greyed.
+- **Tests:** 14 new; three changed where the greyed Champions link became a link, one of them now checking that Formula 2's tabs stay greyed. The page's tests read champions.json up to 2025, so adding 2026's champion by hand keeps them green; the colour test reads the whole file.
+- **Review** (#1185, one fresh-context Sonnet reader, 334,419 tokens, 85 tool calls, about 18 minutes): mergeable after fixes, 0 blockers, 4 should-fix, 10 nits. Folded:
+  - the search ignores accents and needs every word ("raikkonen" and "senna 1988" found nothing): `fold` in series.ts for each row's text, the same in paddock.js for the query;
+  - a jump landed under the jump bar where it wraps (700 to about 1,090 px): the script keeps the bar's height in `--pd-ch-bar`, measured again once the web font loads, with 100 px as the fallback there;
+  - the tests pinned the live champions.json (above);
+  - the phone cards follow the draft: no Teams' line before 1958 and no card for the 1958 row; the phone's "1958" jump goes to the 1958 season's card;
+  - an address naming a decade or a season opens it on a phone; a query left from a wider window is cleared on a phone, which has no box; the count is aria-live and the empty line role=status;
+  - the reigning card's tiles wrap at 300 px; "1 season", "1 different driver"; firstSentence also ends at ! and ?;
+  - the footnote's dropped scores also against formula1.com's points-system article ("a system that remained in play until 1991").
+  Accepted: firstSentence cuts at a lower-case abbreviation (no stored note has one); without the script a phone's "1958" link goes nowhere; orange text at 3.11:1 in Day and dark team squares in Night, as drawn; the footnote and the Around the site lines are Formula 1's (an IDEAS line for O18); the plan's anchors #d2020 and #era-1958 are #pd-ch-2020s and #pd-ch-1958, prefixed to stay clear of other ids; paddock.js has no automated test (checked by hand on the preview).
 
 ## 1.0.295 — 2026-10-22
 
