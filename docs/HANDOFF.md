@@ -6,7 +6,47 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-23 (LATEST, session 70 handed off at ~23:45Z on the 22nd for a fresh context: O16, Formula 1's Standings, done and live with theme 0.1.17; the operator's question of a lap-by-lap race position chart is the next session's first item)
+## ⚡ Next session pickup — 2026-10-25 (LATEST, session 71 is the desk: O17 done and its button fixed live (theme 0.1.19); the lap chart planned and approved; the programme moved to parallel sessions, batch Task 1 running: 1.a the lap chart build, 1.b the fourteen series' research, 1.c the 2025 title race draft)
+
+### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
+
+```
+Session 72, the desk session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
+Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md (rules 7 and 11 changed on 25 Oct for parallel sessions) · docs/plan/ledger.json (O17 done; O28 and O20 started) · docs/HANDOFF.md LATEST (25 Oct) · the memory feedback-paddock-* files (feedback-paddock-task-numbering: a batch of parallel work is Task N, its sub-tasks N.a, N.b, N.c).
+Then run `git status` and `git log --oneline -5` on the local branch desk/records, and list the linked sessions of batch Task 1 (1.a the lap chart build, 1.b the fourteen series' research, 1.c the 2025 title race draft).
+The desk builds nothing: it keeps the ledger, the handoff, IDEAS and the ledger page, builds each theme zip with its test list, and runs publish runs on my word.
+Not without my word: any push, merge, publish run, theme upload, the old Next.js code, DNS, any prod write.
+```
+
+1. **O17 is DONE, and its button fixed.** #1185 (the Champions page, 1.0.296) merged as b0a9bac8, theme 0.1.18 uploaded, published in run 40089754745, checked signed in at 1,440 and 390 px.
+   - The operator's test at 1,440 px (24 Oct): "no great visibility due to overlap of 2026 title race button on 1440px on bottom right above 2025 background", and the button should lead to a 2025 title race page.
+   - Answers: the button masks the year; a 2025 page is drafted for answers (Task 1.c, IDEAS).
+   - #1186 (1.0.297, theme 0.1.19): the button takes the card's colour. Merged by the operator into next as 05d9ca5f at 03:39Z on the 25th, without its Sonnet review (merged before the 5-hour figure). 0.1.19 uploaded by the operator. Checked on the site, signed in, at 1,440 px: the live stylesheet's Version 0.1.19; the button rgb(255, 128, 0) equal to the card's and the topmost element at its centre.
+2. **The lap chart (O28) is planned and approved**, at the top of the O28 section in C:\Users\ppara\.claude\plans\humble-pondering-spring.md.
+   - Answers in plan mode: a dotted step to the result's place, marked †; the six differing races of 2026 checked against their reports in the build, then the mark from the data alone; Pit wall's note column widened on the race page (58 → 94 px, 40 → 68 on a phone).
+   - Its defaults changed by a dated ledger line. f1/laps.json's name and shape approved with the plan.
+3. **Parallel sessions (rules 7 and 11, 25 Oct, the operator's word in plan mode):**
+   - Building is done by a session the operator starts for its task, never by a subagent; at most three sessions at once besides the desk.
+   - The desk owns the ledger, the handoff, IDEAS, the ledger page, theme zips and publish runs. Every session runs on Opus; reviews stay Sonnet agents, one at a time across sessions.
+   - The plan is at the top of humble-pondering-spring.md.
+4. **Batch Task 1, started 25 Oct ~03:00Z:**
+   - **1.a, the lap chart build** (O28): session local_30071940-3b3c-443d-8242-affe06c291db, its own worktree cut from o17/button, its theme preview on port 9401. Its PR carries 1.0.298 and theme 0.1.20. It stops for the operator's word before a push and before its review.
+   - **1.b, the fourteen series' research** (O20): session local_f893814b-fe8d-4bca-b842-01d16502c100, read only. Inventories and a draft per family, as artifacts for answers.
+   - **1.c, the 2025 title race draft:** session local_9d4e06db-f1b8-4ff2-901c-1e3147058d28, read only, artifact only.
+   - **Next:** Task 2, O18 by family, once 1.b's drafts are answered and 1.a is merged.
+5. **Records not yet on GitHub:** the local branch desk/records (from next at 05d9ca5f) holds the desk's records commits. They go up as a records PR (a docs(handoff) merge) on the operator's word, never into a build session's branch.
+6. **Usage:** the weekly limit reset on 24 Oct at 21:00Z. Estimates: batch Task 1 about 1M tokens (1.a about 600k with its review, 1.b about 250k, 1.c about 150k), all on Opus.
+
+**Landmines met in session 71:**
+- docs/plan/ledger.json is indented with one space: write it with `JSON.stringify(L, null, 1)`, or every line changes.
+- Message a session by its `local_…` id; its name does not reach it.
+- A Google sign-in popup open in the browser pane pauses its navigation for every tab: leave it to the operator, and use Playwright for the preview meanwhile. Playwright writes its console logs to .playwright-mcp/, which is gitignored.
+- The theme preview takes about a minute to boot: a 502 "WordPress is not ready yet" comes first.
+- On the live site the theme's stylesheet carries ?m=<mtime>, not ?ver=: read the Version line from the file itself.
+
+---
+
+## ⚡ Next session pickup — 2026-10-23 (session 70 handed off at ~23:45Z on the 22nd for a fresh context: O16, Formula 1's Standings, done and live with theme 0.1.17; the operator's question of a lap-by-lap race position chart is the next session's first item)
 
 ### 🔴 Start here — the handoff prompt for the next BUILD session (copy it whole)
 

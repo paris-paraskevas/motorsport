@@ -37,7 +37,9 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   2. Point at the button: it darkens slightly and the year stays hidden behind it.
   3. The same page on a phone: the button across the card, readable over the year.
 - **After the merge:** the upload of 0.1.19; CSS only, so no publish run.
-- **Review:** one fresh-context Sonnet reader, on the operator's 5-hour figure (about 25k tokens).
+- **Review:** not run; the operator merged before giving the 5-hour figure.
+- **Merged:** 25 Oct 03:39Z into `next` as 05d9ca5f, by the operator.
+- **Uploaded and checked:** 0.1.19 uploaded by the operator on 25 Oct. Checked on the site, signed in, at 1,440 px: the live stylesheet's Version 0.1.19 (`curl` of the theme's style.css); the button's background rgb(255, 128, 0), equal to the card's; the button the topmost element at its centre. The operator's test, with the three checks above, follows.
 
 ## #1185 · 1.0.296 · O17 (Formula 1's Champions: the roll of honour) · opened 2026-10-23 into `next` on the operator's "Push o17/champions and open the PR into next.", built on "Go: plan O17 in plan mode." and "Build O17 now in this session.", the plan approved in plan mode; the review and the merge on the word
 **The Champions page.** Built as drawn on The Paddock Drafts, full width; the three doorways to pages the new site does not have yet are greyed, as answered in plan mode. The records of the lap chart's draft (O28, answered "All six lap chart defaults stand.") and of O17's opening and plan ride in from the local o16/records.
