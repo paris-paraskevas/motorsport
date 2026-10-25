@@ -104,23 +104,23 @@ const r2Extras: Record<string, SessionExtras> = {
 /** A driver in one place lap after lap, but where `at` says otherwise, as f1/laps.json keeps it (O28). */
 const run = (place: number, laps: number, at: Record<number, number> = {}): string => Array.from({ length: laps }, (_, i) => at[i + 1] ?? place).join('.');
 // Round 2's race, 59 laps: Hamilton crossed the line third and Leclerc second, classified the other way round; Driver
-// 10 started from the pit lane; Driver 11 ran a lap fewer; Driver 12 stopped after 29.
+// 10 started from the pit lane; Driver 11 ran a lap fewer; Driver 12 stopped after 29. The stops as Jolpica lists them.
 const r2Laps: RaceLaps = {
   laps: 59,
   at: '2026-03-16T00:00:00.000Z',
   drivers: [
-    [VER, 1, run(1, 59)],
-    [HAM, 3, run(2, 59, { 1: 3, 2: 3, 59: 3 })],
-    [LEC, 2, run(3, 59, { 1: 2, 2: 2, 59: 2 })],
-    [ANT, 5, run(4, 59)],
-    [BEA, 6, run(5, 59)],
-    [RUS, 4, run(6, 59)],
-    ['Driver 7', 7, run(7, 59)],
-    ['Driver 8', 8, run(8, 59)],
-    ['Driver 9', 9, run(9, 59)],
-    ['Driver 10', 0, run(10, 59)],
-    ['Driver 11', 10, run(11, 58)],
-    ['Driver 12', 11, run(12, 29)],
+    [VER, 1, run(1, 59), '20'],
+    [HAM, 3, run(2, 59, { 1: 3, 2: 3, 59: 3 }), '28'],
+    [LEC, 2, run(3, 59, { 1: 2, 2: 2, 59: 2 }), '18.40'],
+    [ANT, 5, run(4, 59), ''],
+    [BEA, 6, run(5, 59), '30'],
+    [RUS, 4, run(6, 59), '15'],
+    ['Driver 7', 7, run(7, 59), '22'],
+    ['Driver 8', 8, run(8, 59), '24'],
+    ['Driver 9', 9, run(9, 59), '26'],
+    ['Driver 10', 0, run(10, 59), '27'],
+    ['Driver 11', 10, run(11, 58), '25'],
+    ['Driver 12', 11, run(12, 29), '8'],
   ],
 };
 
@@ -578,7 +578,7 @@ describe('the lap chart (O28)', () => {
     expect(tableRow(chart, 'HAM')[10]).toBe('3');
     expect(chart).toContain('<span class="pd-lc-k"><b>†</b> placed differently in the result than at the flag</span>');
     expect(lapChartNotes(f1)).toEqual([{ round: 2, differs: ['HAM P3→P2', 'LEC P2→P3'], unjoined: [] }]);
-    const same = withRace({ laps: { ...r2Laps, drivers: r2Laps.drivers.map(([n, g, p]) => [n, g, n === HAM ? run(2, 59) : n === LEC ? run(3, 59) : p]) } });
+    const same = withRace({ laps: { ...r2Laps, drivers: r2Laps.drivers.map(([n, g, p, s]) => [n, g, n === HAM ? run(2, 59) : n === LEC ? run(3, 59) : p, s]) } });
     expect(sectionOf(pageOf(`${R}2/race/`, weekendPages(same)), 'Lap chart')).not.toContain('†');
     expect(lapChartNotes(same)).toEqual([]);
   });
@@ -594,18 +594,23 @@ describe('the lap chart (O28)', () => {
     expect(chart).toContain('<span class="pd-lc-k"><i class="pd-lc-kd"></i>The team’s second driver</span>');
   });
 
-  it("puts a stop where a stint ends, none at a red flag's lap, and says nothing for a driver without stints", () => {
+  it("puts a stop where Jolpica lists one, none at a red flag's lap, and draws none when the store holds no stops", () => {
     const { drivers } = chartData(chart);
-    expect(['VER', 'LEC', 'ANT', '7'].map(c => drivers.get(c)?.[8])).toEqual(['20', '18.40', '', '-']);
+    expect(['VER', 'LEC', 'ANT', '7'].map(c => drivers.get(c)?.[8])).toEqual(['20', '18.40', '', '22']);
     expect(tableRow(chart, 'LEC')[11]).toBe('18, 40');
     expect(tableRow(chart, 'ANT')[11]).toBe('none');
-    expect(tableRow(chart, '7')[11]).toBe('–');
-    // Round 2's red flag came on lap 33: a tyre change under it is no stop.
-    const red = withRace({ extras: { stints: [...r2Extras.Race.stints!.filter(([n]) => n !== 12), [12, [['HARD', 1, 33], ['MEDIUM', 34, 59]]]] } });
-    expect(chartData(sectionOf(pageOf(`${R}2/race/`, weekendPages(red)), 'Lap chart')).drivers.get('ANT')?.[8]).toBe('');
+    // Not OpenF1's stints, which Pit wall draws: those were a lap early or missing in 8 of 2026's first 17 races.
+    const stints = withRace({ extras: { stints: [...r2Extras.Race.stints!.filter(([n]) => n !== 3), [3, [['MEDIUM', 1, 19], ['HARD', 20, 59]]]] } });
+    expect(chartData(sectionOf(pageOf(`${R}2/race/`, weekendPages(stints)), 'Lap chart')).drivers.get('VER')?.[8]).toBe('20');
+    // Round 2's red flag came on lap 33: Jolpica lists the tyre changes under it as stops, and they are no stop.
+    const red = withRace({ laps: { ...r2Laps, drivers: r2Laps.drivers.map(([n, g, p, s]) => [n, g, p, n === ANT ? '33' : n === LEC ? '18.33.40' : s]) } });
+    const redData = chartData(sectionOf(pageOf(`${R}2/race/`, weekendPages(red)), 'Lap chart')).drivers;
+    expect([redData.get('ANT')?.[8], redData.get('LEC')?.[8]]).toEqual(['', '18.40']);
     expect(chart).toContain('<span class="pd-lc-k"><i class="pd-lc-kp"></i>Pit stop</span>');
-    // No stints for the race: no dots, no stops column, no Pit stop in the key, never a guessed dot.
-    const none = sectionOf(pageOf(`${R}2/race/`, weekendPages(withRace({ extras: { stints: undefined } }))), 'Lap chart');
+    // A store without the stops (read from a file written before them): no dots, no stops column, no Pit stop in the
+    // key, never a guessed dot.
+    const before: RaceLaps = JSON.parse(JSON.stringify({ ...r2Laps, drivers: r2Laps.drivers.map(d => d.slice(0, 3)) }));
+    const none = sectionOf(pageOf(`${R}2/race/`, weekendPages(withRace({ laps: before }))), 'Lap chart');
     expect([...chartData(none).drivers.values()].every(f => f[8] === '-')).toBe(true);
     expect(none).not.toContain('Stops on lap');
     expect(none).not.toContain('Pit stop');
@@ -649,7 +654,7 @@ describe('the lap chart (O28)', () => {
     expect(chart).toContain('Kimi &lt;b&gt;Antonelli&lt;/b&gt;,Mercedes');
     expect(tableRow(chart, 'ANT')[2]).toBe('Kimi &lt;b&gt;Antonelli&lt;/b&gt;');
     const odd = '<img src=x>, Driver;|';
-    const stranger = withRace({ laps: { ...r2Laps, drivers: [...r2Laps.drivers, [odd, 12, run(12, 20)]] } });
+    const stranger = withRace({ laps: { ...r2Laps, drivers: [...r2Laps.drivers, [odd, 12, run(12, 20), '']] } });
     const body = pageOf(`${R}2/race/`, weekendPages(stranger));
     expect(body).not.toContain('<img');
     const { drivers } = chartData(sectionOf(body, 'Lap chart'));

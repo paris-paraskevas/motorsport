@@ -577,12 +577,13 @@ export function mapsDue<T extends ListedSession>(
 // ── Formula 1's lap chart (slot O28): Jolpica's laps, asked once a race ──────
 
 /** A race's places lap by lap, as f1/laps.json keeps them: its laps, when they were fetched (ISO), and each driver of
- *  Jolpica's result, named as f1/results.json names them (given and family name), with the grid slot (0: the pit lane)
- *  and the place at the end of each lap run, dotted ("1.1.2"). */
+ *  Jolpica's result, named as f1/results.json names them (given and family name), with the grid slot (0: the pit lane),
+ *  the place at the end of each lap run, dotted ("1.1.2"), and the laps of its pit stops as Jolpica lists them, dotted
+ *  ("24.39", "" for none; a tyre change under a red flag among them, which the chart leaves out). */
 export interface RaceLaps {
   laps: number;
   at: string;
-  drivers: [string, number, string][];
+  drivers: [string, number, string, string][];
 }
 
 /** Jolpica's laps were not whole: when that was found (ISO), and when to ask again (nextAsk). */
@@ -610,17 +611,25 @@ function jolpicaTotal(answer: unknown): number | null {
 const count = (v: unknown): number | null => (/^\d+$/.test(str(v)) ? Number(str(v)) : null);
 
 /**
- * A race's places from Jolpica's answers: its result (the names, the grid and the laps each driver ran) and its laps,
- * 100 timings a page. Whole when every page came (the timings add up to the answer's total), every driver has a place
- * for each lap it ran and none past it, and every lap holds each place once; otherwise `why` names the first gap, for
- * the run's log.
+ * A race's places from Jolpica's answers: its result (the names, the grid and the laps each driver ran), its laps, 100
+ * timings a page, and its pit stops, 100 a page. Whole when every page came (the timings and the stops add up to their
+ * answers' totals), every driver has a place for each lap its result counts, every lap holds each place once, and the
+ * pit stops are listed. A driver may hold places past its result's laps: a penalty lap takes a lap off the result, not
+ * off the road (Britain 2026: Sainz, 52 laps run, classified a lap down), so those places are kept. Every race of 2026
+ * had stops (19 to 86), so an empty list is taken as Jolpica not having them yet. Otherwise `why` names the first gap,
+ * for the run's log.
  */
-export function raceLaps(results: unknown, pages: readonly unknown[]): { laps: number; drivers: RaceLaps['drivers']; complete: boolean; why: string } {
+export function raceLaps(
+  results: unknown,
+  pages: readonly unknown[],
+  stopPages: readonly unknown[],
+): { laps: number; drivers: RaceLaps['drivers']; complete: boolean; why: string } {
   const entries = jolpicaRace(results)?.Results;
   const listed = (Array.isArray(entries) ? entries : []).filter(isObj).map(e => {
     const driver = isObj(e.Driver) ? e.Driver : {};
     return { id: str(driver.driverId), name: `${str(driver.givenName)} ${str(driver.familyName)}`.trim(), grid: count(e.grid), laps: count(e.laps) };
   });
+  const known = (id: string): boolean => listed.some(x => x.id === id);
   const places = new Map<string, number[]>();
   let timings = 0;
   let total: number | null = null;
@@ -634,7 +643,7 @@ export function raceLaps(results: unknown, pages: readonly unknown[]): { laps: n
         timings++;
         const id = str(t.driverId);
         const p = count(t.position);
-        if (!listed.some(x => x.id === id)) stranger ||= id || 'a driver without an id';
+        if (!known(id)) stranger ||= id || 'a driver without an id';
         if (n === null || !(n > 0) || p === null || !(p > 0)) continue;
         const run = places.get(id) ?? [];
         run[n - 1] = p;
@@ -642,8 +651,23 @@ export function raceLaps(results: unknown, pages: readonly unknown[]): { laps: n
       }
     }
   }
-  const laps = Math.max(0, ...listed.map(x => x.laps ?? 0));
-  const drivers: RaceLaps['drivers'] = listed.map(x => [x.name, x.grid ?? 0, (places.get(x.id) ?? []).slice(0, x.laps ?? 0).join('.')]);
+  const pits = new Map<string, number[]>();
+  let stopCount = 0;
+  let stopTotal: number | null = null;
+  let stopStranger = '';
+  for (const page of stopPages) {
+    stopTotal ??= jolpicaTotal(page);
+    const listedStops = jolpicaRace(page)?.PitStops;
+    for (const s of (Array.isArray(listedStops) ? listedStops : []).filter(isObj)) {
+      stopCount++;
+      const id = str(s.driverId);
+      const lap = count(s.lap);
+      if (!known(id)) stopStranger ||= id || 'a driver without an id';
+      if (lap !== null && lap > 0 && !(pits.get(id) ?? []).includes(lap)) pits.set(id, [...(pits.get(id) ?? []), lap]);
+    }
+  }
+  const laps = Math.max(0, ...listed.map(x => Math.max(x.laps ?? 0, places.get(x.id)?.length ?? 0)));
+  const drivers: RaceLaps['drivers'] = listed.map(x => [x.name, x.grid ?? 0, (places.get(x.id) ?? []).join('.'), (pits.get(x.id) ?? []).sort((a, b) => a - b).join('.')]);
   const gap = ((): string => {
     if (!listed.length) return 'no result';
     const odd = listed.find(x => !x.id || !x.name || x.grid === null || x.laps === null);
@@ -653,14 +677,18 @@ export function raceLaps(results: unknown, pages: readonly unknown[]): { laps: n
     if (stranger) return `laps for ${stranger}, who is not in the result`;
     for (const x of listed) {
       const run = places.get(x.id) ?? [];
-      const held = run.filter(p => p !== undefined).length;
-      if (held !== x.laps || run.length > (x.laps ?? 0)) return `${x.name} has ${held} places for ${x.laps} laps`;
+      const hole = run.findIndex(p => p === undefined);
+      if (hole >= 0) return `${x.name} has no place on lap ${hole + 1}`;
+      if (run.length < (x.laps ?? 0)) return `${x.name} has ${run.length} places for ${x.laps} laps`;
     }
     for (let n = 1; n <= laps; n++) {
       const on = listed.map(x => places.get(x.id)?.[n - 1]).filter((p): p is number => p !== undefined).sort((a, b) => a - b);
       const wrong = on.findIndex((p, i) => p !== i + 1);
       if (wrong >= 0) return `lap ${n} holds places ${on.join(',')}`;
     }
+    if (!stopCount) return 'no pit stops yet';
+    if (stopTotal !== null && stopCount !== stopTotal) return `${stopCount} of ${stopTotal} pit stops`;
+    if (stopStranger) return `pit stops for ${stopStranger}, who is not in the result`;
     return '';
   })();
   return { laps, drivers, complete: gap === '', why: gap };

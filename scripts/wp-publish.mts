@@ -19,7 +19,7 @@
 //
 // Formula 1's weekend pages (O19) also keep f1/sessions.json (OpenF1's weather, race control and tyres per session),
 // f1/forecast.json (MET Norway, the circuits racing within ten days) and f1/maps.json (each circuit's pole-lap map);
-// its race pages' lap charts (O28) keep f1/laps.json (Jolpica's places lap by lap, asked once a race).
+// its race pages' lap charts (O28) keep f1/laps.json (Jolpica's places lap by lap and pit stops, asked once a race).
 //
 // Publishing needs WP_SITE_URL (an https origin), WP_USER and WP_APP_PASSWORD (an
 // application password; never printed). Every log line starts with the run's
@@ -553,12 +553,15 @@ async function f1Weekend(out: Fetched, now: Date, season: number): Promise<void>
   log('W', `weekend f1 ${asked} sessions asked; ${changed} of 3 files changed`);
 }
 
-/** Formula 1's lap chart (slot O28) keeps f1/laps.json: each race's places lap by lap from Jolpica, asked for a race
- *  with a stored classification until its laps are whole, then never again (lapsDue and raceLaps in lib/wp/render.ts,
- *  where they are tested). The race's result names the drivers and their grid, then its laps come 100 timings a page:
- *  about 14 calls a race. Jolpica allows 4 calls a second and 500 an hour, shared with everyone on the same address,
- *  GitHub's runners included: the calls go 600 ms apart inside four minutes, and the first 429 stops the laps for the
- *  run. Laps not whole are a miss, asked again within the hour on race day and daily after (nextAsk). */
+/** Formula 1's lap chart (slot O28) keeps f1/laps.json: each race's places lap by lap and its pit stops from Jolpica,
+ *  asked for a race with a stored classification until they are whole, then never again (lapsDue and raceLaps in
+ *  lib/wp/render.ts, where they are tested). The race's result names the drivers and their grid, its laps come 100
+ *  timings a page and its pit stops 100 a page: about 15 calls a race. Jolpica allows 4 calls a second and 500 an hour,
+ *  shared with everyone on the same address, GitHub's runners included: the calls go 600 ms apart inside four minutes,
+ *  and the first 429 stops the laps for the run (it came after about 77 calls in each dry run of 25 Oct, so the first
+ *  fill takes several runs). Laps not whole are a miss, asked again within the hour on race day and daily after
+ *  (nextAsk). The stops are Jolpica's rather than OpenF1's stints: those were a lap early or missing in 8 of 2026's
+ *  first 17 races (the operator's answer of 25 Oct). */
 const F1_LAPS = 'f1/laps.json';
 const JOLPICA_GAP_MS = 600;
 const LAPS_MS = 4 * 60_000;
@@ -596,13 +599,17 @@ async function f1Laps(out: Fetched, now: Date, season: number): Promise<void> {
     let why: string;
     try {
       const results = await ask(`${base}/results.json?limit=100`);
-      const pages: unknown[] = [];
-      for (let offset = 0; offset < 3000; offset += 100) {
-        const page = await ask(`${base}/laps.json?limit=100&offset=${offset}`);
-        pages.push(page);
-        if (!(offset + 100 < Number((page as { MRData?: { total?: string } } | null)?.MRData?.total))) break;
-      }
-      const got = raceLaps(results, pages);
+      // Every page of an answer, 100 items a page, to the answer's total.
+      const all = async (what: 'laps' | 'pitstops'): Promise<unknown[]> => {
+        const pages: unknown[] = [];
+        for (let offset = 0; offset < 3000; offset += 100) {
+          const page = await ask(`${base}/${what}.json?limit=100&offset=${offset}`);
+          pages.push(page);
+          if (!(offset + 100 < Number((page as { MRData?: { total?: string } } | null)?.MRData?.total))) break;
+        }
+        return pages;
+      };
+      const got = raceLaps(results, await all('laps'), await all('pitstops'));
       if (got.complete) {
         year[String(round)] = { laps: got.laps, at: now.toISOString(), drivers: got.drivers };
         log('F', `laps f1 R${round} OK ${got.laps} laps ${calls - before} calls`);

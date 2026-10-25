@@ -564,11 +564,14 @@ describe("Formula 1's lap chart: what a run asks Jolpica for (O28)", () => {
     Results: [result('leclerc', 'Charles', 'Leclerc', 2, 3), result('max_verstappen', 'Max', 'Verstappen', 1, 3), result('hulkenberg', 'Nico', 'Hülkenberg', 0, 2, 'Retired')],
   });
   const laps = [lap(1, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(2, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(3, 'leclerc', 'max_verstappen')];
+  // Jolpica's pit stops: Verstappen stopped on lap 2, Leclerc on laps 1 and 2.
+  const stop = (driverId: string, n: number, lapNo: number) => ({ driverId, lap: String(lapNo), stop: String(n), time: '15:00:00', duration: '22.100' });
+  const stops = [answer({ PitStops: [stop('leclerc', 1, 1), stop('max_verstappen', 1, 2), stop('leclerc', 2, 2)] }, 3)];
 
-  it('keeps each driver of the result with the grid slot, the pit lane as 0, and the place at the end of each lap', () => {
-    expect(raceLaps(results, [answer({ Laps: laps }, 8)])).toEqual({
+  it('keeps each driver of the result with the grid slot, the pit lane as 0, the place at the end of each lap and its stops', () => {
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], stops)).toEqual({
       laps: 3,
-      drivers: [['Charles Leclerc', 2, '2.2.1'], ['Max Verstappen', 1, '1.1.2'], ['Nico Hülkenberg', 0, '3.3']],
+      drivers: [['Charles Leclerc', 2, '2.2.1', '1.2'], ['Max Verstappen', 1, '1.1.2', '2'], ['Nico Hülkenberg', 0, '3.3', '']],
       complete: true,
       why: '',
     });
@@ -576,21 +579,39 @@ describe("Formula 1's lap chart: what a run asks Jolpica for (O28)", () => {
 
   it('reads a lap split across two pages, as Jolpica splits them at 100 timings', () => {
     const split = [answer({ Laps: [laps[0], { ...laps[1], Timings: laps[1].Timings.slice(0, 1) }] }, 8), answer({ Laps: [{ ...laps[1], Timings: laps[1].Timings.slice(1) }, laps[2]] }, 8)];
-    expect(raceLaps(results, split).complete).toBe(true);
-    expect(raceLaps(results, split).drivers[1]).toEqual(['Max Verstappen', 1, '1.1.2']);
+    expect(raceLaps(results, split, stops).complete).toBe(true);
+    expect(raceLaps(results, split, stops).drivers[1]).toEqual(['Max Verstappen', 1, '1.1.2', '2']);
+  });
+
+  it('keeps the places a penalty lap left past a driver’s result: Sainz in Britain, 52 laps run, classified a lap down', () => {
+    // Hülkenberg ran all three laps on the road, but his result counts two.
+    const penalty = [lap(1, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(2, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(3, 'leclerc', 'max_verstappen', 'hulkenberg')];
+    const lapped = answer({ Results: [result('leclerc', 'Charles', 'Leclerc', 2, 3), result('max_verstappen', 'Max', 'Verstappen', 1, 3), result('hulkenberg', 'Nico', 'Hülkenberg', 0, 2, 'Lapped')] });
+    expect(raceLaps(lapped, [answer({ Laps: penalty }, 9)], stops)).toMatchObject({ laps: 3, complete: true });
+    expect(raceLaps(lapped, [answer({ Laps: penalty }, 9)], stops).drivers[2]).toEqual(['Nico Hülkenberg', 0, '3.3.3', '']);
   });
 
   it('calls the laps incomplete for a page missing, a place doubled, a driver short of laps or a driver it cannot name', () => {
-    expect(raceLaps(results, [answer({ Laps: laps.slice(0, 2) }, 8)])).toMatchObject({ complete: false, why: '6 of 8 timings' });
+    expect(raceLaps(results, [answer({ Laps: laps.slice(0, 2) }, 8)], stops)).toMatchObject({ complete: false, why: '6 of 8 timings' });
     const doubled = { number: '2', Timings: [{ driverId: 'max_verstappen', position: '1' }, { driverId: 'leclerc', position: '1' }, { driverId: 'hulkenberg', position: '3' }] };
-    expect(raceLaps(results, [answer({ Laps: [laps[0], doubled, laps[2]] }, 8)])).toMatchObject({ complete: false, why: 'lap 2 holds places 1,1,3' });
+    expect(raceLaps(results, [answer({ Laps: [laps[0], doubled, laps[2]] }, 8)], stops)).toMatchObject({ complete: false, why: 'lap 2 holds places 1,1,3' });
     const short = answer({ Results: [result('leclerc', 'Charles', 'Leclerc', 2, 3), result('max_verstappen', 'Max', 'Verstappen', 1, 3), result('hulkenberg', 'Nico', 'Hülkenberg', 0, 3, 'Lapped')] });
-    expect(raceLaps(short, [answer({ Laps: laps }, 8)])).toMatchObject({ complete: false, why: 'Nico Hülkenberg has 2 places for 3 laps' });
+    expect(raceLaps(short, [answer({ Laps: laps }, 8)], stops)).toMatchObject({ complete: false, why: 'Nico Hülkenberg has 2 places for 3 laps' });
+    // A lap missing before the last is a gap, though the count of places would do.
+    const holed = [answer({ Laps: [lap(1, 'max_verstappen', 'leclerc'), lap(2, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(3, 'leclerc', 'max_verstappen', 'hulkenberg')] }, 8)];
+    expect(raceLaps(results, holed, stops)).toMatchObject({ complete: false, why: 'Nico Hülkenberg has no place on lap 1' });
     const stranger = [answer({ Laps: [...laps.slice(0, 2), lap(3, 'leclerc', 'max_verstappen', 'bottas')] }, 9)];
-    expect(raceLaps(results, stranger)).toMatchObject({ complete: false, why: 'laps for bottas, who is not in the result' });
-    expect(raceLaps(answer({ Results: [] }), [answer({ Laps: laps }, 8)])).toMatchObject({ complete: false, why: 'no result' });
-    expect(raceLaps(results, [answer({ Laps: [] }, 0)])).toMatchObject({ complete: false, why: 'no laps' });
-    expect(raceLaps(results, [])).toMatchObject({ complete: false, why: 'no laps' });
+    expect(raceLaps(results, stranger, stops)).toMatchObject({ complete: false, why: 'laps for bottas, who is not in the result' });
+    expect(raceLaps(answer({ Results: [] }), [answer({ Laps: laps }, 8)], stops)).toMatchObject({ complete: false, why: 'no result' });
+    expect(raceLaps(results, [answer({ Laps: [] }, 0)], stops)).toMatchObject({ complete: false, why: 'no laps' });
+    expect(raceLaps(results, [], stops)).toMatchObject({ complete: false, why: 'no laps' });
+  });
+
+  it('calls the race incomplete until its pit stops are listed whole', () => {
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], [])).toMatchObject({ complete: false, why: 'no pit stops yet' });
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], [{ MRData: { total: '0', RaceTable: { Races: [] } } }])).toMatchObject({ complete: false, why: 'no pit stops yet' });
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], [answer({ PitStops: [stop('leclerc', 1, 1)] }, 3)])).toMatchObject({ complete: false, why: '1 of 3 pit stops' });
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], [answer({ PitStops: [stop('bottas', 1, 1)] }, 1)])).toMatchObject({ complete: false, why: 'pit stops for bottas, who is not in the result' });
   });
 
   it('asks for the races classified this season and not yet whole, a miss after its next ask, the newest first', () => {

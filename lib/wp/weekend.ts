@@ -409,7 +409,7 @@ interface LapLine {
   fin: number | null;
   /** How the line ends: at the flag (a lapped car on its last lap), with a cross where the car stopped, or disqualified. */
   end: 'flag' | 'out' | 'dsq';
-  /** The laps it pitted on (Pit wall's stints, none at a red flag's lap); null with no stints for it. */
+  /** The laps it pitted on (Jolpica's pit stops, none at a red flag's lap); null when the store holds none for the race. */
   stops: number[] | null;
 }
 
@@ -426,13 +426,12 @@ function lapLines(w: Weekend): { laps: number; rows: number; lines: LapLine[]; u
   const got = w.d.weekend?.laps?.[String(w.season)]?.[String(w.r.round)];
   if (!t || !isRaceLaps(got) || !(got.laps > 0)) return null;
   const c = cols(t);
-  const x = extrasOf(w, 'Race');
-  // A tyre change under a red flag is no stop (Monza's race, 2026).
-  const reds = new Set((x?.marks?.red ?? []).map(r => r.lap));
-  const stints = x?.stints?.length ? new Map(x.stints.map(([car, list]) => [car, list.filter(([, a, b]) => b >= a)] as const)) : null;
+  // Jolpica lists a tyre change under a red flag as a stop (21 of them on Monza's lap 3, 2026): race control's red
+  // flags take them out.
+  const reds = new Set((extrasOf(w, 'Race')?.marks?.red ?? []).map(r => r.lap));
   const unjoined: string[] = [];
   const lines: LapLine[] = [];
-  for (const [name, grid, dotted] of got.drivers) {
+  for (const [name, grid, dotted, pitted] of got.drivers) {
     const row = t.rows.find(r => r[c.name] === name) ?? t.rows.find(r => sameDriver(r[c.name] ?? '', name));
     const status = row && c.time >= 0 ? (row[c.time] ?? '') : '';
     if (NOT_STARTED.test(status)) continue;
@@ -440,8 +439,6 @@ function lapLines(w: Weekend): { laps: number; rows: number; lines: LapLine[]; u
     const places = dotted ? dotted.split('.').map(Number) : [];
     const team = row ? teamAt(w, row, c) : '';
     const pos = row ? Number(row[c.pos]) : NaN;
-    const car = numberOf(w.d, name);
-    const list = stints && car !== null ? stints.get(car) : undefined;
     lines.push({
       name,
       code: codeOf(w.d, name),
@@ -453,7 +450,7 @@ function lapLines(w: Weekend): { laps: number; rows: number; lines: LapLine[]; u
       places,
       fin: Number.isInteger(pos) && pos > 0 ? pos : null,
       end: DISQUALIFIED.test(status) ? 'dsq' : !row || TOOK_FLAG.test(status) || (!status && places.length === got.laps) ? 'flag' : 'out',
-      stops: list ? list.slice(0, -1).map(s => s[2]).filter(lap => !reds.has(lap)) : null,
+      stops: typeof pitted === 'string' ? (pitted ? pitted.split('.').map(Number) : []).filter(lap => !reds.has(lap)) : null,
     });
   }
   const lastSlot = Math.max(0, ...lines.filter(l => !l.pitLane).map(l => l.start));
