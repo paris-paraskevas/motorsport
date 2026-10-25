@@ -14,6 +14,44 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #(on opening) · 1.0.298 · O28 (Formula 1's lap chart) · built 2026-10-25 in a parallel session (Task 1.a) on the plan approved in plan mode with its three answers (a dotted step marked †; the six differing races checked against Formula 1's reports; Pit wall's notes widened on the race page), and the operator's "Both defaults" during the build; committed locally, the push, the PR into `next`, the review and the merge on the word
+**The lap chart.** Each driver's place at the end of every lap on the race page, between the Classification and Pit wall, as drawn on Paddock Lap Chart. The data is Jolpica's: its laps and its pit stops, kept in `f1/laps.json` on paddock-data; the safety car laps are race control's (OpenF1).
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.20 and the publish runs:
+  - on every Formula 1 race page whose laps are stored, the Lap chart: a line a driver from the grid to the flag, pit stops, safety car laps, retirements, and † where the result differs from the order at the flag; a pointer, a tap or the arrow keys follow one driver; the places as a table under it;
+  - on each round's Overview, "Lap chart →" beside "All 22 on the race's page";
+  - on the race page, Pit wall's notes column 94 px wide (68 on a phone), so its laps line up with the chart's.
+- **Editors get:** nothing new; the publisher fills `f1/laps.json` by itself, race by race.
+- **Files (18):**
+  - `lib/openf1/weekend.ts` · `NeutralSpan`, `SessionMarks.neutral`; `sessionMarks(…, race)` reads a race's safety car spans.
+  - `lib/openf1/weekend.test.ts` · 6 new tests.
+  - `lib/wp/render.ts` · `RaceLaps`, `LapsMiss`, `LapsStore`, `isRaceLaps`, `raceLaps`, `lapsDue`; `weekendWhole` wants a race's spans; `SeriesData.weekend.laps`.
+  - `lib/wp/render.test.ts` · 7 new tests; one changed on purpose (a race is whole only with its spans).
+  - `lib/wp/series.ts` · `sameDriver`, `seatOf`.
+  - `lib/wp/weekend.ts` · `lapChart` in the race's page; `lapChartNotes` for the log; the Overview's link.
+  - `lib/wp/weekend.test.ts` · 10 new tests; the fixture's round 2 gains its laps.
+  - `scripts/wp-publish.mts` · `f1Laps` with its spacing and log; `sessionMarks` told when the session is the race; `d.weekend.laps`; the notes logged each run.
+  - `wp-theme/paddock/style.css` · 0.1.20: `.pd-lc*`, the two column widths Pit wall's rows share on the race page, the scroll margin.
+  - `wp-theme/paddock/assets/js/paddock.js` · the chart's block.
+  - `wp-theme/preview/f1-race.html` · new, round 17's race page from the dry run; `blueprint.json` inserts it under round 17.
+  - `wp-theme/preview/f1-weekend.html` · regenerated from the dry run: the link only.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.298.
+- **Answered during the build** ("Both defaults", 25 Oct): a driver's places may run past his result's laps (Britain's penalty lap); the pit stop dots from Jolpica's pit stops, a fourth field in laps.json; Pit wall's stints to IDEAS.
+- **Verified:**
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,944 tests;
+  - the dry runs into a scratch copy of paddock-data (`--only /series/f1/ --openf1-max 20`, WordPress not called): all 17 races' safety car spans in one run; the laps filled from an empty store in five runs (Jolpica's 429 after about 77 calls a run), every race OK (`laps f1 R17 OK 62 laps 15 calls`); `f1/laps.json` 86,085 bytes; the race pages 30,960 to 48,574 bytes, their chart 10 to 15 KB;
+  - round 17: the 1,236 places and 22 grid slots of 23 Oct's check, VSC on laps 8–9 and 39–40, its 25 stops as Jolpica lists them;
+  - the six races placed differently, each against formula1.com's race result and its penalty notes: Miami https://www.formula1.com/en/results/2026/races/1284/miami/race-result (and the explainer https://www.formula1.com/en/latest/article/explained-why-leclerc-was-hit-with-a-20-second-time-penalty-after-the-miami-grand-prix.4EbZXOee2tXei29C5ktNMG), Monaco https://www.formula1.com/en/results/2026/races/1286/monaco/race-result, Barcelona https://www.formula1.com/en/results/2026/races/1287/barcelona-catalunya/race-result, Britain https://www.formula1.com/en/results/2026/races/1289/great-britain/race-result, Hungary https://www.formula1.com/en/results/2026/races/1291/hungary/race-result, Azerbaijan https://www.formula1.com/en/results/2026/races/1295/azerbaijan/race-result;
+  - on the theme preview (0.1.20): 20 widths from 300 to 2,560 px in Day and Night with no sideways scroll; lap 30 within 0.05 px of Pit wall's; pointer, tap and keys by real input; the Overview's link lands on the chart; without the script the table; Miami's and Britain's finish marks; 0 page errors.
+- **Test after upload:**
+  1. A race page with its laps stored (`/series/f1/2026/round-17/race/`) on a laptop, Day and Night: the Lap chart between the Classification and Pit wall; point at a line and the readout names the driver; click to keep him; Escape lets go.
+  2. On a phone: tap a line, then the same line again; a swipe over the chart scrolls the page.
+  3. Pit wall under it: its lap 30 under the chart's lap 30; its notes column wider.
+  4. Miami (round 4): Leclerc's line ends sixth, a dotted red step leads to "8†"; the key's † line.
+  5. Britain (round 9): Sainz's line runs to lap 52 in 13th and steps to "17†"; the safety car shaded from lap 48 to the flag.
+  6. A round's Overview: "Lap chart →" beside "All 22 on the race's page" opens the chart.
+  7. "Places as a table" opens the places.
+- **Known issues, not failures:** Red Bull Racing's navy and Audi's dark green lines are dark in Night (the codes and the highlight tell them apart, as drafted); the first fill takes about four publish runs, so a race page shows its chart, and its Overview the link, once its laps are in.
+
 ## #1185 · 1.0.296 · O17 (Formula 1's Champions: the roll of honour) · opened 2026-10-23 into `next` on the operator's "Push o17/champions and open the PR into next.", built on "Go: plan O17 in plan mode." and "Build O17 now in this session.", the plan approved in plan mode; the review and the merge on the word
 **The Champions page.** Built as drawn on The Paddock Drafts, full width; the three doorways to pages the new site does not have yet are greyed, as answered in plan mode. The records of the lap chart's draft (O28, answered "All six lap chart defaults stand.") and of O17's opening and plan ride in from the local o16/records.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.18 and one publish run:
