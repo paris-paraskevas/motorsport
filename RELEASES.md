@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.297 — 2026-10-25
+
+Behind the scenes: on Formula 1's Champions page, the button on the champion's card now sits clear of the big year behind it. Nothing changes for readers yet.
+
 ## 1.0.296 — 2026-10-23
 
 Behind the scenes: Formula 1's champions get a page of their own. Every drivers' champion since 1950 and every constructors' champion since 1958, a decade at a time, with the closest title fights, the biggest winning margins and the most successful teams, and a search for a season or a driver. Nothing changes for readers yet.

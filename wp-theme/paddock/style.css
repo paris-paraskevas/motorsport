@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.18
+Version: 0.1.19
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -755,8 +755,9 @@ a.pd-sr-tile:hover { background: color-mix(in srgb, var(--pd-ink) 4%, var(--pd-s
 .pd-ch-tiles span:first-child { border-left: 0; }
 .pd-ch-tiles b { font-size: 1.625rem; line-height: 1.15; font-weight: 800; }
 .pd-chp .pd-ch-txt { max-width: 560px; margin: 16px 0 0; font-size: .875rem; line-height: 1.5; }
-.pd-ch-acts a { display: block; padding: 11px 18px; border: 1.5px solid currentColor; color: inherit; font-size: .875rem; font-weight: 800; text-align: center; text-decoration: none; }
-.pd-ch-acts a:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+/* The card's own colour behind the button: the big year passes under it, never through its words. */
+.pd-ch-acts a { display: block; padding: 11px 18px; border: 1.5px solid currentColor; background: var(--t); color: inherit; font-size: .875rem; font-weight: 800; text-align: center; text-decoration: none; }
+.pd-ch-acts a:hover { background: color-mix(in srgb, currentColor 12%, var(--t)); }
 .pd-ch-acts a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
 .pd-ch-big { position: absolute; right: 18px; bottom: -42px; font-size: 12.5rem; line-height: 1; font-style: normal; font-weight: 800; letter-spacing: -.05em; color: color-mix(in srgb, var(--t) 72%, var(--pd-on)); pointer-events: none; }
 .pd-ch-reign.is-dark .pd-ch-big { color: color-mix(in srgb, var(--t) 72%, #ffffff); }
