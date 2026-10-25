@@ -775,6 +775,202 @@
 		if ( window.ResizeObserver ) { new ResizeObserver( fit ).observe( box ); } else { window.addEventListener( 'resize', fit ); }
 	} );
 
+	// The title race (O29): the top three's points after every round as the publisher stores them in data-pd-race (the
+	// rounds; the turning points' rounds; each driver: code, surname, colour, dashed, his totals; each round: its short
+	// name, day, winner, its leader as one of the three or by name, the leader's points). Drawn here, as WordPress keeps
+	// no SVG in a page: the points behind the leader or the points themselves (the switch), the leader's run as a bar,
+	// the turning points numbered as told below, each line's end labelled and the runner-up's furthest point marked. A
+	// pointer, a tap or the arrow keys read a round's standings in the readout; Escape lets go. In Night a line under 3:1
+	// against the box is lightened until it reaches it (the operator, 25 Oct: Red Bull's navy). Drawn again when the
+	// width or the scheme changes. Without the script the table under it stands open.
+	document.querySelectorAll( '.pd-tr-chart' ).forEach( function ( card ) {
+		var box = card.querySelector( '.pd-tr-draw[data-pd-race]' ), read = card.querySelector( '.pd-tr-read' ), seg = card.querySelector( '.pd-tr-seg' );
+		if ( ! box || ! read ) { return; }
+		var parts = box.getAttribute( 'data-pd-race' ).split( '|' );
+		if ( parts.length !== 4 ) { return; }
+		var N = Number( parts[ 0 ] ), turns = parts[ 1 ] ? parts[ 1 ].split( ' ' ).map( Number ) : [];
+		var D = parts[ 2 ].split( ';' ).map( function ( s ) {
+			var f = s.split( '~' );
+			return { code: f[ 0 ], name: f[ 1 ], colour: f[ 2 ], dashed: f[ 3 ] === '1', p: ( f[ 4 ] || '' ).split( ',' ).map( Number ) };
+		} );
+		var R = parts[ 3 ].split( ';' ).map( function ( s ) {
+			var f = s.split( '~' );
+			return { name: f[ 0 ], day: f[ 1 ], win: f[ 2 ], leader: /^\d$/.test( f[ 3 ] ) ? D[ Number( f[ 3 ] ) ] : null, other: f[ 3 ], lead: Number( f[ 4 ] ) };
+		} );
+		if ( ! ( N > 1 ) || R.length !== N || D.length !== 3 || D.some( function ( d ) { return d.p.length !== N || d.p.some( isNaN ); } ) ) { return; }
+		var view = 'gap', at = null, pinned = false, compact = false, show = function () {};
+		var night = window.matchMedia( '(prefers-color-scheme: dark)' );
+		var node = function ( tag, attrs, parent, text ) {
+			var n = document.createElementNS( SVG, tag );
+			Object.keys( attrs ).forEach( function ( k ) { n.setAttribute( k, attrs[ k ] ); } );
+			if ( text !== undefined ) { n.textContent = text; }
+			if ( parent ) { parent.appendChild( n ); }
+			return n;
+		};
+		// Colours as [ r, g, b ]; contrast as WCAG reckons it.
+		var rgb = function ( s ) {
+			var m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec( s );
+			if ( m ) {
+				var h = m[ 1 ].length === 3 ? m[ 1 ].replace( /(.)/g, '$1$1' ) : m[ 1 ];
+				return [ 0, 2, 4 ].map( function ( i ) { return parseInt( h.slice( i, i + 2 ), 16 ); } );
+			}
+			var v = String( s ).match( /\d+/g );
+			return v && v.length >= 3 ? v.slice( 0, 3 ).map( Number ) : [ 154, 163, 178 ];
+		};
+		var lum = function ( c ) {
+			var v = c.map( function ( x ) { x /= 255; return x <= 0.04045 ? x / 12.92 : Math.pow( ( x + 0.055 ) / 1.055, 2.4 ); } );
+			return 0.2126 * v[ 0 ] + 0.7152 * v[ 1 ] + 0.0722 * v[ 2 ];
+		};
+		var ratio = function ( a, b ) { var x = lum( a ), y = lum( b ); return ( Math.max( x, y ) + 0.05 ) / ( Math.min( x, y ) + 0.05 ); };
+		var css = function ( c ) { return 'rgb(' + c.join( ',' ) + ')'; };
+		var lineColour = function ( d ) {
+			var c = rgb( d.colour ), bg = rgb( getComputedStyle( card ).backgroundColor ), k = 0;
+			while ( night.matches && ratio( c, bg ) < 3 && k++ < 20 ) { c = c.map( function ( x ) { return Math.round( x + ( 255 - x ) * 0.1 ); } ); }
+			return c;
+		};
+		var winsTo = function ( d, i ) { var n = 0; for ( var j = 0; j <= i; j++ ) { if ( R[ j ].win === d.name ) { n++; } } return n; };
+		// The three after a round by points, level ones by wins so far, the standings' first tie-break.
+		var ranked = function ( i ) {
+			return D.map( function ( d, k ) { return { d: d, k: k }; } ).sort( function ( a, b ) { return b.d.p[ i ] - a.d.p[ i ] || winsTo( b.d, i ) - winsTo( a.d, i ) || a.k - b.k; } );
+		};
+		var describe = function ( i ) {
+			var r = R[ i ], list = ranked( i ).map( function ( x ) { var gap = r.lead - x.d.p[ i ]; return x.d.name + ' ' + x.d.p[ i ] + ( gap > 0 ? ', ' + gap + ' behind' : '' ); } );
+			if ( ! r.leader ) { list.unshift( r.other + ' leads on ' + r.lead ); }
+			return 'After round ' + ( i + 1 ) + ', the ' + r.name + ' on ' + r.day + ', won by ' + r.win + ': ' + list.join( ' · ' ) + '.';
+		};
+		var set = function ( i ) {
+			at = i;
+			show( i );
+			read.textContent = i === null ? ( compact ? 'Tap a round to read the standings after it.' : 'Point at a round, or tap it, to read the standings after it.' ) : describe( i );
+			read.classList.toggle( 'is-on', i !== null );
+		};
+		var draw = function () {
+			var W = Math.floor( box.clientWidth );
+			if ( W < 200 ) { return; }
+			compact = W < 560;
+			var gapView = view === 'gap', left = compact ? 28 : 44, right = compact ? 76 : 150, last = N - 1;
+			var mk = compact ? 16 : 18, stripY = mk + 9, stripH = 16, top = stripY + stripH + 12, plotH = compact ? 220 : 300, H = top + plotH + 30;
+			var x0 = left, x1 = W - right, step = ( x1 - x0 ) / last;
+			var X = function ( i ) { return x0 + i * step; };
+			var val = function ( i, d ) { return gapView ? R[ i ].lead - d.p[ i ] : d.p[ i ]; };
+			var most = 1;
+			R.forEach( function ( r, i ) { D.forEach( function ( d ) { most = Math.max( most, val( i, d ) ); } ); } );
+			var vmax = most * 1.05, every = gapView ? ( most > 250 ? 50 : 20 ) : ( most > 700 ? 200 : 100 );
+			var Y = function ( v ) { return gapView ? top + v / vmax * plotH : top + plotH - v / vmax * plotH; };
+			var C = D.map( lineColour );
+			card.querySelectorAll( '.pd-tr-key .kl' ).forEach( function ( el, k ) { if ( C[ k ] ) { el.style.setProperty( '--t', css( C[ k ] ) ); } } );
+			box.textContent = '';
+			var svg = node( 'svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, tabindex: '0', role: 'img',
+				'aria-label': ( gapView ? 'Points behind the leader' : 'Points' ) + ' after each of the ' + N + ' rounds, for ' + D.map( function ( d ) { return d.name; } ).join( ', ' ) + '. The arrow keys step through the rounds; the table below holds the same numbers.' }, box );
+			for ( var t = 0; t <= vmax; t += every ) {
+				node( 'line', { 'class': 'gl' + ( t === 0 ? ' zero' : '' ), x1: x0, x2: x1, y1: Y( t ), y2: Y( t ) }, svg );
+				node( 'text', { 'class': 'tk', x: x0 - 9, y: Y( t ), 'text-anchor': 'end' }, svg, String( t ) );
+			}
+			for ( var i = 0; i < N; i++ ) {
+				if ( compact && i !== 0 && i !== last && ( i + 1 ) % 5 ) { continue; }
+				node( 'text', { 'class': 'tk', x: X( i ), y: top + plotH + 17, 'text-anchor': 'middle' }, svg, String( i + 1 ) );
+			}
+			if ( ! compact ) { node( 'text', { 'class': 'ax', x: 0, y: top + plotH + 17 }, svg, 'Round' ); }
+			turns.forEach( function ( r, j ) {
+				var x = X( r - 1 ), g;
+				node( 'line', { 'class': 'tpl', x1: x, x2: x, y1: mk, y2: top + plotH }, svg );
+				g = node( 'g', { 'class': 'tp' }, svg );
+				node( 'rect', { x: x - mk / 2, y: 0, width: mk, height: mk }, g );
+				node( 'text', { x: x, y: mk / 2 + 0.5 }, g, String( j + 1 ) );
+			} );
+			// The leader's run: his line's colour, a dashed driver's run outlined in dashes.
+			var runs = [];
+			R.forEach( function ( r, i ) {
+				var who = r.leader ? r.leader.code : r.other, prev = runs[ runs.length - 1 ];
+				if ( prev && prev.who === who ) { prev.to = i; } else { runs.push( { who: who, d: r.leader, from: i, to: i } ); }
+			} );
+			runs.forEach( function ( run ) {
+				var a = X( run.from ) - step / 2 + 1, b = X( run.to ) + step / 2 - 1, k = run.d ? D.indexOf( run.d ) : -1, c = k >= 0 ? C[ k ] : [ 154, 163, 178 ], solid = ! run.d || ! run.d.dashed;
+				node( 'rect', { x: a, y: stripY, width: b - a, height: stripH, fill: solid ? css( c ) : 'none', stroke: solid ? 'none' : css( c ), 'stroke-width': 1.5, 'stroke-dasharray': solid ? 'none' : '4 3' }, svg );
+				var label = node( 'text', { 'class': 'run-t', x: ( a + b ) / 2, y: stripY + stripH / 2 + 0.5 }, svg, ( run.d ? run.d.name : run.who ) + ' leads' );
+				if ( solid ) { label.style.fill = lum( c ) > 0.18 ? '#0f1217' : '#ffffff'; }
+				if ( label.getComputedTextLength() > b - a - 8 ) { label.textContent = run.d ? run.d.code : ''; }
+			} );
+			D.forEach( function ( d, k ) {
+				var path = '';
+				for ( var i = 0; i < N; i++ ) { path += ( i ? 'L' : 'M' ) + X( i ).toFixed( 1 ) + ' ' + Y( val( i, d ) ).toFixed( 1 ); }
+				node( 'path', { 'class': 'ln', d: path, stroke: css( C[ k ] ), 'stroke-dasharray': d.dashed ? '6 4' : 'none' }, svg );
+			} );
+			// The runner-up's furthest point behind, when he came back from it.
+			if ( gapView ) {
+				var m = 0;
+				for ( var i = 1; i < N; i++ ) { if ( val( i, D[ 1 ] ) > val( m, D[ 1 ] ) ) { m = i; } }
+				if ( m < last && val( m, D[ 1 ] ) > val( last, D[ 1 ] ) ) { node( 'text', { 'class': 'ann', x: X( m ) + 8, y: Y( val( m, D[ 1 ] ) ) + 1 }, svg, val( m, D[ 1 ] ) + ' behind' ); }
+			}
+			// Each line's end: the code and the total, the runner-up's margin beside it (under it on a phone), the labels
+			// kept apart and tied to their lines where they had to move.
+			var gap = compact ? 14 : 15, behind = R[ last ].lead - D[ 1 ].p[ last ];
+			var ends = D.map( function ( d, k ) { return { d: d, k: k, y0: Y( val( last, d ) ), h: gapView && compact && k === 1 && behind > 0 ? gap + 14 : gap }; } ).sort( function ( a, b ) { return a.y0 - b.y0; } );
+			ends.forEach( function ( e, j ) { e.y = j ? Math.max( e.y0, ends[ j - 1 ].y + ends[ j - 1 ].h ) : e.y0; } );
+			var shift = ends.reduce( function ( s, e ) { return s + e.y0 - e.y; }, 0 ) / ends.length;
+			ends.forEach( function ( e, j ) { e.y = Math.max( top - 4, e.y + shift ); if ( j ) { e.y = Math.max( e.y, ends[ j - 1 ].y + ends[ j - 1 ].h ); } } );
+			ends.forEach( function ( e ) {
+				var x = X( last ), text;
+				if ( Math.abs( e.y - e.y0 ) > 2 ) { node( 'line', { 'class': 'con', x1: x + 5, y1: e.y0, x2: x + 11, y2: e.y }, svg ); }
+				node( 'circle', { 'class': 'dot', cx: x, cy: e.y0, r: 4, fill: css( C[ e.k ] ) }, svg );
+				text = node( 'text', { 'class': 'end', x: x + 14, y: e.y }, svg, e.d.code + ' ' );
+				node( 'tspan', {}, text, String( e.d.p[ last ] ) );
+				if ( gapView && e.k === 1 && behind > 0 ) {
+					if ( compact ) { node( 'text', { 'class': 'ann key', x: x + 14, y: e.y + 14 }, svg, behind + ' behind' ); } else { node( 'tspan', { 'class': 'key' }, text, ' · ' + behind + ' behind' ); }
+				}
+			} );
+			var cross = node( 'line', { 'class': 'cross', y1: top, y2: top + plotH, visibility: 'hidden' }, svg );
+			var dots = D.map( function ( d, k ) { return node( 'circle', { 'class': 'dot', r: 4.5, fill: css( C[ k ] ), visibility: 'hidden' }, svg ); } );
+			show = function ( i ) {
+				var on = i !== null;
+				cross.setAttribute( 'visibility', on ? 'visible' : 'hidden' );
+				if ( on ) { cross.setAttribute( 'x1', X( i ) ); cross.setAttribute( 'x2', X( i ) ); }
+				dots.forEach( function ( c, k ) {
+					c.setAttribute( 'visibility', on ? 'visible' : 'hidden' );
+					if ( on ) { c.setAttribute( 'cx', X( i ) ); c.setAttribute( 'cy', Y( val( i, D[ k ] ) ) ); }
+				} );
+			};
+			var index = function ( clientX ) { var r = svg.getBoundingClientRect(); return Math.max( 0, Math.min( last, Math.round( ( clientX - r.left - x0 ) / step ) ) ); };
+			// A mouse pins on press; a finger on a click, so a scroll that starts on the chart pins nothing.
+			var pin = function ( i ) { if ( pinned && i === at ) { pinned = false; set( null ); } else { pinned = true; set( i ); } }, touched = false;
+			svg.addEventListener( 'pointermove', function ( ev ) { var i = index( ev.clientX ); if ( ev.pointerType === 'mouse' && ! pinned && i !== at ) { set( i ); } } );
+			svg.addEventListener( 'pointerleave', function ( ev ) { if ( ev.pointerType === 'mouse' && ! pinned ) { set( null ); } } );
+			svg.addEventListener( 'pointerdown', function ( ev ) { touched = ev.pointerType !== 'mouse'; if ( ! touched ) { pin( index( ev.clientX ) ); } } );
+			svg.addEventListener( 'click', function ( ev ) { if ( touched ) { pin( index( ev.clientX ) ); } } );
+			svg.addEventListener( 'keydown', function ( ev ) {
+				var by = { ArrowLeft: -1, ArrowRight: 1, Home: -N, End: N }[ ev.key ];
+				if ( ev.key === 'Escape' ) { pinned = false; set( null ); return; }
+				if ( by === undefined ) { return; }
+				ev.preventDefault();
+				pinned = true;
+				set( Math.max( 0, Math.min( last, ( at === null ? N : at ) + by ) ) );
+			} );
+			set( at );
+		};
+		if ( seg ) {
+			var buttons = seg.querySelectorAll( 'button[data-pd-tr]' ), title = card.querySelector( '.pd-tr-ct' );
+			buttons.forEach( function ( b ) {
+				b.setAttribute( 'aria-pressed', String( b.getAttribute( 'data-pd-tr' ) === view ) );
+				b.addEventListener( 'click', function () {
+					view = b.getAttribute( 'data-pd-tr' );
+					buttons.forEach( function ( x ) { x.setAttribute( 'aria-pressed', String( x === b ) ); } );
+					if ( title ) { title.textContent = view === 'gap' ? 'Points behind the leader' : 'Points'; }
+					draw();
+				} );
+			} );
+			seg.hidden = false;
+		}
+		var key = card.querySelector( '.pd-tr-key' ), table = card.querySelector( '.pd-tr-table' ), w = -1;
+		box.hidden = false;
+		read.hidden = false;
+		if ( key ) { key.hidden = false; }
+		if ( table ) { table.open = false; }
+		var redraw = function () { var nw = box.clientWidth; if ( nw !== w ) { w = nw; draw(); } };
+		redraw();
+		if ( window.ResizeObserver ) { new ResizeObserver( function () { requestAnimationFrame( redraw ); } ).observe( box ); } else { window.addEventListener( 'resize', redraw ); }
+		if ( night.addEventListener ) { night.addEventListener( 'change', draw ); }
+	} );
+
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
 

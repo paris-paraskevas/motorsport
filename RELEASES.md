@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.299 — 2026-10-25
+
+Behind the scenes: Formula 1's 2025 title race gets its own page, opened from the champion's card on the Champions page: how Lando Norris won by two points at the last race, the gap round by round, the six races that turned it, and what each driver needed in Abu Dhabi. Nothing changes for readers yet.
+
 ## 1.0.297 — 2026-10-25
 
 Behind the scenes: on Formula 1's Champions page, the button on the champion's card now sits clear of the big year behind it. Nothing changes for readers yet.

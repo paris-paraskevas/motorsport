@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.19
+Version: 0.1.21
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -863,6 +863,162 @@ a.pd-ch-door:focus-visible { outline: 2px solid var(--pd-accent); outline-offset
   .pd-ch-two, .pd-ch-recs, .pd-ch-doors { grid-template-columns: minmax(0, 1fr); }
   .pd-ch-call { flex-direction: column; align-items: stretch; }
   .pd-ch-call a { text-align: center; }
+}
+
+/* The title race (O29), as drafted on Paddock 2025 Title Race (version 5) and answered on 25 Oct: a band naming the page,
+   the champion first in a black panel striped in his team's colour (--t) and the margin under his name, the page's
+   subject outranking the series' frame; the final three; the chart the script draws from data-pd-race (behind the
+   leader or the points, the leader's run, the turning points numbered), its key and the same numbers as a table; the
+   turning points; the decider. Without the script the table stands open and the drawing, its switch and key stay hidden. */
+.pd-tr-band { background: var(--s); color: var(--pd-on); }
+.pd-tr-band-in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 500px); grid-template-areas: "ttl champ" "acts champ"; align-items: end; gap: 22px 48px; padding: 34px var(--pd-gutter) 32px; }
+.pd-tr-ttl { grid-area: ttl; min-width: 0; }
+.pd-sr .pd-tr-kick { font-size: .9375rem; font-weight: 800; }
+.pd-tr-band h1 { margin: 10px 0 14px; color: var(--pd-on); font-size: clamp(2.5rem, 4.6vw, 4rem); line-height: .92; font-weight: 800; font-stretch: 80%; letter-spacing: -.035em; }
+.pd-sr .pd-tr-intro { max-width: 620px; font-size: 1.0625rem; line-height: 1.45; font-weight: 600; }
+.pd-tr-band .pd-sr-acts { grid-area: acts; }
+/* The champion as a timing screen draws the leader: black, the team's colour as a stripe, white type. */
+.pd-tr-champ { grid-area: champ; position: relative; display: grid; align-content: end; padding: 20px 24px 20px 32px; background: #0f1217; color: #ffffff; }
+.pd-tr-champ::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--t); }
+.pd-sr .pd-tr-champ .lab { font-size: .8125rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--t); }
+.pd-sr .pd-tr-band.is-dark .pd-tr-champ .lab { color: #ffffff; }
+.pd-sr .pd-tr-champ .name { margin: 6px 0; font-size: clamp(2.875rem, 5.2vw, 4.5rem); line-height: .95; font-weight: 800; font-stretch: 80%; letter-spacing: -.03em; }
+.pd-sr .pd-tr-champ .team, .pd-sr .pd-tr-champ .who { font-size: .9375rem; font-weight: 700; color: rgba(255, 255, 255, .82); }
+.pd-sr .pd-tr-champ .by { margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .3); font-size: 1.25rem; font-weight: 700; }
+.pd-tr-champ .by b { font-size: 2rem; font-weight: 800; font-stretch: 80%; font-variant-numeric: normal; }
+.pd-sr .pd-tr-champ .who { margin-top: 2px; font-weight: 400; }
+.pd-trp { display: grid; gap: 36px; }
+.pd-tr-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; margin: 0; padding: 0; }
+.pd-tr-three li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; gap: 10px 14px; padding: 16px 18px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--t); }
+.pd-tr-three li.lead { background: color-mix(in srgb, var(--pd-accent) 14%, var(--pd-surface)); }
+.pd-tr-three .p { font-size: 2rem; line-height: 1; font-weight: 800; font-stretch: 80%; color: var(--pd-muted); }
+.pd-tr-three .nm { display: grid; min-width: 0; }
+.pd-tr-three .nm b { font-size: 1.125rem; line-height: 1.2; font-weight: 800; }
+.pd-tr-three .nm small, .pd-tr-three .pts small { font-size: .8125rem; color: var(--pd-muted); }
+.pd-tr-three .pts { display: grid; justify-items: end; }
+.pd-tr-three .pts b { font-size: 2.25rem; line-height: 1; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: normal; }
+.pd-tr-three .pts small { margin-top: 4px; }
+.pd-tr-three .pts small.gap { font-size: .9375rem; font-weight: 800; color: var(--pd-ink); }
+.pd-tr-three .ex { grid-column: 1 / -1; padding-top: 10px; border-top: 1px solid var(--pd-line); font-size: .875rem; color: var(--pd-muted); }
+.pd-tr-three .ex b { color: var(--pd-ink); font-weight: 800; }
+.pd-tr-chart { min-width: 0; background: var(--pd-surface); border: 1px solid var(--pd-line); }
+.pd-tr-chart-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; padding: 18px 20px 0; }
+.pd-sr .pd-tr-ct { font-size: 1.375rem; font-weight: 800; }
+.pd-sr .pd-tr-chart-head p { margin-top: 4px; font-size: .8125rem; color: var(--pd-muted); }
+.pd-tr-seg { display: inline-flex; border: 1px solid var(--pd-line-strong); background: var(--pd-surface); }
+.pd-tr-seg[hidden], .pd-tr-draw[hidden], .pd-tr-read[hidden], .pd-tr-key[hidden] { display: none; }
+.pd-tr-seg button { padding: 10px 18px; border: 0; border-left: 1px solid var(--pd-line-strong); border-radius: 0; background: none; color: var(--pd-muted); font: inherit; font-size: .84rem; font-weight: 800; cursor: pointer; }
+.pd-tr-seg button:first-child { border-left: 0; }
+.pd-tr-seg button[aria-pressed="true"] { background: var(--pd-ink); color: var(--pd-ground); }
+.pd-tr-seg button:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
+.pd-tr-draw { margin: 14px 20px 0; }
+.pd-tr-draw svg { display: block; touch-action: pan-y pinch-zoom; }
+.pd-tr-draw svg:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 4px; }
+.pd-tr-draw text { dominant-baseline: central; }
+.pd-tr-draw .gl { stroke: var(--pd-line); stroke-width: 1; }
+.pd-tr-draw .gl.zero { stroke: var(--pd-line-strong); }
+.pd-tr-draw .tk { fill: var(--pd-muted); font-family: var(--wp--preset--font-family--fira-code, ui-monospace, Consolas, monospace); font-size: 11px; }
+.pd-tr-draw .ax { fill: var(--pd-muted); font-size: 11px; font-weight: 700; }
+.pd-tr-draw .tpl { stroke: var(--pd-line); stroke-width: 1; }
+.pd-tr-draw .tp rect { fill: var(--pd-ink); }
+.pd-tr-draw .tp text { fill: var(--pd-surface); font-size: 11px; font-weight: 800; text-anchor: middle; }
+.pd-tr-draw .run-t { fill: var(--pd-ink); font-size: 10.5px; font-weight: 800; text-anchor: middle; }
+.pd-tr-draw .ln { fill: none; stroke-width: 2.25; stroke-linejoin: round; stroke-linecap: round; }
+.pd-tr-draw .dot { stroke: var(--pd-surface); stroke-width: 2; }
+.pd-tr-draw .end { fill: var(--pd-ink); font-size: 12px; font-weight: 800; }
+.pd-tr-draw .end tspan { fill: var(--pd-muted); font-weight: 600; }
+.pd-tr-draw .end tspan.key, .pd-tr-draw .ann.key { fill: var(--pd-ink); font-weight: 800; }
+.pd-tr-draw .con { stroke: var(--pd-line-strong); stroke-width: 1; }
+.pd-tr-draw .ann { fill: var(--pd-muted); font-size: 11px; font-weight: 700; }
+.pd-tr-draw .ann.key { font-size: 12px; }
+.pd-tr-draw .cross { stroke: var(--pd-ink); stroke-width: 1; }
+.pd-sr .pd-tr-read { min-height: 3em; margin: 4px 20px 0; font-size: .875rem; color: var(--pd-muted); }
+.pd-sr .pd-tr-read.is-on { color: var(--pd-ink); }
+.pd-tr-key { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 10px; padding: 12px 20px; border-top: 1px solid var(--pd-line); font-size: .8125rem; color: var(--pd-muted); }
+.pd-tr-key span { display: inline-flex; align-items: center; gap: 7px; }
+.pd-tr-key .credit { margin-left: auto; }
+.pd-tr-key .kl { display: inline-block; width: 26px; border-top: 2.5px solid var(--t); }
+.pd-tr-key .kl.is-dashed { border-top-style: dashed; }
+.pd-tr-key .km { display: inline-grid; place-items: center; width: 14px; height: 14px; background: var(--pd-ink); color: var(--pd-surface); font-size: 9px; font-style: normal; font-weight: 800; }
+.pd-tr-table { padding: 0 20px 14px; border-top: 1px solid var(--pd-line); }
+.pd-tr-table summary { padding: 12px 0 10px; cursor: pointer; font-size: .875rem; font-weight: 800; }
+.pd-tr-table summary:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: 2px; }
+.pd-tr-tw { overflow-x: auto; }
+.pd-tr-tw table { width: 100%; min-width: 660px; border-collapse: collapse; font-size: .8125rem; }
+.pd-tr-tw th { padding: 8px 10px; background: var(--pd-sunken); font-size: .72rem; font-weight: 700; color: var(--pd-muted); text-align: right; white-space: nowrap; }
+.pd-tr-tw td { padding: 7px 10px; border-top: 1px solid var(--pd-line); text-align: right; white-space: nowrap; }
+.pd-tr-tw th.l, .pd-tr-tw td.gp, .pd-tr-tw td.dt, .pd-tr-tw td.wn, .pd-tr-tw td.ld { text-align: left; }
+.pd-tr-tw td.n { font-weight: 800; }
+.pd-tr-tw td.on { font-weight: 800; background: color-mix(in srgb, var(--pd-accent) 12%, var(--pd-surface)); }
+.pd-tr-turns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; margin: 0; padding: 0; }
+.pd-tr-turn { display: grid; grid-template-rows: auto 1fr auto; gap: 10px; padding: 14px 16px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
+.pd-tr-turn header { display: flex; align-items: flex-start; gap: 10px; }
+.pd-tr-turn .n { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; background: var(--pd-ink); color: var(--pd-surface); font-size: .75rem; font-weight: 800; }
+.pd-tr-turn header b { display: block; font-size: 1.0625rem; line-height: 1.25; font-weight: 800; }
+.pd-tr-turn header small { font-size: .75rem; font-weight: 700; color: var(--pd-muted); }
+.pd-sr .pd-tr-turn p { font-size: .9375rem; line-height: 1.5; }
+.pd-sr .pd-tr-turn .pd-tr-after { display: flex; flex-wrap: wrap; gap: 4px 14px; padding-top: 10px; border-top: 1px solid var(--pd-line); font-size: .8125rem; color: var(--pd-muted); }
+.pd-tr-after span { display: inline-flex; align-items: center; gap: 6px; }
+.pd-tr-after .lab { font-weight: 700; }
+.pd-tr-after .pd-tc { height: 14px; margin: 0; }
+.pd-tr-after b { color: var(--pd-ink); font-weight: 800; }
+.pd-tr-fin { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.pd-tr-box { display: grid; align-content: start; gap: 10px; padding: 16px 18px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
+.pd-sr .pd-tr-box h3 { margin: 0; padding-bottom: 8px; border-bottom: 2px solid var(--pd-ink); font-size: 1rem; font-weight: 800; }
+.pd-tr-box ol { list-style: none; margin: 0; padding: 0; }
+.pd-tr-box li { display: grid; grid-template-columns: 20px 4px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--pd-line); font-size: .9375rem; }
+.pd-tr-box li:first-child { border-top: 0; }
+.pd-tr-box li .k { font-weight: 800; text-align: center; color: var(--pd-muted); }
+.pd-tr-box li i { height: 18px; background: var(--t); }
+.pd-tr-box li b, .pd-tr-box li .v { font-weight: 800; }
+.pd-tr-box li .v { text-align: right; }
+.pd-tr-box li .v small { font-weight: 500; color: var(--pd-muted); }
+.pd-tr-box li.champ { background: color-mix(in srgb, var(--pd-accent) 14%, var(--pd-surface)); }
+.pd-sr .pd-tr-box p { font-size: .875rem; line-height: 1.5; color: var(--pd-muted); }
+.pd-tr-need { display: grid; margin: 0; }
+.pd-tr-need div { display: grid; grid-template-columns: 4px minmax(0, 1fr); column-gap: 10px; padding: 8px 0; border-top: 1px solid var(--pd-line); }
+.pd-tr-need div:first-child { border-top: 0; }
+.pd-tr-need div::before { content: ""; grid-row: span 2; background: var(--t); }
+.pd-tr-need dt { font-size: .9375rem; font-weight: 800; }
+.pd-tr-need dd { margin: 0; font-size: .875rem; line-height: 1.45; color: var(--pd-muted); }
+.pd-sr .pd-tr-box .pd-tr-src { font-size: .75rem; }
+.pd-trp .pd-ch-more h2, .pd-trp .pd-sh h2 { margin: 0 0 6px; font-size: 1.625rem; font-weight: 800; }
+.pd-trp .pd-sh h2 { margin: 0; }
+/* Below 1,100 px the champion's 380 px squeezed the title's column (to 166 px at 768, Session emails under the panel):
+   the band halves; and from 700 to 1,099 px the final three's columns, about 230 px at 768, put each total under the
+   name, not beside it (a phone's one column keeps it beside). */
+@media (max-width: 1099px) {
+  .pd-tr-band-in { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; }
+  .pd-tr-turns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pd-tr-fin { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pd-tr-fin .pd-tr-box:last-child { grid-column: 1 / -1; }
+}
+@media (min-width: 700px) and (max-width: 1099px) {
+  .pd-tr-three li { grid-template-columns: auto minmax(0, 1fr); }
+  .pd-tr-three .pts { grid-column: 2; justify-items: start; }
+}
+@media (max-width: 699px) {
+  .pd-tr-band-in { grid-template-columns: minmax(0, 1fr); grid-template-areas: "ttl" "champ" "acts"; gap: 18px; padding: 24px var(--pd-gutter) 20px; }
+  .pd-tr-band h1 { margin: 8px 0 12px; font-size: 2.375rem; }
+  .pd-sr .pd-tr-intro { font-size: 1rem; }
+  .pd-tr-champ { padding: 16px 16px 16px 24px; }
+  .pd-sr .pd-tr-champ .name { font-size: 2.875rem; }
+  .pd-tr-champ .by b { font-size: 1.75rem; }
+  .pd-trp { gap: 28px; }
+  .pd-tr-three { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .pd-tr-three li { gap: 8px 14px; padding: 12px 14px; }
+  .pd-tr-three .pts b { font-size: 1.875rem; }
+  .pd-tr-chart-head { padding: 14px 12px 0; }
+  .pd-tr-seg { display: flex; width: 100%; }
+  .pd-tr-seg button { flex: 1; padding: 10px 8px; text-align: center; }
+  .pd-tr-draw { margin: 10px 8px 0; }
+  .pd-sr .pd-tr-read { margin: 4px 12px 0; }
+  .pd-tr-key { gap: 6px 14px; padding: 10px 12px; }
+  .pd-tr-key .credit { margin-left: 0; }
+  .pd-tr-table { padding: 0 12px 12px; }
+  .pd-tr-turns, .pd-tr-fin { grid-template-columns: minmax(0, 1fr); }
+  .pd-tr-fin .pd-tr-box:last-child { grid-column: auto; }
+  .pd-trp .pd-sh h2 { font-size: 1.375rem; }
 }
 
 /* Formula 1's weekend pages (O19), as approved on Paddock Weekend Drafts (version 3), full width (O27): the band, the

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import type { TitleRaceFile } from '../series-content';
 import type { ResultRound, SeriesData } from './render';
 import {
   categorySlug,
@@ -17,6 +18,7 @@ import {
   seriesOverview,
   seriesResults,
   seriesStandings,
+  seriesTitleRace,
   stillIn,
   tabs as tabStrip,
   teammates,
@@ -738,6 +740,191 @@ describe('seriesChampions', () => {
 
   it('says so when no champion is recorded', () => {
     expect(seriesChampions({ ...cd, champions: undefined }).body).toContain('No champions recorded yet.');
+  });
+});
+
+describe('seriesTitleRace', () => {
+  const file = (name: string) => JSON.parse(readFileSync(path.join(process.cwd(), 'content/series/f1', name), 'utf8'));
+  const roster = file('drivers.json') as { teams: { name: string; color: string; drivers: { name: string; code?: string }[] }[] };
+  const race = file('title-race-2025.json') as TitleRaceFile;
+  const td: SeriesData = {
+    slug: 'f1',
+    name: 'Formula 1',
+    short: 'F1',
+    season: 2026,
+    standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows: [['1', 'Kimi Antonelli', 'Mercedes', '300'], ['2', 'Max Verstappen', 'Red Bull Racing', '198']] }],
+    results: null,
+    calendar: null,
+    rounds: [],
+    teams: roster.teams.map(t => ({ name: t.name, colour: t.color, drivers: t.drivers })),
+    champions: {
+      seasons: file('champions.json').filter((s: { year: number }) => s.year <= 2025),
+      notes: file('champion-notes.json'),
+      records: file('record-notes.json'),
+      historic: file('historic-team-colors.json').teams,
+      names: file('team-names.json'),
+    },
+    titleRaces: [race],
+  };
+  const page = seriesTitleRace(td, race);
+  const b = page.body;
+
+  it('is the 2025 season’s own page at /series/f1/2025/, wide, the series’ tabs with none lit', () => {
+    expect(page.path).toBe('/series/f1/2025/');
+    expect(page.title).toBe('Formula 1 2025 title race');
+    expect(page.template).toBe('page-wide');
+    expect(b).toContain('<nav class="pd-sr-tabs" aria-label="Formula 1 pages">');
+    expect(b).not.toContain('aria-current="page"');
+    expect(seriesFamily(td).map(p => p.path)).toContain('/series/f1/2025/');
+  });
+
+  it('names the page in the band, the champion first and the margin under him, nothing about 2026', () => {
+    expect(b).toContain('<section class="pd-tr-band" style="--t:#FF8000">');
+    expect(b).toContain('<p class="pd-tr-kick">Formula 1 · 2025 season</p><h1>The 2025 title race</h1>');
+    expect(b).toContain(
+      '<div class="pd-tr-champ"><p class="lab">2025 champion</p><p class="name">Lando Norris</p><p class="team">McLaren · his first title</p>' +
+        '<p class="by">by <b>2 points</b></p><p class="who">423 to Max Verstappen&#39;s 421</p></div>',
+    );
+    expect(b).toContain('<p class="pd-tr-intro">Three drivers went to the last race with a chance.');
+    const bandHtml = b.slice(0, b.indexOf('<nav class="pd-sr-tabs"'));
+    expect(bandHtml).toContain('The 2025 title race');
+    expect(bandHtml).not.toContain('2026');
+    expect(b).not.toContain('pd-sr-bar');
+  });
+
+  it('ranks the final three with the gap, the wins and the rounds each led, counted from the file', () => {
+    expect(b).toContain(
+      '<li class="lead" style="--t:#FF8000"><span class="p">1</span><span class="nm"><b>Lando Norris</b><small>McLaren</small></span>' +
+        '<span class="pts"><b>423</b><small>points</small></span><span class="ex"><b>7 wins</b> · led after 9 rounds</span></li>',
+    );
+    expect(b).toContain('<span class="pts"><b>421</b><small class="gap">2 points behind</small></span><span class="ex"><b>8 wins</b> · never led</span>');
+    expect(b).toContain('<span class="pts"><b>410</b><small class="gap">13 points behind</small></span><span class="ex"><b>7 wins</b> · led after 15 rounds</span>');
+  });
+
+  it('writes the chart’s numbers for the theme’s script, and the same numbers as a table open without it', () => {
+    expect(b).toContain('<h2 class="pd-tr-ct">Points behind the leader</h2><p>After each of the 24 rounds, sprints included</p>');
+    expect(b).toContain('<div class="pd-tr-seg" role="group" aria-label="Show" hidden>');
+    expect(b).toContain('data-pd-race="24|5 15 17 20 22 24|NOR~Norris~#FF8000~0~25,44,62,77,89,115,133,158,176,176,201,226,250,275,275,293,299,314,332,357,390,390,408,423;VER~Verstappen~#1E3A8A~0~18,36,');
+    expect(b).toContain(';PIA~Piastri~#FF8000~1~2,34,49,74,99,');
+    expect(b).toContain('|Australian GP~16 Mar~Norris~0~25;Chinese GP~23 Mar~Piastri~0~44;');
+    expect(b).toContain(';Saudi Arabian GP~20 Apr~Piastri~2~99;');
+    expect(b).toContain(';Las Vegas GP~22 Nov~Verstappen~0~390;');
+    expect(b).toContain('<details class="pd-tr-table" open><summary>Round by round, as a table</summary>');
+    expect(b.match(/<tr><td class="n">/g)).toHaveLength(24);
+    expect(b).toContain(
+      '<tr><td class="n">22</td><td class="gp">Las Vegas Grand Prix</td><td class="dt">22 Nov</td><td class="wn"><i class="pd-tc" style="--t:#1E3A8A"></i>Verstappen</td>' +
+        '<td class="on">390</td><td>366</td><td>366</td><td class="ld">Norris</td></tr>',
+    );
+    expect(b).toContain('<td class="wn"><i class="pd-tc" style="--t:#27F4D2"></i>Russell</td>');
+  });
+
+  it('tells the six turning points, numbered as on the chart, each with the three after it, level ones by wins', () => {
+    expect(b).toContain('<div class="pd-sh"><h2>Six turning points</h2><p>Numbered as on the chart</p></div>');
+    expect(b.match(/<li class="pd-tr-turn">/g)).toHaveLength(6);
+    expect(b).toContain(
+      '<li class="pd-tr-turn"><header><span class="n">1</span><div><b>Saudi Arabian Grand Prix</b><small>Round 5 · 20 Apr</small></div></header>' +
+        '<p>Piastri wins and takes the lead from Norris by 10 points. Norris crashed in qualifying, started tenth and finished fourth.</p>' +
+        '<p class="pd-tr-after"><span class="lab">After it</span><span><i class="pd-tc" style="--t:#FF8000"></i>Piastri <b>99</b></span>' +
+        '<span><i class="pd-tc" style="--t:#FF8000"></i>Norris <b>89</b></span><span><i class="pd-tc" style="--t:#1E3A8A"></i>Verstappen <b>87</b></span></p></li>',
+    );
+    expect(b).toContain('<p>Norris&#39;s car fails a few laps from the end');
+    // Las Vegas: Piastri and Verstappen level on 366, Piastri ahead on wins (seven to six).
+    expect(b).toContain('Norris <b>390</b></span><span><i class="pd-tc" style="--t:#FF8000"></i>Piastri <b>366</b></span><span><i class="pd-tc" style="--t:#1E3A8A"></i>Verstappen <b>366</b>');
+  });
+
+  it('sets out the decider: the three going in, what each needed, the race’s order and the totals', () => {
+    expect(b).toContain('<div class="pd-sh"><h2>The decider</h2><p>Abu Dhabi Grand Prix · 7 December</p></div>');
+    expect(b).toContain('<b>Norris</b><span class="v">408</span>');
+    expect(b).toContain('<b>Verstappen</b><span class="v">396 <small>12 behind</small></span>');
+    expect(b).toContain('<b>Piastri</b><span class="v">392 <small>16 behind</small></span>');
+    expect(b).toContain('<div style="--t:#1E3A8A"><dt>Verstappen</dt><dd>To win, with Norris fourth or lower.</dd></div>');
+    expect(b).toContain('<p class="pd-tr-src">As formula1.com set out the permutations before the race.</p>');
+    const happened = b.slice(b.indexOf('<h3>What happened</h3>'));
+    expect(happened.indexOf('<b>Verstappen</b>')).toBeLessThan(happened.indexOf('<b>Piastri</b>'));
+    expect(happened.indexOf('<b>Piastri</b>')).toBeLessThan(happened.indexOf('<b>Norris</b>'));
+    expect(happened).toContain('<li class="champ" style="--t:#FF8000"><span class="k">3</span><i></i><b>Norris</b><span class="v">423 <small>champion</small></span></li>');
+    expect(happened).toContain('<b>Verstappen</b><span class="v">421 <small>in all</small></span>');
+  });
+
+  it('opens More Formula 1: Champions, this season’s standings and this season’s page', () => {
+    expect(b).toContain('<a class="pd-ch-door" href="/series/f1/champions/"><small>/series/f1/champions/</small><b>Formula 1 champions</b>');
+    expect(b).toContain('<a class="pd-ch-door" href="/series/f1/standings/"><small>/series/f1/standings/</small><b>Formula 1 standings</b><span>The 2026 title race, as it stands.</span>');
+    expect(b).toContain('<a class="pd-ch-door" href="/series/f1/2026/"><small>/series/f1/2026/</small><b>The 2026 season</b>');
+  });
+
+  it('turns the reigning card’s button to the title race, and leaves the current season’s page alone', () => {
+    expect(seriesChampions(td).body).toContain('<a href="/series/f1/2025/">2025 title race →</a>');
+    const now = { ...race, season: 2026 };
+    expect(seriesFamily({ ...td, titleRaces: [now] }).map(p => p.path)).not.toContain('/series/f1/2026/');
+  });
+
+  it('escapes every word from the file, and keeps names out of the chart’s separators', () => {
+    const evil = seriesTitleRace(td, {
+      ...race,
+      intro: '<img onerror=x>',
+      turns: [{ round: 5, text: 'A & "B"' }],
+      decider: { going: '<b>g</b>', needed: [{ driver: 'Lando Norris', text: '"n"' }], neededNote: '<i>', after: 'a&b' },
+      drivers: race.drivers.map((x, k) => (k === 1 ? { ...x, name: 'Max Ver"|st;app~en', code: 'V|R' } : x)),
+    }).body;
+    expect(evil).not.toContain('<img onerror');
+    expect(evil).toContain('&lt;img onerror=x&gt;');
+    expect(evil).toContain('<p>A &amp; &quot;B&quot;</p>');
+    expect(evil).toContain('<p>&lt;b&gt;g&lt;/b&gt;</p>');
+    expect(evil).toContain('<dd>&quot;n&quot;</dd>');
+    expect(evil).toContain('<p class="pd-tr-src">&lt;i&gt;</p>');
+    expect(evil).toContain(' a&amp;b</p>');
+    // The attribute as the browser hands it to the script: entities decoded, so &quot;'s ";" is no separator.
+    const raw = evil.match(/data-pd-race="([^"]*)"/)?.[1] ?? '';
+    expect(raw).toContain(';V R~Ver&quot; st app en~#1E3A8A~0~');
+    const data = raw.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    expect(data.split('|')).toHaveLength(4);
+    expect(data.split('|')[2].split(';')).toHaveLength(3);
+  });
+
+  it('orders the three going in by their points then, and leaves the decider out of a file without one', () => {
+    const swapped = {
+      ...race,
+      drivers: race.drivers.map(x => (x.code === 'VER' ? { ...x, points: x.points.map((p, i) => (i === 22 ? 392 : p)) } : x.code === 'PIA' ? { ...x, points: x.points.map((p, i) => (i === 22 ? 396 : p)) } : x)),
+    };
+    const going = seriesTitleRace(td, swapped).body.match(/<h3>Going in<\/h3><ol>(.*?)<\/ol>/)?.[1] ?? '';
+    expect(going.indexOf('<b>Piastri</b>')).toBeLessThan(going.indexOf('<b>Verstappen</b>'));
+    expect(going).toContain('<b>Piastri</b><span class="v">396 <small>12 behind</small></span>');
+    expect(seriesTitleRace(td, { ...race, decider: undefined }).body).not.toContain('The decider');
+  });
+
+  it('turns the panel’s label white on a dark team colour', () => {
+    const navy = { ...td, champions: { ...td.champions!, seasons: td.champions!.seasons.map(s => (s.year === 2025 ? { ...s, driver: 'Max Verstappen', constructor: 'Red Bull' } : s)) } };
+    expect(seriesTitleRace(navy, race).body).toContain('<section class="pd-tr-band is-dark" style="--t:#1E3A8A">');
+  });
+});
+
+describe('title-race-2025.json', () => {
+  const race = JSON.parse(readFileSync(path.join(process.cwd(), 'content/series/f1/title-race-2025.json'), 'utf8')) as TitleRaceFile;
+  const https = (s: string) => /^https:\/\/(www\.)?(formula1\.com|fia\.com)\//.test(s);
+
+  it('holds every round, the three with a total each round, and each turning point on a round with its sources', () => {
+    expect(race.rounds).toHaveLength(24);
+    expect(race.rounds.map(r => r.round)).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
+    for (const r of race.rounds) expect(r.date).toMatch(/^2025-\d{2}-\d{2}$/);
+    expect(race.drivers.map(d => `${d.code} ${d.points[23]}`)).toEqual(['NOR 423', 'VER 421', 'PIA 410']);
+    for (const t of race.turns ?? []) {
+      expect(race.rounds.some(r => r.round === t.round)).toBe(true);
+      expect(t.sources?.length).toBeGreaterThan(0);
+      for (const s of t.sources ?? []) expect(https(s), s).toBe(true);
+    }
+    for (const s of [...(race.sources ?? []), ...(race.decider?.sources ?? [])]) expect(https(s), s).toBe(true);
+    expect(race.decider?.needed?.map(n => n.driver)).toEqual(race.drivers.map(d => d.name));
+  });
+
+  it('names each round’s leader with his points, and ends on champions.json’s two totals', () => {
+    race.rounds.forEach((r, i) => {
+      const d = race.drivers.find(x => x.name === r.leader);
+      expect(d?.points[i], `round ${r.round}`).toBe(r.lead);
+      expect(r.lead, `round ${r.round}`).toBe(Math.max(...race.drivers.map(x => x.points[i])));
+    });
+    const champs = JSON.parse(readFileSync(path.join(process.cwd(), 'content/series/f1/champions.json'), 'utf8')) as { year: number; points: number; runnerUpPoints: number }[];
+    const c = champs.find(s => s.year === 2025);
+    expect([race.drivers[0].points[23], race.drivers[1].points[23]]).toEqual([c?.points, c?.runnerUpPoints]);
   });
 });
 
