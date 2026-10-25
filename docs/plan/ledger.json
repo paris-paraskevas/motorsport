@@ -1064,6 +1064,11 @@
    "date": "2026-10-25",
    "change": "O29 added and started: Formula 1’s 2025 title race page at /series/f1/2025/, drafted and answered as Task 1.c and built in its session beside O28; new files content/series/f1/title-race-2025.json and scripts/fetch-title-race.mts. O30 added, planned for after Abu Dhabi (4–6 December 2026): 2026’s title race page, its turning points drafted with sources and approved by the operator before they publish.",
    "word": "the operator, 2026-10-25 (session 71, in Task 1.c’s session): “ok so lets build the page then.”; “Now, side by side”; “2026's turning points: Claude drafts them with sources in December, I approve before they publish.”"
+  },
+  {
+   "date": "2026-10-25",
+   "change": "O31 added and started as Task 1.d: the other series’ timetables corrected against their official ones (a wrong fact on the site, rules.md § 11). The cap of three sessions besides the desk raised to four for Task 1.d.",
+   "word": "the operator, 2026-10-25 (session 71): “A fourth session now (Recommended)”"
   }
  ],
  "phases": {
@@ -2698,6 +2703,19 @@
    "status": "planned",
    "evidence": "OPENED 25 Oct for after Abu Dhabi (4–6 December 2026, content/series/f1/rounds.json).",
    "scopeHash": "b19fc10b0b97"
+  },
+  {
+   "id": "O31",
+   "phase": "PO",
+   "title": "The other series’ timetables, checked against their official ones",
+   "scope": "Every 2026 round of GT World, WorldSBK, DTM, MotoGP, WEC, IMSA, NLS and the ADAC 24h Nürburgring checked against the series’ official timetables, and content/series/<slug>/sessions.json corrected with a source for each round; NASCAR’s four old race names in rounds.json and sessions.json brought to nascar.com’s; NLS’s officialSite in meta.json corrected; then one publish run of the Calendar (/calendar/). Found by Task 1.b on 25 Oct: copied templates for five GT World rounds, WorldSBK’s Race 2 before the end of Sunday at three or more rounds, a third DTM practice that does not run and Race 2’s time, single misses in MotoGP, WEC, IMSA, NLS and the 24h.",
+   "fixedBy": "rules.md § 11: a wrong fact on the site goes first; the operator, 2026-10-25 (session 71): “A fourth session now (Recommended)”",
+   "defaults": "every round of the affected series, past and to come; one official source a round (the series’ own event page or timetable PDF), its URL beside the round; times stored as the files store them now; a round whose official timetable is not published yet keeps its times and is listed; content files only, no code; 1.0.300 provisionally, the next free number taken at merge",
+   "needsWord": "the session’s short plan before its edits; then the push, the review, the merge and one publish run of /calendar/",
+   "acceptance": "each corrected round matches its official timetable, its source in the PR; the Calendar’s month pages show the corrected times after the publish run",
+   "status": "started",
+   "evidence": "OPENED and STARTED 25 Oct (session 71) as Task 1.d, a session of its own in a worktree from next, on the operator’s “A fourth session now (Recommended)”, from Task 1.b’s findings (side-session note task-1b-wrong-facts-timetables.md).",
+   "scopeHash": "9f9bb65ea57a"
   },
   {
    "id": "O20",
