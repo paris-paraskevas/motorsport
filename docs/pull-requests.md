@@ -14,6 +14,31 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1186 · 1.0.297 · O17, a follow-up (the champion's button clears the big year) · opened 2026-10-25 into `next` on the operator's "Push o17/button and open the PR into next.", planned with O28 in plan mode and approved; the review and the merge on the word
+**The button over the year.** The operator's test of 0.1.18 at 1,440 px found the reigning card's "2026 title race →" button over the big "2025": it had no fill, so the year ran through its words. It now takes the card's own colour. The records of #1185's merge, upload, publish run and check ride in from the local o17/records, with O28's plan and its answers, and the rule change for parallel sessions.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.19, on `/series/f1/champions/`: the button on the champion's card reads clearly, the year passing under it, on hover too.
+- **Editors get:** nothing.
+- **Files (11):**
+  - `wp-theme/paddock/style.css` · 0.1.19: `.pd-ch-acts a` takes `background: var(--t)`; its hover tint mixes into `var(--t)` instead of transparent.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.297, and #1185's MERGED, PUBLISHED and CHECKED lines.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered):
+    - #1185's MERGED, UPLOADED, PUBLISHED, CHECKED and DONE evidence;
+    - O17's test and this fix;
+    - O28's plan and its three answers, its defaults changed by a dated line;
+    - rules 7 and 11 for parallel sessions, by a dated line.
+  - `CLAUDE.md` (rule 7) and `docs/plan/rules.md` (§§ 7 and 11): building by a session the operator starts for its task, at most three at once besides the desk session, which owns the ledger, the handoff, IDEAS, the ledger page, theme zips and publish runs.
+  - `IDEAS.md`: the 2025 title race page, drafted for the operator's answers (Task 1.c).
+- **Verified:**
+  - on the theme preview (0.1.19, Playwright, a real mouse): before, the button transparent (rgba(0, 0, 0, 0)) over the year on McLaren's rgb(255, 128, 0); after, at 1,440 and 390 px in Day and Night, its background equals the card's, it is the topmost element at its centre, and on hover it darkens toward the ink while the year stays under it;
+  - `npx tsc --noEmit -p .` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npx vitest run` 282 files, 2,921 tests; after the rule change, `npx vitest run lib/design/plan-ledger.test.ts` 6 tests;
+  - theme zip built: 33 files, Version 0.1.19.
+- **Test after upload:**
+  1. `/series/f1/champions/` on a laptop, Day and Night: "2026 title race →" on the champion's card reads clearly, the big "2025" passing under the button.
+  2. Point at the button: it darkens slightly and the year stays hidden behind it.
+  3. The same page on a phone: the button across the card, readable over the year.
+- **After the merge:** the upload of 0.1.19; CSS only, so no publish run.
+- **Review:** one fresh-context Sonnet reader, on the operator's 5-hour figure (about 25k tokens).
+
 ## #1185 · 1.0.296 · O17 (Formula 1's Champions: the roll of honour) · opened 2026-10-23 into `next` on the operator's "Push o17/champions and open the PR into next.", built on "Go: plan O17 in plan mode." and "Build O17 now in this session.", the plan approved in plan mode; the review and the merge on the word
 **The Champions page.** Built as drawn on The Paddock Drafts, full width; the three doorways to pages the new site does not have yet are greyed, as answered in plan mode. The records of the lap chart's draft (O28, answered "All six lap chart defaults stand.") and of O17's opening and plan ride in from the local o16/records.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.18 and one publish run:
@@ -35,6 +60,9 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
     - O17's OPENED, ANSWERED, PLANNED, BUILT and VERIFIED evidence;
     - IDEAS: the lap chart's line closed; no Learn or News page on the new site while the footer and the header name them.
 - **Answered:** the three doorways (the operator in plan mode: "Greyed until built").
+- **Merged** 2026-10-24 11:15:25Z by the operator, squash, as b0a9bac8; the tree on `next` is the branch's own (`git diff origin/o17/champions origin/next`: 0 lines).
+- **Published** after the operator's upload of 0.1.18 (live, paddock.js byte-identical to next's): run 40089754745, 11:24 to 11:26Z, `--only /series/f1/`: 1 created (/series/f1/champions/, page 5361), 17 updated, 126 unchanged, 0 failed. The stored page checked through the public REST API.
+- **Checked** on the site, signed in: at 1,440 px every decade, the jump to 1980s clear of the bar under the admin bar, the search by real typing ("senna" 5 of 76, "Räikkönen" 3, "zzz" none, Escape), the Standings doorway by a real click; at 390 px one decade at a time as cards, 1990s by a real tap, no sideways scroll, no tile overflow; no script error. O17 done; the operator's test follows.
 - **Reviewed** on the operator's "My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1185.": one fresh-context Sonnet reader, 334,419 tokens, 85 tool calls, about 18 minutes; mergeable after fixes, 0 blockers, 4 should-fix, 10 nits.
 - **Folded:** the search ignores accents and needs every word; a jump clears the jump bar where it wraps (its height measured into `--pd-ch-bar`); the tests read champions.json up to 2025; the phone cards follow the draft (no Teams' line before 1958, no 1958 card); a phone opens an address's decade or season; a query is cleared on a phone; the count aria-live; the tiles wrap at 300 px; singular counts; firstSentence ends at ! and ?; the footnote's dropped scores also against formula1.com. Accepted, with reasons in the CHANGELOG: an abbreviation in a note, the no-script phone 1958 link, the drafted colours, the footnote's Formula 1 lines (an IDEAS line for O18), the prefixed anchors, no automated test for paddock.js.
 - **Verified:**

@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.297 — 2026-10-25
+
+### O17, a follow-up: the champion's button clears the big year
+
+The operator's test of 0.1.18 on the site, 24 Oct, at 1,440 px: "no great visibility due to overlap of 2026 title race button on 1440px on bottom right above 2025 background". The reigning card's button had no fill, so the big "2025" behind it ran through its words (measured on the site, signed in: the button from 1205,775 to 1359,821, inside the year's 909,691 to 1371,891, its background transparent). Their answers, 24 Oct: the button masks the year ("Button masks the year"); and the button should open a 2025 title race page, drafted later with real data for their answers ("Draft a 2025 page"; IDEAS.md). Planned with O28 in plan mode and approved, 25 Oct. Theme 0.1.19.
+
+- **The button** (`.pd-ch-acts a`, wp-theme/paddock/style.css) takes the card's own colour (`var(--t)`), so the year passes under it; its hover tint mixes into the card's colour rather than into transparent, so the year stays hidden on hover too.
+- **Its words and target are unchanged:** "2026 title race →", opening this season's Standings, until a 2025 page exists.
+- **The records riding in** from the local o17/records: #1185's merge, the upload of 0.1.18, publish run 40089754745 and the check on the site; O17's test and this fix; O28's plan and its three answers in plan mode (the finish mark a dotted step; the six differing races of 2026 checked against their reports in O28's build, then the mark from the data alone; Pit wall's note column widened on the race page), with its defaults changed by a dated line.
+- **Verified** on the theme preview (0.1.19, Playwright, a real mouse): before, the button transparent over the year; after, at 1,440 and 390 px in Day and Night, its background equals the card's (McLaren's rgb(255, 128, 0)), it is the topmost element at its own centre, and on hover it darkens toward the ink while the year stays under it.
+
 ## 1.0.296 — 2026-10-23
 
 ### O17: Formula 1's Champions
