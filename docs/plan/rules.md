@@ -52,7 +52,7 @@ Adopted 2026-09-10 (session 47) on the operator's word: "i have no other rules e
 ## 7. Agents and tokens
 - Every subagent runs on Sonnet; Haiku for pure extraction; Fable never inherits. [settings: CLAUDE_CODE_SUBAGENT_MODEL + FORCE, repo-local; hook: PreToolUse denies an Agent call without an allowed model]
 - Reading and auditing agents run one at a time and write to files as they go. [behaviour; agent definitions with maxTurns]
-- Building is done by me directly; the only agents on a build PR are a reader and the reviewer. [behaviour]
+- Building is done directly by a session you started for that task (this one or a parallel one), never by a subagent; the only agents on a build PR are a reader and the reviewer. At most three sessions run at once besides the desk; the desk session owns the ledger, the handoff, IDEAS, the ledger page, theme zips and publish runs. (25 October 2026, on your word.) [behaviour]
 - Before a fan-out I state count, model and expected tokens; after it, the actual figure. [behaviour]
 - Above 60 percent session usage, no agents. [behaviour]
 - Documentation goes to disk first at zero cost, then gets read. [behaviour]
@@ -82,7 +82,7 @@ Adopted 2026-09-10 (session 47) on the operator's word: "i have no other rules e
 
 ## 11. How we pick what to finish (new group, 2026-10-09)
 Adopted on the operator's word "rule. go" (9 October 2026), on the proposal shown at the top of The Paddock Ledger page; the dated line is in the ledger's changes list.
-- **The order.** The order of the work is one list, kept at the top of the ledger page and in `docs/HANDOFF.md`'s LATEST section; what is started is finished first, one item at a time. [behaviour; page]
+- **The order.** The order of the work is one list, kept at the top of the ledger page and in `docs/HANDOFF.md`'s LATEST section; what is started is finished first; up to three items at a time, one per session, taken from the front of the order, and two items that touch the same files run one after the other (25 October 2026, on your word). [behaviour; page]
 - **What may go first.** Only three reasons put an item ahead of the order: the site is broken or shows a wrong fact (fixed first, the same day); something is costing money now (next, before anything new); a date that will not wait (a race weekend's article, a deadline: placed by its date). [behaviour]
 - **New items.** A new idea or finding is written down the same day, one line in `IDEAS.md` (the operator's own also under "Your ideas" on the ledger page), and the current item carries on. At the end of the session Claude suggests one of four for each, and the operator chooses: first (only for a reason above), next (the end of the order, or where the operator says), parked, or dropped with the reason. Before it is built it becomes a ledger item with its decision scan and its cost in deploys, builds and database questions. [behaviour; test: the decision scan before `started`]
 - **The operator's word moves anything**, at any time; the change is recorded with its date. [behaviour]

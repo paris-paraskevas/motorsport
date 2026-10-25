@@ -6,8 +6,8 @@
   "Gates on every PR: tsc 0 · lint 0 errors · full vitest · cf:build and the dry-run Total Upload quoted (alarm at 80% of 64 MiB) · a browser run on the local server · a review page · a component test from a saved document · parity output for every deleted route file · a fresh-context Sonnet reviewer before merge.",
   "No page-specific component; a section that fits none is a question. Sources from the catalogue, never a query. Every component carries a Condition, an authorization scheme, a build option, template options with a preset, and Utilization with History.",
   "Every shared object shows where it is used and its history and cannot be deleted while referenced. Text is escaped by default. Exports key files by stable id. Any apply is atomic, validated, staged, refused while locked.",
-  "Agents: Sonnet or Haiku, one at a time, writing incrementally; building is done directly; fan-outs announced before and accounted after; none above 60% usage.",
-  "Session ritual: read the rules, the ledger and the git log; name the next slot; start the dev server; smoke-test; one slot at a time; end by writing evidence and the handoff."
+  "Agents: Sonnet or Haiku, one at a time, writing incrementally; no subagent builds: building is done directly by a session the operator started for its task, at most three at once besides the desk session, which owns the ledger, the handoff, IDEAS, the ledger page, theme zips and publish runs; fan-outs announced before and accounted after; none above 60% usage.",
+  "Session ritual: read the rules, the ledger and the git log; name the next slot; start the dev server; smoke-test; one slot per session, up to three sessions at once besides the desk; end by writing evidence and the handoff (the desk writes the ledger and the handoff for the other sessions)."
  ],
  "changes": [
   {
@@ -1054,6 +1054,11 @@
    "date": "2026-10-25",
    "change": "O28’s defaults, answered in its plan: the six races of 2026 whose result differs from the order at the flag are checked against their reports in the build, and from Austin on the finish mark shows from the data alone, the run’s log naming each race with one (instead of each race waiting for a check before its mark shows); the mark is a dotted step to the result’s place; on the race page Pit wall’s note column widens so the chart keeps its drawn finish labels on Pit wall’s lap scale.",
    "word": "the operator, 2026-10-25 (session 71), in plan mode: “Six now, then data (Recommended)”, “Dotted step (Recommended)”, “Widen Pit wall’s notes (Recommended)”; the plan approved"
+  },
+  {
+   "date": "2026-10-25",
+   "change": "Rules 7 and 11 changed for parallel sessions: building is done directly by a session the operator started for its task, never by a subagent; at most three sessions at once besides the desk session, which owns the ledger, the handoff, IDEAS, the ledger page, theme zips and publish runs; up to three tasks at a time from the front of the order, two touching the same files one after the other; every session on Opus, reviews still Sonnet agents. Same words in CLAUDE.md’s rule 7, docs/plan/rules.md §§ 7 and 11, and the rules above.",
+   "word": "the operator, 2026-10-25 (session 71): “is there any way for us to enter plan mode and find a way for multiple spawned sessions to work in parallel and get the job done?”; in plan mode “Three (Recommended)”, “All Opus”, “The desk only (Recommended)”; the plan approved"
   }
  ],
  "phases": {
