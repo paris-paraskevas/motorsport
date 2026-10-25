@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #(on opening) · 1.0.298 · O28 (Formula 1's lap chart) · built 2026-10-25 in a parallel session (Task 1.a) on the plan approved in plan mode with its three answers (a dotted step marked †; the six differing races checked against Formula 1's reports; Pit wall's notes widened on the race page), and the operator's "Both defaults" during the build; committed locally, the push, the PR into `next`, the review and the merge on the word
+## #(on opening) · 1.0.298 · O28 (Formula 1's lap chart) · built 2026-10-25 in a parallel session (Task 1.a) on the plan approved in plan mode with its three answers (a dotted step marked †; the six differing races checked against Formula 1's reports; Pit wall's notes widened on the race page), and the operator's "Both defaults" and "Follow the FIA's documents (Jolpica, as built)" during the build; committed locally, the push, the PR into `next`, the review and the merge on the word
 **The lap chart.** Each driver's place at the end of every lap on the race page, between the Classification and Pit wall, as drawn on Paddock Lap Chart. The data is Jolpica's: its laps and its pit stops, kept in `f1/laps.json` on paddock-data; the safety car laps are race control's (OpenF1).
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.20 and the publish runs:
   - on every Formula 1 race page whose laps are stored, the Lap chart: a line a driver from the grid to the flag, pit stops, safety car laps, retirements, and † where the result differs from the order at the flag; a pointer, a tap or the arrow keys follow one driver; the places as a table under it;
@@ -35,11 +35,49 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `wp-theme/preview/f1-race.html` · new, round 17's race page from the dry run; `blueprint.json` inserts it under round 17.
   - `wp-theme/preview/f1-weekend.html` · regenerated from the dry run: the link only.
   - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.298.
-- **Answered during the build** ("Both defaults", 25 Oct): a driver's places may run past his result's laps (Britain's penalty lap); the pit stop dots from Jolpica's pit stops, a fourth field in laps.json; Pit wall's stints to IDEAS.
+- **Answered during the build** ("Both defaults", 25 Oct): a driver's places may run past his result's laps (Britain's penalty lap); the pit stop dots from Jolpica's pit stops, a fourth field in laps.json; Pit wall's stints to IDEAS. Then, the stops checked against the official records: "Follow the FIA's documents (Jolpica, as built): the dots stay as they are, red-flag laps out; add the official sources to the records."
+- **The pit stops against the official records:** Jolpica's list equals the FIA's Race Pit Stop Summary car by car and lap by lap in all 17 races. formula1.com's Pit stop summary pages differ from the FIA's documents in 12 races: they leave out the tyre changes under a red flag, the passes when every car was sent through the pit lane (Monaco lap 66, Baku lap 36), penalties served in the pit lane and single visits, and Baku's misses Hamilton's stop on lap 31. OpenF1's stints, which Pit wall draws, match neither in 8 races (Australia, Canada, Monaco, Barcelona, Belgium, Hungary, Malaysia, Singapore). Sources:
+  - the FIA, Race Pit Stop Summary, linked from each race's Event & Timing Information page on fia.com (Singapore's: https://www.fia.com/events/fia-formula-one-world-championship/season-2026/singapore-grand-prix/eventtiming-information):
+    - https://www.fia.com/sites/default/files/2026_01_aus_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_02_chn_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_03_jpn_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_04_usa_f1_r0_timing_racepitstopsummary_v01.pdf (Miami)
+    - https://www.fia.com/sites/default/files/2026_05_can_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_06_mon_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_07_esp_f1_r0_timing_racepitstopsummary_v01.pdf (Barcelona)
+    - https://www.fia.com/sites/default/files/2026_08_aut_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_09_gbr_f1_r0_timing_racepitstopsummary_v01.pdf (Britain)
+    - https://www.fia.com/sites/default/files/2026_10_bel_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_11_hun_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_12_ned_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_13_ita_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_14_esp_f1_r0_timing_racepitstopsummary_v01.pdf (Madrid)
+    - https://www.fia.com/sites/default/files/2026_15_aze_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_16_brn_f1_r0_timing_racepitstopsummary_v01.pdf (Malaysia)
+    - https://www.fia.com/sites/default/files/2026_17_sgp_f1_r0_timing_racepitstopsummary_v01.pdf
+  - formula1.com, Pit stop summary:
+    - https://www.formula1.com/en/results/2026/races/1279/australia/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1280/china/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1281/japan/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1284/miami/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1285/canada/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1286/monaco/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1287/barcelona-catalunya/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1288/austria/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1289/great-britain/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1290/belgium/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1291/hungary/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1292/netherlands/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1293/italy/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1294/spain/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1295/azerbaijan/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1308/bahrain/pit-stop-summary (Malaysia)
+    - https://www.formula1.com/en/results/2026/races/1296/singapore/pit-stop-summary
 - **Verified:**
   - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,944 tests;
   - the dry runs into a scratch copy of paddock-data (`--only /series/f1/ --openf1-max 20`, WordPress not called): all 17 races' safety car spans in one run; the laps filled from an empty store in five runs (Jolpica's 429 after about 77 calls a run), every race OK (`laps f1 R17 OK 62 laps 15 calls`); `f1/laps.json` 86,085 bytes; the race pages 30,960 to 48,574 bytes, their chart 10 to 15 KB;
-  - round 17: the 1,236 places and 22 grid slots of 23 Oct's check, VSC on laps 8–9 and 39–40, its 25 stops as Jolpica lists them;
+  - round 17: the 1,236 places and 22 grid slots of 23 Oct's check, VSC on laps 8–9 and 39–40, its 25 stops as Jolpica and the FIA's document list them;
+  - the stops of every race against the FIA's documents (17, read with pdfplumber) and formula1.com's pages (17), as above; every source link above answered 200 when checked;
   - the six races placed differently, each against formula1.com's race result and its penalty notes: Miami https://www.formula1.com/en/results/2026/races/1284/miami/race-result (and the explainer https://www.formula1.com/en/latest/article/explained-why-leclerc-was-hit-with-a-20-second-time-penalty-after-the-miami-grand-prix.4EbZXOee2tXei29C5ktNMG), Monaco https://www.formula1.com/en/results/2026/races/1286/monaco/race-result, Barcelona https://www.formula1.com/en/results/2026/races/1287/barcelona-catalunya/race-result, Britain https://www.formula1.com/en/results/2026/races/1289/great-britain/race-result, Hungary https://www.formula1.com/en/results/2026/races/1291/hungary/race-result, Azerbaijan https://www.formula1.com/en/results/2026/races/1295/azerbaijan/race-result;
   - on the theme preview (0.1.20): 20 widths from 300 to 2,560 px in Day and Night with no sideways scroll; lap 30 within 0.05 px of Pit wall's; pointer, tap and keys by real input; the Overview's link lands on the chart; without the script the table; Miami's and Britain's finish marks; 0 page errors.
 - **Test after upload:**
