@@ -24,21 +24,21 @@
       "matchDate": "2026-02-22",
       "round": 2,
       "sessions": [
-        { "title": "NASCAR - Ambetter Health 400", "start": "2026-02-22T20:00:00Z", "end": "2026-02-22T23:30:00Z", "location": "Atlanta Motor Speedway, Hampton, GA" }
+        { "title": "NASCAR - Autotrader 400", "start": "2026-02-22T20:00:00Z", "end": "2026-02-22T23:30:00Z", "location": "Atlanta Motor Speedway, Hampton, GA" }
       ]
     },
     {
       "matchDate": "2026-03-01",
       "round": 3,
       "sessions": [
-        { "title": "NASCAR - EchoPark Automotive Grand Prix", "start": "2026-03-01T20:30:00Z", "end": "2026-03-02T00:00:00Z", "location": "Circuit of the Americas, Austin, TX" }
+        { "title": "NASCAR - DuraMAX Texas Grand Prix", "start": "2026-03-01T20:30:00Z", "end": "2026-03-02T00:00:00Z", "location": "Circuit of the Americas, Austin, TX" }
       ]
     },
     {
       "matchDate": "2026-03-08",
       "round": 4,
       "sessions": [
-        { "title": "NASCAR - Shriners Children's 500", "start": "2026-03-08T19:30:00Z", "end": "2026-03-08T22:30:00Z", "location": "Phoenix Raceway, Avondale, AZ" }
+        { "title": "NASCAR - Straight Talk Wireless 500", "start": "2026-03-08T19:30:00Z", "end": "2026-03-08T22:30:00Z", "location": "Phoenix Raceway, Avondale, AZ" }
       ]
     },
     {
@@ -192,7 +192,7 @@
       "matchDate": "2026-08-23",
       "round": 25,
       "sessions": [
-        { "title": "NASCAR - Mobil 1 301", "start": "2026-08-23T19:00:00Z", "end": "2026-08-23T22:30:00Z", "location": "New Hampshire Motor Speedway, Loudon, NH" }
+        { "title": "NASCAR - Dollar Tree 301", "start": "2026-08-23T19:00:00Z", "end": "2026-08-23T22:30:00Z", "location": "New Hampshire Motor Speedway, Loudon, NH" }
       ]
     },
     {
@@ -248,7 +248,7 @@
       "matchDate": "2026-10-18",
       "round": 33,
       "sessions": [
-        { "title": "NASCAR - United Rentals 312", "start": "2026-10-18T19:00:00Z", "end": "2026-10-18T22:30:00Z", "location": "Phoenix Raceway, Avondale, AZ" }
+        { "title": "NASCAR - Freeway Insurance 500", "start": "2026-10-18T19:00:00Z", "end": "2026-10-18T22:30:00Z", "location": "Phoenix Raceway, Avondale, AZ" }
       ]
     },
     {

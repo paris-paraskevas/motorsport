@@ -14,6 +14,46 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #(on opening) · 1.0.300 · O31 (the Calendar's session times, checked against each series' official timetable) · to open into `next` on the operator's word, Task 1.d, planned in plan mode and approved; the review and the merge on the word
+**The Calendar's timetables.** Task 1.b found curated timetables copied from a template and never checked, live on /calendar/. Every 2026 round of GT World, WorldSBK, DTM, MotoGP, WEC, IMSA, NLS and the ADAC 24h is now checked against its series' own timetable, converted by script from track time with the venue's zone and diffed to empty; NASCAR's five old race names and NLS's dead official site are fixed. Content files only.
+- **Readers see:** nothing yet; the site is in Coming Soon. After one publish run of /calendar/: the corrected times in the month pages February to November 2026 and on /calendar/ (October); 14 fewer phantom sessions (DTM's six third practices, NLS's eight race-morning practices) and nine more GT World sessions (its five rebuilt rounds).
+- **Editors get:** nothing.
+- **Files (16):**
+  - `content/series/motogp/sessions.json` · 19 rows: R2 Sprint and Practice end, R3 Warm Up and race, R12's Friday and Saturday (six), R20 Qatar (eight), R21's race.
+  - `content/series/gt-world/sessions.json` · R3, R6, R7, R9, R10 rebuilt from their own timetables; R4's Night Practice and Superpole end.
+  - `content/series/gt-world/rounds.json` · R10 ends 17 Oct (the race moved to the Saturday).
+  - `content/series/wsbk/sessions.json` · 38 rows across all 12 rounds.
+  - `content/series/dtm/sessions.json` · 35 rows corrected, Free Practice 3 removed at R2–R8.
+  - `content/series/wec/sessions.json` · 13 rows: R4 São Paulo (eight), R6 Fuji's Saturday (five).
+  - `content/series/imsa/sessions.json` · 11 rows across R5, R6, R8, R9, R10, R11.
+  - `content/series/nls/sessions.json` · NLS4 and NLS5 corrected (five rows), eight race-morning "Free Training" rows removed.
+  - `content/series/nls/meta.json` · `officialSite` to https://www.nuerburgring-langstrecken-serie.de/.
+  - `content/series/nascar-cup/rounds.json`, `sessions.json` · R2, R3, R4, R25, R33's names.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.300 (provisional: Task 1.a holds 1.0.298, Task 1.c 1.0.299; the later merge takes the next free number).
+- **Answered:** the check on the Calendar (plan mode): the dry run run twice, as stored and against a local copy of paddock-data with the nine calendar files rebuilt from this branch.
+- **Rule for a past round:** the latest timetable the series published, a change it published during the event included (Barcelona's Race 2, Brazil's MotoGP Sprint, Monza's race-day versions); a start that only slipped on the day keeps its timetable time; a session called off keeps its timetable time.
+- **Sources** (each round checked; local times converted with the venue's zone):
+  - MotoGP: motogp.com event Schedule, https://api.pulselive.motogp.com/motogp/v1/events/<id> (the widget on https://www.motogp.com/en/calendar/2026/event/<slug>/<id>), and the "Time schedule" articles' graphics: R2 https://www.motogp.com/en/news/2026/03/16/time-schedule-brazilian-gp/1005703, R3 …/2026/03/25/time-schedule-usa-gp/1013131, R8 …/2026/06/03/time-schedule-grand-prix-of-hungary/1070230, R12 …/2026/08/03/time-schedule-qatar-airways-grand-prix-of-great-britain/1079065, R16 …/2026/09/28/time-schedule-motul-grand-prix-of-japan/1092197, R17 …/2026/10/07/time-schedule-pertamina-grand-prix-of-indonesia/1171110, R18 …/2026/10/19/time-schedule-red-bull-grand-prix-of-australia/1177541; R20 Qatar /event/qatar/3f3d3f5e-851c-42d2-887a-8ce8b41fa908, R21 Portugal /event/portugal/c7f7626b-807f-4a6f-813e-7ad2c68302a3, R19 and R22 their event Schedules. The other rounds: their event Schedules, the stored times confirmed.
+  - GT World: https://www.gt-world-challenge-europe.com/event/<246…255>/ and each round's latest timetable PDF (R1 V1, R2 v2, R3 v4–v6, R4 v1 and v2, R5 v3, R6 v1, R7 "2", R8 v1, R9 v2, R10 v1); https://www.gt-world-challenge-europe.com/news/3334/barcelona-event-update; …/news/3284/season-closing-race-at-portimao-to-run-on-saturday-evening.
+  - WorldSBK: https://api.wsbk.pulselive.com/wsbk-events/v1/seasons/2026/rounds/<AUS, POR, NED, HUN, CZE, ARA, ITA, GBR, FRA, CRE, EST, JER>/sessions.
+  - DTM: https://www.dtm.com/en/events/red-bull-ring-2026, zandvoort-2026, lausitzring-2026, norisring-2026, oschersleben-2026, nuerburgring-2026, sachsenring-2026, hockenheim-finale-2026 (their timetables through https://api.dtm.com/data?query=eventDetails&slug=<event>&lang=en; new to the repository: no robots.txt there, dtm.com's allows all).
+  - WEC: https://www.fiawec.com/en/race/6-hours-of-imola-2026, totalenergies-6-hours-of-spa-francorchamps-2026, 24-hours-of-le-mans-2026, rolex-6-hours-of-sao-paulo-2026, lone-star-le-mans-2026, 6-hours-of-fuji-2026, 6-hours-of-barcelona-2026, 6-hours-of-monza-2026; the previews /en/news/…/13204, 13262, 13588, 13675, 13750, 13808, 13867.
+  - IMSA: https://imsa.results.alkamelcloud.com/Results/26_2026/<event>/01_IMSA%20WeatherTech%20SportsCar%20Championship/ for 02_Daytona, 06_Sebring, 07_Long Beach, 09_Laguna Seca, 11_Detroit, 14_Watkins Glen, 15_Canadian Tire Motorsport Park, 16_Road America, 18_VIRginia, 20_Indianapolis, 21_Road Atlanta.
+  - NLS: https://www.nuerburgring-langstrecken-serie.de/language/de/<2026-71-adac-westfalenfahrt, 2026-58-adac-barbarossapreis, 2026-57-adenauer-adac-rundstrecken-trophy, 2026-1-adac-eifel-trophy, 2026-kw-6h-adac-ruhr-pokal-rennen, 2026-65-adac-reinoldus-langstreckenrennen, 2026-66-adac-acas-cup, 2026-2-nls-sportwarte-rennen>/ and …/termine-adac-ravenol-nuerburgring-langstrecken-serie-2026/; NLS4/5 https://www.24h-rennen.de/zeitplanq/ (Q24h-Zeitplan-2026_V2_251111_.pdf).
+  - ADAC 24h: https://www.24h-rennen.de/zeitplan/ (24h-Zeitplan-2026_V2_260428.pdf).
+  - NASCAR: https://www.nascar.com/nascar-cup-series/2026/schedule/.
+- **Verified:**
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,921 tests;
+  - the scripted diff of every series against its source, empty after the edits (Long Beach's IMSA qualifying end, a minute apart between two official figures, left on purpose);
+  - the Calendar's dry run (`--from-ref … --dry-run --only /calendar/`, UTC), as stored at origin/paddock-data and against a local commit of it with the nine calendar files rebuilt from this branch by `calendarEntries(loadSeries(slug))`: both 15 pages, exit 0, 42 feeds OK; February to November 2026 and /calendar/ differ by exactly the corrections, December 2025, January, December 2026 and January 2027 byte-identical; the unchanged 24 Hours rebuilt identical to the stored file.
+- **Listed for the desk, not changed:** MotoGP's Australian Grand Prix (25 Oct) cancelled for poor visibility and NLS1 (14 Mar) called off for snow, kept at their scheduled times; WEC Barcelona and Monza's timetables (no rows in the file); IMSA's practices never carried; NLS5's qualifying for race 2; NASCAR's race times outside the scope (Clash, Duels, Daytona 500, All-Star Race, Pocono, New Hampshire).
+- **Test after the publish run:**
+  1. `/calendar/2026-10/`: GTWC Barcelona's Sprint Race 2 on Sunday 4 Oct at 16:20 UTC; Portimão's race on Saturday 17 Oct at 16:00 UTC; no "Free Practice 3" in DTM's Hockenheim weekend, its Race 2 at 14:30 UTC; WSBK Jerez's Race 2 at 13:30 UTC; IMSA Petit Le Mans' qualifying at 18:20 UTC.
+  2. `/calendar/2026-11/`: MotoGP Qatar's race on Sunday 8 Nov at 17:00 UTC, Portugal's on 22 Nov at 13:00 UTC.
+  3. `/calendar/2026-08/`: GTWC Magny-Cours' Free Practice 1 on Friday 31 Jul; no NLS "Free Training" on 1 Aug.
+- **After the merge:** one publish run, `--only /calendar/` (the desk's).
+- **Review:** one fresh-context Sonnet reader, on the operator's 5-hour figure.
+
 ## #1186 · 1.0.297 · O17, a follow-up (the champion's button clears the big year) · opened 2026-10-25 into `next` on the operator's "Push o17/button and open the PR into next.", planned with O28 in plan mode and approved; the review and the merge on the word
 **The button over the year.** The operator's test of 0.1.18 at 1,440 px found the reigning card's "2026 title race →" button over the big "2025": it had no fill, so the year ran through its words. It now takes the card's own colour. The records of #1185's merge, upload, publish run and check ride in from the local o17/records, with O28's plan and its answers, and the rule change for parallel sessions.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.19, on `/series/f1/champions/`: the button on the champion's card reads clearly, the year passing under it, on hover too.
