@@ -73,6 +73,16 @@ export function numberOf(d: SeriesData, name: string): number | null {
   return null;
 }
 
+/** Two names for one driver, matched by surname as codeOf matches ("Kimi Antonelli", "Andrea Kimi Antonelli"). */
+export const sameDriver = (a: string, b: string): boolean => bare(a) === bare(b);
+
+/** Where a driver sits in a team's line-up in drivers.json, by surname: 0 for its first; a driver the team does not
+ *  list (a stand-in, Lawson at Red Bull in rounds 12 to 14) after them all. */
+export function seatOf(d: SeriesData, team: string, name: string): number {
+  const at = teamOf(d, team)?.drivers.findIndex(x => bare(x.name) === bare(name)) ?? -1;
+  return at >= 0 ? at : Number.MAX_SAFE_INTEGER;
+}
+
 /** A team's colour as a tick before a name: `--t` is one of the two inline styles WordPress keeps. */
 export const tick = (d: SeriesData, team: string): string => `<i class="pd-tc" style="--t:${colourOf(d, team)}"></i>`;
 

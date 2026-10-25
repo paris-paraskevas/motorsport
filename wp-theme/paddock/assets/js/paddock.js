@@ -775,6 +775,180 @@
 		if ( window.ResizeObserver ) { new ResizeObserver( fit ).observe( box ); } else { window.addEventListener( 'resize', fit ); }
 	} );
 
+	// The lap chart (O28): each driver's place at the end of every lap, from data-pd-laps (the race's laps and rows; the
+	// safety car spans; then a driver a part: code, colour, dashed, start, from the pit lane, finish, how the line ends,
+	// places, stops, name, team). Drawn here, as WordPress keeps no SVG in a page, on Pit wall's lap scale: the name and
+	// finish columns come from --pd-lc-n and --pd-lc-e and the gap from the box, as Pit wall's rows take them, so lap 30
+	// sits over lap 30. A pointer, a tap or the arrow keys follow one driver in the readout; Escape lets go. Drawn again
+	// when the width changes.
+	document.querySelectorAll( '.pd-lc-draw[data-pd-laps]' ).forEach( function ( box ) {
+		var parts = box.getAttribute( 'data-pd-laps' ).split( '|' ), head = parts[ 0 ].split( ' ' ).map( Number ), L = head[ 0 ], N = head[ 1 ];
+		if ( parts.length !== 3 || ! ( L > 0 && N > 0 ) ) { return; }
+		var list = function ( s ) { return s ? s.split( '.' ).map( Number ) : []; };
+		var spans = parts[ 1 ] ? parts[ 1 ].split( ',' ).map( function ( s ) { var p = s.split( ' ' ); return { kind: p[ 0 ], from: Number( p[ 1 ] ), to: Number( p[ 2 ] ) }; } ) : [];
+		var D = parts[ 2 ].split( ';' ).map( function ( s ) {
+			var f = s.split( ',' );
+			return f.length !== 11 ? null : { code: f[ 0 ], color: f[ 1 ], second: f[ 2 ] === '1', start: Number( f[ 3 ] ), pl: f[ 4 ] === '1', fin: f[ 5 ] ? Number( f[ 5 ] ) : null, end: f[ 6 ], p: list( f[ 7 ] ), stops: f[ 8 ] === '-' ? null : list( f[ 8 ] ), name: f[ 9 ], team: f[ 10 ] };
+		} ).filter( Boolean );
+		var card = box.closest( '.pd-lc' );
+		if ( ! D.length || ! card ) { return; }
+		var read = card.querySelector( '.pd-lc-read' );
+		var idle = window.matchMedia && window.matchMedia( '(hover: none)' ).matches ? 'Tap a line to follow one driver.' : 'Point at a line, or tap it, to follow one driver.';
+		var node = function ( tag, attrs, parent, text ) {
+			var n = document.createElementNS( SVG, tag );
+			Object.keys( attrs ).forEach( function ( k ) { n.setAttribute( k, attrs[ k ] ); } );
+			if ( text !== undefined ) { n.textContent = text; }
+			return parent.appendChild( n );
+		};
+		// A line's place at a lap: lap 0 is the grid (the pit lane after the last car on it); the flag is its last lap.
+		var at = function ( d, l ) { return l === 0 ? d.start : d.p[ l - 1 ]; };
+		var flag = function ( d ) { return at( d, d.p.length ); };
+		var moved = function ( d ) { return d.end === 'f' && d.fin !== null && d.p.length > 0 && flag( d ) !== d.fin; };
+		var order = [], finRow = {};
+		for ( var l = 0; l <= L; l++ ) { order.push( {} ); }
+		D.forEach( function ( d, i ) {
+			for ( var k = 0; k <= d.p.length && k <= L; k++ ) { order[ k ][ at( d, k ) ] = i; }
+			if ( d.fin !== null ) { finRow[ d.fin ] = i; }
+		} );
+		var both = function ( n ) { return n.length > 1 ? n.slice( 0, -1 ).join( ', ' ) + ' and ' + n[ n.length - 1 ] : String( n[ 0 ] ); };
+		var describe = function ( d, lap ) {
+			var n = d.p.length, out = n ? 'out after lap ' + n : 'out on the first lap';
+			var end = d.end === 'd' ? 'crossed the line P' + flag( d ) + ', disqualified'
+				: d.end === 'x' ? ( d.fin !== null ? 'finished P' + d.fin + ', ' + out : out )
+					: d.fin === null ? 'crossed the line P' + flag( d )
+						: moved( d ) ? 'crossed the line P' + flag( d ) + ', classified P' + d.fin : 'finished P' + d.fin;
+			var place = lap !== null && lap > 0 && lap <= n ? ' · lap ' + lap + ': P' + d.p[ lap - 1 ] : '';
+			var stops = d.stops === null ? '' : ! d.stops.length ? ' · no stop' : ' · ' + ( d.stops.length > 1 ? 'stops on laps ' : 'stop on lap ' ) + both( d.stops );
+			return d.name + ( d.team ? ', ' + d.team : '' ) + ' · ' + ( d.pl ? 'from the pit lane' : 'grid P' + d.start ) + ', ' + end + place + stops;
+		};
+		var svg = null, groups = [], guide = null, x0 = 0, x1 = 0, dx = 1, top = 0, rh = 22, chosen = null, lapOn = null, pinned = false;
+		var X = function ( n ) { return x0 + n * dx; }, Y = function ( p ) { return top + ( p - 0.5 ) * rh; };
+		var r1 = function ( v ) { return v.toFixed( 1 ); };
+		var set = function ( i, lap ) {
+			chosen = i;
+			lapOn = lap;
+			if ( ! svg ) { return; }
+			svg.classList.toggle( 'has-focus', i !== null );
+			groups.forEach( function ( g, k ) { g.classList.toggle( 'is-on', k === i ); } );
+			if ( i !== null ) { groups[ i ].parentNode.appendChild( groups[ i ] ); }
+			var show = i !== null && lap !== null && lap > 0;
+			guide.setAttribute( 'visibility', show ? 'visible' : 'hidden' );
+			if ( show ) { guide.setAttribute( 'x1', r1( X( lap ) ) ); guide.setAttribute( 'x2', r1( X( lap ) ) ); }
+			if ( read ) {
+				read.textContent = i === null ? idle : describe( D[ i ], lap );
+				read.classList.toggle( 'is-on', i !== null );
+			}
+		};
+		var draw = function ( W ) {
+			var cs = getComputedStyle( box ), nw = parseFloat( cs.getPropertyValue( '--pd-lc-n' ) ) || 74, ew = parseFloat( cs.getPropertyValue( '--pd-lc-e' ) ) || 94;
+			var gap = parseFloat( cs.columnGap ) || 10, sm = W < 560, fx = W - ew;
+			rh = sm ? 14 : W > 1600 ? 26 : 22;
+			top = sm ? 22 : 30;
+			x0 = nw + gap;
+			x1 = W - ew - gap;
+			dx = ( x1 - x0 ) / L;
+			var plotH = N * rh, H = top + plotH + 22, k = sm ? 3 : 4.5;
+			box.textContent = '';
+			svg = node( 'svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, 'class': sm ? 'is-sm' : '', 'aria-hidden': 'true', focusable: 'false' }, box );
+			var rows = node( 'g', {}, svg );
+			for ( var p = 1; p <= N; p++ ) { node( 'line', { 'class': 'r', x1: r1( x0 ), x2: r1( x1 ), y1: Y( p ), y2: Y( p ) }, rows ); }
+			spans.forEach( function ( s ) {
+				var a = X( s.from - 1 ), b = X( s.to );
+				node( 'rect', { 'class': 'sp', x: r1( a ), y: top, width: r1( Math.max( b - a, 1 ) ), height: plotH }, svg );
+				node( 'text', { 'class': 'spl', x: r1( ( a + b ) / 2 ), y: top + plotH + 12 }, svg, s.kind );
+			} );
+			var axis = node( 'g', {}, svg ), step = sm ? 10 : 5;
+			node( 'text', { 'class': 'at', x: 0, y: top - 14 }, axis, sm ? 'Lap' : 'Lap · ' + L );
+			for ( var t = step; t <= L; t += step ) {
+				node( 'line', { 'class': 'tk', x1: r1( X( t ) ), x2: r1( X( t ) ), y1: top - 6, y2: top + plotH }, axis );
+				node( 'text', { 'class': 'an', x: r1( X( t ) ), y: top - 14 }, axis, String( t ) );
+			}
+			if ( ! sm ) {
+				node( 'text', { 'class': 'an', x: r1( X( 0 ) ), y: top - 14 }, axis, 'Grid' );
+				node( 'text', { 'class': 'at', x: fx, y: top - 14 }, axis, 'Finish' );
+			}
+			var lines = node( 'g', {}, svg );
+			groups = D.map( function ( d ) {
+				var g = node( 'g', { 'class': 'drv' }, lines ), path = '', n = Math.min( d.p.length, L ), ex = X( n ), ey = Y( flag( d ) );
+				for ( var q = 0; q <= n; q++ ) { path += ( q ? 'L' : 'M' ) + r1( X( q ) ) + ' ' + r1( Y( at( d, q ) ) ); }
+				node( 'path', { 'class': 'ln' + ( d.second ? ' is-2' : '' ), d: path, stroke: d.color }, g );
+				// Classified elsewhere than at the flag (a penalty after it), or disqualified: a dotted step to the result.
+				if ( ( moved( d ) || d.end === 'd' ) && d.fin !== null && d.fin !== flag( d ) ) {
+					node( 'path', { 'class': 'st', d: 'M' + r1( ex ) + ' ' + r1( ey ) + 'H' + r1( x1 + gap / 2 ) + 'V' + r1( Y( d.fin ) ) + 'H' + r1( fx ), stroke: d.color }, g );
+				}
+				( d.stops || [] ).forEach( function ( s ) {
+					if ( s >= 1 && s <= n ) { node( 'circle', { 'class': 'pit', cx: r1( X( s ) ), cy: r1( Y( d.p[ s - 1 ] ) ), r: sm ? 2.6 : 3.6, fill: d.color }, g ); }
+				} );
+				if ( d.end === 'x' ) { node( 'path', { 'class': 'x', d: 'M' + r1( ex - k ) + ' ' + r1( ey - k ) + 'L' + r1( ex + k ) + ' ' + r1( ey + k ) + 'M' + r1( ex - k ) + ' ' + r1( ey + k ) + 'L' + r1( ex + k ) + ' ' + r1( ey - k ) }, g ); }
+				var sy = Y( d.start );
+				if ( ! sm || d.pl ) { node( 'text', { 'class': 'n', x: sm ? nw - 2 : 20, y: sy, 'text-anchor': 'end' }, g, d.pl ? 'PL' : String( d.start ) ); }
+				node( 'rect', { x: sm ? 0 : 28, y: r1( sy - rh * 0.32 ), width: 3, height: r1( rh * 0.64 ), fill: d.color }, g );
+				node( 'text', { 'class': 'c', x: sm ? 7 : 36, y: sy }, g, d.code );
+				if ( d.fin !== null ) {
+					var fy = Y( d.fin ), gain = d.start - d.fin;
+					node( 'text', { 'class': 'n', x: fx + ( sm ? 18 : 22 ), y: fy, 'text-anchor': 'end' }, g, d.end === 'd' ? 'DSQ' : d.fin + ( moved( d ) ? '†' : '' ) );
+					node( 'text', { 'class': 'c', x: fx + ( sm ? 22 : 28 ), y: fy }, g, d.code );
+					if ( gain && d.end !== 'd' ) { node( 'text', { 'class': 'dl', x: W - 2, y: fy, 'text-anchor': 'end' }, g, ( gain > 0 ? '+' : '−' ) + Math.abs( gain ) ); }
+				}
+				return g;
+			} );
+			guide = node( 'line', { 'class': 'gd', x1: 0, x2: 0, y1: top - 6, y2: top + plotH, visibility: 'hidden' }, svg );
+			pinned = false;
+			set( null, null );
+		};
+		// The driver and lap under the pointer: by row and nearest lap on the plot, by the result's row in the finish column.
+		var hit = function ( ev ) {
+			var r = svg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+			var p = Math.min( N, Math.max( 1, Math.floor( ( y - top ) / rh ) + 1 ) );
+			if ( x > x1 + 4 ) { return { i: p in finRow ? finRow[ p ] : null, lap: null }; }
+			var lap = x < x0 - 4 ? 0 : Math.min( L, Math.max( 0, Math.round( ( x - x0 ) / dx ) ) );
+			return { i: p in order[ lap ] ? order[ lap ][ p ] : null, lap: lap };
+		};
+		box.addEventListener( 'pointermove', function ( ev ) {
+			if ( ! svg || ( ev.pointerType === 'touch' && ! pinned ) ) { return; }
+			var h = hit( ev );
+			if ( ! pinned ) { set( h.i, h.lap ); }
+			else if ( h.lap !== null ) { set( chosen, Math.min( h.lap, D[ chosen ].p.length ) ); }
+		} );
+		box.addEventListener( 'pointerleave', function () { if ( ! pinned ) { set( null, null ); } } );
+		// A click or a tap follows the line under it; again on it, or off every line, lets go. A swipe scrolls the page.
+		box.addEventListener( 'click', function ( ev ) {
+			if ( ! svg ) { return; }
+			var h = hit( ev );
+			pinned = h.i !== null && ! ( pinned && h.i === chosen );
+			set( pinned ? h.i : null, pinned ? h.lap : null );
+		} );
+		box.tabIndex = 0;
+		box.addEventListener( 'keydown', function ( ev ) {
+			if ( [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape' ].indexOf( ev.key ) < 0 ) { return; }
+			ev.preventDefault();
+			if ( ev.key === 'Escape' ) { pinned = false; set( null, null ); return; }
+			var i = chosen === null ? 0 : chosen, lap = lapOn === null ? L : lapOn;
+			if ( chosen !== null ) {
+				if ( ev.key === 'ArrowUp' ) { i = Math.max( 0, i - 1 ); }
+				if ( ev.key === 'ArrowDown' ) { i = Math.min( D.length - 1, i + 1 ); }
+				if ( ev.key === 'ArrowLeft' ) { lap = Math.max( 0, lap - 1 ); }
+				if ( ev.key === 'ArrowRight' ) { lap = Math.min( L, lap + 1 ); }
+			}
+			pinned = true;
+			set( i, Math.min( lap, D[ i ].p.length ) );
+		} );
+		if ( read ) { read.hidden = false; }
+		// The card's width inside its border and padding, to the hundredth as Pit wall's columns are laid out: the box
+		// itself is hidden while it is empty.
+		var width = -1;
+		var redraw = function () {
+			var s = getComputedStyle( card ), w = card.getBoundingClientRect().width;
+			[ 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight' ].forEach( function ( p ) { w -= parseFloat( s[ p ] ) || 0; } );
+			w = Math.round( w * 100 ) / 100;
+			if ( Math.abs( w - width ) < 0.5 || ! ( w > 0 ) ) { return; }
+			width = w;
+			draw( w );
+		};
+		redraw();
+		if ( window.ResizeObserver ) { new ResizeObserver( function () { requestAnimationFrame( redraw ); } ).observe( card ); } else { window.addEventListener( 'resize', redraw ); }
+	} );
+
 	render();
 	if ( ! frozen ) { setInterval( render, 30000 ); }
 

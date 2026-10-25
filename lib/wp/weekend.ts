@@ -9,8 +9,8 @@
 
 import { stepFor, symbolLabel, type ForecastStep } from '@/lib/met-norway';
 import { isMap, type DriverStints, type SessionExtras } from '@/lib/openf1/weekend';
-import { escapeHtml, seasonPath, seriesPath, sessionSlug, WEEKEND_PAGES, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
-import { band, built, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sprintWeekend, tabs, teamLabel, tick, weekendPoints, wk } from './series';
+import { escapeHtml, isRaceLaps, seasonPath, seriesPath, sessionSlug, WEEKEND_PAGES, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
+import { band, built, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, wk } from './series';
 
 /** The rows a session's card leads with (the operator, 22 Oct): three in practice, ten in qualifying and sprint
  *  qualifying, the eight who score in a sprint; the race's ten lead its own section. */
@@ -384,6 +384,170 @@ function pitWall(w: Weekend, label: string, limit: number, used: Used): string {
   );
 }
 
+// ── The lap chart (O28) ──────────────────────────────────────────────────────
+
+/** A classification's Time cell for a car that took the flag: a time, a gap ("+7.335", "+1 Lap") or Lapped. */
+const TOOK_FLAG = /^(?:\+|\d)|^lapped$/i;
+const NOT_STARTED = /did not start|^dns$|withdr/i;
+const DISQUALIFIED = /disqualified|^dsq$/i;
+const LAPS_CREDIT = 'Laps: Jolpica F1 · CC BY-NC-SA 4.0';
+
+/** A driver's line: the store's places, the page's classification for the rest. */
+interface LapLine {
+  name: string;
+  code: string;
+  team: string;
+  colour: string;
+  /** A team's second driver, or a stand-in, by drivers.json's order: dashed. */
+  second: boolean;
+  /** Its row at lap 0: the grid slot, or after the last car on the grid from the pit lane. */
+  start: number;
+  pitLane: boolean;
+  /** Its place at the end of each lap it ran. */
+  places: number[];
+  /** Its place in the classification; null for a driver the classification does not name. */
+  fin: number | null;
+  /** How the line ends: at the flag (a lapped car on its last lap), with a cross where the car stopped, or disqualified. */
+  end: 'flag' | 'out' | 'dsq';
+  /** The laps it pitted on (Pit wall's stints, none at a red flag's lap); null with no stints for it. */
+  stops: number[] | null;
+}
+
+const flagPlace = (l: LapLine): number | undefined => l.places[l.places.length - 1];
+/** Crossed the line in one place and classified in another (a penalty after the flag): the dotted step and the †. */
+const placedDifferently = (l: LapLine): boolean => l.end === 'flag' && l.fin !== null && l.places.length > 0 && flagPlace(l) !== l.fin;
+
+/** The race's places lap by lap, joined to the page's own classification by name, else by surname as codeOf matches:
+ *  the classification gives the team, the finish and how a line ends, so a ruling after the race (Monaco's appeal moved
+ *  Gasly weeks later) lands by itself. A driver who did not start has no line; one the classification does not name is
+ *  drawn without a finish. Null until the store holds the whole race. */
+function lapLines(w: Weekend): { laps: number; rows: number; lines: LapLine[]; unjoined: string[] } | null {
+  const t = tableOf(w, 'Race');
+  const got = w.d.weekend?.laps?.[String(w.season)]?.[String(w.r.round)];
+  if (!t || !isRaceLaps(got) || !(got.laps > 0)) return null;
+  const c = cols(t);
+  const x = extrasOf(w, 'Race');
+  // A tyre change under a red flag is no stop (Monza's race, 2026).
+  const reds = new Set((x?.marks?.red ?? []).map(r => r.lap));
+  const stints = x?.stints?.length ? new Map(x.stints.map(([car, list]) => [car, list.filter(([, a, b]) => b >= a)] as const)) : null;
+  const unjoined: string[] = [];
+  const lines: LapLine[] = [];
+  for (const [name, grid, dotted] of got.drivers) {
+    const row = t.rows.find(r => r[c.name] === name) ?? t.rows.find(r => sameDriver(r[c.name] ?? '', name));
+    const status = row && c.time >= 0 ? (row[c.time] ?? '') : '';
+    if (NOT_STARTED.test(status)) continue;
+    if (!row) unjoined.push(name);
+    const places = dotted ? dotted.split('.').map(Number) : [];
+    const team = row ? teamAt(w, row, c) : '';
+    const pos = row ? Number(row[c.pos]) : NaN;
+    const car = numberOf(w.d, name);
+    const list = stints && car !== null ? stints.get(car) : undefined;
+    lines.push({
+      name,
+      code: codeOf(w.d, name),
+      team,
+      colour: colourOf(w.d, team),
+      second: false,
+      start: grid,
+      pitLane: !(grid > 0),
+      places,
+      fin: Number.isInteger(pos) && pos > 0 ? pos : null,
+      end: DISQUALIFIED.test(status) ? 'dsq' : !row || TOOK_FLAG.test(status) || (!status && places.length === got.laps) ? 'flag' : 'out',
+      stops: list ? list.slice(0, -1).map(s => s[2]).filter(lap => !reds.has(lap)) : null,
+    });
+  }
+  const lastSlot = Math.max(0, ...lines.filter(l => !l.pitLane).map(l => l.start));
+  let slot = lastSlot;
+  for (const l of lines) if (l.pitLane) l.start = ++slot;
+  const byTeam = new Map<string, LapLine[]>();
+  for (const l of lines) if (l.team) byTeam.set(l.team, [...(byTeam.get(l.team) ?? []), l]);
+  for (const [team, mates] of byTeam) [...mates].sort((a, b) => seatOf(w.d, team, a.name) - seatOf(w.d, team, b.name)).slice(1).forEach(l => (l.second = true));
+  lines.sort((a, b) => (a.fin ?? Infinity) - (b.fin ?? Infinity) || a.start - b.start);
+  const rows = Math.max(lines.length, ...lines.map(l => Math.max(l.start, l.fin ?? 0, ...l.places)));
+  return { laps: got.laps, rows, lines, unjoined };
+}
+
+/** A name or a team for data-pd-laps, its separators taken out. */
+const field = (s: string): string => s.replace(/[|;,]/g, ' ').trim();
+
+/** The lap chart, on a race's page between the Classification and Pit wall (the operator's answers of 23 and 25 Oct):
+ *  the theme's script draws it from data-pd-laps (the laps and rows, the safety car spans, then each driver: code,
+ *  colour, dashed, start, from the pit lane, finish, how the line ends, places, stops, name, team) on Pit wall's lap
+ *  scale. The key names only the marks the race has; without the script, the places stand as a table. */
+function lapChart(w: Weekend, used: Used): string {
+  const chart = lapLines(w);
+  if (!chart?.lines.length) return '';
+  const { laps, rows, lines } = chart;
+  const spans = (extrasOf(w, 'Race')?.marks?.neutral ?? []).filter(s => s.from >= 1 && s.from <= laps && s.to >= s.from).map(s => ({ ...s, to: Math.min(s.to, laps) }));
+  if (spans.length) used.marks = true;
+  const ends = { flag: 'f', out: 'x', dsq: 'd' } as const;
+  const data = [
+    `${laps} ${rows}`,
+    spans.map(s => `${s.kind} ${s.from} ${s.to}`).join(','),
+    lines
+      .map(l =>
+        [field(l.code), l.colour, l.second ? 1 : 0, l.start, l.pitLane ? 1 : 0, l.fin ?? '', ends[l.end], l.places.join('.'), l.stops === null ? '-' : l.stops.join('.'), field(l.name), field(teamLabel(l.team))].join(','),
+      )
+      .join(';'),
+  ].join('|');
+  const key = [
+    lines.some(l => l.stops?.length) ? '<span class="pd-lc-k"><i class="pd-lc-kp"></i>Pit stop</span>' : '',
+    lines.some(l => l.end === 'out') ? '<span class="pd-lc-k"><i class="pd-lc-kx"></i>Out of the race</span>' : '',
+    spans.some(s => s.kind === 'SC') ? '<span class="pd-lc-k"><i class="pd-lc-kb">SC</i>Safety car</span>' : '',
+    spans.some(s => s.kind === 'VSC') ? '<span class="pd-lc-k"><i class="pd-lc-kb">VSC</i>Virtual safety car</span>' : '',
+    lines.some(l => l.second) ? '<span class="pd-lc-k"><i class="pd-lc-kd"></i>The team’s second driver</span>' : '',
+    lines.some(placedDifferently) ? '<span class="pd-lc-k"><b>†</b> placed differently in the result than at the flag</span>' : '',
+  ].join('');
+  // Every tenth lap, so Monaco's 78 fit, then the flag; a car out of the race reads "out" once.
+  const tens: number[] = [];
+  for (let l = 10; l < laps; l += 10) tens.push(l);
+  const withStops = lines.some(l => l.stops !== null);
+  const head =
+    `<tr><th class="p">Finish</th><th class="d">Code</th><th class="dn">Driver</th><th class="tm">Team</th><th class="n">Grid</th>${tens.map((l, i) => `<th class="n">${i ? '' : 'Lap '}${l}</th>`).join('')}` +
+    `<th class="n">Flag</th>${withStops ? '<th class="n">Stops on lap</th>' : ''}</tr>`;
+  const body = lines
+    .map(l => {
+      let said = false;
+      const at = (lap: number): string => {
+        if (lap <= l.places.length) return String(l.places[lap - 1]);
+        if (l.end !== 'out' || said) return '–';
+        said = true;
+        return 'out';
+      };
+      const fin = l.end === 'dsq' ? 'DSQ' : l.fin === null ? '–' : `${l.fin}${placedDifferently(l) ? '†' : ''}`;
+      const cells = tens.map(at);
+      const flag = l.end === 'out' ? at(laps) : String(flagPlace(l) ?? '–');
+      const stops = l.stops === null ? '–' : l.stops.length ? l.stops.join(', ') : 'none';
+      return (
+        `<tr><td class="p">${fin}</td><td class="d">${tick(w.d, l.team)}<b>${esc(l.code)}</b></td><td class="dn">${esc(l.name)}</td><td class="tm">${esc(teamLabel(l.team))}</td>` +
+        `<td class="n">${l.pitLane ? 'PL' : l.start}</td>${cells.map(v => `<td class="n">${v}</td>`).join('')}<td class="n">${flag}</td>${withStops ? `<td class="n">${stops}</td>` : ''}</tr>`
+      );
+    })
+    .join('');
+  const label = `Lap chart of the ${w.r.name}: each driver’s place at the end of each of its ${laps} laps. Arrow keys follow a driver; the table below holds the same places.`;
+  return section(
+    'Lap chart',
+    'Each driver’s place at the end of every lap',
+    `<div class="pd-lc"><p class="pd-lc-read" role="status" hidden></p><div class="pd-lc-draw" role="img" aria-label="${esc(label)}" data-pd-laps="${esc(data)}"></div>` +
+      `<p class="pd-lc-key">${key}<span class="pd-lc-credit">${LAPS_CREDIT}</span></p>` +
+      `<details class="pd-lc-tbl"><summary>Places as a table</summary><div class="pd-wk-scroll"><table class="pd-wk-tbl pd-lc-t"><thead>${head}</thead><tbody>${body}</tbody></table></div></details></div>`,
+    'lap-chart',
+  );
+}
+
+/** Each race's lap chart notes for the publisher's log: the drivers placed differently in the result than at the flag,
+ *  which from Austin on are marked from the two tables alone (the operator's answer B, 25 Oct), and the names the
+ *  classification does not hold. */
+export function lapChartNotes(d: SeriesData): { round: number; differs: string[]; unjoined: string[] }[] {
+  const season = d.season;
+  if (!WEEKEND_PAGES.has(d.slug) || !season) return [];
+  return (d.rounds ?? []).flatMap(r => {
+    const chart = lapLines(weekendOf(d, season, r));
+    const differs = (chart?.lines ?? []).filter(placedDifferently).map(l => `${l.code} P${flagPlace(l)}→P${l.fin}`);
+    return chart && (differs.length || chart.unjoined.length) ? [{ round: r.round, differs, unjoined: chart.unjoined }] : [];
+  });
+}
+
 /** A session's card: its time (yours and the track's), its weather, any mark, its leading results, a way to its page. */
 function sessionCard(w: Weekend, e: CalendarEntry, used: Used): string {
   const t = tableOf(w, e.session);
@@ -543,7 +707,10 @@ function overviewPage(w: Weekend): Page {
     const wx = x?.weather;
     if (wx) used.weather = true;
     const hint = [at ? `${yours(at, 't')} your time` : '', wx ? `air ${wx.air[1]}°${wx.track ? `, track ${wx.track[1]}°` : ''}, ${wx.rain ? 'rain' : 'dry'}` : ''].filter(Boolean).join(' · ');
-    parts.push(section('Race result', hint, `${marks(w, 'Race', used)}${podium(w, race)}${classTable(w, race, RACE_ROWS)}<a class="pd-wk-link" href="${sessionPath(w, 'Race')}">All ${race.rows.length} on the race's page</a>`));
+    // The lap chart lives on the race's page; the Overview links it once the race's laps are stored (O28).
+    const chart = lapLines(w)?.lines.length ? `<a class="pd-wk-link" href="${sessionPath(w, 'Race')}#lap-chart">Lap chart</a>` : '';
+    const links = `<p class="pd-wk-links"><a class="pd-wk-link" href="${sessionPath(w, 'Race')}">All ${race.rows.length} on the race's page</a>${chart}</p>`;
+    parts.push(section('Race result', hint, `${marks(w, 'Race', used)}${podium(w, race)}${classTable(w, race, RACE_ROWS)}${links}`));
     const wall = pitWall(w, 'Race', PIT_WALL_ROWS, used);
     if (wall) parts.push(section('Pit wall', 'Each driver’s tyres and stops, lap by lap', wall));
     const points = sprintWeekend(w.d, w.r.round, w.result) && w.result ? pointsTable(w.d, weekendPoints(w.result), true) : '';
@@ -580,6 +747,8 @@ function sessionPage(w: Weekend, e: CalendarEntry): Page {
   if (t) {
     const hint = /^S?Q\d$/.test(t.columns[t.columns.length - 1] ?? '') ? `All ${t.rows.length}, as classified; each driver’s best time in each part` : `All ${t.rows.length}, as classified`;
     parts.push(section('Classification', hint, `${marks(w, e.session, used)}${classTable(w, t)}`));
+    const chart = e.session === 'Race' ? lapChart(w, used) : '';
+    if (chart) parts.push(chart);
     if (/^(race|sprint)$/i.test(e.session)) {
       const wall = pitWall(w, e.session, Infinity, used);
       if (wall) parts.push(section('Pit wall', 'Each driver’s tyres and stops, lap by lap', wall));

@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { VenueForecast } from '@/lib/met-norway';
 import type { CircuitMap, SessionExtras } from '@/lib/openf1/weekend';
-import type { CalendarEntry, ResultRound, SeriesData, Table } from './render';
+import type { CalendarEntry, RaceLaps, ResultRound, SeriesData, Table } from './render';
 import { weekendPoints } from './series';
-import { weekendPages } from './weekend';
+import { lapChartNotes, weekendPages } from './weekend';
 
 const at = (round: number, session: string, start: string, dateOnly = false): CalendarEntry => ({
   start,
@@ -101,6 +101,29 @@ const r2Extras: Record<string, SessionExtras> = {
   Qualifying: { key: 9001, at: '2026-03-15T00:00:00Z', weather: { air: [20, 21, 22], track: [30, 32, 33], humidity: [60, 65], rain: false } },
 };
 
+/** A driver in one place lap after lap, but where `at` says otherwise, as f1/laps.json keeps it (O28). */
+const run = (place: number, laps: number, at: Record<number, number> = {}): string => Array.from({ length: laps }, (_, i) => at[i + 1] ?? place).join('.');
+// Round 2's race, 59 laps: Hamilton crossed the line third and Leclerc second, classified the other way round; Driver
+// 10 started from the pit lane; Driver 11 ran a lap fewer; Driver 12 stopped after 29.
+const r2Laps: RaceLaps = {
+  laps: 59,
+  at: '2026-03-16T00:00:00.000Z',
+  drivers: [
+    [VER, 1, run(1, 59)],
+    [HAM, 3, run(2, 59, { 1: 3, 2: 3, 59: 3 })],
+    [LEC, 2, run(3, 59, { 1: 2, 2: 2, 59: 2 })],
+    [ANT, 5, run(4, 59)],
+    [BEA, 6, run(5, 59)],
+    [RUS, 4, run(6, 59)],
+    ['Driver 7', 7, run(7, 59)],
+    ['Driver 8', 8, run(8, 59)],
+    ['Driver 9', 9, run(9, 59)],
+    ['Driver 10', 0, run(10, 59)],
+    ['Driver 11', 10, run(11, 58)],
+    ['Driver 12', 11, run(12, 29)],
+  ],
+};
+
 const f1: SeriesData = {
   slug: 'f1',
   name: 'Formula 1',
@@ -156,6 +179,7 @@ const f1: SeriesData = {
     sessions: { '2026': { '2': r2Extras } },
     maps: { shanghai, 'albert-park': { ...shanghai, year: 2025, driver: 81 }, suzuka: { miss: 'no laps', next: '2026-03-30T00:00:00Z' } },
     forecast: { suzuka },
+    laps: { '2026': { '1': { miss: '2026-03-08T07:00:00.000Z', next: '2026-03-08T08:00:00.000Z' }, '2': r2Laps } },
   },
 };
 
@@ -487,6 +511,152 @@ describe("a session's page", () => {
     const p1 = pageOf(`${R}2/practice-1/`, weekendPages(marked));
     expect(p1).toContain('<span class="pd-wk-marks"><em class="pd-wk-mark">Started 1 minute late</em><em class="pd-wk-mark is-red">Red flag · not restarted</em></span>');
     expect(p1).toContain('<p class="pd-ss-sub">Friday 13 March · 11:31 at the track, <span class="pd-t" data-utc="2026-03-13T03:31:00Z" data-f="wt">Fri 03:31 UTC</span> your time</p>');
+  });
+});
+
+describe('the lap chart (O28)', () => {
+  /** The chart's data as the theme's script reads it: the laps and rows, the spans, and each driver's eleven fields
+   *  (code, colour, dashed, start, pit lane, finish, end, places, stops, name, team) by code. */
+  const chartData = (body: string) => {
+    const raw = /data-pd-laps="([^"]*)"/.exec(body)?.[1] ?? '';
+    const text = raw.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+    const [head, spans, drivers = ''] = text.split('|');
+    return { head, spans, drivers: new Map(drivers.split(';').map(s => s.split(',')).map(f => [f[0], f] as const)) };
+  };
+  /** One row of the places table by its code: its cells as text. */
+  const tableRow = (body: string, code: string): string[] => {
+    const tr = body.slice(body.indexOf('<tbody>')).split('<tr>').find(r => r.includes(`<b>${code}</b>`)) ?? '';
+    return [...tr.matchAll(/<td[^>]*>(.*?)<\/td>/g)].map(m => m[1].replace(/<[^>]+>/g, ''));
+  };
+  const withRace = (change: { rows?: (row: string[]) => string[]; extras?: Partial<SessionExtras>; laps?: RaceLaps }): SeriesData => ({
+    ...f1,
+    results: [r1, { ...r2, sessions: [r2.sessions[0], { label: 'Race', tables: [{ ...r2.sessions[1].tables[0], rows: r2.sessions[1].tables[0].rows.map(change.rows ?? (row => row)) }] }] }],
+    weekend: { ...f1.weekend!, sessions: { '2026': { '2': { ...r2Extras, Race: { ...r2Extras.Race, ...change.extras } } } }, laps: { '2026': { '2': change.laps ?? r2Laps } } },
+  });
+  const race = pageOf(`${R}2/race/`);
+  const chart = sectionOf(race, 'Lap chart');
+
+  it("sits on the race's page between the Classification and Pit wall, drawn by the theme's script, with its key, credit and table", () => {
+    expect(race.indexOf('<h2>Classification</h2>')).toBeLessThan(race.indexOf('<h2>Lap chart</h2>'));
+    expect(race.indexOf('<h2>Lap chart</h2>')).toBeLessThan(race.indexOf('<h2>Pit wall</h2>'));
+    expect(race).toContain('<section class="pd-wk-sec" id="lap-chart"><div class="pd-wk-sh"><h2>Lap chart</h2><p class="pd-wk-hint">Each driver’s place at the end of every lap</p></div>');
+    expect(chart).toContain(
+      '<div class="pd-lc"><p class="pd-lc-read" role="status" hidden></p><div class="pd-lc-draw" role="img" aria-label="Lap chart of the Chinese Grand Prix: each driver’s place at the end of each of its 59 laps. Arrow keys follow a driver; the table below holds the same places." data-pd-laps="59 12|',
+    );
+    expect(chart).toContain('<span class="pd-lc-credit">Laps: Jolpica F1 · CC BY-NC-SA 4.0</span></p><details class="pd-lc-tbl"><summary>Places as a table</summary>');
+    const { head, spans, drivers } = chartData(chart);
+    expect([head, spans, drivers.size]).toEqual(['59 12', '', 12]);
+    expect(drivers.get('VER')).toEqual(['VER', '#1E3A8A', '0', '1', '0', '1', 'f', run(1, 59), '20', VER, 'Red Bull Racing']);
+    // The table: every tenth lap and the flag, as the chart's places; the stops from Pit wall's stints.
+    expect(chart).toContain('<tr><th class="p">Finish</th><th class="d">Code</th><th class="dn">Driver</th><th class="tm">Team</th><th class="n">Grid</th><th class="n">Lap 10</th><th class="n">20</th><th class="n">30</th><th class="n">40</th><th class="n">50</th><th class="n">Flag</th><th class="n">Stops on lap</th></tr>');
+    expect(tableRow(chart, 'VER')).toEqual(['1', 'VER', VER, 'Red Bull Racing', '1', '1', '1', '1', '1', '1', '1', '20']);
+    // The other sessions' pages carry none.
+    expect(pageOf(`${R}2/sprint/`)).not.toContain('pd-lc');
+    expect(pageOf(`${R}2/qualifying/`)).not.toContain('pd-lc');
+  });
+
+  it('starts a car from the pit lane after the last car on the grid, labelled PL', () => {
+    expect(chartData(chart).drivers.get('10')?.slice(3, 5)).toEqual(['12', '1']);
+    expect(tableRow(chart, '10').slice(0, 5)).toEqual(['10', '10', 'Driver 10', 'Williams', 'PL']);
+  });
+
+  it('crosses a retirement out where it stopped, and runs a lapped car to its last lap without a cross', () => {
+    const { drivers } = chartData(chart);
+    expect(drivers.get('12')?.slice(5, 8)).toEqual(['12', 'x', run(12, 29)]);
+    expect(drivers.get('11')?.slice(5, 8)).toEqual(['11', 'f', run(11, 58)]);
+    expect(chart).toContain('<span class="pd-lc-k"><i class="pd-lc-kx"></i>Out of the race</span>');
+    expect(tableRow(chart, '12').slice(5)).toEqual(['12', '12', 'out', '–', '–', '–', '8']);
+    expect(tableRow(chart, '11').slice(5, 11)).toEqual(['11', '11', '11', '11', '11', '11']);
+  });
+
+  it('marks a driver placed differently in the result than at the flag, and names the race in the log', () => {
+    const { drivers } = chartData(chart);
+    expect(drivers.get('HAM')?.slice(5, 7)).toEqual(['2', 'f']);
+    expect(drivers.get('HAM')?.[7].endsWith('.2.3')).toBe(true);
+    expect(tableRow(chart, 'HAM').slice(0, 1)).toEqual(['2†']);
+    expect(tableRow(chart, 'LEC').slice(0, 1)).toEqual(['3†']);
+    expect(tableRow(chart, 'HAM')[10]).toBe('3');
+    expect(chart).toContain('<span class="pd-lc-k"><b>†</b> placed differently in the result than at the flag</span>');
+    expect(lapChartNotes(f1)).toEqual([{ round: 2, differs: ['HAM P3→P2', 'LEC P2→P3'], unjoined: [] }]);
+    const same = withRace({ laps: { ...r2Laps, drivers: r2Laps.drivers.map(([n, g, p]) => [n, g, n === HAM ? run(2, 59) : n === LEC ? run(3, 59) : p]) } });
+    expect(sectionOf(pageOf(`${R}2/race/`, weekendPages(same)), 'Lap chart')).not.toContain('†');
+    expect(lapChartNotes(same)).toEqual([]);
+  });
+
+  it("dashes a team's second driver by drivers.json's order, a stand-in after the regular driver", () => {
+    const { drivers } = chartData(chart);
+    expect(['LEC', 'HAM', 'RUS', 'ANT'].map(c => drivers.get(c)?.[2])).toEqual(['0', '1', '0', '1']);
+    // Driver 7 in Red Bull's second car all weekend (as Lawson in rounds 12 to 14): the roster lists Verstappen alone.
+    const seat = (t: Table): Table => ({ ...t, rows: t.rows.map(row => (row[1] === 'Driver 7' ? [row[0], row[1], 'Red Bull Racing', ...row.slice(3)] : row)) });
+    const moved: ResultRound = { ...r2, sessions: r2.sessions.map(s => ({ ...s, tables: s.tables.map(seat) })), others: r2.others!.map(s => ({ ...s, tables: s.tables.map(seat) })) };
+    const standIn = chartData(sectionOf(pageOf(`${R}2/race/`, weekendPages({ ...f1, results: [r1, moved] })), 'Lap chart'));
+    expect(['VER', '7'].map(c => standIn.drivers.get(c)?.slice(1, 3))).toEqual([['#1E3A8A', '0'], ['#1E3A8A', '1']]);
+    expect(chart).toContain('<span class="pd-lc-k"><i class="pd-lc-kd"></i>The team’s second driver</span>');
+  });
+
+  it("puts a stop where a stint ends, none at a red flag's lap, and says nothing for a driver without stints", () => {
+    const { drivers } = chartData(chart);
+    expect(['VER', 'LEC', 'ANT', '7'].map(c => drivers.get(c)?.[8])).toEqual(['20', '18.40', '', '-']);
+    expect(tableRow(chart, 'LEC')[11]).toBe('18, 40');
+    expect(tableRow(chart, 'ANT')[11]).toBe('none');
+    expect(tableRow(chart, '7')[11]).toBe('–');
+    // Round 2's red flag came on lap 33: a tyre change under it is no stop.
+    const red = withRace({ extras: { stints: [...r2Extras.Race.stints!.filter(([n]) => n !== 12), [12, [['HARD', 1, 33], ['MEDIUM', 34, 59]]]] } });
+    expect(chartData(sectionOf(pageOf(`${R}2/race/`, weekendPages(red)), 'Lap chart')).drivers.get('ANT')?.[8]).toBe('');
+    expect(chart).toContain('<span class="pd-lc-k"><i class="pd-lc-kp"></i>Pit stop</span>');
+    // No stints for the race: no dots, no stops column, no Pit stop in the key, never a guessed dot.
+    const none = sectionOf(pageOf(`${R}2/race/`, weekendPages(withRace({ extras: { stints: undefined } }))), 'Lap chart');
+    expect([...chartData(none).drivers.values()].every(f => f[8] === '-')).toBe(true);
+    expect(none).not.toContain('Stops on lap');
+    expect(none).not.toContain('Pit stop');
+  });
+
+  it("shades the safety car laps, says which in the key and credits race control's marks", () => {
+    const neutral = withRace({ extras: { marks: { neutral: [{ kind: 'SC', from: 30, to: 33 }, { kind: 'VSC', from: 50, to: 51 }, { kind: 'VSC', from: 60, to: 61 }] } } });
+    const body = pageOf(`${R}2/race/`, weekendPages(neutral));
+    const shaded = sectionOf(body, 'Lap chart');
+    // A span past the race's laps (race control counted on) is dropped.
+    expect(chartData(shaded).spans).toBe('SC 30 33,VSC 50 51');
+    expect(shaded).toContain('<span class="pd-lc-k"><i class="pd-lc-kb">SC</i>Safety car</span><span class="pd-lc-k"><i class="pd-lc-kb">VSC</i>Virtual safety car</span>');
+    expect(body).toContain('<p class="pd-wk-credit">The weather, race control’s marks and the tyres from <a href="https://openf1.org/">OpenF1</a></p>');
+    const calm = pageOf(`${R}2/race/`, weekendPages(withRace({ extras: { marks: { neutral: [] } } })));
+    expect(chartData(sectionOf(calm, 'Lap chart')).spans).toBe('');
+    expect(calm).not.toContain('race control’s marks');
+    expect(calm).not.toContain('Safety car');
+  });
+
+  it("keeps a disqualified driver's line to the flag, DSQ at the finish and no cross; a driver who did not start has none", () => {
+    const dsq = withRace({ rows: row => (row[1] === BEA ? [...row.slice(0, 3), 'Disqualified', '0'] : row[1] === 'Driver 9' ? [...row.slice(0, 3), 'Did not start', '0'] : row) });
+    const body = sectionOf(pageOf(`${R}2/race/`, weekendPages(dsq)), 'Lap chart');
+    const { head, drivers } = chartData(body);
+    expect(drivers.get('BEA')?.slice(5, 7)).toEqual(['5', 'd']);
+    expect(tableRow(body, 'BEA')[0]).toBe('DSQ');
+    expect(tableRow(body, 'BEA')[10]).toBe('5');
+    expect(drivers.has('9')).toBe(false);
+    expect(head).toBe('59 12');
+  });
+
+  it("links the chart from the Overview's race card once the race's laps are stored, and draws none before", () => {
+    expect(sectionOf(pageOf(`${R}2/`), 'Race result')).toContain(
+      `<p class="pd-wk-links"><a class="pd-wk-link" href="${R}2/race/">All 12 on the race's page</a><a class="pd-wk-link" href="${R}2/race/#lap-chart">Lap chart</a></p>`,
+    );
+    // Round 1's laps were a miss: no chart and no link until they are whole.
+    expect(pageOf(`${R}1/`)).not.toContain('#lap-chart');
+    expect(pageOf(`${R}1/race/`)).not.toContain('pd-lc');
+  });
+
+  it('keeps feed text as text in the data and the table, and draws a name the classification does not hold without a finish', () => {
+    expect(chart).toContain('Kimi &lt;b&gt;Antonelli&lt;/b&gt;,Mercedes');
+    expect(tableRow(chart, 'ANT')[2]).toBe('Kimi &lt;b&gt;Antonelli&lt;/b&gt;');
+    const odd = '<img src=x>, Driver;|';
+    const stranger = withRace({ laps: { ...r2Laps, drivers: [...r2Laps.drivers, [odd, 12, run(12, 20)]] } });
+    const body = pageOf(`${R}2/race/`, weekendPages(stranger));
+    expect(body).not.toContain('<img');
+    const { drivers } = chartData(sectionOf(body, 'Lap chart'));
+    const f = [...drivers.values()].find(x => x[9].includes('img'));
+    expect(f?.slice(5, 7)).toEqual(['', 'f']);
+    expect(f?.[9]).toBe('<img src=x>  Driver');
+    expect(lapChartNotes(stranger)).toEqual([{ round: 2, differs: ['HAM P3→P2', 'LEC P2→P3'], unjoined: [odd] }]);
   });
 });
 
