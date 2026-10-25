@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #(to come) · 1.0.299 · O29 (Formula 1's 2025 title race) · built 2026-10-25 in Task 1.c on the operator's "ok so lets build the page then", side by side with O28, the plan approved in plan mode; the PR, the review and the merge on the word
+## #1187 · 1.0.299 · O29 (Formula 1's 2025 title race) · opened 2026-10-25 into `next` on the operator's "Push claude/o29-title-race and open the PR into next.", built in Task 1.c on "ok so lets build the page then", side by side with O28, the plan approved in plan mode; the merge on the word
 **The champion's button gets its page.** The reigning card's "2026 title race →" now reads "2025 title race →" and opens `/series/f1/2025/`, the page drafted on Paddock 2025 Title Race and answered on 25 Oct. Its band names the page and leads with the champion, then the margin.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.21 and a publish run of `/series/f1/`:
   - `/series/f1/2025/` with the band (Lando Norris, by 2 points), the final three, the chart with its switch and readout, six turning points, the decider and More Formula 1;
