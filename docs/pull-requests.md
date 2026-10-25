@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #(on opening) · 1.0.300 · O31 (the Calendar's session times, checked against each series' official timetable) · to open into `next` on the operator's word, Task 1.d, planned in plan mode and approved; the review and the merge on the word
+## #1188 · 1.0.300 · O31 (the Calendar's session times, checked against each series' official timetable) · opened 2026-10-25 into `next` on the operator's "Push o31-timetables and open the PR into next.", Task 1.d, planned in plan mode and approved; the review and the merge on the word
 **The Calendar's timetables.** Task 1.b found curated timetables copied from a template and never checked, live on /calendar/. Every 2026 round of GT World, WorldSBK, DTM, MotoGP, WEC, IMSA, NLS and the ADAC 24h is now checked against its series' own timetable, converted by script from track time with the venue's zone and diffed to empty; NASCAR's five old race names and NLS's dead official site are fixed. Content files only.
 - **Readers see:** nothing yet; the site is in Coming Soon. After one publish run of /calendar/: the corrected times in the month pages February to November 2026 and on /calendar/ (October); 14 fewer phantom sessions (DTM's six third practices, NLS's eight race-morning practices) and nine more GT World sessions (its five rebuilt rounds).
 - **Editors get:** nothing.
