@@ -14,6 +14,59 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1187 · 1.0.299 · O29 (Formula 1's 2025 title race) · opened 2026-10-25 into `next` on the operator's "Push claude/o29-title-race and open the PR into next.", built in Task 1.c on "ok so lets build the page then", side by side with O28, the plan approved in plan mode; the merge on the word
+**The champion's button gets its page.** The reigning card's "2026 title race →" now reads "2025 title race →" and opens `/series/f1/2025/`, the page drafted on Paddock 2025 Title Race and answered on 25 Oct. Its band names the page and leads with the champion, then the margin.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.21 and a publish run of `/series/f1/`:
+  - `/series/f1/2025/` with the band (Lando Norris, by 2 points), the final three, the chart with its switch and readout, six turning points, the decider and More Formula 1;
+  - on `/series/f1/champions/`, the champion's button opening it.
+- **Editors get:** nothing. The page's words are edited by hand in `content/series/f1/title-race-2025.json`; its numbers come from `npx tsx scripts/fetch-title-race.mts <season>`, by the four steps in its header.
+- **Files (18):**
+  - `lib/wp/series.ts` · `seriesTitleRace`, `titleRacesOf` (no page for the current season), the reigning card's button, `seriesFamily`.
+  - `lib/wp/render.ts` · `SeriesData.titleRaces`.
+  - `lib/series-content.ts` · `TitleRaceFile` and `loadTitleRaces` (by name, whole files only).
+  - `scripts/wp-publish.mts` · loads the title races beside the Champions data.
+  - `scripts/fetch-title-race.mts` (new) · writes a season's numbers from Jolpica and keeps the words; prints the totals to check.
+  - `content/series/f1/title-race-2025.json` (new) · 24 rounds and the top three's totals, the band's line, six turning points and the decider, with sources.
+  - `wp-theme/paddock/style.css` · 0.1.21: the title race block.
+  - `wp-theme/paddock/assets/js/paddock.js` · the chart, drawn from `data-pd-race`.
+  - `wp-theme/preview/f1-2025.html` (new), `wp-theme/preview/blueprint.json`, `wp-theme/preview/f1-champions.html` · the preview's page and the new button.
+  - `lib/wp/series.test.ts`, `lib/series-content.test.ts` · the page's nine tests, the file's shape and sources, the loader.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.299.
+- **Verified:**
+  - **The data:** `npx tsx scripts/fetch-title-race.mts 2025`, 28 calls. Its 72 totals and 24 days match formula1.com's 2025 race results and the three drivers' season pages, with 0 mismatches. A rerun keeps every word.
+  - **The theme preview** (Playground on 9402, 0.1.21), at 1,440, 1,024, 768, 390 and 320 px, Day and Night:
+    - no sideways scroll;
+    - the switch, the hover readout, a tap to pin, the arrow keys and Escape;
+    - Red Bull's line at 3.57:1 in Night;
+    - the Champions button by a real click to `/series/f1/2025/`;
+    - 0 script errors (the harness's own parent-theme stylesheet 404s).
+  - At 768 px the first look found the band and the final three squeezed; fixed below 1,100 px.
+  - `npx tsc --noEmit -p .` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,935 tests (after the review's fixes).
+  - `MSYS_NO_PATHCONV=1 npx tsx scripts/wp-publish.mts --from-ref origin/paddock-data --dry-run --out <scratch>/wp-out-o29 --only /series/f1/` exit 0: 145 of 214 pages, `/series/f1/2025/` among them. The preview's two pages come from it.
+  - `npm run cf:build` exit 0; `npx wrangler deploy --dry-run` Total Upload 41,013.75 KiB (gzip 8,963.42 KiB), 62.6% of the 64 MiB ceiling, under the 80% alarm (the new content file rides in the content bundle).
+  - The numbers 1.0.299 and 0.1.21 are provisional (the desk, 25 Oct): O28 holds 1.0.298 and 0.1.20, and whichever merges second takes the next free numbers.
+- **Test after upload:**
+  1. `/series/f1/champions/` on a laptop: the champion's button reads "2025 title race →" and opens the new page.
+  2. `/series/f1/2025/` on a laptop, Day and Night:
+     - Lando Norris largest in the black panel, "by 2 points" under him;
+     - the final three with "2 points behind";
+     - the chart: point at a round to read it, switch to Points and back;
+     - Verstappen's line visible in Night.
+  3. The same page on a phone: the band stacked, the chart's labels clear ("2 behind" under VER), the turning points and the decider one box a row.
+- **After the merge:** the upload of 0.1.21 and one publish run, `--only /series/f1/`.
+- **Review:** one fresh-context Sonnet reader, 339,907 tokens, started at 33% of the 5-hour window (correction: before the desk's word to wait for the operator's go-ahead had arrived).
+  - No must-fix.
+  - Its eight should-fix are folded:
+    - RELEASES in the house form;
+    - totals joined by commas against half points;
+    - the decider only from a file that has one;
+    - touch pins on a click, with pinch-zoom kept;
+    - escaping pinned for names, separators and the decider;
+    - an empty round stops the script;
+    - the loader checks every field;
+    - this entry's dry-run line.
+  - The nits on "his" and the credit line stay: that wording was approved, and the page is Formula 1's.
+
 ## #1186 · 1.0.297 · O17, a follow-up (the champion's button clears the big year) · opened 2026-10-25 into `next` on the operator's "Push o17/button and open the PR into next.", planned with O28 in plan mode and approved; the review and the merge on the word
 **The button over the year.** The operator's test of 0.1.18 at 1,440 px found the reigning card's "2026 title race →" button over the big "2025": it had no fill, so the year ran through its words. It now takes the card's own colour. The records of #1185's merge, upload, publish run and check ride in from the local o17/records, with O28's plan and its answers, and the rule change for parallel sessions.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.19, on `/series/f1/champions/`: the button on the champion's card reads clearly, the year passing under it, on hover too.

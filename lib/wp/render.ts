@@ -11,7 +11,7 @@ import type { Champion, Series, SeriesRoundEntry } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
 import type { MapsStore, SessionExtras, SessionsStore } from '@/lib/openf1/weekend';
 import type { VenueForecast } from '@/lib/met-norway';
-import type { ChampionNotesFile, HistoricTeamColor, RecordNotesFile, StandingsNote, TeamNamesFile } from '@/lib/series-content';
+import type { ChampionNotesFile, HistoricTeamColor, RecordNotesFile, StandingsNote, TeamNamesFile, TitleRaceFile } from '@/lib/series-content';
 
 // ── Stored shapes: what `<slug>/{standings,results,calendar}.json` hold ─────
 
@@ -693,6 +693,8 @@ export interface SeriesData {
   /** The Champions page (O17): champions.json, the reigning season's note, the record notes, the heritage colours of teams
    *  no longer racing, and team-names.json for the names the feeds wrote differently. */
   champions?: ChampionsData;
+  /** The finished seasons' title races (O29): title-race-<season>.json for each crowned season that has one. */
+  titleRaces?: TitleRaceFile[];
   /** For the series list (slot O21), every series: its type (meta.json category), its colour, and the champion of
    *  its season as champions.json writes it, when it does. */
   category?: string;

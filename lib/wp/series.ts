@@ -6,9 +6,10 @@
 // so a page changes only when its data does. Inline style carries only `width` and `--t`, both of which
 // WordPress keeps in post content (safecss_filter_attr, WordPress 6.1 onward).
 
+import type { TitleRaceFile } from '@/lib/series-content';
 import { slugify } from '@/lib/slug';
 import type { Champion } from '@/lib/types';
-import { calendarMonthPath, escapeHtml, seriesPath, sessionKind, WEEKEND_PAGES, weekendPath, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
+import { calendarMonthPath, escapeHtml, seasonPath, seriesPath, sessionKind, WEEKEND_PAGES, weekendPath, type CalendarRound, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
 
 /** The series drawn in round 2's design; the others keep the plain pages until slot O18. */
 export const ROUND2_SERIES: ReadonlySet<string> = new Set(['f1']);
@@ -878,8 +879,10 @@ function reigningCard(d: SeriesData, s: Champion, marks: Map<number, TitleMarks>
   const note = d.champions?.notes?.[String(s.year)]?.note;
   const txt = [teams, note ? escapeHtml(firstSentence(note)) : ''].filter(Boolean).join(' ');
   const season = d.season;
-  const button =
-    typeof season === 'number' && built(d.slug, 'standings')
+  // The champion's own season's title race once it has a page (O29); until then this season's Standings.
+  const button = titleRacesOf(d).some(t => t.season === s.year)
+    ? `<div class="pd-ch-acts"><a href="${seasonPath(d.slug, s.year)}">${s.year} title race →</a></div>`
+    : typeof season === 'number' && built(d.slug, 'standings')
       ? `<div class="pd-ch-acts"><a href="${seriesPath(d.slug, 'standings')}">${season} ${s.year >= season ? 'final standings' : 'title race'} →</a></div>`
       : '';
   return (
@@ -1027,6 +1030,159 @@ export function seriesChampions(d: SeriesData): Page {
 
   const inner = `<div class="pd-sr-sec pd-chp">${mast}${reigningCard(d, seasons[0], marks, seasons)}${jump}<div class="pd-ch-decs">${decs}</div>${foot}${teamsSec}${recs}${doors}${call}</div>`;
   return { path, title, body: frame(inner), template: 'page-wide' };
+}
+
+// ── The title race (O29) ─────────────────────────────────────────────────────
+//
+// /series/<slug>/<season>/ for a finished season with a title-race file (lib/series-content.ts loadTitleRaces), as drafted
+// on Paddock 2025 Title Race (version 5) and answered on 25 Oct: a band naming the page that leads with the champion,
+// then the margin (the page's subject outranks the series' frame); the final three; the points behind the leader round
+// by round, drawn by the theme's script from data-pd-race, the same numbers as a table without it; the turning points;
+// the decider; More Formula 1. Only the words are the file's own; every figure is its rounds' or champions.json's.
+
+/** The title races with a page here: every finished season's but the current one, whose address is its weekends'
+ *  season page (O19). */
+const titleRacesOf = (d: SeriesData): TitleRaceFile[] => (d.titleRaces ?? []).filter(t => t.season !== d.season);
+
+/** A name in data-pd-race, without its separators. */
+const raceText = (s: string): string => s.replace(/[|;~]/g, ' ').trim();
+
+export function seriesTitleRace(d: SeriesData, t: TitleRaceFile): Page {
+  const n = t.rounds.length;
+  const three = t.drivers;
+  const seasons = d.champions?.seasons ?? [];
+  const champ = seasons.find(s => s.year === t.season);
+  const colour = (team: string) => championColour(d, team);
+  const tick = (team: string) => `<i class="pd-tc" style="--t:${colour(team)}"></i>`;
+  const winsTo = (name: string, round: number) => t.rounds.filter(r => r.round <= round && r.winner === name).length;
+  // The three after the i-th round by points, level ones by wins so far, the standings' first tie-break.
+  const ranked = (i: number) =>
+    three.map((x, k) => ({ x, k, pts: x.points[i], wins: winsTo(x.name, t.rounds[i].round) })).sort((a, b) => b.pts - a.pts || b.wins - a.wins || a.k - b.k);
+  // A teammate drawn after another of his team's is dashed, as on the lap chart.
+  const dashed = (k: number) => three.slice(0, k).some(y => plain(y.team) === plain(three[k].team));
+  const name = escapeHtml(d.name);
+
+  const winner = champ?.driver ?? three[0].name;
+  const winnerTeam = champ ? teamIn(champ) : three[0].team;
+  const pts = champ?.points ?? three[0].points[n - 1];
+  const runnerUp = champ?.runnerUp ?? three[1].name;
+  const runnerPts = champ?.runnerUpPoints ?? three[1].points[n - 1];
+  const nth = titleCounts(seasons).get(t.season)?.nth ?? 1;
+  const panel =
+    `<div class="pd-tr-champ"><p class="lab">${t.season} champion</p><p class="name">${escapeHtml(winner)}</p>` +
+    `<p class="team">${winnerTeam ? `${escapeHtml(winnerTeam)} · ` : ''}his ${nthWord(nth).toLowerCase()} title</p>` +
+    (typeof pts === 'number' && typeof runnerPts === 'number'
+      ? `<p class="by">by <b>${pointsText(pts - runnerPts)}</b></p><p class="who">${pts} to ${escapeHtml(runnerUp)}&#39;s ${runnerPts}</p>`
+      : '') +
+    '</div>';
+  // A dark team colour (as the reigning card's is-dark) turns the panel's label white: navy reads poorly on black.
+  const band =
+    `<section class="pd-tr-band${darkColour(colour(winnerTeam)) ? ' is-dark' : ''}" style="--t:${colour(winnerTeam)}"><div class="pd-tr-band-in"><div class="pd-tr-ttl"><p class="pd-tr-kick">${name} · ${t.season} season</p>` +
+    `<h1>The ${t.season} title race</h1>${t.intro ? `<p class="pd-tr-intro">${escapeHtml(t.intro)}</p>` : ''}</div>${panel}` +
+    `<div class="pd-sr-acts"><button type="button" class="pd-sr-follow" data-pd-follow="${escapeHtml(d.slug)}" hidden>Follow</button><a class="pd-sr-emails" href="/subscribe/">Session emails</a></div></div></section>`;
+
+  const last = t.rounds[n - 1];
+  const finalThree =
+    `<ol class="pd-tr-three" aria-label="Final standings">${three
+      .map((x, k) => {
+        const total = x.points[n - 1];
+        const led = t.rounds.filter(r => r.leader === x.name).length;
+        return (
+          `<li${k === 0 ? ' class="lead"' : ''} style="--t:${colour(x.team)}"><span class="p">${k + 1}</span><span class="nm"><b>${escapeHtml(x.name)}</b><small>${escapeHtml(x.team)}</small></span>` +
+          `<span class="pts"><b>${total}</b>${last.lead - total > 0 ? `<small class="gap">${pointsText(last.lead - total)} behind</small>` : '<small>points</small>'}</span>` +
+          `<span class="ex"><b>${winsLabel(winsTo(x.name, last.round))}</b> · ${led ? `led after ${led} round${led === 1 ? '' : 's'}` : 'never led'}</span></li>`
+        );
+      })
+      .join('')}</ol>`;
+
+  // data-pd-race: the rounds; the turning points' rounds; each driver (code, surname, colour, dashed, his total after
+  // each round); each round (short name, day, winner, its leader as one of the three or by name, the leader's points).
+  const turns = (t.turns ?? []).filter(x => t.rounds.some(r => r.round === x.round)).sort((a, b) => a.round - b.round);
+  const data = [
+    String(n),
+    turns.map(x => x.round).join(' '),
+    // Commas, not dots: a half point (2021's Belgian Grand Prix) must not split a total.
+    three.map((x, k) => [raceText(x.code), raceText(surname(x.name)), colour(x.team), dashed(k) ? 1 : 0, x.points.join(',')].join('~')).join(';'),
+    t.rounds
+      .map(r => {
+        const k = three.findIndex(x => x.name === r.leader);
+        return [raceText(r.name.replace(/ Grand Prix\b/, ' GP')), dayLabel(r.date), raceText(surname(r.winner)), k >= 0 ? k : raceText(surname(r.leader)), r.lead].join('~');
+      })
+      .join(';'),
+  ].join('|');
+  const key =
+    three.map((x, k) => `<span><i class="kl${dashed(k) ? ' is-dashed' : ''}" style="--t:${colour(x.team)}"></i>${escapeHtml(surname(x.name))}, ${escapeHtml(x.team)}</span>`).join('') +
+    (turns.length ? '<span><i class="km">1</i>A turning point, told below</span>' : '') +
+    '<span class="credit">Points: Jolpica F1, checked against formula1.com</span>';
+  const table =
+    `<details class="pd-tr-table" open><summary>Round by round, as a table</summary><div class="pd-tr-tw"><table><thead><tr><th>Round</th><th class="l">Grand Prix</th><th class="l">Date</th><th class="l">Winner</th>` +
+    `${three.map(x => `<th>${escapeHtml(surname(x.name))}</th>`).join('')}<th class="l">Leader</th></tr></thead><tbody>${t.rounds
+      .map(
+        (r, i) =>
+          `<tr><td class="n">${r.round}</td><td class="gp">${escapeHtml(r.name)}</td><td class="dt">${dayLabel(r.date)}</td><td class="wn">${r.winner ? `${tick(r.team)}${escapeHtml(surname(r.winner))}` : ''}</td>` +
+          `${three.map(x => `<td${x.name === r.leader ? ' class="on"' : ''}>${x.points[i]}</td>`).join('')}<td class="ld">${escapeHtml(surname(r.leader))}</td></tr>`,
+      )
+      .join('')}</tbody></table></div></details>`;
+  // The theme's script shows the switch, the drawing, the readout and the key, and folds the table away.
+  const chart =
+    `<section class="pd-tr-chart"><div class="pd-tr-chart-head"><div><h2 class="pd-tr-ct">Points behind the leader</h2><p>After each of the ${n} rounds${t.sprints ? ', sprints included' : ''}</p></div>` +
+    '<div class="pd-tr-seg" role="group" aria-label="Show" hidden><button type="button" data-pd-tr="gap">Behind the leader</button><button type="button" data-pd-tr="pts">Points</button></div></div>' +
+    `<div class="pd-tr-draw" data-pd-race="${escapeHtml(data)}" hidden></div><p class="pd-tr-read" aria-live="polite" hidden></p><div class="pd-tr-key" hidden>${key}</div>${table}</section>`;
+
+  const turnsSec = turns.length
+    ? `<section class="pd-tr-tp"><div class="pd-sh"><h2>${inWords(turns.length)} turning point${turns.length === 1 ? '' : 's'}</h2><p>Numbered as on the chart</p></div><ol class="pd-tr-turns">${turns
+        .map((x, j) => {
+          const i = t.rounds.findIndex(r => r.round === x.round);
+          const r = t.rounds[i];
+          const after = ranked(i).map(({ x: y, pts: p }) => `<span>${tick(y.team)}${escapeHtml(surname(y.name))} <b>${p}</b></span>`).join('');
+          return (
+            `<li class="pd-tr-turn"><header><span class="n">${j + 1}</span><div><b>${escapeHtml(r.name)}</b><small>Round ${r.round} · ${dayLabel(r.date)}</small></div></header>` +
+            `<p>${escapeHtml(x.text)}</p><p class="pd-tr-after"><span class="lab">After it</span>${after}</p></li>`
+          );
+        })
+        .join('')}</ol></section>`
+    : '';
+
+  // Only a season decided at its last round has a decider in its file.
+  let decider = '';
+  if (n > 1 && t.decider) {
+    const lead = t.rounds[n - 2].lead;
+    const going = ranked(n - 2)
+      .map(({ x, pts: p }, j) => `<li style="--t:${colour(x.team)}"><span class="k">${j + 1}</span><i></i><b>${escapeHtml(surname(x.name))}</b><span class="v">${p}${lead - p > 0 ? ` <small>${lead - p} behind</small>` : ''}</span></li>`)
+      .join('');
+    const needed = (t.decider?.needed ?? [])
+      .map(x => {
+        const y = three.find(z => z.name === x.driver);
+        return `<div style="--t:${y ? colour(y.team) : NEUTRAL}"><dt>${escapeHtml(surname(x.driver))}</dt><dd>${escapeHtml(x.text)}</dd></div>`;
+      })
+      .join('');
+    const happened = three
+      .map((x, k) => ({ x, k }))
+      .sort((a, b) => (a.x.last ?? 99) - (b.x.last ?? 99))
+      .map(({ x }) => {
+        const champion = x.name === winner;
+        return `<li${champion ? ' class="champ"' : ''} style="--t:${colour(x.team)}"><span class="k">${x.last ?? '–'}</span><i></i><b>${escapeHtml(surname(x.name))}</b><span class="v">${x.points[n - 1]} <small>${champion ? 'champion' : 'in all'}</small></span></li>`;
+      })
+      .join('');
+    decider =
+      `<section class="pd-tr-final"><div class="pd-sh"><h2>The decider</h2><p>${escapeHtml(last.name)} · ${longDay(last.date)}</p></div><div class="pd-tr-fin">` +
+      `<div class="pd-tr-box"><h3>Going in</h3><ol>${going}</ol>${t.decider?.going ? `<p>${escapeHtml(t.decider.going)}</p>` : ''}</div>` +
+      (needed
+        ? `<div class="pd-tr-box"><h3>What each needed</h3><dl class="pd-tr-need">${needed}</dl>${t.decider?.neededNote ? `<p class="pd-tr-src">${escapeHtml(t.decider.neededNote)}</p>` : ''}</div>`
+        : '') +
+      `<div class="pd-tr-box"><h3>What happened</h3><ol>${happened}</ol><p>The three in the race&#39;s order, with each one&#39;s points for the season.${t.decider?.after ? ` ${escapeHtml(t.decider.after)}` : ''}</p></div></div></section>`;
+  }
+
+  const season = d.season;
+  const more = [
+    door(seriesPath(d.slug, 'champions'), seriesPath(d.slug, 'champions'), `${d.name} champions`, 'Every champion, year by year.', built(d.slug, 'champions')),
+    door(seriesPath(d.slug, 'standings'), seriesPath(d.slug, 'standings'), `${d.name} standings`, typeof season === 'number' ? `The ${season} title race, as it stands.` : 'Both tables, and who can still win it.', built(d.slug, 'standings')),
+    typeof season === 'number' && WEEKEND_PAGES.has(d.slug) ? door(seasonPath(d.slug, season), seasonPath(d.slug, season), `The ${season} season`, `Every ${season} weekend, round by round.`, true) : '',
+  ].join('');
+  const doors = `<section class="pd-ch-more"><h2>More ${name}</h2><div class="pd-ch-doors">${more}</div></section>`;
+
+  const main = `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band}${tabs(d, null)}<div class="pd-sr-main"><div class="pd-sr-sec pd-trp">${finalThree}${chart}${turnsSec}${decider}${doors}</div></div></div>`;
+  return { path: seasonPath(d.slug, t.season), title: `${d.name} ${t.season} title race`, body: htmlBlock(main), template: 'page-wide' };
 }
 
 // ── The series list (slot O21) ───────────────────────────────────────────────
@@ -1191,5 +1347,6 @@ export function seriesFamily(d: SeriesData): Page[] {
     seriesResults(d),
     ...(built(d.slug, 'standings') ? [seriesStandings(d)] : []),
     ...(built(d.slug, 'champions') ? [seriesChampions(d)] : []),
+    ...titleRacesOf(d).map(t => seriesTitleRace(d, t)),
   ];
 }

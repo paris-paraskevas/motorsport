@@ -4,6 +4,48 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.299 — 2026-10-25
+
+### O29: Formula 1's 2025 title race
+
+The operator, testing the Champions page on 24 Oct: the reigning card's "2026 title race →" button should lead to a 2025 title race page. Drafted with checked data on Paddock 2025 Title Race (Task 1.c, five versions: the band naming the page, then the champion first and the margin under him, on the operator's word), its eight questions and the build's four answered on 25 Oct, and built on "ok so lets build the page then", side by side with O28 in its own worktree, the plan approved in plan mode.
+
+- **The page** (`/series/f1/2025/`, `seriesTitleRace` in lib/wp/series.ts, beside Champions; in `seriesFamily`):
+  - The band names the page ("Formula 1 · 2025 season", "The 2025 title race", the file's line) and leads with the champion: a black panel striped in his team's colour, his name the band's largest type, then "by 2 points" and "423 to Max Verstappen's 421" (champions.json). It carries no 2026 line and no round bar; the series' tabs follow, none lit.
+  - The final three: each total, the gap ("2 points behind"), the wins and the rounds each led after, counted from the file.
+  - The chart's numbers in `data-pd-race` for the theme's script, and the same numbers as a table open without it.
+  - The six turning points, numbered as on the chart, each with the three's totals after it (level ones by wins so far).
+  - The decider: the three going in, what each needed, and the race's order with the season's totals.
+  - More Formula 1: Champions, this season's Standings and this season's page.
+  - Every word escaped; inline style only `--t`.
+- **The button:** the reigning card opens its own season's title race once that season has a page ("2025 title race →" to `/series/f1/2025/`); without one it keeps this season's Standings. No title race page is built for the current season, whose address is its weekends' season page (O19); December's 2026 page is its own decision.
+- **The data** (`content/series/f1/title-race-2025.json`, new):
+  - The words, written by hand with their formula1.com sources: the band's line, six turning points, the decider.
+  - The numbers, written by `scripts/fetch-title-race.mts` (new): each round's name, the race's own day (the circuit's time zone: Jolpica's UTC date put Las Vegas on 23 Nov, formula1.com's 22 Nov), winner, leader and the leader's points, and the top three's points after every round and their place in the last race.
+  - The script makes 28 Jolpica calls, 650 ms apart, keeps the words on a rerun and prints the totals to check. Its header holds the four by-hand steps (rules.md § 12).
+  - All 72 totals and 24 days match formula1.com's 2025 results and each driver's season page.
+  - `loadTitleRaces` (lib/series-content.ts) reads `title-race-<season>.json` for each crowned season by name, leaving out a file that is not whole. The publisher loads it beside the Champions data (`SeriesData.titleRaces`).
+- **Theme 0.1.21:**
+  - The "Title race (O29)" block in style.css, with the 1,099 px and 699 px rules. After the first look at 768 px squeezed them, the band halves below 1,100 px, and from 700 to 1,099 px the final three put each total under the name.
+  - The chart in paddock.js, beside the circuit's:
+    - Points behind the leader or the points (the switch, shown by the script).
+    - The leader's run as a bar, the turning points' numbered squares, each line's end labelled with the runner-up's margin, and his furthest point ("104 behind").
+    - The readout by pointer, tap and arrow keys, Escape to let go.
+    - In Night only, a line under 3:1 against the box is lightened until it reaches it: Red Bull's #1E3A8A goes from 1.67:1 to rgb(91,112,170), 3.57:1.
+    - It folds the table away once drawn.
+  - The preview: `wp-theme/preview/f1-2025.html` (new) and its page in the blueprint; `f1-champions.html` shows the new button.
+- **Tests:** `seriesTitleRace` (eleven), the 2025 file's shape, sources, leaders and champions.json's totals, and `loadTitleRaces`.
+- **The review** (one fresh-context Sonnet reader, 339,907 tokens) found no must-fix. Its eight should-fix are folded:
+  - RELEASES in the house form;
+  - totals joined by commas, so half points cannot split a line;
+  - the decider built only from a file that has one;
+  - touch pins on a click rather than a press, with pinch-zoom kept on the chart;
+  - escaping pinned for names, the chart's separators and the decider;
+  - an empty round's standings stop the script;
+  - the loader checks every field's type and a YYYY-MM-DD day;
+  - the dry run's line in the PR's entry.
+- **Nits folded:** the readout rewrites only when the round changes, the 700 to 1,099 px wording, and a duplicated phone rule dropped. The nits on "his" and the credit line stay: that wording was approved on the draft, and the page is Formula 1's.
+
 ## 1.0.297 — 2026-10-25
 
 ### O17, a follow-up: the champion's button clears the big year
