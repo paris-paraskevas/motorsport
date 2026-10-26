@@ -19,17 +19,17 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
 - **Readers see:** nothing yet; the site is in Coming Soon. After one publish run of /calendar/: the corrected times in the month pages February to November 2026 and on /calendar/ (October); 14 fewer phantom sessions (DTM's six third practices, NLS's eight race-morning practices) and nine more GT World sessions (its five rebuilt rounds).
 - **Editors get:** nothing.
 - **Files (16):**
-  - `content/series/motogp/sessions.json` · 19 rows: R2 Sprint and Practice end, R3 Warm Up and race, R12's Friday and Saturday (six), R20 Qatar (eight), R21's race.
+  - `content/series/motogp/sessions.json` · 20 rows: R2 Sprint and Practice end, R3 Warm Up and race, R12's Friday and Saturday (six), R16's Warm Up (moved during the event; the review's find), R20 Qatar (eight), R21's race.
   - `content/series/gt-world/sessions.json` · R3, R6, R7, R9, R10 rebuilt from their own timetables; R4's Night Practice and Superpole end.
   - `content/series/gt-world/rounds.json` · R10 ends 17 Oct (the race moved to the Saturday).
   - `content/series/wsbk/sessions.json` · 38 rows across all 12 rounds.
-  - `content/series/dtm/sessions.json` · 35 rows corrected, Free Practice 3 removed at R2–R8.
+  - `content/series/dtm/sessions.json` · 35 rows corrected, Free Practice 3 removed at R2, R3 and R5–R8 (the Norisring never carried one).
   - `content/series/wec/sessions.json` · 13 rows: R4 São Paulo (eight), R6 Fuji's Saturday (five).
   - `content/series/imsa/sessions.json` · 11 rows across R5, R6, R8, R9, R10, R11.
   - `content/series/nls/sessions.json` · NLS4 and NLS5 corrected (five rows), eight race-morning "Free Training" rows removed.
   - `content/series/nls/meta.json` · `officialSite` to https://www.nuerburgring-langstrecken-serie.de/.
   - `content/series/nascar-cup/rounds.json`, `sessions.json` · R2, R3, R4, R25, R33's names.
-  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.300 (provisional: Task 1.a holds 1.0.298, Task 1.c 1.0.299; the later merge takes the next free number).
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.300, above #1187's 1.0.299 (merged into this branch from `next`, both entries kept). #1189 (the lap chart) also carries 1.0.300: whichever of the two merges second takes 1.0.301.
 - **Answered:** the check on the Calendar (plan mode): the dry run run twice, as stored and against a local copy of paddock-data with the nine calendar files rebuilt from this branch.
 - **Rule for a past round:** the latest timetable the series published, a change it published during the event included (Barcelona's Race 2, Brazil's MotoGP Sprint, Monza's race-day versions); a start that only slipped on the day keeps its timetable time; a session called off keeps its timetable time.
 - **Sources** (each round checked; local times converted with the venue's zone):
@@ -42,17 +42,28 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - NLS: https://www.nuerburgring-langstrecken-serie.de/language/de/<2026-71-adac-westfalenfahrt, 2026-58-adac-barbarossapreis, 2026-57-adenauer-adac-rundstrecken-trophy, 2026-1-adac-eifel-trophy, 2026-kw-6h-adac-ruhr-pokal-rennen, 2026-65-adac-reinoldus-langstreckenrennen, 2026-66-adac-acas-cup, 2026-2-nls-sportwarte-rennen>/ and …/termine-adac-ravenol-nuerburgring-langstrecken-serie-2026/; NLS4/5 https://www.24h-rennen.de/zeitplanq/ (Q24h-Zeitplan-2026_V2_251111_.pdf).
   - ADAC 24h: https://www.24h-rennen.de/zeitplan/ (24h-Zeitplan-2026_V2_260428.pdf).
   - NASCAR: https://www.nascar.com/nascar-cup-series/2026/schedule/.
-- **Verified:**
-  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,921 tests;
-  - the scripted diff of every series against its source, empty after the edits (Long Beach's IMSA qualifying end, a minute apart between two official figures, left on purpose);
-  - the Calendar's dry run (`--from-ref … --dry-run --only /calendar/`, UTC), as stored at origin/paddock-data and against a local commit of it with the nine calendar files rebuilt from this branch by `calendarEntries(loadSeries(slug))`: both 15 pages, exit 0, 42 feeds OK; February to November 2026 and /calendar/ differ by exactly the corrections, December 2025, January, December 2026 and January 2027 byte-identical; the unchanged 24 Hours rebuilt identical to the stored file.
-- **Listed for the desk, not changed:** MotoGP's Australian Grand Prix (25 Oct) cancelled for poor visibility and NLS1 (14 Mar) called off for snow, kept at their scheduled times; WEC Barcelona and Monza's timetables (no rows in the file); IMSA's practices never carried; NLS5's qualifying for race 2; NASCAR's race times outside the scope (Clash, Duels, Daytona 500, All-Star Race, Pocono, New Hampshire).
+  - Hosts new to the repository, probed first: api.pulselive.motogp.com (robots.txt and sitemap.xml 404), api.dtm.com (robots.txt 404), dtm.com (robots.txt allows all; sitemap.txt and sitemap.xml read). gpone.com (where the review read Japan's notice) bars AI agents in its robots.txt and answers 403: not used.
+- **Verified,** after the fold, with #1187 merged in:
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,935 tests. A first run beside two dry runs timed out on two designer tests at 5 s (`components/designer/PageDesigner.test.tsx`, untouched here); the file alone passed 57 of 57 and the quiet full run passed;
+  - the scripted diff of every series against its source, empty after the edits (Long Beach's IMSA qualifying end, a minute apart between two official figures, left on purpose); Japan's Warm Up equals motogp.com's event Schedule;
+  - the Calendar's dry run (`--from-ref … --dry-run --only /calendar/`, UTC), as stored at origin/paddock-data and against a local commit of it with the nine calendar files rebuilt from this branch by `calendarEntries(loadSeries(slug))`: both 15 pages, exit 0, 42 feeds OK; February to November 2026 and /calendar/ differ by exactly the corrections (MotoGP's 20 rows among them), December 2025, January, December 2026 and January 2027 byte-identical; the unchanged 24 Hours rebuilt identical to the stored file.
+- **Listed for the desk, not changed:**
+  - MotoGP's Australian Grand Prix (25 Oct) cancelled for poor visibility and NLS1 (14 Mar) called off for snow: kept at their scheduled times.
+  - Sessions the files never carried, at their published local times:
+    - WEC R7 Barcelona (CEST): FP1 Fri 16 Oct 11:30, FP2 16:30; Sat 17 Oct LMGT3 FP3 08:50, LMGT3 Qualifying 11:50, LMGT3 Hyperpole 12:10, Hypercar FP3 12:40, Hypercar Qualifying 15:40, Hypercar Hyperpole 16:00; race Sun 18 Oct 12:00.
+    - WEC R8 Monza, to come (CET): FP1 Fri 6 Nov 10:30, FP2 14:30; Sat 7 Nov FP3 10:30, LMGT3 Qualifying 14:20, LMGT3 Hyperpole 14:40, Hypercar Qualifying 15:00, Hypercar Hyperpole 15:20; race Sun 8 Nov 11:00.
+    - IMSA (the timing archive): Sebring Practice 2 Thu 19 Mar 16:00, Practice 3 19:45 EDT; Detroit Practice 3 Sat 30 May 11:10 EDT; Road America Practice 1 Fri 31 Jul 11:25, Practice 2 Sat 1 Aug 09:50 CDT; VIR Practice 1 Fri 21 Aug 15:10, Practice 2 Sat 22 Aug 10:30 EDT; Indianapolis Practice 1 Fri 18 Sep 15:25 EDT; Petit Le Mans Practice 1 Thu 1 Oct 10:40, Practice 2 15:20, Practice 3 19:30 EDT.
+    - NLS5's qualifying for race 2: Sun 19 Apr 08:15–09:45 CEST.
+    - GT World's official (paid) test sessions: no round carries them.
+  - NASCAR's race times, outside the scope, differ from nascar.com (ET): the Clash Wed 4 Feb 6:00 PM (stored Sun 1 Feb 8:00 PM); the Duels, two races, 7:00 and 8:45 PM (stored one); the Daytona 500 1:30 PM (stored 2:30); the All-Star Race 1:00 PM (stored 3:00); Pocono 1:00 PM (stored 3:00); New Hampshire 2:00 PM (stored 3:00). R27's name is shortened ("Southern 500"; nascar.com: "Cook Out Southern 500").
+  - `scripts/scaffold-series.mjs` still writes NLS's dead address (code); MotoGP R18's block anchor (25 Oct) lies three days from its FP1 (22 Oct UTC), outside the feed's ±2-day window (unchanged here; no ghost row today).
+- **Reviewed** on the operator's "My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1188.": one fresh-context Sonnet reader, 577,936 tokens, 185 tool calls, about 51 minutes; mergeable after fixes, 1 blocker, 2 should-fix, 7 nits. It re-read every changed row from the sources and converted them on its own: all matched.
+- **Folded:** the conflict with #1187 (merged `next`, both entries kept); Japan's Warm Up moved during the event (09:35–09:55 JST, motogp.com's event Schedule); the listed sessions' times written above; "R2–R8" and the two Race 2 times worded right; the new hosts' probes stated. Accepted, with reasons: R36's name stands ("NASCAR Cup Series Championship Race" on nascar.com); the scaffold script, R27's name, R18's anchor and the paid tests listed, not changed (outside the slot).
 - **Test after the publish run:**
   1. `/calendar/2026-10/`: GTWC Barcelona's Sprint Race 2 on Sunday 4 Oct at 16:20 UTC; Portimão's race on Saturday 17 Oct at 16:00 UTC; no "Free Practice 3" in DTM's Hockenheim weekend, its Race 2 at 14:30 UTC; WSBK Jerez's Race 2 at 13:30 UTC; IMSA Petit Le Mans' qualifying at 18:20 UTC.
   2. `/calendar/2026-11/`: MotoGP Qatar's race on Sunday 8 Nov at 17:00 UTC, Portugal's on 22 Nov at 13:00 UTC.
   3. `/calendar/2026-08/`: GTWC Magny-Cours' Free Practice 1 on Friday 31 Jul; no NLS "Free Training" on 1 Aug.
 - **After the merge:** one publish run, `--only /calendar/` (the desk's).
-- **Review:** one fresh-context Sonnet reader, on the operator's 5-hour figure.
 
 ## #1187 · 1.0.299 · O29 (Formula 1's 2025 title race) · opened 2026-10-25 into `next` on the operator's "Push claude/o29-title-race and open the PR into next.", built in Task 1.c on "ok so lets build the page then", side by side with O28, the plan approved in plan mode; the merge on the word
 **The champion's button gets its page.** The reigning card's "2026 title race →" now reads "2025 title race →" and opens `/series/f1/2025/`, the page drafted on Paddock 2025 Title Race and answered on 25 Oct. Its band names the page and leads with the champion, then the margin.
