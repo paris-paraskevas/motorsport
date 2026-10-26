@@ -90,6 +90,31 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   7. "Places as a table" opens the places.
 - **Known issues, not failures:** Red Bull Racing's navy and Audi's dark green lines are dark in Night (the codes and the highlight tell them apart, as drafted); the first fill takes about four publish runs, so a race page shows its chart, and its Overview the link, once its laps are in.
 
+## #1186 · 1.0.297 · O17, a follow-up (the champion's button clears the big year) · opened 2026-10-25 into `next` on the operator's "Push o17/button and open the PR into next.", planned with O28 in plan mode and approved; the review and the merge on the word
+**The button over the year.** The operator's test of 0.1.18 at 1,440 px found the reigning card's "2026 title race →" button over the big "2025": it had no fill, so the year ran through its words. It now takes the card's own colour. The records of #1185's merge, upload, publish run and check ride in from the local o17/records, with O28's plan and its answers, and the rule change for parallel sessions.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.19, on `/series/f1/champions/`: the button on the champion's card reads clearly, the year passing under it, on hover too.
+- **Editors get:** nothing.
+- **Files (11):**
+  - `wp-theme/paddock/style.css` · 0.1.19: `.pd-ch-acts a` takes `background: var(--t)`; its hover tint mixes into `var(--t)` instead of transparent.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.297, and #1185's MERGED, PUBLISHED and CHECKED lines.
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` (re-rendered):
+    - #1185's MERGED, UPLOADED, PUBLISHED, CHECKED and DONE evidence;
+    - O17's test and this fix;
+    - O28's plan and its three answers, its defaults changed by a dated line;
+    - rules 7 and 11 for parallel sessions, by a dated line.
+  - `CLAUDE.md` (rule 7) and `docs/plan/rules.md` (§§ 7 and 11): building by a session the operator starts for its task, at most three at once besides the desk session, which owns the ledger, the handoff, IDEAS, the ledger page, theme zips and publish runs.
+  - `IDEAS.md`: the 2025 title race page, drafted for the operator's answers (Task 1.c).
+- **Verified:**
+  - on the theme preview (0.1.19, Playwright, a real mouse): before, the button transparent (rgba(0, 0, 0, 0)) over the year on McLaren's rgb(255, 128, 0); after, at 1,440 and 390 px in Day and Night, its background equals the card's, it is the topmost element at its centre, and on hover it darkens toward the ink while the year stays under it;
+  - `npx tsc --noEmit -p .` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npx vitest run` 282 files, 2,921 tests; after the rule change, `npx vitest run lib/design/plan-ledger.test.ts` 6 tests;
+  - theme zip built: 33 files, Version 0.1.19.
+- **Test after upload:**
+  1. `/series/f1/champions/` on a laptop, Day and Night: "2026 title race →" on the champion's card reads clearly, the big "2025" passing under the button.
+  2. Point at the button: it darkens slightly and the year stays hidden behind it.
+  3. The same page on a phone: the button across the card, readable over the year.
+- **After the merge:** the upload of 0.1.19; CSS only, so no publish run.
+- **Review:** one fresh-context Sonnet reader, on the operator's 5-hour figure (about 25k tokens).
+
 ## #1185 · 1.0.296 · O17 (Formula 1's Champions: the roll of honour) · opened 2026-10-23 into `next` on the operator's "Push o17/champions and open the PR into next.", built on "Go: plan O17 in plan mode." and "Build O17 now in this session.", the plan approved in plan mode; the review and the merge on the word
 **The Champions page.** Built as drawn on The Paddock Drafts, full width; the three doorways to pages the new site does not have yet are greyed, as answered in plan mode. The records of the lap chart's draft (O28, answered "All six lap chart defaults stand.") and of O17's opening and plan ride in from the local o16/records.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.18 and one publish run:
