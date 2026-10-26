@@ -191,6 +191,66 @@ export interface StandingsNote {
 /** Sidecar shape: season-as-string → its rulings. */
 export type StandingsNotesFile = Record<string, StandingsNote[]>;
 
+/** A finished season's title race (O29, content/series/<slug>/title-race-<season>.json). `rounds` and `drivers` are
+ *  written by scripts/fetch-title-race.mts from Jolpica: each round's name, the race's own calendar day and its
+ *  winner, and the season's top three with their points after every round and their place in its last race. The words
+ *  beside them are written by hand, every claim checked against formula1.com or the FIA and its sources kept (RULE #1):
+ *  the band's line, the turning points (a round and what happened there) and the decider. */
+export interface TitleRaceFile {
+  season: number;
+  intro?: string;
+  turns?: { round: number; text: string; sources?: string[] }[];
+  decider?: {
+    /** How the last round was reached, after the standings going into it. */
+    going?: string;
+    /** What each driver needed from the last round, in the standings' order. */
+    needed?: { driver: string; text: string }[];
+    neededNote?: string;
+    /** Under the last race's order of the three. */
+    after?: string;
+    sources?: string[];
+  };
+  sources?: string[];
+  /** Whether the season's standings hold sprint points too. */
+  sprints?: boolean;
+  /** `leader` and `lead`: the standings' leader after the round and his points, who need not be one of the three. */
+  rounds: { round: number; name: string; date: string; winner: string; team: string; leader: string; lead: number }[];
+  drivers: { name: string; code: string; team: string; last: number | null; points: number[] }[];
+}
+
+/** The title race of each season given that has a file, oldest first. A file without a season, its rounds and three
+ *  drivers with a total for every round is left out, as an absent one is: no page. Read by name rather than by listing
+ *  the folder, so a file the content bundle does not hold yet is still found on disk (lib/content-fs.ts). */
+export async function loadTitleRaces(slug: string, seasons: readonly number[]): Promise<TitleRaceFile[]> {
+  const out: TitleRaceFile[] = [];
+  for (const season of [...new Set(seasons)].sort((a, b) => a - b)) {
+    const t = await readJsonIfExists<TitleRaceFile>(path.join(SERIES_ROOT, slug, `title-race-${season}.json`));
+    const whole =
+      t?.season === season &&
+      Array.isArray(t.rounds) &&
+      t.rounds.length > 0 &&
+      t.rounds.every(
+        r =>
+          Number.isInteger(r?.round) &&
+          /^\d{4}-\d{2}-\d{2}$/.test(r.date) &&
+          [r.name, r.winner, r.team, r.leader].every(s => typeof s === 'string') &&
+          typeof r.lead === 'number',
+      ) &&
+      Array.isArray(t.drivers) &&
+      t.drivers.length === 3 &&
+      t.drivers.every(
+        d =>
+          [d?.name, d?.code, d?.team].every(s => typeof s === 'string') &&
+          (d.last === null || Number.isInteger(d.last)) &&
+          Array.isArray(d.points) &&
+          d.points.length === t.rounds.length &&
+          d.points.every(p => typeof p === 'number'),
+      );
+    if (whole) out.push(t);
+  }
+  return out;
+}
+
 /** Curated WRC per-stage classifications (content/series/wrc/stage-results.json).
  *  The rally results feed is winners-only, so the full per-stage field lives
  *  here as curated content (RULE #1: eWRC + wrc.com). Null when the file is

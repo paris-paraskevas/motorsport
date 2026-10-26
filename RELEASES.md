@@ -8,6 +8,10 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 Behind the scenes: the calendar's session times now match each championship's official timetable. GT World Challenge's five rounds that had borrowed another round's times have their own, Portimão's finale on its Saturday evening; WorldSBK's second race sits at the end of Sunday, where it moved this year; DTM no longer lists a third practice that never ran, nor the Nürburgring series a practice on race morning. MotoGP's Qatar round shows its evening schedule and Portugal's race its earlier start, with fixes for WEC, IMSA and five NASCAR races' names. Nothing changes for readers yet.
 
+## 1.0.299 — 2026-10-25
+
+Behind the scenes: Formula 1's 2025 title race gets its own page, opened from the champion's card on the Champions page: how Lando Norris won by two points at the last race, the gap round by round, the six races that turned it, and what each driver needed in Abu Dhabi. Nothing changes for readers yet.
+
 ## 1.0.297 — 2026-10-25
 
 Behind the scenes: on Formula 1's Champions page, the button on the champion's card now sits clear of the big year behind it. Nothing changes for readers yet.
