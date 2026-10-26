@@ -4,11 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 1.0.298 — 2026-10-25
+## 1.0.300 — 2026-10-26
 
 ### O28: Formula 1's lap chart
 
-The operator's question of 22 Oct: "could we have a driver position graph for the race showing lap by lap positions for drivers". The draft, Paddock Lap Chart (round 17), was answered on 23 Oct with its six defaults, and the plan approved in plan mode on 25 Oct with three answers: (A) a dotted step from the line's end to the result's place, its number marked †; (B) the six races of 2026 that differ checked against Formula 1's reports in this build, the mark from the data alone from Austin on; (C) Pit wall's note column widened on the race page (58 → 94 px, 40 → 68 on a phone), so lap 30 sits over lap 30. Built in a parallel session (Task 1.a); theme 0.1.20. Two answers during the build, 25 Oct ("Both defaults"): a driver's places may run past his result's laps (Britain), and the pit stop dots come from Jolpica's pit stops rather than OpenF1's stints, with a fourth field in laps.json. The operator then had the stops checked against the official records and chose the FIA's: "Follow the FIA's documents (Jolpica, as built): the dots stay as they are, red-flag laps out; add the official sources to the records."
+The operator's question of 22 Oct: "could we have a driver position graph for the race showing lap by lap positions for drivers". The draft, Paddock Lap Chart (round 17), was answered on 23 Oct with its six defaults, and the plan approved in plan mode on 25 Oct with three answers: (A) a dotted step from the line's end to the result's place, its number marked †; (B) the six races of 2026 that differ checked against Formula 1's reports in this build, the mark from the data alone from Austin on; (C) Pit wall's note column widened on the race page (58 → 94 px, 40 → 68 on a phone), so lap 30 sits over lap 30. Built in a parallel session (Task 1.a) as 1.0.298 and theme 0.1.20, renumbered 1.0.300 and theme 0.1.22 when #1187 (O29) merged first with 1.0.299 and 0.1.21 (the desk: whichever merges second takes the next free numbers). Two answers during the build, 25 Oct ("Both defaults"): a driver's places may run past his result's laps (Britain), and the pit stop dots come from Jolpica's pit stops rather than OpenF1's stints, with a fourth field in laps.json. The operator then had the stops checked against the official records and chose the FIA's: "Follow the FIA's documents (Jolpica, as built): the dots stay as they are, red-flag laps out; add the official sources to the records."
 
 - **The chart** (`lapChart`, lib/wp/weekend.ts) on each race page between the Classification and Pit wall: "Lap chart", "Each driver’s place at the end of every lap", `id="lap-chart"`.
   - Every driver's place at the end of every lap from the grid (lap 0), in the team's colour, a team's second driver dashed by drivers.json's order with a stand-in after the regular driver (Lawson at Red Bull in rounds 12 to 14), the code at both ends, the grid slot, the classified place and the places gained or lost.
@@ -24,7 +24,7 @@ The operator's question of 22 Oct: "could we have a driver position graph for th
   - `f1Laps` (scripts/wp-publish.mts), after the weekend data in its own try: its calls 600 ms apart inside four minutes, the first 429 stopping the laps for the run; one log line a race (`laps f1 R17 OK 62 laps 15 calls`, `MISS …`, `THROTTLED: the rest next run`); and each run's log names every race whose result differs from the flag (answer B).
   - Race control's spans (`sessionMarks(…, race)`, lib/openf1/weekend.ts, `SessionMarks.neutral`): "DEPLOYED" opens a span and "ENDING" or "IN THIS LAP" closes it, in 2026's words ("VSC") and before ("VIRTUAL SAFETY CAR"); a red flag closes an open span on its lap, as Monza and Monaco restarted from a standing start; the other car deployed closes the first a lap before (Malaysia's VSC became a safety car); a span still open at the flag closes on the last lap; a car redeployed on the lap it came in is one span (Britain). `weekendWhole` asks a race kept before its spans again once.
   - `sameDriver` and `seatOf` (lib/wp/series.ts) join the names by surname, as `codeOf` does, and order a team's seats.
-- **Theme 0.1.20:**
+- **Theme 0.1.22:**
   - style.css: `.pd-lc*` on Pit wall's card; `--pd-lc-n` and `--pd-lc-e` (74 and 94 px, 46 and 68 on a phone) for the chart's columns and, on the race page, Pit wall's rows (answer C), the Overview's Pit wall unchanged; a scroll margin for `#lap-chart`; the readout holds room for its longest line, so the chart never moves under a finger;
   - paddock.js: the chart's block after the circuit's, drawn again when the card's width changes; a pointer, a click or a tap follows a driver (a swipe scrolls the page), the arrow keys move between drivers and laps, Escape lets go; reduced motion kept.
 - **The preview:** `wp-theme/preview/f1-race.html` (new, round 17's race page from the dry run), inserted by the blueprint under round 17; `f1-weekend.html` regenerated, the link its only change.
@@ -41,7 +41,49 @@ Verified:
 - The dry runs, into a scratch copy of paddock-data at e868b223 (`--data <copy> --dry-run --out <dir> --only /series/f1/ --openf1-max 20`; WordPress not called): the first read all 17 races' safety car spans in one run (`weekend f1 R17 Race weather OK marks {"neutral":[{"kind":"VSC","from":8,"to":9},{"kind":"VSC","from":39,"to":40}]} tyres 22`). With the final code the laps filled from an empty store in five runs, one of them started before Jolpica's allowance had refilled: every race OK, from `laps f1 R17 OK 62 laps 15 calls` to `laps f1 R1 OK 58 laps 13 calls`, 11 to 17 calls a race; each run's log named the races placed differently among those stored, the last all six. 144 pages; `f1/laps.json` 86,085 bytes for 17 races; the race pages 30,960 to 48,574 bytes (Monaco's the largest), the chart's section 10,352 to 14,671 of them; the largest page is still Champions (74,999).
 - By hand: round 17's stored places equal all 1,236 checked on 23 Oct, and its 22 grid slots; its VSC laps 8–9 and 39–40; its 25 stops equal Jolpica's pit stop list, and every race keeps every stop listed (the red flags' tyre changes stored and not drawn: 21 at Monza, 21 at Zandvoort, 16 at Monaco). The six races against formula1.com's race results and their penalty notes: Miami, Leclerc's 20 s ("dropped Leclerc from P6 down to P8", formula1.com's explainer); Monaco, Gasly's two 5 s and Hülkenberg's and Pérez's 10 s; Barcelona, Colapinto's 10 s; Britain, Antonelli's 5 s and Sainz's penalty lap; Hungary, Hamilton's and Bearman's 5 s; Azerbaijan, Bortoleto's 10 s. In all six the classified drivers' places equal the stored ones; formula1.com lists the rest as not classified, where Jolpica, and so the page, numbers them after the finishers (Barcelona's Albon, 55 laps, 18th and Lapped there).
 - The pit stops against the official records: the FIA's Race Pit Stop Summary for all 17 races (each PDF read with pdfplumber, the car and the lap by their columns; Britain's answered 404 at first and 200 on a later check) and formula1.com's Pit stop summary for all 17 (the page's own table), both against Jolpica's list and OpenF1's stints, as above.
-- On the theme preview (0.1.20, Playwright, real input): round 17's race page and Overview at 20 widths from 300 to 2,560 px, Day and Night: no sideways scroll, the chart inside its card, lap 30 within 0.05 px of Pit wall's, the redraw within 115 ms of a width change; the mouse (hover, a click to keep a driver, along his laps, the finish column), taps on a phone (keep, switch, let go; a swipe scrolls the page 531 px), the keys (Tab to the chart, the arrows, Escape; the page never scrolls); the Overview's "Lap chart →" by a click and a tap lands 12 px under the top; without the script the table, opened by a click; Miami's and Britain's pages swapped in once, not committed: 6†, 7† and 8† with their dotted steps, Sainz "crossed the line P13, classified P17"; 0 page errors.
+- On the theme preview (0.1.22, Playwright, real input): round 17's race page and Overview at 20 widths from 300 to 2,560 px, Day and Night: no sideways scroll, the chart inside its card, lap 30 within 0.05 px of Pit wall's, the redraw within 115 ms of a width change; the mouse (hover, a click to keep a driver, along his laps, the finish column), taps on a phone (keep, switch, let go; a swipe scrolls the page 531 px), the keys (Tab to the chart, the arrows, Escape; the page never scrolls); the Overview's "Lap chart →" by a click and a tap lands 12 px under the top; without the script the table, opened by a click; Miami's and Britain's pages swapped in once, not committed: 6†, 7† and 8† with their dotted steps, Sainz "crossed the line P13, classified P17"; 0 page errors.
+
+## 1.0.299 — 2026-10-25
+
+### O29: Formula 1's 2025 title race
+
+The operator, testing the Champions page on 24 Oct: the reigning card's "2026 title race →" button should lead to a 2025 title race page. Drafted with checked data on Paddock 2025 Title Race (Task 1.c, five versions: the band naming the page, then the champion first and the margin under him, on the operator's word), its eight questions and the build's four answered on 25 Oct, and built on "ok so lets build the page then", side by side with O28 in its own worktree, the plan approved in plan mode.
+
+- **The page** (`/series/f1/2025/`, `seriesTitleRace` in lib/wp/series.ts, beside Champions; in `seriesFamily`):
+  - The band names the page ("Formula 1 · 2025 season", "The 2025 title race", the file's line) and leads with the champion: a black panel striped in his team's colour, his name the band's largest type, then "by 2 points" and "423 to Max Verstappen's 421" (champions.json). It carries no 2026 line and no round bar; the series' tabs follow, none lit.
+  - The final three: each total, the gap ("2 points behind"), the wins and the rounds each led after, counted from the file.
+  - The chart's numbers in `data-pd-race` for the theme's script, and the same numbers as a table open without it.
+  - The six turning points, numbered as on the chart, each with the three's totals after it (level ones by wins so far).
+  - The decider: the three going in, what each needed, and the race's order with the season's totals.
+  - More Formula 1: Champions, this season's Standings and this season's page.
+  - Every word escaped; inline style only `--t`.
+- **The button:** the reigning card opens its own season's title race once that season has a page ("2025 title race →" to `/series/f1/2025/`); without one it keeps this season's Standings. No title race page is built for the current season, whose address is its weekends' season page (O19); December's 2026 page is its own decision.
+- **The data** (`content/series/f1/title-race-2025.json`, new):
+  - The words, written by hand with their formula1.com sources: the band's line, six turning points, the decider.
+  - The numbers, written by `scripts/fetch-title-race.mts` (new): each round's name, the race's own day (the circuit's time zone: Jolpica's UTC date put Las Vegas on 23 Nov, formula1.com's 22 Nov), winner, leader and the leader's points, and the top three's points after every round and their place in the last race.
+  - The script makes 28 Jolpica calls, 650 ms apart, keeps the words on a rerun and prints the totals to check. Its header holds the four by-hand steps (rules.md § 12).
+  - All 72 totals and 24 days match formula1.com's 2025 results and each driver's season page.
+  - `loadTitleRaces` (lib/series-content.ts) reads `title-race-<season>.json` for each crowned season by name, leaving out a file that is not whole. The publisher loads it beside the Champions data (`SeriesData.titleRaces`).
+- **Theme 0.1.21:**
+  - The "Title race (O29)" block in style.css, with the 1,099 px and 699 px rules. After the first look at 768 px squeezed them, the band halves below 1,100 px, and from 700 to 1,099 px the final three put each total under the name.
+  - The chart in paddock.js, beside the circuit's:
+    - Points behind the leader or the points (the switch, shown by the script).
+    - The leader's run as a bar, the turning points' numbered squares, each line's end labelled with the runner-up's margin, and his furthest point ("104 behind").
+    - The readout by pointer, tap and arrow keys, Escape to let go.
+    - In Night only, a line under 3:1 against the box is lightened until it reaches it: Red Bull's #1E3A8A goes from 1.67:1 to rgb(91,112,170), 3.57:1.
+    - It folds the table away once drawn.
+  - The preview: `wp-theme/preview/f1-2025.html` (new) and its page in the blueprint; `f1-champions.html` shows the new button.
+- **Tests:** `seriesTitleRace` (eleven), the 2025 file's shape, sources, leaders and champions.json's totals, and `loadTitleRaces`.
+- **The review** (one fresh-context Sonnet reader, 339,907 tokens) found no must-fix. Its eight should-fix are folded:
+  - RELEASES in the house form;
+  - totals joined by commas, so half points cannot split a line;
+  - the decider built only from a file that has one;
+  - touch pins on a click rather than a press, with pinch-zoom kept on the chart;
+  - escaping pinned for names, the chart's separators and the decider;
+  - an empty round's standings stop the script;
+  - the loader checks every field's type and a YYYY-MM-DD day;
+  - the dry run's line in the PR's entry.
+- **Nits folded:** the readout rewrites only when the round changes, the 700 to 1,099 px wording, and a duplicated phone rule dropped. The nits on "his" and the credit line stay: that wording was approved on the draft, and the page is Formula 1's.
 
 ## 1.0.297 — 2026-10-25
 

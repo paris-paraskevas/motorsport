@@ -4,9 +4,13 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
-## 1.0.298 — 2026-10-25
+## 1.0.300 — 2026-10-26
 
 Behind the scenes: every Formula 1 race page gets a lap chart. Each driver's place at the end of every lap, from the grid to the flag, with the pit stops, the safety car laps and the cars that retired, and a mark where the official result differs from the order at the line. Point at a line, or tap it, to follow one driver; the same places are there as a table too. Nothing changes for readers yet.
+
+## 1.0.299 — 2026-10-25
+
+Behind the scenes: Formula 1's 2025 title race gets its own page, opened from the champion's card on the Champions page: how Lando Norris won by two points at the last race, the gap round by round, the six races that turned it, and what each driver needed in Abu Dhabi. Nothing changes for readers yet.
 
 ## 1.0.297 — 2026-10-25
 

@@ -31,7 +31,7 @@ import { dirname, join } from 'node:path';
 import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '../lib/series';
-import { loadChampionNotes, loadCuratedChampions, loadCuratedDrivers, loadHistoricTeamColors, loadRecordNotes, loadStandingsNotes, loadTeamNames, officialTeamName } from '../lib/series-content';
+import { loadChampionNotes, loadCuratedChampions, loadCuratedDrivers, loadHistoricTeamColors, loadRecordNotes, loadStandingsNotes, loadTeamNames, loadTitleRaces, officialTeamName } from '../lib/series-content';
 import { fetchUpstream } from '../lib/fetch-upstream';
 import { fetchF1SeasonSprints } from '../lib/results/f1';
 import { fetchOpenF1WeekendSessions, fetchSessionClassification, hasResolvedDrivers } from '../lib/results/openf1';
@@ -911,6 +911,8 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
       // The Champions page (O17): the roll of honour and what it reads beside it.
       if (seasons?.length) {
         d.champions = { seasons, notes: await loadChampionNotes(slug), records: await loadRecordNotes(slug), historic: await loadHistoricTeamColors(slug), names: await loadTeamNames(slug) };
+        // The title race of each crowned season that has a file (O29): its page, and the reigning card's button to it.
+        d.titleRaces = await loadTitleRaces(slug, seasons.map(s => s.year));
       }
     }
     // The weekend pages' data (O19), as f1Weekend and f1Laps keep it: fetched this run, or stored at --from-ref.
