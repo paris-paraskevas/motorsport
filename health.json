@@ -139,8 +139,8 @@
     "slug": "gt-world",
     "name": "GT World Challenge",
     "kind": "results",
-    "status": "OK",
-    "note": "",
+    "status": "STALE",
+    "note": "fewer races than stored",
     "since": "2026-10-27"
   },
   {
@@ -251,8 +251,8 @@
     "slug": "nls",
     "name": "NLS Nürburgring",
     "kind": "results",
-    "status": "STALE",
-    "note": "empty answer",
+    "status": "OK",
+    "note": "",
     "since": "2026-10-20"
   },
   {
