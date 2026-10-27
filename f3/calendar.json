@@ -36,8 +36,8 @@
     "location": "Albert Park Circuit, Melbourne"
   },
   {
-    "start": "2026-04-11T00:00:00.000Z",
-    "end": "2026-04-12T00:00:00.000Z",
+    "start": "2026-04-10T21:00:00.000Z",
+    "end": "2026-04-11T21:00:00.000Z",
     "dateOnly": true,
     "event": "Bahrain International Circuit",
     "session": "*Cancelled* F3 | Sakhir | Race 1",
@@ -45,8 +45,8 @@
     "location": "Bahrain International Circuit, Gate 255, Gulf of Bahrain Avenue Umm Jidar, Sakhir، 1062, Bahrain"
   },
   {
-    "start": "2026-04-12T00:00:00.000Z",
-    "end": "2026-04-13T00:00:00.000Z",
+    "start": "2026-04-11T21:00:00.000Z",
+    "end": "2026-04-12T21:00:00.000Z",
     "dateOnly": true,
     "event": "Bahrain International Circuit",
     "session": "*Cancelled* F3 | Sakhir | Race 2",

@@ -567,8 +567,8 @@
     "location": "ExCeL London, Royal Victoria Dock, London, UK"
   },
   {
-    "start": "2026-12-18T00:00:00.000Z",
-    "end": "2026-12-19T00:00:00.000Z",
+    "start": "2026-12-17T22:00:00.000Z",
+    "end": "2026-12-18T22:00:00.000Z",
     "dateOnly": true,
     "event": "Jeddah Corniche Circuit",
     "session": "Formula E | Jeddah ePrix | Race 1",
@@ -576,8 +576,8 @@
     "location": "Jeddah Corniche Circuit, طريق الكورنيش،، الشاطئ،، Jeddah 23512, Saudi Arabia"
   },
   {
-    "start": "2026-12-19T00:00:00.000Z",
-    "end": "2026-12-20T00:00:00.000Z",
+    "start": "2026-12-18T22:00:00.000Z",
+    "end": "2026-12-19T22:00:00.000Z",
     "dateOnly": true,
     "event": "Jeddah Corniche Circuit",
     "session": "Formula E | Jeddah ePrix | Race 2",
@@ -585,8 +585,8 @@
     "location": "Jeddah Corniche Circuit, طريق الكورنيش،، الشاطئ،، Jeddah 23512, Saudi Arabia"
   },
   {
-    "start": "2027-01-16T00:00:00.000Z",
-    "end": "2027-01-17T00:00:00.000Z",
+    "start": "2027-01-15T22:00:00.000Z",
+    "end": "2027-01-16T22:00:00.000Z",
     "dateOnly": true,
     "event": "Autódromo Hermanos Rodríguez",
     "session": "Formula E | Mexico City ePrix",

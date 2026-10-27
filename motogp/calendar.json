@@ -1,7 +1,7 @@
 [
   {
-    "start": "2026-01-29T00:00:00.000Z",
-    "end": "2026-02-01T00:00:00.000Z",
+    "start": "2026-01-28T22:00:00.000Z",
+    "end": "2026-01-31T22:00:00.000Z",
     "dateOnly": true,
     "event": "Sepang International Circuit",
     "session": "MotoGP | [SHAKEDOWN] Sepang",
@@ -9,8 +9,8 @@
     "location": "Sepang International Circuit, Jalan Pekeliling, 64000 Sepang, Selangor, Malaysia"
   },
   {
-    "start": "2026-02-03T00:00:00.000Z",
-    "end": "2026-02-06T00:00:00.000Z",
+    "start": "2026-02-02T22:00:00.000Z",
+    "end": "2026-02-05T22:00:00.000Z",
     "dateOnly": true,
     "event": "Sepang International Circuit",
     "session": "MotoGP | [TEST] Sepang",
@@ -18,8 +18,8 @@
     "location": "Sepang International Circuit, Jalan Pekeliling, 64000 Sepang, Selangor, Malaysia"
   },
   {
-    "start": "2026-02-21T00:00:00.000Z",
-    "end": "2026-02-23T00:00:00.000Z",
+    "start": "2026-02-20T22:00:00.000Z",
+    "end": "2026-02-22T22:00:00.000Z",
     "dateOnly": true,
     "event": "Chang International Circuit",
     "session": "MotoGP | [TEST] Buriram",

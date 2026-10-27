@@ -5,7 +5,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "dtm",
@@ -13,7 +13,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "dtm",
@@ -21,7 +21,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "dtm",
@@ -53,7 +53,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "f2",
@@ -61,7 +61,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "f2",
@@ -69,7 +69,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "f2",
@@ -77,7 +77,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "f3",
@@ -85,7 +85,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "f3",
@@ -93,7 +93,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "f3",
@@ -101,7 +101,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "formula-e",
@@ -109,7 +109,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "formula-e",
@@ -117,7 +117,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "formula-e",
@@ -125,7 +125,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "gt-world",
@@ -157,7 +157,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "imsa",
@@ -165,7 +165,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "imsa",
@@ -181,7 +181,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "indycar",
@@ -189,7 +189,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "indycar",
@@ -197,7 +197,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "motogp",
@@ -205,7 +205,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-24"
+    "since": "2026-10-27"
   },
   {
     "slug": "motogp",
@@ -213,7 +213,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-24"
+    "since": "2026-10-27"
   },
   {
     "slug": "motogp",
@@ -253,7 +253,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "nls",
@@ -269,14 +269,14 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "wec",
     "name": "FIA WEC",
     "kind": "results",
-    "status": "STALE",
-    "note": "fewer races than stored",
+    "status": "OK",
+    "note": "",
     "since": "2026-10-27"
   },
   {
@@ -293,7 +293,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "wrc",
@@ -301,7 +301,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "wrc",
@@ -309,7 +309,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "wsbk",
@@ -317,7 +317,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "wsbk",
@@ -325,7 +325,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "wsbk",
