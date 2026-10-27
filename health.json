@@ -251,8 +251,8 @@
     "slug": "nls",
     "name": "NLS Nürburgring",
     "kind": "results",
-    "status": "OK",
-    "note": "",
+    "status": "STALE",
+    "note": "empty answer",
     "since": "2026-10-20"
   },
   {

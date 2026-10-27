@@ -1,37 +1,9 @@
 {
   "mexico-city": {
-    "fetched": "2026-10-27T07:54:21.943Z",
-    "expires": "Tue, 27 Oct 2026 07:57:28 GMT",
-    "lastModified": "Tue, 27 Oct 2026 07:26:26 GMT",
+    "fetched": "2026-10-27T11:05:06.533Z",
+    "expires": "Tue, 27 Oct 2026 11:32:33 GMT",
+    "lastModified": "Tue, 27 Oct 2026 11:02:03 GMT",
     "steps": [
-      {
-        "t": "2026-10-27T07:00:00.000Z",
-        "air": 15,
-        "symbol": "cloudy",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-10-27T08:00:00.000Z",
-        "air": 14,
-        "symbol": "cloudy",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-10-27T09:00:00.000Z",
-        "air": 14,
-        "symbol": "cloudy",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-10-27T10:00:00.000Z",
-        "air": 14,
-        "symbol": "fair_night",
-        "mm": 0,
-        "hours": 1
-      },
       {
         "t": "2026-10-27T11:00:00.000Z",
         "air": 13,
