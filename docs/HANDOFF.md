@@ -6,7 +6,49 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-25 (LATEST, session 71 is the desk: O17 done and its button fixed live (theme 0.1.19); the lap chart planned and approved; the programme moved to parallel sessions, batch Task 1 running: 1.a the lap chart build, 1.b the fourteen series' research, 1.c the 2025 title race draft)
+## ⚡ Next session pickup — 2026-10-27 (LATEST, session 71, the desk: batch Task 1 done and live — the lap chart (O28), the 2025 title race (O29), the other series' timetables (O31), the fourteen series researched (O20); theme 0.1.22 on the site; next: the operator's tests, then Task 2, O18's plan)
+
+### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
+
+```
+Session 72, the desk session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
+Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md · docs/plan/ledger.json (O17, O20, O28, O29, O31 done; O18 next) · docs/HANDOFF.md LATEST (27 Oct) · IDEAS.md's lines of 24 to 27 Oct · the memory feedback-paddock-* files (task numbering; small batches of questions).
+Then run `git status` and `git log --oneline -5` on the local branch desk/records (eleven records commits, not on GitHub).
+First: my test results of 0.1.22, 0.1.21 and 0.1.19 (Paddock Theme Log), each into its slot's evidence; a failure gets its fix before anything new.
+Then Task 2: O18's plan in plan mode (the other fourteen series, on O20's answers), deciding the split by family; build sessions a family each, at most three at once besides the desk.
+Not without my word: any push, merge, publish run, theme upload, the old Next.js code, DNS, any prod write.
+```
+
+1. **Batch Task 1 is done** (25 to 27 Oct), four parallel sessions, every slot checked on the site:
+   - **1.a, the lap chart (O28):** #1189 merged into next as c5189d66 (1.0.301, theme 0.1.22) after two Sonnet reviews. The laps came in over five runs from the operator's computer, rounds 14–18, 10–13, 6–9, 2–5, then 1, with the data pushed to paddock-data each time (ending at 61f15908). All 18 race pages carry the chart and all 18 Overviews the link.
+   - **1.b, the other fourteen series (O20):** every question answered on the six draft pages; their links are in O20's evidence.
+   - **1.c, the 2025 title race (O29):** #1187 merged as 2845f4ea (1.0.299, theme 0.1.21) and published. O30, 2026's page, is planned for after Abu Dhabi (4–6 Dec).
+   - **1.d, the timetables (O31):** #1188 merged as 6588a8a6 (1.0.300) and published on the Calendar.
+   - The four sessions are finished; they can be archived on the operator's word.
+2. **Theme 0.1.22 is on the site,** so nothing waits to upload. The operator's tests are on Paddock Theme Log (version 20): 0.1.22's ten checks, 0.1.21's three and 0.1.19's three, plus one resize of the lap chart on a real screen.
+3. **Records not yet on GitHub:** the local desk/records, from next at 05d9ca5f, holds eleven records commits (a7afa7d5 … 8533c4be) and this handoff. They go up as a records PR on the operator's word. next has moved since (2845f4ea, 6588a8a6, c5189d66), so merge next in first and union-resolve docs/pull-requests.md.
+4. **WordPress.com refused GitHub's signed-in publish runs with 429 on 27 Oct,** from 07:55Z to at least 08:25Z. It had lifted by 14:50Z: run 40525083231 went through and closed outage issue #1190 itself.
+   - Meanwhile the desk published from the operator's computer, with a second application password in the gitignored `.env.wp`. WP_USER there is the site's own username, not the WordPress.com account's.
+   - Stored data: `npx tsx --env-file=.env.wp scripts/wp-publish.mts --from-ref origin/paddock-data --only <paths>`.
+   - To fetch: the same with `--data <a detached worktree of origin/paddock-data>`, then commit in that worktree and `git push origin HEAD:paddock-data`.
+   - IDEAS has the retry-on-429 fix and a runbook line.
+5. **The pages left** (Where Paddock Stands, https://claude.ai/code/artifact/d9d9ceea-1155-4324-9494-786dd72689fe):
+   - Task 2: the fourteen series by family (O18).
+   - December: 2026's title race (O30).
+   - After every championship: the control room (O26) and the Studio (O25).
+   - Not yet slots: Learn, News, and Formula 1's drivers, teams and circuits.
+6. **Living pages:** The Paddock Ledger (version 86), Paddock Theme Log (version 20), Where Paddock Stands (version 1).
+
+**Landmines met in session 71 (26 and 27 Oct):**
+- **Dispatching the publish workflow in the same second it is enabled** leaves a run that never gets a job: GitHub never queues it, and it can't be cancelled. Wait about 30 s after `gh workflow enable` before `gh workflow run`, and disable only once the run is in_progress with a job. Two such ghosts remain, inert: 39836276374 (22 Oct) and 40467974346 (27 Oct).
+- **A local publisher run** needs this checkout on next (`git fetch origin next:next`, `git switch next`) and `npx tsx scripts/bundle-content.mts`; switch back afterwards.
+- **Jolpica throttles after 66 to 77 calls a run** (500 an hour). A new race's laps need about 14 calls; space fill runs about 15 minutes apart.
+- **The browser pane, when hidden, runs no animation frames,** so the lap chart doesn't redraw on a resize there. Measure after a fresh load, and test resizing on a real screen.
+- **wp-admin's login** is "Log in with WordPress.com" with the Paddock WordPress.com account (not the pagon account).
+
+---
+
+## ⚡ Next session pickup — 2026-10-25 (session 71 is the desk: O17 done and its button fixed live (theme 0.1.19); the lap chart planned and approved; the programme moved to parallel sessions, batch Task 1 running: 1.a the lap chart build, 1.b the fourteen series' research, 1.c the 2025 title race draft)
 
 ### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
 
