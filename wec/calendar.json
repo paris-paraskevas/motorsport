@@ -261,8 +261,8 @@
     "location": "Circuit de la Sarthe, Le Mans"
   },
   {
-    "start": "2026-07-10T13:00:00.000Z",
-    "end": "2026-07-10T14:30:00.000Z",
+    "start": "2026-07-10T14:00:00.000Z",
+    "end": "2026-07-10T15:30:00.000Z",
     "dateOnly": false,
     "event": "Rolex 6 Hours of São Paulo",
     "session": "Free Practice 1",
@@ -270,8 +270,8 @@
     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
   },
   {
-    "start": "2026-07-10T17:00:00.000Z",
-    "end": "2026-07-10T18:30:00.000Z",
+    "start": "2026-07-10T18:50:00.000Z",
+    "end": "2026-07-10T20:20:00.000Z",
     "dateOnly": false,
     "event": "Rolex 6 Hours of São Paulo",
     "session": "Free Practice 2",
@@ -279,8 +279,8 @@
     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
   },
   {
-    "start": "2026-07-11T12:00:00.000Z",
-    "end": "2026-07-11T13:00:00.000Z",
+    "start": "2026-07-11T13:10:00.000Z",
+    "end": "2026-07-11T14:10:00.000Z",
     "dateOnly": false,
     "event": "Rolex 6 Hours of São Paulo",
     "session": "Free Practice 3",
@@ -288,8 +288,8 @@
     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
   },
   {
-    "start": "2026-07-11T17:00:00.000Z",
-    "end": "2026-07-11T17:12:00.000Z",
+    "start": "2026-07-11T17:30:00.000Z",
+    "end": "2026-07-11T17:42:00.000Z",
     "dateOnly": false,
     "event": "Rolex 6 Hours of São Paulo",
     "session": "LMGT3 Qualifying",
@@ -297,8 +297,8 @@
     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
   },
   {
-    "start": "2026-07-11T17:20:00.000Z",
-    "end": "2026-07-11T17:30:00.000Z",
+    "start": "2026-07-11T17:50:00.000Z",
+    "end": "2026-07-11T18:00:00.000Z",
     "dateOnly": false,
     "event": "Rolex 6 Hours of São Paulo",
     "session": "LMGT3 Hyperpole",
@@ -306,8 +306,8 @@
     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
   },
   {
-    "start": "2026-07-11T17:40:00.000Z",
-    "end": "2026-07-11T17:52:00.000Z",
+    "start": "2026-07-11T18:10:00.000Z",
+    "end": "2026-07-11T18:22:00.000Z",
     "dateOnly": false,
     "event": "Rolex 6 Hours of São Paulo",
     "session": "Hypercar Qualifying",
@@ -315,8 +315,8 @@
     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
   },
   {
-    "start": "2026-07-11T18:00:00.000Z",
-    "end": "2026-07-11T18:10:00.000Z",
+    "start": "2026-07-11T18:30:00.000Z",
+    "end": "2026-07-11T18:40:00.000Z",
     "dateOnly": false,
     "event": "Rolex 6 Hours of São Paulo",
     "session": "Hypercar Hyperpole",
@@ -324,8 +324,8 @@
     "location": "Autodromo Jose Carlos Pace, Interlagos, São Paulo"
   },
   {
-    "start": "2026-07-12T14:00:00.000Z",
-    "end": "2026-07-12T20:00:00.000Z",
+    "start": "2026-07-12T14:30:00.000Z",
+    "end": "2026-07-12T20:30:00.000Z",
     "dateOnly": false,
     "event": "Rolex 6 Hours of São Paulo",
     "session": "6 Hours of São Paulo (Race)",
@@ -423,8 +423,8 @@
     "location": "Fuji International Speedway, Oyama"
   },
   {
-    "start": "2026-09-26T00:50:00.000Z",
-    "end": "2026-09-26T01:50:00.000Z",
+    "start": "2026-09-26T00:30:00.000Z",
+    "end": "2026-09-26T01:30:00.000Z",
     "dateOnly": false,
     "event": "6 Hours of Fuji",
     "session": "Free Practice 3",
@@ -432,8 +432,8 @@
     "location": "Fuji International Speedway, Oyama"
   },
   {
-    "start": "2026-09-26T05:20:00.000Z",
-    "end": "2026-09-26T05:32:00.000Z",
+    "start": "2026-09-26T05:00:00.000Z",
+    "end": "2026-09-26T05:12:00.000Z",
     "dateOnly": false,
     "event": "6 Hours of Fuji",
     "session": "LMGT3 Qualifying",
@@ -441,8 +441,8 @@
     "location": "Fuji International Speedway, Oyama"
   },
   {
-    "start": "2026-09-26T05:40:00.000Z",
-    "end": "2026-09-26T05:50:00.000Z",
+    "start": "2026-09-26T05:20:00.000Z",
+    "end": "2026-09-26T05:30:00.000Z",
     "dateOnly": false,
     "event": "6 Hours of Fuji",
     "session": "LMGT3 Hyperpole",
@@ -450,8 +450,8 @@
     "location": "Fuji International Speedway, Oyama"
   },
   {
-    "start": "2026-09-26T06:00:00.000Z",
-    "end": "2026-09-26T06:12:00.000Z",
+    "start": "2026-09-26T05:40:00.000Z",
+    "end": "2026-09-26T05:52:00.000Z",
     "dateOnly": false,
     "event": "6 Hours of Fuji",
     "session": "Hypercar Qualifying",
@@ -459,8 +459,8 @@
     "location": "Fuji International Speedway, Oyama"
   },
   {
-    "start": "2026-09-26T06:20:00.000Z",
-    "end": "2026-09-26T06:30:00.000Z",
+    "start": "2026-09-26T06:00:00.000Z",
+    "end": "2026-09-26T06:10:00.000Z",
     "dateOnly": false,
     "event": "6 Hours of Fuji",
     "session": "Hypercar Hyperpole",

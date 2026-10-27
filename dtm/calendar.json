@@ -1,7 +1,7 @@
 [
   {
     "start": "2026-04-24T08:25:00.000Z",
-    "end": "2026-04-24T09:25:00.000Z",
+    "end": "2026-04-24T09:00:00.000Z",
     "dateOnly": false,
     "event": "Red Bull Ring Round",
     "session": "Free Practice 1",
@@ -10,7 +10,7 @@
   },
   {
     "start": "2026-04-24T10:15:00.000Z",
-    "end": "2026-04-24T11:15:00.000Z",
+    "end": "2026-04-24T10:35:00.000Z",
     "dateOnly": false,
     "event": "Red Bull Ring Round",
     "session": "Free Practice 2",
@@ -28,7 +28,7 @@
   },
   {
     "start": "2026-04-25T07:40:00.000Z",
-    "end": "2026-04-25T08:10:00.000Z",
+    "end": "2026-04-25T08:00:00.000Z",
     "dateOnly": false,
     "event": "Red Bull Ring Round",
     "session": "Qualifying 1",
@@ -46,7 +46,7 @@
   },
   {
     "start": "2026-04-26T07:30:00.000Z",
-    "end": "2026-04-26T08:00:00.000Z",
+    "end": "2026-04-26T07:50:00.000Z",
     "dateOnly": false,
     "event": "Red Bull Ring Round",
     "session": "Qualifying 2",
@@ -63,8 +63,8 @@
     "location": "Red Bull Ring, Spielberg, Austria"
   },
   {
-    "start": "2026-05-22T08:25:00.000Z",
-    "end": "2026-05-22T09:25:00.000Z",
+    "start": "2026-05-22T10:00:00.000Z",
+    "end": "2026-05-22T10:55:00.000Z",
     "dateOnly": false,
     "event": "Zandvoort Round",
     "session": "Free Practice 1",
@@ -72,8 +72,8 @@
     "location": "Circuit Zandvoort, Netherlands"
   },
   {
-    "start": "2026-05-22T10:15:00.000Z",
-    "end": "2026-05-22T11:15:00.000Z",
+    "start": "2026-05-22T14:20:00.000Z",
+    "end": "2026-05-22T15:05:00.000Z",
     "dateOnly": false,
     "event": "Zandvoort Round",
     "session": "Free Practice 2",
@@ -81,17 +81,8 @@
     "location": "Circuit Zandvoort, Netherlands"
   },
   {
-    "start": "2026-05-22T14:00:00.000Z",
-    "end": "2026-05-22T14:45:00.000Z",
-    "dateOnly": false,
-    "event": "Zandvoort Round",
-    "session": "Free Practice 3",
-    "round": 2,
-    "location": "Circuit Zandvoort, Netherlands"
-  },
-  {
-    "start": "2026-05-23T07:40:00.000Z",
-    "end": "2026-05-23T08:10:00.000Z",
+    "start": "2026-05-23T07:45:00.000Z",
+    "end": "2026-05-23T08:05:00.000Z",
     "dateOnly": false,
     "event": "Zandvoort Round",
     "session": "Qualifying 1",
@@ -99,8 +90,8 @@
     "location": "Circuit Zandvoort, Netherlands"
   },
   {
-    "start": "2026-05-23T11:30:00.000Z",
-    "end": "2026-05-23T12:30:00.000Z",
+    "start": "2026-05-23T11:35:00.000Z",
+    "end": "2026-05-23T12:35:00.000Z",
     "dateOnly": false,
     "event": "Zandvoort Round",
     "session": "Race 1",
@@ -108,7 +99,7 @@
     "location": "Circuit Zandvoort, Netherlands"
   },
   {
-    "start": "2026-05-24T07:30:00.000Z",
+    "start": "2026-05-24T07:40:00.000Z",
     "end": "2026-05-24T08:00:00.000Z",
     "dateOnly": false,
     "event": "Zandvoort Round",
@@ -126,8 +117,8 @@
     "location": "Circuit Zandvoort, Netherlands"
   },
   {
-    "start": "2026-06-19T08:25:00.000Z",
-    "end": "2026-06-19T09:25:00.000Z",
+    "start": "2026-06-19T09:40:00.000Z",
+    "end": "2026-06-19T10:35:00.000Z",
     "dateOnly": false,
     "event": "Lausitzring Round",
     "session": "Free Practice 1",
@@ -135,8 +126,8 @@
     "location": "DEKRA Lausitzring, Germany"
   },
   {
-    "start": "2026-06-19T10:15:00.000Z",
-    "end": "2026-06-19T11:15:00.000Z",
+    "start": "2026-06-19T14:10:00.000Z",
+    "end": "2026-06-19T14:55:00.000Z",
     "dateOnly": false,
     "event": "Lausitzring Round",
     "session": "Free Practice 2",
@@ -144,17 +135,8 @@
     "location": "DEKRA Lausitzring, Germany"
   },
   {
-    "start": "2026-06-19T14:00:00.000Z",
-    "end": "2026-06-19T14:45:00.000Z",
-    "dateOnly": false,
-    "event": "Lausitzring Round",
-    "session": "Free Practice 3",
-    "round": 3,
-    "location": "DEKRA Lausitzring, Germany"
-  },
-  {
-    "start": "2026-06-20T07:40:00.000Z",
-    "end": "2026-06-20T08:10:00.000Z",
+    "start": "2026-06-20T07:00:00.000Z",
+    "end": "2026-06-20T07:20:00.000Z",
     "dateOnly": false,
     "event": "Lausitzring Round",
     "session": "Qualifying 1",
@@ -171,8 +153,8 @@
     "location": "DEKRA Lausitzring, Germany"
   },
   {
-    "start": "2026-06-21T07:30:00.000Z",
-    "end": "2026-06-21T08:00:00.000Z",
+    "start": "2026-06-21T07:05:00.000Z",
+    "end": "2026-06-21T07:25:00.000Z",
     "dateOnly": false,
     "event": "Lausitzring Round",
     "session": "Qualifying 2",
@@ -189,8 +171,8 @@
     "location": "DEKRA Lausitzring, Germany"
   },
   {
-    "start": "2026-07-03T06:30:00.000Z",
-    "end": "2026-07-03T07:30:00.000Z",
+    "start": "2026-07-03T09:30:00.000Z",
+    "end": "2026-07-03T10:25:00.000Z",
     "dateOnly": false,
     "event": "Norisring Round",
     "session": "Free Practice 1",
@@ -198,8 +180,8 @@
     "location": "Norisring, Nuremberg, Germany"
   },
   {
-    "start": "2026-07-03T11:00:00.000Z",
-    "end": "2026-07-03T12:00:00.000Z",
+    "start": "2026-07-03T14:00:00.000Z",
+    "end": "2026-07-03T14:45:00.000Z",
     "dateOnly": false,
     "event": "Norisring Round",
     "session": "Free Practice 2",
@@ -207,8 +189,8 @@
     "location": "Norisring, Nuremberg, Germany"
   },
   {
-    "start": "2026-07-04T06:30:00.000Z",
-    "end": "2026-07-04T06:50:00.000Z",
+    "start": "2026-07-04T07:35:00.000Z",
+    "end": "2026-07-04T08:20:00.000Z",
     "dateOnly": false,
     "event": "Norisring Round",
     "session": "Qualifying 1",
@@ -225,8 +207,8 @@
     "location": "Norisring, Nuremberg, Germany"
   },
   {
-    "start": "2026-07-05T06:30:00.000Z",
-    "end": "2026-07-05T06:50:00.000Z",
+    "start": "2026-07-05T07:10:00.000Z",
+    "end": "2026-07-05T07:55:00.000Z",
     "dateOnly": false,
     "event": "Norisring Round",
     "session": "Qualifying 2",
@@ -234,8 +216,8 @@
     "location": "Norisring, Nuremberg, Germany"
   },
   {
-    "start": "2026-07-05T11:30:00.000Z",
-    "end": "2026-07-05T12:30:00.000Z",
+    "start": "2026-07-05T11:45:00.000Z",
+    "end": "2026-07-05T12:45:00.000Z",
     "dateOnly": false,
     "event": "Norisring Round",
     "session": "Race 2",
@@ -243,8 +225,8 @@
     "location": "Norisring, Nuremberg, Germany"
   },
   {
-    "start": "2026-07-24T08:25:00.000Z",
-    "end": "2026-07-24T09:25:00.000Z",
+    "start": "2026-07-24T09:00:00.000Z",
+    "end": "2026-07-24T09:55:00.000Z",
     "dateOnly": false,
     "event": "Motorsport Arena Oschersleben Round",
     "session": "Free Practice 1",
@@ -252,8 +234,8 @@
     "location": "Motorsport Arena Oschersleben, Germany"
   },
   {
-    "start": "2026-07-24T10:15:00.000Z",
-    "end": "2026-07-24T11:15:00.000Z",
+    "start": "2026-07-24T13:35:00.000Z",
+    "end": "2026-07-24T14:20:00.000Z",
     "dateOnly": false,
     "event": "Motorsport Arena Oschersleben Round",
     "session": "Free Practice 2",
@@ -261,17 +243,8 @@
     "location": "Motorsport Arena Oschersleben, Germany"
   },
   {
-    "start": "2026-07-24T14:00:00.000Z",
-    "end": "2026-07-24T14:45:00.000Z",
-    "dateOnly": false,
-    "event": "Motorsport Arena Oschersleben Round",
-    "session": "Free Practice 3",
-    "round": 5,
-    "location": "Motorsport Arena Oschersleben, Germany"
-  },
-  {
-    "start": "2026-07-25T07:40:00.000Z",
-    "end": "2026-07-25T08:10:00.000Z",
+    "start": "2026-07-25T07:45:00.000Z",
+    "end": "2026-07-25T08:05:00.000Z",
     "dateOnly": false,
     "event": "Motorsport Arena Oschersleben Round",
     "session": "Qualifying 1",
@@ -288,8 +261,8 @@
     "location": "Motorsport Arena Oschersleben, Germany"
   },
   {
-    "start": "2026-07-26T07:30:00.000Z",
-    "end": "2026-07-26T08:00:00.000Z",
+    "start": "2026-07-26T07:25:00.000Z",
+    "end": "2026-07-26T07:45:00.000Z",
     "dateOnly": false,
     "event": "Motorsport Arena Oschersleben Round",
     "session": "Qualifying 2",
@@ -306,20 +279,11 @@
     "location": "Motorsport Arena Oschersleben, Germany"
   },
   {
-    "start": "2026-08-14T08:25:00.000Z",
-    "end": "2026-08-14T09:25:00.000Z",
+    "start": "2026-08-14T09:30:00.000Z",
+    "end": "2026-08-14T10:25:00.000Z",
     "dateOnly": false,
     "event": "Nürburgring Round",
     "session": "Free Practice 1",
-    "round": 6,
-    "location": "Nürburgring, Germany"
-  },
-  {
-    "start": "2026-08-14T10:15:00.000Z",
-    "end": "2026-08-14T11:15:00.000Z",
-    "dateOnly": false,
-    "event": "Nürburgring Round",
-    "session": "Free Practice 2",
     "round": 6,
     "location": "Nürburgring, Germany"
   },
@@ -328,13 +292,13 @@
     "end": "2026-08-14T14:45:00.000Z",
     "dateOnly": false,
     "event": "Nürburgring Round",
-    "session": "Free Practice 3",
+    "session": "Free Practice 2",
     "round": 6,
     "location": "Nürburgring, Germany"
   },
   {
-    "start": "2026-08-15T07:40:00.000Z",
-    "end": "2026-08-15T08:10:00.000Z",
+    "start": "2026-08-15T07:55:00.000Z",
+    "end": "2026-08-15T08:15:00.000Z",
     "dateOnly": false,
     "event": "Nürburgring Round",
     "session": "Qualifying 1",
@@ -351,8 +315,8 @@
     "location": "Nürburgring, Germany"
   },
   {
-    "start": "2026-08-16T07:30:00.000Z",
-    "end": "2026-08-16T08:00:00.000Z",
+    "start": "2026-08-16T07:10:00.000Z",
+    "end": "2026-08-16T07:30:00.000Z",
     "dateOnly": false,
     "event": "Nürburgring Round",
     "session": "Qualifying 2",
@@ -369,8 +333,8 @@
     "location": "Nürburgring, Germany"
   },
   {
-    "start": "2026-09-11T08:25:00.000Z",
-    "end": "2026-09-11T09:25:00.000Z",
+    "start": "2026-09-11T09:30:00.000Z",
+    "end": "2026-09-11T10:25:00.000Z",
     "dateOnly": false,
     "event": "Sachsenring Round",
     "session": "Free Practice 1",
@@ -378,8 +342,8 @@
     "location": "Sachsenring, Hohenstein-Ernstthal, Germany"
   },
   {
-    "start": "2026-09-11T10:15:00.000Z",
-    "end": "2026-09-11T11:15:00.000Z",
+    "start": "2026-09-11T13:50:00.000Z",
+    "end": "2026-09-11T14:35:00.000Z",
     "dateOnly": false,
     "event": "Sachsenring Round",
     "session": "Free Practice 2",
@@ -387,17 +351,8 @@
     "location": "Sachsenring, Hohenstein-Ernstthal, Germany"
   },
   {
-    "start": "2026-09-11T14:00:00.000Z",
-    "end": "2026-09-11T14:45:00.000Z",
-    "dateOnly": false,
-    "event": "Sachsenring Round",
-    "session": "Free Practice 3",
-    "round": 7,
-    "location": "Sachsenring, Hohenstein-Ernstthal, Germany"
-  },
-  {
-    "start": "2026-09-12T07:40:00.000Z",
-    "end": "2026-09-12T08:10:00.000Z",
+    "start": "2026-09-12T07:55:00.000Z",
+    "end": "2026-09-12T08:15:00.000Z",
     "dateOnly": false,
     "event": "Sachsenring Round",
     "session": "Qualifying 1",
@@ -414,8 +369,8 @@
     "location": "Sachsenring, Hohenstein-Ernstthal, Germany"
   },
   {
-    "start": "2026-09-13T07:30:00.000Z",
-    "end": "2026-09-13T08:00:00.000Z",
+    "start": "2026-09-13T07:00:00.000Z",
+    "end": "2026-09-13T07:20:00.000Z",
     "dateOnly": false,
     "event": "Sachsenring Round",
     "session": "Qualifying 2",
@@ -432,8 +387,8 @@
     "location": "Sachsenring, Hohenstein-Ernstthal, Germany"
   },
   {
-    "start": "2026-10-09T08:25:00.000Z",
-    "end": "2026-10-09T09:25:00.000Z",
+    "start": "2026-10-09T10:05:00.000Z",
+    "end": "2026-10-09T11:00:00.000Z",
     "dateOnly": false,
     "event": "Hockenheimring Round",
     "session": "Free Practice 1",
@@ -441,8 +396,8 @@
     "location": "Hockenheimring, Germany"
   },
   {
-    "start": "2026-10-09T10:15:00.000Z",
-    "end": "2026-10-09T11:15:00.000Z",
+    "start": "2026-10-09T13:30:00.000Z",
+    "end": "2026-10-09T14:15:00.000Z",
     "dateOnly": false,
     "event": "Hockenheimring Round",
     "session": "Free Practice 2",
@@ -450,17 +405,8 @@
     "location": "Hockenheimring, Germany"
   },
   {
-    "start": "2026-10-09T14:00:00.000Z",
-    "end": "2026-10-09T14:45:00.000Z",
-    "dateOnly": false,
-    "event": "Hockenheimring Round",
-    "session": "Free Practice 3",
-    "round": 8,
-    "location": "Hockenheimring, Germany"
-  },
-  {
-    "start": "2026-10-10T07:40:00.000Z",
-    "end": "2026-10-10T08:10:00.000Z",
+    "start": "2026-10-10T07:35:00.000Z",
+    "end": "2026-10-10T07:55:00.000Z",
     "dateOnly": false,
     "event": "Hockenheimring Round",
     "session": "Qualifying 1",
@@ -478,7 +424,7 @@
   },
   {
     "start": "2026-10-11T07:30:00.000Z",
-    "end": "2026-10-11T08:00:00.000Z",
+    "end": "2026-10-11T07:50:00.000Z",
     "dateOnly": false,
     "event": "Hockenheimring Round",
     "session": "Qualifying 2",
@@ -486,8 +432,8 @@
     "location": "Hockenheimring, Germany"
   },
   {
-    "start": "2026-10-11T11:30:00.000Z",
-    "end": "2026-10-11T12:30:00.000Z",
+    "start": "2026-10-11T14:30:00.000Z",
+    "end": "2026-10-11T15:30:00.000Z",
     "dateOnly": false,
     "event": "Hockenheimring Round",
     "session": "Race 2",

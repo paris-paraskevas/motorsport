@@ -19,7 +19,7 @@
   },
   {
     "start": "2026-02-20T23:00:00.000Z",
-    "end": "2026-02-20T23:30:00.000Z",
+    "end": "2026-02-20T23:20:00.000Z",
     "dateOnly": false,
     "event": "Phillip Island Round",
     "session": "FP3",
@@ -27,8 +27,8 @@
     "location": "Phillip Island Grand Prix Circuit, Phillip Island"
   },
   {
-    "start": "2026-02-21T00:00:00.000Z",
-    "end": "2026-02-21T00:15:00.000Z",
+    "start": "2026-02-21T02:00:00.000Z",
+    "end": "2026-02-21T02:15:00.000Z",
     "dateOnly": false,
     "event": "Phillip Island Round",
     "session": "Superpole",
@@ -46,7 +46,7 @@
   },
   {
     "start": "2026-02-21T23:30:00.000Z",
-    "end": "2026-02-21T23:45:00.000Z",
+    "end": "2026-02-21T23:40:00.000Z",
     "dateOnly": false,
     "event": "Phillip Island Round",
     "session": "Warm Up",
@@ -91,7 +91,7 @@
   },
   {
     "start": "2026-03-28T09:40:00.000Z",
-    "end": "2026-03-28T10:10:00.000Z",
+    "end": "2026-03-28T10:00:00.000Z",
     "dateOnly": false,
     "event": "Portimão Round",
     "session": "FP3",
@@ -117,8 +117,8 @@
     "location": "Autodromo Internacional do Algarve, Portimao"
   },
   {
-    "start": "2026-03-29T08:00:00.000Z",
-    "end": "2026-03-29T08:15:00.000Z",
+    "start": "2026-03-29T08:15:00.000Z",
+    "end": "2026-03-29T08:25:00.000Z",
     "dateOnly": false,
     "event": "Portimão Round",
     "session": "Warm Up",
@@ -163,7 +163,7 @@
   },
   {
     "start": "2026-04-18T07:40:00.000Z",
-    "end": "2026-04-18T08:10:00.000Z",
+    "end": "2026-04-18T08:00:00.000Z",
     "dateOnly": false,
     "event": "Assen Round",
     "session": "FP3",
@@ -171,8 +171,8 @@
     "location": "TT Circuit Assen, Assen"
   },
   {
-    "start": "2026-04-18T09:00:00.000Z",
-    "end": "2026-04-18T09:15:00.000Z",
+    "start": "2026-04-18T09:15:00.000Z",
+    "end": "2026-04-18T09:30:00.000Z",
     "dateOnly": false,
     "event": "Assen Round",
     "session": "Superpole",
@@ -189,8 +189,8 @@
     "location": "TT Circuit Assen, Assen"
   },
   {
-    "start": "2026-04-19T07:00:00.000Z",
-    "end": "2026-04-19T07:15:00.000Z",
+    "start": "2026-04-19T07:15:00.000Z",
+    "end": "2026-04-19T07:25:00.000Z",
     "dateOnly": false,
     "event": "Assen Round",
     "session": "Warm Up",
@@ -207,8 +207,8 @@
     "location": "TT Circuit Assen, Assen"
   },
   {
-    "start": "2026-04-19T12:00:00.000Z",
-    "end": "2026-04-19T12:35:00.000Z",
+    "start": "2026-04-19T13:30:00.000Z",
+    "end": "2026-04-19T14:05:00.000Z",
     "dateOnly": false,
     "event": "Assen Round",
     "session": "Race 2",
@@ -235,7 +235,7 @@
   },
   {
     "start": "2026-05-02T07:40:00.000Z",
-    "end": "2026-05-02T08:10:00.000Z",
+    "end": "2026-05-02T08:00:00.000Z",
     "dateOnly": false,
     "event": "Balaton Park Round",
     "session": "FP3",
@@ -261,8 +261,8 @@
     "location": "Balaton Park Circuit, Balatonfokajar"
   },
   {
-    "start": "2026-05-03T07:00:00.000Z",
-    "end": "2026-05-03T07:15:00.000Z",
+    "start": "2026-05-03T07:20:00.000Z",
+    "end": "2026-05-03T07:30:00.000Z",
     "dateOnly": false,
     "event": "Balaton Park Round",
     "session": "Warm Up",
@@ -279,8 +279,8 @@
     "location": "Balaton Park Circuit, Balatonfokajar"
   },
   {
-    "start": "2026-05-03T12:00:00.000Z",
-    "end": "2026-05-03T12:35:00.000Z",
+    "start": "2026-05-03T13:30:00.000Z",
+    "end": "2026-05-03T14:05:00.000Z",
     "dateOnly": false,
     "event": "Balaton Park Round",
     "session": "Race 2",
@@ -288,8 +288,8 @@
     "location": "Balaton Park Circuit, Balatonfokajar"
   },
   {
-    "start": "2026-05-15T08:20:00.000Z",
-    "end": "2026-05-15T09:05:00.000Z",
+    "start": "2026-05-15T08:35:00.000Z",
+    "end": "2026-05-15T09:20:00.000Z",
     "dateOnly": false,
     "event": "Most Round",
     "session": "FP1",
@@ -307,7 +307,7 @@
   },
   {
     "start": "2026-05-16T07:40:00.000Z",
-    "end": "2026-05-16T08:10:00.000Z",
+    "end": "2026-05-16T08:00:00.000Z",
     "dateOnly": false,
     "event": "Most Round",
     "session": "FP3",
@@ -324,8 +324,8 @@
     "location": "Autodrom Most, Most"
   },
   {
-    "start": "2026-05-16T13:30:00.000Z",
-    "end": "2026-05-16T14:05:00.000Z",
+    "start": "2026-05-16T12:00:00.000Z",
+    "end": "2026-05-16T12:35:00.000Z",
     "dateOnly": false,
     "event": "Most Round",
     "session": "Race 1",
@@ -333,8 +333,8 @@
     "location": "Autodrom Most, Most"
   },
   {
-    "start": "2026-05-17T07:00:00.000Z",
-    "end": "2026-05-17T07:15:00.000Z",
+    "start": "2026-05-17T07:15:00.000Z",
+    "end": "2026-05-17T07:25:00.000Z",
     "dateOnly": false,
     "event": "Most Round",
     "session": "Warm Up",
@@ -351,8 +351,8 @@
     "location": "Autodrom Most, Most"
   },
   {
-    "start": "2026-05-17T12:00:00.000Z",
-    "end": "2026-05-17T12:35:00.000Z",
+    "start": "2026-05-17T13:30:00.000Z",
+    "end": "2026-05-17T14:05:00.000Z",
     "dateOnly": false,
     "event": "Most Round",
     "session": "Race 2",
@@ -360,8 +360,8 @@
     "location": "Autodrom Most, Most"
   },
   {
-    "start": "2026-05-29T08:20:00.000Z",
-    "end": "2026-05-29T09:05:00.000Z",
+    "start": "2026-05-29T08:35:00.000Z",
+    "end": "2026-05-29T09:20:00.000Z",
     "dateOnly": false,
     "event": "Aragón Round",
     "session": "FP1",
@@ -379,7 +379,7 @@
   },
   {
     "start": "2026-05-30T07:40:00.000Z",
-    "end": "2026-05-30T08:10:00.000Z",
+    "end": "2026-05-30T08:00:00.000Z",
     "dateOnly": false,
     "event": "Aragón Round",
     "session": "FP3",
@@ -396,8 +396,8 @@
     "location": "MotorLand Aragon, Alcaniz"
   },
   {
-    "start": "2026-05-30T13:30:00.000Z",
-    "end": "2026-05-30T14:05:00.000Z",
+    "start": "2026-05-30T12:00:00.000Z",
+    "end": "2026-05-30T12:35:00.000Z",
     "dateOnly": false,
     "event": "Aragón Round",
     "session": "Race 1",
@@ -405,8 +405,8 @@
     "location": "MotorLand Aragon, Alcaniz"
   },
   {
-    "start": "2026-05-31T07:00:00.000Z",
-    "end": "2026-05-31T07:15:00.000Z",
+    "start": "2026-05-31T07:20:00.000Z",
+    "end": "2026-05-31T07:30:00.000Z",
     "dateOnly": false,
     "event": "Aragón Round",
     "session": "Warm Up",
@@ -423,8 +423,8 @@
     "location": "MotorLand Aragon, Alcaniz"
   },
   {
-    "start": "2026-05-31T12:00:00.000Z",
-    "end": "2026-05-31T12:35:00.000Z",
+    "start": "2026-05-31T13:30:00.000Z",
+    "end": "2026-05-31T14:05:00.000Z",
     "dateOnly": false,
     "event": "Aragón Round",
     "session": "Race 2",
@@ -451,7 +451,7 @@
   },
   {
     "start": "2026-06-13T07:40:00.000Z",
-    "end": "2026-06-13T08:10:00.000Z",
+    "end": "2026-06-13T08:00:00.000Z",
     "dateOnly": false,
     "event": "Misano Round",
     "session": "FP3",
@@ -478,7 +478,7 @@
   },
   {
     "start": "2026-06-14T07:15:00.000Z",
-    "end": "2026-06-14T07:30:00.000Z",
+    "end": "2026-06-14T07:25:00.000Z",
     "dateOnly": false,
     "event": "Misano Round",
     "session": "Warm Up",
@@ -523,7 +523,7 @@
   },
   {
     "start": "2026-07-11T08:40:00.000Z",
-    "end": "2026-07-11T09:10:00.000Z",
+    "end": "2026-07-11T09:00:00.000Z",
     "dateOnly": false,
     "event": "Donington Park Round",
     "session": "FP3",
@@ -549,8 +549,8 @@
     "location": "Donington Park, Castle Donington"
   },
   {
-    "start": "2026-07-12T08:00:00.000Z",
-    "end": "2026-07-12T08:15:00.000Z",
+    "start": "2026-07-12T08:20:00.000Z",
+    "end": "2026-07-12T08:30:00.000Z",
     "dateOnly": false,
     "event": "Donington Park Round",
     "session": "Warm Up",
@@ -567,8 +567,8 @@
     "location": "Donington Park, Castle Donington"
   },
   {
-    "start": "2026-07-12T13:00:00.000Z",
-    "end": "2026-07-12T13:35:00.000Z",
+    "start": "2026-07-12T14:30:00.000Z",
+    "end": "2026-07-12T15:05:00.000Z",
     "dateOnly": false,
     "event": "Donington Park Round",
     "session": "Race 2",
@@ -595,7 +595,7 @@
   },
   {
     "start": "2026-09-05T07:40:00.000Z",
-    "end": "2026-09-05T08:10:00.000Z",
+    "end": "2026-09-05T08:00:00.000Z",
     "dateOnly": false,
     "event": "Magny-Cours Round",
     "session": "FP3",
@@ -667,7 +667,7 @@
   },
   {
     "start": "2026-09-26T07:40:00.000Z",
-    "end": "2026-09-26T08:10:00.000Z",
+    "end": "2026-09-26T08:00:00.000Z",
     "dateOnly": false,
     "event": "Cremona Round",
     "session": "FP3",
@@ -693,8 +693,8 @@
     "location": "Cremona Circuit, Cremona"
   },
   {
-    "start": "2026-09-27T07:00:00.000Z",
-    "end": "2026-09-27T07:15:00.000Z",
+    "start": "2026-09-27T07:20:00.000Z",
+    "end": "2026-09-27T07:30:00.000Z",
     "dateOnly": false,
     "event": "Cremona Round",
     "session": "Warm Up",
@@ -711,8 +711,8 @@
     "location": "Cremona Circuit, Cremona"
   },
   {
-    "start": "2026-09-27T12:00:00.000Z",
-    "end": "2026-09-27T12:35:00.000Z",
+    "start": "2026-09-27T13:30:00.000Z",
+    "end": "2026-09-27T14:05:00.000Z",
     "dateOnly": false,
     "event": "Cremona Round",
     "session": "Race 2",
@@ -739,7 +739,7 @@
   },
   {
     "start": "2026-10-10T08:40:00.000Z",
-    "end": "2026-10-10T09:10:00.000Z",
+    "end": "2026-10-10T09:00:00.000Z",
     "dateOnly": false,
     "event": "Estoril Round",
     "session": "FP3",
@@ -765,8 +765,8 @@
     "location": "Circuito do Estoril, Estoril"
   },
   {
-    "start": "2026-10-11T08:00:00.000Z",
-    "end": "2026-10-11T08:15:00.000Z",
+    "start": "2026-10-11T08:15:00.000Z",
+    "end": "2026-10-11T08:25:00.000Z",
     "dateOnly": false,
     "event": "Estoril Round",
     "session": "Warm Up",
@@ -783,8 +783,8 @@
     "location": "Circuito do Estoril, Estoril"
   },
   {
-    "start": "2026-10-11T13:00:00.000Z",
-    "end": "2026-10-11T13:35:00.000Z",
+    "start": "2026-10-11T14:30:00.000Z",
+    "end": "2026-10-11T15:05:00.000Z",
     "dateOnly": false,
     "event": "Estoril Round",
     "session": "Race 2",
@@ -792,8 +792,8 @@
     "location": "Circuito do Estoril, Estoril"
   },
   {
-    "start": "2026-10-16T08:20:00.000Z",
-    "end": "2026-10-16T09:05:00.000Z",
+    "start": "2026-10-16T08:35:00.000Z",
+    "end": "2026-10-16T09:20:00.000Z",
     "dateOnly": false,
     "event": "Jerez Round",
     "session": "FP1",
@@ -810,8 +810,8 @@
     "location": "Circuito de Jerez - Angel Nieto, Jerez"
   },
   {
-    "start": "2026-10-17T07:40:00.000Z",
-    "end": "2026-10-17T08:10:00.000Z",
+    "start": "2026-10-17T07:35:00.000Z",
+    "end": "2026-10-17T07:55:00.000Z",
     "dateOnly": false,
     "event": "Jerez Round",
     "session": "FP3",
@@ -837,8 +837,8 @@
     "location": "Circuito de Jerez - Angel Nieto, Jerez"
   },
   {
-    "start": "2026-10-18T07:00:00.000Z",
-    "end": "2026-10-18T07:15:00.000Z",
+    "start": "2026-10-18T07:35:00.000Z",
+    "end": "2026-10-18T07:45:00.000Z",
     "dateOnly": false,
     "event": "Jerez Round",
     "session": "Warm Up",
@@ -855,8 +855,8 @@
     "location": "Circuito de Jerez - Angel Nieto, Jerez"
   },
   {
-    "start": "2026-10-18T12:00:00.000Z",
-    "end": "2026-10-18T12:35:00.000Z",
+    "start": "2026-10-18T13:30:00.000Z",
+    "end": "2026-10-18T14:05:00.000Z",
     "dateOnly": false,
     "event": "Jerez Round",
     "session": "Race 2",

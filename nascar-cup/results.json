@@ -9470,5 +9470,309 @@
         ]
       }
     ]
+  },
+  {
+    "round": 34,
+    "name": "YellaWood 500",
+    "date": "2026-10-25",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Race",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Kyle Larson (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "71"
+              ],
+              [
+                "2",
+                "William Byron (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "47"
+              ],
+              [
+                "3",
+                "Ricky Stenhouse Jr",
+                "Hyak Motorsports",
+                "Classified",
+                "34"
+              ],
+              [
+                "4",
+                "Ross Chastain",
+                "Trackhouse Racing Team",
+                "Classified",
+                "33"
+              ],
+              [
+                "5",
+                "Cole Custer",
+                "Haas Factory Team",
+                "Classified",
+                "32"
+              ],
+              [
+                "6",
+                "Carson Hocevar (CC)",
+                "Spire Motorsports",
+                "Classified",
+                "31"
+              ],
+              [
+                "7",
+                "Todd Gilliland",
+                "Front Row Motorsports",
+                "Classified",
+                "30"
+              ],
+              [
+                "8",
+                "Denny Hamlin (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "29"
+              ],
+              [
+                "9",
+                "Alex Bowman",
+                "Hendrick Motorsports",
+                "Classified",
+                "28"
+              ],
+              [
+                "10",
+                "Michael McDowell",
+                "Spire Motorsports",
+                "Classified",
+                "27"
+              ],
+              [
+                "11",
+                "Austin Dillon",
+                "Richard Childress Racing",
+                "Classified",
+                "26"
+              ],
+              [
+                "12",
+                "Josh Berry",
+                "Wood Brothers Racing",
+                "Classified",
+                "25"
+              ],
+              [
+                "13",
+                "Ryan Preece (CC)",
+                "RFK Racing",
+                "Classified",
+                "33"
+              ],
+              [
+                "14",
+                "Austin Hill (i)",
+                "Richard Childress Racing",
+                "Classified",
+                "0"
+              ],
+              [
+                "15",
+                "Ty Dillon",
+                "Kaulig Racing",
+                "Classified",
+                "22"
+              ],
+              [
+                "16",
+                "Cody Ware",
+                "Rick Ware Racing",
+                "Classified",
+                "21"
+              ],
+              [
+                "17",
+                "Ty Gibbs (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "20"
+              ],
+              [
+                "18",
+                "Daniel Suárez (CC)",
+                "Spire Motorsports",
+                "Classified",
+                "19"
+              ],
+              [
+                "19",
+                "Zane Smith",
+                "Front Row Motorsports",
+                "Classified",
+                "18"
+              ],
+              [
+                "20",
+                "Noah Gragson",
+                "Front Row Motorsports",
+                "Classified",
+                "17"
+              ],
+              [
+                "21",
+                "Joey Gase (i)",
+                "NY Racing Team",
+                "Classified",
+                "0"
+              ],
+              [
+                "22",
+                "Bubba Wallace (CC)",
+                "23XI Racing",
+                "Classified",
+                "15"
+              ],
+              [
+                "23",
+                "Gray Gaulding (i)",
+                "Garage 66",
+                "Classified",
+                "0"
+              ],
+              [
+                "24",
+                "Brad Keselowski",
+                "RFK Racing",
+                "Classified",
+                "21"
+              ],
+              [
+                "25",
+                "Daniel Dye (i)",
+                "Live Fast Motorsports",
+                "Classified",
+                "0"
+              ],
+              [
+                "26",
+                "Riley Herbst",
+                "23XI Racing",
+                "Classified",
+                "16"
+              ],
+              [
+                "27",
+                "Austin Cindric (CC)",
+                "Team Penske",
+                "Classified",
+                "18"
+              ],
+              [
+                "28",
+                "Erik Jones",
+                "Legacy Motor Club",
+                "Classified",
+                "11"
+              ],
+              [
+                "29",
+                "Connor Zilisch (R)",
+                "Trackhouse Racing",
+                "Classified",
+                "12"
+              ],
+              [
+                "30",
+                "Shane Van Gisbergen",
+                "Trackhouse Racing",
+                "Classified",
+                "10"
+              ],
+              [
+                "31",
+                "A. J. Allmendinger",
+                "Kaulig Racing",
+                "Classified",
+                "6"
+              ],
+              [
+                "32",
+                "Chris Buescher (CC)",
+                "RFK Racing",
+                "Classified",
+                "20"
+              ],
+              [
+                "33",
+                "Chase Briscoe (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "16"
+              ],
+              [
+                "34",
+                "Joey Logano (CC)",
+                "Team Penske",
+                "Classified",
+                "15"
+              ],
+              [
+                "35",
+                "Christopher Bell (CC)",
+                "Joe Gibbs Racing",
+                "Classified",
+                "2"
+              ],
+              [
+                "36",
+                "Chase Elliott (CC)",
+                "Hendrick Motorsports",
+                "Classified",
+                "2"
+              ],
+              [
+                "37",
+                "Ryan Blaney (CC)",
+                "Team Penske",
+                "Classified",
+                "4"
+              ],
+              [
+                "38",
+                "Tyler Reddick (CC)",
+                "23XI Racing",
+                "Classified",
+                "1"
+              ],
+              [
+                "39",
+                "John Hunter Nemechek",
+                "Legacy Motor Club",
+                "Classified",
+                "1"
+              ],
+              [
+                "40",
+                "Casey Mears",
+                "Beard Motorsports",
+                "Classified",
+                "1"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]

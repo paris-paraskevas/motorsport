@@ -99,8 +99,8 @@
     "location": "Brands Hatch"
   },
   {
-    "start": "2026-05-29T07:00:00.000Z",
-    "end": "2026-05-29T08:00:00.000Z",
+    "start": "2026-05-28T13:45:00.000Z",
+    "end": "2026-05-28T14:45:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Monza",
     "session": "Bronze Test",
@@ -108,8 +108,8 @@
     "location": "Autodromo Nazionale Monza"
   },
   {
-    "start": "2026-05-29T12:25:00.000Z",
-    "end": "2026-05-29T13:55:00.000Z",
+    "start": "2026-05-30T07:00:00.000Z",
+    "end": "2026-05-30T08:30:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Monza",
     "session": "Free Practice 1",
@@ -117,8 +117,8 @@
     "location": "Autodromo Nazionale Monza"
   },
   {
-    "start": "2026-05-29T17:25:00.000Z",
-    "end": "2026-05-29T18:55:00.000Z",
+    "start": "2026-05-30T12:25:00.000Z",
+    "end": "2026-05-30T13:55:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Monza",
     "session": "Free Practice 2",
@@ -126,17 +126,35 @@
     "location": "Autodromo Nazionale Monza"
   },
   {
-    "start": "2026-05-30T10:05:00.000Z",
-    "end": "2026-05-30T11:15:00.000Z",
+    "start": "2026-05-31T07:55:00.000Z",
+    "end": "2026-05-31T08:15:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Monza",
-    "session": "Qualifying",
+    "session": "Qualifying 1",
     "round": 3,
     "location": "Autodromo Nazionale Monza"
   },
   {
-    "start": "2026-05-31T13:00:00.000Z",
-    "end": "2026-05-31T16:00:00.000Z",
+    "start": "2026-05-31T08:20:00.000Z",
+    "end": "2026-05-31T08:40:00.000Z",
+    "dateOnly": false,
+    "event": "3 Hours of Monza",
+    "session": "Qualifying 2",
+    "round": 3,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-05-31T08:45:00.000Z",
+    "end": "2026-05-31T09:05:00.000Z",
+    "dateOnly": false,
+    "event": "3 Hours of Monza",
+    "session": "Qualifying 3",
+    "round": 3,
+    "location": "Autodromo Nazionale Monza"
+  },
+  {
+    "start": "2026-05-31T14:00:00.000Z",
+    "end": "2026-05-31T17:00:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Monza",
     "session": "3 Hours of Monza (Race)",
@@ -207,8 +225,8 @@
     "location": "Circuit de Spa-Francorchamps"
   },
   {
-    "start": "2026-06-25T20:10:00.000Z",
-    "end": "2026-06-25T21:40:00.000Z",
+    "start": "2026-06-25T20:30:00.000Z",
+    "end": "2026-06-25T22:00:00.000Z",
     "dateOnly": false,
     "event": "CrowdStrike 24 Hours of Spa",
     "session": "Night Practice",
@@ -217,7 +235,7 @@
   },
   {
     "start": "2026-06-26T13:05:00.000Z",
-    "end": "2026-06-26T13:55:00.000Z",
+    "end": "2026-06-26T13:52:00.000Z",
     "dateOnly": false,
     "event": "CrowdStrike 24 Hours of Spa",
     "session": "Superpole",
@@ -315,8 +333,8 @@
     "location": "Misano World Circuit Marco Simoncelli"
   },
   {
-    "start": "2026-08-01T08:35:00.000Z",
-    "end": "2026-08-01T09:35:00.000Z",
+    "start": "2026-07-31T11:30:00.000Z",
+    "end": "2026-07-31T12:50:00.000Z",
     "dateOnly": false,
     "event": "Magny-Cours Sprint",
     "session": "Free Practice 1",
@@ -324,8 +342,8 @@
     "location": "Circuit de Nevers Magny-Cours"
   },
   {
-    "start": "2026-08-01T11:00:00.000Z",
-    "end": "2026-08-01T12:00:00.000Z",
+    "start": "2026-07-31T18:40:00.000Z",
+    "end": "2026-07-31T20:00:00.000Z",
     "dateOnly": false,
     "event": "Magny-Cours Sprint",
     "session": "Free Practice 2",
@@ -333,26 +351,26 @@
     "location": "Circuit de Nevers Magny-Cours"
   },
   {
-    "start": "2026-08-01T15:40:00.000Z",
-    "end": "2026-08-01T15:50:00.000Z",
+    "start": "2026-08-01T12:55:00.000Z",
+    "end": "2026-08-01T13:05:00.000Z",
     "dateOnly": false,
     "event": "Magny-Cours Sprint",
-    "session": "Qualifying 1",
+    "session": "Qualifying 1 (Group A)",
     "round": 6,
     "location": "Circuit de Nevers Magny-Cours"
   },
   {
-    "start": "2026-08-01T16:00:00.000Z",
-    "end": "2026-08-01T16:10:00.000Z",
+    "start": "2026-08-01T13:10:00.000Z",
+    "end": "2026-08-01T13:20:00.000Z",
     "dateOnly": false,
     "event": "Magny-Cours Sprint",
-    "session": "Qualifying 2",
+    "session": "Qualifying 1 (Group B)",
     "round": 6,
     "location": "Circuit de Nevers Magny-Cours"
   },
   {
-    "start": "2026-08-02T10:15:00.000Z",
-    "end": "2026-08-02T11:15:00.000Z",
+    "start": "2026-08-01T19:05:00.000Z",
+    "end": "2026-08-01T20:05:00.000Z",
     "dateOnly": false,
     "event": "Magny-Cours Sprint",
     "session": "Sprint Race 1",
@@ -360,8 +378,26 @@
     "location": "Circuit de Nevers Magny-Cours"
   },
   {
-    "start": "2026-08-02T14:45:00.000Z",
-    "end": "2026-08-02T15:45:00.000Z",
+    "start": "2026-08-02T08:50:00.000Z",
+    "end": "2026-08-02T09:00:00.000Z",
+    "dateOnly": false,
+    "event": "Magny-Cours Sprint",
+    "session": "Qualifying 2 (Group A)",
+    "round": 6,
+    "location": "Circuit de Nevers Magny-Cours"
+  },
+  {
+    "start": "2026-08-02T09:05:00.000Z",
+    "end": "2026-08-02T09:15:00.000Z",
+    "dateOnly": false,
+    "event": "Magny-Cours Sprint",
+    "session": "Qualifying 2 (Group B)",
+    "round": 6,
+    "location": "Circuit de Nevers Magny-Cours"
+  },
+  {
+    "start": "2026-08-02T13:30:00.000Z",
+    "end": "2026-08-02T14:30:00.000Z",
     "dateOnly": false,
     "event": "Magny-Cours Sprint",
     "session": "Sprint Race 2",
@@ -369,8 +405,8 @@
     "location": "Circuit de Nevers Magny-Cours"
   },
   {
-    "start": "2026-08-28T07:00:00.000Z",
-    "end": "2026-08-28T08:00:00.000Z",
+    "start": "2026-08-28T14:40:00.000Z",
+    "end": "2026-08-28T15:40:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Nürburgring",
     "session": "Bronze Test",
@@ -378,8 +414,8 @@
     "location": "Nürburgring"
   },
   {
-    "start": "2026-08-28T12:25:00.000Z",
-    "end": "2026-08-28T13:55:00.000Z",
+    "start": "2026-08-29T08:50:00.000Z",
+    "end": "2026-08-29T10:20:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Nürburgring",
     "session": "Free Practice 1",
@@ -387,8 +423,8 @@
     "location": "Nürburgring"
   },
   {
-    "start": "2026-08-28T17:25:00.000Z",
-    "end": "2026-08-28T18:55:00.000Z",
+    "start": "2026-08-29T14:15:00.000Z",
+    "end": "2026-08-29T15:45:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Nürburgring",
     "session": "Free Practice 2",
@@ -396,11 +432,29 @@
     "location": "Nürburgring"
   },
   {
-    "start": "2026-08-29T10:05:00.000Z",
-    "end": "2026-08-29T11:15:00.000Z",
+    "start": "2026-08-30T07:45:00.000Z",
+    "end": "2026-08-30T08:05:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Nürburgring",
-    "session": "Qualifying",
+    "session": "Qualifying 1",
+    "round": 7,
+    "location": "Nürburgring"
+  },
+  {
+    "start": "2026-08-30T08:10:00.000Z",
+    "end": "2026-08-30T08:30:00.000Z",
+    "dateOnly": false,
+    "event": "3 Hours of Nürburgring",
+    "session": "Qualifying 2",
+    "round": 7,
+    "location": "Nürburgring"
+  },
+  {
+    "start": "2026-08-30T08:35:00.000Z",
+    "end": "2026-08-30T08:55:00.000Z",
+    "dateOnly": false,
+    "event": "3 Hours of Nürburgring",
+    "session": "Qualifying 3",
     "round": 7,
     "location": "Nürburgring"
   },
@@ -487,16 +541,7 @@
   },
   {
     "start": "2026-10-02T07:00:00.000Z",
-    "end": "2026-10-02T08:00:00.000Z",
-    "dateOnly": false,
-    "event": "Barcelona Sprint",
-    "session": "Bronze Test",
-    "round": 9,
-    "location": "Circuit de Barcelona-Catalunya"
-  },
-  {
-    "start": "2026-10-02T12:25:00.000Z",
-    "end": "2026-10-02T13:55:00.000Z",
+    "end": "2026-10-02T08:20:00.000Z",
     "dateOnly": false,
     "event": "Barcelona Sprint",
     "session": "Free Practice 1",
@@ -504,8 +549,8 @@
     "location": "Circuit de Barcelona-Catalunya"
   },
   {
-    "start": "2026-10-02T17:25:00.000Z",
-    "end": "2026-10-02T18:55:00.000Z",
+    "start": "2026-10-02T11:55:00.000Z",
+    "end": "2026-10-02T13:15:00.000Z",
     "dateOnly": false,
     "event": "Barcelona Sprint",
     "session": "Free Practice 2",
@@ -513,26 +558,44 @@
     "location": "Circuit de Barcelona-Catalunya"
   },
   {
-    "start": "2026-10-03T10:05:00.000Z",
-    "end": "2026-10-03T11:15:00.000Z",
+    "start": "2026-10-03T07:50:00.000Z",
+    "end": "2026-10-03T08:00:00.000Z",
     "dateOnly": false,
     "event": "Barcelona Sprint",
-    "session": "Qualifying",
+    "session": "Qualifying 1 (Group A)",
     "round": 9,
     "location": "Circuit de Barcelona-Catalunya"
   },
   {
-    "start": "2026-10-04T13:00:00.000Z",
-    "end": "2026-10-04T14:00:00.000Z",
+    "start": "2026-10-03T08:05:00.000Z",
+    "end": "2026-10-03T08:15:00.000Z",
     "dateOnly": false,
     "event": "Barcelona Sprint",
-    "session": "Sprint Race",
+    "session": "Qualifying 1 (Group B)",
     "round": 9,
     "location": "Circuit de Barcelona-Catalunya"
   },
   {
-    "start": "2026-10-16T08:00:00.000Z",
-    "end": "2026-10-16T09:00:00.000Z",
+    "start": "2026-10-03T12:00:00.000Z",
+    "end": "2026-10-03T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona Sprint",
+    "session": "Sprint Race 1",
+    "round": 9,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-10-04T16:20:00.000Z",
+    "end": "2026-10-04T17:20:00.000Z",
+    "dateOnly": false,
+    "event": "Barcelona Sprint",
+    "session": "Sprint Race 2",
+    "round": 9,
+    "location": "Circuit de Barcelona-Catalunya"
+  },
+  {
+    "start": "2026-10-15T16:40:00.000Z",
+    "end": "2026-10-15T17:40:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Portimão",
     "session": "Bronze Test",
@@ -540,8 +603,8 @@
     "location": "Autodromo Internacional do Algarve, Portimão"
   },
   {
-    "start": "2026-10-16T13:25:00.000Z",
-    "end": "2026-10-16T14:55:00.000Z",
+    "start": "2026-10-16T07:45:00.000Z",
+    "end": "2026-10-16T09:15:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Portimão",
     "session": "Free Practice 1",
@@ -549,8 +612,8 @@
     "location": "Autodromo Internacional do Algarve, Portimão"
   },
   {
-    "start": "2026-10-16T18:25:00.000Z",
-    "end": "2026-10-16T19:55:00.000Z",
+    "start": "2026-10-16T11:45:00.000Z",
+    "end": "2026-10-16T13:15:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Portimão",
     "session": "Free Practice 2",
@@ -558,17 +621,35 @@
     "location": "Autodromo Internacional do Algarve, Portimão"
   },
   {
-    "start": "2026-10-17T11:05:00.000Z",
-    "end": "2026-10-17T12:15:00.000Z",
+    "start": "2026-10-16T16:55:00.000Z",
+    "end": "2026-10-16T17:15:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Portimão",
-    "session": "Qualifying",
+    "session": "Qualifying 1",
     "round": 10,
     "location": "Autodromo Internacional do Algarve, Portimão"
   },
   {
-    "start": "2026-10-18T14:00:00.000Z",
-    "end": "2026-10-18T17:00:00.000Z",
+    "start": "2026-10-16T17:20:00.000Z",
+    "end": "2026-10-16T17:40:00.000Z",
+    "dateOnly": false,
+    "event": "3 Hours of Portimão",
+    "session": "Qualifying 2",
+    "round": 10,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-10-16T17:45:00.000Z",
+    "end": "2026-10-16T18:05:00.000Z",
+    "dateOnly": false,
+    "event": "3 Hours of Portimão",
+    "session": "Qualifying 3",
+    "round": 10,
+    "location": "Autodromo Internacional do Algarve, Portimão"
+  },
+  {
+    "start": "2026-10-17T16:00:00.000Z",
+    "end": "2026-10-17T19:00:00.000Z",
     "dateOnly": false,
     "event": "3 Hours of Portimão",
     "session": "3 Hours of Portimão (Race)",

@@ -29,7 +29,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "f1",
@@ -37,7 +37,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "f1",
@@ -45,7 +45,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-24"
+    "since": "2026-10-27"
   },
   {
     "slug": "f1",
@@ -133,7 +133,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-22"
+    "since": "2026-10-27"
   },
   {
     "slug": "gt-world",
@@ -141,7 +141,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "gt-world",
@@ -149,7 +149,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "imsa",
@@ -173,7 +173,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "indycar",
@@ -221,7 +221,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "nascar-cup",
@@ -229,7 +229,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "nascar-cup",
@@ -237,7 +237,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "nascar-cup",
@@ -245,7 +245,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "nls",
@@ -261,7 +261,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "wec",
@@ -277,7 +277,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-10-27"
   },
   {
     "slug": "wec",
@@ -285,7 +285,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   },
   {
     "slug": "wrc",
@@ -333,6 +333,6 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-10-27"
   }
 ]

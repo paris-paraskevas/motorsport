@@ -180,8 +180,8 @@
     "location": "Detroit Street Circuit"
   },
   {
-    "start": "2026-05-30T20:00:00.000Z",
-    "end": "2026-05-30T22:00:00.000Z",
+    "start": "2026-05-30T20:10:00.000Z",
+    "end": "2026-05-30T21:50:00.000Z",
     "dateOnly": false,
     "event": "Chevrolet Detroit Sports Car Classic",
     "session": "Chevrolet Detroit Sports Car Classic (Race)",
@@ -198,8 +198,8 @@
     "location": "Watkins Glen International"
   },
   {
-    "start": "2026-06-27T17:05:00.000Z",
-    "end": "2026-06-27T19:05:00.000Z",
+    "start": "2026-06-27T14:05:00.000Z",
+    "end": "2026-06-27T15:50:00.000Z",
     "dateOnly": false,
     "event": "Sahlen's Six Hours of The Glen",
     "session": "Practice 2",
@@ -207,8 +207,8 @@
     "location": "Watkins Glen International"
   },
   {
-    "start": "2026-06-27T21:15:00.000Z",
-    "end": "2026-06-27T22:05:00.000Z",
+    "start": "2026-06-27T22:20:00.000Z",
+    "end": "2026-06-27T23:35:00.000Z",
     "dateOnly": false,
     "event": "Sahlen's Six Hours of The Glen",
     "session": "Qualifying",
@@ -261,8 +261,8 @@
     "location": "Canadian Tire Motorsport Park"
   },
   {
-    "start": "2026-08-01T22:55:00.000Z",
-    "end": "2026-08-01T23:50:00.000Z",
+    "start": "2026-08-01T20:25:00.000Z",
+    "end": "2026-08-01T21:00:00.000Z",
     "dateOnly": false,
     "event": "Motul SportsCar Endurance Grand Prix",
     "session": "Qualifying",
@@ -270,8 +270,8 @@
     "location": "Road America"
   },
   {
-    "start": "2026-08-02T15:35:00.000Z",
-    "end": "2026-08-02T21:35:00.000Z",
+    "start": "2026-08-02T15:40:00.000Z",
+    "end": "2026-08-02T21:40:00.000Z",
     "dateOnly": false,
     "event": "Motul SportsCar Endurance Grand Prix",
     "session": "Motul SportsCar Endurance Grand Prix (Race)",
@@ -279,8 +279,8 @@
     "location": "Road America"
   },
   {
-    "start": "2026-08-22T20:45:00.000Z",
-    "end": "2026-08-22T21:25:00.000Z",
+    "start": "2026-08-22T20:50:00.000Z",
+    "end": "2026-08-22T21:05:00.000Z",
     "dateOnly": false,
     "event": "Michelin GT Challenge at VIR",
     "session": "Qualifying",
@@ -288,8 +288,8 @@
     "location": "Virginia International Raceway"
   },
   {
-    "start": "2026-08-23T16:00:00.000Z",
-    "end": "2026-08-23T19:00:00.000Z",
+    "start": "2026-08-23T16:10:00.000Z",
+    "end": "2026-08-23T18:50:00.000Z",
     "dateOnly": false,
     "event": "Michelin GT Challenge at VIR",
     "session": "Michelin GT Challenge at VIR (Race)",
@@ -297,8 +297,8 @@
     "location": "Virginia International Raceway"
   },
   {
-    "start": "2026-09-19T16:35:00.000Z",
-    "end": "2026-09-19T17:15:00.000Z",
+    "start": "2026-09-19T14:45:00.000Z",
+    "end": "2026-09-19T16:15:00.000Z",
     "dateOnly": false,
     "event": "TireRack.com Battle on the Bricks",
     "session": "Practice 2",
@@ -306,8 +306,8 @@
     "location": "Indianapolis Motor Speedway"
   },
   {
-    "start": "2026-09-19T21:05:00.000Z",
-    "end": "2026-09-19T22:20:00.000Z",
+    "start": "2026-09-19T21:45:00.000Z",
+    "end": "2026-09-19T22:21:00.000Z",
     "dateOnly": false,
     "event": "TireRack.com Battle on the Bricks",
     "session": "Qualifying",
@@ -324,8 +324,8 @@
     "location": "Indianapolis Motor Speedway"
   },
   {
-    "start": "2026-10-02T19:50:00.000Z",
-    "end": "2026-10-02T20:35:00.000Z",
+    "start": "2026-10-02T18:20:00.000Z",
+    "end": "2026-10-02T19:35:00.000Z",
     "dateOnly": false,
     "event": "Motul Petit Le Mans",
     "session": "Qualifying",
@@ -333,7 +333,7 @@
     "location": "Michelin Raceway Road Atlanta"
   },
   {
-    "start": "2026-10-03T16:05:00.000Z",
+    "start": "2026-10-03T16:10:00.000Z",
     "end": "2026-10-04T02:10:00.000Z",
     "dateOnly": false,
     "event": "Motul Petit Le Mans",
