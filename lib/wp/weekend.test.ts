@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { VenueForecast } from '@/lib/met-norway';
-import type { CircuitMap, SessionExtras } from '@/lib/openf1/weekend';
+import type { CircuitMap, DriverStints, SessionExtras } from '@/lib/openf1/weekend';
 import type { CalendarEntry, RaceLaps, ResultRound, SeriesData, Table } from './render';
 import { weekendPoints } from './series';
 import { lapChartNotes, weekendPages } from './weekend';
@@ -547,7 +547,7 @@ describe('the lap chart (O28)', () => {
     const { head, spans, drivers } = chartData(chart);
     expect([head, spans, drivers.size]).toEqual(['59 12', '', 12]);
     expect(drivers.get('VER')).toEqual(['VER', '#1E3A8A', '0', '1', '0', '1', 'f', run(1, 59), '20', VER, 'Red Bull Racing']);
-    // The table: every tenth lap and the flag, as the chart's places; the stops from Pit wall's stints.
+    // The table: every tenth lap and the flag, as the chart's places; the stops the FIA's (Jolpica's pit stops).
     expect(chart).toContain('<tr><th class="p">Finish</th><th class="d">Code</th><th class="dn">Driver</th><th class="tm">Team</th><th class="n">Grid</th><th class="n">Lap 10</th><th class="n">20</th><th class="n">30</th><th class="n">40</th><th class="n">50</th><th class="n">Flag</th><th class="n">Stops on lap</th></tr>');
     expect(tableRow(chart, 'VER')).toEqual(['1', 'VER', VER, 'Red Bull Racing', '1', '1', '1', '1', '1', '1', '1', '20']);
     // The other sessions' pages carry none.
@@ -614,6 +614,66 @@ describe('the lap chart (O28)', () => {
     expect([...chartData(none).drivers.values()].every(f => f[8] === '-')).toBe(true);
     expect(none).not.toContain('Stops on lap');
     expect(none).not.toContain('Pit stop');
+  });
+
+  it("leaves out the visits race control's times mark as passes or a red flag's changes, and keeps a penalty visit and a tyre change inside a pass", () => {
+    // Round 2's race starts at 15:00 at the track (UTC+8): the whole field through the pit lane from 16:00 to 16:03,
+    // a red flag from 16:30 to 16:50.
+    const lanes = [
+      { kind: 'through' as const, from: '2026-03-15T08:00:00.000Z', to: '2026-03-15T08:03:00.000Z' },
+      { kind: 'red' as const, from: '2026-03-15T08:30:00.000Z', to: '2026-03-15T08:50:00.000Z' },
+    ];
+    const marks = { red: [{ lap: 33, restarted: true }], neutral: [], lanes };
+    // Verstappen's dots from his visits, his OpenF1 stints the fixture's (Medium to 20, Hard from 21) unless given.
+    const ver = (visits: string, m: SessionExtras['marks'], openf1?: [string, number, number][]) => {
+      const stints = openf1 ? [...r2Extras.Race.stints!.filter(([n]) => n !== 3), [3, openf1] as DriverStints] : r2Extras.Race.stints;
+      const d = withRace({ extras: { marks: m, stints }, laps: { ...r2Laps, drivers: r2Laps.drivers.map(([n, g, p, s]) => [n, g, p, n === VER ? visits : s]) } });
+      return chartData(sectionOf(pageOf(`${R}2/race/`, weekendPages(d)), 'Lap chart')).drivers.get('VER')?.[8];
+    };
+    // A stop at 15:40, the pass at 16:01:30, a drive-through at 16:20 and a change under the red at 16:35.
+    expect(ver('20@15:40:00.25@16:01:30.28@16:20:00.33@16:35:00', marks)).toBe('20.28');
+    // A race read before race control's times were kept: the red flag's lap still takes its changes out.
+    expect(ver('20@15:40:00.33@16:35:00', { red: [{ lap: 33, restarted: true }], neutral: [] })).toBe('20');
+    // Hard to Soft on the pass is a stop (Antonelli, Monaco's lap 61; Lawson, Baku's lap 36); Hard to Hard is the pass
+    // (the rest of both fields), and so is a tyre OpenF1 did not record.
+    expect(ver('20@15:40:00.25@16:01:30', marks, [['MEDIUM', 1, 20], ['HARD', 21, 25], ['SOFT', 26, 59]])).toBe('20.25');
+    expect(ver('20@15:40:00.25@16:01:30', marks, [['MEDIUM', 1, 20], ['HARD', 21, 25], ['HARD', 26, 59]])).toBe('20');
+    expect(ver('20@15:40:00.25@16:01:30', marks, [['MEDIUM', 1, 20], ['HARD', 21, 25], ['UNKNOWN', 26, 59]])).toBe('20');
+    // A stop just before the pass (Piastri, Hamilton and Leclerc under Monaco's safety car): the stop's change is its
+    // own, and the pass a lap later, on the same compound, stays out.
+    expect(ver('24@15:59:00.25@16:01:30', marks, [['MEDIUM', 1, 24], ['HARD', 25, 25], ['HARD', 26, 59]])).toBe('24');
+    // A change under the red flag stays out whatever the tyres.
+    expect(ver('20@15:40:00.33@16:35:00', marks, [['MEDIUM', 1, 20], ['HARD', 21, 33], ['SOFT', 34, 59]])).toBe('20');
+  });
+
+  it("draws Pit wall's stints on the FIA's stops, each tyre OpenF1's stint starting within a lap of it, else not recorded", () => {
+    const wall = (openf1: [string, number, number][], stops: string) => {
+      const d = withRace({
+        extras: { stints: [...r2Extras.Race.stints!.filter(([n]) => n !== 3), [3, openf1]] },
+        laps: { ...r2Laps, drivers: r2Laps.drivers.map(([n, g, p, s]) => [n, g, p, n === VER ? stops : s]) },
+      });
+      const section = sectionOf(pageOf(`${R}2/race/`, weekendPages(d)), 'Pit wall');
+      return [...section.matchAll(/data-tip="VER · ([^·]+?) · laps? (\d+)(?:–(\d+))? · /g)].map(m => `${m[1]} ${m[2]}-${m[3] ?? m[2]}`);
+    };
+    // Australia, OpenF1 a lap early (2026, 19 of 21 cars).
+    expect(wall([['MEDIUM', 1, 10], ['HARD', 11, 59]], '11')).toEqual(['Medium 1-11', 'Hard 12-59']);
+    // Monaco, a lap-1 stop OpenF1 does not have (Bottas, Bearman).
+    expect(wall([['MEDIUM', 1, 59]], '1')).toEqual(['Medium 1-1', 'Tyre not recorded 2-59']);
+    // Canada, a lap early and the lap-1 stop missing (Piastri).
+    expect(wall([['SOFT', 1, 11], ['MEDIUM', 12, 50], ['HARD', 51, 59]], '1.12.51')).toEqual(['Soft 1-1', 'Tyre not recorded 2-12', 'Medium 13-51', 'Hard 52-59']);
+    // Malaysia, stints ended on lap 1 and 2 and the later stops missing (Verstappen). Round 2 here has a red flag on lap
+    // 33, which would take a stop on it out, so these stop on 32.
+    expect(wall([['SOFT', 1, 1], ['SOFT', 2, 2], ['MEDIUM', 3, 9], ['HARD', 10, 59]], '9.32.43')).toEqual(['Soft 1-9', 'Hard 10-32', 'Tyre not recorded 33-43', 'Tyre not recorded 44-59']);
+    // Singapore, a stint ended on lap 1 and the real stop missing (Hadjar, Alonso, Stroll).
+    expect(wall([['MEDIUM', 1, 1], ['SOFT', 2, 59]], '32')).toEqual(['Medium 1-32', 'Tyre not recorded 33-59']);
+    // Barcelona, the second stop on 28 for 39 (Bearman).
+    expect(wall([['MEDIUM', 1, 18], ['HARD', 19, 28], ['SOFT', 29, 59]], '18.39')).toEqual(['Medium 1-18', 'Hard 19-39', 'Tyre not recorded 40-59']);
+    // Belgium, a stop OpenF1 adds (Antonelli).
+    expect(wall([['MEDIUM', 1, 18], ['HARD', 19, 44], ['SOFT', 45, 59]], '18')).toEqual(['Medium 1-18', 'Hard 19-59']);
+    // Hungary, the first stop on lap 1 for 21 (Pérez).
+    expect(wall([['SOFT', 1, 1], ['MEDIUM', 2, 46], ['HARD', 47, 59]], '21.46')).toEqual(['Soft 1-21', 'Tyre not recorded 22-46', 'Hard 47-59']);
+    // The note counts the FIA's stops; a sprint, or a race whose laps are not stored, keeps OpenF1's stints.
+    expect(sectionOf(pageOf(`${R}2/race/`), 'Pit wall')).toMatch(/<b>LEC<\/b><\/span><span class="pd-pw-bar">(<i [^>]+>[SMH]<\/i>){3}<span class="pd-pw-g" style="--n:59"><\/span><\/span><span class="pd-pw-n">2 stops<\/span>/);
   });
 
   it("shades the safety car laps, says which in the key and credits race control's marks", () => {
@@ -735,7 +795,7 @@ describe('odd data', () => {
 describe('found in review', () => {
   const withRace = (stints: SessionExtras['stints']): SeriesData => ({
     ...f1,
-    weekend: { ...f1.weekend!, sessions: { '2026': { '2': { ...r2Extras, Race: { ...r2Extras.Race, stints } } } } },
+    weekend: { ...f1.weekend!, laps: {}, sessions: { '2026': { '2': { ...r2Extras, Race: { ...r2Extras.Race, stints } } } } },
   });
   const others = (car: number) => r2Extras.Race.stints!.filter(([n]) => n !== car);
 

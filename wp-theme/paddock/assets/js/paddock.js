@@ -814,7 +814,7 @@
 		var describe = function ( d, lap ) {
 			var n = d.p.length, out = n ? 'out after lap ' + n : 'out on the first lap';
 			var end = d.end === 'd' ? 'crossed the line P' + flag( d ) + ', disqualified'
-				: d.end === 'x' ? ( d.fin !== null ? 'finished P' + d.fin + ', ' + out : out )
+				: d.end === 'x' ? ( d.fin !== null ? 'classified P' + d.fin + ', ' + out : out )
 					: d.fin === null ? 'crossed the line P' + flag( d )
 						: moved( d ) ? 'crossed the line P' + flag( d ) + ', classified P' + d.fin : 'finished P' + d.fin;
 			var place = lap !== null && lap > 0 && lap <= n ? ' · lap ' + lap + ': P' + d.p[ lap - 1 ] : '';
@@ -841,7 +841,8 @@
 		};
 		var draw = function ( W ) {
 			var cs = getComputedStyle( box ), nw = parseFloat( cs.getPropertyValue( '--pd-lc-n' ) ) || 74, ew = parseFloat( cs.getPropertyValue( '--pd-lc-e' ) ) || 94;
-			var gap = parseFloat( cs.columnGap ) || 10, sm = W < 560, fx = W - ew;
+			// Compact labels in a narrow card, and wherever the stylesheet has narrowed the columns (a phone's).
+			var gap = parseFloat( cs.columnGap ) || 10, sm = W < 560 || nw < 60, fx = W - ew;
 			rh = sm ? 14 : W > 1600 ? 26 : 22;
 			top = sm ? 22 : 30;
 			x0 = nw + gap;
@@ -852,11 +853,18 @@
 			svg = node( 'svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, 'class': sm ? 'is-sm' : '', 'aria-hidden': 'true', focusable: 'false' }, box );
 			var rows = node( 'g', {}, svg );
 			for ( var p = 1; p <= N; p++ ) { node( 'line', { 'class': 'r', x1: r1( x0 ), x2: r1( x1 ), y1: Y( p ), y2: Y( p ) }, rows ); }
+			// A span's label under it; spans too close for their labels side by side put the later one a row lower.
+			var ends = [ -Infinity, -Infinity ];
 			spans.forEach( function ( s ) {
 				var a = X( s.from - 1 ), b = X( s.to );
 				node( 'rect', { 'class': 'sp', x: r1( a ), y: top, width: r1( Math.max( b - a, 1 ) ), height: plotH }, svg );
-				node( 'text', { 'class': 'spl', x: r1( ( a + b ) / 2 ), y: top + plotH + 12 }, svg, s.kind );
+				var label = node( 'text', { 'class': 'spl', x: r1( ( a + b ) / 2 ), y: top + plotH + 12 }, svg, s.kind );
+				var half = label.getComputedTextLength() / 2, row = ( a + b ) / 2 - half > ends[ 0 ] + 4 ? 0 : 1;
+				if ( row ) { label.setAttribute( 'y', top + plotH + 24 ); H = top + plotH + 32; }
+				ends[ row ] = ( a + b ) / 2 + half;
 			} );
+			svg.setAttribute( 'height', H );
+			svg.setAttribute( 'viewBox', '0 0 ' + W + ' ' + H );
 			var axis = node( 'g', {}, svg ), step = sm ? 10 : 5;
 			node( 'text', { 'class': 'at', x: 0, y: top - 14 }, axis, sm ? 'Lap' : 'Lap · ' + L );
 			for ( var t = step; t <= L; t += step ) {
@@ -896,10 +904,12 @@
 			pinned = false;
 			set( null, null );
 		};
-		// The driver and lap under the pointer: by row and nearest lap on the plot, by the result's row in the finish column.
+		// The driver and lap under the pointer: by row and nearest lap on the plot, by the result's row in the finish column;
+		// none over the lap numbers or the safety car labels.
 		var hit = function ( ev ) {
 			var r = svg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
-			var p = Math.min( N, Math.max( 1, Math.floor( ( y - top ) / rh ) + 1 ) );
+			if ( y < top || y >= top + N * rh ) { return { i: null, lap: null }; }
+			var p = Math.floor( ( y - top ) / rh ) + 1;
 			if ( x > x1 + 4 ) { return { i: p in finRow ? finRow[ p ] : null, lap: null }; }
 			var lap = x < x0 - 4 ? 0 : Math.min( L, Math.max( 0, Math.round( ( x - x0 ) / dx ) ) );
 			return { i: p in order[ lap ] ? order[ lap ][ p ] : null, lap: lap };
@@ -920,6 +930,8 @@
 		} );
 		box.tabIndex = 0;
 		box.addEventListener( 'keydown', function ( ev ) {
+			// A modifier leaves the key to the browser (Alt+Left is Back).
+			if ( ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey ) { return; }
 			if ( [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape' ].indexOf( ev.key ) < 0 ) { return; }
 			ev.preventDefault();
 			if ( ev.key === 'Escape' ) { pinned = false; set( null, null ); return; }

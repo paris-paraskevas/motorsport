@@ -35,6 +35,15 @@ export interface SessionMarks {
   /** A race's safety car and virtual safety car laps (O28's lap chart), [] when it had none; a race read before O28
    *  lacks the key and is asked again. */
   neutral?: NeutralSpan[];
+  /** When a car's visit to the pit lane was no stop (O28): a red flag's tyre changes, from the flag to the restart, and
+   *  race control sending the whole field through the pit lane, from its message to three minutes on (ISO). */
+  lanes?: LaneWindow[];
+}
+
+export interface LaneWindow {
+  kind: 'red' | 'through';
+  from: string;
+  to: string;
 }
 
 /** One driver's tyres: car number, then [compound, first lap, last lap] for each stint in order. */
@@ -205,8 +214,31 @@ export function sessionMarks(messages: readonly OF1RaceControl[], planned: strin
       return { lap: x.m.lap_number ?? null, restarted: next !== undefined && STARTED(next.m) };
     });
   }
-  if (race) marks.neutral = neutralSpans(msgs.map(x => x.m));
+  if (race) {
+    marks.neutral = neutralSpans(msgs.map(x => x.m));
+    marks.lanes = laneWindows(msgs);
+  }
   return marks;
+}
+
+const THROUGH = /^ALL CARS THROUGH THE PIT LANE$/i;
+/** The whole field has passed through the pit lane within a lap behind the safety car: 110 s after race control's
+ *  message at Monaco and Baku in 2026. */
+const THROUGH_MS = 3 * 60_000;
+
+/** A race's lane windows (sessionMarks) from its messages in time order. A red flag runs to the next start or finish,
+ *  a stoppage announced twice once; a race never restarted, to four hours on. */
+function laneWindows(msgs: readonly { m: OF1RaceControl; at: number }[]): LaneWindow[] {
+  const iso = (t: number): string => new Date(t).toISOString();
+  const out: LaneWindow[] = [];
+  const reds = msgs.filter(x => RED(x.m));
+  reds.forEach((x, i) => {
+    if (i > 0 && x.at - reds[i - 1].at <= 60_000) return;
+    const end = msgs.find(y => y.at > x.at && (STARTED(y.m) || FINISHED(y.m)));
+    out.push({ kind: 'red', from: iso(x.at), to: iso(end ? end.at : x.at + 4 * 3_600_000) });
+  });
+  for (const x of msgs) if (THROUGH.test(text(x.m))) out.push({ kind: 'through', from: iso(x.at), to: iso(x.at + THROUGH_MS) });
+  return out.sort((a, b) => (a.from < b.from ? -1 : a.from > b.from ? 1 : 0));
 }
 
 /** A race's safety car spans from its messages in time order (sessionMarks). */
@@ -220,9 +252,15 @@ function neutralSpans(msgs: readonly OF1RaceControl[]): NeutralSpan[] {
   };
   // Typed wide: TypeScript would narrow a plain `= null` to null for the whole loop.
   let open = null as NeutralSpan | null;
+  let seen = 0;
   for (const m of msgs) {
     const lap = m.lap_number;
-    if (typeof lap !== 'number' || !(lap > 0)) continue;
+    if (typeof lap !== 'number' || !(lap > 0)) {
+      // A closing message without its lap closes the span on the last lap race control named, never at the flag.
+      if (open && (IN[open.kind].test(text(m)) || RED(m))) open = close(open, Math.max(seen, open.from));
+      continue;
+    }
+    seen = lap;
     const kind = DEPLOYED.find(([, re]) => re.test(text(m)))?.[0];
     if (kind) {
       if (open?.kind === kind) continue;

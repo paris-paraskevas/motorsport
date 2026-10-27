@@ -509,7 +509,7 @@ export const racingSession = (session: string): boolean => /^(race|sprint)$/i.te
 /** A session's weekend data is whole: its weather and marks, its tyres when it is a race or a sprint, and a race's
  *  safety car laps (O28), so a race kept before them is asked again once. */
 export function weekendWhole(x: SessionExtras | undefined, session: string): boolean {
-  return Boolean(x?.weather && x.marks && (!racingSession(session) || x.stints) && (!/^race$/i.test(session) || x.marks.neutral));
+  return Boolean(x?.weather && x.marks && (!racingSession(session) || x.stints) && (!/^race$/i.test(session) || (x.marks.neutral && x.marks.lanes)));
 }
 
 /** Formula 1's finished sessions whose weekend data a run asks for: listed by OpenF1, past their live window, not
@@ -578,8 +578,9 @@ export function mapsDue<T extends ListedSession>(
 
 /** A race's places lap by lap, as f1/laps.json keeps them: its laps, when they were fetched (ISO), and each driver of
  *  Jolpica's result, named as f1/results.json names them (given and family name), with the grid slot (0: the pit lane),
- *  the place at the end of each lap run, dotted ("1.1.2"), and the laps of its pit stops as Jolpica lists them, dotted
- *  ("24.39", "" for none; a tyre change under a red flag among them, which the chart leaves out). */
+ *  the place at the end of each lap run, dotted ("1.1.2"), and its visits to the pit lane as Jolpica lists them (the
+ *  FIA's Race Pit Stop Summary), each its lap and the track's time of day, dotted ("24@20:43:18.39@21:08:29", "" for
+ *  none): the passes and the red flag's tyre changes among them are left out by the chart, by race control's times. */
 export interface RaceLaps {
   laps: number;
   at: string;
@@ -595,7 +596,13 @@ export interface LapsMiss {
 /** season → round → the race's places, or the note of a miss. */
 export type LapsStore = Record<string, Record<string, RaceLaps | LapsMiss>>;
 
-export const isRaceLaps = (x: RaceLaps | LapsMiss | undefined): x is RaceLaps => Boolean(x && 'drivers' in x);
+/** A race the store holds whole, each row as raceLaps writes it (the visits missing in a file written before them). A
+ *  row of any other shape (a file edited by hand) makes the race a miss, asked again, never a run that throws. */
+export const isRaceLaps = (x: unknown): x is RaceLaps =>
+  isObj(x) &&
+  typeof x.laps === 'number' &&
+  Array.isArray(x.drivers) &&
+  (x.drivers as unknown[]).every(d => Array.isArray(d) && typeof d[0] === 'string' && typeof d[1] === 'number' && typeof d[2] === 'string' && (d[3] === undefined || typeof d[3] === 'string'));
 
 /** The race in a Jolpica answer (MRData.RaceTable.Races[0]), and the answer's total of items. */
 function jolpicaRace(answer: unknown): Obj | null {
@@ -651,7 +658,7 @@ export function raceLaps(
       }
     }
   }
-  const pits = new Map<string, number[]>();
+  const pits = new Map<string, { lap: number; time: string }[]>();
   let stopCount = 0;
   let stopTotal: number | null = null;
   let stopStranger = '';
@@ -663,11 +670,18 @@ export function raceLaps(
       const id = str(s.driverId);
       const lap = count(s.lap);
       if (!known(id)) stopStranger ||= id || 'a driver without an id';
-      if (lap !== null && lap > 0 && !(pits.get(id) ?? []).includes(lap)) pits.set(id, [...(pits.get(id) ?? []), lap]);
+      // The time of day at the track ("16:13:33"), which tells a stop from a pass through the pit lane (lapChart).
+      const time = /^\d{1,2}:\d{2}:\d{2}$/.test(str(s.time)) ? str(s.time) : '';
+      if (lap !== null && lap > 0) pits.set(id, [...(pits.get(id) ?? []), { lap, time }]);
     }
   }
   const laps = Math.max(0, ...listed.map(x => Math.max(x.laps ?? 0, places.get(x.id)?.length ?? 0)));
-  const drivers: RaceLaps['drivers'] = listed.map(x => [x.name, x.grid ?? 0, (places.get(x.id) ?? []).join('.'), (pits.get(x.id) ?? []).sort((a, b) => a - b).join('.')]);
+  const visits = (id: string): string =>
+    (pits.get(id) ?? [])
+      .sort((a, b) => a.lap - b.lap || (a.time < b.time ? -1 : a.time > b.time ? 1 : 0))
+      .map(v => (v.time ? `${v.lap}@${v.time}` : String(v.lap)))
+      .join('.');
+  const drivers: RaceLaps['drivers'] = listed.map(x => [x.name, x.grid ?? 0, (places.get(x.id) ?? []).join('.'), visits(x.id)]);
   const gap = ((): string => {
     if (!listed.length) return 'no result';
     const odd = listed.find(x => !x.id || !x.name || x.grid === null || x.laps === null);

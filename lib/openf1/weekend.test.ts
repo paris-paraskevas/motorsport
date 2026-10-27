@@ -108,7 +108,7 @@ describe("sessionMarks: a race's safety cars (O28)", () => {
   ];
 
   it("reads round 17's four VSC messages as laps 8 to 9 and 39 to 40", () => {
-    expect(marks(singapore)).toEqual({ neutral: [{ kind: 'VSC', from: 8, to: 9 }, { kind: 'VSC', from: 39, to: 40 }] });
+    expect(marks(singapore)).toEqual({ neutral: [{ kind: 'VSC', from: 8, to: 9 }, { kind: 'VSC', from: 39, to: 40 }], lanes: [] });
   });
 
   it('reads the safety car in its own words and the virtual one as race control wrote it before 2026', () => {
@@ -139,7 +139,12 @@ describe("sessionMarks: a race's safety cars (O28)", () => {
       status('2026-09-06T13:39:00+00:00', 'SESSION STARTED', 4),
       flag('2026-09-06T14:54:46+00:00', 53),
     ];
-    expect(marks(monza)).toEqual({ red: [{ lap: 3, restarted: true }], neutral: [{ kind: 'SC', from: 3, to: 3 }] });
+    expect(marks(monza)).toEqual({
+      red: [{ lap: 3, restarted: true }],
+      neutral: [{ kind: 'SC', from: 3, to: 3 }],
+      // The tyre changes under the red flag, from the flag to the restart.
+      lanes: [{ kind: 'red', from: '2026-09-06T13:07:43.000Z', to: '2026-09-06T13:39:00.000Z' }],
+    });
     const monaco = [
       sc('2026-06-07T14:20:00Z', 60, 'SAFETY CAR DEPLOYED'),
       sc('2026-06-07T14:29:41Z', 65, 'SAFETY CAR IN THIS LAP'),
@@ -164,6 +169,42 @@ describe("sessionMarks: a race's safety cars (O28)", () => {
     expect(marks(britain).neutral).toEqual([{ kind: 'SC', from: 48, to: 52 }]);
     // Deployed and ended on the same lap: one lap shaded.
     expect(marks([sc('2026-03-08T05:00:00Z', 34, 'VSC DEPLOYED'), sc('2026-03-08T05:01:00Z', 34, 'VSC ENDING')]).neutral).toEqual([{ kind: 'VSC', from: 34, to: 34 }]);
+  });
+
+  it('closes a span whose closing message came without its lap on the last lap race control named, not at the flag', () => {
+    const unlapped = [
+      sc('2026-03-08T05:00:00Z', 10, 'SAFETY CAR DEPLOYED'),
+      rc('2026-03-08T05:04:00Z', 'LAPPED CARS MAY NOW OVERTAKE THE SAFETY CAR: 77', { lap_number: 12 }),
+      rc('2026-03-08T05:06:00Z', 'SAFETY CAR IN THIS LAP', { category: 'SafetyCar' }),
+      flag('2026-03-08T06:00:00Z', 40),
+    ];
+    expect(marks(unlapped).neutral).toEqual([{ kind: 'SC', from: 10, to: 12 }]);
+    // With no lap named since the deployment, its own lap.
+    expect(marks([sc('2026-03-08T05:00:00Z', 10, 'VSC DEPLOYED'), rc('2026-03-08T05:01:00Z', 'VSC ENDING', { category: 'SafetyCar' }), flag('2026-03-08T06:00:00Z', 40)]).neutral).toEqual([{ kind: 'VSC', from: 10, to: 10 }]);
+  });
+
+  it('marks when race control sent the whole field through the pit lane, as Monaco and Baku saved it (2026)', () => {
+    const through = (date: string, lap: number) => rc(date, 'ALL CARS THROUGH THE PIT LANE', { lap_number: lap });
+    const monaco = [
+      sc('2026-06-07T14:20:00+00:00', 60, 'SAFETY CAR DEPLOYED'),
+      through('2026-06-07T14:21:52+00:00', 61),
+      sc('2026-06-07T14:29:41+00:00', 65, 'SAFETY CAR IN THIS LAP'),
+      sc('2026-06-07T14:31:18+00:00', 66, 'SAFETY CAR DEPLOYED'),
+      through('2026-06-07T14:31:38+00:00', 66),
+      status('2026-06-07T14:35:06+00:00', 'SESSION ABORTED', 68),
+      rc('2026-06-07T14:35:07+00:00', 'RED FLAG - RACE SUSPENDED', { lap_number: 68 }),
+      status('2026-06-07T15:12:00+00:00', 'SESSION STARTED', 68),
+    ];
+    expect(marks(monaco).lanes).toEqual([
+      { kind: 'through', from: '2026-06-07T14:21:52.000Z', to: '2026-06-07T14:24:52.000Z' },
+      { kind: 'through', from: '2026-06-07T14:31:38.000Z', to: '2026-06-07T14:34:38.000Z' },
+      { kind: 'red', from: '2026-06-07T14:35:07.000Z', to: '2026-06-07T15:12:00.000Z' },
+    ]);
+    const baku = [sc('2026-09-26T12:12:30+00:00', 36, 'SAFETY CAR DEPLOYED'), through('2026-09-26T12:12:43+00:00', 36)];
+    expect(marks(baku).lanes).toEqual([{ kind: 'through', from: '2026-09-26T12:12:43.000Z', to: '2026-09-26T12:15:43.000Z' }]);
+    // The pit exit closed before the start, or a sprint: no lane.
+    expect(marks([rc('2026-10-11T11:30:00Z', 'PIT EXIT CLOSED', { lap_number: 1 })]).lanes).toEqual([]);
+    expect('lanes' in marks(baku, false)).toBe(false);
   });
 
   it('shades nothing for words it does not know, and reads no spans for a session that is not a race', () => {

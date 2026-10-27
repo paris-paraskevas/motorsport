@@ -8,7 +8,7 @@
 // with --l and --w, and the theme's script (wp-theme/paddock/assets/js/paddock.js) draws the circuit from data-pd-map.
 
 import { stepFor, symbolLabel, type ForecastStep } from '@/lib/met-norway';
-import { isMap, type DriverStints, type SessionExtras } from '@/lib/openf1/weekend';
+import { isMap, trackTimeToUtc, type DriverStints, type SessionExtras } from '@/lib/openf1/weekend';
 import { escapeHtml, isRaceLaps, seasonPath, seriesPath, sessionSlug, WEEKEND_PAGES, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
 import { band, built, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, wk } from './series';
 
@@ -331,26 +331,43 @@ function classTable(w: Weekend, t: Table, limit = Infinity): string {
   return `<div class="pd-wk-scroll"><table class="pd-wk-tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
+/** OpenF1 keeps a stint that ends before it starts (a set fitted and changed before a lap was run; Monaco's and
+ *  Sepang's races hold some): no lap to draw and no stop to count. */
+const ran = (list: DriverStints[1]): DriverStints[1] => list.filter(([, a, b]) => b >= a);
+
+/** A driver's stints on the FIA's stop laps (O28): each one's tyre is OpenF1's stint starting within a lap of it, each
+ *  of those used once (OpenF1's stints run a lap early in some races), else not recorded. */
+function fiaStints(stops: readonly number[], laps: number, openf1: DriverStints[1]): DriverStints[1] {
+  const starts = [1, ...stops.map(s => s + 1)].filter(a => a <= laps);
+  const used = new Set<number>();
+  return starts.map((a, i) => {
+    const k = openf1.findIndex(([, start], j) => !used.has(j) && Math.abs(start - a) <= 1);
+    if (k >= 0) used.add(k);
+    return [k >= 0 ? openf1[k][0] : 'UNKNOWN', a, i + 1 < starts.length ? starts[i + 1] - 1 : laps];
+  });
+}
+
 /** Pit wall: each driver's tyres and stops, lap by lap, a line every five laps; a stint names its laps and its pit lap
- *  on hover, focus or a tap (the theme's script). The stints are OpenF1's, keyed by car number. */
+ *  on hover, focus or a tap (the theme's script). The tyres are OpenF1's, keyed by car number; a race's stops are the
+ *  FIA's once its laps are stored (O28: OpenF1's stints were a lap early or missing stops in 8 of 2026's first 17). */
 function pitWall(w: Weekend, label: string, limit: number, used: Used): string {
   const t = tableOf(w, label);
   const stints = extrasOf(w, label)?.stints;
   if (!t || !stints?.length) return '';
-  const total = Math.max(...stints.flatMap(([, list]) => list.map(s => s[2])));
+  const fia = label === 'Race' ? lapLines(w) : null;
+  const total = fia ? fia.laps : Math.max(...stints.flatMap(([, list]) => list.map(s => s[2])));
   if (!(total > 0)) return '';
   used.tyres = true;
-  // OpenF1 keeps a stint that ends before it starts (a set fitted and changed before a lap was run; Monaco's and
-  // Sepang's races hold some): no lap to draw and no stop to count.
-  const run = (list: DriverStints[1]): DriverStints[1] => list.filter(([, a, b]) => b >= a);
-  const byCar = new Map(stints.map(([car, list]) => [car, run(list)] as const));
+  const byCar = new Map(stints.map(([car, list]) => [car, ran(list)] as const));
   const c = cols(t);
   const pct = (v: number): string => `${((v / total) * 100).toFixed(2)}%`;
   const rows = t.rows.slice(0, limit).map(row => {
     const name = row[c.name] ?? '';
     const code = codeOf(w.d, name);
     const n = numberOf(w.d, name);
-    const mine = n === null ? [] : (byCar.get(n) ?? []);
+    const openf1 = n === null ? [] : (byCar.get(n) ?? []);
+    const line = fia?.lines.find(l => l.name === name) ?? fia?.lines.find(l => sameDriver(l.name, name));
+    const mine = line?.stops ? fiaStints(line.stops, line.places.length, openf1) : openf1;
     const out = /retired|did not|dnf|dns|dsq|disqualified/i.test(c.time >= 0 ? (row[c.time] ?? '') : '');
     const segs = mine
       .map(([compound, a, b], i) => {
@@ -409,7 +426,8 @@ interface LapLine {
   fin: number | null;
   /** How the line ends: at the flag (a lapped car on its last lap), with a cross where the car stopped, or disqualified. */
   end: 'flag' | 'out' | 'dsq';
-  /** The laps it pitted on (Jolpica's pit stops, none at a red flag's lap); null when the store holds none for the race. */
+  /** The laps it pitted on: the FIA's visits (Jolpica's pit stops) less a red flag's changes and race control's
+   *  whole-field passes, a tyre change inside a pass kept; null when the store holds none for the race. */
   stops: number[] | null;
 }
 
@@ -426,9 +444,46 @@ function lapLines(w: Weekend): { laps: number; rows: number; lines: LapLine[]; u
   const got = w.d.weekend?.laps?.[String(w.season)]?.[String(w.r.round)];
   if (!t || !isRaceLaps(got) || !(got.laps > 0)) return null;
   const c = cols(t);
-  // Jolpica lists a tyre change under a red flag as a stop (21 of them on Monza's lap 3, 2026): race control's red
-  // flags take them out.
-  const reds = new Set((extrasOf(w, 'Race')?.marks?.red ?? []).map(r => r.lap));
+  // The FIA lists every visit to the pit lane: a tyre change under a red flag (21 on Monza's lap 3, 2026) and the passes
+  // when race control sends the whole field through the pit lane (Monaco, Baku) are no stop. Race control's times take
+  // them out, all but a pass on which OpenF1's tyres change compound (Antonelli's stop on Monaco's lap 61; the
+  // operator, 27 Oct); a race read before them, by the red flag's lap.
+  const race = extrasOf(w, 'Race');
+  const marks = race?.marks;
+  const lanes = (marks?.lanes ?? []).map(l => ({ through: l.kind === 'through', from: Date.parse(l.from), to: Date.parse(l.to) }));
+  const reds = new Set((marks?.red ?? []).map(r => r.lap));
+  const tyres = new Map((race?.stints ?? []).map(([car, list]) => [car, ran(list)] as const));
+  const day = w.result?.date ?? null;
+  const startAt = Date.parse(w.sessions.find(s => s.session === 'Race')?.start ?? '');
+  const instant = (time: string | undefined): number | null => {
+    const hms = time?.split(':');
+    if (!hms || hms.length !== 3 || !day || !marks?.lanes || !w.r.tz) return null;
+    const iso = trackTimeToUtc(day, `${hms[0]}:${hms[1]}`, w.tz);
+    if (!iso) return null;
+    const at = Date.parse(iso) + Number(hms[2]) * 1000;
+    // A visit past the track's midnight (a night race) is on the next day.
+    return Number.isFinite(startAt) && at < startAt - 2 * 3_600_000 ? at + 86_400_000 : at;
+  };
+  // Each visit, in order, takes the first OpenF1 stint it began, on its lap or the next (OpenF1 runs a lap early in
+  // some races), so a pass just after a stop is not read as that stop's change. A tyre OpenF1 did not record is no change.
+  const stopsOf = (name: string, pitted: string): number[] => {
+    const n = numberOf(w.d, name);
+    const stints = n === null ? [] : (tyres.get(n) ?? []);
+    const taken = new Set<number>();
+    const laps = pitted.split('.').filter(Boolean).flatMap(v => {
+      const [lap, time] = v.split('@');
+      const l = Number(lap);
+      const k = stints.findIndex(([, a], j) => j > 0 && !taken.has(j) && (a === l || a === l + 1));
+      if (k > 0) taken.add(k);
+      const [now, before] = k > 0 ? [stints[k][0], stints[k - 1][0]] : ['', ''];
+      const changed = now !== before && COMPOUNDS[now] !== undefined && COMPOUNDS[before] !== undefined;
+      const at = instant(time);
+      const lane = at === null ? undefined : lanes.find(x => at >= x.from && at <= x.to);
+      const off = at === null ? reds.has(l) : lane !== undefined && !(lane.through && changed);
+      return off || !(l > 0) ? [] : [l];
+    });
+    return [...new Set(laps)].sort((a, b) => a - b);
+  };
   const unjoined: string[] = [];
   const lines: LapLine[] = [];
   for (const [name, grid, dotted, pitted] of got.drivers) {
@@ -450,7 +505,7 @@ function lapLines(w: Weekend): { laps: number; rows: number; lines: LapLine[]; u
       places,
       fin: Number.isInteger(pos) && pos > 0 ? pos : null,
       end: DISQUALIFIED.test(status) ? 'dsq' : !row || TOOK_FLAG.test(status) || (!status && places.length === got.laps) ? 'flag' : 'out',
-      stops: typeof pitted === 'string' ? (pitted ? pitted.split('.').map(Number) : []).filter(lap => !reds.has(lap)) : null,
+      stops: typeof pitted === 'string' ? stopsOf(name, pitted) : null,
     });
   }
   const lastSlot = Math.max(0, ...lines.filter(l => !l.pitLane).map(l => l.start));

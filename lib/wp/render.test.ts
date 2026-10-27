@@ -421,7 +421,8 @@ describe("Formula 1's weekend data: what a run asks OpenF1 for (O19)", () => {
     expect(weekendWhole(extras({ weather, marks: {}, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Sprint')).toBe(true);
     // O28: a race kept before its safety car laps were read is asked again once; none is [].
     expect(weekendWhole(extras({ weather, marks: {}, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(false);
-    expect(weekendWhole(extras({ weather, marks: { neutral: [] }, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(true);
+    expect(weekendWhole(extras({ weather, marks: { neutral: [] }, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(false);
+    expect(weekendWhole(extras({ weather, marks: { neutral: [], lanes: [] }, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(true);
     expect(weekendWhole(extras({ marks: {} }), 'Practice 1')).toBe(false);
   });
 
@@ -431,7 +432,7 @@ describe("Formula 1's weekend data: what a run asks OpenF1 for (O19)", () => {
     const kept = (marks: SessionExtras['marks']): SessionsStore => ({ '2026': { '1': { Race: extras({ weather, marks, stints: [[1, [['MEDIUM', 1, 58]]]] }) } } });
     const now = new Date('2026-10-25T09:00:00Z');
     expect(weekendDue(calendar, list, kept({}), 2026, now, 20).due.map(d => d.session.session_key)).toEqual([9002]);
-    expect(weekendDue(calendar, list, kept({ neutral: [{ kind: 'VSC', from: 12, to: 14 }] }), 2026, now, 20).due).toEqual([]);
+    expect(weekendDue(calendar, list, kept({ neutral: [{ kind: 'VSC', from: 12, to: 14 }], lanes: [] }), 2026, now, 20).due).toEqual([]);
   });
 
   describe('weekendDue', () => {
@@ -571,7 +572,7 @@ describe("Formula 1's lap chart: what a run asks Jolpica for (O28)", () => {
   it('keeps each driver of the result with the grid slot, the pit lane as 0, the place at the end of each lap and its stops', () => {
     expect(raceLaps(results, [answer({ Laps: laps }, 8)], stops)).toEqual({
       laps: 3,
-      drivers: [['Charles Leclerc', 2, '2.2.1', '1.2'], ['Max Verstappen', 1, '1.1.2', '2'], ['Nico Hülkenberg', 0, '3.3', '']],
+      drivers: [['Charles Leclerc', 2, '2.2.1', '1@15:00:00.2@15:00:00'], ['Max Verstappen', 1, '1.1.2', '2@15:00:00'], ['Nico Hülkenberg', 0, '3.3', '']],
       complete: true,
       why: '',
     });
@@ -580,7 +581,7 @@ describe("Formula 1's lap chart: what a run asks Jolpica for (O28)", () => {
   it('reads a lap split across two pages, as Jolpica splits them at 100 timings', () => {
     const split = [answer({ Laps: [laps[0], { ...laps[1], Timings: laps[1].Timings.slice(0, 1) }] }, 8), answer({ Laps: [{ ...laps[1], Timings: laps[1].Timings.slice(1) }, laps[2]] }, 8)];
     expect(raceLaps(results, split, stops).complete).toBe(true);
-    expect(raceLaps(results, split, stops).drivers[1]).toEqual(['Max Verstappen', 1, '1.1.2', '2']);
+    expect(raceLaps(results, split, stops).drivers[1]).toEqual(['Max Verstappen', 1, '1.1.2', '2@15:00:00']);
   });
 
   it('keeps the places a penalty lap left past a driver’s result: Sainz in Britain, 52 laps run, classified a lap down', () => {
@@ -628,6 +629,19 @@ describe("Formula 1's lap chart: what a run asks Jolpica for (O28)", () => {
     expect(lapsDue(rounds, {}, 2026, now)).toEqual([5, 3, 2, 1]);
     expect(isRaceLaps(whole)).toBe(true);
     expect(isRaceLaps(store['2026']['2'])).toBe(false);
+  });
+
+  it('takes a race the store holds in another shape (a file edited by hand) as a miss to ask again, never one to draw', () => {
+    const row: [string, number, string, string] = ['Max Verstappen', 1, '1.1.1', '2@15:40:00'];
+    expect(isRaceLaps({ laps: 3, at: '2026-10-25T09:00:00.000Z', drivers: [row] })).toBe(true);
+    // A file written before the visits: three fields a row.
+    expect(isRaceLaps({ laps: 3, at: '2026-10-25T09:00:00.000Z', drivers: [row.slice(0, 3)] })).toBe(true);
+    for (const drivers of [null, {}, [null], [[1, 1, '1.1.1', '']], [['Max Verstappen', '1', '1.1.1', '']], [['Max Verstappen', 1, '1.1.1', 2]]]) {
+      expect(isRaceLaps({ laps: 3, at: '2026-10-25T09:00:00.000Z', drivers })).toBe(false);
+    }
+    expect(isRaceLaps({ laps: '3', at: '2026-10-25T09:00:00.000Z', drivers: [row] })).toBe(false);
+    const rounds: ResultRound[] = [{ round: 1, name: 'Round 1', date: '2026-03-08', sessions: [{ label: 'Race', tables: [{ title: '', columns: ['Pos', 'Driver'], rows: [['1', 'Max Verstappen']] }] }] }];
+    expect(lapsDue(rounds, { '2026': { '1': { laps: 3, at: '2026-10-25T09:00:00.000Z', drivers: {} } as unknown as RaceLaps } }, 2026, new Date('2026-10-25T09:00:00Z'))).toEqual([1]);
   });
 });
 

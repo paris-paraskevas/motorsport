@@ -1067,6 +1067,7 @@ a.pd-ch-door:focus-visible { outline: 2px solid var(--pd-accent); outline-offset
 .pd-wk-hint, .pd-wk-note { margin: 0; font-size: .8rem; color: var(--pd-muted); }
 .pd-wkp .pd-wk-link { font-size: .84rem; font-weight: 800; }
 .pd-wk-link::after { content: " →"; }
+.pd-wk-links { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; }
 .pd-wk-podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
 .pd-wk-podium li { display: grid; gap: 2px; padding: 12px 14px 13px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--t); }
 .pd-wk-podium li:first-child { background: color-mix(in srgb, var(--t) 12%, var(--pd-surface)); }
@@ -1192,7 +1193,7 @@ a.pd-ch-door:focus-visible { outline: 2px solid var(--pd-accent); outline-offset
 /* Room for the longest readout, two lines (three on a phone), so the chart never moves under a finger or a pointer. */
 .pd-lc-read { min-height: 2.9em; margin: 0; font-size: .84rem; line-height: 1.45; color: var(--pd-muted); }
 .pd-lc-read.is-on { color: var(--pd-ink); }
-.pd-lc-draw svg { display: block; touch-action: pan-y; }
+.pd-lc-draw svg { display: block; touch-action: pan-y pinch-zoom; -webkit-user-select: none; user-select: none; }
 .pd-lc-draw text { dominant-baseline: central; }
 .pd-lc-draw :is(.an, .n, .dl) { font-family: var(--wp--preset--font-family--fira-code, ui-monospace, Consolas, monospace); }
 .pd-lc-draw :is(.r, .tk) { stroke: var(--pd-line); stroke-width: 1; }
@@ -1227,7 +1228,7 @@ a.pd-ch-door:focus-visible { outline: 2px solid var(--pd-accent); outline-offset
 .pd-lc-kb { padding: 1px 4px; background: var(--pd-sunken); border: 1px solid var(--pd-line-strong); font-size: .64rem; font-weight: 700; letter-spacing: .06em; line-height: 1.2; }
 .pd-lc-kd { width: 22px; height: 2px; background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent 5px 8px); }
 .pd-lc-credit { margin-left: auto; }
-.pd-lc-tbl { padding-top: 10px; border-top: 1px solid var(--pd-line); }
+.pd-lc-tbl { min-width: 0; padding-top: 10px; border-top: 1px solid var(--pd-line); }
 .pd-lc-tbl summary { font-size: .84rem; font-weight: 800; cursor: pointer; }
 .pd-lc-tbl .pd-wk-scroll { margin-top: 10px; }
 .pd-lc-t .n, .pd-lc-t .p { text-align: right; white-space: nowrap; }
@@ -1320,6 +1321,8 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 @media (max-width: 340px) {
 	/* The last lap's number would touch the five before it; the axis names the laps already. */
 	.pd-pw-scale .is-last { display: none; }
+	/* The longest readout (five stops, placed differently) runs to four lines here. */
+	.pd-lc-read { min-height: 5.8em; }
 }
 
 /* The series list (O21): round 2's "All series". Still racing, then Completed, each split by type, a type's group as
