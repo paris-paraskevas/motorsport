@@ -148,7 +148,7 @@ export function trackTimeToUtc(day: string, hm: string, tz: string): string | nu
 }
 
 /** The local day (YYYY-MM-DD) of an instant at the track. */
-function trackDay(iso: string, tz: string): string | null {
+export function trackDay(iso: string, tz: string): string | null {
   try {
     return new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso));
   } catch {

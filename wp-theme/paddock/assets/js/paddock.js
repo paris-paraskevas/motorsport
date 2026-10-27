@@ -853,13 +853,16 @@
 			svg = node( 'svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, 'class': sm ? 'is-sm' : '', 'aria-hidden': 'true', focusable: 'false' }, box );
 			var rows = node( 'g', {}, svg );
 			for ( var p = 1; p <= N; p++ ) { node( 'line', { 'class': 'r', x1: r1( x0 ), x2: r1( x1 ), y1: Y( p ), y2: Y( p ) }, rows ); }
-			// A span's label under it; spans too close for their labels side by side put the later one a row lower.
+			// A span's label under it; spans too close for their labels side by side put the later one a row lower, and one
+			// with neither row clear (a chart under 200 px) goes without.
 			var ends = [ -Infinity, -Infinity ];
 			spans.forEach( function ( s ) {
 				var a = X( s.from - 1 ), b = X( s.to );
 				node( 'rect', { 'class': 'sp', x: r1( a ), y: top, width: r1( Math.max( b - a, 1 ) ), height: plotH }, svg );
 				var label = node( 'text', { 'class': 'spl', x: r1( ( a + b ) / 2 ), y: top + plotH + 12 }, svg, s.kind );
-				var half = label.getComputedTextLength() / 2, row = ( a + b ) / 2 - half > ends[ 0 ] + 4 ? 0 : 1;
+				var half = label.getComputedTextLength() / 2, left = ( a + b ) / 2 - half;
+				var row = left > ends[ 0 ] + 4 ? 0 : left > ends[ 1 ] + 4 ? 1 : -1;
+				if ( row < 0 ) { svg.removeChild( label ); return; }
 				if ( row ) { label.setAttribute( 'y', top + plotH + 24 ); H = top + plotH + 32; }
 				ends[ row ] = ( a + b ) / 2 + half;
 			} );

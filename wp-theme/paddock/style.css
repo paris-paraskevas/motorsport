@@ -1227,7 +1227,7 @@ a.pd-ch-door:focus-visible { outline: 2px solid var(--pd-accent); outline-offset
 .pd-lc-kx::after { transform: rotate(-45deg); }
 .pd-lc-kb { padding: 1px 4px; background: var(--pd-sunken); border: 1px solid var(--pd-line-strong); font-size: .64rem; font-weight: 700; letter-spacing: .06em; line-height: 1.2; }
 .pd-lc-kd { width: 22px; height: 2px; background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent 5px 8px); }
-.pd-lc-credit { margin-left: auto; }
+.pd-lc-credit, .pd-pw-credit { margin-left: auto; }
 .pd-lc-tbl { min-width: 0; padding-top: 10px; border-top: 1px solid var(--pd-line); }
 .pd-lc-tbl summary { font-size: .84rem; font-weight: 800; cursor: pointer; }
 .pd-lc-tbl .pd-wk-scroll { margin-top: 10px; }
@@ -1312,7 +1312,7 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 	.pd-lc { padding: 12px 10px 10px; }
 	.pd-lc-read { min-height: 4.35em; }
 	.pd-lc-draw { column-gap: 6px; }
-	.pd-lc-credit { margin-left: 0; }
+	.pd-lc-credit, .pd-pw-credit { margin-left: 0; }
 	.pd-lc-t .dn { display: none; }
 	.pd-ss-band-in { padding: 14px var(--pd-gutter); }
 	.pd-cm { padding: 0 var(--pd-gutter) 24px; }
