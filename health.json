@@ -139,8 +139,8 @@
     "slug": "gt-world",
     "name": "GT World Challenge",
     "kind": "results",
-    "status": "STALE",
-    "note": "fewer races than stored",
+    "status": "OK",
+    "note": "",
     "since": "2026-10-27"
   },
   {

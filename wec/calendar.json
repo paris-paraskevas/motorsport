@@ -1,7 +1,7 @@
 [
   {
-    "start": "2026-04-13T21:00:00.000Z",
-    "end": "2026-04-14T21:00:00.000Z",
+    "start": "2026-04-14T00:00:00.000Z",
+    "end": "2026-04-15T00:00:00.000Z",
     "dateOnly": true,
     "event": "6 Hours of Imola",
     "session": "FIA WEC | [TEST] Prologue",
@@ -477,8 +477,8 @@
     "location": "Fuji International Speedway, Oyama"
   },
   {
-    "start": "2026-10-17T21:00:00.000Z",
-    "end": "2026-10-18T21:00:00.000Z",
+    "start": "2026-10-18T00:00:00.000Z",
+    "end": "2026-10-19T00:00:00.000Z",
     "dateOnly": true,
     "event": "6 Hours of Barcelona",
     "session": "FIA WEC | 6 Hours of Barcelona",
@@ -486,8 +486,8 @@
     "location": "Circuit de Barcelona, Mas La Moreneta s/n, 08160 Montmeló, Barcelona, Spain"
   },
   {
-    "start": "2026-11-07T22:00:00.000Z",
-    "end": "2026-11-08T22:00:00.000Z",
+    "start": "2026-11-08T00:00:00.000Z",
+    "end": "2026-11-09T00:00:00.000Z",
     "dateOnly": true,
     "event": "6 Hours of Monza",
     "session": "FIA WEC | 6 Hours of Monza",

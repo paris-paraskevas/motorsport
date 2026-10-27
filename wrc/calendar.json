@@ -144,21 +144,21 @@
     "location": "La Bollène-Vésubie, France"
   },
   {
-    "start": "2026-02-11T22:00:00.000Z",
-    "end": "2026-02-15T22:00:00.000Z",
+    "start": "2026-02-12T00:00:00.000Z",
+    "end": "2026-02-16T00:00:00.000Z",
     "dateOnly": true,
-    "event": "Umeå",
+    "event": "Rally Sweden",
     "session": "WRC | Rally Sweden",
-    "round": null,
+    "round": 2,
     "location": "Umeå, Sweden"
   },
   {
-    "start": "2026-03-11T22:00:00.000Z",
-    "end": "2026-03-15T22:00:00.000Z",
+    "start": "2026-03-12T00:00:00.000Z",
+    "end": "2026-03-16T00:00:00.000Z",
     "dateOnly": true,
-    "event": "Naivasha",
+    "event": "Safari Rally Kenya",
     "session": "WRC | Safari Rally Kenya",
-    "round": null,
+    "round": 3,
     "location": "Naivasha, Kenya"
   },
   {
@@ -360,12 +360,12 @@
     "location": "Alan, Croatia"
   },
   {
-    "start": "2026-04-22T21:00:00.000Z",
-    "end": "2026-04-26T21:00:00.000Z",
+    "start": "2026-04-23T00:00:00.000Z",
+    "end": "2026-04-27T00:00:00.000Z",
     "dateOnly": true,
-    "event": "Las Palmas de Gran Canaria",
+    "event": "Rally Islas Canarias",
     "session": "WRC | Rally Islas Canarias",
-    "round": null,
+    "round": 5,
     "location": "Las Palmas de Gran Canaria, Las Palmas, Spain"
   },
   {
@@ -585,12 +585,12 @@
     "location": "Fafe 2 - Power Stage, Portugal"
   },
   {
-    "start": "2026-05-27T21:00:00.000Z",
-    "end": "2026-05-31T21:00:00.000Z",
+    "start": "2026-05-28T00:00:00.000Z",
+    "end": "2026-06-01T00:00:00.000Z",
     "dateOnly": true,
-    "event": "Aichi",
+    "event": "FORUM8 Rally Japan",
     "session": "WRC | Rally Japan",
-    "round": null,
+    "round": 7,
     "location": "Aichi, Japan"
   },
   {
@@ -1125,30 +1125,30 @@
     "location": "Himos, Jämsä, Finland"
   },
   {
-    "start": "2026-08-26T21:00:00.000Z",
-    "end": "2026-08-30T21:00:00.000Z",
+    "start": "2026-08-27T00:00:00.000Z",
+    "end": "2026-08-31T00:00:00.000Z",
     "dateOnly": true,
-    "event": "Encarnacion",
+    "event": "Rally del Paraguay",
     "session": "WRC | Rally del Paraguay",
-    "round": null,
+    "round": 11,
     "location": "Encarnacion, Paraguay"
   },
   {
-    "start": "2026-09-09T21:00:00.000Z",
-    "end": "2026-09-13T21:00:00.000Z",
+    "start": "2026-09-10T00:00:00.000Z",
+    "end": "2026-09-14T00:00:00.000Z",
     "dateOnly": true,
-    "event": "Concepción",
+    "event": "Rally Chile",
     "session": "WRC | Rally Chile Bio Bío",
-    "round": null,
+    "round": 12,
     "location": "Concepción, Talcahuano, Bío Bío, Chile"
   },
   {
-    "start": "2026-09-30T21:00:00.000Z",
-    "end": "2026-10-04T21:00:00.000Z",
+    "start": "2026-10-01T00:00:00.000Z",
+    "end": "2026-10-05T00:00:00.000Z",
     "dateOnly": true,
-    "event": "Olbia",
+    "event": "Rally Italia Sardegna",
     "session": "WRC | Rally Italia Sardegna",
-    "round": null,
+    "round": 13,
     "location": "Olbia, 07026 Olbia, Province of Sassari, Italy"
   }
 ]

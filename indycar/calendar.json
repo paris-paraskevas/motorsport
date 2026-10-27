@@ -558,8 +558,8 @@
     "location": "Nashville Superspeedway, Lebanon, TN"
   },
   {
-    "start": "2026-08-08T21:00:00.000Z",
-    "end": "2026-08-09T21:00:00.000Z",
+    "start": "2026-08-09T00:00:00.000Z",
+    "end": "2026-08-10T00:00:00.000Z",
     "dateOnly": true,
     "event": "OnlyBulls Grand Prix of Portland",
     "session": "IndyCar | bitnile.com Grand Prix of Portland",
@@ -567,8 +567,8 @@
     "location": "Portland International Raceway, 1940 N Victory Blvd, Portland, OR 97217, USA"
   },
   {
-    "start": "2026-08-15T21:00:00.000Z",
-    "end": "2026-08-16T21:00:00.000Z",
+    "start": "2026-08-16T00:00:00.000Z",
+    "end": "2026-08-17T00:00:00.000Z",
     "dateOnly": true,
     "event": "Ontario Honda Dealers Indy at Markham",
     "session": "IndyCar | Ontario Honda Dealers Indy at Markham",
@@ -576,8 +576,8 @@
     "location": "Honda Indy Markham, Unionville, ON L3R 2E3, Canada"
   },
   {
-    "start": "2026-08-22T21:00:00.000Z",
-    "end": "2026-08-23T21:00:00.000Z",
+    "start": "2026-08-23T00:00:00.000Z",
+    "end": "2026-08-24T00:00:00.000Z",
     "dateOnly": true,
     "event": "Freedom 250 Grand Prix of Washington, D.C.",
     "session": "IndyCar | Grand Prix of Washington",
@@ -603,8 +603,8 @@
     "location": "Milwaukee Mile, West Allis, WI"
   },
   {
-    "start": "2026-09-05T21:00:00.000Z",
-    "end": "2026-09-06T21:00:00.000Z",
+    "start": "2026-09-06T00:00:00.000Z",
+    "end": "2026-09-07T00:00:00.000Z",
     "dateOnly": true,
     "event": "WeatherTech Raceway Laguna Seca (Season Finale)",
     "session": "IndyCar | Laguna Seca",
