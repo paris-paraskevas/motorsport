@@ -275,8 +275,8 @@
     "slug": "wec",
     "name": "FIA WEC",
     "kind": "results",
-    "status": "OK",
-    "note": "",
+    "status": "STALE",
+    "note": "fewer races than stored",
     "since": "2026-10-27"
   },
   {
