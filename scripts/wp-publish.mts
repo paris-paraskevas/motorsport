@@ -18,7 +18,8 @@
 //   add --only /calendar/,/series/f1/                                            several families
 //
 // Formula 1's weekend pages (O19) also keep f1/sessions.json (OpenF1's weather, race control and tyres per session),
-// f1/forecast.json (MET Norway, the circuits racing within ten days) and f1/maps.json (each circuit's pole-lap map).
+// f1/forecast.json (MET Norway, the circuits racing within ten days) and f1/maps.json (each circuit's pole-lap map);
+// its race pages' lap charts (O28) keep f1/laps.json (Jolpica's places lap by lap and pit stops, asked once a race).
 //
 // Publishing needs WP_SITE_URL (an https origin), WP_USER and WP_APP_PASSWORD (an
 // application password; never printed). Every log line starts with the run's
@@ -50,7 +51,7 @@ import { loadCircuits, matchCircuitEntry, normalise, venueCandidates } from '../
 import contentFs from '../lib/content-fs';
 import type { CancelledRoundEntry, Series, SeriesRoundEntry } from '../lib/types';
 import { ROUND2_SERIES, seriesFamily, seriesList } from '../lib/wp/series';
-import { weekendPages } from '../lib/wp/weekend';
+import { lapChartNotes, weekendPages } from '../lib/wp/weekend';
 import {
   calendarEntries,
   calendarMonthPages,
@@ -58,6 +59,7 @@ import {
   escapeHtml,
   hashOf,
   heading,
+  lapsDue,
   mapsDue,
   nearestOpenF1,
   nextAsk,
@@ -69,6 +71,7 @@ import {
   openf1Wanted,
   paragraph,
   planSync,
+  raceLaps,
   resultRounds,
   withSession,
   seriesPages,
@@ -80,6 +83,7 @@ import {
   WEEKEND_PAGES,
   type CalendarEntry,
   type CalendarRound,
+  type LapsStore,
   type Page,
   type ResultRound,
   type SeriesData,
@@ -536,7 +540,8 @@ async function f1Weekend(out: Fetched, now: Date, season: number): Promise<void>
     // The session's real end: when race control said it finished, else the later planned end with an hour to spare.
     const ended = finishedAt(messages) ?? Math.max(Date.parse(e.end), Date.parse(s.date_end) || 0) + 3_600_000;
     const weather = weatherSummary(await ask<OF1Weather>('weather', s.session_key), { from: Date.parse(e.start) - 15 * 60_000, to: ended }) ?? have?.weather;
-    const marks = messages.length ? sessionMarks(messages, e.start, roundOf.get(round)?.tz) : have?.marks;
+    // A race's marks carry its safety car laps for the lap chart (O28).
+    const marks = messages.length ? sessionMarks(messages, e.start, roundOf.get(round)?.tz, e.session === 'Race') : have?.marks;
     const tyres = racing ? await ask<OF1Stint>('stints', s.session_key) : [];
     const stints = tyres.length ? driverStints(tyres) : have?.stints;
     const extras: SessionExtras = { key: s.session_key, at: now.toISOString(), ...(weather ? { weather } : {}), ...(marks ? { marks } : {}), ...(racing && stints?.length ? { stints } : {}) };
@@ -546,6 +551,86 @@ async function f1Weekend(out: Fetched, now: Date, season: number): Promise<void>
   }
   if (writeStored(F1_SESSIONS, store)) changed++;
   log('W', `weekend f1 ${asked} sessions asked; ${changed} of 3 files changed`);
+}
+
+/** Formula 1's lap chart (slot O28) keeps f1/laps.json: each race's places lap by lap and its pit stops from Jolpica,
+ *  asked for a race with a stored classification until they are whole, then never again (lapsDue and raceLaps in
+ *  lib/wp/render.ts, where they are tested). The race's result names the drivers and their grid, its laps come 100
+ *  timings a page and its pit stops 100 a page: about 15 calls a race. Jolpica allows 4 calls a second and 500 an hour,
+ *  shared with everyone on the same address, GitHub's runners included: the calls go 600 ms apart inside four minutes,
+ *  and the first 429 stops the laps for the run (it came after about 77 calls in each dry run of 25 Oct, so the first
+ *  fill takes several runs). Laps not whole are a miss, asked again within the hour on race day and daily after
+ *  (nextAsk). The stops are Jolpica's rather than OpenF1's stints: those were a lap early or missing in 8 of 2026's
+ *  first 17 races (the operator's answer of 25 Oct). */
+const F1_LAPS = 'f1/laps.json';
+const JOLPICA_GAP_MS = 600;
+const LAPS_MS = 4 * 60_000;
+
+class Throttled extends Error {}
+
+async function f1Laps(out: Fetched, now: Date, season: number): Promise<void> {
+  const rounds = out.results.get('f1')?.data ?? readStored<ResultRound[]>(relOf('f1', 'results')) ?? [];
+  const calendar = out.calendar.get('f1')?.data ?? [];
+  const store = readStored<LapsStore>(F1_LAPS) ?? {};
+  const year = (store[String(season)] ??= {});
+  const due = lapsDue(rounds, store, season, now);
+  const deadline = Date.now() + LAPS_MS;
+  let at = 0;
+  let calls = 0;
+  const ask = async (url: string): Promise<unknown> => {
+    const wait = at + JOLPICA_GAP_MS - Date.now();
+    if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
+    at = Date.now();
+    calls++;
+    const res = await fetchUpstream(url);
+    if (res.status === 429) throw new Throttled();
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  };
+  let asked = 0;
+  for (const [i, round] of due.entries()) {
+    if (Date.now() > deadline) {
+      log('F', `laps f1 out of time: ${due.length - i} races left for the next run`);
+      break;
+    }
+    asked++;
+    const before = calls;
+    const base = `https://api.jolpi.ca/ergast/f1/${season}/${round}`;
+    let why: string;
+    try {
+      const results = await ask(`${base}/results.json?limit=100`);
+      // Every page of an answer, 100 items a page, to the answer's total.
+      const all = async (what: 'laps' | 'pitstops'): Promise<unknown[]> => {
+        const pages: unknown[] = [];
+        for (let offset = 0; offset < 3000; offset += 100) {
+          const page = await ask(`${base}/${what}.json?limit=100&offset=${offset}`);
+          pages.push(page);
+          if (!(offset + 100 < Number((page as { MRData?: { total?: string } } | null)?.MRData?.total))) break;
+        }
+        return pages;
+      };
+      const got = raceLaps(results, await all('laps'), await all('pitstops'));
+      if (got.complete) {
+        year[String(round)] = { laps: got.laps, at: now.toISOString(), drivers: got.drivers };
+        log('F', `laps f1 R${round} OK ${got.laps} laps ${calls - before} calls`);
+        continue;
+      }
+      why = got.why;
+    } catch (err) {
+      if (err instanceof Throttled) {
+        log('F', `laps f1 R${round} THROTTLED: the rest next run`);
+        break;
+      }
+      why = errorText(err);
+    }
+    // Asked again within the hour while the race is less than a day over, daily after.
+    const end = calendar.find(e => e.round === round && e.session === 'Race')?.end ?? `${rounds.find(r => r.round === round)?.date}T23:59:59Z`;
+    const next = nextAsk(Date.parse(end) || now.getTime(), now);
+    year[String(round)] = { miss: now.toISOString(), next };
+    log('F', `laps f1 R${round} MISS ${why} after ${calls - before} calls; again after ${next.slice(0, 16)}Z`);
+  }
+  const changed = writeStored(F1_LAPS, store);
+  log('W', `laps f1 ${asked} of ${due.length} races asked, ${calls} calls; ${F1_LAPS} ${changed ? 'changed' : 'unchanged'}`);
 }
 
 async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
@@ -614,6 +699,12 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
     await f1Weekend(out, now, seasonOf('f1'));
   } catch (err) {
     log('F', `weekend f1 ERROR ${errorText(err)}: the stored weekend files stay as they were`);
+  }
+  // The lap chart's laps never stop the run either.
+  try {
+    await f1Laps(out, now, seasonOf('f1'));
+  } catch (err) {
+    log('F', `laps f1 ERROR ${errorText(err)}: ${F1_LAPS} stays as it was`);
   }
   // IndyCar with the curated drivers, as the Results tab passes them (teams and names).
   const indycar = await extra('indycar', async () => fetchIndyCarSeasonResults({ drivers: await loadCuratedDrivers('indycar') }));
@@ -824,9 +915,20 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
         d.titleRaces = await loadTitleRaces(slug, seasons.map(s => s.year));
       }
     }
-    // The weekend pages' data (O19), as f1Weekend keeps it: fetched this run, or stored at --from-ref.
+    // The weekend pages' data (O19), as f1Weekend and f1Laps keep it: fetched this run, or stored at --from-ref.
     if (WEEKEND_PAGES.has(slug)) {
-      d.weekend = { sessions: readStored<SessionsStore>(F1_SESSIONS) ?? {}, maps: readStored<MapsStore>(F1_MAPS) ?? {}, forecast: readStored<Record<string, VenueForecast>>(F1_FORECAST) ?? {} };
+      d.weekend = {
+        sessions: readStored<SessionsStore>(F1_SESSIONS) ?? {},
+        maps: readStored<MapsStore>(F1_MAPS) ?? {},
+        forecast: readStored<Record<string, VenueForecast>>(F1_FORECAST) ?? {},
+        laps: readStored<LapsStore>(F1_LAPS) ?? {},
+      };
+      // The answer B of 25 Oct: from Austin on, a result that differs from the order at the flag is marked from the two
+      // tables alone, and the log names each race that has one.
+      for (const n of lapChartNotes(d)) {
+        const parts = [n.differs.length ? `placed differently in the result than at the flag: ${n.differs.join(', ')}` : '', n.unjoined.length ? `not in the classification, drawn without a finish: ${n.unjoined.join(', ')}` : ''];
+        log('R', `laps ${slug} R${n.round} ${parts.filter(Boolean).join('; ')}`);
+      }
     }
     all.push(d);
   }

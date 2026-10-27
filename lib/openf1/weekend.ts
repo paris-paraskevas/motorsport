@@ -20,11 +20,30 @@ export interface SessionWeather {
   rain: boolean;
 }
 
+/** Laps run behind the safety car or under the virtual one, first to last, both whole laps of the race. */
+export interface NeutralSpan {
+  kind: 'SC' | 'VSC';
+  from: number;
+  to: number;
+}
+
 export interface SessionMarks {
   /** The session started late: when it was planned to, and when it did (race control's new time, or its start). */
   late?: { planned: string; started: string };
   /** Each red flag: the lap it came on (races and sprints), and whether the session started again after it. */
   red?: { lap: number | null; restarted: boolean }[];
+  /** A race's safety car and virtual safety car laps (O28's lap chart), [] when it had none; a race read before O28
+   *  lacks the key and is asked again. */
+  neutral?: NeutralSpan[];
+  /** When a car's visit to the pit lane was no stop (O28): a red flag's tyre changes, from the flag to the restart, and
+   *  race control sending the whole field through the pit lane, from its message to three minutes on (ISO). */
+  lanes?: LaneWindow[];
+}
+
+export interface LaneWindow {
+  kind: 'red' | 'through';
+  from: string;
+  to: string;
 }
 
 /** One driver's tyres: car number, then [compound, first lap, last lap] for each stint in order. */
@@ -129,7 +148,7 @@ export function trackTimeToUtc(day: string, hm: string, tz: string): string | nu
 }
 
 /** The local day (YYYY-MM-DD) of an instant at the track. */
-function trackDay(iso: string, tz: string): string | null {
+export function trackDay(iso: string, tz: string): string | null {
   try {
     return new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso));
   } catch {
@@ -145,6 +164,11 @@ const DELAYED = /\b(DELAYED START|START DELAYED|SESSION DELAYED|START OF THE SES
 const NEW_START = /\bWILL (?:START|BEGIN) AT (\d{1,2}:\d{2})\b/i;
 /** The red flag itself, or a message that opens with it; "RED FLAG LIFTED" ends one rather than starting it. */
 const RED = (m: OF1RaceControl) => m.flag === 'RED' || (/^RED FLAG\b/i.test(text(m)) && !/\bLIFTED\b/i.test(text(m)));
+/** Race control's words for the safety cars, whole messages only: "VSC" since 2026, "VIRTUAL SAFETY CAR" before. A
+ *  wording not here shades nothing, rather than the wrong laps. */
+const DEPLOYED: readonly [NeutralSpan['kind'], RegExp][] = [['VSC', /^(?:VSC|VIRTUAL SAFETY CAR) DEPLOYED$/i], ['SC', /^SAFETY CAR DEPLOYED$/i]];
+const IN: Readonly<Record<NeutralSpan['kind'], RegExp>> = { VSC: /^(?:VSC|VIRTUAL SAFETY CAR) ENDING$/i, SC: /^SAFETY CAR IN THIS LAP$/i };
+const CHEQUERED = (m: OF1RaceControl) => m.flag === 'CHEQUERED' || /^CHEQUERED FLAG$/i.test(text(m));
 
 /** When race control last said the session finished (ms), or null. */
 export function finishedAt(messages: readonly OF1RaceControl[]): number | null {
@@ -158,8 +182,12 @@ export function finishedAt(messages: readonly OF1RaceControl[]): number | null {
  * one race control gave before the session started ("FORMATION LAP WILL START AT 17:30", the track's time; a time past
  * the track's midnight is the next day's), else when it started. A red flag counts as restarted when the session
  * started again after it without finishing first: a red that ends a qualifying part is not restarted by the next part.
+ * A race also gets its safety car laps (`race`): a deployment opens a span on its lap, and its ending ("IN THIS LAP",
+ * "ENDING") closes it on its own. A red flag closes an open span on its lap: the race restarts from a standing start
+ * (Monza and Monaco 2026). The other car deployed closes the first a lap before (Malaysia 2026's VSC became a safety
+ * car), a span still open at the flag closes on the last lap, and one redeployed on the lap it came in runs on.
  */
-export function sessionMarks(messages: readonly OF1RaceControl[], planned: string, tz: string | undefined): SessionMarks {
+export function sessionMarks(messages: readonly OF1RaceControl[], planned: string, tz: string | undefined, race = false): SessionMarks {
   // OpenF1's dates differ in their fractions of a second, so they are compared as instants, never as text.
   const msgs = messages.map(m => ({ m, at: Date.parse(m.date) })).filter(x => Number.isFinite(x.at)).sort((a, b) => a.at - b.at);
   const marks: SessionMarks = {};
@@ -186,7 +214,67 @@ export function sessionMarks(messages: readonly OF1RaceControl[], planned: strin
       return { lap: x.m.lap_number ?? null, restarted: next !== undefined && STARTED(next.m) };
     });
   }
+  if (race) {
+    marks.neutral = neutralSpans(msgs.map(x => x.m));
+    marks.lanes = laneWindows(msgs);
+  }
   return marks;
+}
+
+const THROUGH = /^ALL CARS THROUGH THE PIT LANE$/i;
+/** The whole field has passed through the pit lane within a lap behind the safety car: 110 s after race control's
+ *  message at Monaco and Baku in 2026. */
+const THROUGH_MS = 3 * 60_000;
+
+/** A race's lane windows (sessionMarks) from its messages in time order. A red flag runs to the next start or finish,
+ *  a stoppage announced twice once; a race never restarted, to four hours on. */
+function laneWindows(msgs: readonly { m: OF1RaceControl; at: number }[]): LaneWindow[] {
+  const iso = (t: number): string => new Date(t).toISOString();
+  const out: LaneWindow[] = [];
+  const reds = msgs.filter(x => RED(x.m));
+  reds.forEach((x, i) => {
+    if (i > 0 && x.at - reds[i - 1].at <= 60_000) return;
+    const end = msgs.find(y => y.at > x.at && (STARTED(y.m) || FINISHED(y.m)));
+    out.push({ kind: 'red', from: iso(x.at), to: iso(end ? end.at : x.at + 4 * 3_600_000) });
+  });
+  for (const x of msgs) if (THROUGH.test(text(x.m))) out.push({ kind: 'through', from: iso(x.at), to: iso(x.at + THROUGH_MS) });
+  return out.sort((a, b) => (a.from < b.from ? -1 : a.from > b.from ? 1 : 0));
+}
+
+/** A race's safety car spans from its messages in time order (sessionMarks). */
+function neutralSpans(msgs: readonly OF1RaceControl[]): NeutralSpan[] {
+  const laps = msgs.map(m => m.lap_number).filter((n): n is number => typeof n === 'number' && n > 0);
+  const last = msgs.filter(CHEQUERED).map(m => m.lap_number).find((n): n is number => typeof n === 'number' && n > 0) ?? (laps.length ? Math.max(...laps) : 0);
+  const spans: NeutralSpan[] = [];
+  const close = (span: NeutralSpan, to: number): null => {
+    if (to >= span.from) spans.push({ ...span, to });
+    return null;
+  };
+  // Typed wide: TypeScript would narrow a plain `= null` to null for the whole loop.
+  let open = null as NeutralSpan | null;
+  let seen = 0;
+  for (const m of msgs) {
+    const lap = m.lap_number;
+    if (typeof lap !== 'number' || !(lap > 0)) {
+      // A closing message without its lap closes the span on the last lap race control named, never at the flag.
+      if (open && (IN[open.kind].test(text(m)) || RED(m))) open = close(open, Math.max(seen, open.from));
+      continue;
+    }
+    seen = lap;
+    const kind = DEPLOYED.find(([, re]) => re.test(text(m)))?.[0];
+    if (kind) {
+      if (open?.kind === kind) continue;
+      if (open) close(open, lap - 1);
+      open = { kind, from: lap, to: lap };
+    } else if (open && (IN[open.kind].test(text(m)) || RED(m))) open = close(open, lap);
+  }
+  if (open) close(open, Math.max(last, open.from));
+  return spans.reduce<NeutralSpan[]>((out, s) => {
+    const prev = out[out.length - 1];
+    if (prev && prev.kind === s.kind && s.from <= prev.to) prev.to = Math.max(prev.to, s.to);
+    else out.push(s);
+    return out;
+  }, []);
 }
 
 /** Each driver's stints in order, by car number. */

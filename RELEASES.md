@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.301 — 2026-10-27
+
+Behind the scenes: every Formula 1 race page gets a lap chart. Each driver's place at the end of every lap, from the grid to the flag, with the pit stops, the safety car laps and the cars that retired, and a mark where the official result differs from the order at the line. Point at a line, or tap it, to follow one driver; the same places are there as a table too. The pit stops follow the FIA's official record, on the chart and in Pit wall below it. Nothing changes for readers yet.
+
 ## 1.0.300 — 2026-10-25
 
 Behind the scenes: the calendar's session times now match each championship's official timetable. GT World Challenge's five rounds that had borrowed another round's times have their own, Portimão's finale on its Saturday evening; WorldSBK's second race sits at the end of Sunday, where it moved this year; DTM no longer lists a third practice that never ran, nor the Nürburgring series a practice on race morning. MotoGP's Qatar round shows its evening schedule and Portugal's race its earlier start, with fixes for WEC, IMSA and five NASCAR races' names. Nothing changes for readers yet.

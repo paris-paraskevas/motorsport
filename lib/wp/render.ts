@@ -506,9 +506,10 @@ export function nextAsk(endedAt: number, now: Date): string {
 
 export const racingSession = (session: string): boolean => /^(race|sprint)$/i.test(session);
 
-/** A session's weekend data is whole: its weather and marks, and its tyres when it is a race or a sprint. */
+/** A session's weekend data is whole: its weather and marks, its tyres when it is a race or a sprint, and a race's
+ *  safety car laps (O28), so a race kept before them is asked again once. */
 export function weekendWhole(x: SessionExtras | undefined, session: string): boolean {
-  return Boolean(x?.weather && x.marks && (!racingSession(session) || x.stints));
+  return Boolean(x?.weather && x.marks && (!racingSession(session) || x.stints) && (!/^race$/i.test(session) || (x.marks.neutral && x.marks.lanes)));
 }
 
 /** Formula 1's finished sessions whose weekend data a run asks for: listed by OpenF1, past their live window, not
@@ -571,6 +572,155 @@ export function mapsDue<T extends ListedSession>(
     out.push({ circuit, session: latest });
   }
   return out;
+}
+
+// ── Formula 1's lap chart (slot O28): Jolpica's laps, asked once a race ──────
+
+/** A race's places lap by lap, as f1/laps.json keeps them: its laps, when they were fetched (ISO), and each driver of
+ *  Jolpica's result, named as f1/results.json names them (given and family name), with the grid slot (0: the pit lane),
+ *  the place at the end of each lap run, dotted ("1.1.2"), and its visits to the pit lane as Jolpica lists them (the
+ *  FIA's Race Pit Stop Summary), each its lap and the track's time of day, dotted ("24@20:43:18.39@21:08:29", "" for
+ *  none): the passes and the red flag's tyre changes among them are left out by the chart, by race control's times. */
+export interface RaceLaps {
+  laps: number;
+  at: string;
+  drivers: [string, number, string, string][];
+}
+
+/** Jolpica's laps were not whole: when that was found (ISO), and when to ask again (nextAsk). */
+export interface LapsMiss {
+  miss: string;
+  next: string;
+}
+
+/** season → round → the race's places, or the note of a miss. */
+export type LapsStore = Record<string, Record<string, RaceLaps | LapsMiss>>;
+
+/** A race the store holds whole, each row as raceLaps writes it (the visits missing in a file written before them). A
+ *  row of any other shape (a file edited by hand) makes the race a miss, asked again, never a run that throws. */
+export const isRaceLaps = (x: unknown): x is RaceLaps =>
+  isObj(x) &&
+  typeof x.laps === 'number' &&
+  Array.isArray(x.drivers) &&
+  (x.drivers as unknown[]).every(d => Array.isArray(d) && typeof d[0] === 'string' && typeof d[1] === 'number' && typeof d[2] === 'string' && (d[3] === undefined || typeof d[3] === 'string'));
+
+/** The race in a Jolpica answer (MRData.RaceTable.Races[0]), and the answer's total of items. */
+function jolpicaRace(answer: unknown): Obj | null {
+  const data = isObj(answer) ? answer.MRData : null;
+  const table = isObj(data) ? data.RaceTable : null;
+  const races = isObj(table) ? table.Races : null;
+  return Array.isArray(races) && isObj(races[0]) ? races[0] : null;
+}
+function jolpicaTotal(answer: unknown): number | null {
+  const total = isObj(answer) && isObj(answer.MRData) ? str(answer.MRData.total) : '';
+  return /^\d+$/.test(total) ? Number(total) : null;
+}
+const count = (v: unknown): number | null => (/^\d+$/.test(str(v)) ? Number(str(v)) : null);
+
+/**
+ * A race's places from Jolpica's answers: its result (the names, the grid and the laps each driver ran), its laps, 100
+ * timings a page, and its pit stops, 100 a page. Whole when every page came (the timings and the stops add up to their
+ * answers' totals), every driver has a place for each lap its result counts, every lap holds each place once, and the
+ * pit stops are listed. A driver may hold places past its result's laps: a penalty lap takes a lap off the result, not
+ * off the road (Britain 2026: Sainz, 52 laps run, classified a lap down), so those places are kept. Every race of 2026
+ * had stops (19 to 86), so an empty list is taken as Jolpica not having them yet. Otherwise `why` names the first gap,
+ * for the run's log.
+ */
+export function raceLaps(
+  results: unknown,
+  pages: readonly unknown[],
+  stopPages: readonly unknown[],
+): { laps: number; drivers: RaceLaps['drivers']; complete: boolean; why: string } {
+  const entries = jolpicaRace(results)?.Results;
+  const listed = (Array.isArray(entries) ? entries : []).filter(isObj).map(e => {
+    const driver = isObj(e.Driver) ? e.Driver : {};
+    return { id: str(driver.driverId), name: `${str(driver.givenName)} ${str(driver.familyName)}`.trim(), grid: count(e.grid), laps: count(e.laps) };
+  });
+  const known = (id: string): boolean => listed.some(x => x.id === id);
+  const places = new Map<string, number[]>();
+  let timings = 0;
+  let total: number | null = null;
+  let stranger = '';
+  for (const page of pages) {
+    total ??= jolpicaTotal(page);
+    const laps = jolpicaRace(page)?.Laps;
+    for (const lap of (Array.isArray(laps) ? laps : []).filter(isObj)) {
+      const n = count(lap.number);
+      for (const t of (Array.isArray(lap.Timings) ? lap.Timings : []).filter(isObj)) {
+        timings++;
+        const id = str(t.driverId);
+        const p = count(t.position);
+        if (!known(id)) stranger ||= id || 'a driver without an id';
+        if (n === null || !(n > 0) || p === null || !(p > 0)) continue;
+        const run = places.get(id) ?? [];
+        run[n - 1] = p;
+        places.set(id, run);
+      }
+    }
+  }
+  const pits = new Map<string, { lap: number; time: string }[]>();
+  let stopCount = 0;
+  let stopTotal: number | null = null;
+  let stopStranger = '';
+  for (const page of stopPages) {
+    stopTotal ??= jolpicaTotal(page);
+    const listedStops = jolpicaRace(page)?.PitStops;
+    for (const s of (Array.isArray(listedStops) ? listedStops : []).filter(isObj)) {
+      stopCount++;
+      const id = str(s.driverId);
+      const lap = count(s.lap);
+      if (!known(id)) stopStranger ||= id || 'a driver without an id';
+      // The time of day at the track ("16:13:33"), which tells a stop from a pass through the pit lane (lapChart).
+      const time = /^\d{1,2}:\d{2}:\d{2}$/.test(str(s.time)) ? str(s.time) : '';
+      if (lap !== null && lap > 0) pits.set(id, [...(pits.get(id) ?? []), { lap, time }]);
+    }
+  }
+  const laps = Math.max(0, ...listed.map(x => Math.max(x.laps ?? 0, places.get(x.id)?.length ?? 0)));
+  const visits = (id: string): string =>
+    (pits.get(id) ?? [])
+      .sort((a, b) => a.lap - b.lap || (a.time < b.time ? -1 : a.time > b.time ? 1 : 0))
+      .map(v => (v.time ? `${v.lap}@${v.time}` : String(v.lap)))
+      .join('.');
+  const drivers: RaceLaps['drivers'] = listed.map(x => [x.name, x.grid ?? 0, (places.get(x.id) ?? []).join('.'), visits(x.id)]);
+  const gap = ((): string => {
+    if (!listed.length) return 'no result';
+    const odd = listed.find(x => !x.id || !x.name || x.grid === null || x.laps === null);
+    if (odd) return `no grid slot or laps for ${odd.name || 'a driver'}`;
+    if (!timings) return 'no laps';
+    if (total !== null && timings !== total) return `${timings} of ${total} timings`;
+    if (stranger) return `laps for ${stranger}, who is not in the result`;
+    for (const x of listed) {
+      const run = places.get(x.id) ?? [];
+      const hole = run.findIndex(p => p === undefined);
+      if (hole >= 0) return `${x.name} has no place on lap ${hole + 1}`;
+      if (run.length < (x.laps ?? 0)) return `${x.name} has ${run.length} places for ${x.laps} laps`;
+    }
+    for (let n = 1; n <= laps; n++) {
+      const on = listed.map(x => places.get(x.id)?.[n - 1]).filter((p): p is number => p !== undefined).sort((a, b) => a - b);
+      const wrong = on.findIndex((p, i) => p !== i + 1);
+      if (wrong >= 0) return `lap ${n} holds places ${on.join(',')}`;
+    }
+    if (!stopCount) return 'no pit stops yet';
+    if (stopTotal !== null && stopCount !== stopTotal) return `${stopCount} of ${stopTotal} pit stops`;
+    if (stopStranger) return `pit stops for ${stopStranger}, who is not in the result`;
+    return '';
+  })();
+  return { laps, drivers, complete: gap === '', why: gap };
+}
+
+/** The races whose laps a run asks Jolpica for: classified this season, not yet whole in the store, a miss past its
+ *  next ask; the newest first. A whole race is never asked again: the finish follows the stored classification. */
+export function lapsDue(rounds: readonly ResultRound[], store: LapsStore, season: number, now: Date): number[] {
+  const t = now.getTime();
+  const year = store[String(season)] ?? {};
+  return rounds
+    .filter(r => r.round !== null && r.date?.slice(0, 4) === String(season) && Boolean(r.sessions.find(s => s.label === 'Race')?.tables[0]?.rows.length))
+    .filter(r => {
+      const have = year[String(r.round)];
+      return !isRaceLaps(have) && !(have && Date.parse(have.next) > t);
+    })
+    .map(r => r.round as number)
+    .sort((a, b) => b - a);
 }
 
 // ── Calendar ─────────────────────────────────────────────────────────────────
@@ -686,8 +836,9 @@ export interface SeriesData {
    *  struck-through tile (O19). */
   cancelled?: { round: number; name: string; place?: string; from?: string; to?: string; reason?: string }[];
   /** Formula 1's weekend data (O19) as the publisher keeps it beside the results: each session's weather, marks and
-   *  tyres, each circuit's map, and the forecast for each circuit racing within ten days. */
-  weekend?: { sessions: SessionsStore; maps: MapsStore; forecast: Record<string, VenueForecast> };
+   *  tyres, each circuit's map, the forecast for each circuit racing within ten days, and each race's places lap by lap
+   *  for its lap chart (O28). */
+  weekend?: { sessions: SessionsStore; maps: MapsStore; forecast: Record<string, VenueForecast>; laps?: LapsStore };
   /** The season's rulings that changed points after the races (standings-notes.json), for the Standings page (O16). */
   standingsNotes?: StandingsNote[];
   /** The Champions page (O17): champions.json, the reigning season's note, the record notes, the heritage colours of teams

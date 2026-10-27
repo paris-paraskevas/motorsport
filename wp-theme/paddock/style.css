@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.21
+Version: 0.1.22
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -1067,6 +1067,7 @@ a.pd-ch-door:focus-visible { outline: 2px solid var(--pd-accent); outline-offset
 .pd-wk-hint, .pd-wk-note { margin: 0; font-size: .8rem; color: var(--pd-muted); }
 .pd-wkp .pd-wk-link { font-size: .84rem; font-weight: 800; }
 .pd-wk-link::after { content: " →"; }
+.pd-wk-links { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; }
 .pd-wk-podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
 .pd-wk-podium li { display: grid; gap: 2px; padding: 12px 14px 13px; background: var(--pd-surface); border: 1px solid var(--pd-line); border-top: 4px solid var(--t); }
 .pd-wk-podium li:first-child { background: color-mix(in srgb, var(--t) 12%, var(--pd-surface)); }
@@ -1176,6 +1177,62 @@ a.pd-ch-door:focus-visible { outline: 2px solid var(--pd-accent); outline-offset
 /* One line where it fits; on the narrowest phones the longest tip wraps inside the Pit wall. */
 .pd-pw-tip { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 6px)); width: max-content; max-width: calc(100% - 8px); padding: 6px 10px; background: var(--pd-ink); color: var(--pd-ground); font-size: .78rem; font-weight: 700; pointer-events: none; }
 .pd-pw-tip::after { content: ""; position: absolute; left: 50%; bottom: -5px; margin-left: -5px; border: 5px solid transparent; border-bottom: 0; border-top-color: var(--pd-ink); }
+/* The lap chart (O28): each driver's place at the end of every lap, drawn by the script from data-pd-laps on Pit wall's
+   card and lap scale. The name and finish columns ride in --pd-lc-n and --pd-lc-e, and on the race page Pit wall's rows
+   take them too (its notes widened, the operator's answer C of 25 Oct), so lap 30 sits over lap 30 at every width; the
+   Overview's Pit wall keeps its own. Without the script the box stays empty and hides, and the table stands. */
+.pd-wkp { --pd-lc-n: 74px; --pd-lc-e: 94px; }
+.pd-wkp:has(.pd-lc) :is(.pd-pw-axis, .pd-pw-row) { grid-template-columns: var(--pd-lc-n) minmax(0, 1fr) var(--pd-lc-e); }
+#lap-chart { scroll-margin-top: calc(var(--wp-admin--admin-bar--height, 0px) + 12px); }
+.pd-lc { display: grid; gap: 10px; padding: 14px 16px 12px; background: var(--pd-surface); border: 1px solid var(--pd-line); }
+/* Pit wall's gap between its columns: the script reads it beside the two widths. Hidden overflow lets the card narrow
+   past the width it was drawn at, so the script sees the new width and draws again. */
+.pd-lc-draw { column-gap: 10px; overflow: hidden; }
+.pd-lc-draw:empty { display: none; }
+.pd-lc-draw:empty + .pd-lc-key .pd-lc-k { display: none; }
+/* Room for the longest readout, two lines (three on a phone), so the chart never moves under a finger or a pointer. */
+.pd-lc-read { min-height: 2.9em; margin: 0; font-size: .84rem; line-height: 1.45; color: var(--pd-muted); }
+.pd-lc-read.is-on { color: var(--pd-ink); }
+.pd-lc-draw svg { display: block; touch-action: pan-y pinch-zoom; -webkit-user-select: none; user-select: none; }
+.pd-lc-draw text { dominant-baseline: central; }
+.pd-lc-draw :is(.an, .n, .dl) { font-family: var(--wp--preset--font-family--fira-code, ui-monospace, Consolas, monospace); }
+.pd-lc-draw :is(.r, .tk) { stroke: var(--pd-line); stroke-width: 1; }
+.pd-lc-draw .an { fill: var(--pd-muted); font-size: 11px; font-weight: 500; text-anchor: middle; }
+.pd-lc-draw .at { fill: var(--pd-muted); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.pd-lc-draw .sp { fill: var(--pd-sunken); }
+.pd-lc-draw .spl { fill: var(--pd-muted); font-size: 10px; font-weight: 600; letter-spacing: .06em; text-anchor: middle; }
+.pd-lc-draw .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.pd-lc-draw .ln.is-2 { stroke-dasharray: 5 3; }
+.pd-lc-draw .st { fill: none; stroke-width: 1.6; stroke-dasharray: 1.6 2.6; stroke-linecap: round; }
+.pd-lc-draw .pit { stroke: var(--pd-surface); stroke-width: 1.5; }
+.pd-lc-draw .x { fill: none; stroke: var(--pd-ink); stroke-width: 1.6; stroke-linecap: round; }
+.pd-lc-draw .n { fill: var(--pd-muted); font-size: 12px; font-weight: 500; }
+.pd-lc-draw .c { fill: var(--pd-ink); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+.pd-lc-draw .dl { fill: var(--pd-muted); font-size: 11px; font-weight: 500; }
+.pd-lc-draw .gd { stroke: var(--pd-line-strong); stroke-width: 1; }
+.pd-lc-draw .is-sm :is(.n, .c) { font-size: 10.5px; }
+.pd-lc-draw .is-sm .dl { font-size: 10px; }
+.pd-lc-draw .drv { transition: opacity .15s; }
+.pd-lc-draw .has-focus .drv { opacity: .22; }
+.pd-lc-draw .has-focus .drv.is-on { opacity: 1; }
+.pd-lc-draw .drv.is-on .ln { stroke-width: 3.2; }
+@media (prefers-reduced-motion: reduce) { .pd-lc-draw .drv { transition: none; } }
+.pd-lc-key { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin: 0; font-size: .76rem; color: var(--pd-muted); }
+.pd-lc-k { display: inline-flex; align-items: center; gap: 6px; }
+.pd-lc-k i { display: inline-block; flex: none; font-style: normal; }
+.pd-lc-k b { font-weight: 800; color: var(--pd-ink); }
+.pd-lc-kp { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.pd-lc-kx { position: relative; width: 10px; height: 10px; }
+.pd-lc-kx::before, .pd-lc-kx::after { content: ""; position: absolute; top: 4px; left: -1px; width: 12px; height: 1.6px; background: var(--pd-ink); transform: rotate(45deg); }
+.pd-lc-kx::after { transform: rotate(-45deg); }
+.pd-lc-kb { padding: 1px 4px; background: var(--pd-sunken); border: 1px solid var(--pd-line-strong); font-size: .64rem; font-weight: 700; letter-spacing: .06em; line-height: 1.2; }
+.pd-lc-kd { width: 22px; height: 2px; background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent 5px 8px); }
+.pd-lc-credit, .pd-pw-credit { margin-left: auto; }
+.pd-lc-tbl { min-width: 0; padding-top: 10px; border-top: 1px solid var(--pd-line); }
+.pd-lc-tbl summary { font-size: .84rem; font-weight: 800; cursor: pointer; }
+.pd-lc-tbl .pd-wk-scroll { margin-top: 10px; }
+.pd-lc-t .n, .pd-lc-t .p { text-align: right; white-space: nowrap; }
+.pd-lc-t .dn { color: var(--pd-muted); white-space: nowrap; }
 /* A session's own page. */
 .pd-ss-band { background: var(--s); color: var(--pd-on); }
 .pd-ss-band-in { display: grid; gap: 4px; padding: 18px var(--pd-gutter); }
@@ -1251,6 +1308,12 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 	.pd-pw { padding: 12px 10px 10px; }
 	.pd-pw-axis, .pd-pw-row { grid-template-columns: 46px minmax(0, 1fr) 40px; gap: 6px; }
 	.pd-pw-d .pd-tc, .pd-pw-scale span.o { display: none; }
+	.pd-wkp { --pd-lc-n: 46px; --pd-lc-e: 68px; }
+	.pd-lc { padding: 12px 10px 10px; }
+	.pd-lc-read { min-height: 4.35em; }
+	.pd-lc-draw { column-gap: 6px; }
+	.pd-lc-credit, .pd-pw-credit { margin-left: 0; }
+	.pd-lc-t .dn { display: none; }
 	.pd-ss-band-in { padding: 14px var(--pd-gutter); }
 	.pd-cm { padding: 0 var(--pd-gutter) 24px; }
 	.pd-sn-t { min-height: 0; }
@@ -1258,6 +1321,8 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 @media (max-width: 340px) {
 	/* The last lap's number would touch the five before it; the axis names the laps already. */
 	.pd-pw-scale .is-last { display: none; }
+	/* The longest readout (five stops, placed differently) runs to four lines here. */
+	.pd-lc-read { min-height: 5.8em; }
 }
 
 /* The series list (O21): round 2's "All series". Still racing, then Completed, each split by type, a type's group as
