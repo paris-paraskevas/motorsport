@@ -6,16 +6,16 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-27 (LATEST, session 71, the desk: batch Task 1 done and live — the lap chart (O28), the 2025 title race (O29), the other series' timetables (O31), the fourteen series researched (O20); theme 0.1.22 on the site; next: the operator's tests, then Task 2, O18's plan)
+## ⚡ Next session pickup — 2026-10-27 (LATEST, session 71, the desk: batch Task 1 done and live — the lap chart (O28), the 2025 title race (O29), the other series' timetables (O31), the fourteen series researched (O20); theme 0.1.22 on the site; the operator's tests passed; next: Task 2, O18's plan)
 
 ### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
 
 ```
 Session 72, the desk session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
 Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md · docs/plan/ledger.json (O17, O20, O28, O29, O31 done; O18 next) · docs/HANDOFF.md LATEST (27 Oct) · IDEAS.md's lines of 24 to 27 Oct · the memory feedback-paddock-* files (task numbering; small batches of questions).
-Then run `git status` and `git log --oneline -5` on the local branch desk/records (eleven records commits, not on GitHub).
-First: my test results of 0.1.22, 0.1.21 and 0.1.19 (Paddock Theme Log), each into its slot's evidence; a failure gets its fix before anything new.
-Then Task 2: O18's plan in plan mode (the other fourteen series, on O20's answers), deciding the split by family; build sessions a family each, at most three at once besides the desk.
+Then run `git status` and `git log --oneline -5` on the local branch desk/records (twelve records commits, not on GitHub).
+My tests of 0.1.22, 0.1.21 and 0.1.19 passed (recorded 28 Oct); nothing waits to upload.
+First, Task 2: O18's plan in plan mode (the other fourteen series, on O20's answers), deciding the split by family; build sessions a family each, at most three at once besides the desk.
 Not without my word: any push, merge, publish run, theme upload, the old Next.js code, DNS, any prod write.
 ```
 
@@ -25,8 +25,8 @@ Not without my word: any push, merge, publish run, theme upload, the old Next.js
    - **1.c, the 2025 title race (O29):** #1187 merged as 2845f4ea (1.0.299, theme 0.1.21) and published. O30, 2026's page, is planned for after Abu Dhabi (4–6 Dec).
    - **1.d, the timetables (O31):** #1188 merged as 6588a8a6 (1.0.300) and published on the Calendar.
    - The four sessions are finished; they can be archived on the operator's word.
-2. **Theme 0.1.22 is on the site,** so nothing waits to upload. The operator's tests are on Paddock Theme Log (version 20): 0.1.22's ten checks, 0.1.21's three and 0.1.19's three, plus one resize of the lap chart on a real screen.
-3. **Records not yet on GitHub:** the local desk/records, from next at 05d9ca5f, holds eleven records commits (a7afa7d5 … 8533c4be) and this handoff. They go up as a records PR on the operator's word. next has moved since (2845f4ea, 6588a8a6, c5189d66), so merge next in first and union-resolve docs/pull-requests.md.
+2. **Theme 0.1.22 is on the site,** so nothing waits to upload. The operator's tests passed (reported 28 Oct: “all test complete, everything A OK”): 0.1.22's ten checks with the resize on a real screen, 0.1.21's three and 0.1.19's three.
+3. **Records not yet on GitHub:** the local desk/records, from next at 05d9ca5f, holds twelve records commits (a7afa7d5 … this handoff's), the tests recorded among them. They go up as a records PR on the operator's word. next has moved since (2845f4ea, 6588a8a6, c5189d66), so merge next in first and union-resolve docs/pull-requests.md.
 4. **WordPress.com refused GitHub's signed-in publish runs with 429 on 27 Oct,** from 07:55Z to at least 08:25Z. It had lifted by 14:50Z: run 40525083231 went through and closed outage issue #1190 itself.
    - Meanwhile the desk published from the operator's computer, with a second application password in the gitignored `.env.wp`. WP_USER there is the site's own username, not the WordPress.com account's.
    - Stored data: `npx tsx --env-file=.env.wp scripts/wp-publish.mts --from-ref origin/paddock-data --only <paths>`.
@@ -37,7 +37,7 @@ Not without my word: any push, merge, publish run, theme upload, the old Next.js
    - December: 2026's title race (O30).
    - After every championship: the control room (O26) and the Studio (O25).
    - Not yet slots: Learn, News, and Formula 1's drivers, teams and circuits.
-6. **Living pages:** The Paddock Ledger (version 86), Paddock Theme Log (version 20), Where Paddock Stands (version 1).
+6. **Living pages:** The Paddock Ledger (version 87), Paddock Theme Log (version 21), both marking the tests passed; Where Paddock Stands (version 1, as of 27 Oct).
 
 **Landmines met in session 71 (26 and 27 Oct):**
 - **Dispatching the publish workflow in the same second it is enabled** leaves a run that never gets a job: GitHub never queues it, and it can't be cancelled. Wait about 30 s after `gh workflow enable` before `gh workflow run`, and disable only once the run is in_progress with a job. Two such ghosts remain, inert: 39836276374 (22 Oct) and 40467974346 (27 Oct).
